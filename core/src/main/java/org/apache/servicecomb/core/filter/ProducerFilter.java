@@ -14,22 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.transport.rest.client;
+package org.apache.servicecomb.core.filter;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterProvider;
-import org.springframework.stereotype.Component;
+import javax.annotation.Nonnull;
 
-@Component
-public class RestClientFilterProvider implements FilterProvider {
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+
+public interface ProducerFilter extends Filter {
+  @Nonnull
   @Override
-  public List<Class<? extends Filter>> getFilters() {
-    return Arrays.asList(
-        RestClientCodecFilter.class,
-        RestClientSenderFilter.class
-    );
+  default List<InvocationType> getInvocationTypes() {
+    return Collections.singletonList(InvocationType.PRODUCER);
   }
 }

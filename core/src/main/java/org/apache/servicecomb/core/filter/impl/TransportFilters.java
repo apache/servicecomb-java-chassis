@@ -20,18 +20,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.InternalFilter;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
 /**
- * Internal use only, will not publish by {@link DefaultFilterProvider}
+ * Internal use only
  */
-@FilterMeta(name = "transport-filters")
-public class TransportFilters implements Filter {
+@Component
+public class TransportFilters implements InternalFilter {
+  public static final String NAME = "transport-filters";
+
   private Map<String, FilterNode> chainByTransport = new HashMap<>();
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
   public Map<String, FilterNode> getChainByTransport() {
     return chainByTransport;
@@ -43,7 +53,7 @@ public class TransportFilters implements Filter {
     if (filterNode == null) {
       return nextNode.onFilter(invocation);
     }
-    
+
     return filterNode.onFilter(invocation);
   }
 }

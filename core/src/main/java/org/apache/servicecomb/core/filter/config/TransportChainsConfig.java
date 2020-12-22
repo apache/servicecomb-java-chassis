@@ -14,20 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.transport.highway;
+package org.apache.servicecomb.core.filter.config;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterProvider;
+public class TransportChainsConfig {
+  private Map<String, List<String>> chainByTransport = new HashMap<>();
 
-public class HighwayFilterProvider implements FilterProvider {
+  public Map<String, List<String>> getChainByTransport() {
+    return chainByTransport;
+  }
+
+  public TransportChainsConfig add(String transport, List<String> chain) {
+    chainByTransport.put(transport, chain);
+
+    return this;
+  }
+
   @Override
-  public List<Class<? extends Filter>> getFilters() {
-    return Arrays.asList(
-        HighwayClientFilter.class,
-        HighwayServerCodecFilter.class
-    );
+  public String toString() {
+    return chainByTransport.toString();
   }
 }

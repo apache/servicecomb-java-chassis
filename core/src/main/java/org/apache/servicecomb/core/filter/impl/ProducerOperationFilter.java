@@ -16,26 +16,30 @@
  */
 package org.apache.servicecomb.core.filter.impl;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
-
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-@FilterMeta(name = "producer-operation", invocationType = PRODUCER)
-public class ProducerOperationFilter implements Filter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProducerOperationFilter.class);
+@Component
+public class ProducerOperationFilter implements ProducerFilter {
+  public static final String NAME = "producer-operation";
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {

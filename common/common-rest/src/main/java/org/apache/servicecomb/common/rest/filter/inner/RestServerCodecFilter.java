@@ -21,12 +21,12 @@ import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
 import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.servicecomb.core.exception.Exceptions.exceptionToResponse;
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.HttpTransportContext;
@@ -36,20 +36,28 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
 import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 
-@FilterMeta(name = "rest-server-codec", invocationType = PRODUCER)
-public class RestServerCodecFilter implements Filter {
+@Component
+public class RestServerCodecFilter implements ProducerFilter {
+  public static final String NAME = "rest-server-codec";
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     return CompletableFuture.completedFuture(invocation)

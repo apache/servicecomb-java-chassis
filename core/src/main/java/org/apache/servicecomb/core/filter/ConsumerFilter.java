@@ -14,17 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.tracing.zipkin;
+package org.apache.servicecomb.core.filter;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterProvider;
+import javax.annotation.Nonnull;
 
-public class ZipkinFilterProvider implements FilterProvider {
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+
+public interface ConsumerFilter extends Filter {
+  @Nonnull
   @Override
-  public List<Class<? extends Filter>> getFilters() {
-    return Arrays.asList(ZipkinTracingFilter.class);
+  default List<InvocationType> getInvocationTypes() {
+    return Collections.singletonList(InvocationType.CONSUMER);
   }
 }

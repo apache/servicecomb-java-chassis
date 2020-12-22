@@ -21,28 +21,36 @@ import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
 
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.http.HttpTracing;
 
-@FilterMeta(name = "zipkin")
+@Component
 public class ZipkinTracingFilter implements Filter {
+  public static final String NAME = "zipkin";
+
   private ZipkinConsumerDelegate consumer;
 
   private ZipkinProviderDelegate producer;
 
+  @Nonnull
   @Override
-  public void init(SCBEngine engine) {
-    HttpTracing httpTracing = BeanUtils.getContext().getBean(HttpTracing.class);
+  public String getName() {
+    return NAME;
+  }
+
+  @Autowired
+  public void setHttpTracing(HttpTracing httpTracing) {
     this.consumer = new ZipkinConsumerDelegate(httpTracing);
     this.producer = new ZipkinProviderDelegate(httpTracing);
   }

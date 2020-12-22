@@ -14,20 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.common.rest.filter;
+package org.apache.servicecomb.core.filter.impl;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterProvider;
+import javax.annotation.Nonnull;
 
-public class RestFilterProvider implements FilterProvider {
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.InternalFilter;
+import org.apache.servicecomb.swagger.invocation.Response;
+
+// just for test
+public class EmptyFilter implements InternalFilter {
+  @Nonnull
   @Override
-  public List<Class<? extends Filter>> getFilters() {
-    return Arrays.asList(
-        RestServerCodecFilter.class
-    );
+  public String getName() {
+    return "empty";
+  }
+
+  @Override
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    return CompletableFuture.completedFuture(Response.ok(null));
   }
 }

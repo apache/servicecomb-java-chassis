@@ -74,7 +74,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
-// TODO: should not depend on spring, that will make integration more flexible
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
 
@@ -360,7 +359,7 @@ public class SCBEngine {
     triggerEvent(EventType.AFTER_HANDLER);
 
     triggerEvent(EventType.BEFORE_FILTER);
-    filterChainsManager.init(this);
+    filterChainsManager.init();
     triggerEvent(EventType.AFTER_FILTER);
 
     createProducerMicroserviceMeta();
@@ -393,7 +392,7 @@ public class SCBEngine {
 
     producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
     producerMicroserviceMeta.setHandlerChain(producerHandlerManager.getOrCreate(microserviceName));
-    producerMicroserviceMeta.setFilterChain(filterChainsManager.createProducerFilterChain(microserviceName));
+    producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
   }
 

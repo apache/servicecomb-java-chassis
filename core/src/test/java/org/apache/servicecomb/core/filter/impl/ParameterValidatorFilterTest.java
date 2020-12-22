@@ -96,7 +96,7 @@ public class ParameterValidatorFilterTest {
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    filter.init(null);
+    filter.afterPropertiesSet();
   }
 
   @Before

@@ -17,18 +17,18 @@
 package org.apache.servicecomb.core.filter.impl;
 
 import static org.apache.servicecomb.core.exception.ExceptionCodes.LB_ADDRESS_NOT_FOUND;
-import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
@@ -40,23 +40,74 @@ import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * build-in round robin LB, for demo scenes
  */
-@FilterMeta(name = "simple-load-balance", invocationType = CONSUMER, shareable = false)
-public class SimpleLoadBalanceFilter implements Filter {
+@Component
+public class SimpleLoadBalanceFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceHandler.class);
 
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  public static final String NAME = "simple-load-balance";
 
-  // key is grouping filter qualified name
-  private volatile Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
+  private static class Service {
+    private final String name;
 
-  public SimpleLoadBalanceFilter() {
-    discoveryTree.loadFromSPI(DiscoveryFilter.class);
-    discoveryTree.addFilter(new EndpointDiscoveryFilter());
-    discoveryTree.sort();
+    private final DiscoveryTree discoveryTree = new DiscoveryTree();
+
+    // key is grouping filter qualified name
+    private final Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
+
+    public Service(String name) {
+      this.name = name;
+      discoveryTree.loadFromSPI(DiscoveryFilter.class);
+      discoveryTree.addFilter(new EndpointDiscoveryFilter());
+      discoveryTree.sort();
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public Endpoint selectEndpoint(Invocation invocation) {
+      DiscoveryContext context = new DiscoveryContext();
+      context.setInputParameters(invocation);
+      VersionedCache endpointsVersionedCache = discoveryTree.discovery(context,
+          invocation.getAppId(),
+          invocation.getMicroserviceName(),
+          invocation.getMicroserviceVersionRule());
+      if (endpointsVersionedCache.isEmpty()) {
+        String msg = "No available address found.";
+        LOGGER.error("{} microserviceName={}, version={}, discoveryGroupName={}",
+            msg,
+            invocation.getMicroserviceName(),
+            invocation.getMicroserviceVersionRule(),
+            endpointsVersionedCache.name());
+        throw Exceptions.consumer(LB_ADDRESS_NOT_FOUND, msg);
+      }
+
+      List<Endpoint> endpoints = endpointsVersionedCache.data();
+      AtomicInteger index = indexMap.computeIfAbsent(endpointsVersionedCache.name(), name -> {
+        LOGGER.info("Create loadBalancer for {}.", name);
+        return new AtomicInteger();
+      });
+      LOGGER.debug("invocation {} use discoveryGroup {}.",
+          invocation.getMicroserviceQualifiedName(),
+          endpointsVersionedCache.name());
+
+      int idx = Math.abs(index.getAndIncrement());
+      idx = idx % endpoints.size();
+      return endpoints.get(idx);
+    }
+  }
+
+  private final Map<String, Service> servicesByName = new ConcurrentHashMapEx<>();
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
   }
 
   @Override
@@ -65,38 +116,9 @@ public class SimpleLoadBalanceFilter implements Filter {
       return nextNode.onFilter(invocation);
     }
 
-    invocation.setEndpoint(selectEndpoint(invocation));
+    Service service = servicesByName.computeIfAbsent(invocation.getMicroserviceName(), Service::new);
+    Endpoint endpoint = service.selectEndpoint(invocation);
+    invocation.setEndpoint(endpoint);
     return nextNode.onFilter(invocation);
-  }
-
-  public Endpoint selectEndpoint(Invocation invocation) {
-    DiscoveryContext context = new DiscoveryContext();
-    context.setInputParameters(invocation);
-    VersionedCache endpointsVersionedCache = discoveryTree.discovery(context,
-        invocation.getAppId(),
-        invocation.getMicroserviceName(),
-        invocation.getMicroserviceVersionRule());
-    if (endpointsVersionedCache.isEmpty()) {
-      String msg = "No available address found.";
-      LOGGER.error("{} microserviceName={}, version={}, discoveryGroupName={}",
-          msg,
-          invocation.getMicroserviceName(),
-          invocation.getMicroserviceVersionRule(),
-          endpointsVersionedCache.name());
-      throw Exceptions.consumer(LB_ADDRESS_NOT_FOUND, msg);
-    }
-
-    List<Endpoint> endpoints = endpointsVersionedCache.data();
-    AtomicInteger index = indexMap.computeIfAbsent(endpointsVersionedCache.name(), name -> {
-      LOGGER.info("Create loadBalancer for {}.", name);
-      return new AtomicInteger();
-    });
-    LOGGER.debug("invocation {} use discoveryGroup {}.",
-        invocation.getMicroserviceQualifiedName(),
-        endpointsVersionedCache.name());
-
-    int idx = Math.abs(index.getAndIncrement());
-    idx = idx % endpoints.size();
-    return endpoints.get(idx);
   }
 }

@@ -16,24 +16,32 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
-
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@FilterMeta(name = "rest-client-codec", invocationType = CONSUMER)
-public class RestClientCodecFilter implements Filter {
+@Component
+public class RestClientCodecFilter implements ConsumerFilter {
+  public static final String NAME = "rest-client-codec";
+
   protected RestClientTransportContextFactory transportContextFactory;
 
   protected RestClientEncoder encoder;
 
   protected RestClientDecoder decoder;
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
   @Autowired
   public RestClientCodecFilter setTransportContextFactory(RestClientTransportContextFactory transportContextFactory) {

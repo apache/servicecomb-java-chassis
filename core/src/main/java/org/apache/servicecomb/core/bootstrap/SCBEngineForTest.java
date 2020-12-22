@@ -19,11 +19,14 @@ package org.apache.servicecomb.core.bootstrap;
 
 import static org.apache.servicecomb.core.executor.ExecutorManager.EXECUTOR_GROUP_THREADPOOL;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.executor.GroupExecutor;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
-import org.apache.servicecomb.core.filter.FilterManager;
-import org.apache.servicecomb.core.filter.config.TransportFiltersConfig;
+import org.apache.servicecomb.core.filter.impl.EmptyFilter;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
@@ -34,9 +37,12 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 public class SCBEngineForTest extends SCBEngine {
   public SCBEngineForTest() {
     getExecutorManager().registerExecutor(EXECUTOR_GROUP_THREADPOOL, new GroupExecutor().init());
+
+    List<Filter> filters = Arrays.asList(
+        new EmptyFilter()
+    );
     setFilterChainsManager(new FilterChainsManager()
-        .setTransportFiltersConfig(new TransportFiltersConfig())
-        .setFilterManager(new FilterManager()));
+        .addFilters(filters));
   }
 
   @Override

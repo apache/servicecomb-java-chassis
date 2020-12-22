@@ -14,21 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.filter.impl;
+package org.apache.servicecomb.core.filter.config;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.function.Consumer;
 
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterProvider;
+import org.apache.commons.configuration.Configuration;
 
-public class DefaultFilterProvider implements FilterProvider {
-  @Override
-  public List<Class<? extends Filter>> getFilters() {
-    return Arrays.asList(
-        SimpleLoadBalanceFilter.class,
-        ScheduleFilter.class,
-        ParameterValidatorFilter.class,
-        ProducerOperationFilter.class);
+import com.netflix.config.DynamicPropertyFactory;
+
+public class AbstractFilterChainsConfig {
+  public static final String ROOT = "servicecomb.filter-chains.";
+
+  protected final Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+
+  protected void loadKeys(String root, Consumer<String> loadKey) {
+    config.getKeys(root).forEachRemaining(loadKey);
   }
 }
