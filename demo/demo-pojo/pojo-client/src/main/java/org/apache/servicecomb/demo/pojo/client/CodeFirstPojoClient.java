@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
@@ -98,18 +97,19 @@ public class CodeFirstPojoClient {
       InvocationContext context = new InvocationContext();
       context.addContext("k", "v");
       ContextUtils.setInvocationContext(context);
-      CompletableFuture<String> future = ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone");
 
-      future.thenCompose(result -> {
-        TestMgr.check("someone sayhi, context k: v", result);
+      ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone")
+          .thenCompose(result -> {
+            TestMgr.check("someone sayhi, context k: v", result);
 
-        TestMgr.check(true, context == ContextUtils.getInvocationContext());
+            TestMgr.check(true, context == ContextUtils.getInvocationContext());
 
-        return ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone 1");
-      }).whenComplete((r, e) -> {
-        TestMgr.check("someone 1 sayhi, context k: v", r);
-        latch.countDown();
-      });
+            return ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone 1");
+          })
+          .whenComplete((r, e) -> {
+            TestMgr.check("someone 1 sayhi, context k: v", r);
+            latch.countDown();
+          });
 
       ContextUtils.removeInvocationContext();
     });

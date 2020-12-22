@@ -18,24 +18,33 @@ package org.apache.servicecomb.transport.highway;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.servicecomb.core.exception.Exceptions.exceptionToResponse;
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
 
 import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
+import org.springframework.stereotype.Component;
 
 import io.vertx.core.buffer.Buffer;
 
-@FilterMeta(name = "highway-server-codec", invocationType = PRODUCER)
-public class HighwayServerCodecFilter implements Filter {
+@Component
+public class HighwayServerCodecFilter implements ProducerFilter {
+  public static final String NAME = "highway-server-codec";
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     return CompletableFuture.completedFuture(invocation)

@@ -78,7 +78,7 @@ public class FilterNode {
   }
 
   public CompletableFuture<Response> onFilter(Invocation invocation) {
-    if (!filter.enabled()) {
+    if (!filter.isEnabled()) {
       return nextNode.onFilter(invocation);
     }
 

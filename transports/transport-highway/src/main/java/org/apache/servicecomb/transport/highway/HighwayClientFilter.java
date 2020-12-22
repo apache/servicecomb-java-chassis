@@ -16,26 +16,35 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
-
 import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-@FilterMeta(name = "highway-client", invocationType = CONSUMER)
-public class HighwayClientFilter implements Filter {
+@Component
+public class HighwayClientFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientFilter.class);
+
+  public static final String NAME = "highway-client";
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
@@ -81,7 +90,11 @@ public class HighwayClientFilter implements Filter {
 
   protected Response convertFailedResponseToException(Response response) {
     if (response.isFailed()) {
-      throw Exceptions.create(response.getStatus(), response.getResult());
+      Object errorData = response.getResult();
+      if (errorData instanceof InvocationException) {
+        errorData = ((InvocationException) errorData).getErrorData();
+      }
+      throw Exceptions.create(response.getStatus(), errorData);
     }
 
     return response;

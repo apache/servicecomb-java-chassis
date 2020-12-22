@@ -15,30 +15,11 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: tracing-app
-service_description:
-  name: tracing-service
-  version: 0.0.2
+servicecomb-config-order: -500
 servicecomb:
-  service:
-    registry:
-      enabled: false
-  rest:
-    address: 0.0.0.0:8080?sslEnabled=false
-  highway:
-    address: 0.0.0.0:7070
-  handler:
-    chain:
-      Provider:
-        default: tracing-provider,bizkeeper-provider
-      Consumer:
-        default: tracing-consumer,loadbalance,bizkeeper-consumer
   filter-chains:
-    producer:
-      default: scb-producer-transport, schedule, zipkin, validator, producer-operation
-  tracing:
-    collector:
-      address: http://localhost:9411
-  executor:
-    default:
-      maxThreads-per-group: 10
+    transport:
+      scb-consumer-transport:
+        highway: highway-client
+      scb-producer-transport:
+        highway: highway-server-codec

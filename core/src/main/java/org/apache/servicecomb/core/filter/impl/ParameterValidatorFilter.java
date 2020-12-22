@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.core.filter.impl;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
-
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
@@ -30,10 +29,8 @@ import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -43,19 +40,29 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@FilterMeta(name = "validator", invocationType = PRODUCER)
-public class ParameterValidatorFilter implements Filter {
+@Component
+public class ParameterValidatorFilter implements ProducerFilter, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
+
+  public static final String NAME = "validator";
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
-  private ExecutableValidator validator;
+  protected ExecutableValidator validator;
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
   @Override
-  public void init(SCBEngine engine) {
+  public void afterPropertiesSet() {
     validator = createValidatorFactory()
         .getValidator().forExecutables();
   }

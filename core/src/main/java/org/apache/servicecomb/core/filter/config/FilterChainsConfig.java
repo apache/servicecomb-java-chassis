@@ -16,63 +16,90 @@
  */
 package org.apache.servicecomb.core.filter.config;
 
-import static org.apache.servicecomb.core.filter.config.TransportFiltersConfig.FILTER_CHAINS_PREFIX;
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-import com.netflix.config.DynamicPropertyFactory;
+public class FilterChainsConfig extends AbstractFilterChainsConfig {
+  public static final String TRANSPORT_ROOT = ROOT + "transport";
 
-public class FilterChainsConfig {
-  private final List<Object> defaultChain;
+  public static final String DEFINITION_ROOT = ROOT + "definition";
 
-  private final Map<String, List<Object>> microserviceChains = new HashMap<>();
+  // key is chain name
+  private final Map<String, TransportChainsConfig> transportChains = new HashMap<>();
 
-  private final TransportFiltersConfig transportFiltersConfig;
+  private final Map<String, List<String>> definitions = new HashMap<>();
 
-  public FilterChainsConfig(TransportFiltersConfig transportFiltersConfig, InvocationType type) {
-    this.transportFiltersConfig = transportFiltersConfig;
+  private InvocationFilterChainsConfig consumer;
 
-    Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    String root = FILTER_CHAINS_PREFIX + type.name().toLowerCase(Locale.US);
-    defaultChain = resolve(ConfigUtil.getStringList(config, root + ".default"));
-    loadMicroserviceChains(config, root + ".policies");
+  private InvocationFilterChainsConfig producer;
+
+  private boolean enabled;
+
+  public void load() {
+    enabled = config.getBoolean(ROOT + "enabled", false);
+
+    loadKeys(TRANSPORT_ROOT, this::loadTransportChain);
+    loadKeys(DEFINITION_ROOT, this::loadDefinitionChain);
+
+    consumer = new InvocationFilterChainsConfig(ROOT + "consumer");
+    producer = new InvocationFilterChainsConfig(ROOT + "producer");
   }
 
-  public List<Object> getDefaultChain() {
-    return defaultChain;
+  private void loadTransportChain(String qualifiedKey) {
+    String qualifiedName = qualifiedKey.substring(TRANSPORT_ROOT.length() + 1);
+    int dotIdx = qualifiedName.indexOf('.');
+    String chainName = qualifiedName.substring(0, dotIdx);
+    String transport = qualifiedName.substring(dotIdx + 1);
+
+    transportChains.computeIfAbsent(chainName, key -> new TransportChainsConfig())
+        .add(transport, ConfigUtil.getStringList(config, qualifiedKey));
   }
 
-  public Map<String, List<Object>> getMicroserviceChains() {
-    return microserviceChains;
+  private void loadDefinitionChain(String qualifiedKey) {
+    String chainName = qualifiedKey.substring(DEFINITION_ROOT.length() + 1);
+
+    definitions.put(chainName, ConfigUtil.getStringList(config, qualifiedKey));
   }
 
-  public List<Object> findChain(String microservice) {
-    return microserviceChains.getOrDefault(microservice, defaultChain);
+  public boolean isEnabled() {
+    return enabled;
   }
 
-  private void loadMicroserviceChains(Configuration config, String policiesRoot) {
-    config.getKeys(policiesRoot).forEachRemaining(qualifiedKey -> {
-      String microserviceName = qualifiedKey.substring(policiesRoot.length() + 1);
-      List<String> chain = ConfigUtil.getStringList(config, qualifiedKey);
-
-      microserviceChains.put(microserviceName, resolve(chain));
-    });
+  public InvocationFilterChainsConfig getConsumer() {
+    return consumer;
   }
 
-  private List<Object> resolve(List<String> rawChain) {
-    return rawChain.stream()
-        .map(value -> {
-          TransportFilterConfig config = transportFiltersConfig.getConfig(value);
-          return config == null ? value : config;
-        })
+  public InvocationFilterChainsConfig getProducer() {
+    return producer;
+  }
+
+  public Function<List<String>, List<Object>> getResolver() {
+    return this::resolveChain;
+  }
+
+  private List<Object> resolveChain(List<String> chain) {
+    return chain.stream()
+        .flatMap(filterOrReference -> resolveFilterOrReference(filterOrReference).stream())
         .collect(Collectors.toList());
+  }
+
+  private List<Object> resolveFilterOrReference(String filterOrReference) {
+    TransportChainsConfig transportChain = transportChains.get(filterOrReference);
+    if (transportChain != null) {
+      return Collections.singletonList(transportChain);
+    }
+
+    List<String> chain = definitions.get(filterOrReference);
+    if (chain == null) {
+      return Collections.singletonList(filterOrReference);
+    }
+
+    return resolveChain(chain);
   }
 }

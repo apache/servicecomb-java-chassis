@@ -16,11 +16,15 @@
  */
 package org.apache.servicecomb.core.filter;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 /**
@@ -52,16 +56,26 @@ import org.apache.servicecomb.swagger.invocation.Response;
  * </pre>
  */
 public interface Filter {
-  default boolean enabled() {
+  default boolean isEnabled() {
     return true;
-  }
-
-  default void init(SCBEngine engine) {
-
   }
 
   default boolean isInEventLoop() {
     return InvokerUtils.isInEventLoop();
+  }
+
+  @Nonnull
+  default String getName() {
+    throw new IllegalStateException("must provide filter name.");
+  }
+
+  /**
+   *
+   * @return can be used for the specific invocation type
+   */
+  @Nonnull
+  default List<InvocationType> getInvocationTypes() {
+    return Arrays.asList(InvocationType.CONSUMER, InvocationType.PRODUCER);
   }
 
   /**

@@ -16,8 +16,5 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import java.util.List;
-
-public interface FilterProvider {
-  List<Class<? extends Filter>> getFilters();
+public interface InternalFilter extends Filter {
 }

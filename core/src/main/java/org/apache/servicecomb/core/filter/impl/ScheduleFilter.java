@@ -16,21 +16,29 @@
  */
 package org.apache.servicecomb.core.filter.impl;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
-@FilterMeta(name = "schedule", invocationType = PRODUCER)
-public class ScheduleFilter implements Filter {
+@Component
+public class ScheduleFilter implements ProducerFilter {
+  public static final String NAME = "schedule";
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode next) {
     invocation.getInvocationStageTrace().startSchedule();

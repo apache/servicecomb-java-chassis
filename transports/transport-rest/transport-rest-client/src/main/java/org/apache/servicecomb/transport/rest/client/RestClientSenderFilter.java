@@ -16,18 +16,26 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
-
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterMeta;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
-@FilterMeta(name = "rest-client-sender", invocationType = CONSUMER)
-public class RestClientSenderFilter implements Filter {
+@Component
+public class RestClientSenderFilter implements ConsumerFilter {
+  public static final String NAME = "rest-client-sender";
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     CompletableFuture<Response> future = new RestClientSender(invocation)
