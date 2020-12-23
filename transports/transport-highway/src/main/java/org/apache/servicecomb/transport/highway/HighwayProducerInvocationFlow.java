@@ -17,8 +17,10 @@
 package org.apache.servicecomb.transport.highway;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.core.invocation.ProducerInvocationFlow;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -39,8 +41,18 @@ public class HighwayProducerInvocationFlow extends ProducerInvocationFlow {
 
   @Override
   protected Invocation sendCreateInvocationException(Throwable throwable) {
-    LOGGER.error("Failed to prepare invocation, msgId={}", msgId, throwable);
+    logException(throwable);
     return null;
+  }
+
+  private void logException(Throwable throwable) {
+    if (Exceptions.isPrintInvocationStackTrace()) {
+      LOGGER.error("Failed to prepare invocation, msgId={}.", msgId, throwable);
+      return;
+    }
+
+    LOGGER.error("Failed to prepare invocation, msgId={}, message={}.", msgId,
+        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
   }
 
   @Override

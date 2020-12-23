@@ -19,6 +19,7 @@ package org.apache.servicecomb.core.invocation;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -68,18 +69,43 @@ public abstract class ProducerInvocationFlow {
   private void finishInvocation(Invocation invocation, Response response, Throwable throwable) {
     invocation.onFinish(response);
 
+    tryLogException(invocation, throwable);
+  }
+
+  private void tryLogException(Invocation invocation, Throwable throwable) {
     if (throwable == null) {
       return;
     }
 
     throwable = Exceptions.unwrap(throwable);
     if (requestEx == null) {
-      LOGGER.error("Failed to finish invocation, operation:{}", invocation.getMicroserviceQualifiedName(), throwable);
+      logException(invocation, throwable);
       return;
     }
 
-    LOGGER.error("Failed to finish invocation, operation:{}, request uri:{}",
-        invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(), throwable);
+    logException(invocation, requestEx, throwable);
+  }
+
+  private void logException(Invocation invocation, Throwable throwable) {
+    if (Exceptions.isPrintInvocationStackTrace()) {
+      LOGGER.error("Failed to finish invocation, operation:{}.", invocation.getMicroserviceQualifiedName(), throwable);
+      return;
+    }
+
+    LOGGER.error("Failed to finish invocation, operation:{}, message={}.", invocation.getMicroserviceQualifiedName(),
+        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
+  }
+
+  private void logException(Invocation invocation, HttpServletRequestEx requestEx, Throwable throwable) {
+    if (Exceptions.isPrintInvocationStackTrace()) {
+      LOGGER.error("Failed to finish invocation, operation:{}, request uri:{}.",
+          invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(), throwable);
+      return;
+    }
+
+    LOGGER.error("Failed to finish invocation, operation:{}, request uri:{}, message={}.",
+        invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(),
+        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
   }
 
   protected abstract Invocation sendCreateInvocationException(Throwable throwable);
