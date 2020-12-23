@@ -32,12 +32,15 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public final class Exceptions {
   private static final Logger LOGGER = LoggerFactory.getLogger(Exceptions.class);
@@ -113,11 +116,22 @@ public final class Exceptions {
       StatusType genericStatus) {
     InvocationException invocationException = Exceptions.convert(invocation, exception, genericStatus);
     if (invocation != null) {
-      LOGGER.error("failed to process {} invocation, operation={}.",
-          invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(), invocationException);
+      logException(invocation, invocationException);
     }
     return Response.status(invocationException.getStatus())
         .entity(invocationException.getErrorData());
+  }
+
+  private static void logException(@Nonnull Invocation invocation, InvocationException invocationException) {
+    if (isPrintInvocationStackTrace()) {
+      LOGGER.error("failed to process {} invocation, operation={}.",
+          invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(), invocationException);
+      return;
+    }
+
+    LOGGER.error("failed to process {} invocation, operation={}, message={}.",
+        invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(),
+        ExceptionUtils.getExceptionMessageWithoutTrace(invocationException));
   }
 
   public static InvocationException convert(@Nonnull Invocation invocation, Throwable throwable) {
@@ -140,5 +154,10 @@ public final class Exceptions {
     }
 
     throw new IllegalStateException("never happened: can not find converter for " + throwable.getClass().getName());
+  }
+
+  public static boolean isPrintInvocationStackTrace() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.exception.invocation.print-stack-trace", false).get();
   }
 }

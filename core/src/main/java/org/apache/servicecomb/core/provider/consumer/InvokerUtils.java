@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -229,18 +230,35 @@ public final class InvokerUtils {
     return invocation.getMicroserviceMeta().getFilterChain()
         .onFilter(invocation)
         .exceptionally(throwable -> convertException(invocation, throwable))
-        .whenComplete((response, throwable) -> processMetrics(invocation, response));
+        .whenComplete((response, throwable) -> finishInvocation(invocation, response, throwable));
   }
 
   private static Response convertException(Invocation invocation, Throwable throwable) {
-    InvocationException invocationException = Exceptions.convert(invocation, throwable);
+    throw Exceptions.convert(invocation, throwable);
+  }
 
-    LOGGER.error("failed to invoke {}, endpoint={}.",
+  private static void finishInvocation(Invocation invocation, Response response, Throwable throwable) {
+    processMetrics(invocation, response);
+    tryLogException(invocation, throwable);
+  }
+
+  private static void tryLogException(Invocation invocation, Throwable throwable) {
+    if (throwable == null) {
+      return;
+    }
+
+    if (Exceptions.isPrintInvocationStackTrace()) {
+      LOGGER.error("failed to invoke {}, endpoint={}.",
+          invocation.getMicroserviceQualifiedName(),
+          invocation.getEndpoint(),
+          throwable);
+      return;
+    }
+
+    LOGGER.error("failed to invoke {}, endpoint={}, message={}.",
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint(),
-        invocationException);
-
-    throw invocationException;
+        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
   }
 
   private static void processMetrics(Invocation invocation, Response response) {

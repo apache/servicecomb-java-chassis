@@ -18,6 +18,9 @@
 servicecomb-config-order: -500
 
 servicecomb:
+  exception:
+    invocation:
+      print-stack-trace: false
   filter-chains:
     enabled: false
     transport:
