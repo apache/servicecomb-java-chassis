@@ -15,7 +15,7 @@ public class BulkheadProperties extends GovProperties<BulkheadPolicy> {
   }
 
   @Override
-  public Map<String, BulkheadPolicy> covert(Map<String, String> properties) {
-    return parseEntity(properties, BulkheadPolicy.class);
+  public Class<BulkheadPolicy> getEntityClass() {
+    return BulkheadPolicy.class;
   }
 }

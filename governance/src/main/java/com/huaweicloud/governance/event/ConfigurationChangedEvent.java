@@ -17,21 +17,16 @@
 
 package com.huaweicloud.governance.event;
 
-import java.util.Map;
+import java.util.List;
 
 public class ConfigurationChangedEvent {
-  private Map<String, Object> configurations;
+  private List<String> changedConfigurations;
 
-  public ConfigurationChangedEvent(Map<String, Object> configurations) {
-    this.configurations = configurations;
+  public ConfigurationChangedEvent(List<String> changedConfigurations) {
+    this.changedConfigurations = changedConfigurations;
   }
 
-  public Map<String, Object> getConfigurations() {
-    return configurations;
-  }
-
-  public ConfigurationChangedEvent setConfigurations(Map<String, Object> configurations) {
-    this.configurations = configurations;
-    return this;
+  public List<String> getChangedConfigurations() {
+    return changedConfigurations;
   }
 }

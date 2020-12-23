@@ -16,6 +16,8 @@
  */
 package com.huaweicloud.governance.policy;
 
+import com.huaweicloud.governance.handler.RateLimitingHandler;
+
 /**
  * resilience4j 采用类似令牌桶的思想，其原理:
  * 每隔limitRefreshPeriod的时间会加入limitForPeriod个新许可
@@ -33,56 +35,34 @@ public class RateLimitingPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_LIMIT_FOR_PERIOD = 1000;
 
-  private Integer timeoutDuration;
+  private int timeoutDuration = DEFAULT_TIMEOUT_DURATION;
 
-  private Integer limitRefreshPeriod;
+  private int limitRefreshPeriod = DEFAULT_LIMIT_REFRESH_PERIOD;
 
-  private Integer limitForPeriod;
+  // 配置项名称使用 rate， 对应于 resilience4j 的 limitForPeriod
+  private int rate = DEFAULT_LIMIT_FOR_PERIOD;
 
-  // 简化配置
-  private Integer rate;
-
-  public Integer getTimeoutDuration() {
-    if (timeoutDuration == null) {
-      timeoutDuration = DEFAULT_TIMEOUT_DURATION;
-    }
+  public int getTimeoutDuration() {
     return timeoutDuration;
   }
 
-  public void setTimeoutDuration(Integer timeoutDuration) {
+  public void setTimeoutDuration(int timeoutDuration) {
     this.timeoutDuration = timeoutDuration;
   }
 
-  public Integer getLimitRefreshPeriod() {
-    if (limitRefreshPeriod == null) {
-      limitRefreshPeriod = DEFAULT_LIMIT_REFRESH_PERIOD;
-    }
+  public int getLimitRefreshPeriod() {
     return limitRefreshPeriod;
   }
 
-  public void setLimitRefreshPeriod(Integer limitRefreshPeriod) {
+  public void setLimitRefreshPeriod(int limitRefreshPeriod) {
     this.limitRefreshPeriod = limitRefreshPeriod;
   }
 
-  public Integer getLimitForPeriod() {
-    if (limitForPeriod == null) {
-      limitForPeriod = getRate();
-    }
-    return limitForPeriod;
-  }
-
-  public void setLimitForPeriod(Integer limitForPeriod) {
-    this.limitForPeriod = limitForPeriod;
-  }
-
-  public Integer getRate() {
-    if (rate == null) {
-      rate = DEFAULT_LIMIT_FOR_PERIOD;
-    }
+  public int getRate() {
     return rate;
   }
 
-  public void setRate(Integer rate) {
+  public void setRate(int rate) {
     this.rate = rate;
   }
 
@@ -91,7 +71,7 @@ public class RateLimitingPolicy extends AbstractPolicy {
 
   @Override
   public String handler() {
-    return "GovRateLimiting";
+    return RateLimitingHandler.class.getSimpleName();
   }
 
   @Override
@@ -99,7 +79,6 @@ public class RateLimitingPolicy extends AbstractPolicy {
     return "RateLimitingPolicy{" +
         "timeoutDuration=" + timeoutDuration +
         ", limitRefreshPeriod=" + limitRefreshPeriod +
-        ", limitForPeriod=" + limitForPeriod +
         ", rate=" + rate + " req/s" +
         '}';
   }

@@ -18,6 +18,10 @@ package com.huaweicloud.governance.handler;
 
 import java.time.Duration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import com.huaweicloud.governance.policy.CircuitBreakerPolicy;
 import com.huaweicloud.governance.policy.Policy;
 
@@ -26,11 +30,9 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
-/**
- * @Author GuoYl123
- * @Date 2020/5/11
- **/
+@Component("CircuitBreakerHandler")
 public class CircuitBreakerHandler extends AbstractGovHandler<CircuitBreaker> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
   @Override
   public <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy) {
@@ -51,6 +53,8 @@ public class CircuitBreakerHandler extends AbstractGovHandler<CircuitBreaker> {
    * @return
    */
   private CircuitBreaker getCircuitBreaker(CircuitBreakerPolicy policy) {
+    LOGGER.info("applying new policy: {}", policy.toString());
+
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
         //熔断 失败率(请求)百分比阈值
         .failureRateThreshold(policy.getFailureRateThreshold())

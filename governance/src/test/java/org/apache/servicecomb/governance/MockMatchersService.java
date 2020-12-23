@@ -14,22 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.huaweicloud.governance.properties;
+
+package org.apache.servicecomb.governance;
+
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.huaweicloud.governance.policy.CircuitBreakerPolicy;
+import com.huaweicloud.governance.marker.GovHttpRequest;
+import com.huaweicloud.governance.service.MatchersService;
 
 @Component
-public class CircuitBreakerProperties extends GovProperties<CircuitBreakerPolicy> {
-  public static final String MATCH_CIRCUITBREAKER_KEY = "servicecomb.circuitBreaker";
-
-  public CircuitBreakerProperties() {
-    super(MATCH_CIRCUITBREAKER_KEY);
-  }
-
+public class MockMatchersService implements MatchersService {
   @Override
-  public Class<CircuitBreakerPolicy> getEntityClass() {
-    return CircuitBreakerPolicy.class;
+  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
+    return null;
   }
 }

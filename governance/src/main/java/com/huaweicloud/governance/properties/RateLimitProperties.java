@@ -17,8 +17,6 @@
 package com.huaweicloud.governance.properties;
 
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import com.huaweicloud.governance.policy.RateLimitingPolicy;
@@ -32,7 +30,7 @@ public class RateLimitProperties extends GovProperties<RateLimitingPolicy> {
   }
 
   @Override
-  public Map<String, RateLimitingPolicy> covert(Map<String, String> properties) {
-    return parseEntity(properties, RateLimitingPolicy.class);
+  public Class<RateLimitingPolicy> getEntityClass() {
+    return RateLimitingPolicy.class;
   }
 }

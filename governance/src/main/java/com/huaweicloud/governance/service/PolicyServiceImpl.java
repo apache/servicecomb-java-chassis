@@ -68,11 +68,14 @@ public class PolicyServiceImpl implements PolicyService {
     List<AbstractPolicy> policyList = new ArrayList<>();
     AbstractPolicy defaultPolicy = null;
     for (Entry<String, T> entry : policies.entrySet()) {
-      if (entry.getValue().getRules().getMatch().equals(MATCH_NONE)) {
+      T policy = entry.getValue();
+
+      if (policy.getRules() != null && MATCH_NONE.equals(policy.getRules().getMatch())) {
         defaultPolicy = entry.getValue();
         defaultPolicy.setName(entry.getKey());
       }
-      if (entry.getValue().match(marks)) {
+
+      if (policy.match(marks)) {
         AbstractPolicy policyResult;
         policyResult = entry.getValue();
         policyResult.setName(entry.getKey());

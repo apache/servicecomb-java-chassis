@@ -18,12 +18,10 @@ package com.huaweicloud.governance.policy;
 
 import org.springframework.util.StringUtils;
 
+import com.huaweicloud.governance.handler.CircuitBreakerHandler;
+
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
 
-/**
- * @Author GuoYl123
- * @Date 2020/5/11
- **/
 public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_FAILURE_RATE_THRESHOLD = 50;
@@ -42,88 +40,70 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_SLIDING_WINDOW_SIZE = 100;
 
-  private Integer failureRateThreshold;
+  private int failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
 
-  private Integer slowCallRateThreshold;
+  private int slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
 
-  private Integer waitDurationInOpenState;
+  private int waitDurationInOpenState = DEFAULT_WAIT_DURATION_IN_OPEN_STATUS;
 
-  private Integer slowCallDurationThreshold;
+  private int slowCallDurationThreshold = DEFAULT_SLOW_CALL_DURATION_THRESHOLD;
 
-  private Integer permittedNumberOfCallsInHalfOpenState;
+  private int permittedNumberOfCallsInHalfOpenState = DEFAULT_PERMITTED;
 
-  private Integer minimumNumberOfCalls;
+  private int minimumNumberOfCalls = DEFAULT_MINIMUM_NUMBER_CALLS;
 
   private String slidingWindowType;
 
-  private Integer slidingWindowSize;
+  private int slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
 
   public CircuitBreakerPolicy() {
   }
 
-  public Integer getFailureRateThreshold() {
-    if (StringUtils.isEmpty(failureRateThreshold)) {
-      failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
-    }
+  public int getFailureRateThreshold() {
     return failureRateThreshold;
   }
 
-  public void setFailureRateThreshold(Integer failureRateThreshold) {
+  public void setFailureRateThreshold(int failureRateThreshold) {
     this.failureRateThreshold = failureRateThreshold;
   }
 
-  public Integer getSlowCallRateThreshold() {
-    if (StringUtils.isEmpty(slowCallRateThreshold)) {
-      slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
-    }
+  public int getSlowCallRateThreshold() {
     return slowCallRateThreshold;
   }
 
-  public void setSlowCallRateThreshold(Integer slowCallRateThreshold) {
+  public void setSlowCallRateThreshold(int slowCallRateThreshold) {
     this.slowCallRateThreshold = slowCallRateThreshold;
   }
 
-  public Integer getWaitDurationInOpenState() {
-    if (StringUtils.isEmpty(waitDurationInOpenState)) {
-      waitDurationInOpenState = DEFAULT_WAIT_DURATION_IN_OPEN_STATUS;
-    }
+  public int getWaitDurationInOpenState() {
     return waitDurationInOpenState;
   }
 
-  public void setWaitDurationInOpenState(Integer waitDurationInOpenState) {
+  public void setWaitDurationInOpenState(int waitDurationInOpenState) {
     this.waitDurationInOpenState = waitDurationInOpenState;
   }
 
-  public Integer getSlowCallDurationThreshold() {
-    if (StringUtils.isEmpty(slowCallDurationThreshold)) {
-      slowCallDurationThreshold = DEFAULT_SLOW_CALL_DURATION_THRESHOLD;
-    }
+  public int getSlowCallDurationThreshold() {
     return slowCallDurationThreshold;
   }
 
-  public void setSlowCallDurationThreshold(Integer slowCallDurationThreshold) {
+  public void setSlowCallDurationThreshold(int slowCallDurationThreshold) {
     this.slowCallDurationThreshold = slowCallDurationThreshold;
   }
 
-  public Integer getPermittedNumberOfCallsInHalfOpenState() {
-    if (StringUtils.isEmpty(permittedNumberOfCallsInHalfOpenState)) {
-      permittedNumberOfCallsInHalfOpenState = DEFAULT_PERMITTED;
-    }
+  public int getPermittedNumberOfCallsInHalfOpenState() {
     return permittedNumberOfCallsInHalfOpenState;
   }
 
-  public void setPermittedNumberOfCallsInHalfOpenState(Integer permittedNumberOfCallsInHalfOpenState) {
+  public void setPermittedNumberOfCallsInHalfOpenState(int permittedNumberOfCallsInHalfOpenState) {
     this.permittedNumberOfCallsInHalfOpenState = permittedNumberOfCallsInHalfOpenState;
   }
 
-  public Integer getMinimumNumberOfCalls() {
-    if (StringUtils.isEmpty(minimumNumberOfCalls)) {
-      minimumNumberOfCalls = DEFAULT_MINIMUM_NUMBER_CALLS;
-    }
+  public int getMinimumNumberOfCalls() {
     return minimumNumberOfCalls;
   }
 
-  public void setMinimumNumberOfCalls(Integer minimumNumberOfCalls) {
+  public void setMinimumNumberOfCalls(int minimumNumberOfCalls) {
     this.minimumNumberOfCalls = minimumNumberOfCalls;
   }
 
@@ -145,20 +125,17 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   }
 
   // time's unit is second
-  public Integer getSlidingWindowSize() {
-    if (StringUtils.isEmpty(slidingWindowSize)) {
-      slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
-    }
+  public int getSlidingWindowSize() {
     return slidingWindowSize;
   }
 
-  public void setSlidingWindowSize(Integer slidingWindowSize) {
+  public void setSlidingWindowSize(int slidingWindowSize) {
     this.slidingWindowSize = slidingWindowSize;
   }
 
   @Override
   public String handler() {
-    return "GovCircuitBreaker";
+    return CircuitBreakerHandler.class.getSimpleName();
   }
 
   @Override

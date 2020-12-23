@@ -16,6 +16,7 @@
  */
 package com.huaweicloud.governance.policy;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractPolicy implements Policy {
@@ -37,8 +38,14 @@ public abstract class AbstractPolicy implements Policy {
   }
 
   @Override
-  public boolean match(List<String> strs) {
-    return strs.stream().anyMatch(str -> rules.getMatch().contains(str));
+  public boolean match(List<String> items) {
+    if (rules == null || rules.getMatch() == null) {
+      return false;
+    }
+
+    List<String> configuredItems = Arrays.asList(rules.getMatch().split(","));
+
+    return items.stream().anyMatch(item -> configuredItems.contains(item));
   }
 
   @Override

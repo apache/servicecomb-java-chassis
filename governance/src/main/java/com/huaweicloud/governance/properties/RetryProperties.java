@@ -16,8 +16,6 @@
  */
 package com.huaweicloud.governance.properties;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import com.huaweicloud.governance.policy.RetryPolicy;
@@ -31,7 +29,7 @@ public class RetryProperties extends GovProperties<RetryPolicy> {
   }
 
   @Override
-  public Map<String, RetryPolicy> covert(Map<String, String> properties) {
-    return parseEntity(properties, RetryPolicy.class);
+  public Class<RetryPolicy> getEntityClass() {
+    return RetryPolicy.class;
   }
 }

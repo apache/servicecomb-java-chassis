@@ -18,6 +18,8 @@ package com.huaweicloud.governance.policy;
 
 import org.springframework.util.StringUtils;
 
+import com.huaweicloud.governance.handler.RetryHandler;
+
 /**
  *  intervalFunction  失败时可以更改等待时间的函数
  *  retryOnResultPredicate  根据返回结果决定是否进行重试
@@ -33,18 +35,18 @@ public class RetryPolicy extends AbstractPolicy {
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS = "502";
 
   //最多尝试次数
-  private Integer maxAttempts;
+  private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
   //每次重试尝试等待的时间，默认给0
-  private Integer waitDuration;
+  private int waitDuration = DEFAULT_WAIT_DURATION;
 
   //需要重试的http status, 逗号分隔
   private String retryOnResponseStatus;
 
-  //todo: 需要进行重试的异常列表，反射取异常
+  //TODO: 需要进行重试的异常列表，反射取异常
   private String retryExceptions;
 
-  //todo: 需要进行忽略的异常列表
+  //TODO: 需要进行忽略的异常列表
   private String ignoreExceptions;
 
   private boolean onSame;
@@ -60,25 +62,19 @@ public class RetryPolicy extends AbstractPolicy {
     this.retryOnResponseStatus = retryOnResponseStatus;
   }
 
-  public Integer getMaxAttempts() {
-    if (maxAttempts == null) {
-      maxAttempts = DEFAULT_MAX_ATTEMPTS;
-    }
+  public int getMaxAttempts() {
     return maxAttempts;
   }
 
-  public void setMaxAttempts(Integer maxAttempts) {
+  public void setMaxAttempts(int maxAttempts) {
     this.maxAttempts = maxAttempts;
   }
 
-  public Integer getWaitDuration() {
-    if (waitDuration == null) {
-      waitDuration = DEFAULT_WAIT_DURATION;
-    }
+  public int getWaitDuration() {
     return waitDuration;
   }
 
-  public void setWaitDuration(Integer waitDuration) {
+  public void setWaitDuration(int waitDuration) {
     this.waitDuration = waitDuration;
   }
 
@@ -108,7 +104,7 @@ public class RetryPolicy extends AbstractPolicy {
 
   @Override
   public String handler() {
-    return "GovRetry";
+    return RetryHandler.class.getSimpleName();
   }
 
   @Override

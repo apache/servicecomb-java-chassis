@@ -26,6 +26,6 @@ public abstract class AbstractGovHandler<PROCESSOR> implements GovHandler {
 
   @Subscribe
   public void onDynamicConfigurationListener(ConfigurationChangedEvent event) {
-    map.clear();
+    event.getChangedConfigurations().forEach(v -> map.remove(v));
   }
 }

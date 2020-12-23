@@ -18,6 +18,8 @@ package com.huaweicloud.governance.handler;
 
 import java.time.Duration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.huaweicloud.governance.policy.Policy;
@@ -30,6 +32,7 @@ import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 
 @Component("RateLimitingHandler")
 public class RateLimitingHandler extends AbstractGovHandler<RateLimiter> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingHandler.class);
 
   @Override
   public <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy) {
@@ -48,9 +51,11 @@ public class RateLimitingHandler extends AbstractGovHandler<RateLimiter> {
    * @return
    */
   private RateLimiter getRateLimiter(RateLimitingPolicy policy) {
+    LOGGER.info("applying new policy: {}", policy.toString());
+
     RateLimiterConfig config;
     config = RateLimiterConfig.custom()
-        .limitForPeriod(policy.getLimitForPeriod())
+        .limitForPeriod(policy.getRate())
         .limitRefreshPeriod(Duration.ofMillis(policy.getLimitRefreshPeriod()))
         .timeoutDuration(Duration.ofMillis(policy.getTimeoutDuration()))
         .build();

@@ -1,46 +1,36 @@
 package com.huaweicloud.governance.policy;
 
-/**
- * 默认只有信号量,不提供线程池模式
- *
- * @Author GuoYl123
- * @Date 2020/5/11
- **/
+import com.huaweicloud.governance.handler.BulkheadHandler;
+
 public class BulkheadPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_CONCURRENT_CALLS = 1000;
 
   public static final int DEFAULT_MAX_WAIT_DURATION = 0;
 
-  private Integer maxConcurrentCalls;
+  private int maxConcurrentCalls = DEFAULT_MAX_CONCURRENT_CALLS;
 
-  private Integer maxWaitDuration;
+  private int maxWaitDuration = DEFAULT_MAX_WAIT_DURATION;
 
-  public Integer getMaxConcurrentCalls() {
-    if (maxConcurrentCalls == null) {
-      maxConcurrentCalls = DEFAULT_MAX_CONCURRENT_CALLS;
-    }
+  public int getMaxConcurrentCalls() {
     return maxConcurrentCalls;
   }
 
-  public void setMaxConcurrentCalls(Integer maxConcurrentCalls) {
+  public void setMaxConcurrentCalls(int maxConcurrentCalls) {
     this.maxConcurrentCalls = maxConcurrentCalls;
   }
 
-  public Integer getMaxWaitDuration() {
-    if (maxWaitDuration == null) {
-      maxWaitDuration = DEFAULT_MAX_WAIT_DURATION;
-    }
+  public int getMaxWaitDuration() {
     return maxWaitDuration;
   }
 
-  public void setMaxWaitDuration(Integer maxWaitDuration) {
+  public void setMaxWaitDuration(int maxWaitDuration) {
     this.maxWaitDuration = maxWaitDuration;
   }
 
   @Override
   public String handler() {
-    return "GovBulkhead";
+    return BulkheadHandler.class.getSimpleName();
   }
 
   @Override

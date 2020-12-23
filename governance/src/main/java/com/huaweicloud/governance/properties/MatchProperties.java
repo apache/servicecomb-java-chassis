@@ -16,22 +16,20 @@
  */
 package com.huaweicloud.governance.properties;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import com.huaweicloud.governance.marker.TrafficMarker;
 
 @Component
 public class MatchProperties extends GovProperties<TrafficMarker> {
-  public static final String MATCH_POLICY_KEY = "servicecomb.match";
+  public static final String MATCH_POLICY_KEY = "servicecomb.matchGroup";
 
   public MatchProperties() {
     super(MATCH_POLICY_KEY);
   }
 
   @Override
-  public Map<String, TrafficMarker> covert(Map<String, String> properties) {
-    return parseEntity(properties, TrafficMarker.class);
+  public Class<TrafficMarker> getEntityClass() {
+    return TrafficMarker.class;
   }
 }
