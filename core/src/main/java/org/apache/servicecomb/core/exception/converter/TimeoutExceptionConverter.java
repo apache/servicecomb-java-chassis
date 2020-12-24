@@ -26,8 +26,12 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimeoutExceptionConverter implements ExceptionConverter<TimeoutException> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TimeoutExceptionConverter.class);
+
   public static final int ORDER = Short.MAX_VALUE;
 
   @Override
@@ -43,9 +47,13 @@ public class TimeoutExceptionConverter implements ExceptionConverter<TimeoutExce
   @Override
   public InvocationException convert(@Nullable Invocation invocation, TimeoutException throwable,
       StatusType genericStatus) {
-    String message = String.format("Request Timeout. Details: %s", throwable.getMessage());
+    // throwable.getMessage:
+    //   The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080
+    // should not copy the message to invocationException to avoid leak server ip address
+    LOGGER.info("Request timeout, Details: {}.", throwable.getMessage());
+
     return new InvocationException(REQUEST_TIMEOUT,
-        ExceptionConverter.getGenericCode(genericStatus), message,
+        ExceptionConverter.getGenericCode(genericStatus), "Request Timeout.",
         throwable);
   }
 }
