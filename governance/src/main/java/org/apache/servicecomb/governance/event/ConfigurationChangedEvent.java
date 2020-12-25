@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.event;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+public class ConfigurationChangedEvent {
+  private List<String> changedConfigurations;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
+  public ConfigurationChangedEvent(List<String> changedConfigurations) {
+    this.changedConfigurations = changedConfigurations;
+  }
 
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public List<String> getChangedConfigurations() {
+    return changedConfigurations;
   }
 }

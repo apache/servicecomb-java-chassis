@@ -14,20 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.policy;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+/**
+ * @Author GuoYl123
+ * @Date 2020/5/11
+ **/
+public interface Policy {
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
+  boolean match(List<String> strings);
 
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
-  }
+  String handler();
+
+  String name();
 }

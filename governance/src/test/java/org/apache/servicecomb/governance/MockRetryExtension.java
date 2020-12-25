@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.huaweicloud.governance.handler.ext.RetryExtension;
+import org.apache.servicecomb.governance.handler.ext.RetryExtension;
 
 @Component
 public class MockRetryExtension implements RetryExtension {

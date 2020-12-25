@@ -14,20 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.properties;
 
-package org.apache.servicecomb.governance;
 
-import java.util.List;
-
+import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
 @Component
-public class MockMatchersService implements MatchersService {
+public class RateLimitProperties extends GovProperties<RateLimitingPolicy> {
+  public static final String MATCH_RATE_LIMIT_KEY = "servicecomb.rateLimiting";
+
+  public RateLimitProperties() {
+    super(MATCH_RATE_LIMIT_KEY);
+  }
+
   @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public Class<RateLimitingPolicy> getEntityClass() {
+    return RateLimitingPolicy.class;
   }
 }

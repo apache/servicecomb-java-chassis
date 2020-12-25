@@ -14,20 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.policy;
 
-package org.apache.servicecomb.governance;
-
+import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+public abstract class AbstractPolicy implements Policy {
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
+  private String name;
 
-@Component
-public class MockMatchersService implements MatchersService {
+  private GovRule rules;
+
+  public GovRule getRules() {
+    return rules;
+  }
+
+  public void setRules(GovRule rules) {
+    this.rules = rules;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
   @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public boolean match(List<String> items) {
+    if (rules == null || rules.getMatch() == null) {
+      return false;
+    }
+
+    List<String> configuredItems = Arrays.asList(rules.getMatch().split(","));
+
+    return items.stream().anyMatch(item -> configuredItems.contains(item));
+  }
+
+  @Override
+  public String name() {
+    return name;
   }
 }

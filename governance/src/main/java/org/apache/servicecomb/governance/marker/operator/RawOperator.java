@@ -14,20 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.marker.operator;
 
-package org.apache.servicecomb.governance;
+import java.util.HashMap;
 
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
-  }
+public class RawOperator extends HashMap<String, String> {
+  private static final long serialVersionUID = 659728839992490564L;
 }

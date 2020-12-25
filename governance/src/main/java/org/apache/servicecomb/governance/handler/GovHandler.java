@@ -14,20 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.handler;
 
-package org.apache.servicecomb.governance;
+import org.apache.servicecomb.governance.policy.Policy;
 
-import java.util.List;
+import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
-import org.springframework.stereotype.Component;
+public interface GovHandler {
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
+  <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy);
 
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
-  }
+  HandlerType type();
 }

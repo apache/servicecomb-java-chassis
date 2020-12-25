@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.policy;
 
-import java.util.List;
+public class GovRule {
 
-import org.springframework.stereotype.Component;
+  private String match;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
+  private int precedence;
 
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public String getMatch() {
+    return match;
+  }
+
+  public void setMatch(String match) {
+    this.match = match;
+  }
+
+  public int getPrecedence() {
+    return precedence;
+  }
+
+  public void setPrecedence(int precedence) {
+    this.precedence = precedence;
   }
 }

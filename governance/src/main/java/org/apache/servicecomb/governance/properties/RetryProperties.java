@@ -14,20 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.properties;
 
-package org.apache.servicecomb.governance;
-
-import java.util.List;
-
+import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
 @Component
-public class MockMatchersService implements MatchersService {
+public class RetryProperties extends GovProperties<RetryPolicy> {
+  public static final String MATCH_RETRY_KEY = "servicecomb.retry";
+
+  public RetryProperties() {
+    super(MATCH_RETRY_KEY);
+  }
+
   @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public Class<RetryPolicy> getEntityClass() {
+    return RetryPolicy.class;
   }
 }

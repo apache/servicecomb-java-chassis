@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.properties;
 
-import java.util.List;
-
+import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
 @Component
-public class MockMatchersService implements MatchersService {
+public class BulkheadProperties extends GovProperties<BulkheadPolicy> {
+  public static final String MATCH_BULKHEAD__KEY = "servicecomb.bulkhead";
+
+  public BulkheadProperties() {
+    super(MATCH_BULKHEAD__KEY);
+  }
+
   @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public Class<BulkheadPolicy> getEntityClass() {
+    return BulkheadPolicy.class;
   }
 }

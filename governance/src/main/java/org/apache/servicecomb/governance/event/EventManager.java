@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.event;
 
-import java.util.List;
+import com.google.common.eventbus.EventBus;
 
-import org.springframework.stereotype.Component;
+public class EventManager {
+  private static EventBus eventBus = new EventBus();
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
+  public static EventBus getEventBus() {
+    return eventBus;
+  }
 
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public static void post(Object event) {
+    eventBus.post(event);
+  }
+
+  public static void register(Object subscriber) {
+    eventBus.register(subscriber);
   }
 }

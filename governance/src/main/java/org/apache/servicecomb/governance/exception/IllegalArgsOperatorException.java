@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.exception;
 
-import java.util.List;
+public class IllegalArgsOperatorException extends RuntimeException {
+  private static final long serialVersionUID = 793575987576638624L;
 
-import org.springframework.stereotype.Component;
-
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public IllegalArgsOperatorException(String message) {
+    super(message);
   }
 }

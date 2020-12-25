@@ -14,20 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.governance;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.servicecomb.governance.policy.Policy;
+import org.apache.servicecomb.governance.service.MatchersService;
+import org.apache.servicecomb.governance.service.PolicyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
 
 @Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+public class MatchersManager {
+
+  @Autowired
+  private MatchersService matchersService;
+
+  @Autowired
+  private PolicyService policyService;
+
+  public MatchersManager() {
+  }
+
+  public Map<String, Policy> match(GovHttpRequest request) {
+    /**
+     * 1.获取该请求携带的marker
+     */
+    List<String> marks = matchersService.getMatchedNames(request);
+    /**
+     * 2.通过 marker获取到所有的policy
+     */
+    return policyService.getAllPolicies(marks);
   }
 }

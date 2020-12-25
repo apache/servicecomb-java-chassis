@@ -36,21 +36,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.huaweicloud.governance.event.ConfigurationChangedEvent;
-import com.huaweicloud.governance.event.EventManager;
-import com.huaweicloud.governance.marker.Matcher;
-import com.huaweicloud.governance.marker.TrafficMarker;
-import com.huaweicloud.governance.policy.AbstractPolicy;
-import com.huaweicloud.governance.policy.BulkheadPolicy;
-import com.huaweicloud.governance.policy.CircuitBreakerPolicy;
-import com.huaweicloud.governance.policy.RateLimitingPolicy;
-import com.huaweicloud.governance.policy.RetryPolicy;
-import com.huaweicloud.governance.properties.BulkheadProperties;
-import com.huaweicloud.governance.properties.CircuitBreakerProperties;
-import com.huaweicloud.governance.properties.GovProperties;
-import com.huaweicloud.governance.properties.MatchProperties;
-import com.huaweicloud.governance.properties.RateLimitProperties;
-import com.huaweicloud.governance.properties.RetryProperties;
+import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.marker.Matcher;
+import org.apache.servicecomb.governance.marker.TrafficMarker;
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
+import org.apache.servicecomb.governance.policy.BulkheadPolicy;
+import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
+import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
+import org.apache.servicecomb.governance.policy.RetryPolicy;
+import org.apache.servicecomb.governance.properties.BulkheadProperties;
+import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.GovProperties;
+import org.apache.servicecomb.governance.properties.MatchProperties;
+import org.apache.servicecomb.governance.properties.RateLimitProperties;
+import org.apache.servicecomb.governance.properties.RetryProperties;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)

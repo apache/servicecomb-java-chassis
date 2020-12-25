@@ -14,20 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.properties;
 
-package org.apache.servicecomb.governance;
-
-import java.util.List;
-
+import org.apache.servicecomb.governance.marker.TrafficMarker;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
 @Component
-public class MockMatchersService implements MatchersService {
+public class MatchProperties extends GovProperties<TrafficMarker> {
+  public static final String MATCH_POLICY_KEY = "servicecomb.matchGroup";
+
+  public MatchProperties() {
+    super(MATCH_POLICY_KEY);
+  }
+
   @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
+  public Class<TrafficMarker> getEntityClass() {
+    return TrafficMarker.class;
   }
 }

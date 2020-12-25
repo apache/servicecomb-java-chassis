@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.handler.ext;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+public interface RetryExtension {
+  boolean isRetry(List<Integer> statusList, Object result);
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
-  }
+  Class<? extends Throwable>[] retryExceptions();
 }
