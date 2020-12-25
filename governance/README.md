@@ -1,13 +1,24 @@
 # About Deployment Module
 
-Deployment is a mechanism to manage how microservics interact with external services. When running a microservice in a Cloud Native environment, it will interact with many external services, like service center, config center, an APM service to report tracing data, a dashboard service to report health data, etc. Deployment Service manages the meta data of these services. Deployment queries the addresses , the parameters, the authentication information of these services and so on. 
+Governance module provides an abstraction on how to describe governance instructions for commonly used
+different microservice frameworks, like Java Chassis, Go Chassis, Spring Cloud, Dubbo, etc. 
 
-Deployment Service is some kind of service like service center, they are differ from two aspects:
-1. All microservics will report their information to service center. But Deployment Service acts as a management system and knows the meta information in deploy time. 
-2. Service center provide some other functions like instance management and heartbeat, while Deployment Service only provides metadata query services and it is simple. 
+This abstraction is based on traffic marking, here is a configuration example.
 
-This module does not provide a Deployment Service, it provides the interface to interacts with Deployment Service. Service providers can implement the interface. 
+```yaml
+servicecomb:
+  matchGroup:
+    matchGroup0: |
+      matches:
+        - apiPath:
+            exact: "/hello"
+          name: match0
+  rateLimiting:
+    rateLimiting0: |
+      rules:
+        match: matchGroup0.match0
+      rate: 1
+```
 
-They are some design constraints need to be considered when implement Deployment interface:
-1. Deployment can only read configurations of environment, microservics.yaml. It can not read dynamic configurations.
-2. Deployment is initialized before bean initialization. 
+First define a traffic marking rule (match group) `servicecomb.matchGroup.matchGroup0` and detailed matches
+specification. Then define governance rules for any marking rule. Marking rule id is `matchGroup0.match0`. 
