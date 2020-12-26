@@ -44,12 +44,12 @@ public class TestLoadBalanceCreator {
     Endpoint host1 = new Endpoint(transport, "host1");
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("instance1");
-    ServiceCombServer server = new ServiceCombServer(host1, instance1);
+    ServiceCombServer server = new ServiceCombServer(null, host1, instance1);
 
     Endpoint host2 = new Endpoint(transport, "host2");
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("instance2");
-    ServiceCombServer server2 = new ServiceCombServer(host2, instance2);
+    ServiceCombServer server2 = new ServiceCombServer(null, host2, instance2);
 
     servers.add(server);
     servers.add(server2);
@@ -98,12 +98,12 @@ public class TestLoadBalanceCreator {
     Endpoint host1 = new Endpoint(transport, "host1");
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("instance1");
-    ServiceCombServer server = new ServiceCombServer(host1, instance1);
+    ServiceCombServer server = new ServiceCombServer(null, host1, instance1);
 
     Endpoint host2 = new Endpoint(transport, "host2");
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("instance2");
-    ServiceCombServer server2 = new ServiceCombServer(host2, instance2);
+    ServiceCombServer server2 = new ServiceCombServer(null, host2, instance2);
 
     servers.add(server);
     servers.add(server2);
@@ -150,8 +150,8 @@ public class TestLoadBalanceCreator {
     instance1.setInstanceId("ii01");
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("ii02");
-    ServiceCombServer server = new ServiceCombServer(endpoint1, instance1);
-    ServiceCombServer server2 = new ServiceCombServer(endpoint2, instance2);
+    ServiceCombServer server = new ServiceCombServer(null, endpoint1, instance1);
+    ServiceCombServer server2 = new ServiceCombServer(null, endpoint2, instance2);
 
     new Expectations() {
       {
@@ -203,12 +203,12 @@ public class TestLoadBalanceCreator {
     List<ServiceCombServer> servers = new ArrayList<>();
     Endpoint host1 = new Endpoint(transport, "host1");
     MicroserviceInstance instance1 = new MicroserviceInstance();
-    ServiceCombServer server = new ServiceCombServer(host1, instance1);
+    ServiceCombServer server = new ServiceCombServer(null, host1, instance1);
     instance1.setInstanceId("instance1");
 
     Endpoint host2 = new Endpoint(transport, "host2");
     MicroserviceInstance instance2 = new MicroserviceInstance();
-    ServiceCombServer server2 = new ServiceCombServer(host2, instance2);
+    ServiceCombServer server2 = new ServiceCombServer(null, host2, instance2);
     instance2.setInstanceId("instance2");
 
     servers.add(server);

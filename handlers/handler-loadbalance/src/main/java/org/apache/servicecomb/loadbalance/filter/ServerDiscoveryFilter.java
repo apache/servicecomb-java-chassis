@@ -18,11 +18,13 @@
 package org.apache.servicecomb.loadbalance.filter;
 
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +32,14 @@ public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServerDiscoveryFilter.class);
 
   @Override
-  protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
+  protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
+      MicroserviceInstance instance) {
     Transport transport = CseContext.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;
     }
-
-    return new ServiceCombServer(transport, new CacheEndpoint(endpoint, instance));
+    Invocation invocation = context.getInputParameters();
+    return new ServiceCombServer(invocation.getMicroserviceName(), transport, new CacheEndpoint(endpoint, instance));
   }
 }

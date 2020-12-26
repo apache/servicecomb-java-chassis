@@ -45,31 +45,35 @@ public class ServiceCombServerStats {
    */
   static AtomicReference<TryingIsolatedServerMarker> globalAllowIsolatedServerTryingFlag = new AtomicReference<>();
 
-  private long lastWindow = System.currentTimeMillis();
-
   Clock clock;
 
-  private AtomicLong continuousFailureCount = new AtomicLong(0);
+  private long lastWindow;
 
-  private long lastVisitTime = System.currentTimeMillis();
+  private AtomicLong continuousFailureCount;
 
-  private long lastActiveTime = System.currentTimeMillis();
+  private long lastVisitTime;
 
-  private AtomicLong totalRequests = new AtomicLong(0L);
+  private long lastActiveTime;
 
-  private AtomicLong successRequests = new AtomicLong(0L);
+  private long isolatedTime;
 
-  private AtomicLong failedRequests = new AtomicLong(0L);
+  private AtomicLong totalRequests;
+
+  private AtomicLong successRequests;
+
+  private AtomicLong failedRequests;
 
   private boolean isolated = false;
 
-  public ServiceCombServerStats() {
-    this.clock = TimeUtils.getSystemDefaultZoneClock();
-    init();
+  private String microserviceName;
+
+  public ServiceCombServerStats(String microserviceName) {
+    this(microserviceName, TimeUtils.getSystemDefaultZoneClock());
   }
 
-  public ServiceCombServerStats(Clock clock) {
+  public ServiceCombServerStats(String microserviceName, Clock clock) {
     this.clock = clock;
+    this.microserviceName = microserviceName;
     init();
   }
 
@@ -117,23 +121,33 @@ public class ServiceCombServerStats {
 
   public void markIsolated(boolean isolated) {
     this.isolated = isolated;
+    this.isolatedTime = System.currentTimeMillis();
   }
 
   public void markSuccess() {
-    long time = System.currentTimeMillis();
+    long time = clock.millis();
     ensureWindow(time);
-    lastVisitTime = time;
-    lastActiveTime = time;
+
+    if (isolated) {
+      if (Configuration.INSTANCE.isRecoverImmediatelyWhenSuccess(microserviceName)
+          && time - this.isolatedTime > Configuration.INSTANCE
+          .getMinIsolationTime(microserviceName)) {
+        resetStats();
+        LOGGER.info("trying server invocation success, and reset stats.");
+      } else {
+        LOGGER.info("trying server invocation success!");
+      }
+    }
+
     totalRequests.incrementAndGet();
     successRequests.incrementAndGet();
     continuousFailureCount.set(0);
-    if (isolated) {
-      LOGGER.info("trying server invocation success!");
-    }
+    lastVisitTime = time;
+    lastActiveTime = time;
   }
 
   public void markFailure() {
-    long time = System.currentTimeMillis();
+    long time = clock.millis();
     ensureWindow(time);
     lastVisitTime = time;
 
@@ -150,10 +164,7 @@ public class ServiceCombServerStats {
       synchronized (lock) {
         if (time - lastWindow > TIME_WINDOW_IN_MILLISECONDS) {
           if (!isolated) {
-            continuousFailureCount.set(0);
-            totalRequests.set(0);
-            successRequests.set(0);
-            failedRequests.set(0);
+            resetStats();
           }
           lastWindow = time;
         }
@@ -161,15 +172,26 @@ public class ServiceCombServerStats {
     }
   }
 
+  private void resetStats() {
+    continuousFailureCount.set(0);
+    totalRequests.set(0);
+    successRequests.set(0);
+    failedRequests.set(0);
+  }
+
   public long getLastVisitTime() {
     return lastVisitTime;
+  }
+
+  public long getIsolatedTime() {
+    return isolatedTime;
   }
 
   public long getLastActiveTime() {
     return lastActiveTime;
   }
 
-  public long getCountinuousFailureCount() {
+  public long getContinuousFailureCount() {
     return continuousFailureCount.get();
   }
 
