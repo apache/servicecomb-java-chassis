@@ -33,7 +33,7 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
 
   @Override
   public int getOrder() {
-    return (int) Short.MAX_VALUE;
+    return Short.MAX_VALUE;
   }
 
   @Override
@@ -43,7 +43,8 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   }
 
   @Override
-  protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
+  protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
+      MicroserviceInstance instance) {
     Transport transport = CseContext.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);

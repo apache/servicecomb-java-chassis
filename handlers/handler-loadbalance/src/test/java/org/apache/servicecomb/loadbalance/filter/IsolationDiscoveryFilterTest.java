@@ -75,7 +75,8 @@ public class IsolationDiscoveryFilterTest {
       String endpoint = "rest://127.0.0.1:" + i;
       instance.setEndpoints(Collections.singletonList(endpoint));
       data.put(instance.getInstanceId(), instance);
-      ServiceCombServer serviceCombServer = new ServiceCombServer(transport, new CacheEndpoint(endpoint, instance));
+      ServiceCombServer serviceCombServer = new ServiceCombServer(null, transport,
+          new CacheEndpoint(endpoint, instance));
       ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer);
     }
     discoveryTreeNode.data(data);
@@ -214,7 +215,7 @@ public class IsolationDiscoveryFilterTest {
 
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
         .getServiceCombServerStats(server0);
-    Deencapsulation.setField(serviceCombServerStats, "lastVisitTime",
+    Deencapsulation.setField(serviceCombServerStats, "isolatedTime",
         System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
@@ -230,10 +231,11 @@ public class IsolationDiscoveryFilterTest {
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server0);
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
         .getServiceCombServerStats(server0);
-    Deencapsulation.setField(serviceCombServerStats, "lastVisitTime",
-        System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
 
     ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server0, true);
+    Deencapsulation.setField(serviceCombServerStats, "isolatedTime",
+        System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
+
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));

@@ -108,23 +108,14 @@ public class ServiceCombLoadBalancerStats {
     return serviceCombServers.get(instance.getInstanceId());
   }
 
-  public ServiceCombServer getServiceCombServerOld(MicroserviceInstance instance) {
-    for (ServiceCombServer server : serverStatsCache.asMap().keySet()) {
-      if (server.getInstance().equals(instance)) {
-        return server;
-      }
-    }
-    return null;
-  }
-
   @VisibleForTesting
   void setServerExpireInSeconds(int sec) {
     this.serverExpireInSeconds = sec;
   }
 
   @VisibleForTesting
-  void setTimerIntervalInMillis(int milis) {
-    this.timerIntervalInMillis = milis;
+  void setTimerIntervalInMillis(int millis) {
+    this.timerIntervalInMillis = millis;
   }
 
   @VisibleForTesting
@@ -141,23 +132,23 @@ public class ServiceCombLoadBalancerStats {
       serverStatsCache.cleanUp();
     }
 
+    pingView.clear();
+
     serverStatsCache =
         CacheBuilder.newBuilder()
             .expireAfterAccess(serverExpireInSeconds, TimeUnit.SECONDS)
-            .removalListener(new RemovalListener<ServiceCombServer, ServiceCombServerStats>() {
-              @Override
-              public void onRemoval(RemovalNotification<ServiceCombServer, ServiceCombServerStats> notification) {
-                ServiceCombServer server = notification.getKey();
-                LOGGER.info("stats of instance {} removed. host is {}",
-                    server.getInstance().getInstanceId(), server.getHost());
-                pingView.remove(notification.getKey());
-                serviceCombServers.remove(notification.getKey());
-              }
-            })
+            .removalListener(
+                (RemovalListener<ServiceCombServer, ServiceCombServerStats>) notification -> {
+                  ServiceCombServer server = notification.getKey();
+                  LOGGER.info("stats of instance {} removed, host is {}",
+                      server.getInstance().getInstanceId(), server.getHost());
+                  pingView.remove(notification.getKey());
+                  serviceCombServers.remove(notification.getKey());
+                })
             .build(
                 new CacheLoader<ServiceCombServer, ServiceCombServerStats>() {
                   public ServiceCombServerStats load(ServiceCombServer server) {
-                    ServiceCombServerStats stats = new ServiceCombServerStats();
+                    ServiceCombServerStats stats = new ServiceCombServerStats(server.getMicroserviceName());
                     pingView.put(server, stats);
                     serviceCombServers.put(server.getInstance().getInstanceId(), server);
                     return stats;

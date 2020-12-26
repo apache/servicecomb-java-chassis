@@ -849,7 +849,7 @@ public class TestLoadBalanceHandler2 {
         (inv, aysnc) -> {
           Assert.assertEquals("rest://127.0.0.1:8080", inv.getEndpoint().getEndpoint());
           Assert.assertTrue(serviceCombServerStats.isIsolated());
-          Assert.assertEquals(5, serviceCombServerStats.getCountinuousFailureCount());
+          Assert.assertEquals(5, serviceCombServerStats.getContinuousFailureCount());
           Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
           aysnc.success("OK");
         });
@@ -863,7 +863,7 @@ public class TestLoadBalanceHandler2 {
     }
     Assert.assertEquals("rest://127.0.0.1:8080", invocation.getEndpoint().getEndpoint());
     Assert.assertTrue(serviceCombServerStats.isIsolated());
-    Assert.assertEquals(0, serviceCombServerStats.getCountinuousFailureCount());
+    Assert.assertEquals(0, serviceCombServerStats.getContinuousFailureCount());
     Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
   }
 
@@ -894,16 +894,16 @@ public class TestLoadBalanceHandler2 {
         (inv, aysnc) -> {
           Assert.assertFalse(stats0.isIsolated());
           Assert.assertTrue(stats1.isIsolated());
-          Assert.assertEquals(5, stats1.getCountinuousFailureCount());
+          Assert.assertEquals(5, stats1.getContinuousFailureCount());
           Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
           if (counter.value == 0) {
             Assert.assertEquals("rest://127.0.0.1:8080", inv.getEndpoint().getEndpoint());
-            Assert.assertEquals(0, stats0.getCountinuousFailureCount());
+            Assert.assertEquals(0, stats0.getContinuousFailureCount());
             counter.value++;
             aysnc.producerFail(new InvocationException(503, "RETRY", "retry to next instance"));
           } else if (counter.value == 1) {
             Assert.assertEquals("rest://127.0.0.1:8081", inv.getEndpoint().getEndpoint());
-            Assert.assertEquals(1, stats0.getCountinuousFailureCount());
+            Assert.assertEquals(1, stats0.getContinuousFailureCount());
             counter.value++;
             aysnc.success("OK");
           } else {
@@ -920,9 +920,9 @@ public class TestLoadBalanceHandler2 {
     }
     Assert.assertEquals("rest://127.0.0.1:8081", invocation.getEndpoint().getEndpoint());
     Assert.assertFalse(stats0.isIsolated());
-    Assert.assertEquals(1, stats0.getCountinuousFailureCount());
+    Assert.assertEquals(1, stats0.getContinuousFailureCount());
     Assert.assertTrue(stats1.isIsolated());
-    Assert.assertEquals(0, stats1.getCountinuousFailureCount());
+    Assert.assertEquals(0, stats1.getContinuousFailureCount());
     Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
   }
 
@@ -947,7 +947,7 @@ public class TestLoadBalanceHandler2 {
   private ServiceCombServer createMockedServer(String microserviceInstanceId, String endpoint) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     microserviceInstance.setInstanceId(microserviceInstanceId);
-    return new ServiceCombServer(
+    return new ServiceCombServer(null,
         new Endpoint(Mockito.mock(Transport.class), endpoint),
         microserviceInstance);
   }

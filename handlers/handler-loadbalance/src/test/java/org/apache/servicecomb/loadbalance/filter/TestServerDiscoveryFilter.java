@@ -19,16 +19,19 @@ package org.apache.servicecomb.loadbalance.filter;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestServerDiscoveryFilter {
@@ -59,22 +62,27 @@ public class TestServerDiscoveryFilter {
       }
     };
 
-    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, null, null);
+    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, Const.RESTFUL, null, null);
     Assert.assertNull(server);
   }
 
   @Test
-  public void createEndpointNormal() {
+  public void createEndpointNormal(@Injectable DiscoveryContext context, @Injectable Invocation invocation) {
     new Expectations() {
       {
         transportManager.findTransport(anyString);
         result = trasport;
+        context.getInputParameters();
+        result = invocation;
+        invocation.getMicroserviceName();
+        result = "test";
       }
     };
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("0000001");
 
-    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, "rest://localhost:8080", instance);
+    ServiceCombServer server = (ServiceCombServer) filter
+        .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
     Assert.assertSame(instance, server.getInstance());
     Assert.assertSame(trasport, server.getEndpoint().getTransport());
     Assert.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());

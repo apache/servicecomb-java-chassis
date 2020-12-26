@@ -33,7 +33,8 @@ public class ScbRibbonEndpointDiscoveryFilter extends AbstractEndpointDiscoveryF
   }
 
   @Override
-  protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
+  protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
+      MicroserviceInstance instance) {
     URIEndpointObject uri = new URIEndpointObject(endpoint);
     return new Server(uri.getHostOrIp(), uri.getPort());
   }
