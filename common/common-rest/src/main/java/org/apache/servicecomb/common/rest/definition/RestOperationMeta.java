@@ -96,7 +96,7 @@ public class RestOperationMeta {
     Method method = operationMeta.getMethod();
     Type[] genericParamTypes = method.getGenericParameterTypes();
     if (genericParamTypes.length != operation.getParameters().size()) {
-      throw new Error("Param count is not equal between swagger and method, path=" + absolutePath
+      LOGGER.warn("Param count is not equal between swagger and method, path=" + absolutePath
           + ";operation=" + operationMeta.getMicroserviceQualifiedName());
     }
 
