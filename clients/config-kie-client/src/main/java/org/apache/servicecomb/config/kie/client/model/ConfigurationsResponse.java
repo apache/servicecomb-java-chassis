@@ -15,33 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.kie.client.http;
+package org.apache.servicecomb.config.kie.client.model;
 
 import java.util.Map;
 
-public class HttpRequest {
+public class ConfigurationsResponse {
+  private String revision;
 
-  private String url;
+  private boolean changed;
 
-  private Map<String, String> headers;
+  private Map<String, Object> configurations;
 
-  private String content;
-
-  public HttpRequest(String url, Map<String, String> headers, String content) {
-    this.url = url;
-    this.headers = headers;
-    this.content = content;
+  public String getRevision() {
+    return revision;
   }
 
-  public String getUrl() {
-    return url;
+  public ConfigurationsResponse setRevision(String revision) {
+    this.revision = revision;
+    return this;
   }
 
-  public Map<String, String> getHeaders() {
-    return headers;
+  public boolean isChanged() {
+    return changed;
   }
 
-  public String getContent() {
-    return content;
+  public ConfigurationsResponse setChanged(boolean changed) {
+    this.changed = changed;
+    return this;
+  }
+
+  public Map<String, Object> getConfigurations() {
+    return configurations;
+  }
+
+  public ConfigurationsResponse setConfigurations(
+      Map<String, Object> configurations) {
+    this.configurations = configurations;
+    return this;
   }
 }

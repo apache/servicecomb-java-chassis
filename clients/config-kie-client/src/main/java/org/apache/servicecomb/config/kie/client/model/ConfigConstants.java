@@ -15,47 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.kie.client.http;
+package org.apache.servicecomb.config.kie.client.model;
 
-public class HttpResponse {
 
-  private int statusCode;
+public class ConfigConstants {
 
-  private String message;
+  public static final String LABEL_ENV = "environment";
 
-  private String content;
+  public static final String LABEL_APP = "app";
 
-  public HttpResponse() {
+  public static final String LABEL_SERVICE = "service";
 
-  }
+  public static final String LABEL_VERSION = "version";
 
-  HttpResponse(int statusCode, String message, String content) {
-    this.statusCode = statusCode;
-    this.content = content;
-    this.message = message;
-  }
+  public static final String STATUS_ENABLED = "enabled";
 
-  public int getStatusCode() {
-    return statusCode;
-  }
+  public static final String KEY_PROJECT = "project";
 
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
+  // ###### kie config center polling configuration############### //
+  public static final String KEY_ENABLELONGPOLLING = "enableLongPolling";
 
-  public String getMessage() {
-    return message;
-  }
+  public static final String KEY_POLLINGWAITSEC = "pollingWaitInSeconds";
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
-  }
 }

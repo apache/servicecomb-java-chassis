@@ -33,7 +33,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>http-client-common</module>
-    <module>kie-client</module>
+    <module>config-kie-client</module>
     <module>service-center-client</module>
     <module>config-center-client</module>
   </modules>

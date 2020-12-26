@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.kie.client.http;
+package org.apache.servicecomb.config.kie.client.model;
 
-public class HttpTransportFactory {
-
-  private static final HttpTransport httpTransport = new HttpTransportImpl();
-
-  private HttpTransportFactory() {
-
-  }
-
-  public static HttpTransport getDefaultHttpTransport() {
-    return httpTransport;
-  }
+public enum ValueType {
+  yml,
+  yaml,
+  string,
+  text,
+  json,
+  properties
 }
