@@ -179,6 +179,14 @@
         <artifactId>foundation-vertx</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+      <!-- ServiceComb：governance -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>servicecomb-governance</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- ServiceComb： handlers -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
