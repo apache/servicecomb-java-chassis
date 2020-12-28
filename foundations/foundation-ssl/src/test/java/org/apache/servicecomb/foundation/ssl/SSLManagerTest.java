@@ -199,7 +199,8 @@ public class SSLManagerTest {
     };
 
     SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
-    Assert.assertEquals(false, aSSLEngine.getUseClientMode());
+    // if client mode may not decided at initialization. Different JDK is different, do not check it.
+    // Assert.assertEquals(false, aSSLEngine.getUseClientMode());
     Assert.assertNotNull(aSSLEngine);
   }
 
