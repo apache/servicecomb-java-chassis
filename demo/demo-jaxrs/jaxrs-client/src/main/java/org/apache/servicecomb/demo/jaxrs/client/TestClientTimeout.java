@@ -75,7 +75,7 @@ public class TestClientTimeout implements CategorizedTestCase {
       // implement timeout with same error code and message for rest and highway
       TestMgr.check(408, e.getStatus().getStatusCode());
       TestMgr.check(true,
-          e.getErrorData().toString().contains("CommonExceptionData [message=Request Timeout. Details:"));
+          e.getErrorData().toString().contains("CommonExceptionData [message=Request Timeout."));
       TestMgr.check(serviceCombServerStats.getContinuousFailureCount(), failures + 1);
     }
 
