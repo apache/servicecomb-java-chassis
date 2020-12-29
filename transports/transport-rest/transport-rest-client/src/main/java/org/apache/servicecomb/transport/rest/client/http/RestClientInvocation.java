@@ -284,8 +284,11 @@ public class RestClientInvocation {
     try {
       if (e instanceof TimeoutException) {
         // give an accurate cause for timeout exception
+        //   The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080
+        // should not copy the message to invocationException to avoid leak server ip address
+        LOGGER.info("Request timeout, Details: {}.", e.getMessage());
         asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
-            new CommonExceptionData(String.format("Request Timeout. Details: %s", e.getMessage()))));
+            new CommonExceptionData("Request Timeout.")));
         return;
       }
       asyncResp.fail(invocation.getInvocationType(), e);

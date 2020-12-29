@@ -36,6 +36,8 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -43,6 +45,8 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
 public class HighwayClient {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClient.class);
+
   private static final String SSL_KEY = "highway.consumer";
 
   private ClientPoolManager<HighwayClientConnectionPool> clientMgr;
@@ -101,8 +105,12 @@ public class HighwayClient {
           invocation.getInvocationStageTrace().finishClientFiltersResponse();
           if (ar.cause() instanceof TimeoutException) {
             // give an accurate cause for timeout exception
+            //   The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080
+            // should not copy the message to invocationException to avoid leak server ip address
+            LOGGER.info("Request timeout, Details: {}.", ar.cause().getMessage());
+
             asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
-                new CommonExceptionData(String.format("Request Timeout. Details: %s", ar.cause().getMessage()))));
+                new CommonExceptionData("Request Timeout.")));
             return;
           }
           asyncResp.consumerFail(ar.cause());
