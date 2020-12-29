@@ -15,20 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.kie.client.http;
+package org.apache.servicecomb.config.kie.client.model;
 
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
-/**
- * Created by   on 2019/10/16.
- */
-public interface HttpTransport {
+import java.util.HashMap;
+import java.util.Map;
 
-  HttpResponse get(HttpRequest request) throws IOException;
+public class LabelDocResponse {
 
-  HttpResponse post(HttpRequest request) throws IOException;
+  @JsonAlias("label_id")
+  private String labelId;
 
-  HttpResponse put(HttpRequest request) throws IOException;
+  private Map<String, String> labels = new HashMap<String, String>();
 
-  HttpResponse delete(HttpRequest request) throws IOException;
+  public String getLabelId() {
+    return labelId;
+  }
+
+  public Map<String, String> getLabels() {
+    return labels;
+  }
+
+  public void setLabelId(String labelId) {
+    this.labelId = labelId;
+  }
+
+  public void setLabels(Map<String, String> labels) {
+    this.labels = labels;
+  }
 }
