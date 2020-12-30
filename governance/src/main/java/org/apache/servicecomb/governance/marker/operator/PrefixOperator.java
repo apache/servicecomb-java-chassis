@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.governance.marker.operator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExactOperator implements MatchOperator {
-
+public class PrefixOperator implements MatchOperator {
   @Override
-  public boolean match(String targetStr, String patternStr) {
-    return StringUtils.equals(targetStr, patternStr);
+  public boolean match(String requestValue, String patternValue) {
+    return StringUtils.startsWith(requestValue, patternValue);
   }
 }
