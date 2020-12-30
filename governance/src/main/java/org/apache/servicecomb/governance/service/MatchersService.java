@@ -18,9 +18,6 @@ package org.apache.servicecomb.governance.service;
 
 import org.apache.servicecomb.governance.marker.GovHttpRequest;
 
-import java.util.List;
-
 public interface MatchersService {
-
-  List<String> getMatchedNames(GovHttpRequest govHttpRequest);
+  boolean checkMatch(GovHttpRequest govHttpRequest, String key);
 }

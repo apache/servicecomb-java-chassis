@@ -16,20 +16,19 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractPolicy implements Policy {
 
   private String name;
 
-  private GovRule rules;
+  private GovernanceRule rules;
 
-  public GovRule getRules() {
+  public GovernanceRule getRules() {
     return rules;
   }
 
-  public void setRules(GovRule rules) {
+  public void setRules(GovernanceRule rules) {
     this.rules = rules;
   }
 
@@ -39,13 +38,24 @@ public abstract class AbstractPolicy implements Policy {
 
   @Override
   public boolean match(List<String> items) {
-    if (rules == null || rules.getMatch() == null) {
+    if (rules == null) {
       return false;
     }
+    return items.stream().anyMatch(item -> rules.match(item));
+  }
 
-    List<String> configuredItems = Arrays.asList(rules.getMatch().split(","));
+  public static int compare(AbstractPolicy policy1, AbstractPolicy policy2) {
+    int p1 = policy1.rules == null ? 0 : policy1.rules.getPrecedence();
+    int p2 = policy2.rules == null ? 0 : policy2.rules.getPrecedence();
+    return p1 - p2;
+  }
 
-    return items.stream().anyMatch(item -> configuredItems.contains(item));
+  public List<String> getParsedMatch() {
+    if (rules == null) {
+      return null;
+    }
+
+    return rules.getParsedMatch();
   }
 
   @Override

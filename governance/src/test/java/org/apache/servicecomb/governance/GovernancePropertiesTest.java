@@ -47,17 +47,17 @@ import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
-import org.apache.servicecomb.governance.properties.GovProperties;
+import org.apache.servicecomb.governance.properties.GovernanceProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)
-public class GovPropertiesTest {
+public class GovernancePropertiesTest {
 
   @Autowired
-  private List<GovProperties<? extends AbstractPolicy>> propertiesList;
+  private List<GovernanceProperties<? extends AbstractPolicy>> propertiesList;
 
   @Autowired
   private MatchProperties matchProperties;
@@ -79,7 +79,7 @@ public class GovPropertiesTest {
 
   private Map<String, Object> dynamicValues = new HashMap<>();
 
-  public GovPropertiesTest() {
+  public GovernancePropertiesTest() {
     System.out.print(1);
   }
 

@@ -15,21 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance.properties;
+package org.apache.servicecomb.governance;
 
-import org.apache.servicecomb.governance.policy.BulkheadPolicy;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 @Component
-public class BulkheadProperties extends PolicyProperties<BulkheadPolicy> {
-  public static final String MATCH_BULKHEAD__KEY = "servicecomb.bulkhead";
+public class MockInvocationContext implements InvocationContext {
+  private ThreadLocal<Map<String, Boolean>> context = new ThreadLocal<>();
 
-  public BulkheadProperties() {
-    super(MATCH_BULKHEAD__KEY);
+  @Override
+  public Map<String, Boolean> getCalculatedMatches() {
+    Map<String, Boolean> result = context.get();
+    if (result == null) {
+      return Collections.emptyMap();
+    }
+    return result;
   }
 
   @Override
-  public Class<BulkheadPolicy> getEntityClass() {
-    return BulkheadPolicy.class;
+  public void addMatch(String key, Boolean value) {
+    Map<String, Boolean> result = context.get();
+    if (result == null) {
+      result = new HashMap<>();
+      context.set(result);
+    }
+    result.put(key, value);
   }
 }

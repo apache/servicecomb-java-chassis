@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import org.apache.servicecomb.governance.properties.GovProperties;
+import org.apache.servicecomb.governance.properties.GovernanceProperties;
 
 @Component
 public class PolicyServiceImpl implements PolicyService {
@@ -37,7 +37,7 @@ public class PolicyServiceImpl implements PolicyService {
   private static final String MATCH_NONE = "none";
 
   @Autowired
-  private List<GovProperties<? extends AbstractPolicy>> propertiesList;
+  private List<GovernanceProperties<? extends AbstractPolicy>> propertiesList;
 
   @Override
   public Map<String, Policy> getAllPolicies(List<String> marks) {
@@ -47,7 +47,7 @@ public class PolicyServiceImpl implements PolicyService {
       return policies;
     }
 
-    for (GovProperties<? extends AbstractPolicy> properties : propertiesList) {
+    for (GovernanceProperties<? extends AbstractPolicy> properties : propertiesList) {
       Policy policy = match(properties.getParsedEntity(), marks);
       if (policy != null) {
         policies.put(properties.getClass().getName(), policy);
