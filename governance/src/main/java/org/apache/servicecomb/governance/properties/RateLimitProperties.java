@@ -21,7 +21,7 @@ import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RateLimitProperties extends GovProperties<RateLimitingPolicy> {
+public class RateLimitProperties extends PolicyProperties<RateLimitingPolicy> {
   public static final String MATCH_RATE_LIMIT_KEY = "servicecomb.rateLimiting";
 
   public RateLimitProperties() {

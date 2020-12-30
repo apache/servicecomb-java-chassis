@@ -18,13 +18,33 @@ package org.apache.servicecomb.governance.marker;
 
 import java.util.Map;
 
+import org.springframework.util.Assert;
+
 public class GovHttpRequest {
+  private final String serviceName;
+
+  private final String version;
 
   private Map<String, String> headers;
 
   private String uri;
 
   private String method;
+
+  public GovHttpRequest(String serviceName, String version) {
+    Assert.notNull(serviceName, "serviceName should not be null");
+    Assert.notNull(version, "version should not be null");
+    this.serviceName = serviceName;
+    this.version = version;
+  }
+
+  public String getServiceName() {
+    return serviceName;
+  }
+
+  public String getVersion() {
+    return version;
+  }
 
   public Map<String, String> getHeaders() {
     return headers;

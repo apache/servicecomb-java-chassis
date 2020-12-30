@@ -16,7 +16,10 @@
  */
 package org.apache.servicecomb.governance.marker;
 
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class TrafficMarker {
 
@@ -38,5 +41,33 @@ public class TrafficMarker {
 
   public void setMatches(List<Matcher> matches) {
     this.matches = matches;
+  }
+
+  public boolean checkMatch(GovHttpRequest govHttpRequest, RequestProcessor requestProcessor, String name) {
+    if (!servicesMatch(govHttpRequest)) {
+      return false;
+    }
+
+    return this.matches.stream().anyMatch(match ->
+        match.getName().equals(name) && requestProcessor.match(govHttpRequest, match));
+  }
+
+
+  private boolean servicesMatch(GovHttpRequest govHttpRequest) {
+    if (StringUtils.isEmpty(services)) {
+      return true;
+    }
+
+    return Arrays.stream(services.split(",")).anyMatch(ser -> {
+      String[] serviceAndVersion = ser.split(":");
+      if (serviceAndVersion.length == 1) {
+        return govHttpRequest.getServiceName().equals(serviceAndVersion[0]);
+      } else if (serviceAndVersion.length == 2) {
+        return govHttpRequest.getServiceName().equals(serviceAndVersion[0]) && govHttpRequest.getVersion()
+            .equals(serviceAndVersion[1]);
+      } else {
+        return false;
+      }
+    });
   }
 }

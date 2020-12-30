@@ -41,11 +41,12 @@ import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
 import com.google.common.eventbus.Subscribe;
+
 import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.EventManager;
 
-public abstract class GovProperties<T> implements InitializingBean {
-  private static final Logger LOGGER = LoggerFactory.getLogger(GovProperties.class);
+public abstract class GovernanceProperties<T> implements InitializingBean {
+  private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceProperties.class);
 
   private final Representer representer = new Representer();
 
@@ -58,7 +59,7 @@ public abstract class GovProperties<T> implements InitializingBean {
 
   protected Class<T> entityClass;
 
-  protected GovProperties(String key) {
+  protected GovernanceProperties(String key) {
     configKey = key;
     representer.getPropertyUtils().setSkipMissingProperties(true);
     EventManager.register(this);
@@ -75,7 +76,7 @@ public abstract class GovProperties<T> implements InitializingBean {
     for (String key : event.getChangedConfigurations()) {
       if (key.startsWith(configKey + ".")) {
         // 删除的情况， 从配置文件读取配置。 需要保证 environment 已经刷新配置值。
-        T entityItem = parseEntityItem(environment.getProperty(key));
+        T entityItem = parseEntityItem(key, environment.getProperty(key));
         String mapKey = key.substring((configKey + ".").length());
         if (entityItem == null) {
           parsedEntity.remove(mapKey);
@@ -142,7 +143,7 @@ public abstract class GovProperties<T> implements InitializingBean {
 
     Map<String, T> resultMap = new HashMap<>();
     for (Entry<String, String> entry : yamlEntity.entrySet()) {
-      T marker = parseEntityItem(entry.getValue());
+      T marker = parseEntityItem(entry.getKey(), entry.getValue());
       if (marker != null) {
         resultMap.put(entry.getKey(), marker);
       }
@@ -152,14 +153,18 @@ public abstract class GovProperties<T> implements InitializingBean {
 
   protected abstract Class<T> getEntityClass();
 
-  protected T parseEntityItem(String value) {
+  protected abstract void setName(T value, String key);
+
+  protected T parseEntityItem(String key, String value) {
     if (StringUtils.isEmpty(value)) {
       return null;
     }
 
     try {
       Yaml entityParser = new Yaml(new Constructor(new TypeDescription(entityClass, entityClass)), representer);
-      return entityParser.loadAs(value, entityClass);
+      T result = entityParser.loadAs(value, entityClass);
+      setName(result, key);
+      return result;
     } catch (YAMLException e) {
       LOGGER.error("governance config yaml is illegal : {}", e.getMessage());
     }

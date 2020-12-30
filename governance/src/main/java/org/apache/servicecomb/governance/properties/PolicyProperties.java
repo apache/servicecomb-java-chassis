@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance.policy;
+package org.apache.servicecomb.governance.properties;
 
-public class GovRule {
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
 
-  private String match;
-
-  private int precedence;
-
-  public String getMatch() {
-    return match;
+public abstract class PolicyProperties<T extends AbstractPolicy> extends GovernanceProperties<T> {
+  protected PolicyProperties(String key) {
+    super(key);
   }
 
-  public void setMatch(String match) {
-    this.match = match;
-  }
-
-  public int getPrecedence() {
-    return precedence;
-  }
-
-  public void setPrecedence(int precedence) {
-    this.precedence = precedence;
+  protected void setName(T value, String key) {
+    value.setName(key);
   }
 }
