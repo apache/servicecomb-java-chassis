@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.policy.Policy;
+import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,6 +35,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
 @RunWith(SpringRunner.class)
@@ -57,11 +58,12 @@ public class FlowControlTest {
 
     GovHttpRequest request = new GovHttpRequest("testService", "1.0");
     request.setUri("/hello");
-    Policy policy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
+    RateLimitingPolicy policy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
     Assert.assertNotNull(policy);
-    DecorateCheckedSupplier<Object> dcs = rateLimitingHandler.process(ds, policy);
+    RateLimiter rateLimiter = rateLimitingHandler.getActuator(policy);
+    ds.withRateLimiter(rateLimiter);
 
-    Assert.assertEquals("test", dcs.get());
+    Assert.assertEquals("test", ds.get());
 
     // flow control
     CountDownLatch cd = new CountDownLatch(10);
@@ -71,8 +73,7 @@ public class FlowControlTest {
       new Thread() {
         public void run() {
           try {
-            DecorateCheckedSupplier<Object> dcs = rateLimitingHandler.process(ds, policy);
-            Object result = dcs.get();
+            Object result = ds.get();
             if (!"test".equals(result)) {
               notExpected.set(true);
             }

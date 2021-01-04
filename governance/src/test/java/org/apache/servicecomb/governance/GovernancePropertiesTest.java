@@ -23,19 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.EventManager;
 import org.apache.servicecomb.governance.marker.Matcher;
@@ -51,6 +38,18 @@ import org.apache.servicecomb.governance.properties.GovernanceProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)
@@ -78,10 +77,6 @@ public class GovernancePropertiesTest {
   private Environment environment;
 
   private Map<String, Object> dynamicValues = new HashMap<>();
-
-  public GovernancePropertiesTest() {
-    System.out.print(1);
-  }
 
   @Before
   public void setUp() {
