@@ -18,38 +18,29 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.policy.Policy;
-import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
-
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 
 @Component("RateLimitingHandler")
-public class RateLimitingHandler extends AbstractGovHandler<RateLimiter> {
+public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, RateLimitingPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingHandler.class);
 
   @Override
-  public <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy) {
-    RateLimiter rateLimiter = getActuator("servicecomb.rateLimiting." + policy.name(), (RateLimitingPolicy) policy,
-        this::getRateLimiter);
-    return supplier.withRateLimiter(rateLimiter);
+  protected String createKey(RateLimitingPolicy policy) {
+    return "servicecomb.rateLimiting." + policy.name();
   }
 
   @Override
-  public HandlerType type() {
-    return HandlerType.SERVER;
+  protected RateLimiter createProcessor(RateLimitingPolicy policy) {
+    return getRateLimiter(policy);
   }
 
-  /**
-   * @param policy
-   * @return
-   */
   private RateLimiter getRateLimiter(RateLimitingPolicy policy) {
     LOGGER.info("applying new policy: {}", policy.toString());
 

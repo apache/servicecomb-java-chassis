@@ -18,40 +18,29 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.policy.Policy;
-
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
 @Component("CircuitBreakerHandler")
-public class CircuitBreakerHandler extends AbstractGovHandler<CircuitBreaker> {
+public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
   @Override
-  public <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy) {
-    CircuitBreaker circuitBreaker = getActuator("servicecomb.circuitBreaker." + policy.name(),
-        (CircuitBreakerPolicy) policy, this::getCircuitBreaker);
-    return supplier.withCircuitBreaker(circuitBreaker);
+  protected String createKey(CircuitBreakerPolicy policy) {
+    return "servicecomb.circuitBreaker." + policy.name();
   }
 
   @Override
-  public HandlerType type() {
-    return HandlerType.SERVER;
+  protected CircuitBreaker createProcessor(CircuitBreakerPolicy policy) {
+    return getCircuitBreaker(policy);
   }
 
-  /**
-   * todo: recordExceptions
-   *
-   * @param policy
-   * @return
-   */
   private CircuitBreaker getCircuitBreaker(CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy: {}", policy.toString());
 

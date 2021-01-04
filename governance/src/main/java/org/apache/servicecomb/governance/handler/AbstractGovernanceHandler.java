@@ -19,27 +19,32 @@ package org.apache.servicecomb.governance.handler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
-import com.google.common.eventbus.Subscribe;
 import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.EventManager;
 
-public abstract class AbstractGovHandler<PROCESSOR> implements GovHandler {
+import com.google.common.eventbus.Subscribe;
+
+public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY> {
   private Map<String, PROCESSOR> map = new ConcurrentHashMap<>();
 
-  protected AbstractGovHandler() {
+  protected AbstractGovernanceHandler() {
     EventManager.register(this);
   }
 
-  protected <R> PROCESSOR getActuator(String key, R policy, Function<R, PROCESSOR> func) {
+  public <R> PROCESSOR getActuator(POLICY policy) {
+    String key = createKey(policy);
     PROCESSOR processor = map.get(key);
     if (processor == null) {
-      processor = func.apply(policy);
+      processor = createProcessor(policy);
       map.put(key, processor);
     }
     return processor;
   }
+
+  abstract protected String createKey(POLICY policy);
+
+  abstract protected PROCESSOR createProcessor(POLICY policy);
 
   @Subscribe
   public void onDynamicConfigurationListener(ConfigurationChangedEvent event) {
