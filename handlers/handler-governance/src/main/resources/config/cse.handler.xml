@@ -18,4 +18,6 @@
 <config>
   <handler id="governance-provider"
     class="org.apache.servicecomb.handler.governance.ProviderGovernanceHandler"/>
+  <handler id="governance-consumer"
+    class="org.apache.servicecomb.handler.governance.ConsumerGovernanceHandler"/>
 </config>

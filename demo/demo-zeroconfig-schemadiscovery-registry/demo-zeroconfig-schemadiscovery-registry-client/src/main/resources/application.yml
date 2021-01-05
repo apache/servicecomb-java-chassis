@@ -25,9 +25,68 @@ service_description:
   name: demo-zeroconfig-schemadiscovery-registry-client
   version: 0.0.2
 servicecomb:
+  rest:
+    address: 0.0.0.0:8082
+
   handler:
     chain:
       Consumer:
-        default: loadbalance
-  rest:
-    address: 0.0.0.0:8082
+        default: governance-consumer,loadbalance
+      Provider:
+        default: governance-provider
+
+  matchGroup:
+    demo-rateLimiting: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.hello"
+          name: xx
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+    demo-retry: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.retry"
+          name: xx
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+    demo-circuitBreaker: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.circuitBreaker"
+          name: xx
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+    demo-bulkhead: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.bulkhead"
+          name: xx
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+  rateLimiting:
+    demo-rateLimiting: |
+      rules:
+        match: demo-rateLimiting.xx
+      rate: 10
+      name: xx
+  retry:
+    demo-retry: |
+      rules:
+        match: demo-retry.xx
+      maxAttempts: 3
+      name: xx
+  circuitBreaker:
+    demo-circuitBreaker: |
+      rules:
+        match: demo-circuitBreaker.xx
+      minimumNumberOfCalls: 10
+      slidingWindowSize: 10
+      failureRateThreshold: 20
+      name: xx
+  bulkhead:
+    demo-bulkhead: |
+      rules:
+        match: demo-bulkhead.xx
+      maxConcurrentCalls: 5
+      name: xx

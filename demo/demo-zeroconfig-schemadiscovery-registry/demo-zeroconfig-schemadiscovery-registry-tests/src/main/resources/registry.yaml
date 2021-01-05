@@ -22,6 +22,7 @@ demo-zeroconfig-schemadiscovery-registry-client:
     schemaIds:
       - ClientServerEndpoint
       - SchemaDiscoveryEndpoint
+      - GovernanceEndpoint
     instances:
       - endpoints:
           - rest://localhost:8082
