@@ -73,6 +73,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-governance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-loadbalance</artifactId>
     </dependency>
     <dependency>

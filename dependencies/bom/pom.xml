@@ -205,6 +205,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-governance</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-loadbalance</artifactId>
         <version>${project.version}</version>
       </dependency>

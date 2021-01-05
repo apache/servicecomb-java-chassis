@@ -73,13 +73,14 @@ public class ProviderGovernanceHandler implements Handler {
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovHttpRequest request = createGovHttpRequest(invocation);
 
-    RateLimitingPolicy rateLimitingPolicy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
-    dcs.withRateLimiter(rateLimitingHandler.getActuator(rateLimitingPolicy));
-    CircuitBreakerPolicy circuitBreakerPolicy = matchersManager
-        .match(request, circuitBreakerProperties.getParsedEntity());
-    dcs.withCircuitBreaker(circuitBreakerHandler.getActuator(circuitBreakerPolicy));
-    BulkheadPolicy bulkheadPolicy = matchersManager.match(request, bulkheadProperties.getParsedEntity());
-    dcs.withBulkhead(bulkheadHandler.getActuator(bulkheadPolicy));
+    try {
+      ServiceCombInvocationContext.setInvocationContext(invocation);
+      addRateLimiting(dcs, request);
+      addCircuitBreaker(dcs, request);
+      addBulkhead(dcs, request);
+    } finally {
+      ServiceCombInvocationContext.removeInvocationContext();
+    }
 
     dcs.get().whenComplete((r, e) -> {
       if (e == null) {
@@ -107,12 +108,41 @@ public class ProviderGovernanceHandler implements Handler {
     });
   }
 
+  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+    BulkheadPolicy bulkheadPolicy = matchersManager.match(request, bulkheadProperties.getParsedEntity());
+    if (bulkheadPolicy != null) {
+      dcs.withBulkhead(bulkheadHandler.getActuator(bulkheadPolicy));
+    }
+  }
+
+  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+    CircuitBreakerPolicy circuitBreakerPolicy = matchersManager
+        .match(request, circuitBreakerProperties.getParsedEntity());
+    if (circuitBreakerPolicy != null) {
+      dcs.withCircuitBreaker(circuitBreakerHandler.getActuator(circuitBreakerPolicy));
+    }
+  }
+
+  private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+    RateLimitingPolicy rateLimitingPolicy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
+    if (rateLimitingPolicy != null) {
+      dcs.withRateLimiter(rateLimitingHandler.getActuator(rateLimitingPolicy));
+    }
+  }
+
   private Supplier<CompletionStage<Response>> createBusinessCompletionStageSupplier(Invocation invocation) {
     return () -> {
       CompletableFuture<Response> result = new CompletableFuture<>();
       try {
         invocation.next(response -> {
-          result.complete(response);
+          if (response.isFailed()) {
+            // For failed response, create a fail to make circuit breaker work.
+            // Users application maybe much complicated than this simple logic,
+            // while they need to customize which error will cause circuit breaker.
+            result.completeExceptionally(response.getResult());
+          } else {
+            result.complete(response);
+          }
         });
       } catch (Exception e) {
         result.completeExceptionally(e);

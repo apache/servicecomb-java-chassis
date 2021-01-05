@@ -298,10 +298,10 @@ public class LoadbalanceHandler implements Handler {
     // retry in loadbalance, 2.0 feature
     int currentHandler = invocation.getHandlerIndex();
 
-    SyncResponseExecutor orginExecutor;
+    SyncResponseExecutor originalExecutor;
     Executor newExecutor;
     if (invocation.getResponseExecutor() instanceof SyncResponseExecutor) {
-      orginExecutor = (SyncResponseExecutor) invocation.getResponseExecutor();
+      originalExecutor = (SyncResponseExecutor) invocation.getResponseExecutor();
       newExecutor = new Executor() {
         @Override
         public void execute(Runnable command) {
@@ -312,7 +312,7 @@ public class LoadbalanceHandler implements Handler {
       };
       invocation.setResponseExecutor(newExecutor);
     } else {
-      orginExecutor = null;
+      originalExecutor = null;
       newExecutor = null;
     }
 
@@ -346,8 +346,8 @@ public class LoadbalanceHandler implements Handler {
               context.getRequest().getInvocationQualifiedName(),
               context.getRequest().getEndpoint());
         }
-        if (orginExecutor != null) {
-          orginExecutor.execute(() -> {
+        if (originalExecutor != null) {
+          originalExecutor.execute(() -> {
             asyncResp.complete(response);
           });
         } else {
@@ -361,8 +361,8 @@ public class LoadbalanceHandler implements Handler {
         context.getRequest().getTraceIdLogger().error(LOGGER, "Invoke all server failed. Operation {}, e={}",
             context.getRequest().getInvocationQualifiedName(),
             ExceptionUtils.getExceptionMessageWithoutTrace(finalException));
-        if (orginExecutor != null) {
-          orginExecutor.execute(() -> {
+        if (originalExecutor != null) {
+          originalExecutor.execute(() -> {
             fail(finalException);
           });
         } else {

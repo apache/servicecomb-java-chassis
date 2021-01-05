@@ -30,14 +30,14 @@ public class RetryPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_ATTEMPTS = 3;
 
-  public static final int DEFAULT_WAIT_DURATION = 0;
+  public static final int DEFAULT_WAIT_DURATION = 1;
 
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS = "502";
 
   //最多尝试次数
   private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
-  //每次重试尝试等待的时间，默认给0
+  //每次重试尝试等待的时间，默认给1。 在异步场景下，这个值必须大于0，否则不会重试。
   private int waitDuration = DEFAULT_WAIT_DURATION;
 
   //需要重试的http status, 逗号分隔
