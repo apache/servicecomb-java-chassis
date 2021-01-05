@@ -70,6 +70,20 @@ public class RateLimitingPolicy extends AbstractPolicy {
   }
 
   @Override
+  public boolean isValid() {
+    if (timeoutDuration < 0) {
+      return false;
+    }
+    if (limitRefreshPeriod <= 0) {
+      return false;
+    }
+    if (rate <= 0) {
+      return false;
+    }
+    return super.isValid();
+  }
+
+  @Override
   public String handler() {
     return RateLimitingHandler.class.getSimpleName();
   }

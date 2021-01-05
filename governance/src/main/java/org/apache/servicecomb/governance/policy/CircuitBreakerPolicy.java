@@ -58,6 +58,30 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   public CircuitBreakerPolicy() {
   }
 
+  @Override
+  public boolean isValid() {
+    if (failureRateThreshold > 100 || failureRateThreshold <= 0) {
+      return false;
+    }
+    if (slowCallRateThreshold > 100 || slowCallRateThreshold <= 0) {
+      return false;
+    }
+    if (waitDurationInOpenState <= 0) {
+      return false;
+    }
+    if (slowCallDurationThreshold <= 0) {
+      return false;
+    }
+    if (permittedNumberOfCallsInHalfOpenState <= 0) {
+      return false;
+    }
+    if (minimumNumberOfCalls <= 0) {
+      return false;
+    }
+
+    return super.isValid();
+  }
+
   public int getFailureRateThreshold() {
     return failureRateThreshold;
   }

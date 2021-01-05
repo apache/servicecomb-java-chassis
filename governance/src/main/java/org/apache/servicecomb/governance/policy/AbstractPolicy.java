@@ -18,11 +18,14 @@ package org.apache.servicecomb.governance.policy;
 
 import java.util.List;
 
-public abstract class AbstractPolicy implements Policy {
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.governance.entity.Configurable;
 
-  private String name;
+public abstract class AbstractPolicy implements Policy, Configurable {
 
-  private GovernanceRule rules;
+  protected String name;
+
+  protected GovernanceRule rules;
 
   public GovernanceRule getRules() {
     return rules;
@@ -34,6 +37,17 @@ public abstract class AbstractPolicy implements Policy {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public boolean isValid() {
+    if (StringUtils.isEmpty(name)) {
+      return false;
+    }
+    if (rules == null) {
+      return false;
+    }
+    return rules.isValid();
   }
 
   @Override

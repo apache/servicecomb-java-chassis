@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.servicecomb.governance.entity.Configurable;
+import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.EventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,10 +45,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import com.google.common.eventbus.Subscribe;
 
-import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
-import org.apache.servicecomb.governance.event.EventManager;
-
-public abstract class GovernanceProperties<T> implements InitializingBean {
+public abstract class GovernanceProperties<T extends Configurable> implements InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceProperties.class);
 
   private final Representer representer = new Representer();
@@ -164,6 +164,11 @@ public abstract class GovernanceProperties<T> implements InitializingBean {
       Yaml entityParser = new Yaml(new Constructor(new TypeDescription(entityClass, entityClass)), representer);
       T result = entityParser.loadAs(value, entityClass);
       setName(result, key);
+
+      if (!result.isValid()) {
+        LOGGER.warn("Entity configuration is not valid and ignored. Key [{}], value [{}]", key, value);
+        return null;
+      }
       return result;
     } catch (YAMLException e) {
       LOGGER.error("governance config yaml is illegal : {}", e.getMessage());
