@@ -20,8 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.governance.entity.Configurable;
 
-public class TrafficMarker {
+public class TrafficMarker implements Configurable {
 
   private String services;
 
@@ -29,6 +30,19 @@ public class TrafficMarker {
 
   public String getServices() {
     return services;
+  }
+
+  @Override
+  public boolean isValid() {
+    if (matches == null || matches.isEmpty()) {
+      return false;
+    }
+    for (Matcher matcher : matches) {
+      if (!matcher.isValid()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public void setServices(String services) {

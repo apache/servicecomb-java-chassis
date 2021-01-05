@@ -47,6 +47,13 @@ public class GovernanceRule {
     this.precedence = precedence;
   }
 
+  public boolean isValid() {
+    if (StringUtils.isEmpty(match)) {
+      return false;
+    }
+    return true;
+  }
+
   public boolean match(String name) {
     if (StringUtils.isEmpty(this.match)) {
       return false;

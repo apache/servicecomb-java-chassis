@@ -46,6 +46,17 @@ public class BulkheadPolicy extends AbstractPolicy {
   }
 
   @Override
+  public boolean isValid() {
+    if (maxConcurrentCalls <= 0) {
+      return false;
+    }
+    if (maxWaitDuration < 0) {
+      return false;
+    }
+    return super.isValid();
+  }
+
+  @Override
   public String handler() {
     return BulkheadHandler.class.getSimpleName();
   }

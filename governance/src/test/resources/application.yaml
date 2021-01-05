@@ -22,6 +22,8 @@ servicecomb:
         - apiPath:
             exact: "/hello"
           name: match0
+    wrong-name-inogred: |
+      wrong: some
     demo-retry: |
       matches:
         - apiPath:
@@ -42,17 +44,26 @@ servicecomb:
       rules:
         match: demo-rateLimiting.match0
       rate: 1
+    wrongIngored: |
+      rate: 0
   retry:
     retry0: |
       rules:
         match: demo-retry.xx
       maxAttempts: 3
+    wrongIngored: |
+      rules:
+        wrong: 0
   circuitBreaker:
     circuitBreaker0: |
       rules:
         match: demo-circuitBreaker.xx
       minimumNumberOfCalls: 2
       slidingWindowSize: 2
+    wrongIngored: |
+      rules:
+        match: demo-circuitBreaker.xx
+      minimumNumberOfCalls: -1
   bulkhead:
     bulkhead0: |
       rules:
@@ -60,3 +71,7 @@ servicecomb:
         precedence: 100
       maxConcurrentCalls: 1
       maxWaitDuration: 3000
+    wrongIngored: |
+      rules:
+        match: demo-bulkhead.xx
+      maxWaitDuration: -1
