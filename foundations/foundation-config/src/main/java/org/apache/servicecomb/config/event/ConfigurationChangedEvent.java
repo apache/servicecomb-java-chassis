@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance.event;
+package org.apache.servicecomb.config.event;
 
-import java.util.Set;
+import com.netflix.config.WatchedUpdateResult;
 
 public class ConfigurationChangedEvent {
-  private Set<String> changedConfigurations;
+  private final WatchedUpdateResult event;
 
-  public ConfigurationChangedEvent(Set<String> changedConfigurations) {
-    this.changedConfigurations = changedConfigurations;
+  public ConfigurationChangedEvent(WatchedUpdateResult event) {
+    this.event = event;
   }
 
-  public Set<String> getChangedConfigurations() {
-    return changedConfigurations;
+  public WatchedUpdateResult getEvent() {
+    return this.event;
   }
 }

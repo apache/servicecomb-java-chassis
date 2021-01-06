@@ -27,7 +27,13 @@ service_description:
 servicecomb:
   rest:
     address: 0.0.0.0:8082
-
+  config:
+    client:
+      # for testing dynamic configuration
+      # serverUri: http://127.0.0.1:30113
+      refreshMode: 0
+      # refresh_interval: 5000
+      # refreshPort: 30114
   handler:
     chain:
       Consumer:
