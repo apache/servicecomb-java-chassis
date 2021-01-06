@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.governance;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,7 +104,7 @@ public class GovernancePropertiesTest {
   public void tearDown() {
     Set<String> keys = dynamicValues.keySet();
     keys.forEach(k -> dynamicValues.put(k, null));
-    EventManager.post(new ConfigurationChangedEvent(new ArrayList<>(dynamicValues.keySet())));
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
   }
 
   @Test
@@ -135,7 +135,7 @@ public class GovernancePropertiesTest {
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
 
-    EventManager.post(new ConfigurationChangedEvent(new ArrayList<>(dynamicValues.keySet())));
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
     Assert.assertEquals(5, markers.size());
@@ -167,7 +167,7 @@ public class GovernancePropertiesTest {
         + "maxConcurrentCalls: 3\n"
         + "maxWaitDuration: 3000");
 
-    EventManager.post(new ConfigurationChangedEvent(new ArrayList<>(dynamicValues.keySet())));
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
