@@ -188,7 +188,7 @@ public class TestCookieProcessor {
   @Test
   public void testSetValueDateFixed() throws Exception {
     Date date = new Date(1586957400199L);
-    String strDate =  "2020-04-15T13:30:00.199+0000";
+    String strDate =  "2020-04-15T13:30:00.199+00:00";
 
     createClientRequest();
 
