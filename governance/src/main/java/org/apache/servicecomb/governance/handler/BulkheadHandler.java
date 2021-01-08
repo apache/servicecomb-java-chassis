@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
 @Component("BulkheadHandler")
 public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, BulkheadPolicy> {
@@ -35,7 +34,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
   @Override
   protected String createKey(BulkheadPolicy policy) {
-    return "servicecomb.bulkhead." + policy.name();
+    return "servicecomb.bulkhead." + policy.getName();
   }
 
   @Override
@@ -53,6 +52,6 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
 
-    return registry.bulkhead(policy.name());
+    return registry.bulkhead(policy.getName());
   }
 }

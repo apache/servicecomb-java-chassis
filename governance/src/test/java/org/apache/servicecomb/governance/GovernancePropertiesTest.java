@@ -120,7 +120,6 @@ public class GovernancePropertiesTest {
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assert.assertEquals(1, matchers.size());
     Matcher matcher = matchers.get(0);
-    Assert.assertEquals("match0", matcher.getName());
     Assert.assertEquals("/hello", matcher.getApiPath().get("exact"));
   }
 
@@ -143,27 +142,21 @@ public class GovernancePropertiesTest {
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assert.assertEquals(1, matchers.size());
     Matcher matcher = matchers.get(0);
-    Assert.assertEquals("match0", matcher.getName());
     Assert.assertEquals("/hello2", matcher.getApiPath().get("exact"));
 
     demoRateLimiting = markers.get("demo-rateLimiting2");
     matchers = demoRateLimiting.getMatches();
     Assert.assertEquals(1, matchers.size());
     matcher = matchers.get(0);
-    Assert.assertEquals("match0", matcher.getName());
     Assert.assertEquals("/hello2", matcher.getApiPath().get("exact"));
   }
 
   @Test
   public void test_bulkhead_properties_changed() {
-    dynamicValues.put("servicecomb.bulkhead.bulkhead0", "rules:\n"
-        + "  match: demo-bulkhead.xx\n"
-        + "  precedence: 100\n"
+    dynamicValues.put("servicecomb.bulkhead.demo-bulkhead", "rules:\n"
         + "maxConcurrentCalls: 2\n"
         + "maxWaitDuration: 2000");
     dynamicValues.put("servicecomb.bulkhead.bulkhead1", "rules:\n"
-        + "  match: demo-bulkhead.xx\n"
-        + "  precedence: 100\n"
         + "maxConcurrentCalls: 3\n"
         + "maxWaitDuration: 3000");
 
@@ -171,60 +164,48 @@ public class GovernancePropertiesTest {
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
-    BulkheadPolicy policy = policies.get("bulkhead0");
+    BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assert.assertEquals(2, policy.getMaxConcurrentCalls());
     Assert.assertEquals(2000, policy.getMaxWaitDuration());
-    Assert.assertEquals("demo-bulkhead.xx", policy.getRules().getMatch());
-    Assert.assertEquals(100, policy.getRules().getPrecedence());
 
     policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
     policy = policies.get("bulkhead1");
     Assert.assertEquals(3, policy.getMaxConcurrentCalls());
     Assert.assertEquals(3000, policy.getMaxWaitDuration());
-    Assert.assertEquals("demo-bulkhead.xx", policy.getRules().getMatch());
-    Assert.assertEquals(100, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_bulkhead_properties_successfully_loaded() {
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    BulkheadPolicy policy = policies.get("bulkhead0");
+    BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assert.assertEquals(1, policy.getMaxConcurrentCalls());
     Assert.assertEquals(3000, policy.getMaxWaitDuration());
-    Assert.assertEquals("demo-bulkhead.xx", policy.getRules().getMatch());
-    Assert.assertEquals(100, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_circuit_breaker_properties_successfully_loaded() {
     Map<String, CircuitBreakerPolicy> policies = circuitBreakerProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    CircuitBreakerPolicy policy = policies.get("circuitBreaker0");
+    CircuitBreakerPolicy policy = policies.get("demo-circuitBreaker");
     Assert.assertEquals(2, policy.getMinimumNumberOfCalls());
     Assert.assertEquals(2, policy.getSlidingWindowSize());
-    Assert.assertEquals("demo-circuitBreaker.xx", policy.getRules().getMatch());
-    Assert.assertEquals(0, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_rate_limit_properties_successfully_loaded() {
     Map<String, RateLimitingPolicy> policies = rateLimitProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    RateLimitingPolicy policy = policies.get("rateLimiting0");
+    RateLimitingPolicy policy = policies.get("demo-rateLimiting");
     Assert.assertEquals(1, policy.getRate());
-    Assert.assertEquals("demo-rateLimiting.match0", policy.getRules().getMatch());
-    Assert.assertEquals(0, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_retry_properties_successfully_loaded() {
     Map<String, RetryPolicy> policies = retryProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    RetryPolicy policy = policies.get("retry0");
+    RetryPolicy policy = policies.get("demo-retry");
     Assert.assertEquals(3, policy.getMaxAttempts());
-    Assert.assertEquals("demo-retry.xx", policy.getRules().getMatch());
-    Assert.assertEquals(0, policy.getRules().getPrecedence());
   }
 }

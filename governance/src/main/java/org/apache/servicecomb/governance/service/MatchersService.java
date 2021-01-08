@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.governance.service;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 
 public interface MatchersService {
-  boolean checkMatch(GovHttpRequest govHttpRequest, String key);
+  boolean checkMatch(GovernanceRequest governanceRequest, String key);
 }

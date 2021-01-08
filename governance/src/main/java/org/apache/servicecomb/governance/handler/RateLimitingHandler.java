@@ -33,7 +33,7 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
 
   @Override
   protected String createKey(RateLimitingPolicy policy) {
-    return "servicecomb.rateLimiting." + policy.name();
+    return "servicecomb.rateLimiting." + policy.getName();
   }
 
   @Override
@@ -51,6 +51,6 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
         .timeoutDuration(Duration.ofMillis(policy.getTimeoutDuration()))
         .build();
     RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.of(config);
-    return rateLimiterRegistry.rateLimiter(policy.name());
+    return rateLimiterRegistry.rateLimiter(policy.getName());
   }
 }

@@ -19,7 +19,6 @@ package org.apache.servicecomb.governance.marker;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.marker.operator.RawOperator;
 
 public class Matcher {
@@ -28,15 +27,6 @@ public class Matcher {
   private RawOperator apiPath;
 
   private List<String> method;
-
-  private String name;
-
-  public boolean isValid() {
-    if (StringUtils.isEmpty(name)) {
-      return false;
-    }
-    return true;
-  }
 
   public Map<String, RawOperator> getHeaders() {
     return headers;
@@ -60,13 +50,5 @@ public class Matcher {
 
   public void setMethod(List<String> method) {
     this.method = method;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 }

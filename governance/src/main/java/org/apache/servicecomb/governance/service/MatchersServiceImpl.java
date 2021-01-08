@@ -19,7 +19,7 @@ package org.apache.servicecomb.governance.service;
 
 import java.util.Map;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.governance.marker.TrafficMarker;
 import org.apache.servicecomb.governance.properties.MatchProperties;
@@ -35,20 +35,15 @@ public class MatchersServiceImpl implements MatchersService {
   private MatchProperties matchProperties;
 
   @Override
-  public boolean checkMatch(GovHttpRequest govHttpRequest, String key) {
+  public boolean checkMatch(GovernanceRequest governanceRequest, String key) {
     Map<String, TrafficMarker> parsedEntity = matchProperties.getParsedEntity();
 
-    String[] subKeys = key.split("\\.");
-    if (subKeys.length != 2) {
-      return false;
-    }
-
-    TrafficMarker trafficMarker = parsedEntity.get(subKeys[0]);
+    TrafficMarker trafficMarker = parsedEntity.get(key);
 
     if (trafficMarker == null) {
       return false;
     }
 
-    return trafficMarker.checkMatch(govHttpRequest, requestProcessor, subKeys[1]);
+    return trafficMarker.checkMatch(governanceRequest, requestProcessor);
   }
 }

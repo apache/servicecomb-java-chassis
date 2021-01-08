@@ -20,6 +20,26 @@ package org.apache.servicecomb.governance.entity;
 /**
  * Indicates a object can be configure in configuration file or config center.
  */
-public interface Configurable {
-  boolean isValid();
+public abstract class Configurable {
+  protected String name;
+
+  protected String services;
+
+  public abstract boolean isValid();
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getServices() {
+    return this.services;
+  }
+
+  public void setServices(String services) {
+    this.services = services;
+  }
 }

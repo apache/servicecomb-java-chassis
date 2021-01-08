@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.service;
 
-import java.util.List;
-import java.util.Map;
+package org.apache.servicecomb.governance;
 
-import org.apache.servicecomb.governance.policy.Policy;
+public interface MicroserviceMeta {
+  String getName();
 
-public interface PolicyService {
-  Map<String, Policy> getAllPolicies(List<String> mark);
+  String getVersion();
 }

@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.junit.Assert;
@@ -56,7 +56,7 @@ public class FlowControlTest {
       return "test";
     });
 
-    GovHttpRequest request = new GovHttpRequest("testService", "1.0");
+    GovernanceRequest request = new GovernanceRequest();
     request.setUri("/hello");
     RateLimitingPolicy policy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
     Assert.assertNotNull(policy);

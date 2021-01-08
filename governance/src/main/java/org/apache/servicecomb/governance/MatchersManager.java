@@ -16,15 +16,12 @@
  */
 package org.apache.servicecomb.governance;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.apache.servicecomb.governance.service.MatchersService;
-import org.apache.servicecomb.governance.service.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,50 +32,26 @@ public class MatchersManager {
   private MatchersService matchersService;
 
   @Autowired
-  private PolicyService policyService;
-
-  @Autowired
   private InvocationContext invocationContext;
 
   public MatchersManager() {
   }
 
-  public <T extends AbstractPolicy> T match(GovHttpRequest request, Map<String, T> policies) {
-    List<T> matchedPolicy = new ArrayList<>();
-    List<String> matchedKeys = new ArrayList<>();
-
+  public <T extends AbstractPolicy> T match(GovernanceRequest request, Map<String, T> policies) {
     Map<String, Boolean> calculatedMatches = invocationContext.getCalculatedMatches();
-    calculatedMatches.forEach((k, v) -> {
-      if (v) {
-        matchedKeys.add(k);
-      }
-    });
 
     for (Entry<String, T> entry : policies.entrySet()) {
       T policy = entry.getValue();
 
-      if (policy.match(matchedKeys)) {
-        matchedPolicy.add(policy);
-        continue;
+      if (calculatedMatches.containsKey(entry.getKey())) {
+        return policy;
       }
 
-      List<String> parsedMatches = policy.getParsedMatch();
-      if (parsedMatches != null) {
-        parsedMatches.stream().forEach(key -> {
-          if (!calculatedMatches.containsKey(key)) {
-            boolean keyMatch = matchersService.checkMatch(request, key);
-            invocationContext.addMatch(key, keyMatch);
-            if (keyMatch) {
-              matchedPolicy.add(policy);
-            }
-          }
-        });
+      boolean keyMatch = matchersService.checkMatch(request, entry.getKey());
+      invocationContext.addMatch(entry.getKey(), keyMatch);
+      if (keyMatch) {
+        return policy;
       }
-    }
-
-    if (matchedPolicy.size() > 0) {
-      matchedPolicy.sort(AbstractPolicy::compare);
-      return matchedPolicy.get(0);
     }
     return null;
   }

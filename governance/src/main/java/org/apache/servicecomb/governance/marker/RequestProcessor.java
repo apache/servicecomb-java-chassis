@@ -32,7 +32,7 @@ public class RequestProcessor {
   @Autowired
   private Map<String, MatchOperator> operatorMap;
 
-  public boolean match(GovHttpRequest request, Matcher matcher) {
+  public boolean match(GovernanceRequest request, Matcher matcher) {
     if ((matcher.getMethod() != null && !matcher.getMethod().contains(request.getMethod())) ||
         (matcher.getApiPath() != null && !operatorMatch(request.getUri(), matcher.getApiPath()))) {
       return false;
