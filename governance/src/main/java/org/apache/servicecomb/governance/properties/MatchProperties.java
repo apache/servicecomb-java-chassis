@@ -31,9 +31,4 @@ public class MatchProperties extends GovernanceProperties<TrafficMarker> {
   public Class<TrafficMarker> getEntityClass() {
     return TrafficMarker.class;
   }
-
-  @Override
-  protected void setName(TrafficMarker value, String key) {
-    // do nothing
-  }
 }

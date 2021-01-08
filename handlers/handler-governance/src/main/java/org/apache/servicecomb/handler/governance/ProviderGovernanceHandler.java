@@ -28,7 +28,7 @@ import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
@@ -71,7 +71,7 @@ public class ProviderGovernanceHandler implements Handler {
 
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovHttpRequest request = createGovHttpRequest(invocation);
+    GovernanceRequest request = createGovHttpRequest(invocation);
 
     try {
       ServiceCombInvocationContext.setInvocationContext(invocation);
@@ -108,14 +108,14 @@ public class ProviderGovernanceHandler implements Handler {
     });
   }
 
-  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
     BulkheadPolicy bulkheadPolicy = matchersManager.match(request, bulkheadProperties.getParsedEntity());
     if (bulkheadPolicy != null) {
       dcs.withBulkhead(bulkheadHandler.getActuator(bulkheadPolicy));
     }
   }
 
-  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
     CircuitBreakerPolicy circuitBreakerPolicy = matchersManager
         .match(request, circuitBreakerProperties.getParsedEntity());
     if (circuitBreakerPolicy != null) {
@@ -123,7 +123,7 @@ public class ProviderGovernanceHandler implements Handler {
     }
   }
 
-  private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+  private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
     RateLimitingPolicy rateLimitingPolicy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
     if (rateLimitingPolicy != null) {
       dcs.withRateLimiter(rateLimitingHandler.getActuator(rateLimitingPolicy));
@@ -151,9 +151,8 @@ public class ProviderGovernanceHandler implements Handler {
     };
   }
 
-  private GovHttpRequest createGovHttpRequest(Invocation invocation) {
-    GovHttpRequest request = new GovHttpRequest(RegistrationManager.INSTANCE.getMicroservice().getServiceName(),
-        RegistrationManager.INSTANCE.getMicroservice().getVersion());
+  private GovernanceRequest createGovHttpRequest(Invocation invocation) {
+    GovernanceRequest request = new GovernanceRequest();
     request.setUri(invocation.getSchemaId() + "." + invocation.getOperationName());
     request.setMethod(invocation.getOperationMeta().getHttpMethod());
     request.setHeaders(invocation.getContext());

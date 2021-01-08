@@ -33,10 +33,9 @@ import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.handler.RetryHandler;
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.apache.servicecomb.governance.properties.RetryProperties;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ public class ConsumerGovernanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovHttpRequest request = createGovHttpRequest(invocation);
+    GovernanceRequest request = createGovHttpRequest(invocation);
 
     try {
       ServiceCombInvocationContext.setInvocationContext(invocation);
@@ -117,7 +116,7 @@ public class ConsumerGovernanceHandler implements Handler {
     });
   }
 
-  private void addRetry(DecorateCompletionStage<Response> dcs, GovHttpRequest request) {
+  private void addRetry(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
     RetryPolicy retryPolicy = matchersManager.match(request, retryProperties.getParsedEntity());
     if (retryPolicy != null) {
       dcs.withRetry(retryHandler.getActuator(retryPolicy), RETRY_POOL);
@@ -146,9 +145,8 @@ public class ConsumerGovernanceHandler implements Handler {
     };
   }
 
-  private GovHttpRequest createGovHttpRequest(Invocation invocation) {
-    GovHttpRequest request = new GovHttpRequest(RegistrationManager.INSTANCE.getMicroservice().getServiceName(),
-        RegistrationManager.INSTANCE.getMicroservice().getVersion());
+  private GovernanceRequest createGovHttpRequest(Invocation invocation) {
+    GovernanceRequest request = new GovernanceRequest();
     request.setUri(invocation.getSchemaId() + "." + invocation.getOperationName());
     request.setMethod(invocation.getOperationMeta().getHttpMethod());
     request.setHeaders(invocation.getContext());

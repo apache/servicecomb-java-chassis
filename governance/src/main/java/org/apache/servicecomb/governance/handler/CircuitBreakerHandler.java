@@ -33,7 +33,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
 
   @Override
   protected String createKey(CircuitBreakerPolicy policy) {
-    return "servicecomb.circuitBreaker." + policy.name();
+    return "servicecomb.circuitBreaker." + policy.getName();
   }
 
   @Override
@@ -63,6 +63,6 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         .slidingWindowSize(policy.getSlidingWindowSize())
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
-    return circuitBreakerRegistry.circuitBreaker(policy.name(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(policy.getName(), circuitBreakerConfig);
   }
 }

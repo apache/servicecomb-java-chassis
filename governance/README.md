@@ -1,4 +1,4 @@
-# About Deployment Module
+# About Governance Module
 
 Governance module provides an abstraction on how to describe governance instructions for commonly used
 different microservice frameworks, like Java Chassis, Go Chassis, Spring Cloud, Dubbo, etc. 

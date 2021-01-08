@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance.properties;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.servicecomb.governance.MicroserviceMeta;
 import org.apache.servicecomb.governance.entity.Configurable;
 import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.EventManager;
@@ -54,6 +56,9 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
 
   @Autowired
   protected Environment environment;
+
+  @Autowired
+  private MicroserviceMeta microserviceMeta;
 
   protected Map<String, T> parsedEntity;
 
@@ -153,8 +158,6 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
 
   protected abstract Class<T> getEntityClass();
 
-  protected abstract void setName(T value, String key);
-
   protected T parseEntityItem(String key, String value) {
     if (StringUtils.isEmpty(value)) {
       return null;
@@ -163,10 +166,14 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
     try {
       Yaml entityParser = new Yaml(new Constructor(new TypeDescription(entityClass, entityClass)), representer);
       T result = entityParser.loadAs(value, entityClass);
-      setName(result, key);
+      result.setName(key);
 
       if (!result.isValid()) {
         LOGGER.warn("Entity configuration is not valid and ignored. Key [{}], value [{}]", key, value);
+        return null;
+      }
+      if (!servicesMatch(result.getServices())) {
+        LOGGER.info("Configuration belongs to other service is ignored. Key [{}]", key);
         return null;
       }
       return result;
@@ -174,5 +181,23 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
       LOGGER.error("governance config yaml is illegal : {}", e.getMessage());
     }
     return null;
+  }
+
+  private boolean servicesMatch(String services) {
+    if (StringUtils.isEmpty(services)) {
+      return true;
+    }
+
+    return Arrays.stream(services.split(",")).anyMatch(ser -> {
+      String[] serviceAndVersion = ser.split(":");
+      if (serviceAndVersion.length == 1) {
+        return microserviceMeta.getName().equals(serviceAndVersion[0]);
+      } else if (serviceAndVersion.length == 2) {
+        return microserviceMeta.getName().equals(serviceAndVersion[0]) && microserviceMeta.getVersion()
+            .equals(serviceAndVersion[1]);
+      } else {
+        return false;
+      }
+    });
   }
 }

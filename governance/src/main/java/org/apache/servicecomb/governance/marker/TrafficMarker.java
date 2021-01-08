@@ -16,37 +16,21 @@
  */
 package org.apache.servicecomb.governance.marker;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
 
-public class TrafficMarker implements Configurable {
-
-  private String services;
+public class TrafficMarker extends Configurable {
+  private String name;
 
   private List<Matcher> matches;
-
-  public String getServices() {
-    return services;
-  }
 
   @Override
   public boolean isValid() {
     if (matches == null || matches.isEmpty()) {
       return false;
     }
-    for (Matcher matcher : matches) {
-      if (!matcher.isValid()) {
-        return false;
-      }
-    }
     return true;
-  }
-
-  public void setServices(String services) {
-    this.services = services;
   }
 
   public List<Matcher> getMatches() {
@@ -57,31 +41,18 @@ public class TrafficMarker implements Configurable {
     this.matches = matches;
   }
 
-  public boolean checkMatch(GovHttpRequest govHttpRequest, RequestProcessor requestProcessor, String name) {
-    if (!servicesMatch(govHttpRequest)) {
-      return false;
-    }
-
-    return this.matches.stream().anyMatch(match ->
-        match.getName().equals(name) && requestProcessor.match(govHttpRequest, match));
+  @Override
+  public String getName() {
+    return name;
   }
 
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
 
-  private boolean servicesMatch(GovHttpRequest govHttpRequest) {
-    if (StringUtils.isEmpty(services)) {
-      return true;
-    }
-
-    return Arrays.stream(services.split(",")).anyMatch(ser -> {
-      String[] serviceAndVersion = ser.split(":");
-      if (serviceAndVersion.length == 1) {
-        return govHttpRequest.getServiceName().equals(serviceAndVersion[0]);
-      } else if (serviceAndVersion.length == 2) {
-        return govHttpRequest.getServiceName().equals(serviceAndVersion[0]) && govHttpRequest.getVersion()
-            .equals(serviceAndVersion[1]);
-      } else {
-        return false;
-      }
-    });
+  public boolean checkMatch(GovernanceRequest governanceRequest, RequestProcessor requestProcessor) {
+    return this.matches.stream().anyMatch(match ->
+        this.name.equals(name) && requestProcessor.match(governanceRequest, match));
   }
 }

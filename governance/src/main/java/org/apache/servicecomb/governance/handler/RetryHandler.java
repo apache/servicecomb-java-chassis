@@ -43,7 +43,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   @Override
   protected String createKey(RetryPolicy policy) {
-    return "servicecomb.retry." + policy.name();
+    return "servicecomb.retry." + policy.getName();
   }
 
   @Override
@@ -65,7 +65,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
         .build();
 
     RetryRegistry registry = RetryRegistry.of(config);
-    return registry.retry(retryPolicy.name());
+    return registry.retry(retryPolicy.getName());
   }
 
   private Predicate<Object> getPredicate(List<Integer> statusList) {

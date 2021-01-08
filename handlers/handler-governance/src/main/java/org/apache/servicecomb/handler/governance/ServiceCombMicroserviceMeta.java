@@ -14,17 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.policy;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.governance.entity.Configurable;
+package org.apache.servicecomb.handler.governance;
 
-public abstract class AbstractPolicy extends Configurable implements Policy {
+import org.apache.servicecomb.governance.MicroserviceMeta;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ServiceCombMicroserviceMeta implements MicroserviceMeta {
   @Override
-  public boolean isValid() {
-    if (StringUtils.isEmpty(name)) {
-      return false;
-    }
-    return true;
+  public String getName() {
+    return RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+  }
+
+  @Override
+  public String getVersion() {
+    return RegistrationManager.INSTANCE.getMicroservice().getVersion();
   }
 }

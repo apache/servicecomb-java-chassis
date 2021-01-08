@@ -23,8 +23,4 @@ public abstract class PolicyProperties<T extends AbstractPolicy> extends Governa
   protected PolicyProperties(String key) {
     super(key);
   }
-
-  protected void setName(T value, String key) {
-    value.setName(key);
-  }
 }
