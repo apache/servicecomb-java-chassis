@@ -130,11 +130,11 @@ public class TestDoSFix {
 
   @Test
   public void testChar() {
-    batFastFail(char.class, InputCoercionException.class, MismatchedInputException.class);
-    batFastFail(Character.class, InputCoercionException.class, MismatchedInputException.class);
+    batFastFail(char.class, InputCoercionException.class, InvalidFormatException.class);
+    batFastFail(Character.class, InputCoercionException.class, InvalidFormatException.class);
 
-    batFastFail("cValue", JsonMappingException.class, MismatchedInputException.class);
-    batFastFail("cObjValue", JsonMappingException.class, MismatchedInputException.class);
+    batFastFail("cValue", JsonMappingException.class, InvalidFormatException.class);
+    batFastFail("cObjValue", JsonMappingException.class, InvalidFormatException.class);
   }
 
   @Test

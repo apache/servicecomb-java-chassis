@@ -43,11 +43,11 @@ public class TestRestObjectMapper {
     // must read/write ISO 8061 dates
     Date date = mapper.readValue("\"2017-07-21T17:32:28Z\"".getBytes(), Date.class);
     String dateStr = mapper.writeValueAsString(date);
-    Assert.assertEquals(dateStr, "\"2017-07-21T17:32:28.000+0000\"");
+    Assert.assertEquals(dateStr, "\"2017-07-21T17:32:28.000+00:00\"");
 
     date = mapper.readValue("\"2017-07-21T17:32:28.320+0100\"".getBytes(), Date.class);
     dateStr = mapper.writeValueAsString(date);
-    Assert.assertEquals(dateStr, "\"2017-07-21T16:32:28.320+0000\""); // one hour later
+    Assert.assertEquals(dateStr, "\"2017-07-21T16:32:28.320+00:00\""); // one hour later
   }
 
   @Test
