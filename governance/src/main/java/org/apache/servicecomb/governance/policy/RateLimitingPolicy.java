@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import org.apache.servicecomb.governance.handler.RateLimitingHandler;
-
 public class RateLimitingPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_TIMEOUT_DURATION = 0;
@@ -72,11 +70,6 @@ public class RateLimitingPolicy extends AbstractPolicy {
       return false;
     }
     return super.isValid();
-  }
-
-  @Override
-  public String handler() {
-    return RateLimitingHandler.class.getSimpleName();
   }
 
   @Override

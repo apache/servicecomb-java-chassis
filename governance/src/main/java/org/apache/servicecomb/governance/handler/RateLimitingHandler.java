@@ -18,22 +18,33 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
+import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 
-@Component("RateLimitingHandler")
+@Component
 public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, RateLimitingPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingHandler.class);
+
+  @Autowired
+  private RateLimitProperties rateLimitProperties;
 
   @Override
   protected String createKey(RateLimitingPolicy policy) {
     return "servicecomb.rateLimiting." + policy.getName();
+  }
+
+  @Override
+  public RateLimitingPolicy matchPolicy(GovernanceRequest governanceRequest) {
+    return matchersManager.match(governanceRequest, rateLimitProperties.getParsedEntity());
   }
 
   @Override

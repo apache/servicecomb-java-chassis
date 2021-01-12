@@ -31,11 +31,8 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.policy.RetryPolicy;
-import org.apache.servicecomb.governance.properties.RetryProperties;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -43,15 +40,12 @@ import org.slf4j.LoggerFactory;
 
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
+import io.github.resilience4j.retry.Retry;
 
 public class ConsumerGovernanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerGovernanceHandler.class);
 
-  private MatchersManager matchersManager = BeanUtils.getBean(MatchersManager.class);
-
   private RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
-
-  private RetryProperties retryProperties = BeanUtils.getBean(RetryProperties.class);
 
   private static final ScheduledExecutorService RETRY_POOL = Executors.newScheduledThreadPool(2, new ThreadFactory() {
     private AtomicInteger count = new AtomicInteger(0);
@@ -117,9 +111,9 @@ public class ConsumerGovernanceHandler implements Handler {
   }
 
   private void addRetry(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    RetryPolicy retryPolicy = matchersManager.match(request, retryProperties.getParsedEntity());
-    if (retryPolicy != null) {
-      dcs.withRetry(retryHandler.getActuator(retryPolicy), RETRY_POOL);
+    Retry retry = retryHandler.getActuator(request);
+    if (retry != null) {
+      dcs.withRetry(retry, RETRY_POOL);
     }
   }
 

@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,9 +57,8 @@ public class FlowControlTest {
 
     GovernanceRequest request = new GovernanceRequest();
     request.setUri("/hello");
-    RateLimitingPolicy policy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
-    Assert.assertNotNull(policy);
-    RateLimiter rateLimiter = rateLimitingHandler.getActuator(policy);
+
+    RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
     ds.withRateLimiter(rateLimiter);
 
     Assert.assertEquals("test", ds.get());
