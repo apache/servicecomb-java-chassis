@@ -71,9 +71,6 @@ public class RouterInvokeFilter implements HttpServerFilter {
     if (!isHaveHeadersRule()) {
       return null;
     }
-    if (!RouterRuleCache.isServerContainRule(invocation.getMicroserviceName())) {
-      return null;
-    }
     if (loadHeaders()) {
       Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
       try {
