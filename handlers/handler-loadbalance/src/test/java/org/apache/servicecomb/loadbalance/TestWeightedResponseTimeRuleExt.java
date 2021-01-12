@@ -53,7 +53,7 @@ public class TestWeightedResponseTimeRuleExt {
   }
 
   @Test
-  public void testWeighed() {
+  public void testWeighed() throws InterruptedException {
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
     LoadBalancer loadBalancer = new LoadBalancer(rule, "testService");
     List<ServiceCombServer> servers = new ArrayList<>();
@@ -73,10 +73,12 @@ public class TestWeightedResponseTimeRuleExt {
       } else {
         server2.incrementAndGet();
       }
+      //此处是为了控制请求的时间窗口大小，使得策略中1分钟大小的时间窗口生效，并产生变化
+      Thread.sleep(1);
     }
     double percent = (double) server1.get() / (server2.get() + server1.get());
     System.out.println("percent" + percent);
-    Assert.assertEquals("actually percent: " + percent, 0.70d < percent, percent < 0.90d);
+    Assert.assertEquals("actually percent: " + percent, 0.50d < percent, percent < 0.90d);
   }
 
   @Test
