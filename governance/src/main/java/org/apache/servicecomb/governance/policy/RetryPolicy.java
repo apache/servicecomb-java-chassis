@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.springframework.util.StringUtils;
 
 public class RetryPolicy extends AbstractPolicy {
@@ -72,11 +71,6 @@ public class RetryPolicy extends AbstractPolicy {
       return false;
     }
     return super.isValid();
-  }
-
-  @Override
-  public String handler() {
-    return RetryHandler.class.getSimpleName();
   }
 
   @Override

@@ -20,19 +20,31 @@ package org.apache.servicecomb.governance.handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
 
-public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY> {
+public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
   private Map<String, PROCESSOR> map = new ConcurrentHashMap<>();
+
+  @Autowired
+  protected MatchersManager matchersManager;
 
   protected AbstractGovernanceHandler() {
     EventManager.register(this);
   }
 
-  public <R> PROCESSOR getActuator(POLICY policy) {
+  public <R> PROCESSOR getActuator(GovernanceRequest governanceRequest) {
+    POLICY policy = matchPolicy(governanceRequest);
+    if (policy == null) {
+      return null;
+    }
+
     String key = createKey(policy);
     PROCESSOR processor = map.get(key);
     if (processor == null) {
@@ -43,6 +55,8 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY> {
   }
 
   abstract protected String createKey(POLICY policy);
+
+  abstract protected POLICY matchPolicy(GovernanceRequest governanceRequest);
 
   abstract protected PROCESSOR createProcessor(POLICY policy);
 

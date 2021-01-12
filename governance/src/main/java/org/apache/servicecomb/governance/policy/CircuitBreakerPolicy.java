@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.springframework.util.StringUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
@@ -154,11 +153,6 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public void setSlidingWindowSize(int slidingWindowSize) {
     this.slidingWindowSize = slidingWindowSize;
-  }
-
-  @Override
-  public String handler() {
-    return CircuitBreakerHandler.class.getSimpleName();
   }
 
   @Override

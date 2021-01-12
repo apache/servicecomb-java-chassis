@@ -19,22 +19,33 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.BulkheadPolicy;
+import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
 
-@Component("BulkheadHandler")
+@Component
 public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, BulkheadPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BulkheadHandler.class);
+
+  @Autowired
+  private BulkheadProperties bulkheadProperties;
 
   @Override
   protected String createKey(BulkheadPolicy policy) {
     return "servicecomb.bulkhead." + policy.getName();
+  }
+
+  @Override
+  public BulkheadPolicy matchPolicy(GovernanceRequest governanceRequest) {
+    return matchersManager.match(governanceRequest, bulkheadProperties.getParsedEntity());
   }
 
   @Override

@@ -24,18 +24,10 @@ import java.util.function.Supplier;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.policy.BulkheadPolicy;
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
-import org.apache.servicecomb.governance.properties.BulkheadProperties;
-import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
-import org.apache.servicecomb.governance.properties.RateLimitProperties;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -43,28 +35,23 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
 public class ProviderGovernanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderGovernanceHandler.class);
 
-  private MatchersManager matchersManager = BeanUtils.getBean(MatchersManager.class);
-
   private RateLimitingHandler rateLimitingHandler = BeanUtils.getBean(RateLimitingHandler.class);
-
-  private RateLimitProperties rateLimitProperties = BeanUtils.getBean(RateLimitProperties.class);
 
   private CircuitBreakerHandler circuitBreakerHandler = BeanUtils.getBean(CircuitBreakerHandler.class);
 
-  private CircuitBreakerProperties circuitBreakerProperties = BeanUtils.getBean(CircuitBreakerProperties.class);
-
   private BulkheadHandler bulkheadHandler = BeanUtils.getBean(BulkheadHandler.class);
-
-  private BulkheadProperties bulkheadProperties = BeanUtils.getBean(BulkheadProperties.class);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -109,24 +96,23 @@ public class ProviderGovernanceHandler implements Handler {
   }
 
   private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    BulkheadPolicy bulkheadPolicy = matchersManager.match(request, bulkheadProperties.getParsedEntity());
-    if (bulkheadPolicy != null) {
-      dcs.withBulkhead(bulkheadHandler.getActuator(bulkheadPolicy));
+    Bulkhead bulkhead = bulkheadHandler.getActuator(request);
+    if (bulkhead != null) {
+      dcs.withBulkhead(bulkhead);
     }
   }
 
   private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    CircuitBreakerPolicy circuitBreakerPolicy = matchersManager
-        .match(request, circuitBreakerProperties.getParsedEntity());
-    if (circuitBreakerPolicy != null) {
-      dcs.withCircuitBreaker(circuitBreakerHandler.getActuator(circuitBreakerPolicy));
+    CircuitBreaker circuitBreaker = circuitBreakerHandler.getActuator(request);
+    if (circuitBreaker != null) {
+      dcs.withCircuitBreaker(circuitBreaker);
     }
   }
 
   private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    RateLimitingPolicy rateLimitingPolicy = matchersManager.match(request, rateLimitProperties.getParsedEntity());
-    if (rateLimitingPolicy != null) {
-      dcs.withRateLimiter(rateLimitingHandler.getActuator(rateLimitingPolicy));
+    RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
+    if (rateLimiter != null) {
+      dcs.withRateLimiter(rateLimiter);
     }
   }
 

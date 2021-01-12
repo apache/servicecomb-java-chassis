@@ -19,7 +19,7 @@ package org.apache.servicecomb.governance.policy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
 
-public abstract class AbstractPolicy extends Configurable implements Policy {
+public abstract class AbstractPolicy extends Configurable {
   @Override
   public boolean isValid() {
     if (StringUtils.isEmpty(name)) {
