@@ -83,7 +83,8 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
     boolean needRandom = false;
     for (ServiceCombServer server : servers) {
       ServerStats serverStats = loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
-      double avgTime = serverStats.getResponseTimeAvg();
+      //getResponseTimeAvgRecent()按照时间窗口统计，时间窗口大小为1分钟；getResponseTimeAvg()一直累积
+      double avgTime = serverStats.getResponseTimeAvgRecent();
       if (!needRandom && avgTime > MIN_GAP) {
         needRandom = true;
       }
