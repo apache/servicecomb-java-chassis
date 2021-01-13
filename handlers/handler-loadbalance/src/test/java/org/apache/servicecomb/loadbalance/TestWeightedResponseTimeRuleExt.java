@@ -68,7 +68,7 @@ public class TestWeightedResponseTimeRuleExt {
 
     AtomicInteger serverCounter1 = new AtomicInteger(0);
     AtomicInteger serverCounter2 = new AtomicInteger(0);
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 2000; i++) {
       loadBalancer.getLoadBalancerStats().noteResponseTime(server1, 20);
       loadBalancer.getLoadBalancerStats().noteResponseTime(server2, 400);
       Thread.sleep(1);
@@ -85,8 +85,8 @@ public class TestWeightedResponseTimeRuleExt {
     serverCounter1.set(0);
     serverCounter2.set(0);
 
-    Thread.sleep(2000);
-    for (int i = 0; i < 1000; i++) {
+    Thread.sleep(1000);
+    for (int i = 0; i < 2000; i++) {
       loadBalancer.getLoadBalancerStats().noteResponseTime(server1, 20);
       loadBalancer.getLoadBalancerStats().noteResponseTime(server2, 20);
       Thread.sleep(1);
