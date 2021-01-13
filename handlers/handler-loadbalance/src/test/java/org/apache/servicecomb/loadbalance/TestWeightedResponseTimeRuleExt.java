@@ -62,7 +62,7 @@ public class TestWeightedResponseTimeRuleExt {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
       Mockito.when(server.toString()).thenReturn("server " + i);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 20 * Math.pow(10, i + 1));
+      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 20 * Math.pow(20, i + 1));
     }
 
     AtomicInteger server1 = new AtomicInteger(0);
