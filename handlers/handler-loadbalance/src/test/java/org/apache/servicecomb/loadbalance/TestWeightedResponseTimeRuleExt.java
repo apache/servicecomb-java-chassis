@@ -62,12 +62,12 @@ public class TestWeightedResponseTimeRuleExt {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
       Mockito.when(server.toString()).thenReturn("server " + i);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 20 * Math.pow(4, i + 1));
+      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 20 * Math.pow(10, i + 1));
     }
 
     AtomicInteger server1 = new AtomicInteger(0);
     AtomicInteger server2 = new AtomicInteger(0);
-    for (int i = 0; i < 2000; i++) {
+    for (int i = 0; i < 1000; i++) {
       if (rule.choose(servers, invocation).toString().equals("server 0")) {
         server1.incrementAndGet();
       } else {
@@ -78,11 +78,11 @@ public class TestWeightedResponseTimeRuleExt {
     }
     double percent = (double) server1.get() / (server2.get() + server1.get());
     System.out.println("percent" + percent);
-    Assert.assertEquals("actually percent: " + percent, 0.50d < percent, percent < 0.90d);
+    Assert.assertEquals("actually percent: " + percent, 0.70d < percent, percent < 0.90d);
     server1.set(0);
     server2.set(0);
     Thread.sleep(1000);
-    for (int i = 0; i < 2000; i++) {
+    for (int i = 0; i < 1000; i++) {
       if (rule.choose(servers, invocation).toString().equals("server 0")) {
         server1.incrementAndGet();
       } else {
@@ -91,7 +91,7 @@ public class TestWeightedResponseTimeRuleExt {
     }
     percent = (double) server1.get() / (server2.get() + server1.get());
     System.out.println("percent" + percent);
-    Assert.assertEquals(0.50d, percent,0);
+    Assert.assertEquals(0.50d, percent, 0);
   }
 
   @Test
