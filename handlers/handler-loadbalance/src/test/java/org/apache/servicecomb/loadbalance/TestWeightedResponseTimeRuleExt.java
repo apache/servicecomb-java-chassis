@@ -79,6 +79,19 @@ public class TestWeightedResponseTimeRuleExt {
     double percent = (double) server1.get() / (server2.get() + server1.get());
     System.out.println("percent" + percent);
     Assert.assertEquals("actually percent: " + percent, 0.50d < percent, percent < 0.90d);
+    server1.set(0);
+    server2.set(0);
+    Thread.sleep(1000);
+    for (int i = 0; i < 2000; i++) {
+      if (rule.choose(servers, invocation).toString().equals("server 0")) {
+        server1.incrementAndGet();
+      } else {
+        server2.incrementAndGet();
+      }
+    }
+    percent = (double) server1.get() / (server2.get() + server1.get());
+    System.out.println("percent" + percent);
+    Assert.assertEquals(0.50d, percent,0);
   }
 
   @Test
