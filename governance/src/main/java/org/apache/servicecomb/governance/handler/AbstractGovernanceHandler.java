@@ -32,6 +32,8 @@ import com.google.common.eventbus.Subscribe;
 public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
   private Map<String, PROCESSOR> map = new ConcurrentHashMap<>();
 
+  private final Object lock = new Object();
+
   @Autowired
   protected MatchersManager matchersManager;
 
@@ -48,8 +50,13 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     String key = createKey(policy);
     PROCESSOR processor = map.get(key);
     if (processor == null) {
-      processor = createProcessor(policy);
-      map.put(key, processor);
+      synchronized (lock) {
+        processor = map.get(key);
+        if (processor == null) {
+          processor = createProcessor(policy);
+          map.put(key, processor);
+        }
+      }
     }
     return processor;
   }
