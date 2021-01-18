@@ -53,7 +53,3 @@ servicecomb:
     publisher.defaultLog:
       enabled: true
       endpoints.client.detail.enabled: true
-
-# inspector
-  inspector:
-    enabled: true
