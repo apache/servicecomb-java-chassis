@@ -27,6 +27,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>config-kie-client</artifactId>
+    <name>ServiceComb::Clients::Kie Client</name>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicecomb</groupId>
