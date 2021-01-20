@@ -15,26 +15,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>2.1.5-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
-  </parent>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <artifactId>huawei-cloud</artifactId>
-  <name>Java Chassis::Huawei Cloud</name>
-  <packaging>pom</packaging>
-  <modelVersion>4.0.0</modelVersion>
-
-  <modules>
-    <module>servicestage</module>
-    <module>environment</module>
-    <module>dtm</module>
-    <module>dashboard</module>
-  </modules>
-
-</project>
+    <bean id="monitorStarterListener" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.MonitorBootListener"></bean>
+    <bean id="dataFactory" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.DataFactory"></bean>
+    <bean id="healthmonitorDataProvider" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.HealthMonitorDataProvider"></bean>
+    <bean id="defaultMonitorDataPublisher" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.DefaultMonitorDataPublisher"></bean>
+</beans>
