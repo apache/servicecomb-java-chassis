@@ -80,12 +80,10 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
     for (String key : event.getChangedConfigurations()) {
       if (key.startsWith(configKey + ".")) {
-        // 删除的情况， 从配置文件读取配置。 需要保证 environment 已经刷新配置值。
-        T entityItem = parseEntityItem(key, environment.getProperty(key));
         String mapKey = key.substring((configKey + ".").length());
-        if (entityItem == null) {
-          parsedEntity.remove(mapKey);
-        } else {
+        parsedEntity.remove(mapKey);
+        T entityItem = parseEntityItem(key, environment.getProperty(key));
+        if (entityItem != null) {
           parsedEntity.put(mapKey, entityItem);
         }
       }
@@ -143,7 +141,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
 
   protected Map<String, T> parseEntity(Map<String, String> yamlEntity) {
     if (CollectionUtils.isEmpty(yamlEntity)) {
-      return Collections.emptyMap();
+      return new HashMap<>();
     }
 
     Map<String, T> resultMap = new HashMap<>();

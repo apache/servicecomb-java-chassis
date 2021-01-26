@@ -124,6 +124,22 @@ public class GovernancePropertiesTest {
   }
 
   @Test
+  public void test_match_properties_delete() {
+    Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
+    Assert.assertEquals(4, markers.size());
+    dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
+        + "  - apiPath:\n"
+        + "      exact: \"/hello2\"\n"
+        + "    name: match0");
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    markers = matchProperties.getParsedEntity();
+    Assert.assertEquals(5, markers.size());
+    tearDown();
+    markers = matchProperties.getParsedEntity();
+    Assert.assertEquals(4, markers.size());
+  }
+
+  @Test
   public void test_match_properties_changed() {
     dynamicValues.put("servicecomb.matchGroup.demo-rateLimiting", "matches:\n"
         + "  - apiPath:\n"

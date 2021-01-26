@@ -21,11 +21,15 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.governance.marker.operator.MatchOperator;
 import org.apache.servicecomb.governance.marker.operator.RawOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RequestProcessor {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
   private static final String OPERATOR_SUFFIX = "Operator";
 
@@ -55,7 +59,12 @@ public class RequestProcessor {
     }
 
     for (Entry<String, String> entry : rawOperator.entrySet()) {
-      if (!operatorMap.get(entry.getKey() + OPERATOR_SUFFIX).match(str, entry.getValue())) {
+      MatchOperator operator = operatorMap.get(entry.getKey() + OPERATOR_SUFFIX);
+      if (operator == null) {
+        LOGGER.error("unsupported operator:" + entry.getKey() + ", plz use one of :" + operatorMap.keySet().toString());
+        return false;
+      }
+      if (!operator.match(str, entry.getValue())) {
         return false;
       }
     }
