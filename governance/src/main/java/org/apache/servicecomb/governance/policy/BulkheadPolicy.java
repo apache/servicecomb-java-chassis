@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.governance.policy;
 
-import org.apache.servicecomb.governance.handler.BulkheadHandler;
-
 public class BulkheadPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_CONCURRENT_CALLS = 1000;
@@ -46,8 +44,14 @@ public class BulkheadPolicy extends AbstractPolicy {
   }
 
   @Override
-  public String handler() {
-    return BulkheadHandler.class.getSimpleName();
+  public boolean isValid() {
+    if (maxConcurrentCalls <= 0) {
+      return false;
+    }
+    if (maxWaitDuration < 0) {
+      return false;
+    }
+    return super.isValid();
   }
 
   @Override

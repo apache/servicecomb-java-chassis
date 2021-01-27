@@ -16,40 +16,15 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import java.util.Arrays;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.governance.entity.Configurable;
 
-public abstract class AbstractPolicy implements Policy {
-
-  private String name;
-
-  private GovRule rules;
-
-  public GovRule getRules() {
-    return rules;
-  }
-
-  public void setRules(GovRule rules) {
-    this.rules = rules;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+public abstract class AbstractPolicy extends Configurable {
   @Override
-  public boolean match(List<String> items) {
-    if (rules == null || rules.getMatch() == null) {
+  public boolean isValid() {
+    if (StringUtils.isEmpty(name)) {
       return false;
     }
-
-    List<String> configuredItems = Arrays.asList(rules.getMatch().split(","));
-
-    return items.stream().anyMatch(item -> configuredItems.contains(item));
-  }
-
-  @Override
-  public String name() {
-    return name;
+    return true;
   }
 }

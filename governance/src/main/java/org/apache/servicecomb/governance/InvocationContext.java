@@ -17,17 +17,10 @@
 
 package org.apache.servicecomb.governance;
 
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.stereotype.Component;
+public interface InvocationContext {
+  Map<String, Boolean> getCalculatedMatches();
 
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
-import org.apache.servicecomb.governance.service.MatchersService;
-
-@Component
-public class MockMatchersService implements MatchersService {
-  @Override
-  public List<String> getMatchedNames(GovHttpRequest govHttpRequest) {
-    return null;
-  }
+  void addMatch(String key, Boolean value);
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance.properties;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.servicecomb.governance.MicroserviceMeta;
+import org.apache.servicecomb.governance.entity.Configurable;
+import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.EventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,11 +46,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
-import org.apache.servicecomb.governance.event.EventManager;
 
-public abstract class GovProperties<T> implements InitializingBean {
-  private static final Logger LOGGER = LoggerFactory.getLogger(GovProperties.class);
+public abstract class GovernanceProperties<T extends Configurable> implements InitializingBean {
+  private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceProperties.class);
 
   private final Representer representer = new Representer();
 
@@ -54,11 +57,14 @@ public abstract class GovProperties<T> implements InitializingBean {
   @Autowired
   protected Environment environment;
 
+  @Autowired
+  private MicroserviceMeta microserviceMeta;
+
   protected Map<String, T> parsedEntity;
 
   protected Class<T> entityClass;
 
-  protected GovProperties(String key) {
+  protected GovernanceProperties(String key) {
     configKey = key;
     representer.getPropertyUtils().setSkipMissingProperties(true);
     EventManager.register(this);
@@ -74,12 +80,10 @@ public abstract class GovProperties<T> implements InitializingBean {
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
     for (String key : event.getChangedConfigurations()) {
       if (key.startsWith(configKey + ".")) {
-        // 删除的情况， 从配置文件读取配置。 需要保证 environment 已经刷新配置值。
-        T entityItem = parseEntityItem(environment.getProperty(key));
         String mapKey = key.substring((configKey + ".").length());
-        if (entityItem == null) {
-          parsedEntity.remove(mapKey);
-        } else {
+        parsedEntity.remove(mapKey);
+        T entityItem = parseEntityItem(key, environment.getProperty(key));
+        if (entityItem != null) {
           parsedEntity.put(mapKey, entityItem);
         }
       }
@@ -137,12 +141,12 @@ public abstract class GovProperties<T> implements InitializingBean {
 
   protected Map<String, T> parseEntity(Map<String, String> yamlEntity) {
     if (CollectionUtils.isEmpty(yamlEntity)) {
-      return Collections.emptyMap();
+      return new HashMap<>();
     }
 
     Map<String, T> resultMap = new HashMap<>();
     for (Entry<String, String> entry : yamlEntity.entrySet()) {
-      T marker = parseEntityItem(entry.getValue());
+      T marker = parseEntityItem(entry.getKey(), entry.getValue());
       if (marker != null) {
         resultMap.put(entry.getKey(), marker);
       }
@@ -152,17 +156,46 @@ public abstract class GovProperties<T> implements InitializingBean {
 
   protected abstract Class<T> getEntityClass();
 
-  protected T parseEntityItem(String value) {
+  protected T parseEntityItem(String key, String value) {
     if (StringUtils.isEmpty(value)) {
       return null;
     }
 
     try {
       Yaml entityParser = new Yaml(new Constructor(new TypeDescription(entityClass, entityClass)), representer);
-      return entityParser.loadAs(value, entityClass);
+      T result = entityParser.loadAs(value, entityClass);
+      result.setName(key);
+
+      if (!result.isValid()) {
+        LOGGER.warn("Entity configuration is not valid and ignored. Key [{}], value [{}]", key, value);
+        return null;
+      }
+      if (!servicesMatch(result.getServices())) {
+        LOGGER.info("Configuration belongs to other service is ignored. Key [{}]", key);
+        return null;
+      }
+      return result;
     } catch (YAMLException e) {
       LOGGER.error("governance config yaml is illegal : {}", e.getMessage());
     }
     return null;
+  }
+
+  private boolean servicesMatch(String services) {
+    if (StringUtils.isEmpty(services)) {
+      return true;
+    }
+
+    return Arrays.stream(services.split(",")).anyMatch(ser -> {
+      String[] serviceAndVersion = ser.split(":");
+      if (serviceAndVersion.length == 1) {
+        return microserviceMeta.getName().equals(serviceAndVersion[0]);
+      } else if (serviceAndVersion.length == 2) {
+        return microserviceMeta.getName().equals(serviceAndVersion[0]) && microserviceMeta.getVersion()
+            .equals(serviceAndVersion[1]);
+      } else {
+        return false;
+      }
+    });
   }
 }

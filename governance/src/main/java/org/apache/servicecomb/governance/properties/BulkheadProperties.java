@@ -21,7 +21,7 @@ import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BulkheadProperties extends GovProperties<BulkheadPolicy> {
+public class BulkheadProperties extends PolicyProperties<BulkheadPolicy> {
   public static final String MATCH_BULKHEAD__KEY = "servicecomb.bulkhead";
 
   public BulkheadProperties() {

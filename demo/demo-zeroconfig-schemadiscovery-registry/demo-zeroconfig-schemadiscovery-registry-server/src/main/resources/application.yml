@@ -27,3 +27,9 @@ service_description:
 servicecomb:
   rest:
     address: 0.0.0.0:8080
+  handler:
+    chain:
+      Consumer:
+        default: governance-consumer,loadbalance
+      Provider:
+        default: governance-provider

@@ -16,16 +16,14 @@
  */
 package org.apache.servicecomb.governance;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.servicecomb.governance.policy.Policy;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.apache.servicecomb.governance.service.MatchersService;
-import org.apache.servicecomb.governance.service.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.apache.servicecomb.governance.marker.GovHttpRequest;
 
 @Component
 public class MatchersManager {
@@ -34,19 +32,27 @@ public class MatchersManager {
   private MatchersService matchersService;
 
   @Autowired
-  private PolicyService policyService;
+  private InvocationContext invocationContext;
 
   public MatchersManager() {
   }
 
-  public Map<String, Policy> match(GovHttpRequest request) {
-    /**
-     * 1.获取该请求携带的marker
-     */
-    List<String> marks = matchersService.getMatchedNames(request);
-    /**
-     * 2.通过 marker获取到所有的policy
-     */
-    return policyService.getAllPolicies(marks);
+  public <T extends AbstractPolicy> T match(GovernanceRequest request, Map<String, T> policies) {
+    Map<String, Boolean> calculatedMatches = invocationContext.getCalculatedMatches();
+
+    for (Entry<String, T> entry : policies.entrySet()) {
+      T policy = entry.getValue();
+
+      if (calculatedMatches.containsKey(entry.getKey())) {
+        return policy;
+      }
+
+      boolean keyMatch = matchersService.checkMatch(request, entry.getKey());
+      invocationContext.addMatch(entry.getKey(), keyMatch);
+      if (keyMatch) {
+        return policy;
+      }
+    }
+    return null;
   }
 }

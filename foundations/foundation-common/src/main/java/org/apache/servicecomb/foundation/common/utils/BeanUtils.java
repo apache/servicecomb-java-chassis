@@ -141,6 +141,14 @@ public final class BeanUtils {
     return context.getBeansOfType(type);
   }
 
+  public static <T> T getBean(Class<T> type) {
+    if (context == null) {
+      // for some test case
+      return null;
+    }
+    return context.getBean(type);
+  }
+
   /**
    * Get the implemented class of the given instance
    * @param bean the instance to get implemented class from

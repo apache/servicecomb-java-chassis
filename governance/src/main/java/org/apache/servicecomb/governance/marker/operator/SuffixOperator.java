@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance.policy;
+package org.apache.servicecomb.governance.marker.operator;
 
-public class GovRule {
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
-  private String match;
-
-  private int precedence;
-
-  public String getMatch() {
-    return match;
-  }
-
-  public void setMatch(String match) {
-    this.match = match;
-  }
-
-  public int getPrecedence() {
-    return precedence;
-  }
-
-  public void setPrecedence(int precedence) {
-    this.precedence = precedence;
+@Component
+public class SuffixOperator implements MatchOperator {
+  @Override
+  public boolean match(String requestValue, String patternValue) {
+    return StringUtils.endsWith(requestValue, patternValue);
   }
 }

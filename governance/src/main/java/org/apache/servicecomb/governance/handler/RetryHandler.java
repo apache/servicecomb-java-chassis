@@ -22,42 +22,44 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.governance.policy.Policy;
+import org.apache.servicecomb.governance.handler.ext.RetryExtension;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
+import org.apache.servicecomb.governance.properties.RetryProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.handler.ext.RetryExtension;
-
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 
-@Component("RetryHandler")
-public class RetryHandler extends AbstractGovHandler<Retry> {
+@Component
+public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RetryHandler.class);
 
   @Autowired
+  private RetryProperties retryProperties;
+
+  @Autowired
   private RetryExtension retryExtension;
 
-  /**
-   * @param supplier
-   * @param policy
-   * @return
-   */
   @Override
-  public <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy) {
-    Retry retry = getActuator("servicecomb.retry." + policy.name(), (RetryPolicy) policy, this::getRetry);
-    return supplier.withRetry(retry);
+  protected String createKey(RetryPolicy policy) {
+    return "servicecomb.retry." + policy.getName();
   }
 
   @Override
-  public HandlerType type() {
-    return HandlerType.CLIENT;
+  public RetryPolicy matchPolicy(GovernanceRequest governanceRequest) {
+    return matchersManager.match(governanceRequest, retryProperties.getParsedEntity());
+  }
+
+  @Override
+  protected Retry createProcessor(RetryPolicy policy) {
+    return getRetry(policy);
   }
 
   private Retry getRetry(RetryPolicy retryPolicy) {
@@ -74,7 +76,7 @@ public class RetryHandler extends AbstractGovHandler<Retry> {
         .build();
 
     RetryRegistry registry = RetryRegistry.of(config);
-    return registry.retry(retryPolicy.name());
+    return registry.retry(retryPolicy.getName());
   }
 
   private Predicate<Object> getPredicate(List<Integer> statusList) {

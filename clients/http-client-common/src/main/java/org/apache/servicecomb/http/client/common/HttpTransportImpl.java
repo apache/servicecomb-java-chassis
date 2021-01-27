@@ -81,7 +81,7 @@ public class HttpTransportImpl implements HttpTransport {
   public HttpResponse doRequest(HttpRequest httpRequest) throws IOException {
     //add header
     httpRequest.addHeader(HEADER_CONTENT_TYPE, "application/json");
-    httpRequest.addHeader(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
+    httpRequest.addHeader(HEADER_USER_AGENT, "microservice-client/1.0.0");
 
     if (globalHeaders != null) {
       globalHeaders.forEach(httpRequest::addHeader);

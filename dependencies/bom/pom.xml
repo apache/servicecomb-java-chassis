@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-dependencies-parent</artifactId>
-    <version>2.1.5-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-chassis-bom</artifactId>
@@ -59,12 +59,17 @@
       <!-- Service Comb : clients -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>http-client-common</artifactId>
+        <artifactId>config-center-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>kie-client</artifactId>
+        <artifactId>config-kie-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>http-client-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -201,6 +206,11 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-flowcontrol-qps</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-governance</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

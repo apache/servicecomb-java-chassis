@@ -14,19 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.policy;
 
-import java.util.List;
+package org.apache.servicecomb.governance.properties;
 
-/**
- * @Author GuoYl123
- * @Date 2020/5/11
- **/
-public interface Policy {
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
 
-  boolean match(List<String> strings);
-
-  String handler();
-
-  String name();
+public abstract class PolicyProperties<T extends AbstractPolicy> extends GovernanceProperties<T> {
+  protected PolicyProperties(String key) {
+    super(key);
+  }
 }

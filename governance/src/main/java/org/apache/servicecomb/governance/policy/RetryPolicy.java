@@ -18,38 +18,22 @@ package org.apache.servicecomb.governance.policy;
 
 import org.springframework.util.StringUtils;
 
-import org.apache.servicecomb.governance.handler.RetryHandler;
-
-/**
- *  intervalFunction  失败时可以更改等待时间的函数
- *  retryOnResultPredicate  根据返回结果决定是否进行重试
- *  retryOnExceptionPredicate  根据失败异常决定是否进行重试
- *
- */
 public class RetryPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_ATTEMPTS = 3;
 
-  public static final int DEFAULT_WAIT_DURATION = 0;
+  public static final int DEFAULT_WAIT_DURATION = 1;
 
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS = "502";
 
   //最多尝试次数
   private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
-  //每次重试尝试等待的时间，默认给0
+  //每次重试尝试等待的时间，默认给1。 在异步场景下，这个值必须大于0，否则不会重试。
   private int waitDuration = DEFAULT_WAIT_DURATION;
 
   //需要重试的http status, 逗号分隔
   private String retryOnResponseStatus;
-
-  //TODO: 需要进行重试的异常列表，反射取异常
-  private String retryExceptions;
-
-  //TODO: 需要进行忽略的异常列表
-  private String ignoreExceptions;
-
-  private boolean onSame;
 
   public String getRetryOnResponseStatus() {
     if (StringUtils.isEmpty(retryOnResponseStatus)) {
@@ -78,33 +62,15 @@ public class RetryPolicy extends AbstractPolicy {
     this.waitDuration = waitDuration;
   }
 
-  public String getRetryExceptions() {
-    return retryExceptions;
-  }
-
-  public void setRetryExceptions(String retryExceptions) {
-    this.retryExceptions = retryExceptions;
-  }
-
-  public String getIgnoreExceptions() {
-    return ignoreExceptions;
-  }
-
-  public void setIgnoreExceptions(String ignoreExceptions) {
-    this.ignoreExceptions = ignoreExceptions;
-  }
-
-  public boolean isOnSame() {
-    return onSame;
-  }
-
-  public void setOnSame(boolean onSame) {
-    this.onSame = onSame;
-  }
-
   @Override
-  public String handler() {
-    return RetryHandler.class.getSimpleName();
+  public boolean isValid() {
+    if (maxAttempts < 1) {
+      return false;
+    }
+    if (waitDuration < 0) {
+      return false;
+    }
+    return super.isValid();
   }
 
   @Override
@@ -113,9 +79,6 @@ public class RetryPolicy extends AbstractPolicy {
         "maxAttempts=" + maxAttempts +
         ", waitDuration=" + waitDuration +
         ", retryOnResponseStatus='" + retryOnResponseStatus + '\'' +
-        ", retryExceptions='" + retryExceptions + '\'' +
-        ", ignoreExceptions='" + ignoreExceptions + '\'' +
-        ", onSame=" + onSame +
         '}';
   }
 }

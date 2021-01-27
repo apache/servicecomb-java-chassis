@@ -21,42 +21,54 @@ servicecomb:
       matches:
         - apiPath:
             exact: "/hello"
-          name: match0
+    wrong-name-inogred: |
+      wrong: some
     demo-retry: |
       matches:
         - apiPath:
             exact: "/retry"
-          name: xx
     demo-circuitBreaker: |
       matches:
         - apiPath:
             exact: "/circuitBreaker"
-          name: xx
     demo-bulkhead: |
       matches:
         - apiPath:
             exact: "/bulkhead"
-          name: xx
+    demo-bulkhead-other: |
+      matches:
+        - apiPath:
+          exact: "/bulkhead"
+      services: other:1.0
   rateLimiting:
-    rateLimiting0: |
-      rules:
-        match: demo-rateLimiting.match0
+    demo-rateLimiting: |
       rate: 1
+    wrongIngored: |
+      rate: 0
   retry:
-    retry0: |
-      rules:
-        match: demo-retry.xx
+    demo-retry: |
       maxAttempts: 3
+    wrongIngored: |
+      maxAttempts: -1
   circuitBreaker:
-    circuitBreaker0: |
-      rules:
-        match: demo-circuitBreaker.xx
+    demo-circuitBreaker: |
       minimumNumberOfCalls: 2
       slidingWindowSize: 2
-  bulkhead:
-    bulkhead0: |
+      services: myself:1.0,other
+    wrongIngored: |
       rules:
-        match: demo-bulkhead.xx
-        precedence: 100
+        match: demo-circuitBreaker.xx
+      minimumNumberOfCalls: -1
+  bulkhead:
+    demo-bulkhead: |
       maxConcurrentCalls: 1
       maxWaitDuration: 3000
+      services: myself:1.0
+    demo-bulkhead-other: |
+      maxConcurrentCalls: 1
+      maxWaitDuration: 3000
+      services: other:1.0
+    wrongIngored: |
+      rules:
+        match: demo-bulkhead.xx
+      maxWaitDuration: -1

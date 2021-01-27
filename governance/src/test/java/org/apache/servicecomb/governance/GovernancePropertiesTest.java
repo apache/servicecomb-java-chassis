@@ -17,12 +17,27 @@
 
 package org.apache.servicecomb.governance;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.marker.Matcher;
+import org.apache.servicecomb.governance.marker.TrafficMarker;
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
+import org.apache.servicecomb.governance.policy.BulkheadPolicy;
+import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
+import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
+import org.apache.servicecomb.governance.policy.RetryPolicy;
+import org.apache.servicecomb.governance.properties.BulkheadProperties;
+import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.GovernanceProperties;
+import org.apache.servicecomb.governance.properties.MatchProperties;
+import org.apache.servicecomb.governance.properties.RateLimitProperties;
+import org.apache.servicecomb.governance.properties.RetryProperties;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,28 +51,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
-import org.apache.servicecomb.governance.event.EventManager;
-import org.apache.servicecomb.governance.marker.Matcher;
-import org.apache.servicecomb.governance.marker.TrafficMarker;
-import org.apache.servicecomb.governance.policy.AbstractPolicy;
-import org.apache.servicecomb.governance.policy.BulkheadPolicy;
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
-import org.apache.servicecomb.governance.policy.RetryPolicy;
-import org.apache.servicecomb.governance.properties.BulkheadProperties;
-import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
-import org.apache.servicecomb.governance.properties.GovProperties;
-import org.apache.servicecomb.governance.properties.MatchProperties;
-import org.apache.servicecomb.governance.properties.RateLimitProperties;
-import org.apache.servicecomb.governance.properties.RetryProperties;
-
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)
-public class GovPropertiesTest {
+public class GovernancePropertiesTest {
 
   @Autowired
-  private List<GovProperties<? extends AbstractPolicy>> propertiesList;
+  private List<GovernanceProperties<? extends AbstractPolicy>> propertiesList;
 
   @Autowired
   private MatchProperties matchProperties;
@@ -78,10 +77,6 @@ public class GovPropertiesTest {
   private Environment environment;
 
   private Map<String, Object> dynamicValues = new HashMap<>();
-
-  public GovPropertiesTest() {
-    System.out.print(1);
-  }
 
   @Before
   public void setUp() {
@@ -109,7 +104,7 @@ public class GovPropertiesTest {
   public void tearDown() {
     Set<String> keys = dynamicValues.keySet();
     keys.forEach(k -> dynamicValues.put(k, null));
-    EventManager.post(new ConfigurationChangedEvent(new ArrayList<>(dynamicValues.keySet())));
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
   }
 
   @Test
@@ -125,8 +120,23 @@ public class GovPropertiesTest {
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assert.assertEquals(1, matchers.size());
     Matcher matcher = matchers.get(0);
-    Assert.assertEquals("match0", matcher.getName());
     Assert.assertEquals("/hello", matcher.getApiPath().get("exact"));
+  }
+
+  @Test
+  public void test_match_properties_delete() {
+    Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
+    Assert.assertEquals(4, markers.size());
+    dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
+        + "  - apiPath:\n"
+        + "      exact: \"/hello2\"\n"
+        + "    name: match0");
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    markers = matchProperties.getParsedEntity();
+    Assert.assertEquals(5, markers.size());
+    tearDown();
+    markers = matchProperties.getParsedEntity();
+    Assert.assertEquals(4, markers.size());
   }
 
   @Test
@@ -140,7 +150,7 @@ public class GovPropertiesTest {
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
 
-    EventManager.post(new ConfigurationChangedEvent(new ArrayList<>(dynamicValues.keySet())));
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
     Assert.assertEquals(5, markers.size());
@@ -148,88 +158,70 @@ public class GovPropertiesTest {
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assert.assertEquals(1, matchers.size());
     Matcher matcher = matchers.get(0);
-    Assert.assertEquals("match0", matcher.getName());
     Assert.assertEquals("/hello2", matcher.getApiPath().get("exact"));
 
     demoRateLimiting = markers.get("demo-rateLimiting2");
     matchers = demoRateLimiting.getMatches();
     Assert.assertEquals(1, matchers.size());
     matcher = matchers.get(0);
-    Assert.assertEquals("match0", matcher.getName());
     Assert.assertEquals("/hello2", matcher.getApiPath().get("exact"));
   }
 
   @Test
   public void test_bulkhead_properties_changed() {
-    dynamicValues.put("servicecomb.bulkhead.bulkhead0", "rules:\n"
-        + "  match: demo-bulkhead.xx\n"
-        + "  precedence: 100\n"
+    dynamicValues.put("servicecomb.bulkhead.demo-bulkhead", "rules:\n"
         + "maxConcurrentCalls: 2\n"
         + "maxWaitDuration: 2000");
     dynamicValues.put("servicecomb.bulkhead.bulkhead1", "rules:\n"
-        + "  match: demo-bulkhead.xx\n"
-        + "  precedence: 100\n"
         + "maxConcurrentCalls: 3\n"
         + "maxWaitDuration: 3000");
 
-    EventManager.post(new ConfigurationChangedEvent(new ArrayList<>(dynamicValues.keySet())));
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
-    BulkheadPolicy policy = policies.get("bulkhead0");
+    BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assert.assertEquals(2, policy.getMaxConcurrentCalls());
     Assert.assertEquals(2000, policy.getMaxWaitDuration());
-    Assert.assertEquals("demo-bulkhead.xx", policy.getRules().getMatch());
-    Assert.assertEquals(100, policy.getRules().getPrecedence());
 
     policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
     policy = policies.get("bulkhead1");
     Assert.assertEquals(3, policy.getMaxConcurrentCalls());
     Assert.assertEquals(3000, policy.getMaxWaitDuration());
-    Assert.assertEquals("demo-bulkhead.xx", policy.getRules().getMatch());
-    Assert.assertEquals(100, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_bulkhead_properties_successfully_loaded() {
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    BulkheadPolicy policy = policies.get("bulkhead0");
+    BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assert.assertEquals(1, policy.getMaxConcurrentCalls());
     Assert.assertEquals(3000, policy.getMaxWaitDuration());
-    Assert.assertEquals("demo-bulkhead.xx", policy.getRules().getMatch());
-    Assert.assertEquals(100, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_circuit_breaker_properties_successfully_loaded() {
     Map<String, CircuitBreakerPolicy> policies = circuitBreakerProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    CircuitBreakerPolicy policy = policies.get("circuitBreaker0");
+    CircuitBreakerPolicy policy = policies.get("demo-circuitBreaker");
     Assert.assertEquals(2, policy.getMinimumNumberOfCalls());
     Assert.assertEquals(2, policy.getSlidingWindowSize());
-    Assert.assertEquals("demo-circuitBreaker.xx", policy.getRules().getMatch());
-    Assert.assertEquals(0, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_rate_limit_properties_successfully_loaded() {
     Map<String, RateLimitingPolicy> policies = rateLimitProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    RateLimitingPolicy policy = policies.get("rateLimiting0");
+    RateLimitingPolicy policy = policies.get("demo-rateLimiting");
     Assert.assertEquals(1, policy.getRate());
-    Assert.assertEquals("demo-rateLimiting.match0", policy.getRules().getMatch());
-    Assert.assertEquals(0, policy.getRules().getPrecedence());
   }
 
   @Test
   public void test_retry_properties_successfully_loaded() {
     Map<String, RetryPolicy> policies = retryProperties.getParsedEntity();
     Assert.assertEquals(1, policies.size());
-    RetryPolicy policy = policies.get("retry0");
+    RetryPolicy policy = policies.get("demo-retry");
     Assert.assertEquals(3, policy.getMaxAttempts());
-    Assert.assertEquals("demo-retry.xx", policy.getRules().getMatch());
-    Assert.assertEquals(0, policy.getRules().getPrecedence());
   }
 }

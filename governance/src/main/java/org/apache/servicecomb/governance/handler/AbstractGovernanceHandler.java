@@ -19,27 +19,53 @@ package org.apache.servicecomb.governance.handler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
-import com.google.common.eventbus.Subscribe;
+import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.policy.AbstractPolicy;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractGovHandler<PROCESSOR> implements GovHandler {
+import com.google.common.eventbus.Subscribe;
+
+public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
   private Map<String, PROCESSOR> map = new ConcurrentHashMap<>();
 
-  protected AbstractGovHandler() {
+  private final Object lock = new Object();
+
+  @Autowired
+  protected MatchersManager matchersManager;
+
+  protected AbstractGovernanceHandler() {
     EventManager.register(this);
   }
 
-  protected <R> PROCESSOR getActuator(String key, R policy, Function<R, PROCESSOR> func) {
+  public <R> PROCESSOR getActuator(GovernanceRequest governanceRequest) {
+    POLICY policy = matchPolicy(governanceRequest);
+    if (policy == null) {
+      return null;
+    }
+
+    String key = createKey(policy);
     PROCESSOR processor = map.get(key);
     if (processor == null) {
-      processor = func.apply(policy);
-      map.put(key, processor);
+      synchronized (lock) {
+        processor = map.get(key);
+        if (processor == null) {
+          processor = createProcessor(policy);
+          map.put(key, processor);
+        }
+      }
     }
     return processor;
   }
+
+  abstract protected String createKey(POLICY policy);
+
+  abstract protected POLICY matchPolicy(GovernanceRequest governanceRequest);
+
+  abstract protected PROCESSOR createProcessor(POLICY policy);
 
   @Subscribe
   public void onDynamicConfigurationListener(ConfigurationChangedEvent event) {

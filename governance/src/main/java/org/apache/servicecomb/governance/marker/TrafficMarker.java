@@ -18,18 +18,19 @@ package org.apache.servicecomb.governance.marker;
 
 import java.util.List;
 
-public class TrafficMarker {
+import org.apache.servicecomb.governance.entity.Configurable;
 
-  private String services;
+public class TrafficMarker extends Configurable {
+  private String name;
 
   private List<Matcher> matches;
 
-  public String getServices() {
-    return services;
-  }
-
-  public void setServices(String services) {
-    this.services = services;
+  @Override
+  public boolean isValid() {
+    if (matches == null || matches.isEmpty()) {
+      return false;
+    }
+    return true;
   }
 
   public List<Matcher> getMatches() {
@@ -38,5 +39,20 @@ public class TrafficMarker {
 
   public void setMatches(List<Matcher> matches) {
     this.matches = matches;
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public boolean checkMatch(GovernanceRequest governanceRequest, RequestProcessor requestProcessor) {
+    return this.matches.stream().anyMatch(match ->
+        this.name.equals(name) && requestProcessor.match(governanceRequest, match));
   }
 }

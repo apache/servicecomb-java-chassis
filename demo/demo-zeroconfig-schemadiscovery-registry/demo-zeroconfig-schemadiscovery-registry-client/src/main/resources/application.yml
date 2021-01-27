@@ -25,9 +25,58 @@ service_description:
   name: demo-zeroconfig-schemadiscovery-registry-client
   version: 0.0.2
 servicecomb:
+  rest:
+    address: 0.0.0.0:8082
+  config:
+    client:
+      # for testing dynamic configuration
+      # serverUri: http://127.0.0.1:30113
+      refreshMode: 0
+      # refresh_interval: 5000
+      # refreshPort: 30114
   handler:
     chain:
       Consumer:
-        default: loadbalance
-  rest:
-    address: 0.0.0.0:8082
+        default: governance-consumer,loadbalance
+      Provider:
+        default: governance-provider
+
+  matchGroup:
+    demo-rateLimiting: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.hello"
+    demo-retry: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.retry"
+    demo-circuitBreaker: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.circuitBreaker"
+    demo-bulkhead: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.bulkhead"
+  rateLimiting:
+    demo-rateLimiting: |
+      rate: 10
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+  retry:
+    demo-retry: |
+      maxAttempts: 3
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+  circuitBreaker:
+    demo-circuitBreaker: |
+      minimumNumberOfCalls: 10
+      slidingWindowSize: 10
+      failureRateThreshold: 20
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+  bulkhead:
+    demo-bulkhead: |
+      maxConcurrentCalls: 5
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client

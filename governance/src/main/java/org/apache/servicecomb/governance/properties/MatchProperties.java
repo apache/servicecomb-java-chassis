@@ -20,7 +20,7 @@ import org.apache.servicecomb.governance.marker.TrafficMarker;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MatchProperties extends GovProperties<TrafficMarker> {
+public class MatchProperties extends GovernanceProperties<TrafficMarker> {
   public static final String MATCH_POLICY_KEY = "servicecomb.matchGroup";
 
   public MatchProperties() {

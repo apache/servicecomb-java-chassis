@@ -17,16 +17,16 @@
 
 package org.apache.servicecomb.governance.event;
 
-import java.util.List;
+import java.util.Set;
 
 public class ConfigurationChangedEvent {
-  private List<String> changedConfigurations;
+  private Set<String> changedConfigurations;
 
-  public ConfigurationChangedEvent(List<String> changedConfigurations) {
+  public ConfigurationChangedEvent(Set<String> changedConfigurations) {
     this.changedConfigurations = changedConfigurations;
   }
 
-  public List<String> getChangedConfigurations() {
+  public Set<String> getChangedConfigurations() {
     return changedConfigurations;
   }
 }

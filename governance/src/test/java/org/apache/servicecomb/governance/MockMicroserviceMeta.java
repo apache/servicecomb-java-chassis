@@ -14,39 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.marker;
 
-import java.util.Map;
+package org.apache.servicecomb.governance;
 
-public class GovHttpRequest {
+import org.springframework.stereotype.Component;
 
-  private Map<String, String> headers;
-
-  private String uri;
-
-  private String method;
-
-  public Map<String, String> getHeaders() {
-    return headers;
+@Component
+public class MockMicroserviceMeta implements MicroserviceMeta {
+  @Override
+  public String getName() {
+    return "myself";
   }
 
-  public void setHeaders(Map<String, String> headers) {
-    this.headers = headers;
-  }
-
-  public String getUri() {
-    return uri;
-  }
-
-  public void setUri(String uri) {
-    this.uri = uri;
-  }
-
-  public String getMethod() {
-    return method;
-  }
-
-  public void setMethod(String method) {
-    this.method = method;
+  @Override
+  public String getVersion() {
+    return "1.0";
   }
 }

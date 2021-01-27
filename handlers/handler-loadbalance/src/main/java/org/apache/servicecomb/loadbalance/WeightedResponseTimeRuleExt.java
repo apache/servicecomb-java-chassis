@@ -36,7 +36,7 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
 
   private LoadBalancer loadBalancer;
 
-  private double totalWeightsCache = 0d;
+  private double totalWeightsCache = -1d;
 
   @Override
   public void setLoadBalancer(LoadBalancer loadBalancer) {
@@ -66,7 +66,7 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
   }
 
   private List<Double> calculateTotalWeights(List<ServiceCombServer> servers) {
-    if (totalWeightsCache > MIN_GAP * servers.size()) {
+    if (Double.compare(totalWeightsCache, 0) < 0 || Double.compare(totalWeightsCache, MIN_GAP * servers.size()) > 0) {
       return doCalculateTotalWeights(servers);
     }
     // 10% possibilities to use weighed response rule when the normal access is very fast.
@@ -83,7 +83,8 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
     boolean needRandom = false;
     for (ServiceCombServer server : servers) {
       ServerStats serverStats = loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
-      double avgTime = serverStats.getResponseTimeAvg();
+      //getResponseTimeAvgRecent()按照时间窗口统计，时间窗口大小为1分钟；getResponseTimeAvg()一直累积
+      double avgTime = serverStats.getResponseTimeAvgRecent();
       if (!needRandom && avgTime > MIN_GAP) {
         needRandom = true;
       }

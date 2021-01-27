@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.springframework.util.StringUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
@@ -56,6 +55,30 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   private int slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
 
   public CircuitBreakerPolicy() {
+  }
+
+  @Override
+  public boolean isValid() {
+    if (failureRateThreshold > 100 || failureRateThreshold <= 0) {
+      return false;
+    }
+    if (slowCallRateThreshold > 100 || slowCallRateThreshold <= 0) {
+      return false;
+    }
+    if (waitDurationInOpenState <= 0) {
+      return false;
+    }
+    if (slowCallDurationThreshold <= 0) {
+      return false;
+    }
+    if (permittedNumberOfCallsInHalfOpenState <= 0) {
+      return false;
+    }
+    if (minimumNumberOfCalls <= 0) {
+      return false;
+    }
+
+    return super.isValid();
   }
 
   public int getFailureRateThreshold() {
@@ -130,11 +153,6 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public void setSlidingWindowSize(int slidingWindowSize) {
     this.slidingWindowSize = slidingWindowSize;
-  }
-
-  @Override
-  public String handler() {
-    return CircuitBreakerHandler.class.getSimpleName();
   }
 
   @Override

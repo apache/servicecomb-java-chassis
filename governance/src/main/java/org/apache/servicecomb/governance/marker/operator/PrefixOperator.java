@@ -14,13 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.service;
 
-import java.util.List;
-import java.util.Map;
+package org.apache.servicecomb.governance.marker.operator;
 
-import org.apache.servicecomb.governance.policy.Policy;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
-public interface PolicyService {
-  Map<String, Policy> getAllPolicies(List<String> mark);
+@Component
+public class PrefixOperator implements MatchOperator {
+  @Override
+  public boolean match(String requestValue, String patternValue) {
+    return StringUtils.startsWith(requestValue, patternValue);
+  }
 }

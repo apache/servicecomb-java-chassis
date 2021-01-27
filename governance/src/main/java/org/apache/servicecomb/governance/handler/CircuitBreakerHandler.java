@@ -18,40 +18,40 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
+import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.policy.Policy;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
-@Component("CircuitBreakerHandler")
-public class CircuitBreakerHandler extends AbstractGovHandler<CircuitBreaker> {
+@Component
+public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
+  @Autowired
+  private CircuitBreakerProperties circuitBreakerProperties;
+
   @Override
-  public <RESULT> DecorateCheckedSupplier<RESULT> process(DecorateCheckedSupplier<RESULT> supplier, Policy policy) {
-    CircuitBreaker circuitBreaker = getActuator("servicecomb.circuitBreaker." + policy.name(),
-        (CircuitBreakerPolicy) policy, this::getCircuitBreaker);
-    return supplier.withCircuitBreaker(circuitBreaker);
+  protected String createKey(CircuitBreakerPolicy policy) {
+    return "servicecomb.circuitBreaker." + policy.getName();
   }
 
   @Override
-  public HandlerType type() {
-    return HandlerType.SERVER;
+  public CircuitBreakerPolicy matchPolicy(GovernanceRequest governanceRequest) {
+    return matchersManager.match(governanceRequest, circuitBreakerProperties.getParsedEntity());
   }
 
-  /**
-   * todo: recordExceptions
-   *
-   * @param policy
-   * @return
-   */
+  @Override
+  protected CircuitBreaker createProcessor(CircuitBreakerPolicy policy) {
+    return getCircuitBreaker(policy);
+  }
+
   private CircuitBreaker getCircuitBreaker(CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy: {}", policy.toString());
 
@@ -74,6 +74,6 @@ public class CircuitBreakerHandler extends AbstractGovHandler<CircuitBreaker> {
         .slidingWindowSize(policy.getSlidingWindowSize())
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
-    return circuitBreakerRegistry.circuitBreaker(policy.name(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(policy.getName(), circuitBreakerConfig);
   }
 }

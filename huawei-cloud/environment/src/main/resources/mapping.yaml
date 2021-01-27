@@ -14,12 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-CAS_APPLICATION_NAME:
-  - servicecomb.service.application
-CAS_COMPONENT_NAME:
-  - servicecomb.service.name
-CAS_INSTANCE_VERSION:
-  - servicecomb.service.version
 
 PAAS_CSE_ENDPOINT:
   - servicecomb.service.registry.address
@@ -31,3 +25,11 @@ PAAS_CSE_CC_ENDPOINT:
 PAAS_PROJECT_NAME:
   - servicecomb.credentials.project
 
+## other possible and useful mappings
+
+#CAS_APPLICATION_NAME:
+#  - servicecomb.service.application
+#CAS_COMPONENT_NAME:
+#  - servicecomb.service.name
+#CAS_INSTANCE_VERSION:
+#  - servicecomb.service.version
