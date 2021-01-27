@@ -45,13 +45,7 @@ public class HttpTransportFactory {
   }
 
   public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,
-      RequestAuthHeaderProvider requestAuthHeaderProvider) {
-    RequestConfig config = RequestConfig.custom()
-        .setConnectTimeout(CONNECT_TIMEOUT)
-        .setConnectionRequestTimeout(
-            CONNECTION_REQUEST_TIMEOUT)
-        .setSocketTimeout(SOCKET_TIMEOUT).build();
-
+      RequestAuthHeaderProvider requestAuthHeaderProvider, RequestConfig config) {
     //register http/https socket factory
     RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.<ConnectionSocketFactory>create();
     builder.register("http", PlainConnectionSocketFactory.INSTANCE);
@@ -75,5 +69,18 @@ public class HttpTransportFactory {
         disableCookieManagement();
 
     return new HttpTransportImpl(httpClientBuilder.build(), requestAuthHeaderProvider);
+  }
+
+  public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,
+      RequestAuthHeaderProvider requestAuthHeaderProvider) {
+    return createHttpTransport(sslProperties, requestAuthHeaderProvider, defaultRequestConfig().build());
+  }
+
+  public static RequestConfig.Builder defaultRequestConfig() {
+    return RequestConfig.custom()
+        .setConnectTimeout(CONNECT_TIMEOUT)
+        .setConnectionRequestTimeout(
+            CONNECTION_REQUEST_TIMEOUT)
+        .setSocketTimeout(SOCKET_TIMEOUT);
   }
 }
