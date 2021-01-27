@@ -21,6 +21,15 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+import javax.ws.rs.core.Response.StatusType;
+
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Test;
@@ -60,5 +69,36 @@ class ExceptionsTest {
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
     assertThat(Json.encode(invocationException.getErrorData()))
         .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"msg\"}");
+  }
+
+  static class ThrowExceptionWhenConvert implements ExceptionConverter<Throwable> {
+    @Override
+    public boolean canConvert(Throwable throwable) {
+      return true;
+    }
+
+    @Override
+    public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
+      throw new RuntimeExceptionWithoutStackTrace("mock exception when convert");
+    }
+  }
+
+  @Test
+  void should_protect_when_converter_throw_exception() {
+    try (LogCollector logCollector = new LogCollector()) {
+      Map<Class<?>, ExceptionConverter<Throwable>> cache = new HashMap<>();
+      cache.put(RuntimeExceptionWithoutStackTrace.class, new ThrowExceptionWhenConvert());
+      InvocationException exception = Exceptions
+          .convert(null, new RuntimeExceptionWithoutStackTrace("exception need convert"), BAD_REQUEST, cache);
+
+      assertThat(exception.getStatus())
+          .isSameAs(INTERNAL_SERVER_ERROR);
+      assertThat(exception.getErrorData().toString())
+          .isEqualTo("CommonExceptionData{code='SCB.50000000', message='Internal Server Error', dynamic={}}");
+      assertThat(logCollector.getLastEvents().getRenderedMessage().replace("\r\n", "\n"))
+          .isEqualTo("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
+              + "original exception:org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: exception need convert\n"
+              + "converter exception:org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: mock exception when convert\n");
+    }
   }
 }
