@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.exception;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIENT;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_SERVER;
 import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -141,9 +143,23 @@ public final class Exceptions {
 
   public static InvocationException convert(@Nullable Invocation invocation, Throwable throwable,
       StatusType genericStatus) {
+    return convert(invocation, throwable, genericStatus, CACHE);
+  }
+
+  public static InvocationException convert(@Nullable Invocation invocation, Throwable throwable,
+      StatusType genericStatus, Map<Class<?>, ExceptionConverter<Throwable>> cache) {
     Throwable unwrapped = unwrap(throwable);
-    return CACHE.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped))
-        .convert(invocation, unwrapped, genericStatus);
+    try {
+      return cache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped))
+          .convert(invocation, unwrapped, genericStatus);
+    } catch (Exception e) {
+      LOGGER.error("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
+              + "original exception:{}converter exception:{}",
+          getStackTrace(throwable),
+          getStackTrace(e));
+      return new InvocationException(INTERNAL_SERVER_ERROR,
+          new CommonExceptionData(GENERIC_SERVER, INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    }
   }
 
   private static ExceptionConverter<Throwable> findConverter(Throwable throwable) {

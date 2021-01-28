@@ -24,6 +24,7 @@ import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.SpectatorUtils;
@@ -33,9 +34,17 @@ public class OsMetersInitializer implements MetricsInitializer {
 
   private OsMeter osMeter;
 
+  private boolean isOsLinux = SystemUtils.IS_OS_LINUX;
+
+  @VisibleForTesting
+  OsMetersInitializer setOsLinux(boolean osLinux) {
+    isOsLinux = osLinux;
+    return this;
+  }
+
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    if (!SystemUtils.IS_OS_LINUX) {
+    if (!isOsLinux) {
       LOGGER.info("only support linux os to collect cpu and net info");
       return;
     }

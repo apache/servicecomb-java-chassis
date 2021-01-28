@@ -25,17 +25,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -54,19 +50,11 @@ public class TestOsMeterInitializer {
 
   Registry registry = new DefaultRegistry(globalRegistry.getClock());
 
-  private boolean isLinux;
-
   @Mocked
   EventBus eventBus;
 
-  @Before
-  public void beforeTest() {
-    isLinux = SystemUtils.IS_OS_LINUX;
-  }
-
   @Test
   public void init(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
-    ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", true);
     List<String> list = new ArrayList<>();
     list.add("13  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
@@ -111,6 +99,7 @@ public class TestOsMeterInitializer {
     };
     globalRegistry.add(registry);
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
+    osMetersInitializer.setOsLinux(true);
     osMetersInitializer.init(globalRegistry, eventBus, null);
     OsMeter osMeter = osMetersInitializer.getOsMeter();
     Assert.assertNotNull(osMeter);
@@ -149,13 +138,8 @@ public class TestOsMeterInitializer {
   @Test
   public void initFail() {
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
-    ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", false);
+    osMetersInitializer.setOsLinux(false);
     osMetersInitializer.init(null, eventBus, null);
     Assert.assertNull(osMetersInitializer.getOsMeter());
-  }
-
-  @After
-  public void afterTest() {
-    ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", isLinux);
   }
 }
