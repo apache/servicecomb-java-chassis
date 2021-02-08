@@ -95,19 +95,30 @@ public class ServiceCenterRegistration extends AbstractTask {
             eventBus.post(new MicroserviceRegistrationEvent(true));
             startTask(new RegisterSchemaTask(0));
           }
+          return;
         } else {
-          LOGGER.info("service has already registered, will not register schema.");
+          Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
+          if (!isListEquals(newMicroservice.getSchemas(), microservice.getSchemas())) {
+            throw new IllegalStateException("Service has already registered, but schema ids not equal, stop register. "
+                + "Change the microservice version or delete the old microservice info and try again.");
+          }
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
           eventBus.post(new MicroserviceRegistrationEvent(true));
-          startTask(new RegisterMicroserviceInstanceTask(0));
+          startTask(new RegisterSchemaTask(0));
         }
+      } catch (IllegalStateException e) {
+        throw e;
       } catch (Exception e) {
         LOGGER.error("register microservice failed, and will try again.", e);
         eventBus.post(new MicroserviceRegistrationEvent(false));
         startTask(new BackOffSleepTask(failedCount + 1, new RegisterMicroserviceTask(failedCount + 1)));
       }
     }
+  }
+
+  private boolean isListEquals(List<String> one, List<String> two) {
+    return one.size() == two.size() && one.containsAll(two) && two.containsAll(one);
   }
 
   class RegisterSchemaTask implements Task {

@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.center.client;
+package org.apache.servicecomb.config.common;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class ConfigurationChangedEvent {
-  private Map<String, Object> configurations;
+import org.junit.Assert;
+import org.junit.Test;
 
-  public ConfigurationChangedEvent(Map<String, Object> configurations) {
-    this.configurations = configurations;
-  }
-
-  public Map<String, Object> getConfigurations() {
-    return configurations;
-  }
-
-  public ConfigurationChangedEvent setConfigurations(Map<String, Object> configurations) {
-    this.configurations = configurations;
-    return this;
+public class TestConfigurationChangedEvent {
+  @Test
+  public void testConfigurationChangedEvent() {
+    Map<String, Object> before = new HashMap<>();
+    Map<String, Object> after = new HashMap<>();
+    before.put("updated", "1");
+    before.put("deleted", "1");
+    after.put("added", 1);
+    after.put("updated", 2);
+    ConfigurationChangedEvent event = ConfigurationChangedEvent.createIncremental(after, before);
+    Assert.assertEquals(1, event.getAdded().size());
+    Assert.assertEquals(1, event.getDeleted().size());
+    Assert.assertEquals(1, event.getUpdated().size());
+    Assert.assertEquals(2, event.getComplete().size());
   }
 }
