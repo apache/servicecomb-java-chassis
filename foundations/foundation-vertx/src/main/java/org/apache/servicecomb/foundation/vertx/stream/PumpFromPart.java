@@ -23,12 +23,12 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.Part;
 
-import io.vertx.core.Handler;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.vertx.http.DownloadUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
@@ -66,7 +66,13 @@ public class PumpFromPart {
   public CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream, Handler<Throwable> throwableHandler) {
     return prepareReadStream()
         .thenCompose(readStream -> new PumpCommon().pump(context, readStream, writeStream, throwableHandler))
-        .whenComplete((v, e) -> DownloadUtils.clearPartResource(part));
+        .whenComplete((v, e) -> {
+          DownloadUtils.clearPartResource(part);
+          // PumpImpl will add drainHandler to writeStream,
+          // in order to support write multiple files to same writeStream,
+          // need reset after one stream is successful.
+          writeStream.drainHandler(null);
+        });
   }
 
   public CompletableFuture<Void> toOutputStream(OutputStream outputStream, boolean autoCloseOutputStream) {

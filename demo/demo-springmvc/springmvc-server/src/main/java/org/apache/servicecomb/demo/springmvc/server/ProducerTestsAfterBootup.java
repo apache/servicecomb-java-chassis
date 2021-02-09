@@ -89,7 +89,7 @@ public class ProducerTestsAfterBootup implements BootListener {
   }
 
   public void testRegisteredBasePath() {
-    TestMgr.check(15, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+    TestMgr.check(16, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
   }
 
   private String getSwaggerContent(Swagger swagger) {
