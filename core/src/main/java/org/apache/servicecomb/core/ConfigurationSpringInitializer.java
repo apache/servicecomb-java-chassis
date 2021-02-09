@@ -74,8 +74,17 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
 
   public static final String MAPPING_PROPERTY_SOURCE_NAME = "mapping.yaml";
 
-  private final List<BootStrapService> bootStrapServices =
-      SPIServiceUtils.getSortedService(BootStrapService.class);
+  public static final String EXTERNAL_INIT = "scb-config-external-init";
+
+  public static void setExternalInit(boolean value) {
+    System.setProperty(EXTERNAL_INIT, String.valueOf(value));
+  }
+
+  public static boolean isExternalInit() {
+    return Boolean.getBoolean(EXTERNAL_INIT);
+  }
+
+  private final List<BootStrapService> bootStrapServices = SPIServiceUtils.getSortedService(BootStrapService.class);
 
   public ConfigurationSpringInitializer() {
     setOrder(Ordered.LOWEST_PRECEDENCE / 2);
@@ -88,6 +97,11 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
    */
   @Override
   public void setEnvironment(Environment environment) {
+    super.setEnvironment(environment);
+    if (isExternalInit()) {
+      return;
+    }
+
     syncFromSpring(environment);
     syncToSpring(environment);
 
@@ -105,6 +119,10 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
   }
 
   public static void syncToSpring(Environment environment) {
+    if (isExternalInit()) {
+      return;
+    }
+
     addMicroserviceYAMLToSpring(environment);
     addMappingToSpring(environment);
   }
@@ -197,6 +215,9 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
   @Override
   protected Properties mergeProperties() throws IOException {
     Properties properties = super.mergeProperties();
+    if (isExternalInit()) {
+      return properties;
+    }
 
     AbstractConfiguration config = ConfigurationManager.getConfigInstance();
     Iterator<String> iterator = config.getKeys();
