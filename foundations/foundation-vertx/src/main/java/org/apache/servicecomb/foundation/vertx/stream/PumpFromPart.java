@@ -93,6 +93,7 @@ public class PumpFromPart {
   // otherwise when pump big stream, will cause stack overflow
   private CompletableFuture<Void> toOutputStreamSync(OutputStream outputStream, boolean autoCloseOutputStream) {
     CompletableFuture<Void> future = new CompletableFuture<>();
+    future.whenComplete((v, e) -> DownloadUtils.clearPartResource(part));
 
     try (InputStream inputStream = part.getInputStream()) {
       IOUtils.copyLarge(inputStream, outputStream);

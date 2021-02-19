@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot.springmvc.server;
+package org.apache.servicecomb.springboot.springmvc.client;
 
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import com.netflix.config.DynamicPropertyFactory;
-
+/**
+ * SpringmvcClient
+ *
+ *
+ */
 @SpringBootApplication
 @EnableServiceComb
-public class SpringmvcServer {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpringmvcServer.class);
+public class SpringmvcClient {
 
   public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(SpringmvcServer.class).web(WebApplicationType.NONE).build().run(args);
 
-    assertPropertyCorrect();
-  }
+    new SpringApplicationBuilder().sources(SpringmvcClient.class).web(WebApplicationType.SERVLET).build().run(args);
 
-  private static void assertPropertyCorrect() {
-    String result = DynamicPropertyFactory.getInstance()
-        .getStringProperty("test.unresolved.placeholder", null).get();
-    if (!"jdbc:postgresql://${ip}:${port}/pt".equals(result)) {
-      LOGGER.error("tests for configuration error, stop");
-      SCBEngine.getInstance().destroy();
-    }
+    org.apache.servicecomb.demo.springmvc.client.SpringmvcClient.run();
+
+    TestMgr.summary();
   }
 }

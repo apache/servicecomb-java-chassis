@@ -16,6 +16,8 @@
 ## ---------------------------------------------------------------------------
 
 server:
-  port: 7999
-
-test.unresolved.placeholder: jdbc:postgresql://${ip}:${port}/pt
+  port: 8999
+servicecomb:
+  test:
+    vert:
+      transport: false
