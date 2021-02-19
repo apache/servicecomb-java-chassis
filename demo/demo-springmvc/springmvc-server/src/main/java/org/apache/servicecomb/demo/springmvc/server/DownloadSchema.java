@@ -55,8 +55,8 @@ public class DownloadSchema {
     return file;
   }
 
-  @GetMapping(path = "/tempFileEntity")
-  public ResponseEntity<Part> tempFileEntity(@RequestParam("content") String content) throws IOException {
+  @GetMapping(path = "/deleteAfterFinished")
+  public ResponseEntity<Part> deleteAfterFinished(@RequestParam("content") String content) throws IOException {
     File file = createTempFile(content);
 
     return ResponseEntity
@@ -64,6 +64,16 @@ public class DownloadSchema {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
         .body(new FilePart(null, file)
             .setDeleteAfterFinished(true));
+  }
+
+  @GetMapping(path = "/notDeleteAfterFinished")
+  public ResponseEntity<Part> notDeleteAfterFinished(@RequestParam("content") String content) throws IOException {
+    File file = createTempFile(content);
+
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+        .body(new FilePart(null, file));
   }
 
   @GetMapping(path = "/assertLastFileDeleted")

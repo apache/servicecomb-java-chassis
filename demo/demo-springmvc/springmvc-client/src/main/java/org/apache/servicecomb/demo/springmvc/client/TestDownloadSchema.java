@@ -29,17 +29,30 @@ public class TestDownloadSchema implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     testDownloadFileAndDeleted();
+    testDownloadFileNotDeleted();
   }
 
   private void testDownloadFileAndDeleted() throws Exception {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     ReadStreamPart readStreamPart = restTemplate
-        .getForObject("servicecomb://springmvc/download/tempFileEntity?content=hello", ReadStreamPart.class);
+        .getForObject("servicecomb://springmvc/download/deleteAfterFinished?content=hello", ReadStreamPart.class);
     String hello = readStreamPart.saveAsString().get();
     TestMgr.check(hello, "hello");
 
     boolean exists = restTemplate
         .getForObject("servicecomb://springmvc/download/assertLastFileDeleted", boolean.class);
     TestMgr.check(exists, false);
+  }
+
+  private void testDownloadFileNotDeleted() throws Exception {
+    RestTemplate restTemplate = RestTemplateBuilder.create();
+    ReadStreamPart readStreamPart = restTemplate
+        .getForObject("servicecomb://springmvc/download/notDeleteAfterFinished?content=hello", ReadStreamPart.class);
+    String hello = readStreamPart.saveAsString().get();
+    TestMgr.check(hello, "hello");
+
+    boolean exists = restTemplate
+        .getForObject("servicecomb://springmvc/download/assertLastFileDeleted", boolean.class);
+    TestMgr.check(exists, true);
   }
 }
