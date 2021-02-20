@@ -16,4 +16,6 @@
 ## ---------------------------------------------------------------------------
 
 server:
-  port: 8999
+  port: 8080
+
+test.unresolved.placeholder: jdbc:postgresql://${ip}:${port}/pt

@@ -28,6 +28,8 @@
   <name>Java Chassis::Demo::Spring Boot::Transport</name>
   <packaging>pom</packaging>
   <modules>
+    <module>demo-spring-boot-springmvc-server</module>
+    <module>demo-spring-boot-springmvc-client</module>
     <module>demo-spring-boot-pojo-server</module>
     <module>demo-spring-boot-pojo-client</module>
   </modules>
