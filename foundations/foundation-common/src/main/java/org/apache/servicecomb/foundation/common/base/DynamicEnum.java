@@ -18,10 +18,14 @@ package org.apache.servicecomb.foundation.common.base;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public abstract class DynamicEnum<T> {
   private T value;
+
+  @JsonIgnore
+  private boolean dynamic = false;
 
   public DynamicEnum(T value) {
     this.value = value;
@@ -30,6 +34,20 @@ public abstract class DynamicEnum<T> {
   @JsonValue
   public T getValue() {
     return value;
+  }
+
+  @JsonIgnore
+  public boolean isStatic() {
+    return !dynamic;
+  }
+
+  public boolean isDynamic() {
+    return dynamic;
+  }
+
+  public DynamicEnum<T> setDynamic(boolean dynamic) {
+    this.dynamic = dynamic;
+    return this;
   }
 
   @Override
