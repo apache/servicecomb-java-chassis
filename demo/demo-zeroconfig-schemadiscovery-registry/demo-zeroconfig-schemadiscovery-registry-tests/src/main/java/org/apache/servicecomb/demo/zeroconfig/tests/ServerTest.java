@@ -26,6 +26,8 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import io.vertx.core.json.JsonObject;
+
 @Component
 public class ServerTest implements CategorizedTestCase {
 
@@ -35,6 +37,8 @@ public class ServerTest implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     testServerGetName();
     testGetAllMicroservice();
+    testJsonObject();
+    testString();
   }
 
   private void testServerGetName() throws Exception {
@@ -80,5 +84,29 @@ public class ServerTest implements CategorizedTestCase {
             "cse://demo-zeroconfig-schemadiscovery-registry-edge"
                 + "/register/url/prefix/getRegisteredMicroservice",
             List.class).size());
+  }
+
+  private void testJsonObject() {
+    JsonObject in = new JsonObject();
+    JsonObject inner = new JsonObject();
+    //调用者需要按照swagger传参
+    inner.put("hello", "world");
+    in.put("map", inner);
+
+    JsonObject result = template
+        .postForObject(
+            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+                + "/register/url/prefix/jsonObject", in, JsonObject.class);
+    TestMgr.check(inner.toString(), result.toString());
+    TestMgr.check(result.getString("hello"), "world");
+  }
+
+  private void testString() {
+    String in = "{\"hello\":\"world\"}";
+    String result = template
+        .postForObject(
+            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+                + "/register/url/prefix/getString", in, String.class);
+    TestMgr.check(in, result);
   }
 }
