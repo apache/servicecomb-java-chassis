@@ -70,10 +70,16 @@ public class DynamicEnumCache<T extends DynamicEnum<?>> {
     }
 
     T instance = values.get(value);
+    if (instance != null) {
+      return instance;
+    }
+
     try {
       // do not cache unknown value to avoid attach
       // if need to cache unknown value, should avoid cache too many values
-      return instance != null ? instance : constructor.newInstance(value);
+      instance = constructor.newInstance(value);
+      instance.setDynamic(true);
+      return instance;
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       LOGGER.error("failed to create enum, class={}, value={}.", cls.getName(), value);
       return null;
