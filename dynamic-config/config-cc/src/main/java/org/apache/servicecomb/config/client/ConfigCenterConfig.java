@@ -24,6 +24,9 @@ import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 
+import org.apache.servicecomb.config.YAMLUtil;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+
 import com.google.common.base.Joiner;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 
@@ -58,6 +61,8 @@ public final class ConfigCenterConfig {
 
   public static final String IDLE_TIMEOUT_IN_SECONDES = "servicecomb.config.client.idleTimeoutInSeconds";
 
+  public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
+
   private static final int DEFAULT_REFRESH_MODE = 0;
 
   private static final int DEFAULT_REFRESH_PORT = 30104;
@@ -71,6 +76,41 @@ public final class ConfigCenterConfig {
 
   public static void setConcurrentCompositeConfiguration(ConcurrentCompositeConfiguration config) {
     finalConfig = config;
+    readFileSourceConfig();
+  }
+
+  public String getFileSource() {
+    return finalConfig.getString(FILE_SOURCE, "");
+  }
+
+  private readFileSourceConfig() {
+    final String fileSource = INSTANCE.getFileSource();
+    if (fileSource.length() <= 0) {
+      return;
+    }
+    List<String> fileSourceNames = new ArrayList<>();
+    fileSourceNames.addAll(Arrays.asList(fileSource.split(",");
+    fileSourceNames.forEach(fileSourcename -> {
+      try {
+        List<URL> urlList = new ArrayList<>();
+        ClassLoader loader = JvmUtils.findClassLoader();
+        Enumeration<URL> urls = loader.getResources(fileSourceName);
+        while (urls.hasMoreElement()) {
+          urlList.add(urls.nextElement());
+        }
+        urlList.stream().forEach(url -> {
+          Map<String, Object> properties = null;
+          try {
+            properties = YAMLUtil.yaml2Properties(new FileInputStream(new File(url.toURI())));
+          } catch (FileNotFoundException | URISyntaxException e) {
+            e.printStackTrace();
+          }
+          properties.entrySet().forEach(property -> finalConfig.addProperty(property.getKey(), property.getValue()));
+        });
+      } catch (IOException e) {
+        e.printStacktrace();
+      }
+    });
   }
 
   public static ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {

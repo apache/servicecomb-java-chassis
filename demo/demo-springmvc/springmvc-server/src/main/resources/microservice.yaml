@@ -47,10 +47,11 @@ servicecomb:
   # can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
   config:
     client:
-  #    serverUri: http://127.0.0.1:30113
+      serverUri: http://127.0.0.1:30115
       refreshMode: 0
       refresh_interval: 5000
       refreshPort: 30114
+      fileSource: mytest.yaml
   uploads:
     directory: target
   rest:

@@ -1,0 +1,6 @@
+int: 128
+String: hello
+servicecomb:
+  config:
+    client:
+      serverUri: http:// 127.0.0.1: 30113
