@@ -20,7 +20,7 @@ public class ReadFileSource {
   public String testString;
 
   @GetMapping(path = "/String")
-  public int getTestString() {
+  public String getTestString() {
     return testString;
   }
 }
