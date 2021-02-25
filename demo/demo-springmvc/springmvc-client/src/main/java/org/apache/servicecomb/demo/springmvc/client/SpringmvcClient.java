@@ -159,20 +159,27 @@ public class SpringmvcClient {
       String content = restTemplate
           .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
+      String application = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "").get();
+
       TestMgr.check(true,
-          content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.addDate"));
+          content.contains(
+              "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.addDate"));
       TestMgr.check(true,
-          content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.sayHello"));
+          content.contains(
+              "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.sayHello"));
       TestMgr.check(true, content.contains(
-          "servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.fallbackFromCache"));
+          "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.fallbackFromCache"));
       TestMgr.check(true,
-          content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.isTrue"));
+          content
+              .contains("servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.isTrue"));
       TestMgr.check(true,
-          content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.add"));
+          content.contains("servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.add"));
       TestMgr.check(true,
-          content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.sayHi2"));
+          content
+              .contains("servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.sayHi2"));
       TestMgr.check(true, content
-          .contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.saySomething"));
+          .contains(
+              "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.saySomething"));
 
       String[] metricLines = content.split("\n");
       if (metricLines.length > 0) {

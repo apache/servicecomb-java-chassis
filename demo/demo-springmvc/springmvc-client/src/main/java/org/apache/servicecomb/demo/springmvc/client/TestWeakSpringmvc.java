@@ -30,6 +30,7 @@ import org.apache.servicecomb.demo.server.GenericsModel;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -96,6 +97,9 @@ interface SpecialNameModelInf {
 
 @Component
 public class TestWeakSpringmvc implements CategorizedTestCase {
+  @Value("${APPLICATION_ID}")
+  private String applicationName;
+
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
   private DiffNames diffNames;
 
@@ -111,7 +115,7 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInf;
 
-  @RpcReference(microserviceName = "springmvctest:springmvc", schemaId = "weakSpringmvc")
+  @RpcReference(microserviceName = "${APPLICATION_ID}:springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInfWithAppId;
 
   private RestTemplate restTemplate = RestTemplateBuilder.create();
@@ -182,14 +186,14 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
     TestMgr.check(8, diffNames2.differentName(2, 3));
     TestMgr.check(7, restTemplate.getForObject("cse://springmvc/weakSpringmvc/diffNames?x=2&y=3", Integer.class));
     TestMgr.check(7, restTemplate
-        .getForObject("cse://springmvctest:springmvc/weakSpringmvc/diffNames?x=2&y=3",
+        .getForObject("cse://" + applicationName + ":springmvc/weakSpringmvc/diffNames?x=2&y=3",
             Integer.class));
     Map<String, Object> args = new HashMap<>();
     args.put("x", 2);
     args.put("y", 3);
     TestMgr.check(7, InvokerUtils.syncInvoke("springmvc",
         "weakSpringmvc", "differentName", args));
-    TestMgr.check(7, InvokerUtils.syncInvoke("springmvctest:springmvc",
+    TestMgr.check(7, InvokerUtils.syncInvoke(applicationName + ":springmvc",
         "weakSpringmvc", "differentName", args));
   }
 }
