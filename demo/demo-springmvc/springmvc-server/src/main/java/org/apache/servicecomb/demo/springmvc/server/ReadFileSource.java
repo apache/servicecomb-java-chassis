@@ -2,7 +2,7 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annatation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "testFileSource")
