@@ -92,7 +92,7 @@ public final class ConfigCenterConfig {
     }
     List<String> fileSourceNames = new ArrayList<>();
     fileSourceNames.addAll(Arrays.asList(fileSource.split(",")));
-    fileSourceNames.forEach(fileSourcename -> {
+    fileSourceNames.forEach(fileSourceName -> {
       try {
         List<URL> urlList = new ArrayList<>();
         ClassLoader loader = JvmUtils.findClassLoader();
