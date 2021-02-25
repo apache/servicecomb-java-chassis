@@ -51,7 +51,7 @@ servicecomb:
       refreshMode: 0
       refresh_interval: 5000
       refreshPort: 30114
-      fileSource: mytest.yaml
+      fileSource: mytest.yaml, test2.yaml
   uploads:
     directory: target
   rest:

@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.config.client;
 
+import com.google.common.base.Joiner;
+import com.netflix.config.ConcurrentCompositeConfiguration;
+
 import java.util.*;
 import java.io.*;
 import java.net.*;
@@ -81,17 +84,16 @@ public final class ConfigCenterConfig {
     readFileSourceConfig();
   }
 
-  public String getFileSource() {
-    return finalConfig.getString(FILE_SOURCE, "");
+  @SUpressWarnings("unchecked")
+  public List<String> getFileSource() {
+    return (List<String>) finalConfig.getProperty(FILE_SOURCE);
   }
 
   private static void readFileSourceConfig() {
-    final String fileSource = INSTANCE.getFileSource();
-    if (fileSource.length() <= 0) {
+    final List<String> fileSourceNames = INSTANCE.getFileSource();
+    if (fileSourceNames.size <= 0) {
       return;
     }
-    List<String> fileSourceNames = new ArrayList<>();
-    fileSourceNames.addAll(Arrays.asList(fileSource.split(",")));
     fileSourceNames.forEach(fileSourceName -> {
       try {
         List<URL> urlList = new ArrayList<>();
