@@ -3,4 +3,4 @@ String: hello
 servicecomb:
   config:
     client:
-      serverUri: http:// 127.0.0.1: 30113
+      serverUri: http://127.0.0.1:30113

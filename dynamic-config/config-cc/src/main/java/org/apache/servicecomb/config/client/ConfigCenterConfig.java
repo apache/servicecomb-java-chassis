@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.config.client;
 
-import java.util.List;
+import java.util.*;
+import java.io.*;
+import java.net.*;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.deployment.Deployment;
@@ -83,19 +85,19 @@ public final class ConfigCenterConfig {
     return finalConfig.getString(FILE_SOURCE, "");
   }
 
-  private void readFileSourceConfig() {
+  private static void readFileSourceConfig() {
     final String fileSource = INSTANCE.getFileSource();
     if (fileSource.length() <= 0) {
       return;
     }
     List<String> fileSourceNames = new ArrayList<>();
-    fileSourceNames.addAll(Arrays.asList(fileSource.split(",");
+    fileSourceNames.addAll(Arrays.asList(fileSource.split(",")));
     fileSourceNames.forEach(fileSourcename -> {
       try {
         List<URL> urlList = new ArrayList<>();
         ClassLoader loader = JvmUtils.findClassLoader();
         Enumeration<URL> urls = loader.getResources(fileSourceName);
-        while (urls.hasMoreElement()) {
+        while (urls.hasMoreElements()) {
           urlList.add(urls.nextElement());
         }
         urlList.stream().forEach(url -> {
@@ -108,7 +110,7 @@ public final class ConfigCenterConfig {
           properties.entrySet().forEach(property -> finalConfig.addProperty(property.getKey(), property.getValue()));
         });
       } catch (IOException e) {
-        e.printStacktrace();
+        e.printStackTrace();
       }
     });
   }
