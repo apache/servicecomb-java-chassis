@@ -27,11 +27,16 @@ import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import io.vertx.core.json.JsonObject;
 
 @RestSchema(schemaId = "ClientServerEndpoint")
 @RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
@@ -41,6 +46,9 @@ public class ClientServerEndpoint {
 
   @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
   private IServerEndpoint serverEndpoint;
+
+  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "RpcEndpoint")
+  private IRpcEndpoint rpcEndpoint;
 
   @GetMapping(path = "/getName")
   public String getName(@RequestParam(name = "name") String name) {
@@ -59,5 +67,20 @@ public class ClientServerEndpoint {
       }
     }
     return names;
+  }
+
+  @PostMapping(path = "/jsonObject")
+  public JsonObject jsonObject(@RequestBody JsonObject jsonObject) {
+    JsonObject param = new JsonObject();
+    param.put("map", jsonObject);
+    JsonObject message = rpcEndpoint.getJsonObject(param);
+    JsonObject inner = new JsonObject();
+    inner.put("map", message);
+    return inner;
+  }
+
+  @PostMapping(path = "/getString")
+  public String getString(@RawJsonRequestBody String jsonString) {
+    return jsonString;
   }
 }

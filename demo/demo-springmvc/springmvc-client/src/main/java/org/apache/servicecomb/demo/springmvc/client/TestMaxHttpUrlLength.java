@@ -25,12 +25,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Strings;
+import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class TestMaxHttpUrlLength implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
-    testUrlNotLongerThan4096();
+    if (DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      testUrlNotLongerThan4096();
+    }
   }
 
   private void testUrlNotLongerThan4096() {

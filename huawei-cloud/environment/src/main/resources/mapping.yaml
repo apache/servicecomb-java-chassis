@@ -18,6 +18,7 @@
 PAAS_CSE_ENDPOINT:
   - servicecomb.service.registry.address
   - servicecomb.config.client.serverUri
+  - servicecomb.monitor.client.serverUri
 PAAS_CSE_SC_ENDPOINT:
   - servicecomb.service.registry.address
 PAAS_CSE_CC_ENDPOINT:

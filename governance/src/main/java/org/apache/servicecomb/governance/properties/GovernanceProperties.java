@@ -82,7 +82,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
       if (key.startsWith(configKey + ".")) {
         String mapKey = key.substring((configKey + ".").length());
         parsedEntity.remove(mapKey);
-        T entityItem = parseEntityItem(key, environment.getProperty(key));
+        T entityItem = parseEntityItem(mapKey, environment.getProperty(key));
         if (entityItem != null) {
           parsedEntity.put(mapKey, entityItem);
         }

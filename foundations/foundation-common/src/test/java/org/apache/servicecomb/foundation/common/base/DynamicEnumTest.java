@@ -51,6 +51,20 @@ class DynamicEnumTest {
   }
 
   @Test
+  void should_be_dynamic_for_unknown_value() {
+    Color color = Color.fromValue("unknown");
+    assertThat(color.isDynamic()).isTrue();
+    assertThat(color.isStatic()).isFalse();
+  }
+
+  @Test
+  void should_be_static_for_known_value() {
+    Color color = Color.fromValue("RED");
+    assertThat(color.isDynamic()).isFalse();
+    assertThat(color.isStatic()).isTrue();
+  }
+
+  @Test
   void should_encode() {
     assertThat(Json.encode(Color.RED)).isEqualTo("\"RED\"");
   }

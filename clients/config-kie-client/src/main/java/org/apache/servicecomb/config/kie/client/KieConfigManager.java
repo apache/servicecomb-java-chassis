@@ -17,13 +17,18 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import com.google.common.eventbus.EventBus;
+import java.util.Collections;
+import java.util.Map;
+
+import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.EventBus;
 
 public class KieConfigManager extends AbstractTask {
 
@@ -37,10 +42,18 @@ public class KieConfigManager extends AbstractTask {
 
   private ConfigurationsRequest configurationsRequest;
 
+  private Map<String, Object> lastConfiguration;
+
   public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus) {
+    this(configKieClient, eventBus, Collections.emptyMap());
+  }
+
+  public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus,
+      Map<String, Object> lastConfiguration) {
     super("config-center-configuration-task");
     this.configKieClient = configKieClient;
     this.eventBus = eventBus;
+    this.lastConfiguration = lastConfiguration;
   }
 
   public void setConfigurationsRequest(ConfigurationsRequest configurationsRequest) {
@@ -65,7 +78,8 @@ public class KieConfigManager extends AbstractTask {
         if (response.isChanged()) {
           LOGGER.info("The configurations are change, will refresh local configurations.");
           configurationsRequest.setRevision(response.getRevision());
-          eventBus.post(new KieConfigChangedEvent(response.getConfigurations()));
+          eventBus.post(ConfigurationChangedEvent.createIncremental(response.getConfigurations(), lastConfiguration));
+          lastConfiguration = response.getConfigurations();
         }
         startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
       } catch (Exception e) {

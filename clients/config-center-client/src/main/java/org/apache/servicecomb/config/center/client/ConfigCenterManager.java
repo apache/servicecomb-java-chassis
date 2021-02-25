@@ -17,14 +17,18 @@
 
 package org.apache.servicecomb.config.center.client;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
+import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
-
-import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.EventBus;
 
 public class ConfigCenterManager extends AbstractTask {
 
@@ -38,10 +42,18 @@ public class ConfigCenterManager extends AbstractTask {
 
   private QueryConfigurationsRequest queryConfigurationsRequest;
 
+  private Map<String, Object> lastConfiguration;
+
   public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus) {
+    this(configCenterClient, eventBus, Collections.emptyMap());
+  }
+
+  public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus,
+      Map<String, Object> lastConfiguration) {
     super("config-center-configuration-task");
     this.configCenterClient = configCenterClient;
     this.eventBus = eventBus;
+    this.lastConfiguration = lastConfiguration;
   }
 
   public void setQueryConfigurationsRequest(QueryConfigurationsRequest queryConfigurationsRequest) {
@@ -65,7 +77,8 @@ public class ConfigCenterManager extends AbstractTask {
         QueryConfigurationsResponse response = configCenterClient.queryConfigurations(queryConfigurationsRequest);
         if (response.isChanged()) {
           queryConfigurationsRequest.setRevision(response.getRevision());
-          eventBus.post(new ConfigurationChangedEvent(response.getConfigurations()));
+          eventBus.post(ConfigurationChangedEvent.createIncremental(response.getConfigurations(), lastConfiguration));
+          lastConfiguration = response.getConfigurations();
         }
         startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
       } catch (Exception e) {
@@ -73,6 +86,5 @@ public class ConfigCenterManager extends AbstractTask {
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
       }
     }
-
   }
 }

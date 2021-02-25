@@ -189,6 +189,7 @@ public class GovernancePropertiesTest {
     policy = policies.get("bulkhead1");
     Assert.assertEquals(3, policy.getMaxConcurrentCalls());
     Assert.assertEquals(3000, policy.getMaxWaitDuration());
+    Assert.assertEquals("bulkhead1", policy.getName());
   }
 
   @Test
