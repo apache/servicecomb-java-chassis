@@ -84,7 +84,7 @@ public final class ConfigCenterConfig {
     readFileSourceConfig();
   }
 
-  @SupressWarnings("unchecked")
+  @SuppressWarnings("unchecked")
   public List<String> getFileSource() {
     return (List<String>) finalConfig.getProperty(FILE_SOURCE);
   }
