@@ -83,7 +83,7 @@ public final class ConfigCenterConfig {
     return finalConfig.getString(FILE_SOURCE, "");
   }
 
-  private readFileSourceConfig() {
+  private void readFileSourceConfig() {
     final String fileSource = INSTANCE.getFileSource();
     if (fileSource.length() <= 0) {
       return;
