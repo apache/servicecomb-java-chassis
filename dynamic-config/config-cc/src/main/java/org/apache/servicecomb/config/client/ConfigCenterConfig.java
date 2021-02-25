@@ -84,14 +84,14 @@ public final class ConfigCenterConfig {
     readFileSourceConfig();
   }
 
-  @SUpressWarnings("unchecked")
+  @SupressWarnings("unchecked")
   public List<String> getFileSource() {
     return (List<String>) finalConfig.getProperty(FILE_SOURCE);
   }
 
   private static void readFileSourceConfig() {
     final List<String> fileSourceNames = INSTANCE.getFileSource();
-    if (fileSourceNames.size <= 0) {
+    if (fileSourceNames.size() <= 0) {
       return;
     }
     fileSourceNames.forEach(fileSourceName -> {
