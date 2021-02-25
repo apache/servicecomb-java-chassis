@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
@@ -89,7 +90,11 @@ public class ProducerTestsAfterBootup implements BootListener {
   }
 
   public void testRegisteredBasePath() {
-    TestMgr.check(17, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+    if (DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      TestMgr.check(17, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+    } else {
+      TestMgr.check(18, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+    }
   }
 
   private String getSwaggerContent(Swagger swagger) {

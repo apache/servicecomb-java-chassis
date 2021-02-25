@@ -15,7 +15,17 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
+APPLICATION_ID: springmvcboottest
+
 server:
   port: 8080
 
 test.unresolved.placeholder: jdbc:postgresql://${ip}:${port}/pt
+test:
+  placeholder:
+    schema: placeholder/schema
+
+servicecomb:
+  test:
+    vert:
+      transport: false
