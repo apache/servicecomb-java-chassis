@@ -122,11 +122,27 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   public class UpdateHandler {
 
+    {
+      System.out.println("intiaiizing Updatehandler");
+    }
+
     public void handle(String action, Map<String, Object> parseConfigs) {
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
+
+      System.out.println("call handle method: " + action);
+
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
+      List<String> fileSourceList = configCenterClient.getFileSources();
+
+      fileSourceList.forEach(fileName -> {
+        if (configuration.containsKey(fileName)) {
+          System.out.println("read yaml file: " + fileName);
+          replaceConfig(configuration, fileName);
+        }
+      });
+
       if ("create".equals(action)) {
         valueCache.putAll(configuration);
         updateConfiguration(createIncremental(ImmutableMap.<String, Object>copyOf(configuration),
@@ -146,6 +162,21 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
         return;
       }
       LOGGER.info("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
+    }
+
+    private void replaceConfig(Map<String, Object> configuration, String fileName) {
+      Object tempConfig = configuration.get(filename);
+      System.out.println("delete " + fileName);
+      configuration.remove(fileName);
+      System.out.println("add " + fileName + "'s config: " + tempConfig.toString());
+      try {
+        Map<String, Object> properties = YAMLUtil.yaml2Properties(
+          new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getbytes()));
+        configuration.putAll(properties);
+      } catch (ClassCastException e) {
+        LOGGER.warn("yaml file has incorrect format");
+        e.printStackTrace();
+      }
     }
   }
 }
