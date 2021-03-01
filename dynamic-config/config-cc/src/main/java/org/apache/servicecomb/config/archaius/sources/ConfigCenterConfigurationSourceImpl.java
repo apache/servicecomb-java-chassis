@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -130,7 +131,13 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       }
 
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
-      List<String> fileSourceList = configCenterClient.getFileSources();
+      List<String> fileSourceList = new ArrayList<>();
+	  
+	  try {
+		  configCenterClient.getFileSources();
+	  } catch (NullPointerException e) {
+		  LOGGER.warn("No File Source Found!");
+	  }
 
       fileSourceList.forEach(fileName -> {
         if (configuration.containsKey(fileName)) {
