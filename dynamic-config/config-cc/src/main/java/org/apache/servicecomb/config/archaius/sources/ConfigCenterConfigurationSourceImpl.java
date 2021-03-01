@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.client.ConfigCenterClient;
@@ -123,7 +124,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public class UpdateHandler {
 
     {
-      System.out.println("intiaiizing Updatehandler");
+      System.out.println("initializing UpdateHandler");
     }
 
     public void handle(String action, Map<String, Object> parseConfigs) {
@@ -165,13 +166,13 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     }
 
     private void replaceConfig(Map<String, Object> configuration, String fileName) {
-      Object tempConfig = configuration.get(filename);
+      Object tempConfig = configuration.get(fileName);
       System.out.println("delete " + fileName);
       configuration.remove(fileName);
       System.out.println("add " + fileName + "'s config: " + tempConfig.toString());
       try {
         Map<String, Object> properties = YAMLUtil.yaml2Properties(
-          new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getbytes()));
+          new ByteArrayInputStream(tempConfig.toString().getBytes()));
         configuration.putAll(properties);
       } catch (ClassCastException e) {
         LOGGER.warn("yaml file has incorrect format");
