@@ -19,9 +19,11 @@ package org.apache.servicecomb.config.archaius.sources;
 
 import static com.netflix.config.WatchedUpdateResult.createIncremental;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.WatchedUpdateListener;
+import com.netflix.config.WatchedUpdateResult;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.deployment.Deployment;
@@ -34,11 +36,9 @@ import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.WatchedUpdateListener;
-import com.netflix.config.WatchedUpdateResult;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by on 2017/1/9.
