@@ -106,15 +106,15 @@ public final class ConfigCenterConfig {
   
   @SuppressWarnings("unchecked")
   public List<String> getFileSources() {
-	  Object property = finalConfig.getProperty(FILE_SOURCE);
-	  if (property instanceof String) {
-		  List<String> result = new ArrayList<>();
-		  result.add((String) property);
-		  return result;
-	  } else if (property instanceof List) {
-		  return (List<String>) property;
-	  }
-	  return new ArrayList<>();
+	Object property = finalConfig.getProperty(FILE_SOURCE);
+	if (property instanceof String) {
+	  List<String> result = new ArrayList<>();
+	  result.add((String) property);
+	  return result;
+	} else if (property instanceof List) {
+	  return (List<String>) property;
+	}
+	return new ArrayList<>();
   }
 
   public int getRefreshInterval() {
