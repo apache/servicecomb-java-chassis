@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -124,19 +125,19 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   public class UpdateHandler {
 
-    {
-      System.out.println("initializing UpdateHandler");
-    }
-
     public void handle(String action, Map<String, Object> parseConfigs) {
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
 
-      System.out.println("call handle method: " + action);
-
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
-      List<String> fileSourceList = configCenterClient.getFileSources();
+      List<String> fileSourceList = new ArrayList<>();
+	  
+	  try {
+		  fileSourceList = configCenterClient.getFileSources();
+	  } catch (NullPointerException e) {
+		  LOGGER.warn("No File Source Found!");
+	  }
 
       fileSourceList.forEach(fileName -> {
         if (configuration.containsKey(fileName)) {
@@ -168,9 +169,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
     private void replaceConfig(Map<String, Object> configuration, String fileName) {
       Object tempConfig = configuration.get(fileName);
-      // System.out.println("delete " + fileName);
       configuration.remove(fileName);
-      System.out.println("add " + fileName + "'s config: " + tempConfig.toString());
       try {
         Map<String, Object> properties = YAMLUtil.yaml2Properties(
           new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getBytes()));
