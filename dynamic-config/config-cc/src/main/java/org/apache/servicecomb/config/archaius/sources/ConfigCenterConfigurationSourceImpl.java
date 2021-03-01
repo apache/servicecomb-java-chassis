@@ -124,16 +124,10 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   public class UpdateHandler {
 
-    {
-      System.out.println("initializing UpdateHandler");
-    }
-
     public void handle(String action, Map<String, Object> parseConfigs) {
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
-
-      System.out.println("call handle method: " + action);
 
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
       List<String> fileSourceList = configCenterClient.getFileSources();
@@ -168,9 +162,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
     private void replaceConfig(Map<String, Object> configuration, String fileName) {
       Object tempConfig = configuration.get(fileName);
-      // System.out.println("delete " + fileName);
       configuration.remove(fileName);
-      System.out.println("add " + fileName + "'s config: " + tempConfig.toString());
       try {
         Map<String, Object> properties = YAMLUtil.yaml2Properties(
           new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getBytes()));
