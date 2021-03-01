@@ -172,7 +172,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       System.out.println("add " + fileName + "'s config: " + tempConfig.toString());
       try {
         Map<String, Object> properties = YAMLUtil.yaml2Properties(
-          new ByteArrayInputStream(tempConfig.toString().getBytes()));
+          new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getBytes()));
         configuration.putAll(properties);
       } catch (ClassCastException e) {
         LOGGER.warn("yaml file has incorrect format");
