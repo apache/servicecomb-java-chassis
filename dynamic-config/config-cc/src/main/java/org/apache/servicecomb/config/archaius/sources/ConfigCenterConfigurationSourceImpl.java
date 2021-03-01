@@ -167,7 +167,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
     private void replaceConfig(Map<String, Object> configuration, String fileName) {
       Object tempConfig = configuration.get(fileName);
-      System.out.println("delete " + fileName);
+      // System.out.println("delete " + fileName);
       configuration.remove(fileName);
       System.out.println("add " + fileName + "'s config: " + tempConfig.toString());
       try {

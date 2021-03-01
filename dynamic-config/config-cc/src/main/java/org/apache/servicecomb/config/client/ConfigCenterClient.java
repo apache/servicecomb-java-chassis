@@ -87,6 +87,12 @@ public class ConfigCenterClient {
   private String serviceName = CONFIG_CENTER_CONFIG.getServiceName();
 
   private String environment = CONFIG_CENTER_CONFIG.getEnvironment();
+  
+  private List<String> fileSources = CONFIG_CENTER_CONFIG.getFileSources();
+  
+  public List<String> getFileSources() {
+	  return fileSources;
+  }
 
   private MemberDiscovery memberDiscovery = new MemberDiscovery(CONFIG_CENTER_CONFIG.getServerUri());
 
