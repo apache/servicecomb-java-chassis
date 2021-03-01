@@ -17,12 +17,20 @@
 
 package org.apache.servicecomb.config.client;
 
-import java.util.List;
+import com.google.common.base.Joiner;
+import com.netflix.config.ConcurrentCompositeConfiguration;
+
+import java.util.*;
+import java.io.*;
+import java.net.*;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
+
+import org.apache.servicecomb.config.YAMLUtil;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 
 import com.google.common.base.Joiner;
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -58,6 +66,8 @@ public final class ConfigCenterConfig {
 
   public static final String IDLE_TIMEOUT_IN_SECONDES = "servicecomb.config.client.idleTimeoutInSeconds";
 
+  public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
+
   private static final int DEFAULT_REFRESH_MODE = 0;
 
   private static final int DEFAULT_REFRESH_PORT = 30104;
@@ -71,6 +81,40 @@ public final class ConfigCenterConfig {
 
   public static void setConcurrentCompositeConfiguration(ConcurrentCompositeConfiguration config) {
     finalConfig = config;
+    readFileSourceConfig();
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<String> getFileSource() {
+    return (List<String>) finalConfig.getProperty(FILE_SOURCE);
+  }
+
+  private static void readFileSourceConfig() {
+    final List<String> fileSourceNames = INSTANCE.getFileSource();
+    if (fileSourceNames.size() <= 0) {
+      return;
+    }
+    fileSourceNames.forEach(fileSourceName -> {
+      try {
+        List<URL> urlList = new ArrayList<>();
+        ClassLoader loader = JvmUtils.findClassLoader();
+        Enumeration<URL> urls = loader.getResources(fileSourceName);
+        while (urls.hasMoreElements()) {
+          urlList.add(urls.nextElement());
+        }
+        urlList.stream().forEach(url -> {
+          Map<String, Object> properties = null;
+          try {
+            properties = YAMLUtil.yaml2Properties(new FileInputStream(new File(url.toURI())));
+          } catch (FileNotFoundException | URISyntaxException e) {
+            e.printStackTrace();
+          }
+          properties.entrySet().forEach(property -> finalConfig.addProperty(property.getKey(), property.getValue()));
+        });
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   public static ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {
