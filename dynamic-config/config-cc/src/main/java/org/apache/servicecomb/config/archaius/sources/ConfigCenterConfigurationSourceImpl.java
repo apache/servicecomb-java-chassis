@@ -17,27 +17,29 @@
 
 package org.apache.servicecomb.config.archaius.sources;
 
-import static com.netflix.config.WatchedUpdateResult.createIncremental;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
-import org.apache.servicecomb.config.ConfigMapping;
-import org.apache.servicecomb.config.client.ConfigCenterClient;
-import org.apache.servicecomb.config.client.ConfigCenterConfig;
-import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
+import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.ConfigMapping;
+import org.apache.servicecomb.config.YAMLUtil;
+import org.apache.servicecomb.config.client.ConfigCenterClient;
+import org.apache.servicecomb.config.client.ConfigCenterConfig;
+import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.netflix.config.WatchedUpdateResult.createIncremental;
 
 /**
  * Created by on 2017/1/9.
@@ -126,7 +128,23 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
+
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
+      List<String> fileSourceList = new ArrayList<>();
+	  
+	  try {
+		  fileSourceList = configCenterClient.getFileSources();
+	  } catch (NullPointerException e) {
+		  LOGGER.warn("No File Source Found!");
+	  }
+
+      fileSourceList.forEach(fileName -> {
+        if (configuration.containsKey(fileName)) {
+          System.out.println("read yaml file: " + fileName);
+          replaceConfig(configuration, fileName);
+        }
+      });
+
       if ("create".equals(action)) {
         valueCache.putAll(configuration);
         updateConfiguration(createIncremental(ImmutableMap.<String, Object>copyOf(configuration),
@@ -146,6 +164,19 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
         return;
       }
       LOGGER.info("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
+    }
+
+    private void replaceConfig(Map<String, Object> configuration, String fileName) {
+      Object tempConfig = configuration.get(fileName);
+      configuration.remove(fileName);
+      try {
+        Map<String, Object> properties = YAMLUtil.yaml2Properties(
+          new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getBytes()));
+        configuration.putAll(properties);
+      } catch (ClassCastException e) {
+        LOGGER.warn("yaml file has incorrect format");
+        e.printStackTrace();
+      }
     }
   }
 }
