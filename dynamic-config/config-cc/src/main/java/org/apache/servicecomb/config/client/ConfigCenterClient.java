@@ -84,7 +84,7 @@ public class ConfigCenterClient {
   private List<String> fileSources = CONFIG_CENTER_CONFIG.getFileSources();
   
   public List<String> getFileSources() {
-	  return fileSources;
+    return fileSources;
   }
 
   private MemberDiscovery memberDiscovery = new MemberDiscovery(CONFIG_CENTER_CONFIG.getServerUri());
