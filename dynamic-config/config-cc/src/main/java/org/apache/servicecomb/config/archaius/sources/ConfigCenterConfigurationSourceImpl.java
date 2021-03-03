@@ -129,13 +129,15 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       }
       
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
-      List<String> fileSourceList = configCenterClient.getFileSources();
-      if (fileSourceList != null) {
-        fileSourceList.forEach(fileName -> {
-          if (configuration.containsKey(fileName)) {
-            replaceConfig(configuration, fileName);
-          }
-        });
+      if (configCenterClient != null) {
+        List<String> fileSourceList = configCenterClient.getFileSources();
+        if (fileSourceList != null) {
+          fileSourceList.forEach(fileName -> {
+            if (configuration.containsKey(fileName)) {
+              replaceConfig(configuration, fileName);
+            }
+          });
+        }
       }
 
       if ("create".equals(action)) {
