@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -128,22 +127,16 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
-
+      
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
-      List<String> fileSourceList = new ArrayList<>();
-	  
-	  try {
-		  fileSourceList = configCenterClient.getFileSources();
-	  } catch (NullPointerException e) {
-		  LOGGER.warn("No File Source Found!");
-	  }
-
-      fileSourceList.forEach(fileName -> {
-        if (configuration.containsKey(fileName)) {
-          System.out.println("read yaml file: " + fileName);
-          replaceConfig(configuration, fileName);
-        }
-      });
+      List<String> fileSourceList = configCenterClient.getFileSources();
+      if (fileSourceList != null) {
+        fileSourceList.forEach(fileName -> {
+          if (configuration.containsKey(fileName)) {
+            replaceConfig(configuration, fileName);
+          }
+        });
+      }
 
       if ("create".equals(action)) {
         valueCache.putAll(configuration);
