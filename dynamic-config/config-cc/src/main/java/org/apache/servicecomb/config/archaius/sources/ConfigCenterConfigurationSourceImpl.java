@@ -128,19 +128,18 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
-
+      
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
       List<String> fileSourceList = new ArrayList<>();
-	  
-	  try {
-		  fileSourceList = configCenterClient.getFileSources();
-	  } catch (NullPointerException e) {
-		  LOGGER.warn("No File Source Found!");
-	  }
+      
+      try {
+        fileSourceList = configCenterClient.getFileSources();
+      } catch (NullPointerException e) {
+        LOGGER.warn("No File Source Found!");
+      }
 
       fileSourceList.forEach(fileName -> {
         if (configuration.containsKey(fileName)) {
-          System.out.println("read yaml file: " + fileName);
           replaceConfig(configuration, fileName);
         }
       });
