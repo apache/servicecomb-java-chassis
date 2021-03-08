@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.qps;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -151,17 +152,7 @@ public class QpsControllerManager {
       return qpsStrategy;
     }
 
-    return new AbstractQpsStrategy() {
-      @Override
-      public boolean isLimitNewRequest() {
-        return false;
-      }
-
-      @Override
-      public String name() {
-        return qualifiedNameKey;
-      }
-    };
+    return null;
   }
 
   private boolean keyMatch(String configKey, Entry<String, AbstractQpsStrategy> controllerEntry) {
@@ -210,13 +201,18 @@ public class QpsControllerManager {
   }
 
   protected void updateObjMap(String configKey) {
-    for (Entry<String, AbstractQpsStrategy> controllerEntry : qualifiedNameControllerMap
-        .entrySet()) {
-      if (keyMatch(configKey, controllerEntry)) {
-        AbstractQpsStrategy qpsStrategy = searchQpsController(controllerEntry.getKey());
-        controllerEntry.setValue(qpsStrategy);
-        LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
-            controllerEntry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
+    Iterator<Entry<String, AbstractQpsStrategy>> it = qualifiedNameControllerMap.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<String, AbstractQpsStrategy> entry = it.next();
+      if (keyMatch(configKey, entry)) {
+        AbstractQpsStrategy qpsStrategy = searchQpsController(entry.getKey());
+        if (qpsStrategy != null) {
+          entry.setValue(qpsStrategy);
+          LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
+              entry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
+        } else {
+          it.remove();
+        }
       }
     }
   }
