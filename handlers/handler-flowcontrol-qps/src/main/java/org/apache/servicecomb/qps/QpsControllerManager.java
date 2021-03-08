@@ -151,7 +151,17 @@ public class QpsControllerManager {
       return qpsStrategy;
     }
 
-    return null;
+    return new AbstractQpsStrategy() {
+      @Override
+      public boolean isLimitNewRequest() {
+        return false;
+      }
+
+      @Override
+      public String name() {
+        return qualifiedNameKey;
+      }
+    };
   }
 
   private boolean keyMatch(String configKey, Entry<String, AbstractQpsStrategy> controllerEntry) {
