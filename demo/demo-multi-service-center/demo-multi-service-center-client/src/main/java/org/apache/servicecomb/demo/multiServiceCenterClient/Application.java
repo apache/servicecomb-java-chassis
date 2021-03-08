@@ -36,7 +36,7 @@ public class Application {
 
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(Application.class)
-        .web(WebApplicationType.SERVLET).build().run(args);
+        .web(WebApplicationType.NONE).build().run(args);
 
     runTest();
   }
