@@ -18,6 +18,7 @@
 package org.apache.servicecomb.router;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,9 +72,9 @@ public class RouterDistributorTest {
   private static final String TARGET_SERVICE_NAME = "test_server";
 
   @Test
-  public void testHeaderIsNull() {
+  public void testHeaderIsEmpty() {
     List<ServiceIns> list = getMockList();
-    List<ServiceIns> serverList = mainFilter(list, null);
+    List<ServiceIns> serverList = mainFilter(list, Collections.emptyMap());
     Assert.assertEquals(2, serverList.size());
   }
 
