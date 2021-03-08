@@ -17,15 +17,16 @@
 
 package org.apache.servicecomb.config.client;
 
-import com.google.common.base.Joiner;
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Joiner;
+import com.netflix.config.ConcurrentCompositeConfiguration;
 
 public final class ConfigCenterConfig {
   public static final ConfigCenterConfig INSTANCE = new ConfigCenterConfig();
