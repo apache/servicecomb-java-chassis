@@ -29,7 +29,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class Application {
 
   public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET)
+    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.NONE)
         .build().run(args);
 
     runTest();

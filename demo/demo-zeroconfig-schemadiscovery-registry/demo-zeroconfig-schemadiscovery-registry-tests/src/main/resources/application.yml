@@ -15,9 +15,6 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-server:
-  port: 8084
-
 # java-chassis configurations
 
 APPLICATION_ID: demo-zeroconfig-schemadiscovery-registry
