@@ -50,7 +50,11 @@ public final class YAMLUtil {
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
-    SAFE_PARSER.loadAll(input).forEach(data -> configurations.putAll(retrieveItems("", (Map<String, Object>) data)));
+    SAFE_PARSER.loadAll(input).forEach(data -> {
+      if (data instanceof Map) {
+        configurations.putAll(retrieveItems("", (Map<String, Object>) data));
+      }
+    });
     return configurations;
   }
 
