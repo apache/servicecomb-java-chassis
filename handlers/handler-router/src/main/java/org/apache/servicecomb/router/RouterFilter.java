@@ -16,18 +16,21 @@
  */
 package org.apache.servicecomb.router;
 
-import com.netflix.loadbalancer.Server;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.apache.servicecomb.router.match.RouterRuleMatcher;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
-import org.springframework.util.StringUtils;
-import org.springframework.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import com.netflix.loadbalancer.Server;
 
 
 /**
@@ -39,15 +42,12 @@ public class RouterFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterFilter.class);
 
   public static <T extends Server, E> List<T> getFilteredListOfServers(List<T> list,
-      String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
+      String targetServiceName, @NotNull Map<String, String> headers, RouterDistributor<T, E> distributer) {
     if (CollectionUtils.isEmpty(list)) {
       return list;
     }
     if (StringUtils.isEmpty(targetServiceName)) {
       return list;
-    }
-    if (headers == null) {
-      headers = new HashMap<>();
     }
     /**
      * 1.init and cache

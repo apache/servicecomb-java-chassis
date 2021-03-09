@@ -66,7 +66,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
 
   private Map<String, String> filterHeaders(Map<String, String> headers) {
     List<RouterHeaderFilterExt> filters = SPIServiceUtils
-        .loadSortedService(RouterHeaderFilterExt.class);
+        .getOrLoadSortedService(RouterHeaderFilterExt.class);
     for (RouterHeaderFilterExt filterExt : filters) {
       if (filterExt.enabled()) {
         headers = filterExt.doFilter(headers);
