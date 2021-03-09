@@ -126,7 +126,7 @@ public class RestClientSender {
     httpClientRequest.write(fileHeader);
 
     return new PumpFromPart(transportContext.getVertxContext(), part)
-        .toWriteStream(httpClientRequest, null)
+        .toWriteStream(httpClientRequest, future::completeExceptionally)
         .whenComplete((v, e) -> {
           if (e != null) {
             LOGGER.debug("Failed to send file [{}:{}].", name, part.getSubmittedFileName(), e);

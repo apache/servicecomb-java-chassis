@@ -16,17 +16,25 @@
  */
 package org.apache.servicecomb.it.testcase;
 
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.anyOf;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
 import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.assertj.core.api.Condition;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +47,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import io.netty.channel.ConnectTimeoutException;
 
 public class TestUpload {
 
@@ -53,10 +63,17 @@ public class TestUpload {
   private static final String message = "cseMessage";
 
   interface UploadIntf {
-    Map<String, String> uploadMultiformMix(Resource file,
+    Map<String, String> uploadMultiformMix(Endpoint endpoint, Resource file,
         List<Resource> fileList,
         String str,
         List<String> strList);
+
+    default Map<String, String> uploadMultiformMix(Resource file,
+        List<Resource> fileList,
+        String str,
+        List<String> strList) {
+      return uploadMultiformMix(null, file, fileList, str, strList);
+    }
   }
 
   private static Consumers<UploadIntf> consumersSpringmvc = new Consumers<>("uploadSpringmvcSchema",
@@ -83,6 +100,29 @@ public class TestUpload {
     } catch (IOException e) {
       Assert.fail("Failed to create temp file");
     }
+  }
+
+  @Test
+  public void should_failed_when_connect_failed() {
+    Throwable throwable = catchThrowable(
+        () -> consumersJaxrs.getIntf()
+            .uploadMultiformMix(EndpointUtils.parse(EndpointUtils.formatFromUri("http://149.159.169.179:54321")),
+                fileSystemResource1, singletonList(fileSystemResource2), message, singletonList("2.中文测试")));
+
+    assertThat(throwable)
+        .isInstanceOf(InvocationException.class);
+    assertThat(throwable.toString())
+        .is(anyOf(
+            new Condition<>(v -> v.equals(
+                "InvocationException: code=500;msg=CommonExceptionData{code='SCB.00000000', message='connection timed out.', dynamic={}}"),
+                "for filter"),
+            new Condition<>(v -> v.equals(
+                "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]"),
+                "for handler")
+        ));
+    assertThat(throwable.getCause())
+        .isInstanceOf(ConnectTimeoutException.class)
+        .hasMessage("connection timed out: /149.159.169.179:54321");
   }
 
   @Test
@@ -334,7 +374,7 @@ public class TestUpload {
     map.put("file", fileSystemResource1);
     map.put("fileList", fileList);
     map.put("str", message);
-    map.put("strList", Collections.singletonList("2.中文测试"));
+    map.put("strList", singletonList("2.中文测试"));
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     ResponseEntity<Map<String, String>> response =
@@ -355,7 +395,7 @@ public class TestUpload {
     fileList.add(fileSystemResource2);
     Map<String, String> responseBody =
         consumersSpringmvc.getIntf().uploadMultiformMix(
-            fileSystemResource1, fileList, message, Collections.singletonList("2.中文测试"));
+            fileSystemResource1, fileList, message, singletonList("2.中文测试"));
     Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
     Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
     Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
@@ -370,7 +410,7 @@ public class TestUpload {
     map.put("file", fileSystemResource1);
     map.put("fileList", fileList);
     map.put("str", message);
-    map.put("strList", Collections.singletonList("2.中文测试"));
+    map.put("strList", singletonList("2.中文测试"));
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     ResponseEntity<Map<String, String>> response =
@@ -391,7 +431,7 @@ public class TestUpload {
     fileList.add(fileSystemResource2);
     Map<String, String> responseBody =
         consumersJaxrs.getIntf().uploadMultiformMix(
-            fileSystemResource1, fileList, message, Collections.singletonList("2.中文测试"));
+            fileSystemResource1, fileList, message, singletonList("2.中文测试"));
     Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
     Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
     Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
