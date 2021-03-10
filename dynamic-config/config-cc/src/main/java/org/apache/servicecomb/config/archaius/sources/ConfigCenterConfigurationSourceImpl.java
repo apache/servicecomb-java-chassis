@@ -164,9 +164,12 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
     private void replaceConfig(Map<String, Object> configuration, String fileName) {
       Object tempConfig = configuration.get(fileName);
-      Map<String, Object> properties = YAMLUtil.yaml2Properties(
-          new ByteArrayInputStream(tempConfig.toString().replaceAll(":", ": ").getBytes()));
-      configuration.putAll(properties);
+      try {
+        Map<String, Object> properties = YAMLUtil.yaml2Properties(tempConfig.toString());
+        configuration.putAll(properties);
+      } catch (Exception e) {
+        LOGGER.warn("yaml file has incorrect format", e);
+      }
     }
   }
 }
