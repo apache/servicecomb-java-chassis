@@ -464,6 +464,10 @@ public class QpsControllerManagerTest {
     ArchaiusUtils.setProperty(key, value);
   }
 
+  public static void deleteConfig(String key) {
+    ArchaiusUtils.setProperty(key, null);
+  }
+
   private static void setConfigWithDefaultPrefix(boolean isProvider, String key, int value) {
     String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
     if (isProvider) {
@@ -471,5 +475,32 @@ public class QpsControllerManagerTest {
     }
 
     ArchaiusUtils.setProperty(configKey, value);
+  }
+
+  public static void deleteConfigWithDefaultPrefix(boolean isProvider, String key) {
+    String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
+    if (isProvider) {
+      configKey = Config.PROVIDER_LIMIT_KEY_PREFIX + key;
+    }
+
+    ArchaiusUtils.setProperty(configKey, null);
+  }
+
+  @Test
+  public void testDeleteQpsController() {
+
+    final String MICROSERVICE_NAME = "springmvcClient";
+    final String SCHEMA_ID = "controller";
+    final String OPERATION_ID = "add";
+    final String CONFIG_KEY = "springmvcClient.controller.add";
+
+    QpsControllerManager testManager = new QpsControllerManager(true);
+    Invocation testInvocation = getMockInvocation(MICROSERVICE_NAME, SCHEMA_ID, OPERATION_ID);
+    Mockito.when(testInvocation.getSchemaId()).thenReturn("controller");
+    testManager.getOrCreate("springmvcClient", testInvocation);
+
+    setConfigWithDefaultPrefix(true, CONFIG_KEY, 1);
+
+    deleteConfigWithDefaultPrefix(true, CONFIG_KEY);
   }
 }
