@@ -39,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 import io.swagger.models.Swagger;
 
@@ -51,6 +53,11 @@ public class SwaggerLoader {
   private Map<String, Map<String, Map<String, Swagger>>> apps = new ConcurrentHashMapEx<>();
 
   public SwaggerLoader() {
+  }
+
+  // result length is 64
+  public static String calcSchemaSummary(String schemaContent) {
+    return Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString();
   }
 
   /**
@@ -119,8 +126,7 @@ public class SwaggerLoader {
         .remove(schemaId);
   }
 
-  public Swagger loadSwagger(Microservice microservice,
-      Collection<MicroserviceInstance> instances, String schemaId) {
+  public Swagger loadSwagger(Microservice microservice, Collection<MicroserviceInstance> instances, String schemaId) {
     Swagger swagger = loadLocalSwagger(microservice.getAppId(), microservice.getServiceName(), schemaId);
     if (swagger != null) {
       return swagger;

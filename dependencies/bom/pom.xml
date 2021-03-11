@@ -280,6 +280,11 @@
       <!-- ServiceComb： service registry -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-lightweight</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>registry-local</artifactId>
         <version>${project.version}</version>
       </dependency>

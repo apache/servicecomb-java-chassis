@@ -30,32 +30,36 @@ public class MicroserviceInstances {
     return microserviceNotExist;
   }
 
-  public void setMicroserviceNotExist(boolean microserviceNotExist) {
+  public MicroserviceInstances setMicroserviceNotExist(boolean microserviceNotExist) {
     this.microserviceNotExist = microserviceNotExist;
+    return this;
   }
 
   public boolean isNeedRefresh() {
     return needRefresh;
   }
 
-  public void setNeedRefresh(boolean needRefresh) {
+  public MicroserviceInstances setNeedRefresh(boolean needRefresh) {
     this.needRefresh = needRefresh;
+    return this;
   }
 
   public String getRevision() {
     return revision;
   }
 
-  public void setRevision(String revision) {
+  public MicroserviceInstances setRevision(String revision) {
     this.revision = revision;
+    return this;
   }
 
   public FindInstancesResponse getInstancesResponse() {
     return instancesResponse;
   }
 
-  public void setInstancesResponse(FindInstancesResponse instancesResponse) {
+  public MicroserviceInstances setInstancesResponse(FindInstancesResponse instancesResponse) {
     this.instancesResponse = instancesResponse;
+    return this;
   }
 
   public void mergeMicroserviceInstances(MicroserviceInstances other) {

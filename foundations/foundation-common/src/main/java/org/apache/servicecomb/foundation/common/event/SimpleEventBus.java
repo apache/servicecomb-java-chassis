@@ -63,6 +63,7 @@ public class SimpleEventBus extends EventBus {
     }
   }
 
+  @Override
   public void post(Object event) {
     // cache always reset after register/unregister
     // so cache always match latest subscribersMap at last

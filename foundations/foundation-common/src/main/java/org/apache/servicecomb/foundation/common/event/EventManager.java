@@ -17,12 +17,16 @@
 
 package org.apache.servicecomb.foundation.common.event;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import com.google.common.eventbus.EventBus;
 
 /**
  * EventManager for chassis events
  *
  */
+@Configuration
 public class EventManager {
   public static EventBus eventBus = new SimpleEventBus();
 
@@ -49,5 +53,10 @@ public class EventManager {
    */
   public static void unregister(Object listener) {
     eventBus.unregister(listener);
+  }
+
+  @Bean
+  public EventBus eventBus() {
+    return eventBus;
   }
 }

@@ -32,14 +32,11 @@ import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.version.Version;
 
-import com.google.common.annotations.VisibleForTesting;
-
 public class MicroserviceFactory {
   public Microservice create() {
     return create(ConfigUtil.createLocalConfig());
   }
 
-  @VisibleForTesting
   public Microservice create(Configuration configuration) {
     Microservice microservice = createMicroserviceFromConfiguration(configuration);
     microservice.setInstance(MicroserviceInstance.createFromDefinition(configuration));

@@ -38,6 +38,7 @@ import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -217,7 +218,7 @@ public final class RegistryUtils {
   }
 
   public static String calcSchemaSummary(String schemaContent) {
-    return Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString();
+    return SwaggerLoader.calcSchemaSummary(schemaContent);
   }
 
   public static String getAggregatedSchema(String microserviceId, String schemaId) {

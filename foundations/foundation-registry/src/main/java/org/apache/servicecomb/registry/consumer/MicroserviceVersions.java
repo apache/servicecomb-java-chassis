@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
@@ -39,7 +40,6 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.config.ServiceRegistryCommonConfig;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +101,11 @@ public class MicroserviceVersions {
 
   public boolean isWaitingDelete() {
     return waitingDelete;
+  }
+
+  public MicroserviceVersions markWaitingDelete() {
+    this.waitingDelete = true;
+    return this;
   }
 
   public AppManager getAppManager() {
@@ -181,7 +186,8 @@ public class MicroserviceVersions {
   protected MicroserviceInstances findServiceInstances() {
     return DiscoveryManager.INSTANCE.findServiceInstances(appId,
         microserviceName,
-        DefinitionConst.VERSION_RULE_ALL);
+        DefinitionConst.VERSION_RULE_ALL,
+        revision);
   }
 
   protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {

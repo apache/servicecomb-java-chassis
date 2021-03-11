@@ -69,11 +69,20 @@ public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
    * @param versionRule literal version rule. e.g. 1.0.0, 1.0.0+, [1.0.0, 2.0.0)
    * @return all instances match the criteria.
    */
-  MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule);
+  default MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
+    return findServiceInstances(appId, serviceName, versionRule, null);
+  }
+
+  default MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule,
+      String revision) {
+    return null;
+  }
 
   /**
    * Life Cycle：can be used when calling <code>findServiceInstances</code>
+   *
+   * TODO: should delete this revision<br>
+   *   because revision is microservice scope, not discovery scope
    */
   String getRevision();
 
