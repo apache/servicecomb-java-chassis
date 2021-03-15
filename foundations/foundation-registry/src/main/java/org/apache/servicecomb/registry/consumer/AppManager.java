@@ -18,16 +18,21 @@
 package org.apache.servicecomb.registry.consumer;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
 public class AppManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AppManager.class);
+
   // key: appId
   private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
 
@@ -83,5 +88,19 @@ public class AppManager {
     for (MicroserviceManager microserviceManager : apps.values()) {
       microserviceManager.pullInstances();
     }
+  }
+
+  public void safePullInstances() {
+    try {
+      pullInstances();
+    } catch (Exception e) {
+      LOGGER.error("failed to pull instances.", e);
+    }
+  }
+
+  public void markWaitingDelete(String appId, String microserviceName) {
+    Optional.ofNullable(apps.get(appId))
+        .map(microserviceManager -> microserviceManager.getVersionsByName().get(microserviceName))
+        .ifPresent(MicroserviceVersions::markWaitingDelete);
   }
 }

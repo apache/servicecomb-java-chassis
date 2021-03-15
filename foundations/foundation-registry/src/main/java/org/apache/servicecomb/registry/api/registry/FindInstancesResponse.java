@@ -26,8 +26,9 @@ public class FindInstancesResponse {
     return instances;
   }
 
-  public void setInstances(List<MicroserviceInstance> instances) {
+  public FindInstancesResponse setInstances(List<MicroserviceInstance> instances) {
     this.instances = instances;
+    return this;
   }
 
   public void mergeInstances(List<MicroserviceInstance> instances) {

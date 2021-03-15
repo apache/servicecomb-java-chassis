@@ -27,12 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
@@ -60,25 +61,20 @@ public class RegistrationManager {
 
   private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
-  public static RegistrationManager INSTANCE = new RegistrationManager();
-
-  private final List<Registration> registrationList;
-
-  private final Registration primary;
-
   private static SwaggerLoader swaggerLoader = new SwaggerLoader();
 
+  public static RegistrationManager INSTANCE = new RegistrationManager();
+
+  private final List<Registration> registrationList = new ArrayList<>();
+
+  private Registration primary;
+
   private RegistrationManager() {
-    registrationList = SPIServiceUtils.getOrLoadSortedService(Registration.class)
+    SPIServiceUtils.getOrLoadSortedService(Registration.class)
         .stream()
-        .filter((registration -> registration.enabled()))
-        .collect(Collectors.toList());
-    if (registrationList.isEmpty()) {
-      LOGGER.warn("No registration is enabled. Fix this if only in unit tests.");
-      primary = null;
-    } else {
-      primary = registrationList.get(0);
-    }
+        .filter((SPIEnabled::enabled))
+        .forEach(registrationList::add);
+    initPrimary();
   }
 
   public MicroserviceInstance getMicroserviceInstance() {
@@ -136,9 +132,20 @@ public class RegistrationManager {
     registrationList.forEach(registration -> registration.run());
   }
 
-
   public void init() {
+    BeanUtils.addBeans(Registration.class, registrationList);
+
+    initPrimary();
     registrationList.forEach(registration -> registration.init());
+  }
+
+  private void initPrimary() {
+    if (registrationList.isEmpty()) {
+      LOGGER.warn("No registration is enabled. Fix this if only in unit tests.");
+      primary = null;
+    } else {
+      primary = registrationList.get(0);
+    }
   }
 
   /**

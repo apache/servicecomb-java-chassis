@@ -93,7 +93,7 @@ public class TestRegistryBase {
     new MockUp<DiscoveryManager>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule) {
+          String versionRule, String revision) {
         return microserviceInstances;
       }
     };

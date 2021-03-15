@@ -41,6 +41,7 @@ public class MicroserviceInstance {
   // when register to service center again, use the old instanceId.
   private String instanceId;
 
+  // service center rule: max length: 64
   private String serviceId;
 
   private List<String> endpoints = new ArrayList<>();
@@ -91,12 +92,22 @@ public class MicroserviceInstance {
     this.instanceId = instanceId;
   }
 
+  public MicroserviceInstance instanceId(String instanceId) {
+    this.instanceId = instanceId;
+    return this;
+  }
+
   public String getServiceId() {
     return serviceId;
   }
 
   public void setServiceId(String serviceId) {
     this.serviceId = serviceId;
+  }
+
+  public MicroserviceInstance serviceId(String serviceId) {
+    this.serviceId = serviceId;
+    return this;
   }
 
   public String getHostName() {

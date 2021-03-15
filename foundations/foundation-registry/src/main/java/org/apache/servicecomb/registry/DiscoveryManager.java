@@ -17,12 +17,13 @@
 
 package org.apache.servicecomb.registry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -38,7 +39,7 @@ import com.google.common.annotations.VisibleForTesting;
 public class DiscoveryManager {
   public static DiscoveryManager INSTANCE = new DiscoveryManager();
 
-  private final List<Discovery> discoveryList;
+  private final List<Discovery> discoveryList = new ArrayList<>();
 
   private final AppManager appManager;
 
@@ -48,10 +49,10 @@ public class DiscoveryManager {
   private DiscoveryManager() {
     appManager = new AppManager();
     instanceCacheManager = new InstanceCacheManagerNew(appManager);
-    discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class)
+    SPIServiceUtils.getOrLoadSortedService(Discovery.class)
         .stream()
         .filter((discovery -> discovery.enabled()))
-        .collect(Collectors.toList());
+        .forEach(discoveryList::add);
   }
 
   @VisibleForTesting
@@ -61,15 +62,22 @@ public class DiscoveryManager {
 
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule) {
+    return findServiceInstances(appId, serviceName, versionRule, null);
+  }
+
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName,
+      String versionRule, String revision) {
     MicroserviceInstances result = new MicroserviceInstances();
     // default values not suitable for aggregate, reset.
     result.setNeedRefresh(false);
     result.setMicroserviceNotExist(true);
     discoveryList
         .forEach(discovery -> {
-          MicroserviceInstances microserviceInstances = discovery.findServiceInstances(appId, serviceName, versionRule);
-          result.mergeMicroserviceInstances(microserviceInstances);
-          discovery.setRevision(microserviceInstances.getRevision());
+          MicroserviceInstances instances = discovery.findServiceInstances(appId, serviceName, versionRule, revision);
+          result.mergeMicroserviceInstances(instances);
+
+          // 逻辑错误，revision只与本次查询条件有关，与discovery无关
+          discovery.setRevision(instances.getRevision());
         });
 
     return result;
@@ -142,6 +150,8 @@ public class DiscoveryManager {
   }
 
   public void init() {
+    BeanUtils.addBeans(Discovery.class, discoveryList);
+
     discoveryList.forEach(discovery -> discovery.init());
   }
 }

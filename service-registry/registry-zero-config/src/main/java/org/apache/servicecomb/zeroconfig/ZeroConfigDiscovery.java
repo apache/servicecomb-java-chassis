@@ -16,43 +16,49 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import com.netflix.config.DynamicPropertyFactory;
-import java.util.Collection;
-import java.util.List;
-import org.apache.servicecomb.registry.api.Discovery;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.zeroconfig.client.ZeroConfigClient;
+import org.apache.servicecomb.registry.consumer.AppManager;
+import org.apache.servicecomb.registry.lightweight.AbstractLightDiscovery;
+import org.apache.servicecomb.registry.lightweight.DiscoveryClient;
+import org.apache.servicecomb.registry.lightweight.SchemaChangedEvent;
+import org.apache.servicecomb.registry.lightweight.store.Store;
+import org.springframework.stereotype.Component;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ORDER;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.netflix.config.DynamicPropertyFactory;
 
-public class ZeroConfigDiscovery implements Discovery {
-
+@Component
+public class ZeroConfigDiscovery extends AbstractLightDiscovery {
   private static final String NAME = "zero-config discovery";
 
-  private ZeroConfigClient zeroConfigClient = ZeroConfigClient.INSTANCE;
-  private String revision;
+  private final AppManager appManager;
 
-  @Override
-  public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLED, true).get();
+  public ZeroConfigDiscovery(Store store, DiscoveryClient discoveryClient, EventBus eventBus, AppManager appManager) {
+    super(store);
+    this.appManager = appManager;
+
+    Executors
+        .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "zero-config-discovery"))
+        .scheduleAtFixedRate(appManager::safePullInstances, 0, 3, TimeUnit.SECONDS);
+    eventBus.register(this);
+  }
+
+  @Subscribe
+  public void onSchemaChanged(SchemaChangedEvent event) {
+    Microservice microservice = event.getMicroservice();
+    appManager.markWaitingDelete(microservice.getAppId(), microservice.getServiceName());
   }
 
   @Override
-  public void init() {
-    // done in registration
-  }
-
-  @Override
-  public void run() {
-    // done in registration
-  }
-
-  @Override
-  public void destroy() {
-    // done in registration
+  public String name() {
+    return NAME;
   }
 
   @Override
@@ -61,46 +67,7 @@ public class ZeroConfigDiscovery implements Discovery {
   }
 
   @Override
-  public Microservice getMicroservice(String microserviceId) {
-    return zeroConfigClient.getMicroservice(microserviceId);
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(CFG_ENABLED, true).get();
   }
-
-  @Override
-  public List<Microservice> getAllMicroservices() {
-    return zeroConfigClient.getAllMicroservices();
-  }
-
-  //TODO
-  @Override
-  public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances,
-      String schemaId) {
-    return zeroConfigClient.getSchema(microserviceId, schemaId);
-  }
-
-  @Override
-  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
-    return zeroConfigClient.findMicroserviceInstance(serviceId, instanceId);
-  }
-
-  @Override
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule) {
-    return zeroConfigClient.findServiceInstances(appId, serviceName, versionRule);
-  }
-
-  @Override
-  public String getRevision() {
-    return this.revision;
-  }
-
-  @Override
-  public void setRevision(String revision) {
-    this.revision = revision;
-  }
-
-  @Override
-  public String name() {
-    return NAME;
-  }
-
 }

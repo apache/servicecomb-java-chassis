@@ -32,6 +32,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Microservice {
+  // service center rule: max length: 64
+  // two way to generate service id
+  // 1. microservice instance generate by some rule, ex: env/app/name/version
+  //    and then register to service center with the id
+  // 2. register to service center with the id to be null, and then service center generate by UUID
   private String serviceId;
 
   private Framework framework;
@@ -40,8 +45,10 @@ public class Microservice {
 
   private String environment;
 
+  // service center rule: max length: 160
   private String appId;
 
+  // service center rule: max length: 128
   private String serviceName;
 
   /**
@@ -113,12 +120,22 @@ public class Microservice {
     this.serviceId = serviceId;
   }
 
+  public Microservice serviceId(String serviceId) {
+    this.serviceId = serviceId;
+    return this;
+  }
+
   public String getAppId() {
     return appId;
   }
 
   public void setAppId(String appId) {
     this.appId = appId;
+  }
+
+  public Microservice appId(String appId) {
+    this.appId = appId;
+    return this;
   }
 
   public String getAlias() {
@@ -137,12 +154,22 @@ public class Microservice {
     this.serviceName = serviceName;
   }
 
+  public Microservice serviceName(String serviceName) {
+    this.serviceName = serviceName;
+    return this;
+  }
+
   public String getVersion() {
     return version;
   }
 
   public void setVersion(String version) {
     this.version = version;
+  }
+
+  public Microservice version(String version) {
+    this.version = version;
+    return this;
   }
 
   public String getDescription() {

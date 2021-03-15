@@ -209,7 +209,8 @@ public class LocalRegistryStore {
   }
 
   // local registry do not care about version and revision
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule,
+      String revision) {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     FindInstancesResponse findInstancesResponse = new FindInstancesResponse();
     List<MicroserviceInstance> instances = new ArrayList<>();

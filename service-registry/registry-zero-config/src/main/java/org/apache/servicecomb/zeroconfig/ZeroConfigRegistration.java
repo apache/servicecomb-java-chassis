@@ -16,69 +16,93 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ORDER;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
-import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.api.registry.BasePath;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.zeroconfig.client.ClientUtil;
-import org.apache.servicecomb.zeroconfig.client.ZeroConfigClient;
-import org.apache.servicecomb.zeroconfig.server.ServerUtil;
+import org.apache.servicecomb.registry.lightweight.AbstractLightRegistration;
+import org.apache.servicecomb.registry.lightweight.RegisterInstanceEvent;
+import org.apache.servicecomb.registry.lightweight.Self;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ZeroConfigRegistration implements Registration {
-
+@Component
+public class ZeroConfigRegistration extends AbstractLightRegistration {
   private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistration.class);
 
   private static final String NAME = "zero-config registration";
 
-  private ZeroConfigClient zeroConfigClient = ZeroConfigClient.INSTANCE;
+  private final Multicast multicast;
+
+  private final Self self;
+
+  private final EventBus eventBus;
+
+  private final ScheduledExecutorService executorService = Executors
+      .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "zero-config-register"));
+
+  public ZeroConfigRegistration(Multicast multicast, Self self, EventBus eventBus) {
+    this.multicast = multicast;
+    this.self = self;
+    this.eventBus = eventBus;
+
+    eventBus.register(this);
+  }
+
+  private void sendRegister() {
+    try {
+      multicast.send(MessageType.REGISTER, self.buildRegisterRequest());
+    } catch (Exception e) {
+      LOGGER.error("register failed.", e);
+    }
+  }
+
+  @Subscribe
+  public void onRegisterInstance(RegisterInstanceEvent event) {
+    if (event.getInstance().getInstanceId().equals(self.getInstance().getInstanceId())) {
+      return;
+    }
+
+    sendRegister();
+  }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLED, true).get();
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(CFG_ENABLED, true).get();
   }
 
   @Override
   public void init() {
-    zeroConfigClient.init();
-    ServerUtil.INSTANCE.init();
-    ClientUtil.INSTANCE.init();
+
   }
 
   @Override
   public void run() {
-    // register service instance
-    boolean registerResult = zeroConfigClient.register();
-
-    if (!registerResult) {
-      LOGGER.error("Failed to Register Service Instance in Zero-Config mode");
-    } else {
-      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(
-          NAME,
-          getMicroserviceInstance().getInstanceId(),
-          false
-      ));
-    }
+    // switch to registered status, before send register message
+    // otherwise send message maybe failed
+    eventBus.post(new MicroserviceInstanceRegisteredEvent(
+        NAME,
+        self.getInstance().getInstanceId(),
+        false
+    ));
+    executorService.scheduleAtFixedRate(this::sendRegister, 0, 10, TimeUnit.SECONDS);
   }
 
   @Override
   public void destroy() {
-    // unregister service instance
-    boolean unregisterResult = zeroConfigClient.unregister();
-
-    if (!unregisterResult) {
-      LOGGER.error("Failed to Unregister Service Instance in Zero-Config mode");
+    try {
+      multicast.send(MessageType.UNREGISTER, self.buildUnregisterRequest());
+    } catch (Exception e) {
+      LOGGER.error("unregister failed.", e);
     }
   }
 
@@ -90,41 +114,5 @@ public class ZeroConfigRegistration implements Registration {
   @Override
   public String name() {
     return NAME;
-  }
-
-  @Override
-  public MicroserviceInstance getMicroserviceInstance() {
-    return zeroConfigClient.getSelfMicroserviceInstance();
-  }
-
-  @Override
-  public Microservice getMicroservice() {
-    return zeroConfigClient.getSelfMicroservice();
-  }
-
-  @Override
-  public String getAppId() {
-    return zeroConfigClient.getSelfMicroservice().getAppId();
-  }
-
-  @Override
-  public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    zeroConfigClient.getSelfMicroserviceInstance().setStatus(status);
-    return true;
-  }
-
-  @Override
-  public void addSchema(String schemaId, String content) {
-    zeroConfigClient.getSelfMicroservice().addSchema(schemaId, content);
-  }
-
-  @Override
-  public void addEndpoint(String endpoint) {
-    zeroConfigClient.getSelfMicroserviceInstance().getEndpoints().add(endpoint);
-  }
-
-  @Override
-  public void addBasePath(Collection<BasePath> basePaths) {
-    zeroConfigClient.getSelfMicroservice().getPaths().addAll(basePaths);
   }
 }

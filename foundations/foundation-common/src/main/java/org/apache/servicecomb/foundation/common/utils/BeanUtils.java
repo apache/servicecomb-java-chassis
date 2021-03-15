@@ -19,7 +19,9 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +34,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public final class BeanUtils {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
 
   public static final String DEFAULT_BEAN_CORE_RESOURCE = "classpath*:META-INF/spring/scb-core-bean.xml";
@@ -157,5 +158,21 @@ public final class BeanUtils {
    */
   public static Class<?> getImplClassFromBean(Object bean) {
     return AopProxyUtils.ultimateTargetClass(bean);
+  }
+
+  public static <T extends SPIOrder & SPIEnabled> void addBeans(Class<T> cls, List<T> exists) {
+    if (context == null) {
+      return;
+    }
+
+    for (T instance : exists) {
+      context.getAutowireCapableBeanFactory().autowireBean(instance);
+    }
+    for (T bean : context.getBeansOfType(cls).values()) {
+      if (bean.enabled()) {
+        exists.add(bean);
+      }
+    }
+    exists.sort(Comparator.comparingInt(SPIOrder::getOrder));
   }
 }
