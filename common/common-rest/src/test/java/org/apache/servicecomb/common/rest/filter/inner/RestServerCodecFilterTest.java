@@ -112,8 +112,8 @@ public class RestServerCodecFilterTest {
         invocation.getTransportContext();
         result = transportContext;
 
-        transportContext.getRequestEx();
-        result = new RuntimeExceptionWithoutStackTrace("encode request failed");
+        invocation.getRequestEx();
+        result = new RuntimeExceptionWithoutStackTrace("mock encode request failed");
       }
     };
   }
@@ -147,7 +147,7 @@ public class RestServerCodecFilterTest {
 
     assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
     assertThat(Json.encode(response.getResult()))
-        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"encode request failed\"}");
+        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"mock encode request failed\"}");
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {

@@ -115,7 +115,7 @@ public class RestProducerInvocationCreatorTest {
   public void should_failed_when_not_defined_any_schema() {
     mockGetServicePathManager(null);
 
-    InvocationException throwable = (InvocationException) catchThrowable(() -> creator.create());
+    InvocationException throwable = (InvocationException) catchThrowable(() -> creator.createAsync().join());
     CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
 
     assertThat(throwable.getStatusCode()).isEqualTo(NOT_FOUND.getStatusCode());
@@ -135,7 +135,7 @@ public class RestProducerInvocationCreatorTest {
       }
     };
 
-    InvocationException throwable = (InvocationException) catchThrowable(() -> creator.create());
+    InvocationException throwable = (InvocationException) catchThrowable(() -> creator.createAsync().join());
     CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
 
     assertThat(throwable.getStatusCode()).isEqualTo(NOT_ACCEPTABLE.getStatusCode());
@@ -147,7 +147,7 @@ public class RestProducerInvocationCreatorTest {
   public void should_save_requestEx_in_invocation_context() {
     mockGetServicePathManager();
 
-    Invocation invocation = creator.create();
+    Invocation invocation = creator.createAsync().join();
 
     Object request = invocation.getLocalContext(RestConst.REST_REQUEST);
     assertThat(request).isSameAs(requestEx);
@@ -157,7 +157,7 @@ public class RestProducerInvocationCreatorTest {
   public void should_save_path_var_map_in_requestEx() {
     mockGetServicePathManager();
 
-    creator.create();
+    creator.createAsync().join();
 
     new Verifications() {
       {
@@ -177,7 +177,7 @@ public class RestProducerInvocationCreatorTest {
       }
     };
 
-    Invocation invocation = creator.create();
+    Invocation invocation = creator.createAsync().join();
 
     assertThat(invocation.getContext("k")).isEqualTo("v");
   }

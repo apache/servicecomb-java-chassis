@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core.invocation;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.servicecomb.core.Invocation;
@@ -87,7 +88,7 @@ public class ProducerInvocationFlowTest {
   @Test
   public void should_start_invocation_when_succeed_to_create_invocation() {
     mockFilterChain();
-    TestFlow flow = new TestFlow(() -> invocation);
+    TestFlow flow = new TestFlow(() -> completedFuture(invocation));
 
     flow.run();
 
@@ -102,7 +103,7 @@ public class ProducerInvocationFlowTest {
   @Test
   public void should_send_response_when_invocation_success() {
     mockFilterChain();
-    TestFlow flow = new TestFlow(() -> invocation);
+    TestFlow flow = new TestFlow(() -> completedFuture(invocation));
 
     flow.run();
 
@@ -112,7 +113,7 @@ public class ProducerInvocationFlowTest {
   @Test
   public void should_finish_invocation_when_invocation_success() {
     mockFilterChain();
-    TestFlow flow = new TestFlow(() -> invocation);
+    TestFlow flow = new TestFlow(() -> completedFuture(invocation));
 
     flow.run();
 
@@ -134,7 +135,7 @@ public class ProducerInvocationFlowTest {
   @Test
   public void should_send_response_when_invocation_fail() {
     mockInvocationFailed();
-    TestFlow flow = new TestFlow(() -> invocation);
+    TestFlow flow = new TestFlow(() -> completedFuture(invocation));
 
     flow.run();
 
@@ -144,7 +145,7 @@ public class ProducerInvocationFlowTest {
   @Test
   public void should_finish_invocation_when_invocation_fail() {
     mockInvocationFailed();
-    TestFlow flow = new TestFlow(() -> invocation);
+    TestFlow flow = new TestFlow(() -> completedFuture(invocation));
 
     flow.run();
 

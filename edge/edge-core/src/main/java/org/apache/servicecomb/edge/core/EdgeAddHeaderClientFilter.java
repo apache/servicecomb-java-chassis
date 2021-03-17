@@ -19,6 +19,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
@@ -29,15 +30,17 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class EdgeAddHeaderClientFilter implements HttpClientFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeAddHeaderClientFilter.class);
 
-  private static final String KEY_ENABLED = "servicecomb.edge.filter.addHeader.enabled";
+  private static final String PREFIX = "servicecomb.edge.filter.addHeader";
 
-  private static final String KEY_HEADERS = "servicecomb.edge.filter.addHeader.allowedHeaders";
+  private static final String KEY_ENABLED = PREFIX + ".enabled";
+
+  private static final String KEY_HEADERS = PREFIX + ".allowedHeaders";
 
   private List<String> publicHeaders = new ArrayList<>();
 
@@ -45,13 +48,13 @@ public class EdgeAddHeaderClientFilter implements HttpClientFilter {
 
   public EdgeAddHeaderClientFilter() {
     init();
-    ((ConcurrentCompositeConfiguration) DynamicPropertyFactory
-        .getBackingConfigurationSource()).addConfigurationListener(event -> {
-      if (event.getPropertyName().startsWith(KEY_HEADERS) || event.getPropertyName().startsWith(KEY_ENABLED)) {
-        LOGGER.info("Public headers config have been changed. Event=" + event.getType());
-        init();
-      }
-    });
+    ConfigurationManager.getConfigInstance()
+        .addConfigurationListener(event -> {
+          if (StringUtils.startsWith(event.getPropertyName(), PREFIX)) {
+            LOGGER.info("Public headers config have been changed. Event=" + event.getType());
+            init();
+          }
+        });
   }
 
   private void init() {
@@ -75,15 +78,20 @@ public class EdgeAddHeaderClientFilter implements HttpClientFilter {
 
   @Override
   public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+    addHeaders(invocation, requestEx::addHeader);
+  }
+
+  public void addHeaders(Invocation invocation, BiConsumer<String, String> headerAdder) {
     if (!invocation.isEdge()) {
       return;
     }
+    
     HttpServletRequestEx oldRequest = invocation.getRequestEx();
     publicHeaders.forEach(key -> {
-      if (StringUtils.isEmpty(oldRequest.getHeader(key))) {
-        return;
+      String value = oldRequest.getHeader(key);
+      if (StringUtils.isNotEmpty(value)) {
+        headerAdder.accept(key, value);
       }
-      requestEx.addHeader(key, oldRequest.getHeader(key));
     });
   }
 

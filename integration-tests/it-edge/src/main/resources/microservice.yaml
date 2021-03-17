@@ -19,6 +19,12 @@ service_description:
   name: it-edge
 
 servicecomb:
+  filter-chains:
+    transport:
+      scb-consumer-transport:
+        rest: rest-client-codec, edge-add-headers, rest-client-sender
+    definition:
+      scb-consumer: edge-server-codec, simple-load-balance, scb-consumer-transport
   handler:
     chain:
       Consumer:

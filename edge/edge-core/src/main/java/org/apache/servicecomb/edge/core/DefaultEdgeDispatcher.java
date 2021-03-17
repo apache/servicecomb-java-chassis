@@ -17,10 +17,19 @@
 
 package org.apache.servicecomb.edge.core;
 
-import java.util.Map;
+import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
@@ -28,6 +37,7 @@ import io.vertx.ext.web.RoutingContext;
  * Provide an easy mapping dispatcher that starts with a common prefix pattern.
  */
 public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
+
   private static final String KEY_ENABLED = "servicecomb.http.dispatcher.edge.default.enabled";
 
   private static final String KEY_ORDER = "servicecomb.http.dispatcher.edge.default.order";
@@ -37,6 +47,10 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   private static final String KEY_WITH_VERSION = "servicecomb.http.dispatcher.edge.default.withVersion";
 
   private static final String KEY_PREFIX_SEGMENT_COUNT = "servicecomb.http.dispatcher.edge.default.prefixSegmentCount";
+
+  public static final String MICROSERVICE_NAME = "param0";
+
+  public static final String VERSION = "param1";
 
   private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
 
@@ -61,27 +75,62 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
     withVersion = DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_WITH_VERSION, true).get();
     prefixSegmentCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PREFIX_SEGMENT_COUNT, 1).get();
-    String regex;
-    if (withVersion) {
-      regex = "/" + prefix + "/([^\\\\/]+)/([^\\\\/]+)/(.*)";
-    } else {
-      regex = "/" + prefix + "/([^\\\\/]+)/(.*)";
-    }
+    String regex = generateRouteRegex(prefix, withVersion);
+
     // cookies handler are enabled by default start from 3.8.3
     router.routeWithRegex(regex).handler(createBodyHandler());
     router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
   }
 
+  @VisibleForTesting
+  String generateRouteRegex(String prefix, boolean withVersion) {
+    String version = withVersion ? "/([^\\\\/]+)" : "";
+    return String.format("/%s/([^\\\\/]+)%s/(.*)", prefix, version);
+  }
+
   protected void onRequest(RoutingContext context) {
-    Map<String, String> pathParams = context.pathParams();
-    String microserviceName = pathParams.get("param0");
+    String microserviceName = extractMicroserviceName(context);
+    String versionRule = extractVersionRule(context);
     String path = Utils.findActualPath(context.request().path(), prefixSegmentCount);
 
-    EdgeInvocation edgeInvocation =  createEdgeInvocation();
-    if (withVersion) {
-      String pathVersion = pathParams.get("param1");
-      edgeInvocation.setVersionRule(versionMapper.getOrCreate(pathVersion).getVersionRule());
+    if (isFilterChainEnabled()) {
+      requestByFilter(context, microserviceName, versionRule, path);
+      return;
     }
+
+    requestByHandler(context, microserviceName, versionRule, path);
+  }
+
+  protected boolean isFilterChainEnabled() {
+    return SCBEngine.getInstance().isFilterChainEnabled();
+  }
+
+  @Nullable
+  private String extractMicroserviceName(RoutingContext context) {
+    return context.pathParam(MICROSERVICE_NAME);
+  }
+
+  private String extractVersionRule(RoutingContext context) {
+    if (withVersion) {
+      String pathVersion = context.pathParam(VERSION);
+      return versionMapper.getOrCreate(pathVersion).getVersionRule();
+    }
+
+    return DefinitionConst.VERSION_RULE_ALL;
+  }
+
+  protected void requestByFilter(RoutingContext context, String microserviceName, String versionRule, String path) {
+    HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
+    HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+    InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
+        microserviceName, versionRule, path);
+    new RestProducerInvocationFlow(creator, requestEx, responseEx)
+        .run();
+  }
+
+  private void requestByHandler(RoutingContext context, String microserviceName, String versionRule, String path) {
+    EdgeInvocation edgeInvocation = createEdgeInvocation();
+    edgeInvocation.setVersionRule(versionRule);
     edgeInvocation.init(microserviceName, context, path, httpServerFilters);
     edgeInvocation.edgeInvoke();
   }

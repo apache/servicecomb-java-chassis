@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.transport.highway;
 
+import java.util.concurrent.CompletableFuture;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
@@ -136,7 +138,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
     }
   }
 
-  public Invocation createInvocation(long msgId, RequestHeader header, Buffer bodyBuffer) {
+  public CompletableFuture<Invocation> createInvocation(long msgId, RequestHeader header, Buffer bodyBuffer) {
     MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
@@ -154,6 +156,6 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
         .setOperationProtobuf(ProtobufManager.getOrCreateOperation(invocation));
     invocation.setTransportContext(transportContext);
 
-    return invocation;
+    return CompletableFuture.completedFuture(invocation);
   }
 }

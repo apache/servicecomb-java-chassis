@@ -458,6 +458,10 @@ public class Invocation extends SwaggerInvocation {
     return InvocationType.CONSUMER.equals(invocationType);
   }
 
+  public boolean isProducer() {
+    return InvocationType.PRODUCER.equals(invocationType);
+  }
+
   public boolean isEdge() {
     return edge;
   }

@@ -17,9 +17,10 @@
 
 package org.apache.servicecomb.edge.core;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.apache.servicecomb.edge.core.DefaultEdgeDispatcher.MICROSERVICE_NAME;
+import static org.apache.servicecomb.edge.core.DefaultEdgeDispatcher.VERSION;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -52,21 +53,25 @@ public class TestDefaultEdgeDispatcher {
       , @Mocked RoutingContext context
       , @Mocked HttpServerRequest requst
       , @Mocked EdgeInvocation invocation) {
-    DefaultEdgeDispatcher dispatcher = new DefaultEdgeDispatcher();
-    Map<String, String> pathParams = new HashMap<>();
-    pathParams.put("param0", "testService");
-    pathParams.put("param1", "v1");
+    DefaultEdgeDispatcher dispatcher = new DefaultEdgeDispatcher() {
+      @Override
+      protected boolean isFilterChainEnabled() {
+        return false;
+      }
+    };
 
-    new Expectations() {
+    new Expectations(SCBEngine.class) {
       {
-        router.routeWithRegex("/api/([^\\\\/]+)/([^\\\\/]+)/(.*)");
+        router.routeWithRegex(dispatcher.generateRouteRegex("api", true));
         result = route;
         route.handler((Handler<RoutingContext>) any);
         result = route;
         route.failureHandler((Handler<RoutingContext>) any);
         result = route;
-        context.pathParams();
-        result = pathParams;
+        context.pathParam(MICROSERVICE_NAME);
+        result = "testService";
+        context.pathParam(VERSION);
+        result = "v1";
         context.request();
         result = requst;
         requst.path();

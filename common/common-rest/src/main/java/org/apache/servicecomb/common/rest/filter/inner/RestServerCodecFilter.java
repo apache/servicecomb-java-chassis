@@ -61,22 +61,25 @@ public class RestServerCodecFilter implements ProducerFilter {
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     return CompletableFuture.completedFuture(invocation)
-        .thenCompose(this::decodeRequest)
-        .thenCompose(nextNode::onFilter)
+        .thenAccept(this::decodeRequest)
+        .thenCompose(v -> invokeNext(invocation, nextNode))
         .exceptionally(exception -> exceptionToResponse(invocation, exception, INTERNAL_SERVER_ERROR))
         .thenCompose(response -> encodeResponse(invocation, response));
   }
 
-  protected CompletableFuture<Invocation> decodeRequest(Invocation invocation) {
-    HttpTransportContext transportContext = invocation.getTransportContext();
-    HttpServletRequestEx requestEx = transportContext.getRequestEx();
+  protected CompletableFuture<Response> invokeNext(Invocation invocation, FilterNode nextNode) {
+    return nextNode.onFilter(invocation);
+  }
+
+  protected Void decodeRequest(Invocation invocation) {
+    HttpServletRequestEx requestEx = invocation.getRequestEx();
 
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     Map<String, Object> swaggerArguments = RestCodec.restToArgs(requestEx, restOperationMeta);
     invocation.setSwaggerArguments(swaggerArguments);
 
-    return CompletableFuture.completedFuture(invocation);
+    return null;
   }
 
   protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {

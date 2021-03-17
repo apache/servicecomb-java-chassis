@@ -16,11 +16,13 @@
  */
 package org.apache.servicecomb.core.invocation;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.core.Invocation;
 
 /**
  * better to named InvocationFactory, but already be used by old version
  */
 public interface InvocationCreator {
-  Invocation create();
+  CompletableFuture<Invocation> createAsync();
 }

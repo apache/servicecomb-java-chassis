@@ -32,14 +32,9 @@ public class EdgeRestTransportClient extends RestTransportClient {
     Context invocationContext = (Context) invocation.getHandlerContext().get(EdgeInvocation.EDGE_INVOCATION_CONTEXT);
 
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
-    HttpClientWithContext httpClientWithContext;
-    if (endpoint.isHttp2Enabled()) {
-      httpClientWithContext = HttpClients
-          .getClient(Http2TransportHttpClientOptionsSPI.CLIENT_NAME, invocation.isSync(), invocationContext);
-    } else {
-      httpClientWithContext = HttpClients
-          .getClient(HttpTransportHttpClientOptionsSPI.CLIENT_NAME, invocation.isSync(), invocationContext);
-    }
-    return httpClientWithContext;
+    String clientName = endpoint.isHttp2Enabled() ?
+        Http2TransportHttpClientOptionsSPI.CLIENT_NAME :
+        HttpTransportHttpClientOptionsSPI.CLIENT_NAME;
+    return HttpClients.getClient(clientName, invocation.isSync(), invocationContext);
   }
 }
