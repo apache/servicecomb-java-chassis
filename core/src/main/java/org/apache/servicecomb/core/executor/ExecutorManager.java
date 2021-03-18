@@ -58,7 +58,13 @@ public class ExecutorManager {
   }
 
   public Executor findExecutor(OperationMeta operationMeta, Executor defaultOperationExecutor) {
+    // operation级别
     Executor executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceQualifiedName());
+    if (executor != null) {
+      return executor;
+    }
+
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaQualifiedName());
     if (executor != null) {
       return executor;
     }
@@ -67,17 +73,25 @@ public class ExecutorManager {
       return defaultOperationExecutor;
     }
 
+    // schema级别
     executor = findByKey(
         KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName() + '.' + operationMeta.getSchemaId());
     if (executor != null) {
       return executor;
     }
 
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaId());
+    if (executor != null) {
+      return executor;
+    }
+
+    // microservice级别
     executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName());
     if (executor != null) {
       return executor;
     }
 
+    // 寻找config-key指定的default
     executor = findByKey(KEY_EXECUTORS_DEFAULT);
     if (executor != null) {
       return executor;

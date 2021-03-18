@@ -36,4 +36,4 @@ servicecomb:
   codec:
     printErrorMessage: true
 
-  executors.Provider.jaxrs.ReactiveSchema: servicecomb.executor.reactive
+  executors.Provider.ReactiveSchema: servicecomb.executor.reactive
