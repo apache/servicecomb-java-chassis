@@ -58,7 +58,7 @@ public class ExecutorManager {
   }
 
   public Executor findExecutor(OperationMeta operationMeta, Executor defaultOperationExecutor) {
-    Executor executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaQualifiedName());
+    Executor executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceQualifiedName());
     if (executor != null) {
       return executor;
     }
@@ -67,8 +67,13 @@ public class ExecutorManager {
       return defaultOperationExecutor;
     }
 
-    // 尝试schema级别
-    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaId());
+    executor = findByKey(
+        KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName() + '.' + operationMeta.getSchemaId());
+    if (executor != null) {
+      return executor;
+    }
+
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName());
     if (executor != null) {
       return executor;
     }
