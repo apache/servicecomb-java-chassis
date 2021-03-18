@@ -31,9 +31,7 @@ public class CompatiblePathVersionMapper {
   private Map<String, VersionRule> mapper = new ConcurrentHashMapEx<>();
 
   public VersionRule getOrCreate(String pathVersion) {
-    return mapper.computeIfAbsent(pathVersion, pv -> {
-      return createVersionRule(pathVersion);
-    });
+    return mapper.computeIfAbsent(pathVersion, this::createVersionRule);
   }
 
   // v + number

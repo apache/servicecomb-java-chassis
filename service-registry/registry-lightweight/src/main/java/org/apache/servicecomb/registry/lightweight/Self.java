@@ -51,15 +51,15 @@ public class Self implements InitializingBean {
   public Self init(AbstractConfiguration configuration) {
     MicroserviceFactory factory = new MicroserviceFactory();
     microservice = factory.create(configuration);
-    microservice.setServiceId(String.format("%s/%s/%s/%s",
+    microservice.serviceId(String.format("%s/%s/%s/%s",
         microservice.getEnvironment(),
         microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion()));
 
-    instance = microservice.getInstance();
-    instance.setInstanceId(UUID.randomUUID().toString());
-    instance.setServiceId(microservice.getServiceId());
+    instance = microservice.getInstance()
+        .instanceId(UUID.randomUUID().toString())
+        .serviceId(microservice.getServiceId());
 
     microserviceInfo
         .setMicroservice(microservice)

@@ -22,6 +22,7 @@ import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIEN
 import static org.apache.servicecomb.core.exception.ExceptionCodes.NOT_DEFINED_ANY_SCHEMA;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 import javax.ws.rs.core.HttpHeaders;
@@ -48,7 +49,7 @@ import io.vertx.core.json.Json;
 public abstract class RestProducerInvocationCreator implements InvocationCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestVertxProducerInvocationCreator.class);
 
-  protected final MicroserviceMeta microserviceMeta;
+  protected MicroserviceMeta microserviceMeta;
 
   protected final Endpoint endpoint;
 
@@ -56,11 +57,11 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
 
   protected final HttpServletResponseEx responseEx;
 
-  private RestOperationMeta restOperationMeta;
+  protected RestOperationMeta restOperationMeta;
 
   protected ProduceProcessor produceProcessor;
 
-  public RestProducerInvocationCreator(@Nonnull MicroserviceMeta microserviceMeta, @Nonnull Endpoint endpoint,
+  public RestProducerInvocationCreator(MicroserviceMeta microserviceMeta, Endpoint endpoint,
       @Nonnull HttpServletRequestEx requestEx, @Nonnull HttpServletResponseEx responseEx) {
     this.microserviceMeta = microserviceMeta;
     this.endpoint = endpoint;
@@ -69,12 +70,10 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   @Override
-  public Invocation create() {
+  public CompletableFuture<Invocation> createAsync() {
     initRestOperation();
 
-    Invocation invocation = InvocationFactory.forProvider(endpoint,
-        restOperationMeta.getOperationMeta(),
-        null);
+    Invocation invocation = createInstance();
     initInvocationContext(invocation);
 
     initProduceProcessor();
@@ -82,7 +81,11 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
 
     invocation.addLocalContext(RestConst.REST_REQUEST, requestEx);
 
-    return invocation;
+    return CompletableFuture.completedFuture(invocation);
+  }
+
+  protected Invocation createInstance() {
+    return InvocationFactory.forProvider(endpoint, restOperationMeta.getOperationMeta(), null);
   }
 
   protected void initInvocationContext(Invocation invocation) {
@@ -98,19 +101,24 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
 
   protected abstract void initTransportContext(Invocation invocation);
 
-  private void initRestOperation() {
-    OperationLocator locator = locateOperation();
+  protected void initRestOperation() {
+    OperationLocator locator = locateOperation(microserviceMeta);
     requestEx.setAttribute(RestConst.PATH_PARAMETERS, locator.getPathVarMap());
     restOperationMeta = locator.getOperation();
   }
 
-  private OperationLocator locateOperation() {
+  protected OperationLocator locateOperation(MicroserviceMeta microserviceMeta) {
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager == null) {
-      LOGGER.error("No schema defined for {}:{}.", microserviceMeta.getAppId(), microserviceMeta.getMicroserviceName());
+      LOGGER.error("No schema defined for {}:{}.", this.microserviceMeta.getAppId(),
+          this.microserviceMeta.getMicroserviceName());
       throw Exceptions.create(NOT_FOUND, NOT_DEFINED_ANY_SCHEMA, NOT_FOUND.getReasonPhrase());
     }
 
+    return locateOperation(servicePathManager);
+  }
+
+  protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
     return servicePathManager.producerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
   }
 

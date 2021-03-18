@@ -30,7 +30,7 @@ public class RestVertxProducerInvocationCreator extends RestProducerInvocationCr
   private final RoutingContext routingContext;
 
   public RestVertxProducerInvocationCreator(@Nonnull RoutingContext routingContext,
-      @Nonnull MicroserviceMeta microserviceMeta, @Nonnull Endpoint endpoint,
+      MicroserviceMeta microserviceMeta, Endpoint endpoint,
       @Nonnull HttpServletRequestEx requestEx, @Nonnull HttpServletResponseEx responseEx) {
     super(microserviceMeta, endpoint, requestEx, responseEx);
     this.routingContext = routingContext;
