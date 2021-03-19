@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 
 /**
  * Configuration bean for local services. Bean configuration is token

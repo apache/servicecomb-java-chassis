@@ -232,6 +232,10 @@
     <!-- service registry -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-lightweight</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
     </dependency>
     <dependency>

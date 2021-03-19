@@ -25,6 +25,9 @@ service_description:
   name: demo-zeroconfig-schemadiscovery-registry-server
   version: 0.0.2
 servicecomb:
+  service:
+    zero-config:
+      mode: multicast
   rest:
     address: 0.0.0.0:8080
   handler:

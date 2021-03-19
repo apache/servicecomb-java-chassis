@@ -15,9 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.zeroconfig;
+package org.apache.servicecomb.zeroconfig.multicast;
 
-public enum MessageType {
-  REGISTER,
-  UNREGISTER
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MODE;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.MODE_MULTICAST;
+
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+
+public class ConditionOnMulticast implements Condition {
+  @Override
+  public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+    String mode = context.getEnvironment().getProperty(CFG_MODE);
+    return mode == null || MODE_MULTICAST.equals(mode);
+  }
 }

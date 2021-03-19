@@ -25,9 +25,9 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 public class MicroserviceInfo {
   private Microservice microservice;
 
-  private Map<String, String> schemasById;
-
   private MicroserviceInstance instance;
+
+  private Map<String, String> schemasById;
 
   public Microservice getMicroservice() {
     return microservice;

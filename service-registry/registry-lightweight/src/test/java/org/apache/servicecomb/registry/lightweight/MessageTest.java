@@ -15,14 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.zeroconfig.multicast;
+package org.apache.servicecomb.registry.lightweight;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.servicecomb.registry.lightweight.RegisterRequest;
-import org.apache.servicecomb.registry.lightweight.UnregisterRequest;
-import org.apache.servicecomb.zeroconfig.Message;
-import org.apache.servicecomb.zeroconfig.MessageType;
 import org.junit.jupiter.api.Test;
 
 import io.vertx.core.json.Json;
@@ -41,7 +37,9 @@ class MessageTest {
         + "{\n"
         + "  \"type\" : \"REGISTER\",\n"
         + "  \"body\" : {\n"
+        + "    \"appId\" : null,\n"
         + "    \"serviceId\" : null,\n"
+        + "    \"crossApp\" : false,\n"
         + "    \"schemasSummary\" : null,\n"
         + "    \"instanceId\" : null,\n"
         + "    \"status\" : null,\n"

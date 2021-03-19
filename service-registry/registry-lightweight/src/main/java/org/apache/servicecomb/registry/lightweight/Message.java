@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.zeroconfig;
+package org.apache.servicecomb.registry.lightweight;
 
-import org.apache.servicecomb.registry.lightweight.RegisterRequest;
-import org.apache.servicecomb.registry.lightweight.UnregisterRequest;
+import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+import io.vertx.core.json.jackson.DatabindCodec;
 
 public class Message<T> {
   public static <T> Message<T> of(MessageType type, T body) {
@@ -60,5 +61,14 @@ public class Message<T> {
   public Message<T> setBody(T body) {
     this.body = body;
     return this;
+  }
+
+  public byte[] encode() throws IOException {
+    return DatabindCodec.mapper().writeValueAsBytes(this);
+  }
+
+  public static Message<?> decode(byte[] bytes, int length) throws IOException {
+    return DatabindCodec.mapper()
+        .readValue(bytes, 0, length, Message.class);
   }
 }

@@ -17,22 +17,68 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractLightweightDiscovery implements Discovery {
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
+@SuppressWarnings("UnstableApiUsage")
+public abstract class AbstractLightweightDiscovery implements Discovery, InitializingBean {
+  protected EventBus eventBus;
+
   protected Store store;
 
-  public AbstractLightweightDiscovery(Store store) {
+  protected AppManager appManager;
+
+  @Autowired
+  public AbstractLightweightDiscovery setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+    return this;
+  }
+
+  @Autowired
+  public AbstractLightweightDiscovery setStore(Store store) {
     this.store = store;
+    return this;
+  }
+
+  @Autowired
+  public AbstractLightweightDiscovery setAppManager(AppManager appManager) {
+    this.appManager = appManager;
+    return this;
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    eventBus.register(this);
+  }
+
+  @SuppressWarnings("unused")
+  @Subscribe
+  public void onSchemaChanged(SchemaChangedEvent event) {
+    Microservice microservice = event.getMicroservice();
+    appManager.markWaitingDelete(microservice.getAppId(), microservice.getServiceName());
+  }
+
+  protected void startPullInstances(Duration pullInterval) {
+    Executors
+        .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, name()))
+        .scheduleAtFixedRate(appManager::safePullInstances, 0, pullInterval.getSeconds(), TimeUnit.SECONDS);
   }
 
   @Override

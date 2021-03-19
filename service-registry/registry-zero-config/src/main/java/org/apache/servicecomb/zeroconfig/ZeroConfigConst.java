@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.zeroconfig;
 
 public interface ZeroConfigConst {
@@ -21,15 +22,33 @@ public interface ZeroConfigConst {
 
   String PREFIX = "servicecomb.service.zero-config.";
 
+  String CFG_MODE = PREFIX + "mode";
+
   String CFG_ENABLED = PREFIX + "enabled";
 
-  String CFG_GROUP = PREFIX + "group";
+  String CFG_GROUP = PREFIX + "multicast.group";
 
-  String CFG_ADDRESS = PREFIX + "address";
+  String CFG_ADDRESS = PREFIX + "multicast.address";
+
+  String CFG_HEARTBEAT_INTERVAL = PREFIX + "heartbeat.interval";
+
+  String CFG_HEARTBEAT_LOST_TIMES = PREFIX + "heartbeat.lost-times";
+
+  String CFG_PULL_INTERVAL = PREFIX + "pull-interval";
 
   String DEFAULT_GROUP = "225.6.7.8";
 
   String DEFAULT_ADDRESS = "0.0.0.0:6666";
+
+  String DEFAULT_HEARTBEAT_INTERVAL = "30s";
+
+  int DEFAULT_HEARTBEAT_LOST_TIMES = 3;
+
+  String DEFAULT_PULL_INTERVAL = "3s";
+
+  String MODE_MULTICAST = "multicast";
+
+  String MODE_LOCAL = "local";
 
   int ORDER = 101;
 }
