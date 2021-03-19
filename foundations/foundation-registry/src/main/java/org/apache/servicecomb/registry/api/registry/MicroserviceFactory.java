@@ -29,7 +29,6 @@ import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.version.Version;
 
 public class MicroserviceFactory {
@@ -78,15 +77,11 @@ public class MicroserviceFactory {
     microservice.setEnvironment(BootStrapProperties.readServiceEnvironment(configuration));
 
     // set alias name when allow cross app
-    if (allowCrossApp(propertiesMap)) {
+    if (microservice.allowCrossApp()) {
       microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
           microservice.getServiceName()));
     }
 
     return microservice;
-  }
-
-  private boolean allowCrossApp(Map<String, String> propertiesMap) {
-    return Boolean.parseBoolean(propertiesMap.get(DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY));
   }
 }

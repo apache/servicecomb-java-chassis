@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.net.HostAndPort;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.jackson.DatabindCodec;
 
@@ -49,9 +48,9 @@ public class Multicast {
 
   private final DatagramPacket recvPacket = new DatagramPacket(recvBuffer, recvBuffer.length);
 
-  public Multicast() throws IOException {
-    this.bindAddress = initBindAddress();
-    this.group = initGroup();
+  public Multicast(Config config) throws IOException {
+    this.bindAddress = initBindAddress(config);
+    this.group = initGroup(config);
     LOGGER.info("zero config, address: {}", bindAddress);
     LOGGER.info("zero config, group: {}", group);
 
@@ -60,18 +59,14 @@ public class Multicast {
     this.multicastSocket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(5));
   }
 
-  private InetSocketAddress initBindAddress() {
-    HostAndPort hostAndPort = HostAndPort
-        .fromString(readString(ZeroConfigConst.CFG_ADDRESS, ZeroConfigConst.DEFAULT_ADDRESS));
+  @SuppressWarnings("UnstableApiUsage")
+  private InetSocketAddress initBindAddress(Config config) {
+    HostAndPort hostAndPort = HostAndPort.fromString(config.getAddress());
     return new InetSocketAddress(hostAndPort.getHost(), hostAndPort.getPort());
   }
 
-  private InetAddress initGroup() throws UnknownHostException {
-    return InetAddress.getByName(readString(ZeroConfigConst.CFG_GROUP, ZeroConfigConst.DEFAULT_GROUP));
-  }
-
-  private String readString(String key, String defaultValue) {
-    return DynamicPropertyFactory.getInstance().getStringProperty(key, defaultValue).get();
+  private InetAddress initGroup(Config config) throws UnknownHostException {
+    return InetAddress.getByName(config.getGroup());
   }
 
   public <T> void send(MessageType type, T body) throws IOException {

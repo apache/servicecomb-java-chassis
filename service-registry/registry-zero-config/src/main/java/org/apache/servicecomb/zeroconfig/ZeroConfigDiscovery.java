@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
 import java.util.concurrent.Executors;
@@ -24,24 +23,25 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.consumer.AppManager;
-import org.apache.servicecomb.registry.lightweight.AbstractLightDiscovery;
-import org.apache.servicecomb.registry.lightweight.DiscoveryClient;
+import org.apache.servicecomb.registry.lightweight.AbstractLightweightDiscovery;
 import org.apache.servicecomb.registry.lightweight.SchemaChangedEvent;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 
 @Component
-public class ZeroConfigDiscovery extends AbstractLightDiscovery {
+public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
   private static final String NAME = "zero-config discovery";
+
+  private final Config config;
 
   private final AppManager appManager;
 
-  public ZeroConfigDiscovery(Store store, DiscoveryClient discoveryClient, EventBus eventBus, AppManager appManager) {
+  public ZeroConfigDiscovery(Config config, Store store, EventBus eventBus, AppManager appManager) {
     super(store);
+    this.config = config;
     this.appManager = appManager;
 
     Executors
@@ -68,6 +68,6 @@ public class ZeroConfigDiscovery extends AbstractLightDiscovery {
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(CFG_ENABLED, true).get();
+    return config.isEnabled();
   }
 }

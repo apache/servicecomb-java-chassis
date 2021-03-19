@@ -24,7 +24,11 @@ import org.apache.servicecomb.core.invocation.endpoint.EndpointCacheUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 
 public class RegisterRequest {
+  private String appId;
+
   private String serviceId;
+
+  private boolean crossApp;
 
   private String schemasSummary;
 
@@ -34,12 +38,30 @@ public class RegisterRequest {
 
   private List<String> endpoints;
 
+  public String getAppId() {
+    return appId;
+  }
+
+  public RegisterRequest setAppId(String appId) {
+    this.appId = appId;
+    return this;
+  }
+
   public String getServiceId() {
     return serviceId;
   }
 
   public RegisterRequest setServiceId(String serviceId) {
     this.serviceId = serviceId;
+    return this;
+  }
+
+  public boolean isCrossApp() {
+    return crossApp;
+  }
+
+  public RegisterRequest setCrossApp(boolean crossApp) {
+    this.crossApp = crossApp;
     return this;
   }
 

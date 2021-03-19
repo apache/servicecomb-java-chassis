@@ -19,9 +19,6 @@ package org.apache.servicecomb.serviceregistry.api.registry;
 
 import static org.apache.servicecomb.registry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -32,26 +29,23 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import mockit.Deencapsulation;
-
 public class TestMicroserviceFactory {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void testAllowCrossApp() {
-    MicroserviceFactory factory = new MicroserviceFactory();
-    Map<String, String> propertiesMap = new HashMap<>();
-    Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
+    Microservice microservice = new Microservice();
+    Assert.assertFalse(microservice.allowCrossApp());
 
-    propertiesMap.put(CONFIG_ALLOW_CROSS_APP_KEY, "true");
-    Assert.assertTrue(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
+    microservice.getProperties().put(CONFIG_ALLOW_CROSS_APP_KEY, "true");
+    Assert.assertTrue(microservice.allowCrossApp());
 
-    propertiesMap.put(CONFIG_ALLOW_CROSS_APP_KEY, "false");
-    Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
+    microservice.getProperties().put(CONFIG_ALLOW_CROSS_APP_KEY, "false");
+    Assert.assertFalse(microservice.allowCrossApp());
 
-    propertiesMap.put(CONFIG_ALLOW_CROSS_APP_KEY, "asfas");
-    Assert.assertFalse(Deencapsulation.invoke(factory, "allowCrossApp", propertiesMap));
+    microservice.getProperties().put(CONFIG_ALLOW_CROSS_APP_KEY, "asfas");
+    Assert.assertFalse(microservice.allowCrossApp());
   }
 
   @Test

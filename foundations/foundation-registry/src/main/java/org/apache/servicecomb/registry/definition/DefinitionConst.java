@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.definition;
 
 public interface DefinitionConst {
+  // Whether to allow cross-app calls to me
   String CONFIG_ALLOW_CROSS_APP_KEY = "allowCrossApp";
 
   String DEFAULT_STAGE = "prod";

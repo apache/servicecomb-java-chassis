@@ -26,11 +26,11 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractLightRegistration implements Registration {
+public abstract class AbstractLightweightRegistration implements Registration {
   protected Self self;
 
   @Autowired
-  public AbstractLightRegistration setSelf(Self self) {
+  public AbstractLightweightRegistration setSelf(Self self) {
     this.self = self;
     return this;
   }

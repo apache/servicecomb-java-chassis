@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
 import java.util.concurrent.Executors;
@@ -24,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.lightweight.AbstractLightRegistration;
+import org.apache.servicecomb.registry.lightweight.AbstractLightweightRegistration;
 import org.apache.servicecomb.registry.lightweight.RegisterInstanceEvent;
 import org.apache.servicecomb.registry.lightweight.Self;
 import org.slf4j.Logger;
@@ -33,13 +32,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 
 @Component
-public class ZeroConfigRegistration extends AbstractLightRegistration {
+public class ZeroConfigRegistration extends AbstractLightweightRegistration {
   private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistration.class);
 
   private static final String NAME = "zero-config registration";
+
+  private final Config config;
 
   private final Multicast multicast;
 
@@ -50,7 +50,8 @@ public class ZeroConfigRegistration extends AbstractLightRegistration {
   private final ScheduledExecutorService executorService = Executors
       .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "zero-config-register"));
 
-  public ZeroConfigRegistration(Multicast multicast, Self self, EventBus eventBus) {
+  public ZeroConfigRegistration(Config config, Multicast multicast, Self self, EventBus eventBus) {
+    this.config = config;
     this.multicast = multicast;
     this.self = self;
     this.eventBus = eventBus;
@@ -77,7 +78,7 @@ public class ZeroConfigRegistration extends AbstractLightRegistration {
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(CFG_ENABLED, true).get();
+    return config.isEnabled();
   }
 
   @Override

@@ -21,11 +21,14 @@ import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import org.apache.servicecomb.registry.lightweight.RegisterRequest;
 import org.apache.servicecomb.registry.lightweight.RegistryServerService;
+import org.apache.servicecomb.registry.lightweight.Self;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,6 +36,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ZeroConfigServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigServer.class);
+
+  private final Self self;
 
   private final Multicast multicast;
 
@@ -43,16 +48,23 @@ public class ZeroConfigServer {
   private final Executor taskExecutor = Executors
       .newSingleThreadExecutor(runnable -> new Thread(runnable, "zero-config-server-task"));
 
-  public ZeroConfigServer(Multicast multicast, RegistryServerService registryServerService) {
+  public ZeroConfigServer(Self self, Multicast multicast, RegistryServerService registryServerService) {
+    this.self = self;
     this.multicast = multicast;
     this.registryServerService = registryServerService;
 
-    addMessageProcessor(MessageType.REGISTER, registryServerService::register);
+    addMessageProcessor(MessageType.REGISTER, this::register);
     addMessageProcessor(MessageType.UNREGISTER, registryServerService::unregister);
 
     Executors
         .newSingleThreadExecutor(runnable -> new Thread(runnable, "zero-config-server-recv"))
         .execute(this::recv);
+  }
+
+  private void register(RegisterRequest request) {
+    if (request.isCrossApp() || Objects.equals(request.getAppId(), self.getAppId())) {
+      registryServerService.register(request);
+    }
   }
 
   private <T> void addMessageProcessor(MessageType messageType, Consumer<T> messageProcessor) {
