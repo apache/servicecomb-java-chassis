@@ -59,13 +59,14 @@ public class TestExecutorManager {
   @Test
   public void findExecutor_twoParam_opCfg_withoutOpDef(@Mocked Executor executor,
       @Mocked OperationMeta operationMeta) {
-    String schemaQualifiedName = "schemaId.opId";
+    // String schemaQualifiedName = "schemaId.opId";
+    String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaQualifiedName, opBeanId);
+    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
-        operationMeta.getSchemaQualifiedName();
-        result = schemaQualifiedName;
+        operationMeta.getMicroserviceQualifiedName();
+        result = microserviceQualifiedName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
@@ -78,13 +79,13 @@ public class TestExecutorManager {
   public void findExecutor_twoParam_opCfg_withOpDef(@Mocked Executor executor,
       @Mocked Executor defExecutor,
       @Mocked OperationMeta operationMeta) {
-    String schemaQualifiedName = "schemaId.opId";
+    String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaQualifiedName, opBeanId);
+    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
-        operationMeta.getSchemaQualifiedName();
-        result = schemaQualifiedName;
+        operationMeta.getMicroserviceQualifiedName();
+        result = microserviceQualifiedName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
@@ -102,18 +103,20 @@ public class TestExecutorManager {
   @Test
   public void findExecutor_twoParam_schemaCfg_withoutOpDef(@Mocked Executor executor,
       @Mocked OperationMeta operationMeta) {
+    String microserviceName = "serviceName";
     String schemaName = "schemaId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaName, opBeanId);
+    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceName + "." +  schemaName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getSchemaId();
         result = schemaName;
+        operationMeta.getMicroserviceName();
+        result = microserviceName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
     };
-
     Assert.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 
