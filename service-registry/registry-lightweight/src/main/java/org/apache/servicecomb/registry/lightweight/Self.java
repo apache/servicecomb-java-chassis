@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -33,8 +34,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConfigurationManager;
 
 @Component
-public class Self implements InitializingBean {
+public class Self implements InitializingBean, BootListener {
   private Microservice microservice;
+
+  // Whether to allow cross-app calls to me
+  private boolean crossApp;
 
   private String schemasSummary;
 
@@ -49,8 +53,7 @@ public class Self implements InitializingBean {
 
   @VisibleForTesting
   public Self init(AbstractConfiguration configuration) {
-    MicroserviceFactory factory = new MicroserviceFactory();
-    microservice = factory.create(configuration);
+    microservice = new MicroserviceFactory().create(configuration);
     microservice.serviceId(String.format("%s/%s/%s/%s",
         microservice.getEnvironment(),
         microservice.getAppId(),
@@ -67,6 +70,17 @@ public class Self implements InitializingBean {
         .setInstance(instance);
 
     return this;
+  }
+
+  @Override
+  public int getOrder() {
+    return Integer.MAX_VALUE;
+  }
+
+  @Override
+  public void onBeforeRegistry(BootEvent event) {
+    schemasSummary = calcSchemasSummary();
+    crossApp = microservice.allowCrossApp();
   }
 
   public Microservice getMicroservice() {
@@ -114,10 +128,6 @@ public class Self implements InitializingBean {
   }
 
   public String getSchemasSummary() {
-    if (schemasSummary == null) {
-      schemasSummary = calcSchemasSummary();
-    }
-
     return schemasSummary;
   }
 
@@ -131,8 +141,10 @@ public class Self implements InitializingBean {
 
   public RegisterRequest buildRegisterRequest() {
     return createRegisterRequest()
+        .setAppId(microservice.getAppId())
         .setServiceId(microservice.getServiceId())
-        .setSchemasSummary(getSchemasSummary())
+        .setCrossApp(crossApp)
+        .setSchemasSummary(schemasSummary)
         .setInstanceId(instance.getInstanceId())
         .setStatus(instance.getStatus())
         .setEndpoints(instance.getEndpoints());

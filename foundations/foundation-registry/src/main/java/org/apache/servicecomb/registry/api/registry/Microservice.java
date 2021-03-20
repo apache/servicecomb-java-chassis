@@ -266,4 +266,9 @@ public class Microservice {
   public void setThirdPartyService(boolean thirdPartyService) {
     this.thirdPartyService = thirdPartyService;
   }
+
+  // Whether to allow cross-app calls to me
+  public boolean allowCrossApp() {
+    return Boolean.parseBoolean(properties.get(DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY));
+  }
 }

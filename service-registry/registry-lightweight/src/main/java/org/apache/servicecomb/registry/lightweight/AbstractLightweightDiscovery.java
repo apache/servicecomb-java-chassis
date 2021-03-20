@@ -28,10 +28,10 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 
-public abstract class AbstractLightDiscovery implements Discovery {
+public abstract class AbstractLightweightDiscovery implements Discovery {
   protected Store store;
 
-  public AbstractLightDiscovery(Store store) {
+  public AbstractLightweightDiscovery(Store store) {
     this.store = store;
   }
 
