@@ -78,5 +78,7 @@ public class TestUploadSchema implements CategorizedTestCase {
 
     String result = template.postForObject("servicecomb://springmvc/upload/fileUpload", entity, String.class);
     TestMgr.check(result, "success");
+
+    files.forEach(file -> file.delete());
   }
 }

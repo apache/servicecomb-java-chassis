@@ -154,7 +154,7 @@ public final class InvokerUtils {
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
-      invocation.getInvocationStageTrace().startHandlersRequest();
+      invocation.onStartHandlersRequest();
       invocation.next(respExecutor::setResponse);
 
       Response response = respExecutor.waitResponse();
@@ -187,7 +187,7 @@ public final class InvokerUtils {
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
-      invocation.getInvocationStageTrace().startHandlersRequest();
+      invocation.onStartHandlersRequest();
       invocation.next(ar -> {
         ContextUtils.setInvocationContext(invocation.getParentContext());
         try {
@@ -225,8 +225,7 @@ public final class InvokerUtils {
    */
   public static CompletableFuture<Response> invoke(Invocation invocation) {
     invocation.onStart(null, System.nanoTime());
-    invocation.getInvocationStageTrace().startHandlersRequest();
-
+    invocation.onStartHandlersRequest();
     return invocation.getMicroserviceMeta().getFilterChain()
         .onFilter(invocation)
         .exceptionally(throwable -> convertException(invocation, throwable))

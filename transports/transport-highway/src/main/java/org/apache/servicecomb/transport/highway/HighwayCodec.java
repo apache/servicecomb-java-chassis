@@ -81,7 +81,6 @@ public final class HighwayCodec {
     Map<String, Object> swaggerArguments = requestDeserializer.deserialize(bodyBuffer.getBytes());
     addPrimitiveTypeDefaultValues(invocation, swaggerArguments);
     invocation.setSwaggerArguments(swaggerArguments);
-    invocation.mergeContext(header.getContext());
   }
 
   public static RequestHeader readRequestHeader(Buffer headerBuffer) throws Exception {

@@ -65,6 +65,14 @@ public class OperationConfig {
   private long msRequestTimeout;
 
   /**
+   * Invocation timeout.
+   */
+  @InjectProperty(keys = {"invocation.${op-any-priority}.timeout", "invocation.timeout"}, defaultValue = "-1")
+  private long msInvocationTimeout;
+
+  private long nanoInvocationTimeout;
+
+  /**
    * whether to remove certain headers from the 3rd party invocations
    */
   @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "true")
@@ -176,6 +184,19 @@ public class OperationConfig {
 
   public long getNanoRestRequestWaitInPoolTimeout() {
     return nanoRestRequestWaitInPoolTimeout;
+  }
+
+  public long getMsInvocationTimeout() {
+    return msInvocationTimeout;
+  }
+
+  public void setMsInvocationTimeout(long msInvocationTimeout) {
+    this.msInvocationTimeout = msInvocationTimeout;
+    this.nanoInvocationTimeout = TimeUnit.MILLISECONDS.toNanos(msInvocationTimeout);
+  }
+
+  public long getNanoInvocationTimeout() {
+    return this.nanoInvocationTimeout;
   }
 
   public boolean isClientRequestHeaderFilterEnabled() {

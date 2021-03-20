@@ -91,9 +91,9 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   public void testRegisteredBasePath() {
     if (DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
-      TestMgr.check(18, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());	
+      TestMgr.check(19, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
     } else {	
-      TestMgr.check(19, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());	
+      TestMgr.check(20, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
     }	
   }
 

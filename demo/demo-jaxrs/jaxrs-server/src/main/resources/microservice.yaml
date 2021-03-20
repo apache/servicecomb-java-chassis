@@ -37,3 +37,6 @@ servicecomb:
     printErrorMessage: true
 
   executors.Provider.ReactiveSchema: servicecomb.executor.reactive
+
+  invocation:
+    enableTimeoutCheck: false

@@ -38,6 +38,8 @@ public class RestClientSenderFilter implements ConsumerFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    invocation.onStartSendRequest();
+
     CompletableFuture<Response> future = new RestClientSender(invocation)
         .send();
 

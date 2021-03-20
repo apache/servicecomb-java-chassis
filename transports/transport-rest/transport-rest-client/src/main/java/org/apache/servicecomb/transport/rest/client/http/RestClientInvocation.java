@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -126,7 +127,7 @@ public class RestClientInvocation {
     });
 
     // 从业务线程转移到网络线程中去发送
-    invocation.getInvocationStageTrace().startSend();
+    invocation.onStartSendRequest();
     httpClientWithContext.runOnContext(httpClient -> {
       clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
       processServiceCombHeaders(invocation, operationMeta);
@@ -300,8 +301,7 @@ public class RestClientInvocation {
 
   protected void setCseContext() {
     try {
-      String cseContext = JsonUtils.writeValueAsString(invocation.getContext());
-      clientRequest.putHeader(org.apache.servicecomb.core.Const.CSE_CONTEXT, cseContext);
+      clientRequest.putHeader(Const.CSE_CONTEXT, JsonUtils.writeValueAsString(invocation.getContext()));
     } catch (Throwable e) {
       invocation.getTraceIdLogger().error(LOGGER, "Failed to encode and set cseContext, message={}."
           , ExceptionUtils.getExceptionMessageWithoutTrace(e));

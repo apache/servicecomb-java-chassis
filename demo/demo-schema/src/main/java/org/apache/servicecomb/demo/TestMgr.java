@@ -73,6 +73,10 @@ public class TestMgr {
     }
   }
 
+  public static void fail(String desc) {
+    failed(desc, new Exception(desc));
+  }
+
   public static void failed(String desc, Throwable e) {
     checkes.incrementAndGet();
 

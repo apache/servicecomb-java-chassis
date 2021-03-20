@@ -128,7 +128,7 @@ public class HighwayServerInvoke {
     HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
-    invocation.getInvocationStageTrace().startHandlersRequest();
+    invocation.onStartHandlersRequest();
     invocation.next(response -> sendResponse(invocation.getContext(), response));
   }
 
@@ -180,13 +180,10 @@ public class HighwayServerInvoke {
           .setBodyBuffer(bodyBuffer)
           .setOperationProtobuf(ProtobufManager.getOrCreateOperation(invocation));
       invocation.setTransportContext(transportContext);
+      invocation.mergeContext(header.getContext());
 
       invocation.onStart(null, start);
       invocation.getInvocationStageTrace().startSchedule();
-
-      // copied from HighwayCodec#decodeRequest()
-      // for temporary qps enhance purpose, we'll remove it when handler mechanism is refactored
-      invocation.mergeContext(header.getContext());
 
       Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
       if (qpsFlowControlReject.value) {

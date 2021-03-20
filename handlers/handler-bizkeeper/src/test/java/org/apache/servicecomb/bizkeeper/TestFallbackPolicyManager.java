@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.bizkeeper;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.exception.CseException;
@@ -134,8 +136,8 @@ public class TestFallbackPolicyManager {
         result = "unknown";
       }
     };
-    Assert.assertEquals(CseException.class,
-        ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult()).getCause()
-            .getClass());
+    Assert.assertEquals(InvocationException.class,
+        ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", new InvocationException(
+            Status.TOO_MANY_REQUESTS, ""), invocation).getResult()).getClass());
   }
 }

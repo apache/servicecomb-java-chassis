@@ -156,6 +156,8 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
         .setOperationProtobuf(ProtobufManager.getOrCreateOperation(invocation));
     invocation.setTransportContext(transportContext);
 
+    invocation.mergeContext(header.getContext());
+
     return CompletableFuture.completedFuture(invocation);
   }
 }
