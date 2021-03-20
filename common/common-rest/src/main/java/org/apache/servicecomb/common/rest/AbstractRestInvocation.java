@@ -126,10 +126,6 @@ public abstract class AbstractRestInvocation {
       return;
     }
 
-    invocation.onStart(requestEx, start);
-    invocation.getInvocationStageTrace().startSchedule();
-    OperationMeta operationMeta = restOperationMeta.getOperationMeta();
-
     try {
       this.setContext();
     } catch (Exception e) {
@@ -137,6 +133,10 @@ public abstract class AbstractRestInvocation {
       sendFailResponse(e);
       return;
     }
+    
+    invocation.onStart(requestEx, start);
+    invocation.getInvocationStageTrace().startSchedule();
+    OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
     Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
     if (qpsFlowControlReject.value) {
@@ -160,8 +160,11 @@ public abstract class AbstractRestInvocation {
             }
 
             runOnExecutor();
+          } catch (InvocationException e) {
+            LOGGER.error("Invocation failed, cause={}", e.getMessage());
+            sendFailResponse(e);
           } catch (Throwable e) {
-            LOGGER.error("rest server onRequest error", e);
+            LOGGER.error("Processing rest server request error", e);
             sendFailResponse(e);
           }
         }
@@ -217,8 +220,11 @@ public abstract class AbstractRestInvocation {
       }
 
       doInvoke();
+    } catch (InvocationException e) {
+      LOGGER.error("Invocation failed, cause={}", e.getMessage());
+      sendFailResponse(e);
     } catch (Throwable e) {
-      LOGGER.error("unknown rest exception.", e);
+      LOGGER.error("Processing rest server request error", e);
       sendFailResponse(e);
     }
   }
@@ -241,7 +247,7 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void doInvoke() throws Throwable {
-    invocation.getInvocationStageTrace().startHandlersRequest();
+    invocation.onStartHandlersRequest();
     invocation.next(resp -> sendResponseQuietly(resp));
   }
 

@@ -116,7 +116,9 @@ public class TestHighwayCodec {
 
 
   @Test
-  public void testDecodeRequestTraceId(@Mocked Endpoint endpoint) throws Exception {
+  public void test_decode_request_successful_and_not_copy_header(@Mocked Endpoint endpoint) throws Exception {
+    // test decode request not thrown exception and not copy header
+    // header should copied before invocation start.
     commonMock();
 
     Invocation invocation = new Invocation(endpoint, operationMeta, null);
@@ -132,7 +134,7 @@ public class TestHighwayCodec {
 
     context.put("X-B3-traceId", "test2");
     HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
-    Assert.assertEquals("test2", invocation.getContext("X-B3-traceId"));
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
   }
 
   @Test

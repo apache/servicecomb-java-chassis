@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.exception;
 
-public interface ExceptionCodes {
-  String GENERIC_CLIENT = "SCB.00000000";
-  String LB_ADDRESS_NOT_FOUND = "SCB.00000001";
-  String NOT_DEFINED_ANY_SCHEMA = "SCB.00000002";
-  String DEFAULT_VALIDATE = "SCB.00000003";
-  String INVOCATION_TIMEOUT = "SCB.00000004";
+package org.apache.servicecomb.core.event;
 
-  String GENERIC_SERVER = "SCB.50000000";
+import org.apache.servicecomb.core.Invocation;
+
+public class InvocationTimeoutCheckEvent extends InvocationBaseEvent {
+  public InvocationTimeoutCheckEvent(Invocation invocation) {
+    super(invocation);
+  }
 }

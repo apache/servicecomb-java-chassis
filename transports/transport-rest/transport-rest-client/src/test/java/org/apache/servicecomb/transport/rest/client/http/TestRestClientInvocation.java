@@ -191,7 +191,6 @@ public class TestRestClientInvocation {
     Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
     Assert.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
   }
 
   @Test
@@ -207,7 +206,6 @@ public class TestRestClientInvocation {
     Assert.assertSame(resp, response);
     Assert.assertThat(headers.names(), Matchers.empty());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
   }
 
   @Test
@@ -228,7 +226,6 @@ public class TestRestClientInvocation {
     Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
     Assert.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
     operationConfig.setClientRequestHeaderFilterEnabled(true);
   }
 

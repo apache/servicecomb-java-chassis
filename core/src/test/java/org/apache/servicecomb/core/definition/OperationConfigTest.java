@@ -58,5 +58,14 @@ class OperationConfigTest {
       long nano = TimeUnit.MILLISECONDS.toNanos(2);
       assertThat(config.getNanoRequestWaitInPoolTimeout("abc")).isEqualTo(nano);
     }
+
+    @Test
+    void should_get_invocation_timeout_value() {
+      config.setMsInvocationTimeout(1);
+
+      long nano = TimeUnit.MILLISECONDS.toNanos(1);
+      assertThat(config.getNanoInvocationTimeout()).isEqualTo(nano);
+      assertThat(config.getMsInvocationTimeout()).isEqualTo(1);
+    }
   }
 }

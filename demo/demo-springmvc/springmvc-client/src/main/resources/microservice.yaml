@@ -34,7 +34,6 @@ servicecomb:
         pull:
           interval: 90
         watch: true
-      autodiscovery: true
   # can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
   config:
     client:

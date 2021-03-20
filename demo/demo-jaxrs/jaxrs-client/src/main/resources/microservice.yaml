@@ -43,6 +43,9 @@ servicecomb:
         add:
           timeout: 1000
 
+  invocation:
+    enableTimeoutCheck: false
+
 # test configurations. you can choose any implementation. default using local.
 
   # using nacos configuration

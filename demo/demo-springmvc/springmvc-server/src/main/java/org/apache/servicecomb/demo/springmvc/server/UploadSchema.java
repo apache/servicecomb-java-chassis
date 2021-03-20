@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,12 +40,15 @@ public class UploadSchema {
   public String fileUpload(@RequestPart(name = "files") List<MultipartFile> files) {
     try {
       String fileName = UUID.randomUUID().toString();
+      List<File> savedFiles = new ArrayList<>();
       int index = 0;
       for (MultipartFile file : files) {
         File tempFile = new File("random-server-" + fileName + index);
+        savedFiles.add(tempFile);
         file.transferTo(tempFile);
         index++;
       }
+      savedFiles.forEach(file -> file.delete());
       return "success";
     } catch (IOException e) {
       return "failed";

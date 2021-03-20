@@ -53,7 +53,7 @@ public class ScheduleFilter implements ProducerFilter {
     try {
       InvocationStageTrace trace = invocation.getInvocationStageTrace();
       trace.startServerFiltersRequest();
-      trace.startHandlersRequest();
+      invocation.onStartHandlersRequest();
 
       checkInQueueTimeout(invocation);
 

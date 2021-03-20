@@ -32,13 +32,17 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.event.InvocationBusinessFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationEncodeResponseStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.event.InvocationHandlersStartEvent;
 import org.apache.servicecomb.core.event.InvocationRunInExecutorFinishEvent;
 import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
+import org.apache.servicecomb.core.event.InvocationStartSendRequestEvent;
+import org.apache.servicecomb.core.event.InvocationTimeoutCheckEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -52,6 +56,7 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -134,16 +139,6 @@ public class Invocation extends SwaggerInvocation {
 
   public String getTraceId(String traceIdName) {
     return getContext(traceIdName);
-  }
-
-  @Deprecated
-  public long getStartTime() {
-    return invocationStageTrace.getStart();
-  }
-
-  @Deprecated
-  public long getStartExecutionTime() {
-    return invocationStageTrace.getStartExecution();
   }
 
   public Invocation() {
@@ -274,10 +269,6 @@ public class Invocation extends SwaggerInvocation {
       args[i] = this.invocationArguments.get(method.getParameters()[i].getName());
     }
     return producerArguments = args;
-  }
-
-  public void clearProducerArguments() {
-    producerArguments = null;
   }
 
   public Endpoint getEndpoint() {
@@ -411,6 +402,16 @@ public class Invocation extends SwaggerInvocation {
     EventManager.post(new InvocationRunInExecutorFinishEvent(this));
   }
 
+  public void onStartHandlersRequest() {
+    invocationStageTrace.startHandlersRequest();
+    EventManager.post(new InvocationHandlersStartEvent(this));
+  }
+
+  public void onStartSendRequest() {
+    invocationStageTrace.startSend();
+    EventManager.post(new InvocationStartSendRequestEvent(this));
+  }
+
   @Override
   public void onBusinessMethodStart() {
     invocationStageTrace.startBusinessMethod();
@@ -429,6 +430,7 @@ public class Invocation extends SwaggerInvocation {
   @Override
   public void onBusinessFinish() {
     invocationStageTrace.finishBusiness();
+    EventManager.post(new InvocationBusinessFinishEvent(this));
   }
 
   public void onFinish(Response response) {
@@ -481,5 +483,20 @@ public class Invocation extends SwaggerInvocation {
     }
 
     return future;
+  }
+
+  /**
+   * Check if invocation is timeout.
+   *
+   * NOTICE: this method only trigger event to ask the target checker to do the real check. So this method
+   * will only take effect when timeout checker is enabled.
+   *
+   * e.g. InvocationTimeoutBootListener.ENABLE_TIMEOUT_CHECK is enabled.
+   *
+   * @throws InvocationException if timeout, throw an exception. Will not throw exception twice if this method called
+   *  after timeout.
+   */
+  public void ensureInvocationNotTimeout() throws InvocationException {
+    EventManager.post(new InvocationTimeoutCheckEvent(this));
   }
 }

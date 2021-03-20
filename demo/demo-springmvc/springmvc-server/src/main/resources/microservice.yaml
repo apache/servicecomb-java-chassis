@@ -60,6 +60,12 @@ servicecomb:
       compression: true
   highway:
     address: 0.0.0.0:7070?sslEnabled=true
+  invocation:
+    SpringMVCCommonSchemaInterface:
+      testInvocationTimeout:
+        timeout: 1000
+      testInvocationTimeoutWithInvocation:
+        timeout: 1000
   handler:
     chain:
       Provider:

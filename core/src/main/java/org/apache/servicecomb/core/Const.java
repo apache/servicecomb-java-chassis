@@ -25,6 +25,12 @@ public final class Const {
 
   public static final String CSE_CONTEXT = "x-cse-context";
 
+  public static final String CONTEXT_TIME_ELAPSED = "x-scb-time";
+
+  public static final String CONTEXT_TIMED_OUT = "x-scb-timed-out";
+
+  public static final String CONTEXT_TIME_CURRENT = "x-scb-time-current";
+
   public static final String RESTFUL = "rest";
 
   public static final String HIGHWAY = "highway";

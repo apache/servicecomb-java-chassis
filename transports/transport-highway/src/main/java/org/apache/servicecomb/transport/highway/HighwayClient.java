@@ -87,7 +87,7 @@ public class HighwayClient {
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     invocation.getInvocationStageTrace().startClientFiltersRequest();
-    invocation.getInvocationStageTrace().startSend();
+    invocation.onStartSendRequest();
 
     HighwayClientConnection tcpClient = findClientPool(invocation);
 
