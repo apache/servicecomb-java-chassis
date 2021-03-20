@@ -36,6 +36,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-service-center</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
