@@ -91,7 +91,7 @@ public final class ConfigUtil {
   }
 
   public static Object getProperty(String key) {
-    Object config = DynamicPropertyFactory.getBackingConfigurationSource();
+    AbstractConfiguration config = ConfigurationManager.getConfigInstance();
     return getProperty(config, key);
   }
 
@@ -101,6 +101,10 @@ public final class ConfigUtil {
       return configuration.getProperty(key);
     }
     return null;
+  }
+
+  public static List<String> getStringList(@Nonnull String key) {
+    return getStringList(ConfigurationManager.getConfigInstance(), key);
   }
 
   public static List<String> getStringList(@Nonnull Configuration config, @Nonnull String key) {
