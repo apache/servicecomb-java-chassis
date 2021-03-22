@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,11 +63,20 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   private Map<String, String> headers = new HashMap<>();
 
-  private Configuration configuration = ConfigUtil.createLocalConfig();
+  private final Configuration configuration;
 
-  private boolean enabled = configuration.getBoolean(CONFIG_AKSK_ENABLED, true);
+  private boolean enabled;
 
   private boolean loaded = false;
+
+  public AKSKAuthHeaderProvider() {
+    this(ConfigUtil.createLocalConfig());
+  }
+
+  public AKSKAuthHeaderProvider(Configuration configuration) {
+    this.configuration = configuration;
+    this.enabled = configuration.getBoolean(CONFIG_AKSK_ENABLED, true);
+  }
 
   public Map<String, String> authHeaders() {
     if (!enabled) {
@@ -115,7 +126,15 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
   }
 
   private String getProject() {
-    return configuration.getString(CONFIG_PROJECT, VALUE_DEFAULT_PROJECT);
+    String project = configuration.getString(CONFIG_PROJECT, VALUE_DEFAULT_PROJECT);
+    if (StringUtils.isEmpty(project)) {
+      return project;
+    }
+    try {
+      return URLEncoder.encode(project, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      return project;
+    }
   }
 
   private Cipher findCipher() {
