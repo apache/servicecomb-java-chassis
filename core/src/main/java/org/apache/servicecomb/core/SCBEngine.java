@@ -342,8 +342,13 @@ public class SCBEngine {
     serviceInfo.append("Service information is shown below:\n");
     for (BootUpInformationCollector bootUpInformationCollector : bootUpInformationCollectors) {
       String info = bootUpInformationCollector.collect(this);
-      if (!StringUtils.isEmpty(info)) {
-        serviceInfo.append(info).append('\n');
+      if (StringUtils.isEmpty(info)) {
+        continue;
+      }
+
+      serviceInfo.append(info);
+      if (!info.endsWith("\n")) {
+        serviceInfo.append('\n');
       }
     }
     LOGGER.info(serviceInfo.toString());

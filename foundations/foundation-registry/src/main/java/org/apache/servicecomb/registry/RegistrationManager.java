@@ -315,9 +315,9 @@ public class RegistrationManager {
         result.append("Registration implementations:\n");
       }
 
-      result.append("\tname:" + registration.name() + "\n");
-      result.append("\t\tService ID: " + registration.getMicroservice().getServiceId() + "\n");
-      result.append("\t\tInstance ID: " + registration.getMicroserviceInstance().getInstanceId() + "\n");
+      result.append("  name:" + registration.name() + "\n");
+      result.append("    Service ID: " + registration.getMicroservice().getServiceId() + "\n");
+      result.append("    Instance ID: " + registration.getMicroserviceInstance().getInstanceId() + "\n");
     });
     return result.toString();
   }

@@ -17,8 +17,7 @@
 
 package org.apache.servicecomb.config;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -263,24 +262,24 @@ public class BootStrapProperties {
   }
 
   private static Map<String, String> readProperties(Configuration configuration, String newKey, String oldKey) {
-    Map<String, String> propertiesMap = new HashMap<>();
-
-    String prefix = newKey;
-
-    Iterator<String> keysIterator = configuration.getKeys(prefix);
-
-    if (!keysIterator.hasNext()) {
-      prefix = oldKey;
-      keysIterator = configuration.getKeys(prefix);
+    Configuration subset = configuration.subset(newKey);
+    if (subset.isEmpty()) {
+      subset = configuration.subset(oldKey);
     }
-
-    while (keysIterator.hasNext()) {
-      String key = keysIterator.next();
-      propertiesMap.put(key.substring(prefix.length() + 1), String.valueOf(configuration.getProperty(key)));
-    }
-    return propertiesMap;
+    return toStringMap(subset);
   }
 
+  private static Map<String, String> toStringMap(Configuration configuration) {
+    Map<String, String> map = new LinkedHashMap<>();
+    configuration.getKeys().forEachRemaining(key -> {
+      try {
+        map.put(key, configuration.getString(key));
+      } catch (Exception e) {
+        map.put(key, String.valueOf(configuration.getProperty(key)));
+      }
+    });
+    return map;
+  }
 
   private static void checkMicroserviceName(String name) {
     // the configuration we used
