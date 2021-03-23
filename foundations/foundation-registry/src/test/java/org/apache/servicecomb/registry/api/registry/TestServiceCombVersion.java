@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.registry;
+package org.apache.servicecomb.registry.api.registry;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestServiceCombVersion {
-
   @Test
   public void testServiceCombVersion() {
     ServiceCombVersion version = new ServiceCombVersion();

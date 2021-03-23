@@ -17,6 +17,8 @@
 package org.apache.servicecomb.registry.api.registry;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.APP_MAPPING;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICE_MAPPING;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.VERSION_MAPPING;
 
@@ -82,6 +84,16 @@ public class MicroserviceFactory {
           microservice.getServiceName()));
     }
 
+    microservice.setFramework(createFramework());
+    microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
+    
     return microservice;
+  }
+
+  private Framework createFramework() {
+    Framework framework = new Framework();
+    framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
+    framework.setVersion(FrameworkVersions.allVersions());
+    return framework;
   }
 }
