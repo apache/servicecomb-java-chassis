@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.serviceregistry.api.registry.ServiceCombVersion
+org.apache.servicecomb.registry.api.registry.ServiceCombVersion
