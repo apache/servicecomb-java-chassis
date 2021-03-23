@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.zeroconfig;
+package org.apache.servicecomb.zeroconfig.multicast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -25,15 +25,19 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.registry.lightweight.Message;
+import org.apache.servicecomb.registry.lightweight.MessageType;
+import org.apache.servicecomb.zeroconfig.Config;
+import org.apache.servicecomb.zeroconfig.ZeroConfigConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import com.google.common.net.HostAndPort;
 
-import io.vertx.core.json.jackson.DatabindCodec;
-
 @Component
+@Conditional(ConditionOnMulticast.class)
 public class Multicast {
   private static final Logger LOGGER = LoggerFactory.getLogger(Multicast.class);
 
@@ -59,6 +63,7 @@ public class Multicast {
     this.multicastSocket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(5));
   }
 
+
   @SuppressWarnings("UnstableApiUsage")
   private InetSocketAddress initBindAddress(Config config) {
     HostAndPort hostAndPort = HostAndPort.fromString(config.getAddress());
@@ -70,8 +75,7 @@ public class Multicast {
   }
 
   public <T> void send(MessageType type, T body) throws IOException {
-    Message<T> message = Message.of(type, body);
-    byte[] buffer = DatabindCodec.mapper().writeValueAsBytes(message);
+    byte[] buffer = Message.of(type, body).encode();
     DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, bindAddress.getPort());
     multicastSocket.send(packet);
   }
@@ -79,7 +83,6 @@ public class Multicast {
   public Message<?> recv() throws IOException {
     multicastSocket.receive(recvPacket);
 
-    return DatabindCodec.mapper()
-        .readValue(recvPacket.getData(), 0, recvPacket.getLength(), Message.class);
+    return Message.decode(recvPacket.getData(), recvPacket.getLength());
   }
 }

@@ -18,42 +18,27 @@ package org.apache.servicecomb.zeroconfig;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.lightweight.AbstractLightweightDiscovery;
-import org.apache.servicecomb.registry.lightweight.SchemaChangedEvent;
-import org.apache.servicecomb.registry.lightweight.store.Store;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 @Component
 public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
   private static final String NAME = "zero-config discovery";
 
-  private final Config config;
+  private Config config;
 
-  private final AppManager appManager;
-
-  public ZeroConfigDiscovery(Config config, Store store, EventBus eventBus, AppManager appManager) {
-    super(store);
+  @Autowired
+  public ZeroConfigDiscovery setConfig(Config config) {
     this.config = config;
-    this.appManager = appManager;
-
-    Executors
-        .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "zero-config-discovery"))
-        .scheduleAtFixedRate(appManager::safePullInstances, 0, 3, TimeUnit.SECONDS);
-    eventBus.register(this);
+    return this;
   }
 
-  @Subscribe
-  public void onSchemaChanged(SchemaChangedEvent event) {
-    Microservice microservice = event.getMicroservice();
-    appManager.markWaitingDelete(microservice.getAppId(), microservice.getServiceName());
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    super.afterPropertiesSet();
+
+    startPullInstances(config.getPullInterval());
   }
 
   @Override

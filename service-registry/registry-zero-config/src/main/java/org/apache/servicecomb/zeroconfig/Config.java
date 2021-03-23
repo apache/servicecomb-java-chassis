@@ -14,23 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.zeroconfig;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ADDRESS;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_GROUP;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_HEARTBEAT_INTERVAL;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_HEARTBEAT_LOST_TIMES;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_PULL_INTERVAL;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_ADDRESS;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_GROUP;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_HEARTBEAT_INTERVAL;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_HEARTBEAT_LOST_TIMES;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_PULL_INTERVAL;
+
+import java.time.Duration;
 
 import org.apache.servicecomb.config.DynamicProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Config {
-  private final DynamicProperties dynamicProperties;
+  private DynamicProperties dynamicProperties;
 
-  public Config(DynamicProperties dynamicProperties) {
+  @Autowired
+  public Config setDynamicProperties(DynamicProperties dynamicProperties) {
     this.dynamicProperties = dynamicProperties;
+    return this;
   }
 
   public boolean isEnabled() {
@@ -44,5 +56,24 @@ public class Config {
   // (224.0.0.0, 239.255.255.255]
   public String getGroup() {
     return dynamicProperties.getStringProperty(CFG_GROUP, DEFAULT_GROUP);
+  }
+
+  public Duration getHeartbeatInterval() {
+    String interval = dynamicProperties.getStringProperty(CFG_HEARTBEAT_INTERVAL, DEFAULT_HEARTBEAT_INTERVAL);
+    return toDuration(interval);
+  }
+
+  public Duration getCheckDeadInstancesInterval() {
+    int lostTimes = dynamicProperties.getIntProperty(CFG_HEARTBEAT_LOST_TIMES, DEFAULT_HEARTBEAT_LOST_TIMES);
+    return getHeartbeatInterval().multipliedBy(lostTimes);
+  }
+
+  public Duration getPullInterval() {
+    String interval = dynamicProperties.getStringProperty(CFG_PULL_INTERVAL, DEFAULT_PULL_INTERVAL);
+    return toDuration(interval);
+  }
+
+  private Duration toDuration(String interval) {
+    return Duration.parse("PT" + interval);
   }
 }

@@ -15,55 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.zeroconfig;
+package org.apache.servicecomb.registry.lightweight;
 
-import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.servicecomb.registry.lightweight.RegisterRequest;
-import org.apache.servicecomb.registry.lightweight.RegistryServerService;
-import org.apache.servicecomb.registry.lightweight.Self;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ZeroConfigServer {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigServer.class);
-
+public class MessageExecutor {
   private final Self self;
 
-  private final Multicast multicast;
-
-  private final RegistryServerService registryServerService;
+  private final StoreService storeService;
 
   private final Map<MessageType, Consumer<?>> messageProcessors = new HashMap<>();
 
-  private final Executor taskExecutor = Executors
-      .newSingleThreadExecutor(runnable -> new Thread(runnable, "zero-config-server-task"));
+  private final ScheduledExecutorService taskExecutor = Executors
+      .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "lightweight-message-executor"));
 
-  public ZeroConfigServer(Self self, Multicast multicast, RegistryServerService registryServerService) {
+  public MessageExecutor(Self self, StoreService storeService) {
     this.self = self;
-    this.multicast = multicast;
-    this.registryServerService = registryServerService;
+    this.storeService = storeService;
 
     addMessageProcessor(MessageType.REGISTER, this::register);
-    addMessageProcessor(MessageType.UNREGISTER, registryServerService::unregister);
+    addMessageProcessor(MessageType.UNREGISTER, storeService::unregister);
+  }
 
-    Executors
-        .newSingleThreadExecutor(runnable -> new Thread(runnable, "zero-config-server-recv"))
-        .execute(this::recv);
+  public void startCheckDeadInstances(Duration interval) {
+    taskExecutor.scheduleAtFixedRate(
+        () -> storeService.deleteDeadInstances(interval),
+        0, interval.getSeconds(), TimeUnit.SECONDS);
   }
 
   private void register(RegisterRequest request) {
     if (request.isCrossApp() || Objects.equals(request.getAppId(), self.getAppId())) {
-      registryServerService.register(request);
+      storeService.register(request);
     }
   }
 
@@ -71,21 +63,8 @@ public class ZeroConfigServer {
     messageProcessors.put(messageType, messageProcessor);
   }
 
-  private void recv() {
-    for (; ; ) {
-      try {
-        Message<?> message = multicast.recv();
-        processMessage(message);
-      } catch (SocketTimeoutException e) {
-        registryServerService.deleteDeadInstances(Duration.ofSeconds(90));
-      } catch (Exception e) {
-        LOGGER.error("failed to receive or decode message.", e);
-      }
-    }
-  }
-
   @SuppressWarnings("unchecked")
-  private <T> void processMessage(Message<T> message) {
+  public <T> void processMessage(Message<T> message) {
     Consumer<T> consumer = (Consumer<T>) messageProcessors.get(message.getType());
 
     taskExecutor.execute(() -> {

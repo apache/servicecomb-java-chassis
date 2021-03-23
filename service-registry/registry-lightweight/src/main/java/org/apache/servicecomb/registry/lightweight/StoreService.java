@@ -33,8 +33,8 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.EventBus;
 
 @Component
-public class RegistryServerService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerService.class);
+public class StoreService {
+  private static final Logger LOGGER = LoggerFactory.getLogger(StoreService.class);
 
   private final EventBus eventBus;
 
@@ -42,7 +42,7 @@ public class RegistryServerService {
 
   private final DiscoveryClient discoveryClient;
 
-  public RegistryServerService(EventBus eventBus, Store store, DiscoveryClient discoveryClient) {
+  public StoreService(EventBus eventBus, Store store, DiscoveryClient discoveryClient) {
     this.store = store;
     this.discoveryClient = discoveryClient;
     this.eventBus = eventBus;

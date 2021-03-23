@@ -38,7 +38,7 @@ import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.json.Json;
 
-class RegistryServerServiceTest extends TestBase {
+class StoreServiceTest extends TestBase {
   EventBus eventBus = new EventBus();
 
   MockTicker ticker = new MockTicker();
@@ -47,7 +47,7 @@ class RegistryServerServiceTest extends TestBase {
 
   DiscoveryClient discoveryClient = Mockito.mock(DiscoveryClient.class);
 
-  RegistryServerService service = new RegistryServerService(eventBus, store, discoveryClient);
+  StoreService service = new StoreService(eventBus, store, discoveryClient);
 
   @BeforeEach
   void setUp() {
