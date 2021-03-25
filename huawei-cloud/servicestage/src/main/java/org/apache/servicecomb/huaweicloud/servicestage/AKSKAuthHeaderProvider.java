@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
 import org.apache.servicecomb.foundation.auth.ShaAKSKCipher;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,8 +144,9 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
       return DefaultCipher.getInstance();
     }
 
-    Map<String, Cipher> cipherBeans = BeanUtils.getBeansOfType(Cipher.class);
-    return cipherBeans.values().stream().filter(c -> c.name().equals(getCipher())).findFirst()
+    List<Cipher> ciphers = SPIServiceUtils.getOrLoadSortedService(Cipher.class);
+    LOGGER.info("there are " + ciphers.size() + " ciphers");
+    return ciphers.stream().filter(c -> c.name().equals(getCipher())).findFirst()
         .orElseThrow(() -> new IllegalArgumentException("failed to find cipher named " + getCipher()));
   }
 
