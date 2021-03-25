@@ -145,7 +145,6 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
     }
 
     List<Cipher> ciphers = SPIServiceUtils.getOrLoadSortedService(Cipher.class);
-    LOGGER.info("there are " + ciphers.size() + " ciphers");
     return ciphers.stream().filter(c -> c.name().equals(getCipher())).findFirst()
         .orElseThrow(() -> new IllegalArgumentException("failed to find cipher named " + getCipher()));
   }
