@@ -118,7 +118,7 @@ public class SCBEngine {
 
   private ExecutorManager executorManager = new ExecutorManager();
 
-  private PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
+  private PriorityPropertyManager priorityPropertyManager;
 
   protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
       .getSortedService(BootUpInformationCollector.class);
@@ -204,6 +204,11 @@ public class SCBEngine {
 
   public PriorityPropertyManager getPriorityPropertyManager() {
     return priorityPropertyManager;
+  }
+
+  public SCBEngine setPriorityPropertyManager(PriorityPropertyManager priorityPropertyManager) {
+    this.priorityPropertyManager = priorityPropertyManager;
+    return this;
   }
 
   public EventBus getEventBus() {
@@ -451,7 +456,10 @@ public class SCBEngine {
 
     //Step 5: destroy config center source
     ConfigUtil.destroyConfigCenterConfigurationSource();
-    priorityPropertyManager.close();
+    // only be null for some test cases
+    if (priorityPropertyManager != null) {
+      priorityPropertyManager.close();
+    }
 
     //Step 6: Stop vertx to prevent blocking exit
     // delete the following one line when every refactor is done.

@@ -18,7 +18,9 @@ package org.apache.servicecomb.inspector.internal;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
+import org.springframework.stereotype.Component;
 
+@Component
 @InjectProperties(prefix = "servicecomb.inspector")
 public class InspectorConfig {
   @InjectProperty(keys = "enabled", defaultValue = "true")
@@ -31,15 +33,17 @@ public class InspectorConfig {
     return enabled;
   }
 
-  public void setEnabled(boolean enabled) {
+  public InspectorConfig setEnabled(boolean enabled) {
     this.enabled = enabled;
+    return this;
   }
 
   public String getAsciidoctorCss() {
     return asciidoctorCss;
   }
 
-  public void setAsciidoctorCss(String asciidoctorCss) {
+  public InspectorConfig setAsciidoctorCss(String asciidoctorCss) {
     this.asciidoctorCss = asciidoctorCss;
+    return this;
   }
 }

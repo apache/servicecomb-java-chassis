@@ -27,7 +27,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +47,7 @@ import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandle
 import org.apache.servicecomb.common.rest.resource.StaticResourceHandler;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityProperty;
-import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -89,32 +88,29 @@ public class InspectorImpl {
 
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-  private final SCBEngine scbEngine;
+  private final StaticResourceHandler resourceHandler = new ClassPathStaticResourceHandler();
 
   private InspectorConfig inspectorConfig;
 
   private Map<String, String> schemas;
 
+  private PriorityPropertyFactory propertyFactory;
+
   private volatile Asciidoctor asciidoctor;
 
-  private StaticResourceHandler resourceHandler = new ClassPathStaticResourceHandler();
-
-  private PriorityPropertyManager priorityPropertyManager;
-
-  public InspectorImpl(SCBEngine scbEngine, InspectorConfig inspectorConfig, Map<String, String> schemas) {
-    this.scbEngine = scbEngine;
+  public InspectorImpl setInspectorConfig(InspectorConfig inspectorConfig) {
     this.inspectorConfig = inspectorConfig;
-    this.schemas = new LinkedHashMap<>(schemas);
-
-    correctBasePathForOnlineTest();
+    return this;
   }
 
-  public SCBEngine getScbEngine() {
-    return scbEngine;
+  public InspectorImpl setPropertyFactory(PriorityPropertyFactory propertyFactory) {
+    this.propertyFactory = propertyFactory;
+    return this;
   }
 
-  public InspectorConfig getInspectorConfig() {
-    return inspectorConfig;
+  public InspectorImpl setSchemas(Map<String, String> schemas) {
+    this.schemas = schemas;
+    return this;
   }
 
   // when work in servlet mode, should concat url prefix
@@ -122,17 +118,17 @@ public class InspectorImpl {
   //
   // ServiceComb consumer has not this problem
   // ServiceComb consumer not care for producer deploy with or without servlet
-  private void correctBasePathForOnlineTest() {
+  public InspectorImpl correctBasePathForOnlineTest(SCBEngine scbEngine) {
     Transport restTransport = scbEngine.getTransportManager().findTransport(Const.RESTFUL);
     if (restTransport == null ||
         !restTransport.getClass().getName()
             .equals("org.apache.servicecomb.transport.rest.servlet.ServletRestTransport")) {
-      return;
+      return this;
     }
 
     String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (StringUtils.isEmpty(urlPrefix)) {
-      return;
+      return this;
     }
 
     for (Entry<String, String> entry : schemas.entrySet()) {
@@ -145,10 +141,7 @@ public class InspectorImpl {
 
       entry.setValue(SwaggerUtils.swaggerToString(swagger));
     }
-  }
-
-  public void setPriorityPropertyManager(PriorityPropertyManager priorityPropertyManager) {
-    this.priorityPropertyManager = priorityPropertyManager;
+    return this;
   }
 
   @Path("/schemas")
@@ -311,11 +304,8 @@ public class InspectorImpl {
   @GET
   public List<PriorityPropertyView> priorityProperties() {
     List<PriorityPropertyView> views = new ArrayList<>();
-    priorityPropertyManager.getConfigObjectMap().values().stream()
-        .flatMap(Collection::stream)
+    propertyFactory.getProperties()
         .forEach(p -> views.add(createPriorityPropertyView(p)));
-    priorityPropertyManager.getPriorityPropertySet().forEach(p ->
-        views.add(createPriorityPropertyView(p)));
     return views;
   }
 

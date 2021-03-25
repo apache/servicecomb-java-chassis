@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.config.inject;
+package org.apache.servicecomb.config.priority;
 
 import static org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils.createObjectSetter;
 
@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.priority.PriorityProperty;
-import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.config.inject.InjectProperties;
+import org.apache.servicecomb.config.inject.InjectProperty;
+import org.apache.servicecomb.config.inject.PlaceholderResolver;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -40,55 +42,49 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  * ${} or ${not-exist-key} is valid key in archaius<br>
  * so this wrapper mechanism will not throw exception even can not find value by placeholder
  */
+@Component
 public class ConfigObjectFactory {
-  private PriorityPropertyManager priorityPropertyManager;
+  private final PriorityPropertyFactory propertyFactory;
 
-  private Class<?> cls;
+  public ConfigObjectFactory(PriorityPropertyFactory propertyFactory) {
+    this.propertyFactory = propertyFactory;
+  }
 
-  private Map<String, Object> parameters;
+  public PriorityPropertyFactory getPropertyFactory() {
+    return propertyFactory;
+  }
 
-  private Object instance;
-
-  private String prefix = "";
-
-  private List<PriorityProperty<?>> priorityProperties = new ArrayList<>();
-
-  @SuppressWarnings("unchecked")
-  public <T> T create(PriorityPropertyManager priorityPropertyManager, Class<T> cls, Map<String, Object> parameters) {
-    this.priorityPropertyManager = priorityPropertyManager;
-    this.cls = cls;
-    this.parameters = parameters;
-
+  public <T> ConfigObject<T> create(Class<T> cls, Map<String, Object> parameters) {
     try {
-      instance = cls.newInstance();
+      return create(cls.newInstance(), parameters);
     } catch (Throwable e) {
       throw new IllegalStateException("create config object failed, class=" + cls.getName(), e);
     }
-
-    initPrefix();
-    doCreate();
-
-    return (T) instance;
   }
 
-  public List<PriorityProperty<?>> getPriorityProperties() {
-    return priorityProperties;
+  public <T> ConfigObject<T> create(T instance, Map<String, Object> parameters) {
+    String prefix = initPrefix(instance.getClass());
+    List<ConfigObjectProperty> properties = createProperties(instance, prefix, parameters);
+
+    return new ConfigObject<>(instance, properties);
   }
 
-  private void initPrefix() {
+  private String initPrefix(Class<?> cls) {
     InjectProperties injectProperties = cls.getAnnotation(InjectProperties.class);
     if (injectProperties == null) {
-      return;
+      return "";
     }
 
     String prefix = injectProperties.prefix();
-    if (!prefix.isEmpty()) {
-      this.prefix = prefix + ".";
+    if (prefix.isEmpty()) {
+      return "";
     }
+    return prefix + ".";
   }
 
-  private void doCreate() {
-    JavaType javaType = TypeFactory.defaultInstance().constructType(cls);
+  public List<ConfigObjectProperty> createProperties(Object instance, String prefix, Map<String, Object> parameters) {
+    List<ConfigObjectProperty> properties = new ArrayList<>();
+    JavaType javaType = TypeFactory.defaultInstance().constructType(instance.getClass());
     BeanDescription beanDescription = JsonUtils.OBJ_MAPPER.getSerializationConfig().introspect(javaType);
     for (BeanPropertyDefinition propertyDefinition : beanDescription.findProperties()) {
       if (propertyDefinition.getField() == null) {
@@ -100,14 +96,16 @@ public class ConfigObjectFactory {
       }
 
       Setter<Object, Object> setter = createObjectSetter(propertyDefinition);
-      PriorityProperty<?> priorityProperty = createPriorityProperty(propertyDefinition.getField().getAnnotated());
-      priorityProperty.setCallback((value, target) -> setter.set(target, value), instance);
-      priorityProperties.add(priorityProperty);
+      PriorityProperty<?> priorityProperty = createPriorityProperty(propertyDefinition.getField().getAnnotated(),
+          prefix, parameters);
+      setter.set(instance, priorityProperty.getValue());
+      properties.add(new ConfigObjectProperty(setter, priorityProperty));
     }
+    return properties;
   }
 
-  private PriorityProperty<?> createPriorityProperty(Field field) {
-    String[] keys = collectPropertyKeys(field);
+  private PriorityProperty<?> createPriorityProperty(Field field, String prefix, Map<String, Object> parameters) {
+    String[] keys = collectPropertyKeys(field, prefix, parameters);
 
     Class<?> fieldCls = field.getType();
     switch (fieldCls.getName()) {
@@ -147,7 +145,7 @@ public class ConfigObjectFactory {
       }
     }
 
-    return priorityPropertyManager.newPriorityProperty(String.class, null, defaultValue, keys);
+    return propertyFactory.getOrCreate(String.class, null, defaultValue, keys);
   }
 
   private PriorityProperty<?> createDoubleProperty(Field field, String[] keys, Double defaultValue) {
@@ -158,7 +156,7 @@ public class ConfigObjectFactory {
       }
     }
 
-    return priorityPropertyManager.newPriorityProperty(Double.class, null, defaultValue, keys);
+    return propertyFactory.getOrCreate(Double.class, null, defaultValue, keys);
   }
 
   private PriorityProperty<?> createFloatProperty(Field field, String[] keys, Float defaultValue) {
@@ -169,7 +167,7 @@ public class ConfigObjectFactory {
       }
     }
 
-    return priorityPropertyManager.newPriorityProperty(Float.class, null, defaultValue, keys);
+    return propertyFactory.getOrCreate(Float.class, null, defaultValue, keys);
   }
 
   private PriorityProperty<?> createBooleanProperty(Field field, String[] keys, Boolean defaultValue) {
@@ -180,7 +178,7 @@ public class ConfigObjectFactory {
       }
     }
 
-    return priorityPropertyManager.newPriorityProperty(Boolean.class, null, defaultValue, keys);
+    return propertyFactory.getOrCreate(Boolean.class, null, defaultValue, keys);
   }
 
   private PriorityProperty<?> createLongProperty(Field field, String[] keys, Long defaultValue) {
@@ -191,7 +189,7 @@ public class ConfigObjectFactory {
       }
     }
 
-    return priorityPropertyManager.newPriorityProperty(Long.class, null, defaultValue, keys);
+    return propertyFactory.getOrCreate(Long.class, null, defaultValue, keys);
   }
 
   private PriorityProperty<?> createIntProperty(Field field, String[] keys, Integer defaultValue) {
@@ -202,10 +200,10 @@ public class ConfigObjectFactory {
       }
     }
 
-    return priorityPropertyManager.newPriorityProperty(Integer.class, null, defaultValue, keys);
+    return propertyFactory.getOrCreate(Integer.class, null, defaultValue, keys);
   }
 
-  private String[] collectPropertyKeys(Field field) {
+  private String[] collectPropertyKeys(Field field, String prefix, Map<String, Object> parameters) {
     String propertyPrefix = prefix;
     String[] keys = new String[] {field.getName()};
 
@@ -225,6 +223,6 @@ public class ConfigObjectFactory {
       finalKeys.addAll(resolvedKeys);
     }
 
-    return finalKeys.toArray(new String[finalKeys.size()]);
+    return finalKeys.toArray(new String[0]);
   }
 }

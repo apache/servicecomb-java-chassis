@@ -37,12 +37,10 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.priority.PriorityProperty;
-import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
@@ -53,7 +51,6 @@ import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -97,10 +94,11 @@ public class TestInspectorImpl {
     }
 
     scbEngine.run();
-    SwaggerProducer producer = CoreMetaUtils
-        .getSwaggerProducer(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
-    InspectorImpl inspector = (InspectorImpl) producer.getProducerInstance();
-    return new InspectorImpl(scbEngine, inspector.getInspectorConfig(), new LinkedHashMap<>(schemas));
+    InspectorImpl inspector = new InspectorImpl()
+        .setInspectorConfig(scbEngine.getPriorityPropertyManager().createConfigObject(InspectorConfig.class))
+        .setSchemas(schemas);
+    inspector.correctBasePathForOnlineTest(scbEngine);
+    return inspector;
   }
 
   @AfterClass
@@ -264,6 +262,7 @@ public class TestInspectorImpl {
     }
   }
 
+  // create AsciiDoctor, cost seconds
   @Test
   public void getSchemaContentById_view_html() throws IOException {
     testViewHtmlById("schema1");
@@ -350,20 +349,16 @@ public class TestInspectorImpl {
 
   @Test
   public void priorityProperties() {
-    PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
-    inspector.setPriorityPropertyManager(priorityPropertyManager);
+    PriorityPropertyFactory propertyFactory = new PriorityPropertyFactory();
+    inspector.setPropertyFactory(propertyFactory);
 
-    PriorityProperty<?> priorityProperty = priorityPropertyManager
-        .createPriorityProperty(int.class, 0, 0, "high", "low");
+    propertyFactory.getOrCreate(int.class, 0, 0, "high", "low");
 
     List<PriorityPropertyView> views = inspector.priorityProperties();
     Assert.assertEquals(1, views.size());
     Assert.assertThat(
         views.get(0).getDynamicProperties().stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
         Matchers.contains("high", "low"));
-
-    priorityPropertyManager.close();
-    inspector.setPriorityPropertyManager(null);
   }
 
   @Test
