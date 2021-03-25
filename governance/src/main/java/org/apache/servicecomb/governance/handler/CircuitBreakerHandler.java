@@ -69,7 +69,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         //可以达到熔断条件的请求数量下限
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         //可以选择基于时间的滑动窗口计数或者基于请求数量的滑动窗口计数
-        .slidingWindowType(policy.getSlidingWindowType())
+        .slidingWindowType(policy.getSlidingWindowTypeEnum())
         //滑动窗口，单位可能是请求数或者秒
         .slidingWindowSize(policy.getSlidingWindowSize())
         .build();
