@@ -18,7 +18,8 @@
 package org.apache.servicecomb.bizkeeper;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
@@ -36,7 +37,7 @@ public final class HystrixPropertiesStrategyExt extends HystrixPropertiesStrateg
 
   private static final HystrixPropertiesStrategyExt INSTANCE = new HystrixPropertiesStrategyExt();
 
-  private final Map<String, HystrixCommandProperties> commandPropertiesMap = new ConcurrentHashMap<>();
+  private final Map<String, HystrixCommandProperties> commandPropertiesMap = new ConcurrentHashMapEx<>();
 
   private HystrixPropertiesStrategyExt() {
   }
@@ -47,11 +48,7 @@ public final class HystrixPropertiesStrategyExt extends HystrixPropertiesStrateg
 
   @Override
   public HystrixCommandProperties getCommandProperties(HystrixCommandKey commandKey, Setter builder) {
-    HystrixCommandProperties commandProperties = commandPropertiesMap.get(commandKey.name());
-    if (commandProperties == null) {
-      commandProperties = new HystrixCommandPropertiesExt(commandKey, builder);
-      commandPropertiesMap.putIfAbsent(commandKey.name(), commandProperties);
-    }
-    return commandProperties;
+    return commandPropertiesMap.computeIfAbsent(commandKey.name(),
+        key -> new HystrixCommandPropertiesExt(commandKey, builder));
   }
 }

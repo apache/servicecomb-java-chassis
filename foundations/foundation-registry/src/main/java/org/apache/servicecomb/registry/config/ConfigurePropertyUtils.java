@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.registry.config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,10 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
+
+import io.vertx.core.json.jackson.DatabindCodec;
 
 public final class ConfigurePropertyUtils {
   private ConfigurePropertyUtils() {
@@ -60,15 +62,14 @@ public final class ConfigurePropertyUtils {
     return propertiesMap;
   }
 
-  @SuppressWarnings("unchecked")
   public static List<BasePath> getMicroservicePaths(Configuration configuration) {
-    List<BasePath> basePaths = new ArrayList<>();
-    for (Object path : BootStrapProperties.readServicePaths(configuration)) {
-      BasePath basePath = new BasePath();
-      Map<String, ?> pathMap = (Map<String, ?>) path;
-      basePath.setPath(buildPath((String) pathMap.get("path")));
-      basePath.setProperty((Map<String, String>) pathMap.get("property"));
-      basePaths.add(basePath);
+    List<Object> configPaths = BootStrapProperties.readServicePaths(configuration);
+    List<BasePath> basePaths = DatabindCodec.mapper().convertValue(
+        configPaths,
+        TypeFactory.defaultInstance().constructCollectionType(List.class, BasePath.class)
+    );
+    for (BasePath basePath : basePaths) {
+      basePath.setPath(buildPath(basePath.getPath()));
     }
     return basePaths;
   }
