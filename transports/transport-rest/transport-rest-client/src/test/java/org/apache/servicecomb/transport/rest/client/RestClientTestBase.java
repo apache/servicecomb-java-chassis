@@ -18,10 +18,12 @@ package org.apache.servicecomb.transport.rest.client;
 
 import static org.apache.servicecomb.transport.rest.client.RestFeatureController.SCHEMA_ID;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
@@ -30,6 +32,9 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.filter.impl.ProducerOperationFilter;
+import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
+import org.apache.servicecomb.core.filter.impl.SimpleLoadBalanceFilter;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -63,8 +68,26 @@ public class RestClientTestBase {
   static void beforeAll() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
-        .addProducerMeta(SCHEMA_ID, new RestFeatureController())
-        .run();
+        .addProducerMeta(SCHEMA_ID, new RestFeatureController());
+
+    RestClientTransportContextFactory transportContextFactory = new RestClientTransportContextFactory()
+        .setBoundaryFactory(BoundaryFactory.DEFAULT)
+        .setHttpClientRequestFactory(HttpClientRequestFactory.DEFAULT);
+    RestClientCodecFilter restClientCodecFilter = new RestClientCodecFilter()
+        .setTransportContextFactory(transportContextFactory)
+        .setEncoder(new RestClientEncoder())
+        .setDecoder(new RestClientDecoder());
+    scbEngine.getFilterChainsManager()
+        .addFilters(Arrays.asList(
+            new SimpleLoadBalanceFilter(),
+            restClientCodecFilter,
+            new RestClientSenderFilter(),
+            new RestServerCodecFilter(),
+            new ScheduleFilter(),
+            new ProducerOperationFilter()
+        ));
+
+    scbEngine.run();
     HttpClients.load();
   }
 

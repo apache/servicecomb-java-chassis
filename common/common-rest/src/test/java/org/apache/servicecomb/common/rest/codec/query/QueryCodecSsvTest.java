@@ -33,7 +33,7 @@ class QueryCodecSsvTest extends QueryCodecTestBase {
   class Encode {
     @Test
     void should_encode_date() throws Exception {
-      should_encode("?q=1970-01-01T00%3A00%3A00.000%2B0000", new Date(0));
+      should_encode("?q=1970-01-01T00%3A00%3A00.000%2B00%3A00", new Date(0));
     }
 
     @Test
