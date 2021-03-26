@@ -23,13 +23,12 @@ import org.apache.servicecomb.registry.lightweight.RegisterInstanceEvent;
 import org.apache.servicecomb.zeroconfig.AbstractZeroConfigRegistration;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
 
 @Component
-@Conditional(ConditionOnMulticast.class)
+//@Conditional(ConditionOnMulticast.class)
 @SuppressWarnings("UnstableApiUsage")
 public class MulticastRegistration extends AbstractZeroConfigRegistration implements InitializingBean {
   private static final String NAME = "zero-config-multicast";
@@ -45,6 +44,12 @@ public class MulticastRegistration extends AbstractZeroConfigRegistration implem
   @Override
   public String name() {
     return NAME;
+  }
+
+  // delete after support @Conditional
+  @Override
+  public boolean enabled() {
+    return config.isMulticast();
   }
 
   @Override

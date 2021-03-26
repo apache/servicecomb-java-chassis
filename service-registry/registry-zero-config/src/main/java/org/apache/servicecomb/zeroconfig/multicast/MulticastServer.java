@@ -25,11 +25,10 @@ import org.apache.servicecomb.registry.lightweight.MessageExecutor;
 import org.apache.servicecomb.zeroconfig.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 @Component
-@Conditional(ConditionOnMulticast.class)
+//@Conditional(ConditionOnMulticast.class)
 @SuppressWarnings("unused")
 public class MulticastServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(MulticastServer.class);
@@ -41,6 +40,11 @@ public class MulticastServer {
   public MulticastServer(Config config, Multicast multicast, MessageExecutor messageExecutor) {
     this.multicast = multicast;
     this.messageExecutor = messageExecutor;
+
+    // delete after support @Conditional
+    if (!config.isMulticast()) {
+      return;
+    }
 
     Executors
         .newSingleThreadExecutor(runnable -> new Thread(runnable, "multicast-server-recv"))

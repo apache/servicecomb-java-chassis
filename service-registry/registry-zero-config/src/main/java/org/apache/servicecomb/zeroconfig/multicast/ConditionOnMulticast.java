@@ -17,17 +17,15 @@
 
 package org.apache.servicecomb.zeroconfig.multicast;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MODE;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.MODE_MULTICAST;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.apache.servicecomb.zeroconfig.AbstractModeCondition;
 
-public class ConditionOnMulticast implements Condition {
+// currently can not work with spring caused by servicecomb configuration bug
+// no problem to work with springboot
+public class ConditionOnMulticast extends AbstractModeCondition {
   @Override
-  public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-    String mode = context.getEnvironment().getProperty(CFG_MODE);
+  protected boolean modeMatches(String mode) {
     return mode == null || MODE_MULTICAST.equals(mode);
   }
 }
