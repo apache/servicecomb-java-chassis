@@ -62,7 +62,7 @@ public class HighwayClientFilter implements ConsumerFilter {
   }
 
   protected CompletableFuture<TcpData> send(Invocation invocation, OperationProtobuf operationProtobuf) {
-    invocation.getInvocationStageTrace().startSend();
+    invocation.onStartSendRequest();
 
     HighwayClient highwayClient = ((HighwayTransport) invocation.getTransport()).getHighwayClient();
     HighwayClientPackage clientPackage = highwayClient.createClientPackage(invocation, operationProtobuf);

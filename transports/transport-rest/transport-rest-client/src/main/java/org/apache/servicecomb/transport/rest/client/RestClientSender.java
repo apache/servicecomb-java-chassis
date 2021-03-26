@@ -65,7 +65,7 @@ public class RestClientSender {
 
   @SuppressWarnings("deprecation")
   public CompletableFuture<Response> send() {
-    invocation.getInvocationStageTrace().startSend();
+    invocation.onStartSendRequest();
 
     httpClientRequest.exceptionHandler(future::completeExceptionally);
     httpClientRequest.handler(this::processResponse);
