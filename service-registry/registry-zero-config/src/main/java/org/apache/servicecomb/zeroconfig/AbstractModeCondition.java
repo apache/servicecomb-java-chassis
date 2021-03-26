@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.zeroconfig.local;
+package org.apache.servicecomb.zeroconfig;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.MODE_LOCAL;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MODE;
 
-import org.apache.servicecomb.zeroconfig.AbstractModeCondition;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 // currently can not work with spring caused by servicecomb configuration bug
 // no problem to work with springboot
-public class ConditionOnLocal extends AbstractModeCondition {
+public abstract class AbstractModeCondition implements Condition {
   @Override
-  protected boolean modeMatches(String mode) {
-    return MODE_LOCAL.equals(mode);
+  public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+    boolean enabled = context.getEnvironment().getProperty(CFG_ENABLED, boolean.class, true);
+    String mode = context.getEnvironment().getProperty(CFG_MODE);
+    return enabled && modeMatches(mode);
   }
+
+  protected abstract boolean modeMatches(String mode);
 }

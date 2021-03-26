@@ -22,12 +22,15 @@ import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_GROUP;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_HEARTBEAT_INTERVAL;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_HEARTBEAT_LOST_TIMES;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MODE;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_PULL_INTERVAL;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_ADDRESS;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_GROUP;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_HEARTBEAT_INTERVAL;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_HEARTBEAT_LOST_TIMES;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_PULL_INTERVAL;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.MODE_LOCAL;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.MODE_MULTICAST;
 
 import java.time.Duration;
 
@@ -45,8 +48,22 @@ public class Config {
     return this;
   }
 
+  // delete after support @Conditional
+  public boolean isLocal() {
+    return isEnabled() && MODE_LOCAL.equals(getMode());
+  }
+
+  // delete after support @Conditional
+  public boolean isMulticast() {
+    return isEnabled() && MODE_MULTICAST.equals(getMode());
+  }
+
   public boolean isEnabled() {
     return dynamicProperties.getBooleanProperty(CFG_ENABLED, true);
+  }
+
+  public String getMode() {
+    return dynamicProperties.getStringProperty(CFG_MODE, MODE_MULTICAST);
   }
 
   public String getAddress() {

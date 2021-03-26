@@ -50,5 +50,5 @@ public interface ZeroConfigConst {
 
   String MODE_LOCAL = "local";
 
-  int ORDER = 101;
+  int ORDER = -100;
 }

@@ -31,13 +31,12 @@ import org.apache.servicecomb.zeroconfig.Config;
 import org.apache.servicecomb.zeroconfig.ZeroConfigConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import com.google.common.net.HostAndPort;
 
 @Component
-@Conditional(ConditionOnMulticast.class)
+//@Conditional(ConditionOnMulticast.class)
 public class Multicast {
   private static final Logger LOGGER = LoggerFactory.getLogger(Multicast.class);
 
@@ -57,6 +56,12 @@ public class Multicast {
     this.group = initGroup(config);
     LOGGER.info("zero config, address: {}", bindAddress);
     LOGGER.info("zero config, group: {}", group);
+
+    // delete after support @Conditional
+    if (!config.isMulticast()) {
+      multicastSocket = null;
+      return;
+    }
 
     this.multicastSocket = new MulticastSocket(bindAddress);
     this.multicastSocket.joinGroup(group);
