@@ -129,7 +129,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     this.minimumNumberOfCalls = minimumNumberOfCalls;
   }
 
-  public SlidingWindowType getSlidingWindowType() {
+  public SlidingWindowType getSlidingWindowTypeEnum() {
     if (StringUtils.isEmpty(slidingWindowType)) {
       slidingWindowType = "count";
     }
@@ -140,6 +140,10 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
       default:
         return SlidingWindowType.COUNT_BASED;
     }
+  }
+
+  public String getSlidingWindowType() {
+    return this.slidingWindowType;
   }
 
   public void setSlidingWindowType(String slidingWindowType) {
