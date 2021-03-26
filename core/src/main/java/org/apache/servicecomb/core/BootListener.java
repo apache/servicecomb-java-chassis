@@ -40,20 +40,30 @@ public interface BootListener {
 
     private EventType eventType;
 
+    public BootEvent() {
+    }
+
+    public BootEvent(SCBEngine scbEngine, EventType eventType) {
+      this.scbEngine = scbEngine;
+      this.eventType = eventType;
+    }
+
     public SCBEngine getScbEngine() {
       return scbEngine;
     }
 
-    public void setScbEngine(SCBEngine scbEngine) {
+    public BootEvent setScbEngine(SCBEngine scbEngine) {
       this.scbEngine = scbEngine;
+      return this;
     }
 
     public EventType getEventType() {
       return eventType;
     }
 
-    public void setEventType(EventType eventType) {
+    public BootEvent setEventType(EventType eventType) {
       this.eventType = eventType;
+      return this;
     }
   }
 
