@@ -26,9 +26,9 @@ public interface ZeroConfigConst {
 
   String CFG_ENABLED = PREFIX + "enabled";
 
-  String CFG_GROUP = PREFIX + "multicast.group";
+  String CFG_MULTICAST_GROUP = PREFIX + "multicast.group";
 
-  String CFG_ADDRESS = PREFIX + "multicast.address";
+  String CFG_MULTICAST_ADDRESS = PREFIX + "multicast.address";
 
   String CFG_HEARTBEAT_INTERVAL = PREFIX + "heartbeat.interval";
 

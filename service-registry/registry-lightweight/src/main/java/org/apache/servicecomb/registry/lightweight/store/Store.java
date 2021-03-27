@@ -114,6 +114,14 @@ public class Store {
         .collect(Collectors.toList());
   }
 
+  public int getMicroserviceCount() {
+    return microservicesByName.size();
+  }
+
+  public int getInstanceCount() {
+    return instancesById.size();
+  }
+
   public Stream<MicroserviceInstance> findDeadInstances(Duration timeout) {
     long nanoNow = ticker.read();
     long nanoTimeout = timeout.toNanos();

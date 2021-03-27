@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.core.Endpoint;
@@ -37,37 +38,40 @@ public interface DiscoveryClient {
   @Path("/info")
   @GET
   @ApiOperation(value = "", nickname = "getInfo")
-  CompletableFuture<MicroserviceInfo> getInfoAsync(Endpoint endpoint);
+  CompletableFuture<MicroserviceInfo> getInfoAsync(Endpoint endpoint, @QueryParam("service-id") String serviceId);
 
-  default MicroserviceInfo getInfo(Endpoint endpoint) {
-    return AsyncUtils.toSync(getInfoAsync(endpoint));
+
+  default MicroserviceInfo getInfo(Endpoint endpoint, String serviceId) {
+    return AsyncUtils.toSync(getInfoAsync(endpoint, serviceId));
   }
 
   @Path("/microservice")
   @GET
   @ApiOperation(value = "", nickname = "getMicroservice")
-  CompletableFuture<Microservice> getMicroserviceAsync(Endpoint endpoint);
+  CompletableFuture<Microservice> getMicroserviceAsync(Endpoint endpoint, @QueryParam("service-id") String serviceId);
 
-  default Microservice getMicroservice(Endpoint endpoint) {
-    return AsyncUtils.toSync(getMicroserviceAsync(endpoint));
+  default Microservice getMicroservice(Endpoint endpoint, String serviceId) {
+    return AsyncUtils.toSync(getMicroserviceAsync(endpoint, serviceId));
   }
 
   @Path("/instance")
   @GET
   @ApiOperation(value = "", nickname = "getInstance")
-  CompletableFuture<MicroserviceInstance> getInstanceAsync(Endpoint endpoint);
+  CompletableFuture<MicroserviceInstance> getInstanceAsync(Endpoint endpoint,
+      @QueryParam("service-id") String serviceId);
 
-  default MicroserviceInstance getInstance(Endpoint endpoint) {
-    return AsyncUtils.toSync(getInstanceAsync(endpoint));
+  default MicroserviceInstance getInstance(Endpoint endpoint, String serviceId) {
+    return AsyncUtils.toSync(getInstanceAsync(endpoint, serviceId));
   }
 
   @Path("/schemas/{schema-id}")
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   @ApiOperation(value = "", nickname = "getSchema")
-  CompletableFuture<String> getSchemaAsync(Endpoint endpoint, @PathParam("schema-id") String schemaId);
+  CompletableFuture<String> getSchemaAsync(Endpoint endpoint, @QueryParam("service-id") String serviceId,
+      @PathParam("schema-id") String schemaId);
 
-  default String getSchema(Endpoint endpoint, String schemaId) {
-    return AsyncUtils.toSync(getSchemaAsync(endpoint, schemaId));
+  default String getSchema(Endpoint endpoint, String serviceId, String schemaId) {
+    return AsyncUtils.toSync(getSchemaAsync(endpoint, serviceId, schemaId));
   }
 }

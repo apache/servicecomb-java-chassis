@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.zeroconfig;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ADDRESS;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_ENABLED;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_GROUP;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_HEARTBEAT_INTERVAL;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_HEARTBEAT_LOST_TIMES;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MODE;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MULTICAST_ADDRESS;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_MULTICAST_GROUP;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.CFG_PULL_INTERVAL;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_ADDRESS;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.DEFAULT_GROUP;
@@ -66,13 +66,13 @@ public class Config {
     return dynamicProperties.getStringProperty(CFG_MODE, MODE_MULTICAST);
   }
 
-  public String getAddress() {
-    return dynamicProperties.getStringProperty(CFG_ADDRESS, DEFAULT_ADDRESS);
+  public String getMulticastAddress() {
+    return dynamicProperties.getStringProperty(CFG_MULTICAST_ADDRESS, DEFAULT_ADDRESS);
   }
 
   // (224.0.0.0, 239.255.255.255]
-  public String getGroup() {
-    return dynamicProperties.getStringProperty(CFG_GROUP, DEFAULT_GROUP);
+  public String getMulticastGroup() {
+    return dynamicProperties.getStringProperty(CFG_MULTICAST_GROUP, DEFAULT_GROUP);
   }
 
   public Duration getHeartbeatInterval() {

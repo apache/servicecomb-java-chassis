@@ -93,12 +93,12 @@ public class StoreService {
     }
 
     return checkSchemaSummary(request, microserviceStore)
-        .thenCompose(v -> discoveryClient.getInstanceAsync(endpoint))
+        .thenCompose(v -> discoveryClient.getInstanceAsync(endpoint, request.getServiceId()))
         .thenApply(instance -> addInstance(microserviceStore, instance));
   }
 
   private CompletableFuture<InstanceStore> addMicroserviceAndInstance(Endpoint endpoint, RegisterRequest request) {
-    return discoveryClient.getInfoAsync(endpoint)
+    return discoveryClient.getInfoAsync(endpoint, request.getServiceId())
         .thenApply(info -> {
           info.getMicroservice().getSchemaMap().putAll(info.getSchemasById());
           MicroserviceStore microserviceStore = store

@@ -21,9 +21,6 @@ servicecomb:
     consumer:
       policies:
         scb-discovery: simple-load-balance, scb-consumer-transport
-    producer:
-      policies:
-        scb-discovery: scb-producer-transport, schedule, producer-operation
   handler:
     chain:
       Consumer:

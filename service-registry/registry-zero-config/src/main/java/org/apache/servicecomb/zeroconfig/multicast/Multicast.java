@@ -22,6 +22,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -68,15 +69,24 @@ public class Multicast {
     this.multicastSocket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(5));
   }
 
+  public Multicast setSendBufferSize(int size) throws SocketException {
+    multicastSocket.setSendBufferSize(size);
+    return this;
+  }
+
+  public Multicast setReceiveBufferSize(int size) throws SocketException {
+    multicastSocket.setReceiveBufferSize(size);
+    return this;
+  }
 
   @SuppressWarnings("UnstableApiUsage")
   private InetSocketAddress initBindAddress(Config config) {
-    HostAndPort hostAndPort = HostAndPort.fromString(config.getAddress());
+    HostAndPort hostAndPort = HostAndPort.fromString(config.getMulticastAddress());
     return new InetSocketAddress(hostAndPort.getHost(), hostAndPort.getPort());
   }
 
   private InetAddress initGroup(Config config) throws UnknownHostException {
-    return InetAddress.getByName(config.getGroup());
+    return InetAddress.getByName(config.getMulticastGroup());
   }
 
   public <T> void send(MessageType type, T body) throws IOException {
