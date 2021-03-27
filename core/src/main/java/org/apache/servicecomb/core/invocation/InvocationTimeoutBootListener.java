@@ -45,7 +45,7 @@ import com.netflix.config.DynamicPropertyFactory;
 @Component
 public class InvocationTimeoutBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvocationTimeoutBootListener.class);
-  
+
   public static final String ENABLE_TIMEOUT_CHECK = "servicecomb.invocation.enableTimeoutCheck";
 
   public static boolean timeoutCheckEnabled() {
@@ -54,7 +54,7 @@ public class InvocationTimeoutBootListener implements BootListener {
   }
 
   @Override
-  public void onAfterRegistry(BootEvent event) {
+  public void onAfterTransport(BootEvent event) {
     if (timeoutCheckEnabled()) {
       EventManager.getEventBus().register(this);
     }

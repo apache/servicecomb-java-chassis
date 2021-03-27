@@ -31,6 +31,9 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 @RestSchema(schemaId = SCHEMA_ID)
 @Path("/v1/discovery")
 public class DiscoveryEndpoint {
@@ -42,24 +45,48 @@ public class DiscoveryEndpoint {
     this.self = self;
   }
 
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
+              value = "just make it possible to mock many instances by one real instance for performance test")
+      }
+  )
   @Path("/info")
   @GET
   public CompletableFuture<MicroserviceInfo> getInfo() {
     return CompletableFuture.completedFuture(self.getMicroserviceInfo());
   }
 
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
+              value = "just make it possible to mock many instances by one real instance for performance test")
+      }
+  )
   @Path("/microservice")
   @GET
   public CompletableFuture<Microservice> getMicroservice() {
     return CompletableFuture.completedFuture(self.getMicroservice());
   }
 
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
+              value = "just make it possible to mock many instances by one real instance for performance test")
+      }
+  )
   @Path("/instance")
   @GET
   public CompletableFuture<MicroserviceInstance> getInstance() {
     return CompletableFuture.completedFuture(self.getInstance());
   }
 
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
+              value = "just make it possible to mock many instances by one real instance for performance test")
+      }
+  )
   @Path("/schemas/{schema-id}")
   @GET
   @Produces(MediaType.TEXT_PLAIN)

@@ -33,7 +33,7 @@ import com.google.common.eventbus.Subscribe;
 public class MulticastRegistration extends AbstractZeroConfigRegistration implements InitializingBean {
   private static final String NAME = "zero-config-multicast";
 
-  private Multicast multicast;
+  protected Multicast multicast;
 
   @Autowired
   public MulticastRegistration setMulticast(Multicast multicast) {

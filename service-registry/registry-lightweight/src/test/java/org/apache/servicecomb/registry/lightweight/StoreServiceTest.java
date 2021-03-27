@@ -51,9 +51,9 @@ class StoreServiceTest extends TestBase {
 
   @BeforeEach
   void setUp() {
-    Mockito.when(discoveryClient.getInfoAsync(any()))
+    Mockito.when(discoveryClient.getInfoAsync(any(), any()))
         .thenReturn(CompletableFuture.completedFuture(self.getMicroserviceInfo()));
-    Mockito.when(discoveryClient.getInstanceAsync(any()))
+    Mockito.when(discoveryClient.getInstanceAsync(any(), any()))
         .thenReturn(CompletableFuture.completedFuture(self.getInstance()));
   }
 
