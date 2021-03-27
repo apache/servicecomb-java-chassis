@@ -21,7 +21,7 @@ import java.util.Collections;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
@@ -37,7 +37,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void testLong() {
-    PriorityProperty<Long> config = priorityPropertyManager.createPriorityProperty(Long.class, -1L, -2L, keys);
+    PriorityProperty<Long> config = propertyFactory.getOrCreate(Long.class, -1L, -2L, keys);
     Assert.assertEquals(-2L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(low, 1L);
@@ -65,7 +65,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void testInt() {
-    PriorityProperty<Integer> config = priorityPropertyManager.createPriorityProperty(Integer.class, -1, -2, keys);
+    PriorityProperty<Integer> config = propertyFactory.getOrCreate(Integer.class, -1, -2, keys);
     Assert.assertEquals(-2L, (int) config.getValue());
 
     ArchaiusUtils.setProperty(low, 1);
@@ -93,7 +93,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void testString() {
-    PriorityProperty<String> config = priorityPropertyManager.createPriorityProperty(String.class, null, "def", keys);
+    PriorityProperty<String> config = propertyFactory.getOrCreate(String.class, null, "def", keys);
     Assert.assertEquals("def", config.getValue());
 
     ArchaiusUtils.setProperty(low, 1);
@@ -121,7 +121,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void testBoolean() {
-    PriorityProperty<Boolean> config = priorityPropertyManager.createPriorityProperty(Boolean.class, null, false, keys);
+    PriorityProperty<Boolean> config = propertyFactory.getOrCreate(Boolean.class, null, false, keys);
     Assert.assertFalse(config.getValue());
 
     ArchaiusUtils.setProperty(low, true);
@@ -149,7 +149,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void testDouble() {
-    PriorityProperty<Double> config = priorityPropertyManager.createPriorityProperty(Double.class, null, -2.0, keys);
+    PriorityProperty<Double> config = propertyFactory.getOrCreate(Double.class, null, -2.0, keys);
     Assert.assertEquals(-2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, 1);
@@ -177,7 +177,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void testFloat() {
-    PriorityProperty<Float> config = priorityPropertyManager.createPriorityProperty(Float.class, null, -2.0f, keys);
+    PriorityProperty<Float> config = propertyFactory.getOrCreate(Float.class, null, -2.0f, keys);
     Assert.assertEquals(-2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, 1);
@@ -205,7 +205,7 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
   @Test
   public void globalRefresh() {
-    PriorityProperty<String> property = priorityPropertyManager.createPriorityProperty(String.class, null, null, keys);
+    PriorityProperty<String> property = propertyFactory.getOrCreate(String.class, null, null, keys);
 
     Assert.assertNull(property.getValue());
 

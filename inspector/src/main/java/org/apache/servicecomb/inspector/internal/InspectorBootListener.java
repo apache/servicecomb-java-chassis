@@ -16,13 +16,25 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
+import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InspectorBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InspectorBootListener.class);
+
+  private final InspectorConfig inspectorConfig;
+
+  private final PriorityPropertyFactory propertyFactory;
+
+  public InspectorBootListener(InspectorConfig inspectorConfig, PriorityPropertyFactory propertyFactory) {
+    this.inspectorConfig = inspectorConfig;
+    this.propertyFactory = propertyFactory;
+  }
 
   @Override
   public int getOrder() {
@@ -31,18 +43,18 @@ public class InspectorBootListener implements BootListener {
 
   @Override
   public void onAfterTransport(BootEvent event) {
-    InspectorConfig inspectorConfig = event.getScbEngine().getPriorityPropertyManager()
-        .createConfigObject(InspectorConfig.class);
     if (!inspectorConfig.isEnabled()) {
       LOGGER.info("inspector is not enabled.");
       return;
     }
-
     LOGGER.info("inspector is enabled.");
+
     // will not register this schemas to service registry
-    InspectorImpl inspector = new InspectorImpl(event.getScbEngine(), inspectorConfig,
-        RegistrationManager.INSTANCE.getMicroservice().getSchemaMap());
-    inspector.setPriorityPropertyManager(event.getScbEngine().getPriorityPropertyManager());
+    InspectorImpl inspector = new InspectorImpl()
+        .setInspectorConfig(inspectorConfig)
+        .setPropertyFactory(propertyFactory)
+        .setSchemas(RegistrationManager.INSTANCE.getMicroservice().getSchemaMap())
+        .correctBasePathForOnlineTest(event.getScbEngine());
     event.getScbEngine().getProducerProviderManager().registerSchema("inspector", inspector);
   }
 }

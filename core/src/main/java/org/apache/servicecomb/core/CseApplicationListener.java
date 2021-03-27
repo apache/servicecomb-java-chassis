@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
@@ -77,6 +78,7 @@ public class CseApplicationListener
 //        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
 //        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
       scbEngine.setApplicationContext(applicationContext);
+      scbEngine.setPriorityPropertyManager(applicationContext.getBean(PriorityPropertyManager.class));
       scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
       scbEngine.getConsumerProviderManager().getConsumerProviderList()
           .addAll(applicationContext.getBeansOfType(ConsumerProvider.class).values());

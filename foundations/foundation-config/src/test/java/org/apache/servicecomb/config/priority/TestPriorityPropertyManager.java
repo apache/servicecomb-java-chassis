@@ -17,21 +17,16 @@
 
 package org.apache.servicecomb.config.priority;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
 import org.apache.servicecomb.config.inject.TestConfigObjectFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.netflix.config.DynamicProperty;
 
-public class TestPriorityPropertyManager {
+public class TestPriorityPropertyManager extends TestPriorityPropertyBase {
   String high = "ms.schema.op";
 
   String middle = "ms.schema";
@@ -46,27 +41,11 @@ public class TestPriorityPropertyManager {
     public String strValue;
   }
 
-  @Before
-  public void setup() {
-    // avoid write too many logs
-    Logger.getRootLogger().setLevel(Level.OFF);
-
-    ArchaiusUtils.resetConfig();
-
-    Logger.getRootLogger().setLevel(Level.INFO);
-  }
-
-  @After
-  public void teardown() {
-    ArchaiusUtils.resetConfig();
-  }
-
   private void waitKeyForGC(PriorityPropertyManager priorityPropertyManager) {
     long maxTime = 10000;
     long currentTime = System.currentTimeMillis();
     while (System.currentTimeMillis() - currentTime < maxTime) {
-      if (priorityPropertyManager.getPriorityPropertySet().isEmpty()
-          && priorityPropertyManager.getConfigObjectMap().isEmpty()) {
+      if (priorityPropertyManager.getConfigObjectMap().isEmpty()) {
         break;
       }
       System.runFinalization();
@@ -84,21 +63,18 @@ public class TestPriorityPropertyManager {
   public void testConfigurationsAreGCCollected() {
     long timeBegin = System.currentTimeMillis();
 
-    PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
     for (int i = 0; i < 100; i++) {
       for (int j = 0; j < 100; j++) {
         TestConfigObjectFactory.ConfigWithAnnotation configConfigObject = priorityPropertyManager.createConfigObject(
             TestConfigObjectFactory.ConfigWithAnnotation.class);
         Assert.assertEquals("abc", configConfigObject.strDef);
-        PriorityProperty<Long> configPriorityProperty = priorityPropertyManager.
-            createPriorityProperty(Long.class, -1L, -2L, keys);
+        PriorityProperty<Long> configPriorityProperty = propertyFactory.getOrCreate(Long.class, -1L, -2L, keys);
         Assert.assertEquals(-2L, (long) configPriorityProperty.getValue());
       }
     }
 
     waitKeyForGC(priorityPropertyManager);
 
-    Assert.assertTrue(priorityPropertyManager.getPriorityPropertySet().isEmpty());
     Assert.assertTrue(priorityPropertyManager.getConfigObjectMap().isEmpty());
     for (DynamicProperty property : ConfigUtil.getAllDynamicProperties().values()) {
       Assert.assertTrue(ConfigUtil.getCallbacks(property).isEmpty());

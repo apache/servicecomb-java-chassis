@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.apache.servicecomb.config.priority.TestPriorityPropertyBase;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestConfigObjectFactory extends TestPriorityPropertyBase {
   public static class ConfigNoAnnotation {
@@ -189,7 +189,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertFalse(config.isBooleanValue1());
     Assert.assertNull(config.booleanValueObj);
     Assert.assertNull(config.getBooleanValueObj1());
-
   }
 
   @Test
@@ -251,7 +250,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertTrue(config.isBooleanValue1());
     Assert.assertTrue(config.booleanValueObj);
     Assert.assertTrue(config.getBooleanValueObj1());
-
   }
 
   @Test
@@ -313,7 +311,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertTrue(config.isBooleanValue1());
     Assert.assertTrue(config.booleanValueObj);
     Assert.assertTrue(config.getBooleanValueObj1());
-
   }
 
   @InjectProperties(prefix = "root")
@@ -359,7 +356,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertEquals(3, config.floatDef, 0);
     Assert.assertEquals(4, config.doubleDef, 0);
     Assert.assertTrue(config.booleanDef);
-
   }
 
   @Test
@@ -385,7 +381,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty("root.low-1.a.high-1.b", Long.MAX_VALUE - 3);
     Assert.assertEquals(Long.MAX_VALUE - 3, config.longValue);
-
   }
 
   @Test
@@ -400,7 +395,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty("root.l1-1", String.valueOf(2f));
     Assert.assertEquals(2f, config.floatValue, 0);
-
   }
 
   @Test
@@ -411,7 +405,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty("root.k.value", "1");
     Assert.assertEquals(1, config.intValue);
-
   }
 
   @Test
@@ -429,6 +422,5 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty("override.low", null);
     Assert.assertNull(config.strValue);
-
   }
 }

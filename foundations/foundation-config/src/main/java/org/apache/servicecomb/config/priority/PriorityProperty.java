@@ -19,7 +19,6 @@ package org.apache.servicecomb.config.priority;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -35,42 +34,31 @@ import com.netflix.config.DynamicProperty;
 public class PriorityProperty<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(PriorityProperty.class);
 
-  // priorityKeys[0] has the highest priority
-  private final String[] priorityKeys;
+  private final PriorityPropertyType<T> propertyType;
 
   private final String joinedPriorityKeys;
 
-  // when got invalid value will try next level
-  // null always be a invalid value
-  private final T invalidValue;
+  private final Function<DynamicProperty, T> internalValueReader;
 
-  // when got invalid value by lowest level, will use defaultValue
-  private final T defaultValue;
-
-  private DynamicProperty[] properties;
+  private final DynamicProperty[] properties;
 
   private T finalValue;
 
-  private Function<DynamicProperty, T> internalValueReader;
+  public PriorityProperty(PriorityPropertyType<T> propertyType) {
+    this.propertyType = propertyType;
+    this.joinedPriorityKeys = Arrays.toString(propertyType.getPriorityKeys());
+    this.internalValueReader = collectReader(propertyType.getType());
+    this.properties = createProperties(propertyType.getPriorityKeys());
+    initValue();
+  }
 
-  private BiConsumer<T, Object> callback = (t, u) -> {
-  };
-
-  @SuppressWarnings("unchecked")
-  PriorityProperty(Type type, T invalidValue, T defaultValue, String... priorityKeys) {
-    internalValueReader = collectReader(type);
-
-    this.priorityKeys = priorityKeys;
-    this.joinedPriorityKeys = Arrays.toString(priorityKeys);
-    this.invalidValue = invalidValue;
-    this.defaultValue = defaultValue;
-
-    properties = new DynamicProperty[priorityKeys.length];
+  private DynamicProperty[] createProperties(String[] priorityKeys) {
+    DynamicProperty[] properties = new DynamicProperty[priorityKeys.length];
     for (int idx = 0; idx < priorityKeys.length; idx++) {
       String key = priorityKeys[idx].trim();
       properties[idx] = DynamicProperty.getInstance(key);
     }
-    updateFinalValue(true);
+    return properties;
   }
 
   private Function<DynamicProperty, T> collectReader(Type type) {
@@ -132,29 +120,47 @@ public class PriorityProperty<T> {
   }
 
   public String[] getPriorityKeys() {
-    return priorityKeys;
+    return propertyType.getPriorityKeys();
   }
 
   public T getDefaultValue() {
-    return defaultValue;
+    return propertyType.getDefaultValue();
   }
 
   public DynamicProperty[] getProperties() {
     return properties;
   }
 
-  synchronized void updateFinalValue(boolean init) {
-    updateFinalValue(init, this);
+  void initValue() {
+    String effectiveKey = doUpdateFinalValue();
+    LOGGER.debug("config inited, \"{}\" set to {}, effective key is \"{}\".",
+        joinedPriorityKeys, finalValue, effectiveKey);
   }
 
-  synchronized void updateFinalValue(boolean init, Object target) {
+  synchronized boolean updateValue() {
+    T lastValue = finalValue;
+    String effectiveKey = doUpdateFinalValue();
+    if (effectiveKey != null) {
+      LOGGER.debug("config changed, \"{}\" changed from {} to {}, effective key is \"{}\".",
+          joinedPriorityKeys, lastValue, finalValue, effectiveKey);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   *
+   * @return if value changed, return effectiveKey, otherwise null
+   */
+  private String doUpdateFinalValue() {
     T lastValue = finalValue;
 
     String effectiveKey = "default value";
-    T value = defaultValue;
+    T value = propertyType.getDefaultValue();
     for (DynamicProperty property : properties) {
       T propValue = internalValueReader.apply(property);
-      if (propValue == null || propValue.equals(invalidValue)) {
+      if (propValue == null || propValue.equals(propertyType.getInvalidValue())) {
         continue;
       }
 
@@ -164,26 +170,14 @@ public class PriorityProperty<T> {
     }
 
     if (Objects.equals(lastValue, value)) {
-      return;
+      return null;
     }
 
-    if (init) {
-      LOGGER.debug("config inited, \"{}\" set to {}, effective key is \"{}\".",
-          joinedPriorityKeys, value, effectiveKey);
-    } else {
-      LOGGER.debug("config changed, \"{}\" changed from {} to {}, effective key is \"{}\".",
-          joinedPriorityKeys, finalValue, value, effectiveKey);
-    }
     finalValue = value;
-    callback.accept(finalValue, target);
+    return effectiveKey;
   }
 
   public T getValue() {
     return finalValue;
-  }
-
-  public void setCallback(BiConsumer<T, Object> callback, Object target) {
-    this.callback = callback;
-    callback.accept(finalValue, target);
   }
 }

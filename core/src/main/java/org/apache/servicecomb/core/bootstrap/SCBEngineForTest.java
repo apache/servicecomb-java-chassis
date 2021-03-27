@@ -22,6 +22,9 @@ import static org.apache.servicecomb.core.executor.ExecutorManager.EXECUTOR_GROU
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.config.priority.ConfigObjectFactory;
+import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
+import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.filter.Filter;
@@ -43,6 +46,10 @@ public class SCBEngineForTest extends SCBEngine {
     );
     setFilterChainsManager(new FilterChainsManager()
         .addFilters(filters));
+
+    PriorityPropertyFactory propertyFactory = new PriorityPropertyFactory();
+    ConfigObjectFactory configObjectFactory = new ConfigObjectFactory(propertyFactory);
+    setPriorityPropertyManager(new PriorityPropertyManager(configObjectFactory));
   }
 
   @Override

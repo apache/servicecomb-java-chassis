@@ -16,47 +16,46 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import static java.util.Collections.synchronizedMap;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
-import org.apache.servicecomb.config.inject.ConfigObjectFactory;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.springframework.stereotype.Component;
 
 import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
 
+@Component
 public class PriorityPropertyManager {
-  private ConfigurationListener configurationListener = this::configurationListener;
+  private final AbstractConfiguration configuration;
 
-  private Set<PriorityProperty<?>> priorityPropertySet =
-      Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
+  private final ConfigurationListener configurationListener = this::configurationListener;
 
-  private Map<Object, List<PriorityProperty<?>>> configObjectMap =
-      Collections.synchronizedMap(new WeakHashMap<>());
+  private final ConfigObjectFactory configObjectFactory;
 
-  // will be reset to null after register or unregister
-  // and build when configuration changed
-  private Map<Object, Map<String, List<PriorityProperty<?>>>> keyCache;
+  // key is config object instance
+  // value is properties of the config object instance
+  private final Map<Object, List<ConfigObjectProperty>> configObjectMap = synchronizedMap(new WeakHashMap<>());
 
-  public PriorityPropertyManager() {
-    // make sure create a DynamicPropertyFactory instance
-    // otherwise will cause wrong order of configurationListeners
-    DynamicPropertyFactory.getInstance();
+  public PriorityPropertyManager(ConfigObjectFactory configObjectFactory) {
+    this.configuration = ConfigurationManager.getConfigInstance();
+    this.configuration.addConfigurationListener(configurationListener);
 
-    ConfigurationManager.getConfigInstance().addConfigurationListener(configurationListener);
+    this.configObjectFactory = configObjectFactory;
+  }
+
+  public PriorityPropertyFactory getPropertyFactory() {
+    return configObjectFactory.getPropertyFactory();
   }
 
   public void close() {
-    ConfigurationManager.getConfigInstance().removeConfigurationListener(configurationListener);
+    configuration.removeConfigurationListener(configurationListener);
   }
 
   public synchronized void configurationListener(ConfigurationEvent event) {
@@ -64,50 +63,15 @@ public class PriorityPropertyManager {
       return;
     }
 
-    if (keyCache == null) {
-      keyCache = new ConcurrentHashMapEx<>();
-      updateCache(new Object(), priorityPropertySet);
-      configObjectMap.forEach((k, v) -> updateCache(k, v));
-    }
-
-    if (event.getPropertyName() != null) {
-      keyCache.forEach((k, v) -> v.getOrDefault(event.getPropertyName(), Collections.emptyList()).stream()
-          .forEach(p -> p.updateFinalValue(false, k)));
-      return;
-    }
-
-    // event like add configuration source, need to make a global refresh
-    keyCache.forEach(
-        (k, v) -> v.values().stream().flatMap(Collection::stream).forEach(
-            p -> p.updateFinalValue(false, k)));
-  }
-
-  private void updateCache(Object target, Collection<PriorityProperty<?>> properties) {
-    Map<String, List<PriorityProperty<?>>> targetMap = keyCache.computeIfAbsent(target, k -> new HashMap<>());
-    for (PriorityProperty<?> priorityProperty : properties) {
-      for (String key : priorityProperty.getPriorityKeys()) {
-        targetMap.computeIfAbsent(key, k -> new ArrayList<>()).add(priorityProperty);
-      }
-      priorityProperty.updateFinalValue(false, target);
+    // just update all properties, it's very fast, no need to do any optimize
+    for (Entry<Object, List<ConfigObjectProperty>> entry : configObjectMap.entrySet()) {
+      Object instance = entry.getKey();
+      entry.getValue().forEach(configObjectProperty -> configObjectProperty.updateValue(instance));
     }
   }
 
-  public Set<PriorityProperty<?>> getPriorityPropertySet() {
-    return priorityPropertySet;
-  }
-
-  public Map<Object, List<PriorityProperty<?>>> getConfigObjectMap() {
+  public Map<Object, List<ConfigObjectProperty>> getConfigObjectMap() {
     return configObjectMap;
-  }
-
-  private synchronized void registerPriorityProperty(PriorityProperty<?> property) {
-    priorityPropertySet.add(property);
-    keyCache = null;
-  }
-
-  private synchronized void registerConfigObject(Object configObject, List<PriorityProperty<?>> properties) {
-    configObjectMap.put(configObject, properties);
-    keyCache = null;
   }
 
   public <T> T createConfigObject(Class<T> cls, Object... kvs) {
@@ -120,21 +84,17 @@ public class PriorityPropertyManager {
   }
 
   public <T> T createConfigObject(Class<T> cls, Map<String, Object> parameters) {
-    ConfigObjectFactory factory = new ConfigObjectFactory();
-    T configObject = factory.create(this, cls, parameters);
-    registerConfigObject(configObject, factory.getPriorityProperties());
-    return configObject;
+    ConfigObject<T> configObject = configObjectFactory.create(cls, parameters);
+    return saveConfigObject(configObject);
   }
 
-  public <T> PriorityProperty<T> newPriorityProperty(Type cls, T invalidValue, T defaultValue,
-      String... priorityKeys) {
-    return new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);
+  public <T> T createConfigObject(T instance, Map<String, Object> parameters) {
+    ConfigObject<T> configObject = configObjectFactory.create(instance, parameters);
+    return saveConfigObject(configObject);
   }
 
-  public <T> PriorityProperty<T> createPriorityProperty(Type cls, T invalidValue, T defaultValue,
-      String... priorityKeys) {
-    PriorityProperty<T> priorityProperty = new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);
-    registerPriorityProperty(priorityProperty);
-    return priorityProperty;
+  private <T> T saveConfigObject(ConfigObject<T> configObject) {
+    configObjectMap.put(configObject.getInstance(), configObject.getProperties());
+    return configObject.getInstance();
   }
 }
