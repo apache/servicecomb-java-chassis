@@ -32,7 +32,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   public SyncContext(VertxInternal vertx) {
-    super(vertx, null, null, null, null, null, null);
+    super(vertx, null, null, null, null, null, null, null);
   }
 
   public VertxInternal owner() {
@@ -43,10 +43,6 @@ public class SyncContext extends EventLoopContext {
     this.owner = owner;
   }
 
-  @Override
-  public void runOnContext(Handler<Void> task) {
-    task.handle(null);
-  }
 
   public static <T> void syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> asyncResultHandler) {
@@ -63,7 +59,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
-  public <T> void executeBlockingInternal(Handler<Promise<T>> action, Handler<AsyncResult<T>> resultHandler) {
+  public <T> void executeBlockingInternal(Handler<Promise<T>> action, boolean ordered,Handler<AsyncResult<T>> resultHandler) {
     syncExecuteBlocking((future) -> {
       try {
         action.handle(future);
@@ -79,7 +75,6 @@ public class SyncContext extends EventLoopContext {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
   }
 
-  @Override
   <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> resultHandler,
       Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
