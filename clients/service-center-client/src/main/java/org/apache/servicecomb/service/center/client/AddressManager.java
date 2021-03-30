@@ -55,15 +55,23 @@ public class AddressManager {
     return address();
   }
 
-  public String address() {
+  public boolean sslEnabled() {
+    return address().startsWith("https://");
+  }
+
+  private String address() {
     synchronized (this) {
       return formatAddress(addresses.get(index));
     }
   }
 
-  public String nonFormattedAddress() {
+  private String nonFormattedAddress() {
     synchronized (this) {
       return addresses.get(index);
     }
+  }
+
+  public String formatUrl(String url, boolean absoluteUrl) {
+    return absoluteUrl ? nonFormattedAddress() + url : address() + url;
   }
 }

@@ -69,23 +69,26 @@ public class ServiceCenterRawClient {
   private HttpResponse doHttpRequest(String url, boolean absoluteUrl, Map<String, String> headers, String content,
       String method)
       throws IOException {
+
+    String address = addressManager.formatUrl(url, absoluteUrl);
     if (headers == null) {
       headers = new HashMap<>();
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
-    String address = absoluteUrl ? addressManager.nonFormattedAddress() + url : addressManager.address() + url;
     HttpRequest httpRequest = new HttpRequest(address, headers, content, method);
 
     try {
       return httpTransport.doRequest(httpRequest);
     } catch (IOException e) {
-      LOGGER.warn("send request to {} failed and retry to {} once. ", addressManager.address(),
-          addressManager.nextAddress(), e);
-      httpRequest = new HttpRequest(addressManager.address() + url, headers, content, method);
+      addressManager.nextAddress();
+      String retryAddress = addressManager.formatUrl(url, absoluteUrl);
+      LOGGER.warn("send request to {} failed and retry to {} once. ", address,
+          retryAddress, e);
+      httpRequest = new HttpRequest(address, headers, content, method);
       try {
         return httpTransport.doRequest(httpRequest);
       } catch (IOException ioException) {
-        LOGGER.warn("retry to {} failed again, and change next address {}. ", addressManager.address()
+        LOGGER.warn("retry to {} failed again, and change next address {}. ", retryAddress
             , addressManager.nextAddress());
         throw ioException;
       }

@@ -58,7 +58,7 @@ public class RBACBootStrapService implements BootStrapService {
 
     AddressManager addressManager = createAddressManager(environment);
     SSLProperties sslProperties = createSSLProperties(environment, "sc.consumer");
-    sslProperties.setEnabled(addressManager.address().startsWith("https://"));
+    sslProperties.setEnabled(addressManager.sslEnabled());
 
     // header: x-domain-name and url: /v1/{project}/ are all token from getTenantName。
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(
