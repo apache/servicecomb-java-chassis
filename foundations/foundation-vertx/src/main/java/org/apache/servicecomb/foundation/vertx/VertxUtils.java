@@ -47,8 +47,8 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.impl.FileResolver;
 import io.vertx.core.impl.VertxImpl;
-import io.vertx.core.impl.VertxThreadFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
+import io.vertx.core.spi.VertxThreadFactory;
 
 /**
  * VertxUtils
@@ -59,7 +59,7 @@ public final class VertxUtils {
   static {
     // initialize vertx logger, this can be done multiple times
     System.setProperty("vertx.logger-delegate-factory-class-name", SLF4JLogDelegateFactory.class.getName());
-    io.vertx.core.logging.LoggerFactory.initialise();
+    // io.vertx.core.logging.LoggerFactory.initialise();
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxUtils.class);

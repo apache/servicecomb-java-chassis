@@ -40,7 +40,6 @@ public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Objec
     return endpointMetric;
   }
 
-  @Override
   public Object requestBegin(DefaultHttpSocketMetric socketMetric, HttpServerRequest request) {
     return null;
   }
@@ -50,13 +49,11 @@ public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Objec
 
   }
 
-  @Override
   public Object responsePushed(DefaultHttpSocketMetric socketMetric, HttpMethod method, String uri,
       HttpServerResponse response) {
     return null;
   }
 
-  @Override
   public void responseEnd(Object requestMetric, HttpServerResponse response) {
 
   }
@@ -97,7 +94,6 @@ public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Objec
 
   }
 
-  @Override
   @Deprecated
   public boolean isEnabled() {
     return true;

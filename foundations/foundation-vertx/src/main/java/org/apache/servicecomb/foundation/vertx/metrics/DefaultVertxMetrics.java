@@ -26,12 +26,14 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.core.metrics.impl.DummyVertxMetrics;
 import io.vertx.core.net.NetClientOptions;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 import io.vertx.core.spi.metrics.HttpServerMetrics;
+import io.vertx.core.spi.metrics.Metrics;
 import io.vertx.core.spi.metrics.TCPMetrics;
 
 public class DefaultVertxMetrics extends DummyVertxMetrics {
@@ -44,8 +46,10 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   public DefaultVertxMetrics(VertxOptions vertxOptions) {
     this.vertxOptions = vertxOptions;
+    MetricsOptions o = vertxOptions.getMetricsOptions();
+    System.out.println(o.getClass());
     this.clientEndpointMetricManager = new DefaultClientEndpointMetricManager(
-        (MetricsOptionsEx) vertxOptions.getMetricsOptions());
+        (MetricsOptionsEx) o);
   }
 
   public DefaultClientEndpointMetricManager getClientEndpointMetricManager() {
@@ -65,7 +69,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   }
 
   @Override
-  public HttpClientMetrics<?, ?, ?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
+  public HttpClientMetrics<?, ?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
     return new DefaultHttpClientMetrics(clientEndpointMetricManager);
   }
 
@@ -87,7 +91,6 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   }
 
   @Deprecated
-  @Override
   public boolean isEnabled() {
     return true;
   }

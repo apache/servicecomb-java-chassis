@@ -28,7 +28,7 @@ import org.junit.Test;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.FutureFactoryImpl;
+import io.vertx.core.impl.future.SucceededFuture;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
 import mockit.Expectations;
@@ -78,18 +78,17 @@ public class TestNetClientWrapper {
     int port = 8000;
     String host = "localhost";
 
-    FutureFactoryImpl futureFactory = new FutureFactoryImpl();
     new MockUp<NetClient>(normalNetClient) {
       @Mock
       NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        connectHandler.handle(futureFactory.succeededFuture(normalSocket));
+        connectHandler.handle(new SucceededFuture<>(normalSocket));
         return null;
       }
     };
     new MockUp<NetClient>(sslNetClient) {
       @Mock
       NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        connectHandler.handle(futureFactory.succeededFuture(sslSocket));
+        connectHandler.handle(new SucceededFuture<>(sslSocket));
         return null;
       }
     };

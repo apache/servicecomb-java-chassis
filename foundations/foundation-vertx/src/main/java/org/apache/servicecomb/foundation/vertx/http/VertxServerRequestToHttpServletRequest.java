@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.impl.HttpServerRequestInternal;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;

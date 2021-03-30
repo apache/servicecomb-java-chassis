@@ -62,7 +62,6 @@ public class DefaultTcpServerMetrics implements TCPMetrics<DefaultTcpSocketMetri
 
   }
 
-  @Override
   @Deprecated
   public boolean isEnabled() {
     return true;

@@ -29,7 +29,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.net.SocketAddress;
+import io.vertx.core.spi.observability.HttpResponse;
 import mockit.Mocked;
 
 public class TestDefaultHttpServerMetrics {
@@ -193,9 +196,9 @@ public class TestDefaultHttpServerMetrics {
   public void meaningless() {
     Assert.assertTrue(metrics_listen1_server1.isEnabled());
 
-    metrics_listen1_server1.requestBegin(null, null);
+    metrics_listen1_server1.requestBegin(null, (HttpServerRequest) null);
     metrics_listen1_server1.requestReset(null);
-    metrics_listen1_server1.responsePushed(null, null, null, null);
+    metrics_listen1_server1.responsePushed(null, null, null, (HttpServerResponse) null);
     metrics_listen1_server1.responseEnd(null, null);
     metrics_listen1_server1.connected((DefaultHttpSocketMetric) null, null, null);
     metrics_listen1_server1.disconnected(null);

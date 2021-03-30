@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.vertx.stream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -26,9 +27,11 @@ import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.spi.ExecutorServiceFactory;
 import io.vertx.core.streams.WriteStream;
 
 /**
@@ -89,22 +92,21 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
   }
 
   @Override
-  public synchronized WriteStream<Buffer> write(Buffer data) {
-    return write(data, ar -> {
+  public synchronized Future<Void> write(Buffer data) {
+    return Future.future(r -> write(data, ar -> {
       if (ar.failed()) {
         handleException(ar.cause());
       }
-    });
+    }));
   }
 
   @Override
-  public WriteStream<Buffer> write(Buffer data, Handler<AsyncResult<Void>> handler) {
+  public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
     currentBufferCount++;
     buffers.add(data);
     context.executeBlocking(this::writeInWorker,
         true,
         handler);
-    return this;
   }
 
   protected void writeInWorker(Promise<Void> future) {
@@ -132,8 +134,9 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
   }
 
   @Override
-  public void end() {
+  public Future<Void> end() {
     end((Handler<AsyncResult<Void>>)null);
+    return null;
   }
 
   @Override

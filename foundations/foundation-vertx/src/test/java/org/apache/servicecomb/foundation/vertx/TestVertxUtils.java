@@ -91,7 +91,6 @@ public class TestVertxUtils {
   @Test
   public void testVertxUtilsInitWithOptions() {
     VertxOptions oOptions = new VertxOptions();
-    oOptions.getEventBusOptions().setClustered(false);
 
     Vertx vertx = VertxUtils.init(oOptions);
     Assert.assertNotEquals(null, vertx);

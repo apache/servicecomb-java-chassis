@@ -22,20 +22,28 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.impl.HttpServerRequestInternal;
+import io.vertx.core.net.SocketAddress;
+import io.vertx.ext.web.AllowForwardHeaders;
 import io.vertx.ext.web.RoutingContext;
+import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
 import mockit.Mocked;
 
 // HttpServerRequestWrapper is a package visible class, so put this test in package io.vertx.ext.web.impl
 public class TestHttpServerRequestUtils {
+
+  @Mocked
+  HttpServerRequestWrapper httpServerRequestWrapper;
+
   @Test
   public void testVertxServerRequestToHttpServletRequest(@Mocked RoutingContext context,
-      @Mocked HttpServerRequest request) {
-    HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request);
+      @Mocked HttpServerRequestInternal request) {
     new Expectations() {
       {
         context.request();
-        result = wrapper;
+        result = httpServerRequestWrapper;
       }
     };
 
