@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.spi.metrics.PoolMetrics;
 
 public class SyncContext extends EventLoopContext {
@@ -43,6 +42,10 @@ public class SyncContext extends EventLoopContext {
     this.owner = owner;
   }
 
+  @Override
+  void runOnContext(AbstractContext ctx, Handler<Void> task){
+    task.handle(null);
+  }
 
   public static <T> void syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> asyncResultHandler) {
@@ -58,8 +61,10 @@ public class SyncContext extends EventLoopContext {
     res.future().onComplete(asyncResultHandler);
   }
 
+
+
   @Override
-  public <T> void executeBlockingInternal(Handler<Promise<T>> action, boolean ordered,Handler<AsyncResult<T>> resultHandler) {
+  public <T> void executeBlockingInternal(Handler<Promise<T>> action, boolean ordered, Handler<AsyncResult<T>> resultHandler) {
     syncExecuteBlocking((future) -> {
       try {
         action.handle(future);
@@ -75,9 +80,8 @@ public class SyncContext extends EventLoopContext {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
   }
 
-  <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler,
-      Handler<AsyncResult<T>> resultHandler,
-      Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
+  @Override
+  public <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, TaskQueue queue, Handler<AsyncResult<T>> resultHandler) {
     syncExecuteBlocking(blockingCodeHandler, resultHandler);
   }
 }
