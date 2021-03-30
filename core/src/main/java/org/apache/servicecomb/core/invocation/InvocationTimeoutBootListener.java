@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationBusinessFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
-import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationHandlersStartEvent;
 import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
+@SuppressWarnings({"UnstableApiUsage", "unused"})
 @Component
 public class InvocationTimeoutBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvocationTimeoutBootListener.class);
@@ -49,8 +49,7 @@ public class InvocationTimeoutBootListener implements BootListener {
   public static final String ENABLE_TIMEOUT_CHECK = "servicecomb.invocation.enableTimeoutCheck";
 
   public static boolean timeoutCheckEnabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty
-        (ENABLE_TIMEOUT_CHECK, true).get();
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_TIMEOUT_CHECK, true).get();
   }
 
   @Override
@@ -109,8 +108,7 @@ public class InvocationTimeoutBootListener implements BootListener {
         return;
       }
       invocation.addLocalContext(Const.CONTEXT_TIMED_OUT, true);
-      throw new InvocationException(REQUEST_TIMEOUT,
-          ExceptionCodes.INVOCATION_TIMEOUT, "Invocation Timeout.");
+      throw new InvocationException(REQUEST_TIMEOUT, ExceptionCodes.INVOCATION_TIMEOUT, "Invocation Timeout.");
     }
   }
 
@@ -149,11 +147,5 @@ public class InvocationTimeoutBootListener implements BootListener {
     Invocation invocation = event.getInvocation();
     ensureInvocationNotTimeout(invocation);
     invocation.addContext(Const.CONTEXT_TIME_ELAPSED, Long.toString(calculateElapsedTime(invocation)));
-  }
-
-  @Subscribe
-  @EnableExceptionPropagation
-  public void onInvocationFinishEvent(InvocationFinishEvent event) {
-    ensureInvocationNotTimeout(event.getInvocation());
   }
 }

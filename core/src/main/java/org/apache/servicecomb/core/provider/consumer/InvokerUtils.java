@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -228,21 +229,31 @@ public final class InvokerUtils {
     invocation.onStartHandlersRequest();
     return invocation.getMicroserviceMeta().getFilterChain()
         .onFilter(invocation)
-        .exceptionally(throwable -> convertException(invocation, throwable))
-        .whenComplete((response, throwable) -> finishInvocation(invocation, response, throwable));
+        .exceptionally(throwable -> convertExceptionToResponse(invocation, throwable))
+        .whenComplete((response, throwable) -> finishInvocation(invocation, response));
   }
 
-  private static Response convertException(Invocation invocation, Throwable throwable) {
-    throw Exceptions.convert(invocation, throwable);
+  private static Response convertExceptionToResponse(Invocation invocation, Throwable throwable) {
+    InvocationException exception = Exceptions.convert(invocation, throwable);
+    return Response.failResp(exception);
   }
 
-  private static void finishInvocation(Invocation invocation, Response response, Throwable throwable) {
+  private static void finishInvocation(Invocation invocation, Response response) {
     processMetrics(invocation, response);
-    tryLogException(invocation, throwable);
+    tryLogException(invocation, response);
+
+    if (response.isFailed()) {
+      AsyncUtils.rethrow(response.getResult());
+    }
   }
 
-  private static void tryLogException(Invocation invocation, Throwable throwable) {
-    if (throwable == null) {
+  private static void processMetrics(Invocation invocation, Response response) {
+    invocation.getInvocationStageTrace().finishHandlersResponse();
+    invocation.onFinish(response);
+  }
+
+  private static void tryLogException(Invocation invocation, Response response) {
+    if (response.isSucceed()) {
       return;
     }
 
@@ -250,18 +261,13 @@ public final class InvokerUtils {
       LOGGER.error("failed to invoke {}, endpoint={}.",
           invocation.getMicroserviceQualifiedName(),
           invocation.getEndpoint(),
-          throwable);
+          response.<Throwable>getResult());
       return;
     }
 
     LOGGER.error("failed to invoke {}, endpoint={}, message={}.",
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint(),
-        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
-  }
-
-  private static void processMetrics(Invocation invocation, Response response) {
-    invocation.getInvocationStageTrace().finishHandlersResponse();
-    invocation.onFinish(response);
+        ExceptionUtils.getExceptionMessageWithoutTrace(response.getResult()));
   }
 }
