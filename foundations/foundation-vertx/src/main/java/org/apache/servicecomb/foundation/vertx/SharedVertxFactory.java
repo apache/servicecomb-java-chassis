@@ -21,7 +21,9 @@ import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.impl.VertxBuilder;
 import io.vertx.core.shareddata.Shareable;
+import io.vertx.core.spi.VertxMetricsFactory;
 
 public class SharedVertxFactory {
   static class SharedVertxInfo implements Shareable {

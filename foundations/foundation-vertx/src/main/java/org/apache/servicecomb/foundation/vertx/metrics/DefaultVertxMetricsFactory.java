@@ -18,7 +18,9 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
+import io.vertx.core.metrics.MetricsOptionsConverter;
 import io.vertx.core.spi.VertxMetricsFactory;
 import io.vertx.core.spi.metrics.VertxMetrics;
 
@@ -57,6 +59,11 @@ public class DefaultVertxMetricsFactory implements VertxMetricsFactory {
     metricsOptions.setFactory(this);
     metricsOptions.setEnabled(true);
     return metricsOptions;
+  }
+
+  @Override
+  public MetricsOptions newOptions(JsonObject jsonObject) {
+    return new MetricsOptionsEx(jsonObject);
   }
 
   public void setVertx(Vertx vertx, VertxOptions options) {
