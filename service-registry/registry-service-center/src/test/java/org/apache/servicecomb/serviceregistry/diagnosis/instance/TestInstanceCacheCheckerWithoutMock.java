@@ -19,9 +19,8 @@ package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 import java.util.Arrays;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.foundation.common.testing.MockClock;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.time.MockClock;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
@@ -62,7 +61,7 @@ public class TestInstanceCacheCheckerWithoutMock {
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
     checker = new InstanceCacheChecker(DiscoveryManager.INSTANCE.getAppManager());
-    checker.clock = new MockClock(new Holder<>(1L));
+    checker.clock = new MockClock(1L);
     expectedSummary.setStatus(Status.NORMAL);
     expectedSummary.setTimestamp(1);
   }

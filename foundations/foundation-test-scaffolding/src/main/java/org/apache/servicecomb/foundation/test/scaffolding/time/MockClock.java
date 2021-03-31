@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.common.testing;
+package org.apache.servicecomb.foundation.test.scaffolding.time;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-import org.apache.servicecomb.foundation.common.Holder;
-
 public class MockClock extends Clock {
+  private MockValues<Long> values;
 
-  Holder<Long> mockMillsHolder;
+  public MockClock() {
+    this(0L);
+  }
 
-  public MockClock(Holder<Long> h) {
-    this.mockMillsHolder = h;
+  public MockClock(Long... values) {
+    this.setValues(values);
+  }
+
+  public MockClock setValues(Long... values) {
+    this.values = new MockValues<Long>()
+        .setDefaultValue(0L)
+        .setValues(values);
+    return this;
   }
 
   @Override
@@ -48,6 +56,6 @@ public class MockClock extends Clock {
 
   @Override
   public long millis() {
-    return mockMillsHolder.value;
+    return values.read();
   }
 }

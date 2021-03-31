@@ -17,12 +17,8 @@
 
 package org.apache.servicecomb.core.invocation;
 
-import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
+import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationBusinessFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationHandlersStartEvent;
@@ -30,122 +26,83 @@ import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartSendRequestEvent;
 import org.apache.servicecomb.core.event.InvocationTimeoutCheckEvent;
-import org.apache.servicecomb.core.exception.ExceptionCodes;
+import org.apache.servicecomb.core.invocation.timeout.PassingTimeStrategy;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
-import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 
 @SuppressWarnings({"UnstableApiUsage", "unused"})
 @Component
-public class InvocationTimeoutBootListener implements BootListener {
+public class InvocationTimeoutBootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvocationTimeoutBootListener.class);
 
-  public static final String ENABLE_TIMEOUT_CHECK = "servicecomb.invocation.enableTimeoutCheck";
+  public static final String PREFIX = "servicecomb.invocation.timeout.check";
 
-  public static boolean timeoutCheckEnabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_TIMEOUT_CHECK, true).get();
-  }
+  public static final String STRATEGY = PREFIX + ".strategy";
 
-  @Override
-  public void onAfterTransport(BootEvent event) {
-    if (timeoutCheckEnabled()) {
-      EventManager.getEventBus().register(this);
-    }
-  }
+  public static final String ENABLED = PREFIX + ".enabled";
 
-  @Subscribe
-  public void onInvocationStartEvent(InvocationStartEvent event) {
-    Invocation invocation = event.getInvocation();
+  private final InvocationTimeoutStrategy strategy;
 
-    // not initialized
-    // 1. when first time received request
-    // 2. when first time send request not a user thread
-    // initialized
-    // 1. send request in the progress of processing request
-    if (invocation.getLocalContext(Const.CONTEXT_TIME_CURRENT) == null) {
-      invocation.addLocalContext(Const.CONTEXT_TIME_CURRENT, invocation.getInvocationStageTrace().getStart());
+  public InvocationTimeoutBootListener(EventBus eventBus, List<InvocationTimeoutStrategy> strategies,
+      Environment environment) {
+    if (!environment.getProperty(ENABLED, boolean.class, false)) {
+      strategy = null;
+      return;
     }
 
-    if (invocation.getLocalContext(Const.CONTEXT_TIME_ELAPSED) == null) {
-      String elapsed = invocation.getContext(Const.CONTEXT_TIME_ELAPSED);
-      if (StringUtils.isEmpty(elapsed)) {
-        invocation.addLocalContext(Const.CONTEXT_TIME_ELAPSED, 0L);
-        return;
-      }
-
-      try {
-        invocation.addLocalContext(Const.CONTEXT_TIME_ELAPSED, Long.parseLong(elapsed));
-      } catch (NumberFormatException e) {
-        LOGGER.error("Not expected number format exception, attacker?");
-        invocation.addLocalContext(Const.CONTEXT_TIME_ELAPSED, 0L);
-      }
-    }
+    String strategyName = environment.getProperty(STRATEGY, PassingTimeStrategy.NAME);
+    // if strategyName is wrong, then just throw exception
+    strategy = strategies.stream()
+        .filter(invocationTimeoutStrategy -> strategyName.equals(invocationTimeoutStrategy.name()))
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("can not find InvocationTimeoutStrategy, name=" + strategyName));
+    eventBus.register(this);
   }
 
   @Subscribe
   @EnableExceptionPropagation
   public void onInvocationTimeoutCheckEvent(InvocationTimeoutCheckEvent event) {
-    ensureInvocationNotTimeout(event.getInvocation());
+    strategy.checkTimeout(event.getInvocation());
   }
 
-  /**
-   * check if invocation is timeout.
-   *
-   * @throws InvocationException if timeout, throw an exception. Will not throw exception twice if this method called
-   *  after timeout.
-   */
-  private void ensureInvocationNotTimeout(Invocation invocation) {
-    if (invocation.getOperationMeta().getConfig().getNanoInvocationTimeout() > 0 && calculateElapsedTime(invocation) >
-        invocation.getOperationMeta().getConfig().getNanoInvocationTimeout()) {
-      if (invocation.getLocalContext(Const.CONTEXT_TIMED_OUT) != null) {
-        // already timed out, do not throw exception again
-        return;
-      }
-      invocation.addLocalContext(Const.CONTEXT_TIMED_OUT, true);
-      throw new InvocationException(REQUEST_TIMEOUT, ExceptionCodes.INVOCATION_TIMEOUT, "Invocation Timeout.");
-    }
-  }
-
-  private long calculateElapsedTime(Invocation invocation) {
-    return System.nanoTime() - (long) invocation.getLocalContext(Const.CONTEXT_TIME_CURRENT)
-        + (long) invocation.getLocalContext(Const.CONTEXT_TIME_ELAPSED);
+  @Subscribe
+  public void onInvocationStartEvent(InvocationStartEvent event) {
+    strategy.start(event.getInvocation());
   }
 
   @Subscribe
   @EnableExceptionPropagation
   public void onInvocationRunInExecutorStartEvent(InvocationRunInExecutorStartEvent event) {
-    ensureInvocationNotTimeout(event.getInvocation());
+    strategy.startRunInExecutor(event.getInvocation());
   }
 
   @Subscribe
   @EnableExceptionPropagation
   public void onInvocationHandlersStartEvent(InvocationHandlersStartEvent event) {
-    ensureInvocationNotTimeout(event.getInvocation());
+    strategy.startHandlers(event.getInvocation());
   }
 
   @Subscribe
   @EnableExceptionPropagation
   public void onInvocationBusinessMethodStartEvent(InvocationBusinessMethodStartEvent event) {
-    ensureInvocationNotTimeout(event.getInvocation());
+    strategy.startBusinessMethod(event.getInvocation());
   }
 
   @Subscribe
   @EnableExceptionPropagation
   public void onInvocationBusinessFinishEvent(InvocationBusinessFinishEvent event) {
-    ensureInvocationNotTimeout(event.getInvocation());
+    strategy.finishBusinessMethod(event.getInvocation());
   }
 
   @Subscribe
   @EnableExceptionPropagation
   public void onInvocationStartSendRequestEvent(InvocationStartSendRequestEvent event) {
-    Invocation invocation = event.getInvocation();
-    ensureInvocationNotTimeout(invocation);
-    invocation.addContext(Const.CONTEXT_TIME_ELAPSED, Long.toString(calculateElapsedTime(invocation)));
+    strategy.beforeSendRequest(event.getInvocation());
   }
 }

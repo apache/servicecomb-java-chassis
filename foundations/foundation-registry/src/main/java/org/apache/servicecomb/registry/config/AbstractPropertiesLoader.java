@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.PropertyExtended;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

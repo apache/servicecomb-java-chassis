@@ -88,7 +88,7 @@ public class InvocationStageTrace {
   private Invocation invocation;
 
   // current time for start invocation
-  private long startCurrentTime;
+  private long startTimeMillis;
 
   private long start;
 
@@ -139,7 +139,7 @@ public class InvocationStageTrace {
 
   public void start(long start) {
     // remember the current time to start invocation
-    this.startCurrentTime = System.currentTimeMillis();
+    this.startTimeMillis = System.currentTimeMillis();
     this.start = start;
   }
 
@@ -147,12 +147,12 @@ public class InvocationStageTrace {
     return start;
   }
 
-  public long getStartCurrentTime() {
-    return startCurrentTime;
+  public long getStartTimeMillis() {
+    return startTimeMillis;
   }
 
-  public InvocationStageTrace setStartCurrentTime(long startCurrentTime) {
-    this.startCurrentTime = startCurrentTime;
+  public InvocationStageTrace setStartTimeMillis(long startTimeMillis) {
+    this.startTimeMillis = startTimeMillis;
     return this;
   }
 
