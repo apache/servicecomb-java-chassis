@@ -20,8 +20,12 @@ package org.apache.servicecomb.config;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertyConverter;
+import org.apache.commons.configuration.SubsetConfiguration;
 import org.springframework.util.StringUtils;
 
 /**
@@ -262,23 +266,31 @@ public class BootStrapProperties {
   }
 
   private static Map<String, String> readProperties(Configuration configuration, String newKey, String oldKey) {
-    Configuration subset = configuration.subset(newKey);
+    AbstractConfiguration subset = (AbstractConfiguration) configuration.subset(newKey);
     if (subset.isEmpty()) {
-      subset = configuration.subset(oldKey);
+      subset = (AbstractConfiguration) configuration.subset(oldKey);
     }
     return toStringMap(subset);
   }
 
-  private static Map<String, String> toStringMap(Configuration configuration) {
+  private static Map<String, String> toStringMap(AbstractConfiguration configuration) {
+    AbstractConfiguration root = findRoot(configuration);
     Map<String, String> map = new LinkedHashMap<>();
     configuration.getKeys().forEachRemaining(key -> {
-      try {
-        map.put(key, configuration.getString(key));
-      } catch (Exception e) {
-        map.put(key, String.valueOf(configuration.getProperty(key)));
-      }
+      Object value = configuration.getProperty(key);
+      // support placeholder
+      value = PropertyConverter.interpolate(value, root);
+      map.put(key, Objects.toString(value, null));
     });
     return map;
+  }
+
+  private static AbstractConfiguration findRoot(AbstractConfiguration configuration) {
+    if (configuration instanceof SubsetConfiguration) {
+      return findRoot((AbstractConfiguration) ((SubsetConfiguration) configuration).getParent());
+    }
+
+    return configuration;
   }
 
   private static void checkMicroserviceName(String name) {

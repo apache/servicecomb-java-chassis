@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.invocation.timeout.ProcessingTimeStrategy;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.CommonSchemaInterface;
 import org.apache.servicecomb.demo.TestMgr;
@@ -34,6 +34,7 @@ public class TestSpringMVCCommonSchemaInterface implements CategorizedTestCase {
   @RpcReference(schemaId = "SpringMVCCommonSchemaInterface", microserviceName = "springmvc")
   private CommonSchemaInterface client;
 
+  @Override
   public void testAllTransport() throws Exception {
     testInvocationTimeoutInServer();
     testInvocationTimeoutInServerUserCheck();
@@ -54,8 +55,8 @@ public class TestSpringMVCCommonSchemaInterface implements CategorizedTestCase {
   private void testInvocationAlreadyTimeoutInClient() {
     try {
       InvocationContext context = new InvocationContext();
-      context.addLocalContext(Const.CONTEXT_TIME_CURRENT, System.nanoTime());
-      context.addLocalContext(Const.CONTEXT_TIME_ELAPSED, TimeUnit.SECONDS.toNanos(1));
+      context.addLocalContext(ProcessingTimeStrategy.CHAIN_START_TIME, System.nanoTime());
+      context.addLocalContext(ProcessingTimeStrategy.CHAIN_PROCESSING, TimeUnit.SECONDS.toNanos(1));
       client.testInvocationTimeout(context, 1, "hello");
       TestMgr.fail("should timeout");
     } catch (InvocationException e) {

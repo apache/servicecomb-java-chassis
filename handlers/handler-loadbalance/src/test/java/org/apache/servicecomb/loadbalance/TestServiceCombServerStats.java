@@ -22,8 +22,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.apache.servicecomb.foundation.test.scaffolding.time.MockClock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,14 +80,14 @@ public class TestServiceCombServerStats {
 
   @Test
   public void testTimeWindow() {
-    ServiceCombServerStats stats = new ServiceCombServerStats(null, new MockClock(new Holder<>(1000L)));
+    ServiceCombServerStats stats = new ServiceCombServerStats(null, new MockClock(1000L));
     Assert.assertEquals(1000, stats.getLastVisitTime());
     stats.markSuccess();
     stats.markFailure();
     Assert.assertEquals(2, stats.getTotalRequests());
     Assert.assertEquals(50, stats.getFailedRate());
     Assert.assertEquals(50, stats.getSuccessRate());
-    stats.clock = new MockClock(new Holder<>(60000L + 2000L));
+    stats.clock = new MockClock(60000L + 2000L);
     stats.markSuccess();
     Assert.assertEquals(1, stats.getTotalRequests());
     Assert.assertEquals(0, stats.getFailedRate());
@@ -118,9 +117,9 @@ public class TestServiceCombServerStats {
     Invocation invocation = new Invocation();
     Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
     Assert.assertSame(invocation, ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().getInvocation());
-    ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().clock = new MockClock(new Holder<>(
+    ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().clock = new MockClock(
         ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().startTryingTimestamp + 60000
-    ));
+    );
 
     Invocation otherInvocation = new Invocation();
     Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(otherInvocation));

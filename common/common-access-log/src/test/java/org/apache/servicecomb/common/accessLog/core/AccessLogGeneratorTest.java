@@ -34,7 +34,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -87,7 +86,7 @@ public class AccessLogGeneratorTest {
     when(stageTrace.getStartSend()).thenReturn(0L);
     when(stageTrace.getStart()).thenReturn(0L);
     when(stageTrace.getFinish()).thenReturn(0L);
-    when(stageTrace.getStartCurrentTime()).thenReturn(startMillisecond);
+    when(stageTrace.getStartTimeMillis()).thenReturn(startMillisecond);
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
     when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
 

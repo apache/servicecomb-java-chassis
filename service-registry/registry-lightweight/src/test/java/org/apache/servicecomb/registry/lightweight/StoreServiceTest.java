@@ -23,7 +23,7 @@ import static org.mockito.Matchers.any;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.foundation.test.scaffolding.MockTicker;
+import org.apache.servicecomb.foundation.test.scaffolding.time.MockTicker;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.lightweight.store.InstanceStore;
@@ -129,7 +129,7 @@ class StoreServiceTest extends TestBase {
 
     RegisterRequest request = self.buildRegisterRequest()
         .setStatus(MicroserviceInstanceStatus.TESTING);
-    ticker.setValues(1);
+    ticker.setValues(1L);
     InstanceStore instanceStore = service.register(request);
 
     assertThat(self.getInstance().getStatus()).isEqualTo(MicroserviceInstanceStatus.TESTING);
@@ -142,7 +142,7 @@ class StoreServiceTest extends TestBase {
     InstanceStore instanceStore = store.findInstanceStore(self.getInstanceId());
     assertThat(instanceStore.getLastHeartBeat()).isEqualTo(0);
 
-    ticker.setValues(1);
+    ticker.setValues(1L);
     should_register_microservice_and_instance_when_both_not_exist();
     assertThat(instanceStore.getLastHeartBeat()).isEqualTo(1);
   }

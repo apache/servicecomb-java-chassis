@@ -56,7 +56,7 @@ public class DatetimeConfigurableItemTest {
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
     when(invocationStageTrace.getStartSend()).thenReturn(0L);
     when(invocationStageTrace.getStart()).thenReturn(0L);
-    when(invocationStageTrace.getStartCurrentTime()).thenReturn(START_MILLISECOND);
+    when(invocationStageTrace.getStartTimeMillis()).thenReturn(START_MILLISECOND);
 
     accessLogEvent = new ServerAccessLogEvent();
     accessLogEvent.setMilliStartTime(START_MILLISECOND);

@@ -133,7 +133,7 @@ public abstract class AbstractRestInvocation {
       sendFailResponse(e);
       return;
     }
-    
+
     invocation.onStart(requestEx, start);
     invocation.getInvocationStageTrace().startSchedule();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();

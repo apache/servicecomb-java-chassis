@@ -20,17 +20,17 @@ import java.util.ArrayList;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.foundation.common.testing.MockClock;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.time.MockClock;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.After;
@@ -65,7 +65,7 @@ public class TestInstanceCacheCheckerMock {
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
     checker = new InstanceCacheChecker(DiscoveryManager.INSTANCE.getAppManager());
-    checker.clock = new MockClock(new Holder<>(1L));
+    checker.clock = new MockClock(1L);
     expectedSummary.setStatus(Status.NORMAL);
     expectedSummary.setTimestamp(1);
   }

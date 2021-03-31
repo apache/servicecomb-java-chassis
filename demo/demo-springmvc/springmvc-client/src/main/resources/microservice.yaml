@@ -51,6 +51,11 @@ servicecomb:
     chain:
       Consumer:
         default: loadbalance,fault-injection-consumer,bizkeeper-consumer
+  invocation:
+    timeout:
+      check:
+        enabled: true
+        strategy: processing-time
   tracing:
     enabled: true
     samplingRate: 0.5

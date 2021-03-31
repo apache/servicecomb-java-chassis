@@ -94,7 +94,7 @@ public class ConfigurableDatetimeAccessItem implements AccessLogItem<RoutingCont
     long milliDuration = (finishEvent.getInvocation().getInvocationStageTrace().getStartSend() -
         finishEvent.getInvocation().getInvocationStageTrace().getStart()) / 1000_000;
     doAppendFormattedItem(
-        finishEvent.getInvocation().getInvocationStageTrace().getStartCurrentTime() + milliDuration, builder);
+        finishEvent.getInvocation().getInvocationStageTrace().getStartTimeMillis() + milliDuration, builder);
   }
 
   private void doAppendFormattedItem(long milliStartTime, StringBuilder builder) {

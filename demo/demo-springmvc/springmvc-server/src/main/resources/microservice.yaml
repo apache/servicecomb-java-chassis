@@ -61,6 +61,10 @@ servicecomb:
   highway:
     address: 0.0.0.0:7070?sslEnabled=true
   invocation:
+    timeout:
+      check:
+        enabled: true
+        strategy: processing-time
     SpringMVCCommonSchemaInterface:
       testInvocationTimeout:
         timeout: 1000

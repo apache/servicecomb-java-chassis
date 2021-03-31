@@ -15,41 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.test.scaffolding;
+package org.apache.servicecomb.foundation.test.scaffolding.time;
 
-import com.google.common.base.Ticker;
+public class MockValues<T> {
+  private T defaultValue;
 
-public class MockTicker extends Ticker {
-  private long[] values;
+  private T[] values;
 
   private int index;
 
-  public MockTicker() {
-    this(0);
+  public MockValues<T> setDefaultValue(T defaultValue) {
+    this.defaultValue = defaultValue;
+    return this;
   }
 
-  public MockTicker(long... values) {
-    this.values = values;
-    this.index = 0;
-  }
-
-  public MockTicker setValues(long... values) {
+  public MockValues<T> setValues(T[] values) {
     this.values = values;
     this.index = 0;
     return this;
   }
 
-  @Override
-  public long read() {
-    if (values.length == 0) {
-      return 0;
+  public T read() {
+    if (values == null || values.length == 0) {
+      return defaultValue;
     }
 
     if (index >= values.length) {
       return values[values.length - 1];
     }
 
-    long value = values[index];
+    T value = values[index];
     index++;
     return value;
   }

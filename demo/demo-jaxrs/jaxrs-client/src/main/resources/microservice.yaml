@@ -44,18 +44,20 @@ servicecomb:
           timeout: 1000
 
   invocation:
-    enableTimeoutCheck: false
+    timeout:
+      check:
+        enabled: false
 
-# test configurations. you can choose any implementation. default using local.
+  # test configurations. you can choose any implementation. default using local.
 
   # using nacos configuration
-#  nacos:
-#    serverAddr: http://127.0.0.1:8848
-#    group: jaxrstest
-#    dataId: jaxrsclient
-#    namespace: public
-#    contentType: properties # can be properties, yaml, raw. If using raw, property [group].[dataId]=value.
-#    addPrefix: false # if true [group].[dataId] will added as properties/yaml items prefix. Will not influence raw.
+  #  nacos:
+  #    serverAddr: http://127.0.0.1:8848
+  #    group: jaxrstest
+  #    dataId: jaxrsclient
+  #    namespace: public
+  #    contentType: properties # can be properties, yaml, raw. If using raw, property [group].[dataId]=value.
+  #    addPrefix: false # if true [group].[dataId] will added as properties/yaml items prefix. Will not influence raw.
 
   # for integration test not install any config server
 jaxrstest:
