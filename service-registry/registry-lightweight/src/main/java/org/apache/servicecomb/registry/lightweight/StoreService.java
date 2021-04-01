@@ -48,6 +48,11 @@ public class StoreService {
     this.eventBus = eventBus;
   }
 
+  public void registerSelf(Self self) {
+    MicroserviceStore microserviceStore = store.addMicroservice(self.getMicroservice(), self.getSchemasSummary());
+    addInstance(microserviceStore, self.getInstance());
+  }
+
   public InstanceStore register(RegisterRequest request) {
     return AsyncUtils.toSync(registerAsync(request));
   }
@@ -124,7 +129,7 @@ public class StoreService {
 
   private InstanceStore doAddInstance(MicroserviceStore microserviceStore, MicroserviceInstance instance) {
     InstanceStore instanceStore = store.addInstance(microserviceStore, instance);
-    eventBus.post(new RegisterInstanceEvent(instance));
+    eventBus.post(new RegisterInstanceEvent(microserviceStore.getMicroservice(), instance));
     return instanceStore;
   }
 
