@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import static org.apache.servicecomb.core.exception.Exceptions.toConsumerResponse;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -31,10 +33,8 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -229,18 +229,12 @@ public final class InvokerUtils {
     invocation.onStartHandlersRequest();
     return invocation.getMicroserviceMeta().getFilterChain()
         .onFilter(invocation)
-        .exceptionally(throwable -> convertExceptionToResponse(invocation, throwable))
+        .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
         .whenComplete((response, throwable) -> finishInvocation(invocation, response));
-  }
-
-  private static Response convertExceptionToResponse(Invocation invocation, Throwable throwable) {
-    InvocationException exception = Exceptions.convert(invocation, throwable);
-    return Response.failResp(exception);
   }
 
   private static void finishInvocation(Invocation invocation, Response response) {
     processMetrics(invocation, response);
-    tryLogException(invocation, response);
 
     if (response.isFailed()) {
       AsyncUtils.rethrow(response.getResult());
@@ -250,24 +244,5 @@ public final class InvokerUtils {
   private static void processMetrics(Invocation invocation, Response response) {
     invocation.getInvocationStageTrace().finishHandlersResponse();
     invocation.onFinish(response);
-  }
-
-  private static void tryLogException(Invocation invocation, Response response) {
-    if (response.isSucceed()) {
-      return;
-    }
-
-    if (Exceptions.isPrintInvocationStackTrace()) {
-      LOGGER.error("failed to invoke {}, endpoint={}.",
-          invocation.getMicroserviceQualifiedName(),
-          invocation.getEndpoint(),
-          response.<Throwable>getResult());
-      return;
-    }
-
-    LOGGER.error("failed to invoke {}, endpoint={}, message={}.",
-        invocation.getMicroserviceQualifiedName(),
-        invocation.getEndpoint(),
-        ExceptionUtils.getExceptionMessageWithoutTrace(response.getResult()));
   }
 }

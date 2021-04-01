@@ -16,8 +16,7 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.apache.servicecomb.core.exception.Exceptions.exceptionToResponse;
+import static org.apache.servicecomb.core.exception.Exceptions.toProducerResponse;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -50,7 +49,7 @@ public class HighwayServerCodecFilter implements ProducerFilter {
     return CompletableFuture.completedFuture(invocation)
         .thenCompose(this::decodeRequest)
         .thenCompose(nextNode::onFilter)
-        .exceptionally(exception -> exceptionToResponse(invocation, exception, INTERNAL_SERVER_ERROR))
+        .exceptionally(exception -> toProducerResponse(invocation, exception))
         .thenCompose(response -> encodeResponse(invocation, response));
   }
 

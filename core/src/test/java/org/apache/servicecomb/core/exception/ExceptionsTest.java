@@ -21,8 +21,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.core.Response.StatusType;
@@ -73,6 +72,11 @@ class ExceptionsTest {
 
   static class ThrowExceptionWhenConvert implements ExceptionConverter<Throwable> {
     @Override
+    public int getOrder() {
+      return Integer.MIN_VALUE;
+    }
+
+    @Override
     public boolean canConvert(Throwable throwable) {
       return true;
     }
@@ -85,11 +89,12 @@ class ExceptionsTest {
 
   @Test
   void should_protect_when_converter_throw_exception() {
+    DefaultExceptionProcessor processor = new DefaultExceptionProcessor()
+        .setConverters(Collections.singletonList(new ThrowExceptionWhenConvert()));
+
     try (LogCollector logCollector = new LogCollector()) {
-      Map<Class<?>, ExceptionConverter<Throwable>> cache = new HashMap<>();
-      cache.put(RuntimeExceptionWithoutStackTrace.class, new ThrowExceptionWhenConvert());
-      InvocationException exception = Exceptions
-          .convert(null, new RuntimeExceptionWithoutStackTrace("exception need convert"), BAD_REQUEST, cache);
+      InvocationException exception = processor
+          .convert(null, new RuntimeExceptionWithoutStackTrace("exception need convert"), BAD_REQUEST);
 
       assertThat(exception.getStatus())
           .isSameAs(INTERNAL_SERVER_ERROR);
@@ -97,7 +102,7 @@ class ExceptionsTest {
           .isEqualTo("CommonExceptionData{code='SCB.50000000', message='Internal Server Error', dynamic={}}");
       assertThat(logCollector.getLastEvents().getRenderedMessage().replace("\r\n", "\n"))
           .isEqualTo("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
-              + "original exception:org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: exception need convert\n"
+              + "original exception :org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: exception need convert\n"
               + "converter exception:org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: mock exception when convert\n");
     }
   }
