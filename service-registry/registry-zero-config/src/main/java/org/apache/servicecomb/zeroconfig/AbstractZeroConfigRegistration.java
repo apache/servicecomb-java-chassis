@@ -43,8 +43,8 @@ public abstract class AbstractZeroConfigRegistration extends AbstractLightweight
 
   @Override
   public void run() {
-    // switch to registered status, before send register message
-    // otherwise send message maybe failed
+    super.run();
+    
     postRegisteredEvent();
     startRegister(config.getHeartbeatInterval());
   }

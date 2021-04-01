@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 /**
@@ -25,10 +26,17 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
  * currently, only "zero config" need this
  */
 public class RegisterInstanceEvent {
+  private final Microservice microservice;
+
   private final MicroserviceInstance instance;
 
-  public RegisterInstanceEvent(MicroserviceInstance instance) {
+  public RegisterInstanceEvent(Microservice microservice, MicroserviceInstance instance) {
+    this.microservice = microservice;
     this.instance = instance;
+  }
+
+  public Microservice getMicroservice() {
+    return microservice;
   }
 
   public MicroserviceInstance getInstance() {

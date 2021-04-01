@@ -41,11 +41,19 @@ public abstract class AbstractLightweightRegistration implements Registration {
 
   protected EventBus eventBus;
 
+  protected StoreService storeService;
+
   protected Self self;
 
   @Autowired
   public AbstractLightweightRegistration setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
+    return this;
+  }
+
+  @Autowired
+  public AbstractLightweightRegistration setStoreService(StoreService storeService) {
+    this.storeService = storeService;
     return this;
   }
 
@@ -120,6 +128,10 @@ public abstract class AbstractLightweightRegistration implements Registration {
     self.getMicroservice().getPaths().addAll(basePaths);
   }
 
+  @Override
+  public void run() {
+    storeService.registerSelf(self);
+  }
 
   @Override
   public void destroy() {
