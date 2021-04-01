@@ -92,65 +92,63 @@ final class RestClientUtil {
             .append(queryParams);
       }
 
-      @SuppressWarnings("deprecation")
-      HttpClientRequest httpClientRequest = httpClient
-          .request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString(), response -> {
-            responseHandler.handle(new RestResponse(requestContext, response));
-          });
-
-      httpClientRequest.setTimeout(timeout)
-          .exceptionHandler(e -> {
-            LOGGER.error("{} {} fail, endpoint is {}:{}, message: {}",
-                httpMethod,
-                url.toString(),
-                ipPort.getHostOrIp(),
-                ipPort.getPort(),
-                e.getMessage());
-            if (e instanceof UnknownHostException) {
-              // help analyses DNS problem
-              LOGGER.error("DNS resolve failed!", e);
-            }
-            responseHandler.handle(new RestResponse(requestContext, null));
-          });
-
-      //headers
-      Map<String, String> headers = defaultHeaders();
-      httpClientRequest.headers().addAll(headers);
-
-      if (requestParam.getHeaders() != null && requestParam.getHeaders().size() > 0) {
-        headers.putAll(requestParam.getHeaders());
-        for (Map.Entry<String, String> header : requestParam.getHeaders().entrySet()) {
-          httpClientRequest.putHeader(header.getKey(), header.getValue());
+      httpClient.request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString(), ar -> {
+        if (ar.failed()) {
+          return;
         }
-      }
+        ar.result().setTimeout(timeout).exceptionHandler(e -> {
+          LOGGER.error("{} {} fail, endpoint is {}:{}, message: {}",
+              httpMethod,
+              url.toString(),
+              ipPort.getHostOrIp(),
+              ipPort.getPort(),
+              e.getMessage());
+          if (e instanceof UnknownHostException) {
+            // help analyse DNS problem
+            LOGGER.error("DNS resolve failed!", e);
+          }
+          responseHandler.handle(new RestResponse(requestContext, null));
+        });
 
-      // cookies header
-      if (requestParam.getCookies() != null && requestParam.getCookies().size() > 0) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, String> cookie : requestParam.getCookies().entrySet()) {
-          stringBuilder.append(cookie.getKey())
-              .append("=")
-              .append(cookie.getValue())
-              .append("; ");
+        //headers
+        Map<String, String> headers = defaultHeaders();
+        ar.result().headers().addAll(headers);
+
+        if (requestParam.getHeaders() != null && requestParam.getHeaders().size() > 0) {
+          headers.putAll(requestParam.getHeaders());
+          for (Map.Entry<String, String> header : requestParam.getHeaders().entrySet()) {
+            ar.result().putHeader(header.getKey(), header.getValue());
+          }
         }
-        httpClientRequest.putHeader("Cookie", stringBuilder.toString());
-        headers.put("Cookie", stringBuilder.toString());
-      }
 
-      //SignAuth
-      SignRequest signReq = createSignRequest(requestContext.getMethod().toString(),
-          requestContext.getIpPort(),
-          requestContext.getParams(),
-          url.toString(),
-          headers);
-      httpClientRequest.headers().addAll(getSignAuthHeaders(signReq));
+        // cookies header
+        if (requestParam.getCookies() != null && requestParam.getCookies().size() > 0) {
+          StringBuilder stringBuilder = new StringBuilder();
+          for (Map.Entry<String, String> cookie : requestParam.getCookies().entrySet()) {
+            stringBuilder.append(cookie.getKey())
+                .append("=")
+                .append(cookie.getValue())
+                .append("; ");
+          }
+          ar.result().putHeader("Cookie", stringBuilder.toString());
+          headers.put("Cookie", stringBuilder.toString());
+        }
 
-      // body
-      if (httpMethod != HttpMethod.GET && requestParam.getBody() != null && requestParam.getBody().length > 0) {
-        httpClientRequest.end(Buffer.buffer(requestParam.getBody()));
-      } else {
-        httpClientRequest.end();
-      }
+        //SignAuth
+        SignRequest signReq = createSignRequest(requestContext.getMethod().toString(),
+            requestContext.getIpPort(),
+            requestContext.getParams(),
+            url.toString(),
+            headers);
+        ar.result().headers().addAll(getSignAuthHeaders(signReq));
+
+        // body
+        if (httpMethod != HttpMethod.GET && requestParam.getBody() != null && requestParam.getBody().length > 0) {
+         ar.result().end(Buffer.buffer(requestParam.getBody()));
+        } else {
+          ar.result().end();
+        }
+      });
     });
   }
 
