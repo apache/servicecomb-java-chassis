@@ -325,7 +325,6 @@ public class RegistrationManager {
   }
 
   private String getEndpoints(List<String> endpoints) {
-    // return JsonCodec.INSTANCE.toString(endpoints);
     return ServiceHelper.loadFactory(JsonCodec.class).toString(endpoints);
   }
 

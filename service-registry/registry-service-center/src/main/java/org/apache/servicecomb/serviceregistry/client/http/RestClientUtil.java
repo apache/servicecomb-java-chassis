@@ -92,11 +92,11 @@ final class RestClientUtil {
             .append(queryParams);
       }
 
-      httpClient.request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString(), ar -> {
-        if (ar.failed()) {
-          return;
-        }
-        ar.result().setTimeout(timeout).exceptionHandler(e -> {
+      httpClient.request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString()).onSuccess(req -> {
+        req.send().onComplete(resp -> {
+          responseHandler.handle(new RestResponse(requestContext, resp.result()));
+        });
+        req.setTimeout(timeout).exceptionHandler(e -> {
           LOGGER.error("{} {} fail, endpoint is {}:{}, message: {}",
               httpMethod,
               url.toString(),
@@ -104,24 +104,23 @@ final class RestClientUtil {
               ipPort.getPort(),
               e.getMessage());
           if (e instanceof UnknownHostException) {
-            // help analyse DNS problem
-            LOGGER.error("DNS resolve failed!", e);
+            LOGGER.error("DNS resolve failed", e);
           }
           responseHandler.handle(new RestResponse(requestContext, null));
         });
 
         //headers
         Map<String, String> headers = defaultHeaders();
-        ar.result().headers().addAll(headers);
+        req.headers().addAll(headers);
 
         if (requestParam.getHeaders() != null && requestParam.getHeaders().size() > 0) {
           headers.putAll(requestParam.getHeaders());
           for (Map.Entry<String, String> header : requestParam.getHeaders().entrySet()) {
-            ar.result().putHeader(header.getKey(), header.getValue());
+            req.putHeader(header.getKey(), header.getValue());
           }
         }
 
-        // cookies header
+        //cookies header
         if (requestParam.getCookies() != null && requestParam.getCookies().size() > 0) {
           StringBuilder stringBuilder = new StringBuilder();
           for (Map.Entry<String, String> cookie : requestParam.getCookies().entrySet()) {
@@ -130,23 +129,23 @@ final class RestClientUtil {
                 .append(cookie.getValue())
                 .append("; ");
           }
-          ar.result().putHeader("Cookie", stringBuilder.toString());
+          req.putHeader("Cookie", stringBuilder.toString());
           headers.put("Cookie", stringBuilder.toString());
         }
 
-        //SignAuth
+        //signAuth
         SignRequest signReq = createSignRequest(requestContext.getMethod().toString(),
             requestContext.getIpPort(),
             requestContext.getParams(),
             url.toString(),
             headers);
-        ar.result().headers().addAll(getSignAuthHeaders(signReq));
+        req.headers().addAll(getSignAuthHeaders(signReq));
 
-        // body
+        //body
         if (httpMethod != HttpMethod.GET && requestParam.getBody() != null && requestParam.getBody().length > 0) {
-         ar.result().end(Buffer.buffer(requestParam.getBody()));
+          req.end(Buffer.buffer(requestParam.getBody()));
         } else {
-          ar.result().end();
+          req.end();
         }
       });
     });
