@@ -19,8 +19,7 @@ package org.apache.servicecomb.common.rest.filter.inner;
 
 import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
 import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.apache.servicecomb.core.exception.Exceptions.exceptionToResponse;
+import static org.apache.servicecomb.core.exception.Exceptions.toProducerResponse;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,7 +62,7 @@ public class RestServerCodecFilter implements ProducerFilter {
     return CompletableFuture.completedFuture(invocation)
         .thenAccept(this::decodeRequest)
         .thenCompose(v -> invokeNext(invocation, nextNode))
-        .exceptionally(exception -> exceptionToResponse(invocation, exception, INTERNAL_SERVER_ERROR))
+        .exceptionally(exception -> toProducerResponse(invocation, exception))
         .thenCompose(response -> encodeResponse(invocation, response));
   }
 

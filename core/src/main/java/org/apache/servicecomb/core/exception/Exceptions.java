@@ -14,48 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.core.exception;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIENT;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_SERVER;
 import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.netflix.config.DynamicPropertyFactory;
+@Component
+public class Exceptions {
+  private static ExceptionProcessor processor = new DefaultExceptionProcessor();
 
-public final class Exceptions {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Exceptions.class);
-
-  @SuppressWarnings("unchecked")
-  private static final List<ExceptionConverter<Throwable>> CONVERTERS = SPIServiceUtils
-      .getOrLoadSortedService(ExceptionConverter.class).stream()
-      .map(converter -> (ExceptionConverter<Throwable>) converter)
-      .collect(Collectors.toList());
-
-  private static final Map<Class<?>, ExceptionConverter<Throwable>> CACHE = new ConcurrentHashMapEx<>();
-
-  private Exceptions() {
+  @Autowired(required = false)
+  public void setProcessor(List<ExceptionProcessor> processors) {
+    // never be null, "orElse" just to avoid compile warning
+    processor = processors.stream()
+        .min(Comparator.comparingInt(ExceptionProcessor::getOrder))
+        .orElse(new DefaultExceptionProcessor());
   }
 
   public static Throwable unwrapIncludeInvocationException(Throwable throwable) {
@@ -114,66 +105,24 @@ public final class Exceptions {
     return CONSUMER.equals(invocation.getInvocationType()) ? BAD_REQUEST : INTERNAL_SERVER_ERROR;
   }
 
-  public static Response exceptionToResponse(@Nullable Invocation invocation, Throwable exception,
-      StatusType genericStatus) {
-    InvocationException invocationException = Exceptions.convert(invocation, exception, genericStatus);
-    if (invocation != null) {
-      logException(invocation, invocationException);
-    }
-    return Response.status(invocationException.getStatus())
-        .entity(invocationException.getErrorData());
+  public static Response toConsumerResponse(Invocation invocation, Throwable throwable) {
+    return processor.toConsumerResponse(invocation, throwable);
   }
 
-  private static void logException(@Nonnull Invocation invocation, InvocationException invocationException) {
-    if (isPrintInvocationStackTrace()) {
-      LOGGER.error("failed to process {} invocation, operation={}.",
-          invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(), invocationException);
-      return;
-    }
-
-    LOGGER.error("failed to process {} invocation, operation={}, message={}.",
-        invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(),
-        ExceptionUtils.getExceptionMessageWithoutTrace(invocationException));
+  public static Response toProducerResponse(@Nullable Invocation invocation, Throwable exception) {
+    return processor.toProducerResponse(invocation, exception);
   }
 
   public static InvocationException convert(@Nonnull Invocation invocation, Throwable throwable) {
-    StatusType genericStatus = getGenericStatus(invocation);
-    return convert(invocation, throwable, genericStatus);
+    return processor.convert(invocation, throwable);
   }
 
   public static InvocationException convert(@Nullable Invocation invocation, Throwable throwable,
       StatusType genericStatus) {
-    return convert(invocation, throwable, genericStatus, CACHE);
-  }
-
-  public static InvocationException convert(@Nullable Invocation invocation, Throwable throwable,
-      StatusType genericStatus, Map<Class<?>, ExceptionConverter<Throwable>> cache) {
-    Throwable unwrapped = unwrap(throwable);
-    try {
-      return cache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped))
-          .convert(invocation, unwrapped, genericStatus);
-    } catch (Exception e) {
-      LOGGER.error("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
-              + "original exception:{}converter exception:{}",
-          getStackTrace(throwable),
-          getStackTrace(e));
-      return new InvocationException(INTERNAL_SERVER_ERROR,
-          new CommonExceptionData(GENERIC_SERVER, INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    }
-  }
-
-  private static ExceptionConverter<Throwable> findConverter(Throwable throwable) {
-    for (ExceptionConverter<Throwable> converter : CONVERTERS) {
-      if (converter.canConvert(throwable)) {
-        return converter;
-      }
-    }
-
-    throw new IllegalStateException("never happened: can not find converter for " + throwable.getClass().getName());
+    return processor.convert(invocation, throwable, genericStatus);
   }
 
   public static boolean isPrintInvocationStackTrace() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.exception.invocation.print-stack-trace", false).get();
+    return processor.isPrintStackTrace();
   }
 }

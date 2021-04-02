@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter.isDownloadFileResponseType;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -47,7 +46,7 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
   @Override
   protected Invocation sendCreateInvocationException(Throwable throwable) {
     try {
-      Response response = Exceptions.exceptionToResponse(null, throwable, INTERNAL_SERVER_ERROR);
+      Response response = Exceptions.toProducerResponse(null, throwable);
       RestServerCodecFilter.encodeResponse(response, false, DEFAULT_PRODUCE_PROCESSOR, responseEx);
     } catch (Throwable e) {
       LOGGER.error("Failed to send response when prepare invocation failed, request uri:{}",
