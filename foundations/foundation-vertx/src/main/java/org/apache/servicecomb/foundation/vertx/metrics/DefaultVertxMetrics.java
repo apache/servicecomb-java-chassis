@@ -46,10 +46,8 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   public DefaultVertxMetrics(VertxOptions vertxOptions) {
     this.vertxOptions = vertxOptions;
-    MetricsOptions o = vertxOptions.getMetricsOptions();
-    System.out.println(o.getClass());
     this.clientEndpointMetricManager = new DefaultClientEndpointMetricManager(
-        (MetricsOptionsEx) o);
+        (MetricsOptionsEx) vertxOptions.getMetricsOptions());
   }
 
   public DefaultClientEndpointMetricManager getClientEndpointMetricManager() {

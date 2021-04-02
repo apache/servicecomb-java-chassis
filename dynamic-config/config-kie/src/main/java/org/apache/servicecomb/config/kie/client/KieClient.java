@@ -25,6 +25,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.plaf.IconUIResource;
+
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.config.kie.archaius.sources.KieConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.kie.model.KVResponse;
@@ -36,7 +38,7 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 
 public class KieClient {
 
@@ -130,46 +132,44 @@ public class KieClient {
       String finalPath = path;
       HttpClients.getClient(ConfigKieHttpClientOptionsSPI.CLIENT_NAME).runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(serviceUri);
-        HttpClientRequest request = client
-            .get(ipPort.getPort(), ipPort.getHostOrIp(), finalPath, rsp -> {
-              if (rsp.statusCode() == HttpStatus.SC_OK) {
-                revision = rsp.getHeader("X-Kie-Revision");
-                rsp.bodyHandler(buf -> {
+        client.request(HttpMethod.GET, ipPort.getPort(), ipPort.getHostOrIp(), finalPath)
+          .onSuccess(req -> {
+            req.setTimeout(timeout);
+            req.exceptionHandler(e -> {
+              EventManager.post(new ConnFailEvent("fetch config fail"));
+              LOGGER.error("Config update from {} failed. Error message is [{}].",
+                  serviceUri,
+                  e.getMessage());
+              latch.countDown();
+            });
+            req.send().onComplete(resp ->{
+              if (resp.result().statusCode() == HttpStatus.SC_OK) {
+                revision = resp.result().getHeader("X-Kie-Revision");
+                resp.result().bodyHandler(buf -> {
                   try {
                     Map<String, Object> resMap = KieUtil.getConfigByLabel(JsonUtils.OBJ_MAPPER
                         .readValue(buf.toString(), KVResponse.class));
                     KieWatcher.INSTANCE.refreshConfigItems(resMap);
                     EventManager.post(new ConnSuccEvent());
                   } catch (IOException e) {
-                    EventManager.post(new ConnFailEvent(
-                        "config update result parse fail " + e.getMessage()));
-                    LOGGER.error("Config update from {} failed. Error message is [{}].",
-                        serviceUri,
-                        e.getMessage());
+                    EventManager.post(new ConnFailEvent("config update result parse fail " + e.getMessage()));
+                    LOGGER.error("Config update from {} failed. Error message is [{}].", serviceUri, e.getMessage());
                   }
                   latch.countDown();
                 });
-              } else if (rsp.statusCode() == HttpStatus.SC_NOT_MODIFIED) {
+              } else if (resp.result().statusCode() == HttpStatus.SC_NOT_MODIFIED) {
                 EventManager.post(new ConnSuccEvent());
                 latch.countDown();
               } else {
                 EventManager.post(new ConnFailEvent("fetch config fail"));
                 LOGGER.error("Config update from {} failed. Error code is {}, error message is [{}].",
                     serviceUri,
-                    rsp.statusCode(),
-                    rsp.statusMessage());
+                    resp.result().statusCode(),
+                    resp.result().statusMessage());
                 latch.countDown();
               }
-            }).setTimeout(timeout);
-
-        request.exceptionHandler(e -> {
-          EventManager.post(new ConnFailEvent("fetch config fail"));
-          LOGGER.error("Config update from {} failed. Error message is [{}].",
-              serviceUri,
-              e.getMessage());
-          latch.countDown();
-        });
-        request.end();
+            });
+          });
       });
     }
   }
