@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Component
 @InjectProperties(prefix = "servicecomb.invocation.exception")
 public class DefaultExceptionProcessor implements ExceptionProcessor {
@@ -55,6 +57,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
 
   public static final int ORDER = Integer.MAX_VALUE;
 
+  @JsonIgnore
   @SuppressWarnings("unchecked")
   private final List<ExceptionConverter<Throwable>> converters = SPIServiceUtils
       .getOrLoadSortedService(ExceptionConverter.class).stream()

@@ -180,4 +180,19 @@ public class PriorityProperty<T> {
   public T getValue() {
     return finalValue;
   }
+
+  public boolean isChangedKey(String changedKey) {
+    if (changedKey == null) {
+      // property source changed or clear, and so on
+      return true;
+    }
+
+    for (DynamicProperty property : properties) {
+      if (changedKey.equals(property.getName())) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
 }
