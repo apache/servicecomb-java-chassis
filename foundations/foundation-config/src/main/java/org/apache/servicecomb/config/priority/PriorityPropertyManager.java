@@ -63,10 +63,12 @@ public class PriorityPropertyManager {
       return;
     }
 
-    // just update all properties, it's very fast, no need to do any optimize
+    // just loop all properties, it's very fast, no need to do any optimize
     for (Entry<Object, List<ConfigObjectProperty>> entry : configObjectMap.entrySet()) {
       Object instance = entry.getKey();
-      entry.getValue().forEach(configObjectProperty -> configObjectProperty.updateValue(instance));
+      entry.getValue()
+          .forEach(
+              configObjectProperty -> configObjectProperty.updateValueWhenChanged(instance, event.getPropertyName()));
     }
   }
 
