@@ -395,7 +395,7 @@ public class ConfigCenterClient {
           LOGGER.warn(e.getMessage());
         }
       }
-    }
+    });
   }
 
   public static SignRequest createSignRequest(String method, String endpoint, Map<String, String> headers,
