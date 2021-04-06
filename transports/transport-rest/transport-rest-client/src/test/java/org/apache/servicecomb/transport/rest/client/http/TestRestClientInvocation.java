@@ -69,10 +69,11 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.http.impl.Http1xConnectionBaseEx;
 import io.vertx.core.http.impl.WebSocketImpl;
-import io.vertx.core.http.impl.headers.VertxHttpHeaders;
+import io.vertx.core.http.impl.headers.HeadersMultiMap;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
 import mockit.Deencapsulation;
@@ -89,7 +90,7 @@ public class TestRestClientInvocation {
 
   Handler<Buffer> bodyHandler;
 
-  MultiMap headers = new VertxHttpHeaders();
+  MultiMap headers = new HeadersMultiMap();
 
   HttpClientRequest request = mock(HttpClientRequest.class);
 
@@ -158,8 +159,7 @@ public class TestRestClientInvocation {
     when(endpoint.getAddress()).thenReturn(address);
     when(invocation.getHandlerContext()).then(answer -> handlerContext);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
-    when(httpClient.request(Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
-        .thenReturn(request);
+    when(httpClient.request((RequestOptions) Mockito.any()).result()).thenReturn(request);
     when(request.headers()).thenReturn(headers);
 
     doAnswer(a -> {

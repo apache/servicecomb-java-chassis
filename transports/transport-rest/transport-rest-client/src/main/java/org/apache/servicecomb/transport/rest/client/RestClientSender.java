@@ -68,7 +68,7 @@ public class RestClientSender {
     invocation.onStartSendRequest();
 
     httpClientRequest.exceptionHandler(future::completeExceptionally);
-    httpClientRequest.handler(this::processResponse);
+    httpClientRequest.send().onComplete(resp -> processResponse(resp.result()));
 
     // can read metrics of connection in vertx success/exception callback
     // but after the callback, maybe the connection will be reused or closed, metrics is not valid any more
@@ -167,9 +167,9 @@ public class RestClientSender {
     if (throwable != null) {
       LOGGER.error("rest client send or receive failed, operation={}, method={}, endpoint={}, uri={}.",
           invocation.getMicroserviceQualifiedName(),
-          httpClientRequest.method(),
+          httpClientRequest.getMethod(),
           invocation.getEndpoint().getEndpoint(),
-          httpClientRequest.uri());
+          httpClientRequest.getURI());
     }
   }
 

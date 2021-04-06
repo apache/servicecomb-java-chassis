@@ -23,9 +23,8 @@ import io.vertx.core.impl.VertxInternal;
 import io.vertx.core.spi.metrics.NetworkMetrics;
 
 public abstract  class Http1xConnectionBaseEx<S extends WebSocketImplBase<S>> extends Http1xConnectionBase<S>{
-  public Http1xConnectionBaseEx(VertxInternal vertx, ChannelHandlerContext chctx,
-      ContextInternal context) {
-    super(vertx, chctx, context);
+  public Http1xConnectionBaseEx(ContextInternal context, ChannelHandlerContext chctx) {
+    super(context, chctx);
   }
   
 }

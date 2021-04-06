@@ -52,6 +52,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
@@ -82,7 +83,7 @@ public class RestServerVerticle extends AbstractVerticle {
   @SuppressWarnings("deprecation")
   // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
+  public void start(Promise<Void> startFuture) throws Exception {
     try {
       super.start();
       // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
@@ -231,7 +232,7 @@ public class RestServerVerticle extends AbstractVerticle {
 
   @SuppressWarnings("deprecation")
   // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
-  private void startListen(HttpServer server, Future<Void> startFuture) {
+  private void startListen(HttpServer server, Promise<Void> startFuture) {
     server.listen(endpointObject.getPort(), endpointObject.getHostOrIp(), ar -> {
       if (ar.succeeded()) {
         LOGGER.info("rest listen success. address={}:{}",
@@ -256,7 +257,6 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private HttpServerOptions createDefaultHttpServerOptions() {
     HttpServerOptions serverOptions = new HttpServerOptions();
-    serverOptions.setUsePooledBuffers(true);
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());

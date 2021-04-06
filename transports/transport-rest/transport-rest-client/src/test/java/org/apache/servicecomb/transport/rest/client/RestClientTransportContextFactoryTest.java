@@ -101,7 +101,7 @@ class RestClientTransportContextFactoryTest extends RestClientTestBase {
   void should_allowed_modify_host() {
     factory.setHttpClientRequestFactory((invocation, httpClient, method, options) -> {
       options.setHost(invocation.getSwaggerArgument("clusterId") + "." + options.getHost());
-      return httpClient.request(method, options);
+      return httpClient.request(options.setMethod(method)).result();
     });
 
     init(ImmutableMap.of("clusterId", "my-id"), true);

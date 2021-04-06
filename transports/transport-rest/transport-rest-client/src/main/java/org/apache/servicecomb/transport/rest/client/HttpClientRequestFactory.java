@@ -42,7 +42,7 @@ import io.vertx.core.http.RequestOptions;
  * </pre>
  */
 public interface HttpClientRequestFactory {
-  HttpClientRequestFactory DEFAULT = (invocation, httpClient, method, options) -> httpClient.request(method, options);
+  HttpClientRequestFactory DEFAULT = (invocation, httpClient, method, options) -> httpClient.request(options.setMethod(method)).result();
 
   HttpClientRequest create(Invocation invocation, HttpClient httpClient, HttpMethod method, RequestOptions options);
 }

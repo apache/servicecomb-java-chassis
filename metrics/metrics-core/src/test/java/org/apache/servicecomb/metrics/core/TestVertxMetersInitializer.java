@@ -43,7 +43,9 @@ import com.netflix.spectator.api.Registry;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 
@@ -66,7 +68,7 @@ public class TestVertxMetersInitializer {
     @Override
     @SuppressWarnings("deprecation")
     // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startFuture) {
       Router mainRouter = Router.router(vertx);
       mainRouter.route("/").handler(context -> {
         context.response().end(context.getBody());
@@ -89,10 +91,10 @@ public class TestVertxMetersInitializer {
   public static class TestClientVerticle extends AbstractVerticle {
     @SuppressWarnings("deprecation")
     @Override
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startFuture) {
       HttpClient client = vertx.createHttpClient();
-      client.post(port, "127.0.0.1", "/").handler(resp -> {
-        resp.bodyHandler((buffer) -> {
+      client.request(HttpMethod.POST, port, "127.0.0.1", "/").result().response(resp -> {
+        resp.result().bodyHandler(buf -> {
           startFuture.complete();
         });
       }).end(body);

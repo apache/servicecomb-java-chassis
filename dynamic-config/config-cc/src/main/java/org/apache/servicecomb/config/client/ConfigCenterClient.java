@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.config.client;
 
-import java.awt.Event;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -55,7 +54,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.http.WebSocketConnectOptions;
@@ -332,11 +330,11 @@ public class ConfigCenterClient {
             if (resp.result().statusCode() == HttpResponseStatus.OK.code()) {
               resp.result().bodyHandler(buf -> {
                 try {
-                 parseConfigUtils
-                     .refreshConfigItems(JsonUtils.OBJ_MAPPER.readValue(buf.toString(),
-                         new TypeReference<LinkedHashMap<String, Map<String, Object>>>() {
-                         }));
-                 EventManager.post(new ConnSuccEvent());
+                  parseConfigUtils
+                      .refreshConfigItems(JsonUtils.OBJ_MAPPER.readValue(buf.toString(),
+                          new TypeReference<LinkedHashMap<String, Map<String, Object>>>() {
+                          }));
+                  EventManager.post(new ConnSuccEvent());
                 } catch (IOException e) {
                   EventManager.post(new ConnFailEvent(
                       "config update result parse fail " + e.getMessage()));
@@ -388,14 +386,15 @@ public class ConfigCenterClient {
           req.end();
         });
 
-      if (wait) {
-        try {
-          latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-          LOGGER.warn(e.getMessage());
+        if (wait) {
+          try {
+            latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
+          } catch (InterruptedException e) {
+            LOGGER.warn(e.getMessage());
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   public static SignRequest createSignRequest(String method, String endpoint, Map<String, String> headers,

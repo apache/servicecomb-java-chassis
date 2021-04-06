@@ -194,7 +194,14 @@ public class RestClientInvocation {
             invocation.getMicroserviceQualifiedName(),
             path,
             invocation.getEndpoint().getEndpoint());
-    clientRequest = httpClientWithContext.getHttpClient().request(method, requestOptions, this::handleResponse);
+
+    clientRequest = httpClientWithContext.getHttpClient().request(requestOptions.setMethod(method)).result();
+    handleResponse(clientRequest.response().result());
+
+    /*httpClientWithContext.getHttpClient().request(requestOptions.setMethod(method), req -> {
+      clientRequest = req.result();
+      handleResponse(req.result().response().result());
+    });*/
   }
 
   protected void handleResponse(HttpClientResponse httpClientResponse) {
