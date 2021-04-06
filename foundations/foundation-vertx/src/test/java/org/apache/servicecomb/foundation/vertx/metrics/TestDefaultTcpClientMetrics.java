@@ -264,7 +264,7 @@ public class TestDefaultTcpClientMetrics {
   @SuppressWarnings("deprecation")
   @Test
   public void meaningless() {
-    Assert.assertTrue(clientMetrics_a.isEnabled());
+    Assert.assertNotNull(clientMetrics_a);
 
     clientMetrics_a.exceptionOccurred(null, null, null);
     clientMetrics_a.close();
