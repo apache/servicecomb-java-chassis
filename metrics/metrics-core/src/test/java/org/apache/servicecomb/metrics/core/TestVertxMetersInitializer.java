@@ -93,7 +93,8 @@ public class TestVertxMetersInitializer {
     @Override
     public void start(Promise<Void> startFuture) {
       HttpClient client = vertx.createHttpClient();
-      client.request(HttpMethod.POST, port, "127.0.0.1", "/").result().response(resp -> {
+      client.request(HttpMethod.POST, port, "127.0.0.1", "/")
+          .result().response(resp -> {
         resp.result().bodyHandler(buf -> {
           startFuture.complete();
         });
@@ -147,6 +148,7 @@ public class TestVertxMetersInitializer {
     String actual = sb.toString();
     int idx = actual.indexOf("vertx:\n");
     actual = actual.substring(idx);
+    // System.out.println(actual);
 
     String expect = "vertx:\n"
         + "  instances:\n"

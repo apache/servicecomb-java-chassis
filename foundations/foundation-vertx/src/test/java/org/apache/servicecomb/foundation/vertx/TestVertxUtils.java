@@ -56,8 +56,8 @@ public class TestVertxUtils {
     VertxUtils.blockCloseVertxByName("ut");
   }
 
-  // default vertx cache file name changed
-  /*@Test
+   default vertx cache file name changed
+  @Test
   public void testCreateVertxWithFileCPResolving() {
     // Prepare
     ArchaiusUtils.resetConfig();
@@ -83,7 +83,7 @@ public class TestVertxUtils {
     VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingTrue");
 
     ArchaiusUtils.resetConfig();
-  }*/
+  }
 
   @Test
   public void testVertxUtilsInitNullOptions() {
