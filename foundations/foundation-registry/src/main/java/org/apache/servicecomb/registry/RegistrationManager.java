@@ -53,6 +53,8 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.core.json.jackson.JacksonCodec;
 import io.vertx.core.spi.json.JsonCodec;
 
 public class RegistrationManager {
@@ -325,7 +327,8 @@ public class RegistrationManager {
   }
 
   private String getEndpoints(List<String> endpoints) {
-    return ServiceHelper.loadFactory(JsonCodec.class).toString(endpoints);
+    return new JacksonCodec().toString(endpoints, true);
+    // return ServiceHelper.loadFactory(JsonCodec.class).toString(endpoints);
   }
 
   public static class AfterServiceInstanceRegistryHandler {
