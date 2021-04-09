@@ -37,6 +37,7 @@ import org.apache.servicecomb.service.center.client.RegistrationEvents.Microserv
 import org.apache.servicecomb.service.center.client.RegistrationEvents.SchemaRegistrationEvent;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery;
+import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery.SubscriptionKey;
 import org.apache.servicecomb.service.center.client.ServiceCenterRegistration;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
@@ -127,9 +128,9 @@ public class RegistryClientTest implements CategorizedTestCase {
     }
 
     ServiceCenterDiscovery discovery = new ServiceCenterDiscovery(serviceCenterClient, eventBus);
-    discovery.updateMySelf(microservice);
+    discovery.updateMyselfServiceId(microservice.getServiceId());
     discovery.startDiscovery();
-    discovery.register(microservice);
+    discovery.register(new SubscriptionKey(microservice.getAppId(), microservice.getServiceName()));
     discoveryCounter.await(30000, TimeUnit.MILLISECONDS);
     TestMgr.check(instances != null, true);
     TestMgr.check(instances.size(), 1);

@@ -28,14 +28,14 @@ public class AbstractTask {
   public class BackOffSleepTask implements Task {
     final long base = 3000;
 
-    final long max = 60000;
+    final long max = 10 * 60 * 10000;
 
     long waitTime;
 
     Task nextTask;
 
     public BackOffSleepTask(int failedCount, Task nextTask) {
-      this.waitTime = failedCount * base;
+      this.waitTime = failedCount * failedCount * base;
       this.nextTask = nextTask;
     }
 

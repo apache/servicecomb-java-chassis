@@ -25,13 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
+import org.apache.servicecomb.service.center.client.DiscoveryEvents.PullInstanceEvent;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
-import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public class ServiceCenterDiscovery extends AbstractTask {
   private static final String ALL_VERSION = "0+";
@@ -40,12 +41,12 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private boolean started = false;
 
-  class SubscriptionKey {
+  public static class SubscriptionKey {
     final String appId;
 
     final String serviceName;
 
-    SubscriptionKey(String appId, String serviceName) {
+    public SubscriptionKey(String appId, String serviceName) {
       this.appId = appId;
       this.serviceName = serviceName;
     }
@@ -69,7 +70,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
     }
   }
 
-  class SubscriptionValue {
+  public static class SubscriptionValue {
     String revision;
 
     List<MicroserviceInstance> instancesCache;
@@ -81,7 +82,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final EventBus eventBus;
 
-  private Microservice myself;
+  private String myselfServiceId;
 
   private final Map<SubscriptionKey, SubscriptionValue> instancesCache = new ConcurrentHashMap<>();
 
@@ -89,10 +90,11 @@ public class ServiceCenterDiscovery extends AbstractTask {
     super("service-center-discovery-task");
     this.serviceCenterClient = serviceCenterClient;
     this.eventBus = eventBus;
+    this.eventBus.register(this);
   }
 
-  public void updateMySelf(Microservice myself) {
-    this.myself = myself;
+  public void updateMyselfServiceId(String myselfServiceId) {
+    this.myselfServiceId = myselfServiceId;
   }
 
   public void startDiscovery() {
@@ -102,58 +104,79 @@ public class ServiceCenterDiscovery extends AbstractTask {
     }
   }
 
-  public void register(Microservice microservice) {
-    SubscriptionKey subscriptionKey = new SubscriptionKey(microservice.getAppId(), microservice.getServiceName());
+  public void register(SubscriptionKey subscriptionKey) {
     this.instancesCache.computeIfAbsent(subscriptionKey, (key) -> new SubscriptionValue());
+    pullInstance(subscriptionKey, this.instancesCache.get(subscriptionKey));
+  }
+
+  public List<MicroserviceInstance> getInstanceCache(SubscriptionKey key) {
+    return this.instancesCache.get(key).instancesCache;
+  }
+
+  public boolean isRegistered(SubscriptionKey key) {
+    return this.instancesCache.get(key) != null;
+  }
+
+  @Subscribe
+  public void onPullInstanceEvent(PullInstanceEvent event) {
+    pullAllInstance();
+  }
+
+  private void pullInstance(SubscriptionKey k, SubscriptionValue v) {
+    try {
+      FindMicroserviceInstancesResponse instancesResponse = serviceCenterClient
+          .findMicroserviceInstance(myselfServiceId, k.appId, k.serviceName, ALL_VERSION, v.revision);
+      if (instancesResponse.isModified()) {
+        // java chassis 实现了空实例保护，这里暂时不实现。
+        LOGGER.info("Instance changed event, "
+                + "current: revision={}, instances={}; "
+                + "origin: revision={}, instances={}; "
+                + "appId={}, serviceName={}",
+            instancesResponse.getRevision(),
+            instanceToString(instancesResponse.getMicroserviceInstancesResponse().getInstances()),
+            v.revision,
+            instanceToString(v.instancesCache),
+            k.appId,
+            k.serviceName
+        );
+        v.instancesCache = instancesResponse.getMicroserviceInstancesResponse().getInstances();
+        v.revision = instancesResponse.getRevision();
+        eventBus.post(new InstanceChangedEvent(k.appId, k.serviceName,
+            v.instancesCache));
+      }
+    } catch (Exception e) {
+      LOGGER.error("find service instance failed.", e);
+    }
   }
 
   class PullInstanceTask implements Task {
     @Override
     public void execute() {
-      instancesCache.forEach((k, v) -> {
-        try {
-          FindMicroserviceInstancesResponse instancesResponse = serviceCenterClient
-              .findMicroserviceInstance(myself.getServiceId(), k.appId, k.serviceName, ALL_VERSION, v.revision);
-          if (instancesResponse.isModified()) {
-            // java chassis 实现了空实例保护，这里暂时不实现。
-            LOGGER.info("Instance changed event, "
-                    + "current: revision={}, instances={}; "
-                    + "origin: revision={}, instances={}; "
-                    + "appId={}, serviceName={}",
-                instancesResponse.getRevision(),
-                instanceToString(instancesResponse.getMicroserviceInstancesResponse().getInstances()),
-                v.revision,
-                instanceToString(v.instancesCache),
-                k.appId,
-                k.serviceName
-            );
-            v.instancesCache = instancesResponse.getMicroserviceInstancesResponse().getInstances();
-            v.revision = instancesResponse.getRevision();
-            eventBus.post(new InstanceChangedEvent(k.appId, k.serviceName,
-                v.instancesCache));
-          }
-        } catch (Exception e) {
-          LOGGER.error("find service instance failed.", e);
-        }
-      });
+      pullAllInstance();
 
       startTask(new BackOffSleepTask(POLL_INTERVAL, new PullInstanceTask()));
     }
+  }
 
-    private String instanceToString(List<MicroserviceInstance> instances) {
-      if (instances == null) {
-        return "";
-      }
+  private synchronized void pullAllInstance() {
+    instancesCache.forEach((k, v) -> {
+      pullInstance(k, v);
+    });
+  }
 
-      StringBuilder sb = new StringBuilder();
-      for (MicroserviceInstance instance : instances) {
-        for (String endpoint : instance.getEndpoints()) {
-          sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
-          sb.append("|");
-        }
-      }
-      sb.append("#");
-      return sb.toString();
+  private static String instanceToString(List<MicroserviceInstance> instances) {
+    if (instances == null) {
+      return "";
     }
+
+    StringBuilder sb = new StringBuilder();
+    for (MicroserviceInstance instance : instances) {
+      for (String endpoint : instance.getEndpoints()) {
+        sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
+        sb.append("|");
+      }
+    }
+    sb.append("#");
+    return sb.toString();
   }
 }

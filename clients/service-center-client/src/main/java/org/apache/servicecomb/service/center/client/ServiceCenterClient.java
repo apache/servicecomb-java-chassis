@@ -295,7 +295,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       HttpResponse response = httpClient
           .deleteHttpRequest("/registry/microservices/" + serviceId + "/instances/" + instanceId, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        LOGGER.info("DELETE SERVICE INSTANCE OK");
+        LOGGER.info("Delete service instance successfully.");
       } else {
         throw new OperationException(
             "delete service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
