@@ -92,6 +92,7 @@ public class ServiceCenterRegistration extends AbstractTask {
           } else {
             microservice.setServiceId(response.getServiceId());
             microserviceInstance.setServiceId(response.getServiceId());
+            microserviceInstance.setMicroservice(microservice);
             eventBus.post(new MicroserviceRegistrationEvent(true));
             startTask(new RegisterSchemaTask(0));
           }
@@ -104,8 +105,10 @@ public class ServiceCenterRegistration extends AbstractTask {
           }
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
+          microserviceInstance.setMicroservice(microservice);
           eventBus.post(new MicroserviceRegistrationEvent(true));
-          startTask(new RegisterSchemaTask(0));
+          LOGGER.info("microservice is already registered, meta info like swagger contents will not be updated.");
+          startTask(new RegisterMicroserviceInstanceTask(0));
         }
       } catch (IllegalStateException e) {
         throw e;
@@ -180,6 +183,8 @@ public class ServiceCenterRegistration extends AbstractTask {
           startTask(new BackOffSleepTask(failedCount + 1, new RegisterMicroserviceInstanceTask(failedCount + 1)));
         } else {
           microserviceInstance.setInstanceId(instance.getInstanceId());
+          LOGGER.info("register microservice successfully, service id={}, instance id={}", microservice.getServiceId(),
+              microserviceInstance.getInstanceId());
           eventBus.post(new MicroserviceInstanceRegistrationEvent(true));
           startTask(new SendHeartBeatTask(0));
         }

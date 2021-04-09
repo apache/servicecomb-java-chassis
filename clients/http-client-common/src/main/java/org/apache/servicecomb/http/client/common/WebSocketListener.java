@@ -15,46 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client.model;
+package org.apache.servicecomb.http.client.common;
 
-public class SchemaInfo {
-  private String schema;
+import org.java_websocket.handshake.ServerHandshake;
 
-  private String schemaId;
+public interface WebSocketListener {
+  void onMessage(String s);
 
-  private String summary;
+  void onError(Exception e);
 
-  public SchemaInfo() {
+  void onClose(int code, String reason, boolean remote);
 
-  }
-
-  public SchemaInfo(String schemaId, String schema, String summary) {
-    this.schemaId = schemaId;
-    this.schema = schema;
-    this.summary = summary;
-  }
-
-  public String getSchema() {
-    return schema;
-  }
-
-  public void setSchema(String schema) {
-    this.schema = schema;
-  }
-
-  public String getSchemaId() {
-    return schemaId;
-  }
-
-  public void setSchemaId(String schemaId) {
-    this.schemaId = schemaId;
-  }
-
-  public String getSummary() {
-    return summary;
-  }
-
-  public void setSummary(String summary) {
-    this.summary = summary;
-  }
+  void onOpen(ServerHandshake serverHandshake);
 }

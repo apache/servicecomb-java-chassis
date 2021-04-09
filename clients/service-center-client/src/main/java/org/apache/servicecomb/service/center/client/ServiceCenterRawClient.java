@@ -80,16 +80,16 @@ public class ServiceCenterRawClient {
     try {
       return httpTransport.doRequest(httpRequest);
     } catch (IOException e) {
-      addressManager.nextAddress();
+      addressManager.changeAddress();
       String retryAddress = addressManager.formatUrl(url, absoluteUrl);
       LOGGER.warn("send request to {} failed and retry to {} once. ", address,
           retryAddress, e);
-      httpRequest = new HttpRequest(address, headers, content, method);
+      httpRequest = new HttpRequest(retryAddress, headers, content, method);
       try {
         return httpTransport.doRequest(httpRequest);
       } catch (IOException ioException) {
-        LOGGER.warn("retry to {} failed again, and change next address {}. ", retryAddress
-            , addressManager.nextAddress());
+        addressManager.changeAddress();
+        LOGGER.warn("retry to {} failed again. ", retryAddress, e);
         throw ioException;
       }
     }

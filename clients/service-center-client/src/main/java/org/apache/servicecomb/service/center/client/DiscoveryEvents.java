@@ -47,4 +47,11 @@ public abstract class DiscoveryEvents {
       return instances;
     }
   }
+
+  /**
+   * internal events to ask for a immediate instance pull
+   */
+  public static class PullInstanceEvent extends DiscoveryEvents {
+
+  }
 }

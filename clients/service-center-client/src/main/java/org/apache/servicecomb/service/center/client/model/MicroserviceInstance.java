@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("instance")
@@ -50,6 +51,9 @@ public class MicroserviceInstance {
   private String timestamp;
 
   private String modTimestamp;
+
+  @JsonIgnore
+  private Microservice microservice;
 
   public String getInstanceId() {
     return instanceId;
@@ -137,5 +141,19 @@ public class MicroserviceInstance {
 
   public void setDataCenterInfo(DataCenterInfo dataCenterInfo) {
     this.dataCenterInfo = dataCenterInfo;
+  }
+
+  public void setMicroservice(Microservice microservice) {
+    this.microservice = microservice;
+  }
+
+  @JsonIgnore
+  public String getServiceName() {
+    return this.microservice.getServiceName();
+  }
+
+  @JsonIgnore
+  public String getApplicationName() {
+    return this.microservice.getAppId();
   }
 }

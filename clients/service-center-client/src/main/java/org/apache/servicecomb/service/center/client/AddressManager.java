@@ -45,33 +45,26 @@ public class AddressManager {
     }
   }
 
-  public String nextAddress() {
+  public void changeAddress() {
     synchronized (this) {
       this.index++;
       if (this.index >= addresses.size()) {
         this.index = 0;
       }
     }
-    return address();
   }
 
   public boolean sslEnabled() {
     return address().startsWith("https://");
   }
 
-  private String address() {
-    synchronized (this) {
-      return formatAddress(addresses.get(index));
-    }
-  }
-
-  private String nonFormattedAddress() {
+  public String address() {
     synchronized (this) {
       return addresses.get(index);
     }
   }
 
   public String formatUrl(String url, boolean absoluteUrl) {
-    return absoluteUrl ? nonFormattedAddress() + url : address() + url;
+    return absoluteUrl ? address() + url : formatAddress(address()) + url;
   }
 }
