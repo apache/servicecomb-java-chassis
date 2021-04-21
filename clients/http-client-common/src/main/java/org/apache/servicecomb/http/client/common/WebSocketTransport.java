@@ -41,7 +41,8 @@ public class WebSocketTransport extends WebSocketClient {
     if (sslProperties.isEnabled()) {
       SSLSocketFactory sslSocketFactory = SSLManager
           .createSSLSocketFactory(sslProperties.getSslOption(), sslProperties.getSslCustom());
-      setSocketFactory(sslSocketFactory);
+      URI uri = new URI(serverUri);
+      setSocketFactory(new SSLSocketFactoryExt(sslSocketFactory, uri.getHost(), uri.getPort()));
     }
 
     this.webSocketListener = webSocketListener;
