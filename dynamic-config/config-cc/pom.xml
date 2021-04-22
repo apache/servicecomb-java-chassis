@@ -50,6 +50,10 @@
       <artifactId>vertx-codegen</artifactId>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+          <groupId>org.apache.servicecomb</groupId>
+          <artifactId>java-chassis-core</artifactId>
+      </dependency>
   </dependencies>
 
 </project>

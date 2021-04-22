@@ -15,35 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.deployment;
+package org.apache.servicecomb.config.kie.collect;
+
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.servicecomb.config.ConfigUtil;
-
-import com.google.common.annotations.VisibleForTesting;
-import org.springframework.util.StringUtils;
-
-public class DefaultDeploymentProvider implements DeploymentProvider {
+public class KieCenterDefaultDeploymentProvider implements DeploymentProvider {
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (systemKey.contentEquals(SYSTEM_KEY_SERVICE_CENTER)) {
-      SystemBootstrapInfo sc = new SystemBootstrapInfo();
-      String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
-      if (StringUtils.isEmpty(urls)) {
-        urls = new String[] {"http://127.0.0.1:30100"};
+    if (systemKey.contentEquals(SYSTEM_KEY_KIE_CENTER)) {
+      String[] kieAddresses = configuration.getStringArray("servicecomb.kie.serverUri");
+      if (StringUtils.isEmpty(kieAddresses)) {
+          return null;
       }
-      sc.setAccessURL(Arrays.asList(urls));
-      return sc;
+      SystemBootstrapInfo kie = new SystemBootstrapInfo();
+      kie.setAccessURL(Arrays.asList(kieAddresses));
+      return kie;
     }
     return null;
   }
 
   @VisibleForTesting
   public static void setConfiguration(AbstractConfiguration configuration) {
-    DefaultDeploymentProvider.configuration = configuration;
+    KieCenterDefaultDeploymentProvider.configuration = configuration;
   }
 }

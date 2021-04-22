@@ -15,16 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.deployment;
+package org.apache.servicecomb.config.collect;
 
-public interface DeploymentProvider {
-  String SYSTEM_KEY_SERVICE_CENTER = "ServiceCenter";
-  String SYSTEM_KEY_CONFIG_CENTER = "ConfigCenter";
-  String SYSTEM_KEY_KIE_CENTER = "KieCenter";
+import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
-  default int getOrder() {
-    return 100;
+
+public class ConfigCenterInformationCollector implements BootUpInformationCollector {
+  @Override
+  public String collect() {
+    return "Config Center: " + getCenterInfo(Deployment.getSystemBootStrapInfo("ConfigCenter"));
   }
 
-  SystemBootstrapInfo getSystemBootStrapInfo(String systemKey);
+  @Override
+  public int getOrder() {
+    return 1;
+  }
+
+  private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
+    if (systemBootstrapInfo == null) {
+      return ("not exist");
+    }
+    return systemBootstrapInfo.getAccessURL().toString();
+  }
 }

@@ -24,9 +24,7 @@ public class AddressInformationCollector implements BootUpInformationCollector {
   @Override
   public String collect() {
     return "Service Center: "
-        + getCenterInfo(Deployment.getSystemBootStrapInfo("ServiceCenter"))
-        + "\n" + "Config Center: "
-        + getCenterInfo(Deployment.getSystemBootStrapInfo("ConfigCenter"));
+        + getCenterInfo(Deployment.getSystemBootStrapInfo("ServiceCenter"));
   }
 
   @Override
