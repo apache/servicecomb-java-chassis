@@ -32,7 +32,7 @@ public class TestKieConfig {
   @Test
   public void getServerUri() {
     String servers = KieConfig.INSTANCE.getServerUri();
-    Assert.assertEquals("https://172.16.8.7:30103", servers);
+    Assert.assertEquals("https://172.16.8.7:30110", servers);
   }
 
   @Test

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.bootup;
+package org.apache.servicecomb.serviceregistry.collect;
 
+import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
-public class AddressInformationCollector implements BootUpInformationCollector {
+public class ServiceCenterInformationCollector implements BootUpInformationCollector {
   @Override
   public String collect() {
     return "Service Center: "

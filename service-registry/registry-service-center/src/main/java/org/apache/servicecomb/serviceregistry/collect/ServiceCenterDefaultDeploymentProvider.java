@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.deployment;
+package org.apache.servicecomb.serviceregistry.collect;
+
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
 import java.util.Arrays;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.servicecomb.config.ConfigUtil;
+public class ServiceCenterDefaultDeploymentProvider implements DeploymentProvider {
+  public static final String SYSTEM_KEY_SERVICE_CENTER = "ServiceCenter";
 
-import com.google.common.annotations.VisibleForTesting;
-import org.springframework.util.StringUtils;
-
-public class DefaultDeploymentProvider implements DeploymentProvider {
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
@@ -33,8 +35,8 @@ public class DefaultDeploymentProvider implements DeploymentProvider {
     if (systemKey.contentEquals(SYSTEM_KEY_SERVICE_CENTER)) {
       SystemBootstrapInfo sc = new SystemBootstrapInfo();
       String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
-      if (StringUtils.isEmpty(urls)) {
-        urls = new String[] {"http://127.0.0.1:30100"};
+      if (urls == null || urls.length == 0) {
+        urls = new String[]{"http://127.0.0.1:30100"};
       }
       sc.setAccessURL(Arrays.asList(urls));
       return sc;
@@ -44,6 +46,6 @@ public class DefaultDeploymentProvider implements DeploymentProvider {
 
   @VisibleForTesting
   public static void setConfiguration(AbstractConfiguration configuration) {
-    DefaultDeploymentProvider.configuration = configuration;
+    ServiceCenterDefaultDeploymentProvider.configuration = configuration;
   }
 }

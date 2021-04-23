@@ -17,9 +17,15 @@
 
 package org.apache.servicecomb.deployment;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.config.ConfigUtil;
+
 import java.util.Arrays;
 
 public class CustomDeploymentProvider implements DeploymentProvider {
+  private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
+
   @Override
   public int getOrder() {
     return 0;
@@ -27,13 +33,16 @@ public class CustomDeploymentProvider implements DeploymentProvider {
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    switch (systemKey) {
-      case DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER:
-        SystemBootstrapInfo cc = new SystemBootstrapInfo();
-        cc.setAccessURL(Arrays.asList("http://lcalhost/custom"));
-        return cc;
-      default:
-        return null;
+    if (systemKey.contentEquals("TestCenter")) {
+      SystemBootstrapInfo cc = new SystemBootstrapInfo();
+      cc.setAccessURL(Arrays.asList("http://lcalhost/custom"));
+      return cc;
     }
+    return null;
+  }
+
+  @VisibleForTesting
+  public static void setConfiguration(AbstractConfiguration configuration) {
+    CustomDeploymentProvider.configuration = configuration;
   }
 }

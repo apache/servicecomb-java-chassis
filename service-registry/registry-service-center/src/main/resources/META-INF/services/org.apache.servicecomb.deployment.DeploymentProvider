@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.core.bootup.ServiceInformationCollector
-org.apache.servicecomb.core.bootup.FilterChainCollector
+org.apache.servicecomb.serviceregistry.collect.ServiceCenterDefaultDeploymentProvider

@@ -22,18 +22,19 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 
 public class KieCenterDefaultDeploymentProvider implements DeploymentProvider {
+  public static final String SYSTEM_KEY_KIE_CENTER = "KieCenter";
+
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
     if (systemKey.contentEquals(SYSTEM_KEY_KIE_CENTER)) {
       String[] kieAddresses = configuration.getStringArray("servicecomb.kie.serverUri");
-      if (StringUtils.isEmpty(kieAddresses)) {
+      if (kieAddresses == null || kieAddresses.length == 0) {
           return null;
       }
       SystemBootstrapInfo kie = new SystemBootstrapInfo();

@@ -44,7 +44,7 @@ eureka:
       defaultZone: http://172.16.8.8:30100/
 servicecomb:
   kie:
-    serverUri: https://172.16.8.7:30103
+    serverUri: https://172.16.8.7:30110
   service:
     registry:
       autodiscovery: true

@@ -18,9 +18,6 @@
 package org.apache.servicecomb.deployment;
 
 public interface DeploymentProvider {
-  String SYSTEM_KEY_SERVICE_CENTER = "ServiceCenter";
-  String SYSTEM_KEY_CONFIG_CENTER = "ConfigCenter";
-  String SYSTEM_KEY_KIE_CENTER = "KieCenter";
 
   default int getOrder() {
     return 100;

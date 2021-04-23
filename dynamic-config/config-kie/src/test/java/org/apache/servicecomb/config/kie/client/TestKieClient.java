@@ -181,7 +181,7 @@ public class TestKieClient {
 
     KieClient kie = new KieClient(updateHandler);
 
-    ConfigRefresh refresh = kie.new ConfigRefresh("http://configcentertest:30103");
+    ConfigRefresh refresh = kie.new ConfigRefresh("http://configcentertest:30110");
     refresh.run();
     Assert.assertEquals("Fail event trigger", map.get("result"));
     Mockito.when(event.statusCode()).thenReturn(200);

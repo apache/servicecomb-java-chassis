@@ -54,6 +54,11 @@
           <groupId>org.apache.servicecomb</groupId>
           <artifactId>java-chassis-core</artifactId>
       </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

@@ -20,8 +20,8 @@ package org.apache.servicecomb.config.client;
 import com.google.common.base.Joiner;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public final class ConfigCenterConfig {
   public static final String CONNECTION_TIME_OUT = "servicecomb.config.client.timeout.connection";
 
   public static final String EVENT_LOOP_SIZE = "servicecomb.config.client.eventLoopSize";
-  
+
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
 
   public static final String VERTICAL_INSTANCE_COUNT = "servicecomb.config.client.verticalInstanceCount";
@@ -102,18 +102,18 @@ public final class ConfigCenterConfig {
   public String getApiVersion() {
     return finalConfig.getString(URI_API_VERSION, "v3");
   }
-  
+
   @SuppressWarnings("unchecked")
   public List<String> getFileSources() {
-	Object property = finalConfig.getProperty(FILE_SOURCE);
-	if (property instanceof String) {
-	  List<String> result = new ArrayList<>();
-	  result.add((String) property);
-	  return result;
-	} else if (property instanceof List) {
-	  return (List<String>) property;
-	}
-	return new ArrayList<>();
+    Object property = finalConfig.getProperty(FILE_SOURCE);
+    if (property instanceof String) {
+      List<String> result = new ArrayList<>();
+      result.add((String) property);
+      return result;
+    } else if (property instanceof List) {
+      return (List<String>) property;
+    }
+    return new ArrayList<>();
   }
 
   public int getRefreshInterval() {
@@ -172,7 +172,7 @@ public final class ConfigCenterConfig {
   }
 
   public List<String> getServerUri() {
-    return Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL();
+    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL();
   }
 
   public boolean getAutoDiscoveryEnabled() {

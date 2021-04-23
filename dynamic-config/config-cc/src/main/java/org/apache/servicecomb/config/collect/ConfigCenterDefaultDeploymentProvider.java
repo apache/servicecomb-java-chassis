@@ -22,18 +22,19 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 
 public class ConfigCenterDefaultDeploymentProvider implements DeploymentProvider {
+  public static final String SYSTEM_KEY_CONFIG_CENTER = "ConfigCenter";
+
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
     if (systemKey.contentEquals(SYSTEM_KEY_CONFIG_CENTER)) {
       String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
-      if (StringUtils.isEmpty(ccAddresses)) {
+      if (ccAddresses == null || ccAddresses.length == 0) {
         return null;
       }
       SystemBootstrapInfo cc = new SystemBootstrapInfo();
