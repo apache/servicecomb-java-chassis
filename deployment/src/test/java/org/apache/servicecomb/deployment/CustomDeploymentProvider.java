@@ -33,12 +33,12 @@ public class CustomDeploymentProvider implements DeploymentProvider {
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (systemKey.contentEquals("TestCenter")) {
-      SystemBootstrapInfo cc = new SystemBootstrapInfo();
-      cc.setAccessURL(Arrays.asList("http://lcalhost/custom"));
-      return cc;
+    if (!systemKey.equals("TestCenter")) {
+      return null;
     }
-    return null;
+    SystemBootstrapInfo cc = new SystemBootstrapInfo();
+    cc.setAccessURL(Arrays.asList("http://localhost/custom"));
+    return cc;
   }
 
   @VisibleForTesting

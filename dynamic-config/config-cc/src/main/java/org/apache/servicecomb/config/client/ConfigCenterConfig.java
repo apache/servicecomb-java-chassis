@@ -25,6 +25,7 @@ import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class ConfigCenterConfig {
@@ -110,10 +111,11 @@ public final class ConfigCenterConfig {
       List<String> result = new ArrayList<>();
       result.add((String) property);
       return result;
-    } else if (property instanceof List) {
+    }
+    if (property instanceof List) {
       return (List<String>) property;
     }
-    return new ArrayList<>();
+    return Collections.EMPTY_LIST;
   }
 
   public int getRefreshInterval() {

@@ -33,7 +33,7 @@ public class TestDeployment {
   public void testConfiguration() {
     CustomDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo("TestCenter");
-    Assert.assertEquals(info.getAccessURL().get(0), "http://lcalhost/custom");
+    Assert.assertEquals(info.getAccessURL().get(0), "http://localhost/custom");
     Assert.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
   }
 }

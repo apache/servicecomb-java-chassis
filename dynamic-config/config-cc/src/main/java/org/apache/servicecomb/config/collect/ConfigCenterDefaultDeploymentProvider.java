@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.collect;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
@@ -32,16 +33,16 @@ public class ConfigCenterDefaultDeploymentProvider implements DeploymentProvider
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (systemKey.contentEquals(SYSTEM_KEY_CONFIG_CENTER)) {
-      String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
-      if (ccAddresses == null || ccAddresses.length == 0) {
-        return null;
-      }
-      SystemBootstrapInfo cc = new SystemBootstrapInfo();
-      cc.setAccessURL(Arrays.asList(ccAddresses));
-      return cc;
+    if (!systemKey.equals(SYSTEM_KEY_CONFIG_CENTER)) {
+      return null;
     }
-    return null;
+    String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
+    if (ArrayUtils.isEmpty(ccAddresses)) {
+      return null;
+    }
+    SystemBootstrapInfo cc = new SystemBootstrapInfo();
+    cc.setAccessURL(Arrays.asList(ccAddresses));
+    return cc;
   }
 
   @VisibleForTesting

@@ -64,10 +64,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
-    if (Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) == null) {
-      return false;
-    }
-    return true;
+    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) != null;
   }
 
   private void init() {

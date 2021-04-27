@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.collect;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
@@ -32,16 +33,16 @@ public class ServiceCenterDefaultDeploymentProvider implements DeploymentProvide
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (systemKey.contentEquals(SYSTEM_KEY_SERVICE_CENTER)) {
-      SystemBootstrapInfo sc = new SystemBootstrapInfo();
-      String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
-      if (urls == null || urls.length == 0) {
-        urls = new String[]{"http://127.0.0.1:30100"};
-      }
-      sc.setAccessURL(Arrays.asList(urls));
-      return sc;
+    if (!systemKey.equals(SYSTEM_KEY_SERVICE_CENTER)) {
+      return null;
     }
-    return null;
+    SystemBootstrapInfo sc = new SystemBootstrapInfo();
+    String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
+    if (ArrayUtils.isEmpty(urls)) {
+      urls = new String[]{"http://127.0.0.1:30100"};
+    }
+    sc.setAccessURL(Arrays.asList(urls));
+    return sc;
   }
 
   @VisibleForTesting

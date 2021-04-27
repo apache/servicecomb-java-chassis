@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.kie.collect;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
@@ -32,16 +33,16 @@ public class KieCenterDefaultDeploymentProvider implements DeploymentProvider {
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (systemKey.contentEquals(SYSTEM_KEY_KIE_CENTER)) {
-      String[] kieAddresses = configuration.getStringArray("servicecomb.kie.serverUri");
-      if (kieAddresses == null || kieAddresses.length == 0) {
-          return null;
-      }
-      SystemBootstrapInfo kie = new SystemBootstrapInfo();
-      kie.setAccessURL(Arrays.asList(kieAddresses));
-      return kie;
+    if (!systemKey.equals(SYSTEM_KEY_KIE_CENTER)) {
+      return null;
     }
-    return null;
+    String[] kieAddresses = configuration.getStringArray("servicecomb.kie.serverUri");
+    if (ArrayUtils.isEmpty(kieAddresses)) {
+      return null;
+    }
+    SystemBootstrapInfo kie = new SystemBootstrapInfo();
+    kie.setAccessURL(Arrays.asList(kieAddresses));
+    return kie;
   }
 
   @VisibleForTesting

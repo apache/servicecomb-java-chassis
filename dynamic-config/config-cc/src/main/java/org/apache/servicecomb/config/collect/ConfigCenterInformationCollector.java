@@ -21,6 +21,8 @@ import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
+import java.util.Objects;
+
 
 public class ConfigCenterInformationCollector implements BootUpInformationCollector {
   @Override
@@ -34,9 +36,6 @@ public class ConfigCenterInformationCollector implements BootUpInformationCollec
   }
 
   private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
-    if (systemBootstrapInfo == null) {
-      return ("not exist");
-    }
-    return systemBootstrapInfo.getAccessURL().toString();
+    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
 }
