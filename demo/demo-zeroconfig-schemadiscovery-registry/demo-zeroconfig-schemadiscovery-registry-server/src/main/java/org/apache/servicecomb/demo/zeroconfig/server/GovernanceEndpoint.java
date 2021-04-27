@@ -60,6 +60,14 @@ public class GovernanceEndpoint {
     throw new InvocationException(502, "retry", "retry");
   }
 
+  @GetMapping("/retryRpc")
+  @ApiResponses({
+      @ApiResponse(code = 200, response = String.class, message = ""),
+      @ApiResponse(code = 502, response = String.class, message = "")})
+  public String retryRpc(@RequestParam(name = "invocationID") String invocationID) {
+    return retry(invocationID);
+  }
+
   @GetMapping("/circuitBreaker")
   public String circuitBreaker() {
     throw new RuntimeException("circuitBreaker by provider.");

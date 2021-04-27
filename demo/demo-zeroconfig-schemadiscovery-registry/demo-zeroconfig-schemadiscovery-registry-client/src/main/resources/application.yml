@@ -41,30 +41,51 @@ servicecomb:
       Provider:
         default: governance-provider
 
+  governance:
+    GovernanceEndpoint.helloRpc:
+      matchType: rpc
+    demo-zeroconfig-schemadiscovery-registry-server.GovernanceEndpoint.retryRpc:
+      matchType: rpc
   matchGroup:
     demo-rateLimiting: |
       matches:
         - apiPath:
-            exact: "GovernanceEndpoint.hello"
+            exact: "/governance/hello"
+    demo-rateLimiting-rpc: |
+      matches:
+        - apiPath:
+            exact: "GovernanceEndpoint.helloRpc"
     demo-retry: |
       matches:
         - apiPath:
-            exact: "GovernanceEndpoint.retry"
+            exact: "/governance/retry"
+    demo-retry-rpc: |
+      matches:
+        - apiPath:
+            exact: "demo-zeroconfig-schemadiscovery-registry-server.GovernanceEndpoint.retryRpc"
     demo-circuitBreaker: |
       matches:
         - apiPath:
-            exact: "GovernanceEndpoint.circuitBreaker"
+            exact: "/governance/circuitBreaker"
     demo-bulkhead: |
       matches:
         - apiPath:
-            exact: "GovernanceEndpoint.bulkhead"
+            exact: "/governance/bulkhead"
   rateLimiting:
     demo-rateLimiting: |
       rate: 10
       ## services is optional in configuration file
       services: demo-zeroconfig-schemadiscovery-registry-client
+    demo-rateLimiting-rpc: |
+      rate: 10
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
   retry:
     demo-retry: |
+      maxAttempts: 3
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+    demo-retry-rpc: |
       maxAttempts: 3
       ## services is optional in configuration file
       services: demo-zeroconfig-schemadiscovery-registry-client

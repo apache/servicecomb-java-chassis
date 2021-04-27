@@ -58,7 +58,7 @@ public class ProviderGovernanceHandler implements Handler {
 
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = createGovHttpRequest(invocation);
+    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
     try {
       ServiceCombInvocationContext.setInvocationContext(invocation);
@@ -135,13 +135,5 @@ public class ProviderGovernanceHandler implements Handler {
       }
       return result;
     };
-  }
-
-  private GovernanceRequest createGovHttpRequest(Invocation invocation) {
-    GovernanceRequest request = new GovernanceRequest();
-    request.setUri(invocation.getSchemaId() + "." + invocation.getOperationName());
-    request.setMethod(invocation.getOperationMeta().getHttpMethod());
-    request.setHeaders(invocation.getContext());
-    return request;
   }
 }
