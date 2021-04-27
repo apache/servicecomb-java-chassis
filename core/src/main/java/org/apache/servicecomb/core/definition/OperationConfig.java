@@ -108,6 +108,9 @@ public class OperationConfig {
   })
   private String transport;
 
+  @InjectProperty(keys = {"governance.${op-any-priority}.matchType", "governance.matchType"}, defaultValue = "rest")
+  private String governanceMatchType;
+
   public boolean isSlowInvocationEnabled() {
     return slowInvocationEnabled;
   }
@@ -193,6 +196,14 @@ public class OperationConfig {
   public void setMsInvocationTimeout(long msInvocationTimeout) {
     this.msInvocationTimeout = msInvocationTimeout;
     this.nanoInvocationTimeout = TimeUnit.MILLISECONDS.toNanos(msInvocationTimeout);
+  }
+
+  public String getGovernanceMatchType() {
+    return governanceMatchType;
+  }
+
+  public void setGovernanceMatchType(String governanceMatchType) {
+    this.governanceMatchType = governanceMatchType;
   }
 
   public long getNanoInvocationTimeout() {

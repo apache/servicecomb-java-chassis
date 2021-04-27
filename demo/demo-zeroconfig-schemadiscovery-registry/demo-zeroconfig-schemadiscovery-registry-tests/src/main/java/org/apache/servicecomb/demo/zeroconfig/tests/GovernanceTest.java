@@ -38,13 +38,23 @@ public class GovernanceTest implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     testCircuitBreaker();
     testBulkhead();
-    testRateLimiting();
-    testRetry();
+    testRateLimitingRest();
+    testRateLimitingRpc();
+    testRetryRest();
+    testRetryRpc();
   }
 
-  private void testRetry() {
+  private void testRetryRest() {
+    testRetry("/retry");
+  }
+
+  private void testRetryRpc() {
+    testRetry("/retryRpc");
+  }
+
+  private void testRetry(String operation) {
     String invocationID = UUID.randomUUID().toString();
-    String result = template.getForObject(url + "/retry?invocationID={1}", String.class, invocationID);
+    String result = template.getForObject(url + operation + "?invocationID={1}", String.class, invocationID);
     TestMgr.check(result, "try times: 3");
   }
 
@@ -121,7 +131,15 @@ public class GovernanceTest implements CategorizedTestCase {
     TestMgr.check(false, notExpectedFailed.get());
   }
 
-  private void testRateLimiting() throws Exception {
+  private void testRateLimitingRest() throws Exception {
+    testRateLimiting("/hello");
+  }
+
+  private void testRateLimitingRpc() throws Exception {
+    testRateLimiting("/helloRpc");
+  }
+
+  private void testRateLimiting(String operation) throws Exception {
     CountDownLatch latch = new CountDownLatch(100);
     AtomicBoolean expectedFailed = new AtomicBoolean(false);
     AtomicBoolean notExpectedFailed = new AtomicBoolean(false);
@@ -132,7 +150,7 @@ public class GovernanceTest implements CategorizedTestCase {
         new Thread(name) {
           public void run() {
             try {
-              String result = template.getForObject(url + "/hello", String.class);
+              String result = template.getForObject(url + operation, String.class);
               if (!"Hello world!".equals(result)) {
                 notExpectedFailed.set(true);
               }

@@ -38,10 +38,22 @@ public class GovernanceEndpoint {
     return restTemplate.getForObject(SERVER + "/governance/hello", String.class);
   }
 
+  @GetMapping("/helloRpc")
+  public String helloRpc() {
+    return restTemplate.getForObject(SERVER + "/governance/hello", String.class);
+  }
+
   @GetMapping("/retry")
   public String retry(@RequestParam(name = "invocationID") String invocationID) {
     return restTemplate
         .getForObject(SERVER + "/governance/retry?invocationID={1}", String.class,
+            invocationID);
+  }
+
+  @GetMapping("/retryRpc")
+  public String retryRpc(@RequestParam(name = "invocationID") String invocationID) {
+    return restTemplate
+        .getForObject(SERVER + "/governance/retryRpc?invocationID={1}", String.class,
             invocationID);
   }
 

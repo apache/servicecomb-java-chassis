@@ -63,7 +63,7 @@ public class ConsumerGovernanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = createGovHttpRequest(invocation);
+    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
     try {
       ServiceCombInvocationContext.setInvocationContext(invocation);
@@ -137,13 +137,5 @@ public class ConsumerGovernanceHandler implements Handler {
       }
       return result;
     };
-  }
-
-  private GovernanceRequest createGovHttpRequest(Invocation invocation) {
-    GovernanceRequest request = new GovernanceRequest();
-    request.setUri(invocation.getSchemaId() + "." + invocation.getOperationName());
-    request.setMethod(invocation.getOperationMeta().getHttpMethod());
-    request.setHeaders(invocation.getContext());
-    return request;
   }
 }
