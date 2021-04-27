@@ -17,13 +17,10 @@
 package org.apache.servicecomb.core.definition;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
 public class ConsumerMicroserviceVersionsMeta extends MicroserviceVersionsMeta {
   private MicroserviceVersions microserviceVersions;
-
-  private MicroserviceReferenceConfig microserviceReferenceConfig;
 
   public ConsumerMicroserviceVersionsMeta(SCBEngine scbEngine, MicroserviceVersions microserviceVersions) {
     super(scbEngine, microserviceVersions.getMicroserviceName());
@@ -33,14 +30,5 @@ public class ConsumerMicroserviceVersionsMeta extends MicroserviceVersionsMeta {
 
   public MicroserviceVersions getMicroserviceVersions() {
     return microserviceVersions;
-  }
-
-  public MicroserviceReferenceConfig getOrCreateMicroserviceReferenceConfig() {
-    if (microserviceReferenceConfig == null ||
-        microserviceReferenceConfig.isExpired()) {
-      microserviceReferenceConfig = new MicroserviceReferenceConfig(this, null);
-    }
-
-    return microserviceReferenceConfig;
   }
 }
