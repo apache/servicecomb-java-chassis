@@ -19,6 +19,7 @@ package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
@@ -31,23 +32,21 @@ public class MonitorDefaultDeploymentProvider implements DeploymentProvider {
 
   @Override
   public int getOrder() {
-    return 2;
+    return 3;
   }
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    switch (systemKey) {
-      case MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE:
-        String[] msAddresses = configuration.getStringArray(MonitorConstant.MONITOR_URI);
-        if (msAddresses == null || msAddresses.length == 0) {
-          return null;
-        }
-        SystemBootstrapInfo ms = new SystemBootstrapInfo();
-        ms.setAccessURL(Arrays.asList(msAddresses));
-        return ms;
-      default:
-        return null;
+    if (!systemKey.equals(MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE)) {
+      return null;
     }
+    String[] msAddresses = configuration.getStringArray(MonitorConstant.MONITOR_URI);
+    if (ArrayUtils.isEmpty(msAddresses)) {
+      return null;
+    }
+    SystemBootstrapInfo ms = new SystemBootstrapInfo();
+    ms.setAccessURL(Arrays.asList(msAddresses));
+    return ms;
   }
 
   @VisibleForTesting

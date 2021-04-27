@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.config.client;
 
+import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -42,7 +42,7 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public boolean enabled() {
-    return Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) != null;
+    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) != null;
   }
 
   @Override

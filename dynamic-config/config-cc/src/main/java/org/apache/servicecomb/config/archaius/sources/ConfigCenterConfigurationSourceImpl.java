@@ -19,7 +19,6 @@ package org.apache.servicecomb.config.archaius.sources;
 
 import static com.netflix.config.WatchedUpdateResult.createIncremental;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -29,9 +28,9 @@ import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.config.client.ConfigCenterClient;
 import org.apache.servicecomb.config.client.ConfigCenterConfig;
+import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +64,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
-    if (Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) == null) {
-      return false;
-    }
-    return true;
+    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) != null;
   }
 
   private void init() {
@@ -128,7 +124,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       if (parseConfigs == null || parseConfigs.isEmpty()) {
         return;
       }
-      
+
       Map<String, Object> configuration = ConfigMapping.getConvertedMap(parseConfigs);
       if (configCenterClient != null) {
         List<String> fileSourceList = configCenterClient.getFileSources();

@@ -15,34 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.deployment;
+package org.apache.servicecomb.serviceregistry.collect;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
 import java.util.Arrays;
 
-public class CustomDeploymentProvider implements DeploymentProvider {
+public class ServiceCenterDefaultDeploymentProvider implements DeploymentProvider {
+  public static final String SYSTEM_KEY_SERVICE_CENTER = "ServiceCenter";
+
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
-  public int getOrder() {
-    return 0;
-  }
-
-  @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (!systemKey.equals("TestCenter")) {
+    if (!systemKey.equals(SYSTEM_KEY_SERVICE_CENTER)) {
       return null;
     }
-    SystemBootstrapInfo cc = new SystemBootstrapInfo();
-    cc.setAccessURL(Arrays.asList("http://localhost/custom"));
-    return cc;
+    SystemBootstrapInfo sc = new SystemBootstrapInfo();
+    String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
+    if (ArrayUtils.isEmpty(urls)) {
+      urls = new String[]{"http://127.0.0.1:30100"};
+    }
+    sc.setAccessURL(Arrays.asList(urls));
+    return sc;
   }
 
   @VisibleForTesting
   public static void setConfiguration(AbstractConfiguration configuration) {
-    CustomDeploymentProvider.configuration = configuration;
+    ServiceCenterDefaultDeploymentProvider.configuration = configuration;
   }
 }

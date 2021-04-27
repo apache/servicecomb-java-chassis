@@ -22,6 +22,8 @@ import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 
+import java.util.Objects;
+
 public class MonitorInformationCollector implements BootUpInformationCollector {
   @Override
   public String collect() {
@@ -34,9 +36,6 @@ public class MonitorInformationCollector implements BootUpInformationCollector {
   }
 
   private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
-    if (systemBootstrapInfo == null) {
-      return ("not exist");
-    }
-    return systemBootstrapInfo.getAccessURL().toString();
+    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
 }

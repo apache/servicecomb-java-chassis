@@ -15,34 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.deployment;
+package org.apache.servicecomb.config.collect;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
 import java.util.Arrays;
 
-public class CustomDeploymentProvider implements DeploymentProvider {
+public class ConfigCenterDefaultDeploymentProvider implements DeploymentProvider {
+  public static final String SYSTEM_KEY_CONFIG_CENTER = "ConfigCenter";
+
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
-  public int getOrder() {
-    return 0;
-  }
-
-  @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    if (!systemKey.equals("TestCenter")) {
+    if (!systemKey.equals(SYSTEM_KEY_CONFIG_CENTER)) {
+      return null;
+    }
+    String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
+    if (ArrayUtils.isEmpty(ccAddresses)) {
       return null;
     }
     SystemBootstrapInfo cc = new SystemBootstrapInfo();
-    cc.setAccessURL(Arrays.asList("http://localhost/custom"));
+    cc.setAccessURL(Arrays.asList(ccAddresses));
     return cc;
   }
 
   @VisibleForTesting
   public static void setConfiguration(AbstractConfiguration configuration) {
-    CustomDeploymentProvider.configuration = configuration;
+    ConfigCenterDefaultDeploymentProvider.configuration = configuration;
   }
 }

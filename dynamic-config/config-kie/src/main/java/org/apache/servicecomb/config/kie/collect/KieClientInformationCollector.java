@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.kie.client;
+package org.apache.servicecomb.config.kie.collect;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
-public class TestKieConfig {
+import java.util.Objects;
 
-  @BeforeClass
-  public static void setUpClass() {
-    KieConfig.setFinalConfig(ConfigUtil.createLocalConfig());
+
+public class KieClientInformationCollector implements BootUpInformationCollector {
+  @Override
+  public String collect() {
+    return "Kie Center: " + getCenterInfo(Deployment.getSystemBootStrapInfo("KieCenter"));
   }
 
-  @Test
-  public void getServerUri() {
-    String servers = KieConfig.INSTANCE.getServerUri();
-    Assert.assertEquals("https://172.16.8.7:30110", servers);
+  @Override
+  public int getOrder() {
+    return 2;
   }
 
-  @Test
-  public void getEnvironment() {
-    Assert.assertEquals("testing", KieConfig.INSTANCE.getEnvironment());
-    System.setProperty("SERVICECOMB_ENV", "development");
-    KieConfig.setFinalConfig(ConfigUtil.createLocalConfig());
-    Assert.assertEquals("development", KieConfig.INSTANCE.getEnvironment());
+  private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
+    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
-
 }

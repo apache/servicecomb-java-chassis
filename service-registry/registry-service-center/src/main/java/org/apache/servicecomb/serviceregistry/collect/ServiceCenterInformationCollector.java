@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.bootup;
+package org.apache.servicecomb.serviceregistry.collect;
 
+import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
-public class AddressInformationCollector implements BootUpInformationCollector {
+import java.util.Objects;
+
+public class ServiceCenterInformationCollector implements BootUpInformationCollector {
   @Override
   public String collect() {
     return "Service Center: "
-        + getCenterInfo(Deployment.getSystemBootStrapInfo("ServiceCenter"))
-        + "\n" + "Config Center: "
-        + getCenterInfo(Deployment.getSystemBootStrapInfo("ConfigCenter"));
+        + getCenterInfo(Deployment.getSystemBootStrapInfo("ServiceCenter"));
   }
 
   @Override
@@ -35,10 +36,6 @@ public class AddressInformationCollector implements BootUpInformationCollector {
   }
 
   private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
-    if (systemBootstrapInfo == null) {
-      return ("not exist");
-    } else {
-      return systemBootstrapInfo.getAccessURL().toString();
-    }
+    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
 }

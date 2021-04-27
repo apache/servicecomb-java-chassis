@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
@@ -31,6 +30,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 import org.apache.servicecomb.serviceregistry.client.http.RegistryHttpClientOptionsSPI;
 import org.apache.servicecomb.serviceregistry.client.http.RegistryWatchHttpClientOptionsSPI;
+import org.apache.servicecomb.serviceregistry.collect.ServiceCenterDefaultDeploymentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +110,7 @@ class ServiceRegistryConfigBuilder {
 
   public ArrayList<IpPort> getIpPort() {
     List<String> uriList = Objects
-        .requireNonNull(Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER),
+        .requireNonNull(Deployment.getSystemBootStrapInfo(ServiceCenterDefaultDeploymentProvider.SYSTEM_KEY_SERVICE_CENTER),
             "no sc address found!")
         .getAccessURL();
     ArrayList<IpPort> ipPortList = new ArrayList<>();

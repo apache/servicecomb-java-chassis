@@ -15,44 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.deployment;
+package org.apache.servicecomb.config.kie.collect;
+
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
 import java.util.Arrays;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.servicecomb.config.ConfigUtil;
+public class KieCenterDefaultDeploymentProvider implements DeploymentProvider {
+  public static final String SYSTEM_KEY_KIE_CENTER = "KieCenter";
 
-import com.google.common.annotations.VisibleForTesting;
-
-public class DefaultDeploymentProvider implements DeploymentProvider {
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
 
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
-    switch (systemKey) {
-      case SYSTEM_KEY_SERVICE_CENTER:
-        SystemBootstrapInfo sc = new SystemBootstrapInfo();
-        String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
-        if (urls == null || urls.length == 0) {
-          urls = new String[] {"http://127.0.0.1:30100"};
-        }
-        sc.setAccessURL(Arrays.asList(urls));
-        return sc;
-      case SYSTEM_KEY_CONFIG_CENTER:
-        String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
-        if (ccAddresses == null || ccAddresses.length == 0) {
-          return null;
-        }
-        SystemBootstrapInfo cc = new SystemBootstrapInfo();
-        cc.setAccessURL(Arrays.asList(ccAddresses));
-        return cc;
-      default:
-        return null;
+    if (!systemKey.equals(SYSTEM_KEY_KIE_CENTER)) {
+      return null;
     }
+    String[] kieAddresses = configuration.getStringArray("servicecomb.kie.serverUri");
+    if (ArrayUtils.isEmpty(kieAddresses)) {
+      return null;
+    }
+    SystemBootstrapInfo kie = new SystemBootstrapInfo();
+    kie.setAccessURL(Arrays.asList(kieAddresses));
+    return kie;
   }
 
   @VisibleForTesting
   public static void setConfiguration(AbstractConfiguration configuration) {
-    DefaultDeploymentProvider.configuration = configuration;
+    KieCenterDefaultDeploymentProvider.configuration = configuration;
   }
 }
