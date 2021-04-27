@@ -65,13 +65,19 @@ public final class MatchType {
       Enumeration<String> names = invocation.getRequestEx().getHeaderNames();
       while (names.hasMoreElements()) {
         String name = names.nextElement();
-        headers.put(name, invocation.getRequestEx().getHeader(name));
+        if (invocation.getRequestEx().getHeader(name) != null) {
+          headers.put(name, invocation.getRequestEx().getHeader(name));
+        }
       }
     }
 
     Map<String, Object> arguments = invocation.getSwaggerArguments();
     if (arguments != null) {
-      arguments.forEach((k, v) -> headers.put(k, v.toString()));
+      arguments.forEach((k, v) -> {
+        if (v != null) {
+          headers.put(k, v.toString());
+        }
+      });
     }
     return headers;
   }
