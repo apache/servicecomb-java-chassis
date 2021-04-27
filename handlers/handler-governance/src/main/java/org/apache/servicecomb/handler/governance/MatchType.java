@@ -37,12 +37,12 @@ public final class MatchType {
         request.setUri(
             invocation.getSchemaMeta().getSwagger().getBasePath() + invocation.getOperationMeta().getOperationPath());
         request.setMethod(invocation.getOperationMeta().getHttpMethod());
-        request.setHeaders(invocation.getContext());
+        request.setHeaders(getHeaderMap(invocation, true));
         return request;
       }
       request.setUri(invocation.getRequestEx().getRequestURI());
       request.setMethod(invocation.getRequestEx().getMethod());
-      request.setHeaders(getHeaderMap(invocation));
+      request.setHeaders(getHeaderMap(invocation, false));
       return request;
     }
 
@@ -52,17 +52,26 @@ public final class MatchType {
       request.setUri(invocation.getOperationMeta().getSchemaQualifiedName());
     }
     request.setMethod(invocation.getOperationMeta().getHttpMethod());
-    request.setHeaders(invocation.getContext());
+    request.setHeaders(getHeaderMap(invocation, true));
 
     return request;
   }
 
-  private static Map<String, String> getHeaderMap(Invocation invocation) {
-    Enumeration<String> names = invocation.getRequestEx().getHeaderNames();
+  private static Map<String, String> getHeaderMap(Invocation invocation, boolean fromContext) {
     Map<String, String> headers = new HashMap<>();
-    while (names.hasMoreElements()) {
-      String name = names.nextElement();
-      headers.put(name, invocation.getRequestEx().getHeader(name));
+    if (fromContext) {
+      headers.putAll(invocation.getContext());
+    } else {
+      Enumeration<String> names = invocation.getRequestEx().getHeaderNames();
+      while (names.hasMoreElements()) {
+        String name = names.nextElement();
+        headers.put(name, invocation.getRequestEx().getHeader(name));
+      }
+    }
+
+    Map<String, Object> arguments = invocation.getSwaggerArguments();
+    if (arguments != null) {
+      arguments.forEach((k, v) -> headers.put(k, v.toString()));
     }
     return headers;
   }
