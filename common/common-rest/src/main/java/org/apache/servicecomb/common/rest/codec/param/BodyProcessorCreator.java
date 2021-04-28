@@ -167,13 +167,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         return new BufferImpl().appendBytes(((String) arg).getBytes());
       }
 
-      // TODO recover this feature in SCB-1652
-//      if (arg instanceof String && !isString) {
-//        // consumer already encode body, not recommend, can not support other transport
-//        // if used in this way, it's not transport transparent
-//        return Buffer.buffer((String) arg);
-//      }
-
       try (BufferOutputStream output = new BufferOutputStream()) {
         RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
         return output.getBuffer();

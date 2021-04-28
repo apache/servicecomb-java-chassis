@@ -69,7 +69,6 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     prepareServerDirectURL();
     testErrorCodeWrongType();
-    testErrorCodeWithHeaderJAXRSUsingRowTypeRest();
   }
 
   @Override
@@ -228,23 +227,6 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     }
     TestMgr.check(t500.getCode(), 500);
     TestMgr.check(t500.getMessage(), "internal error");
-  }
-
-  private static void testErrorCodeWithHeaderJAXRSUsingRowTypeRest() {
-    // TODO recover this in SCB-1652
-    // using string
-//    MultiRequest request = new MultiRequest();
-//    request.setCode(200);
-//    request.setMessage("test message");
-//    String stringRequest = Json.encode(request);
-//
-//    ResponseEntity<MultiResponse200> result = template
-//        .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", stringRequest,
-//            MultiResponse200.class);
-//    TestMgr.check(result.getStatusCodeValue(), 200);
-//    TestMgr.check(result.getBody().getMessage(), "test message");
-//    TestMgr.check(result.getBody().getCode(), 200);
-//    TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
   }
 
   private static void testErrorCodeWithHeaderJAXRSUsingRowType() {

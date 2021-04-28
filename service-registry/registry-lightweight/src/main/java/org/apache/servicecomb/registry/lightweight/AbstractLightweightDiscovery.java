@@ -124,13 +124,4 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
       String revision) {
     return store.findServiceInstances(appId, serviceName, revision);
   }
-
-  @Override
-  public String getRevision() {
-    return null;
-  }
-
-  @Override
-  public void setRevision(String revision) {
-  }
 }

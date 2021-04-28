@@ -87,7 +87,6 @@ public class RestClientSender {
   }
 
   protected CompletableFuture<Void> sendInVertxContext() {
-    // todo: process timeout follow highway solution, maybe have obvious better performance
     httpClientRequest.setTimeout(invocation.getOperationMeta().getConfig().getMsRequestTimeout());
 
     Multimap<String, Part> uploads = requestParameters.getUploads();
