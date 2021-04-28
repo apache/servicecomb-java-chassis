@@ -19,8 +19,6 @@ package org.apache.servicecomb.core.provider.consumer;
 
 // operation level, to keep compatible, not change name
 public class ReferenceConfig {
-  protected MicroserviceReferenceConfig microserviceReferenceConfig;
-
   protected String transport;
 
   protected String versionRule;

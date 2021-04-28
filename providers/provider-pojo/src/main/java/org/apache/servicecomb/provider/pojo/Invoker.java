@@ -66,7 +66,7 @@ public class Invoker implements InvocationHandler {
       return defaultMethodMeta.getOrCreateMethodHandle(proxy, method)
           .invokeWithArguments(args);
     }
-
+    SCBEngine.getInstance().ensureStatusUp();
     prepareInvocationCaller();
     return invocationCaller.call(method, metaRefresher, invocationCreator, args);
   }

@@ -548,6 +548,7 @@ public class SCBEngine {
    * @return
    */
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName, String versionRule) {
+    ensureStatusUp();
     MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
         .getOrCreateMicroserviceVersions(parseAppId(microserviceName), microserviceName);
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
