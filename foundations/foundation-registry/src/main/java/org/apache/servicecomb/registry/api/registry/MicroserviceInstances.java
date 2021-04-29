@@ -67,7 +67,6 @@ public class MicroserviceInstances {
     mergeMicroserviceNotExist(other.microserviceNotExist);
     mergeRevision(other.revision);
     mergeInstanceResponse(other.getInstancesResponse());
-    mergeRevision(other.getRevision());
   }
 
   private void mergeRevision(String revision) {

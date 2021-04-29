@@ -75,9 +75,6 @@ public class DiscoveryManager {
         .forEach(discovery -> {
           MicroserviceInstances instances = discovery.findServiceInstances(appId, serviceName, versionRule, revision);
           result.mergeMicroserviceInstances(instances);
-
-          // 逻辑错误，revision只与本次查询条件有关，与discovery无关
-          discovery.setRevision(instances.getRevision());
         });
 
     return result;

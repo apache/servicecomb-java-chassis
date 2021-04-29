@@ -111,16 +111,6 @@ public class SchemaDiscovery implements Discovery {
   }
 
   @Override
-  public String getRevision() {
-    return null;
-  }
-
-  @Override
-  public void setRevision(String revision) {
-
-  }
-
-  @Override
   public String name() {
     return NAME;
   }

@@ -32,8 +32,6 @@ public class LocalDiscovery implements Discovery {
 
   private LocalRegistryStore localDiscoveryStore = LocalRegistryStore.INSTANCE;
 
-  private String revision;
-
   @Override
   public void init() {
     // done in registration
@@ -78,16 +76,6 @@ public class LocalDiscovery implements Discovery {
   public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule,
       String revision) {
     return localDiscoveryStore.findServiceInstances(appId, serviceName, versionRule, revision);
-  }
-
-  @Override
-  public String getRevision() {
-    return revision;
-  }
-
-  @Override
-  public void setRevision(String revision) {
-    this.revision = revision;
   }
 
   @Override

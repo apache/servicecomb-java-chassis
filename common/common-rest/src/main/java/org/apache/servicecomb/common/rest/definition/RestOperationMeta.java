@@ -147,7 +147,6 @@ public class RestOperationMeta {
   }
 
   private boolean checkDownloadFileFlag() {
-    // todo: logic of find
     Response response = operationMeta.getSwaggerOperation().getResponses().get("200");
     if (response != null) {
       Model model = response.getResponseSchema();

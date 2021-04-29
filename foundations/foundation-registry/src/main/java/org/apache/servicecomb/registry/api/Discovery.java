@@ -78,18 +78,5 @@ public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
     return null;
   }
 
-  /**
-   * Life Cycle：can be used when calling <code>findServiceInstances</code>
-   *
-   * TODO: should delete this revision<br>
-   *   because revision is microservice scope, not discovery scope
-   */
-  String getRevision();
-
-  /**
-   * Life Cycle：will be called when <code>findServiceInstances</code> is successful
-   */
-  void setRevision(String revision);
-
   String name();
 }

@@ -70,7 +70,6 @@ public class ServiceRegistryConfig {
 
   private int instances;
 
-  // TODO SCB-1691 getter of this field's behavior changed, should check
   private boolean ssl = true;
 
   private String clientName;

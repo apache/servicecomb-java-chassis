@@ -31,8 +31,6 @@ import com.netflix.config.DynamicPropertyFactory;
 public class ServiceCenterDiscovery implements Discovery {
   public static final String NAME = "service center discovery";
 
-  private String revision;
-
   @Override
   public void init() {
     // ServiceCenterRegistration has already done it
@@ -81,16 +79,6 @@ public class ServiceCenterDiscovery implements Discovery {
     return RegistryUtils.findServiceInstances(appId,
         serviceName,
         versionRule);
-  }
-
-  @Override
-  public String getRevision() {
-    return revision;
-  }
-
-  @Override
-  public void setRevision(String revision) {
-    this.revision = revision;
   }
 
   @Override
