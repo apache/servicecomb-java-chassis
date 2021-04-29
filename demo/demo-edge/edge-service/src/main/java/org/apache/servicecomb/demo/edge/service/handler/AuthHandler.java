@@ -61,6 +61,7 @@ public class AuthHandler implements Handler {
 
     if (!authSucc) {
       asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
+      return;
     }
 
     LOGGER.debug("auth success.");
