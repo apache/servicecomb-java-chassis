@@ -56,6 +56,10 @@ servicecomb:
       check:
         enabled: true
         strategy: processing-time
+    springmvc:
+      SpringMVCCommonSchemaInterface:
+        testInvocationTimeoutInClientWait:
+          timeout: 300
   tracing:
     enabled: true
     samplingRate: 0.5

@@ -39,6 +39,17 @@ public class TestSpringMVCCommonSchemaInterface implements CategorizedTestCase {
     testInvocationTimeoutInServer();
     testInvocationTimeoutInServerUserCheck();
     testInvocationAlreadyTimeoutInClient();
+    testInvocationTimeoutInClientWait();
+  }
+
+  private void testInvocationTimeoutInClientWait() {
+    try {
+      client.testInvocationTimeoutInClientWait(500, "hello");
+      TestMgr.fail("should timeout");
+    } catch (InvocationException e) {
+      TestMgr.check(408, e.getStatusCode());
+      TestMgr.check("Invocation Timeout.", ((CommonExceptionData) e.getErrorData()).getMessage());
+    }
   }
 
   private void testInvocationTimeoutInServerUserCheck() {

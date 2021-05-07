@@ -57,4 +57,9 @@ public class SpringMVCCommonSchemaInterface implements CommonSchemaInterface {
 
     return testInvocationTimeout(timeout, name);
   }
+
+  @Override
+  public String testInvocationTimeoutInClientWait(long timeout, String name) {
+    return testInvocationTimeout(timeout, name);
+  }
 }

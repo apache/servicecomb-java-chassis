@@ -17,10 +17,16 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.exception.ExceptionCodes;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 /**
  * 业务线程在阻塞等待着，不必另起线程
@@ -48,9 +54,9 @@ public class SyncResponseExecutor implements Executor {
     latch.countDown();
   }
 
-  public Response waitResponse() throws InterruptedException {
-    // TODO:增加配置，指定超时时间
-    latch.await();
+  public Response waitResponse(Invocation invocation) throws InvocationException {
+    guardedWait(invocation);
+
     // cmd为null，是没走execute，直接返回的场景
     if (cmd != null) {
       cmd.run();
@@ -62,11 +68,36 @@ public class SyncResponseExecutor implements Executor {
   public void setResponse(Response response) {
     this.response = response;
     if (cmd == null) {
-      // 走到这里，没有cmd
-      // 说明没走到网络线程，直接就返回了
-      // 或者在网络线程中没使用execute的方式返回，这会导致返回流程在网络线程中执行
-      // 虽然不合适，但是也不应该导致业务线程无法唤醒
+      // 1. 走到这里，没有cmd，说明没走到网络线程，直接就返回了。
+      // 2. 或者在网络线程中没使用execute的方式返回，这会导致返回流程在网络线程中执行，虽然不合适，但是也不应该导致业务线程无法唤醒
       latch.countDown();
     }
+  }
+
+  private void guardedWait(Invocation invocation) throws InvocationException {
+    long wait = getWaitTime(invocation);
+    try {
+      if (wait <= 0) {
+        latch.await();
+        return;
+      }
+      if (latch.await(wait, TimeUnit.MILLISECONDS)) {
+        return;
+      }
+    } catch (InterruptedException e) {
+      //ignore
+    }
+    throw new InvocationException(REQUEST_TIMEOUT, ExceptionCodes.INVOCATION_TIMEOUT, "Invocation Timeout.");
+  }
+
+  private long getWaitTime(Invocation invocation) {
+    if (invocation.getOperationMeta().getConfig().getMsRequestTimeout() <= 0) {
+      return invocation.getOperationMeta().getConfig().getMsInvocationTimeout();
+    }
+    if (invocation.getOperationMeta().getConfig().getMsInvocationTimeout() <= 0) {
+      return invocation.getOperationMeta().getConfig().getMsRequestTimeout();
+    }
+    return Math.min(invocation.getOperationMeta().getConfig().getMsRequestTimeout(),
+        invocation.getOperationMeta().getConfig().getMsInvocationTimeout());
   }
 }

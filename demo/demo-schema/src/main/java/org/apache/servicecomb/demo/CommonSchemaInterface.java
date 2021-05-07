@@ -33,4 +33,7 @@ public interface CommonSchemaInterface {
   @ApiOperation(value = "testInvocationTimeoutWithInvocation", nickname = "testInvocationTimeoutWithInvocation")
   String testInvocationTimeout(InvocationContext context, @RequestParam("timeout") long timeout,
       @RequestParam("name") String name);
+
+  @GetMapping(path = "testInvocationTimeoutInClientWait")
+  String testInvocationTimeoutInClientWait(@RequestParam("timeout") long timeout, @RequestParam("name") String name);
 }
