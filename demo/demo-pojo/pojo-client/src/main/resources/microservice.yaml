@@ -33,7 +33,7 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: qps-flowcontrol-consumer,bizkeeper-consumer,loadbalance
+        default: qps-flowcontrol-consumer,auth-consumer,bizkeeper-consumer,loadbalance
   isolation:
     Consumer:
       enabled: false

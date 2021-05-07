@@ -18,10 +18,13 @@ package org.apache.servicecomb.authentication.consumer;
 
 import java.util.Optional;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 /**
  *
@@ -31,15 +34,15 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
  */
 public class ConsumerAuthHandler implements Handler {
 
-  private RSAConsumerTokenManager athenticationTokenManager = new RSAConsumerTokenManager();
+  private RSAConsumerTokenManager authenticationTokenManager = new RSAConsumerTokenManager();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
 
-    Optional<String> token = Optional.ofNullable(athenticationTokenManager.getToken());
+    Optional<String> token = Optional.ofNullable(authenticationTokenManager.getToken());
     if (!token.isPresent()) {
       asyncResp.consumerFail(
-          new IllegalStateException("rejected by consumer authentication handler"));
+          new InvocationException(Status.SERVICE_UNAVAILABLE, "auth token is not properly configured yet."));
       return;
     }
     invocation.addContext(Const.AUTH_TOKEN, token.get());
@@ -47,6 +50,6 @@ public class ConsumerAuthHandler implements Handler {
   }
 
   public void setAuthenticationTokenManager(RSAConsumerTokenManager authenticationTokenManager) {
-    this.athenticationTokenManager = authenticationTokenManager;
+    this.authenticationTokenManager = authenticationTokenManager;
   }
 }
