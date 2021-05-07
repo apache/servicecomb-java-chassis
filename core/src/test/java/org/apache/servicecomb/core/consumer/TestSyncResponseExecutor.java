@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core.consumer;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
@@ -29,11 +30,12 @@ public class TestSyncResponseExecutor {
     SyncResponseExecutor executor = new SyncResponseExecutor();
     Runnable cmd = Mockito.mock(Runnable.class);
     Response response = Mockito.mock(Response.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
     executor.execute(cmd);
     executor.setResponse(response);
 
     try {
-      Response responseValue = executor.waitResponse();
+      Response responseValue = executor.waitResponse(invocation);
       Assert.assertNotNull(responseValue);
     } catch (Exception e) {
       Assert.assertNotNull(e);

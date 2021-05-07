@@ -158,7 +158,7 @@ public final class InvokerUtils {
       invocation.onStartHandlersRequest();
       invocation.next(respExecutor::setResponse);
 
-      Response response = respExecutor.waitResponse();
+      Response response = respExecutor.waitResponse(invocation);
       invocation.getInvocationStageTrace().finishHandlersResponse();
       invocation.onFinish(response);
       return response;
@@ -166,8 +166,6 @@ public final class InvokerUtils {
       String msg =
           String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
       LOGGER.error(msg, e);
-      LOGGER.error("invocation type: {}, handler chain: {}", invocation.getInvocationType(),
-          invocation.getHandlerChain());
 
       Response response = Response.createConsumerFail(e);
       invocation.onFinish(response);
