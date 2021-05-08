@@ -16,11 +16,7 @@
  */
 package org.apache.servicecomb.authentication.consumer;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
@@ -31,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class RSAConsumerTokenManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(RSAConsumerTokenManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RSAConsumerTokenManager.class);
 
   private Object lock = new Object();
 
@@ -53,6 +49,12 @@ public class RSAConsumerTokenManager {
     PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
     String instanceId = RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId();
     String serviceId = RegistrationManager.INSTANCE.getMicroservice().getServiceId();
+
+    if (instanceId == null || serviceId == null) {
+      LOGGER.error("service not ready when create token.");
+      return null;
+    }
+
     @SuppressWarnings("deprecation")
     String randomCode = org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(128);
     long generateTime = System.currentTimeMillis();
@@ -60,9 +62,9 @@ public class RSAConsumerTokenManager {
       String plain = String.format("%s@%s@%s@%s", instanceId, serviceId, generateTime, randomCode);
       String sign = RSAUtils.sign(plain, privateKey);
       token = RSAAuthenticationToken.fromStr(String.format("%s@%s", plain, sign));
-    } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
-      logger.error("create token error", e);
-      throw new IllegalStateException("create token error");
+    } catch (Exception e) {
+      LOGGER.error("create token error", e);
+      return null;
     }
     return token.format();
   }

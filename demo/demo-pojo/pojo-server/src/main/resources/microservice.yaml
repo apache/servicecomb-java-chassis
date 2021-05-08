@@ -33,7 +33,7 @@ servicecomb:
   handler:
     chain:
       Provider:
-        default: qps-flowcontrol-provider
+        default: qps-flowcontrol-provider,auth-provider
   flowcontrol:
     Provider:
       qps:
