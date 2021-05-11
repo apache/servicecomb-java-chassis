@@ -36,6 +36,10 @@ public class DefaultEndpointMetric {
 
   private LongAdder bytesWritten = new LongAdder();
 
+  private LongAdder requests = new LongAdder();
+
+  private LongAdder latency = new LongAdder();
+
   public DefaultEndpointMetric(String address) {
     this.address = address;
   }
@@ -78,5 +82,21 @@ public class DefaultEndpointMetric {
 
   public void addBytesWritten(long bytes) {
     bytesWritten.add(bytes);
+  }
+
+  public void incrementRequests() {
+    requests.increment();
+  }
+
+  public long getRequests() {
+    return requests.longValue();
+  }
+
+  public void addLatency(long delta) {
+    latency.add(delta);
+  }
+
+  public long getLatency() {
+    return latency.longValue();
   }
 }

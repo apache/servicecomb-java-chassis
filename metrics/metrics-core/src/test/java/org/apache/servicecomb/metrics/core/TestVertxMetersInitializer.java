@@ -144,6 +144,9 @@ public class TestVertxMetersInitializer {
     int idx = actual.indexOf("vertx:\n");
     actual = actual.substring(idx);
 
+    String clientLatency;
+    String serverLatency;
+
     String expect = "vertx:\n"
         + "  instances:\n"
         + "    name       eventLoopContext-created\n"
@@ -152,18 +155,32 @@ public class TestVertxMetersInitializer {
         + "    transport  0\n"
         + "  transport:\n"
         + "    client.endpoints:\n"
-        + "      connectCount disconnectCount queue         connections send(Bps) receive(Bps) remote\n";
+        + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
+
+    int clientLatencyIndex = actual.indexOf("1            0               0             1           1        ")
+        + "1            0               0             1           1        ".length();
+    clientLatency = actual.substring(clientLatencyIndex, actual.indexOf(" ", clientLatencyIndex));
+    int serverLatencyIndex = actual.lastIndexOf("1            0               0             1           1        ")
+        + "1            0               0             1           1        ".length();
+    serverLatency = actual.substring(serverLatencyIndex, actual.indexOf(" ", serverLatencyIndex));
+
     if (printDetail) {
-      expect += String.format(
-          "      1            0               0             1           4         21           127.0.0.1:%-5s\n",
-          port);
+      expect +=
+          "      1            0               0             1           1        %-7s 4         21           127.0.0.1:%-5s\n";
     }
     expect += ""
-        + "      1            0               0             1           4         21           (summary)\n"
+        + "      1            0               0             1           1        %-7s 4         21           (summary)\n"
         + "    server.endpoints:\n"
-        + "      connectCount disconnectCount rejectByLimit connections send(Bps) receive(Bps) listen\n"
-        + "      1            0               0             1           21        4            0.0.0.0:0\n"
-        + "      1            0               0             1           21        4            (summary)\n\n";
+        + "      connectCount disconnectCount rejectByLimit connections requests latency send(Bps) receive(Bps) listen\n"
+        + "      1            0               0             1           1        %-7s 21        4            0.0.0.0:0\n"
+        + "      1            0               0             1           1        %-7s 21        4            (summary)\n\n";
+
+    if (printDetail) {
+      expect = String.format(expect, clientLatency, port, clientLatency, serverLatency, serverLatency);
+    } else {
+      expect = String.format(expect, clientLatency, serverLatency, serverLatency);
+    }
+
     Assert.assertEquals(expect, actual);
   }
 }

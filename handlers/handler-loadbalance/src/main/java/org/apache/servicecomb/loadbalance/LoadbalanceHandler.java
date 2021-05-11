@@ -282,6 +282,7 @@ public class LoadbalanceHandler implements Handler {
       // this stats is for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (isFailedResponse(resp)) {
+        // this stats is for SessionStickinessRule
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
         ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
       } else {

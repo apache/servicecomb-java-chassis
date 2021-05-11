@@ -29,7 +29,7 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
 /**
  * important: not singleton, every HttpServer instance relate to an HttpServerMetrics instance
  */
-public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Object, DefaultHttpSocketMetric> {
+public class DefaultHttpServerMetrics implements HttpServerMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric> {
   private final DefaultServerEndpointMetric endpointMetric;
 
   public DefaultHttpServerMetrics(DefaultServerEndpointMetric endpointMetric) {
@@ -41,28 +41,29 @@ public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Objec
   }
 
   @Override
-  public Object requestBegin(DefaultHttpSocketMetric socketMetric, HttpServerRequest request) {
-    return null;
+  public DefaultHttpSocketMetric requestBegin(DefaultHttpSocketMetric socketMetric, HttpServerRequest request) {
+    socketMetric.requestBegin();
+    return socketMetric;
   }
 
   @Override
-  public void requestReset(Object requestMetric) {
+  public void requestReset(DefaultHttpSocketMetric requestMetric) {
 
   }
 
   @Override
-  public Object responsePushed(DefaultHttpSocketMetric socketMetric, HttpMethod method, String uri,
+  public DefaultHttpSocketMetric responsePushed(DefaultHttpSocketMetric socketMetric, HttpMethod method, String uri,
       HttpServerResponse response) {
     return null;
   }
 
   @Override
-  public void responseEnd(Object requestMetric, HttpServerResponse response) {
-
+  public void responseEnd(DefaultHttpSocketMetric requestMetric, HttpServerResponse response) {
+    requestMetric.responseEnd();
   }
 
   @Override
-  public Object connected(DefaultHttpSocketMetric socketMetric, Object requestMetric, ServerWebSocket serverWebSocket) {
+  public Object connected(DefaultHttpSocketMetric socketMetric, DefaultHttpSocketMetric requestMetric, ServerWebSocket serverWebSocket) {
     return null;
   }
 

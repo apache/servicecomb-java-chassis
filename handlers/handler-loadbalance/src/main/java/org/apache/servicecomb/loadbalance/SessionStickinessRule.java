@@ -106,9 +106,9 @@ public class SessionStickinessRule implements RuleExt {
 
     if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
       ServerStats serverStats = stats.getSingleServerStat(lastServer);
-      int successiveFaildCount = serverStats.getSuccessiveConnectionFailureCount();
+      int successiveFailedCount = serverStats.getSuccessiveConnectionFailureCount();
       if (Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
-          && successiveFaildCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
+          && successiveFailedCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
         serverStats.clearSuccessiveConnectionFailureCount();
         return true;
       }
