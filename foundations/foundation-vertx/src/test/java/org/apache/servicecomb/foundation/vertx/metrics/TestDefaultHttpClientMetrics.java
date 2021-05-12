@@ -289,22 +289,4 @@ public class TestDefaultHttpClientMetrics {
     Assert.assertEquals(2, socketMetric.getRequestBeginTime());
     Assert.assertEquals(3, socketMetric.getRequestEndTime());
   }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void meaningless() {
-    Assert.assertTrue(clientMetrics_a.isEnabled());
-
-    clientMetrics_a.createEndpoint(null, 0, 0);
-    clientMetrics_a.closeEndpoint(null, 0, null);
-    clientMetrics_a.endpointDisconnected(endpointMetric_a_1, null);
-    clientMetrics_a.responseBegin(null, null);
-    clientMetrics_a.responsePushed(null, null, null, null, null);
-    clientMetrics_a.requestReset(null);
-    clientMetrics_a.responseEnd(null, null);
-    clientMetrics_a.connected(null, null, null);
-    clientMetrics_a.disconnected(null);
-    clientMetrics_a.exceptionOccurred(null, null, null);
-    clientMetrics_a.close();
-  }
 }

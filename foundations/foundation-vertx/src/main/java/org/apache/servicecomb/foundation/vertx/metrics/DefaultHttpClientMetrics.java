@@ -98,6 +98,7 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public void responseEnd(DefaultHttpSocketMetric requestMetric, HttpClientResponse response) {
+    requestMetric.responseEnd();
   }
 
   @Override

@@ -45,4 +45,9 @@ public class DefaultHttpSocketMetric extends DefaultTcpSocketMetric {
   public void requestEnd() {
     this.requestEndTime = System.nanoTime();
   }
+
+  public void responseEnd() {
+    this.endpointMetric.incrementRequests();
+    this.endpointMetric.addLatency(System.nanoTime() - this.requestBeginTime);
+  }
 }
