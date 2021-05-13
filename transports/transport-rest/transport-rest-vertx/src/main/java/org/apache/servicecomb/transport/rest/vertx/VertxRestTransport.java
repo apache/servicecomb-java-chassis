@@ -17,11 +17,15 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.util.List;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -79,7 +83,15 @@ public class VertxRestTransport extends AbstractTransport {
     options.setConfig(json);
     options.setWorkerPoolName("pool-worker-transport-rest");
     options.setWorkerPoolSize(VertxOptions.DEFAULT_WORKER_POOL_SIZE);
+
+    prepareBlockResource();
     return VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(), options);
+  }
+
+  private void prepareBlockResource() {
+    // block deploy will load resources in event loop, but beans auto wire can only be done in main thread
+    List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getOrLoadSortedService(VertxHttpDispatcher.class);
+    BeanUtils.addBeans(VertxHttpDispatcher.class, dispatchers);
   }
 
   @Override
