@@ -62,7 +62,7 @@ public class HelloWorldConsumer  {
 
 Project documentation is available on the [ServiceComb Java Chassis Developer Guide][java-chassis-developer-guide].
 
-[java-chassis-developer-guide]: https://docs.servicecomb.io/java-chassis/en_US/
+[java-chassis-developer-guide]: http://servicecomb.gitee.io/servicecomb-java-chassis-doc/java-chassis/
 
 # Building
 
