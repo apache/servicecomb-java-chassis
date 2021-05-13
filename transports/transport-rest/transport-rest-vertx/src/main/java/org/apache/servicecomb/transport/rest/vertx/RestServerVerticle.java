@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
@@ -217,8 +216,7 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private void initDispatcher(Router mainRouter) {
-    List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.loadSortedService(VertxHttpDispatcher.class);
-    BeanUtils.addBeans(VertxHttpDispatcher.class, dispatchers);
+    List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getOrLoadSortedService(VertxHttpDispatcher.class);
 
     for (VertxHttpDispatcher dispatcher : dispatchers) {
       if (dispatcher.enabled()) {
