@@ -14,37 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.concurrent.atomic.LongAdder;
 
-public class DefaultTcpSocketMetric {
-  protected DefaultEndpointMetric endpointMetric;
+public class DefaultClientTaskMetric {
+  private LongAdder queue = new LongAdder();
 
-  protected boolean connected = true;
-
-  protected long connectedTime = System.nanoTime();
-
-  public DefaultTcpSocketMetric(DefaultEndpointMetric endpointMetric) {
-    this.endpointMetric = endpointMetric;
+  public long getQueueCount() {
+    return queue.longValue();
   }
 
-  public DefaultEndpointMetric getEndpointMetric() {
-    return endpointMetric;
+  public void enqueueRequest() {
+    queue.increment();
   }
 
-  @VisibleForTesting
-  public boolean isConnected() {
-    return connected;
-  }
-
-  public void onDisconnect() {
-    endpointMetric.onDisconnect();
-    this.connected = false;
-  }
-
-  @VisibleForTesting
-  public long getConnectedTime() {
-    return connectedTime;
+  public void dequeueRequest() {
+    queue.decrement();
   }
 }

@@ -35,12 +35,12 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
 import io.vertx.core.spi.metrics.TCPMetrics;
 
 public class DefaultVertxMetrics extends DummyVertxMetrics {
-  private VertxOptions vertxOptions;
+  private final VertxOptions vertxOptions;
 
   // to support listen multiple addresses, must use a map to manage the metric
-  private Map<String, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
+  private final Map<String, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
 
-  private volatile DefaultClientEndpointMetricManager clientEndpointMetricManager;
+  private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   public DefaultVertxMetrics(VertxOptions vertxOptions) {
     this.vertxOptions = vertxOptions;
@@ -57,15 +57,14 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   }
 
   @Override
-  public HttpServerMetrics<?, ?, ?> createHttpServerMetrics(HttpServerOptions options, SocketAddress localAddress
-  ) {
+  public HttpServerMetrics<?, ?, ?> createHttpServerMetrics(HttpServerOptions options, SocketAddress localAddress) {
     DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
         .computeIfAbsent(localAddress.toString(), DefaultServerEndpointMetric::new);
     return new DefaultHttpServerMetrics(endpointMetric);
   }
 
   @Override
-  public HttpClientMetrics<?, ?, ?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
+  public HttpClientMetrics<?, ?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
     return new DefaultHttpClientMetrics(clientEndpointMetricManager);
   }
 
@@ -83,12 +82,6 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   @Override
   public boolean isMetricsEnabled() {
-    return true;
-  }
-
-  @Deprecated
-  @Override
-  public boolean isEnabled() {
     return true;
   }
 
