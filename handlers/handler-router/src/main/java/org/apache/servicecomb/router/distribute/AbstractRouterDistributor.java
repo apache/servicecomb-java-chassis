@@ -145,17 +145,6 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
 
 
   public void initLatestVersion(String serviceName, List<T> list) {
-    TagItem latestVersionTag = RouterRuleCache.getServiceInfoCacheMap().get(serviceName).getLatestVersionTag();
-
-    if (latestVersionTag != null) {
-      for (T server : list) {
-        E ms = getIns.apply(server);
-        if (getVersion.apply(ms).equals(latestVersionTag.getVersion())) {
-          return;
-        }
-      }
-    }
-
     String latestVersion = null;
     for (T server : list) {
       E ms = getIns.apply(server);
