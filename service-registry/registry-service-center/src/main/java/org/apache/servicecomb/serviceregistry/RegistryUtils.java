@@ -103,7 +103,7 @@ public final class RegistryUtils {
     Map<String, ServiceRegistryConfig> configs = BeanUtils.getBeansOfType(ServiceRegistryConfig.class);
     configs.forEach((k, v) -> {
       ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, configuration);
-      addExtraServiceRegistry(serviceRegistry);
+      addExtraServiceRegistry(serviceRegistry, v);
     });
     executeOnEachServiceRegistry(ServiceRegistry::init);
     executeOnEachServiceRegistry(AfterServiceInstanceRegistryHandler::new);
@@ -251,10 +251,12 @@ public final class RegistryUtils {
     }
   }
 
-  public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry) {
+  public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry, ServiceRegistryConfig srConfig) {
     Objects.requireNonNull(serviceRegistry);
     if (EXTRA_SERVICE_REGISTRIES.containsKey(serviceRegistry.getName())) {
-      LOGGER.error("Register name duplicated!", new IllegalArgumentException());
+      LOGGER.error("Register name {} in Client {} is duplicated, "
+          + "please set different registry names for different client!", serviceRegistry.getName(), srConfig.getClientName());
+      throw new IllegalArgumentException("Registry Name Duplicated");
     }
     LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistry.getName(), serviceRegistry.getClass());
     EXTRA_SERVICE_REGISTRIES.put(serviceRegistry.getName(), serviceRegistry);
