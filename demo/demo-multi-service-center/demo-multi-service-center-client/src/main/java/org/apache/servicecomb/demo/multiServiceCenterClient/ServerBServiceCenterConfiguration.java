@@ -32,6 +32,7 @@ public class ServerBServiceCenterConfiguration {
         // use a different http client instance
         .setClientName("registry-serverB")
         .setWatchClientName("registry-watch-serverB")
+        .setRegistryName("server-B")
         .get();
   }
 }

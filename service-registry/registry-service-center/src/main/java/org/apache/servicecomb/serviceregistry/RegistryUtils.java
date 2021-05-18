@@ -253,6 +253,9 @@ public final class RegistryUtils {
 
   public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry) {
     Objects.requireNonNull(serviceRegistry);
+    if (EXTRA_SERVICE_REGISTRIES.containsKey(serviceRegistry.getName())) {
+      LOGGER.error("Register name duplicated!", new IllegalArgumentException());
+    }
     LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistry.getName(), serviceRegistry.getClass());
     EXTRA_SERVICE_REGISTRIES.put(serviceRegistry.getName(), serviceRegistry);
   }

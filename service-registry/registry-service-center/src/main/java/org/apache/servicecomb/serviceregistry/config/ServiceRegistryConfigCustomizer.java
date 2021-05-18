@@ -46,6 +46,11 @@ public class ServiceRegistryConfigCustomizer {
     return this;
   }
 
+  public ServiceRegistryConfigCustomizer setRegistryName(String registryName) {
+    this.original.setRegistryName(registryName);
+    return this;
+  }
+
   public ServiceRegistryConfigCustomizer setWatchClientName(String watchClientName) {
     this.original.setWatchClientName(watchClientName);
     return this;
