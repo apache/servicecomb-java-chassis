@@ -185,9 +185,9 @@ public class QpsControllerManager {
       updateObjMap(configKey);
     });
     limitProperty.addCallback(() -> {
-      qpsStrategy.setQpsLimit(limitProperty.getLong());
+      qpsStrategy.setQpsLimit(limitProperty.getLong((long) Integer.MAX_VALUE));
       LOGGER.info("Qps limit updated, configKey = [{}], value = [{}]", configKey,
-          limitProperty.getString());
+              limitProperty.getLong((long) Integer.MAX_VALUE));
       updateObjMap(configKey);
     });
     bucketProperty.addCallback(() -> {
