@@ -104,7 +104,9 @@ public class IpPortManager {
   }
 
   public IpPort getAvailableAddress() {
-    return getAvailableAddress(currentAvailableIndex.get());
+    int currentIndex = currentAvailableIndex.get();
+    currentAvailableIndex.compareAndSet(currentIndex, currentIndex + 1);
+    return getAvailableAddress(currentIndex);
   }
 
   private IpPort getAvailableAddress(int index) {
