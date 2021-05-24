@@ -58,12 +58,12 @@ public class RestClientTransportContextFactory {
   public RestClientTransportContext create(Invocation invocation) {
     try {
       return doCreate(invocation);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       throw new InvocationException(BAD_REQUEST, FAILED_TO_CREATE_REST_CLIENT_TRANSPORT_CONTEXT, e.getMessage(), e);
     }
   }
 
-  protected RestClientTransportContext doCreate(Invocation invocation) throws Exception {
+  protected RestClientTransportContext doCreate(Invocation invocation) throws Throwable {
     RestOperationMeta restOperationMeta = RestMetaUtils.getRestOperationMeta(invocation.getOperationMeta());
 
     HttpClientWithContext httpClientWithContext = findHttpClientPool(invocation);
@@ -85,15 +85,16 @@ public class RestClientTransportContextFactory {
   }
 
   protected HttpClientRequest createHttpClientRequest(Invocation invocation, RestOperationMeta restOperationMeta,
-      HttpClient httpClient) throws Exception {
+      HttpClient httpClient) throws Throwable {
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    HttpMethod method = HttpMethod.valueOf(restOperationMeta.getHttpMethod());
     RequestOptions requestOptions = new RequestOptions()
         .setHost(endpoint.getHostOrIp())
         .setPort(endpoint.getPort())
         .setSsl(endpoint.isSslEnabled())
+        .setMethod(method)
         .setURI(createRequestPath(invocation, restOperationMeta));
-    HttpMethod method = HttpMethod.valueOf(restOperationMeta.getHttpMethod());
-    return httpClientRequestFactory.create(invocation, httpClient, method, requestOptions);
+    return httpClientRequestFactory.create(invocation, httpClient, requestOptions);
   }
 
   protected String createRequestPath(Invocation invocation, RestOperationMeta restOperationMeta) throws Exception {

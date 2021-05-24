@@ -42,16 +42,20 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.DefaultClientMetrics;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
@@ -103,7 +107,12 @@ public class RestClientInvocation {
     String path = this.createRequestPath(restOperationMeta);
     IpPort ipPort = (IpPort) invocation.getEndpoint().getAddress();
 
-    createRequest(ipPort, path);
+    Future<HttpClientRequest> requestFuture = createRequest(ipPort, path);
+    if (requestFuture.failed()) {
+      throwableHandler.handle(requestFuture.cause());
+      return;
+    }
+    clientRequest = requestFuture.result();
     clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest =
         new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp, throwableHandler);
@@ -118,6 +127,7 @@ public class RestClientInvocation {
       }
     }
 
+    clientRequest.send().onComplete(ar -> handleResponse(ar.result()));
     clientRequest.exceptionHandler(e -> {
       invocation.getTraceIdLogger()
           .error(LOGGER, "Failed to send request, alreadyFailed:{}, local:{}, remote:{}, message={}.",
@@ -178,23 +188,23 @@ public class RestClientInvocation {
     return HttpMethod.valueOf(method);
   }
 
-  @SuppressWarnings("deprecation")
-  void createRequest(IpPort ipPort, String path) {
+  Future<HttpClientRequest> createRequest(IpPort ipPort, String path) {
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    HttpMethod method = getMethod();
     RequestOptions requestOptions = new RequestOptions();
     requestOptions.setHost(ipPort.getHostOrIp())
         .setPort(ipPort.getPort())
         .setSsl(endpoint.isSslEnabled())
+        .setMethod(method)
         .setURI(path);
 
-    HttpMethod method = getMethod();
     invocation.getTraceIdLogger()
         .debug(LOGGER, "Sending request by rest, method={}, qualifiedName={}, path={}, endpoint={}.",
             method,
             invocation.getMicroserviceQualifiedName(),
             path,
             invocation.getEndpoint().getEndpoint());
-    clientRequest = httpClientWithContext.getHttpClient().request(method, requestOptions, this::handleResponse);
+    return httpClientWithContext.getHttpClient().request(requestOptions);
   }
 
   protected void handleResponse(HttpClientResponse httpClientResponse) {
@@ -222,10 +232,12 @@ public class RestClientInvocation {
    * @param responseBuf response body buffer, when download, responseBuf is null, because download data by ReadStreamPart
    */
   protected void processResponseBody(Buffer responseBuf) {
-    DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) ((ConnectionBase) clientRequest.connection())
-        .metric();
-    invocation.getInvocationStageTrace().finishGetConnection(httpSocketMetric.getRequestBeginTime());
-    invocation.getInvocationStageTrace().finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    InvocationContext context = ContextUtils.getInvocationContext();
+    if (context != null) {
+      DefaultRequestMetric requestMetric = context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC);
+      invocation.getInvocationStageTrace().finishGetConnection(requestMetric.getRequestBeginTime());
+      invocation.getInvocationStageTrace().finishWriteToBuffer(requestMetric.getRequestEndTime());
+    }
     invocation.getInvocationStageTrace().finishReceiveResponse();
 
     invocation.getResponseExecutor().execute(() -> {
@@ -264,11 +276,11 @@ public class RestClientInvocation {
     alreadyFailed = true;
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    // connection maybe null when exception happens such as ssl handshake failure
-    if (connection != null) {
-      DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) connection.metric();
-      stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
-      stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    InvocationContext context = ContextUtils.getInvocationContext();
+    if (context != null) {
+      DefaultRequestMetric requestMetric = context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC);
+      stageTrace.finishGetConnection(requestMetric.getRequestBeginTime());
+      stageTrace.finishWriteToBuffer(requestMetric.getRequestEndTime());
     }
 
     // even failed and did not received response, still set time for it
