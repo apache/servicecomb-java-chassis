@@ -79,32 +79,25 @@ public class TestIpPortManager {
     manager.instanceCacheManager = cacheManager;
     IpPort address1 = manager.getAvailableAddress();
 
-    if (address1.getPort() == 9980) {
-      Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
-      Assert.assertEquals(9980, address1.getPort());
-    } else {
-      Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
-      Assert.assertEquals(9981, address1.getPort());
-    }
+    // test initial
+    Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
+    Assert.assertTrue(address1.getPort() == 9980 || address1.getPort() == 9981);
 
-    IpPort address2 = manager.getNextAvailableAddress(address1);
+    // test getAvailableAddress()
+    IpPort address2 = manager.getAvailableAddress();
+    Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
     if (address1.getPort() == 9980) {
-      Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
       Assert.assertEquals(9981, address2.getPort());
     } else {
-      Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
       Assert.assertEquals(9980, address2.getPort());
     }
 
+    // test getAvailableAddress() when reaching the end
     IpPort address3 = manager.getAvailableAddress();
-    if (address1.getPort() == 9980) {
-      Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
-      Assert.assertEquals(9981, address3.getPort());
-    } else {
-      Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
-      Assert.assertEquals(9980, address3.getPort());
-    }
+    Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
+    Assert.assertEquals(address1.getPort(), address3.getPort());
 
+    // mock endpoint list
     Map<String, List<CacheEndpoint>> addresses = new HashMap<>();
     List<CacheEndpoint> instances = new ArrayList<>();
     instances.add(new CacheEndpoint("http://127.0.0.1:9982", null));
@@ -118,31 +111,24 @@ public class TestIpPortManager {
       }
     };
 
+    // test getAvailableAddress() when auto discovery is disabled
     manager.initAutoDiscovery();  //init result is false at first time
-    IpPort address4 = manager.getNextAvailableAddress(address3);
+    IpPort address4 = manager.getAvailableAddress();
+    Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
     if (address1.getPort() == 9980) {
-      Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
-      Assert.assertEquals(9980, address4.getPort());
-    } else {
-      address4 = manager.getNextAvailableAddress(address1);
-      Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
-      Assert.assertEquals(9980, address4.getPort());
+      address4 = manager.getAvailableAddress();
     }
+    Assert.assertEquals(9980, address4.getPort());
 
-    IpPort address5 = manager.getNextAvailableAddress(address4);
+    // test getAvailable address when auto discovery is enabled
+    manager.setAutoDiscoveryInited(true);
+    IpPort address5 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9981, address5.getPort());
 
-    manager.setAutoDiscoveryInited(true);
-    IpPort address6 = manager.getNextAvailableAddress(address3);
-    if (address1.getPort() == 9980) {
-      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
-      Assert.assertEquals(9982, address6.getPort());
-    } else {
-      address6 = manager.getNextAvailableAddress(address1);
-      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
-      Assert.assertEquals(9982, address6.getPort());
-    }
+    IpPort address6 = manager.getAvailableAddress();
+    Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
+    Assert.assertEquals(9982, address6.getPort());
   }
 
   @Test

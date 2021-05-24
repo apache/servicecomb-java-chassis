@@ -37,7 +37,6 @@ import org.mockito.Mockito;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -169,7 +168,7 @@ public class TestClientHttp {
   @Test
   public void testIpPortManager() {
     IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE);
-    IpPort oIPPort = oManager.getNextAvailableAddress(new IpPort("", 33));
+    IpPort oIPPort = oManager.getAvailableAddress();
     Assert.assertEquals(oIPPort.getHostOrIp(), oManager.getAvailableAddress().getHostOrIp());
   }
 }

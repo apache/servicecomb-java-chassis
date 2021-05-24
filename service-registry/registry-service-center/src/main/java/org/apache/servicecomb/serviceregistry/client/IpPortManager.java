@@ -91,20 +91,9 @@ public class IpPortManager {
     }
   }
 
-  public IpPort getNextAvailableAddress(IpPort failedIpPort) {
-    int currentIndex = currentAvailableIndex.get();
-    IpPort current = getAvailableAddress(currentIndex);
-    if (current.equals(failedIpPort)) {
-      current = getAvailableAddress();
-    }
-    LOGGER.info("Change service center address from {} to {}", failedIpPort.toString(), current.toString());
-    return current;
-  }
-
   public IpPort getAvailableAddress() {
-    int currentIndex = currentAvailableIndex.get();
-    currentAvailableIndex.compareAndSet(currentIndex, currentIndex + 1);
-    return getAvailableAddress(currentIndex);
+    int currentIndex = currentAvailableIndex.incrementAndGet();
+    return getAvailableAddress(currentAvailableIndex.get());
   }
 
   private IpPort getAvailableAddress(int index) {
