@@ -95,10 +95,8 @@ public class IpPortManager {
     int currentIndex = currentAvailableIndex.get();
     IpPort current = getAvailableAddress(currentIndex);
     if (current.equals(failedIpPort)) {
-      currentAvailableIndex.compareAndSet(currentIndex, currentIndex + 1);
       current = getAvailableAddress();
     }
-
     LOGGER.info("Change service center address from {} to {}", failedIpPort.toString(), current.toString());
     return current;
   }
