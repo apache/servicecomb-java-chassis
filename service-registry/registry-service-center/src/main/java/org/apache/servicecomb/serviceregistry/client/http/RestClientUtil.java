@@ -33,6 +33,7 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -92,11 +93,14 @@ final class RestClientUtil {
             .append(queryParams);
       }
 
-      @SuppressWarnings("deprecation")
-      HttpClientRequest httpClientRequest = httpClient
-          .request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString(), response -> {
-            responseHandler.handle(new RestResponse(requestContext, response));
-          });
+      Future<HttpClientRequest> requestFuture = httpClient
+          .request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString());
+      if (requestFuture.failed()) {
+        LOGGER.error("connect to server {}:{} fail", ipPort.getHostOrIp(), ipPort.getPort(), requestFuture.cause());
+        responseHandler.handle(new RestResponse(requestContext, null));
+        return;
+      }
+      HttpClientRequest httpClientRequest = requestFuture.result();
 
       httpClientRequest.setTimeout(timeout)
           .exceptionHandler(e -> {
