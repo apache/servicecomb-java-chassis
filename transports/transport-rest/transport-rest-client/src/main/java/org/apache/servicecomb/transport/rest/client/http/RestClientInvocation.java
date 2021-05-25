@@ -108,49 +108,50 @@ public class RestClientInvocation {
     IpPort ipPort = (IpPort) invocation.getEndpoint().getAddress();
 
     Future<HttpClientRequest> requestFuture = createRequest(ipPort, path);
-    if (requestFuture.failed()) {
-      throwableHandler.handle(requestFuture.cause());
-      return;
-    }
-    clientRequest = requestFuture.result();
-    clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
-    RestClientRequestImpl restClientRequest =
-        new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp, throwableHandler);
-    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
 
-    Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
-    HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
-    invocation.getInvocationStageTrace().startClientFiltersRequest();
-    for (HttpClientFilter filter : httpClientFilters) {
-      if (filter.enabled()) {
-        filter.beforeSendRequest(invocation, requestEx);
+    requestFuture.compose(clientRequest -> {
+      this.clientRequest = clientRequest;
+
+      clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
+      RestClientRequestImpl restClientRequest =
+          new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp, throwableHandler);
+      invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
+
+      Buffer requestBodyBuffer;
+      try {
+        requestBodyBuffer = restClientRequest.getBodyBuffer();
+      } catch (Exception e) {
+        return Future.failedFuture(e);
       }
-    }
+      HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
+      invocation.getInvocationStageTrace().startClientFiltersRequest();
+      for (HttpClientFilter filter : httpClientFilters) {
+        if (filter.enabled()) {
+          filter.beforeSendRequest(invocation, requestEx);
+        }
+      }
 
-    clientRequest.send().onComplete(ar -> handleResponse(ar.result()));
-    clientRequest.exceptionHandler(e -> {
+      // 从业务线程转移到网络线程中去发送
+      invocation.onStartSendRequest();
+      httpClientWithContext.runOnContext(httpClient -> {
+        clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
+        clientRequest.response().onComplete(asyncResult -> {
+          if (asyncResult.failed()) {
+            fail((ConnectionBase) clientRequest.connection(), asyncResult.cause());
+            return;
+          }
+          handleResponse(asyncResult.result());
+        });
+        processServiceCombHeaders(invocation, operationMeta);
+        restClientRequest.end();
+      });
+      return Future.succeededFuture();
+    }).onFailure(failure -> {
       invocation.getTraceIdLogger()
           .error(LOGGER, "Failed to send request, alreadyFailed:{}, local:{}, remote:{}, message={}.",
               alreadyFailed, getLocalAddress(), ipPort.getSocketAddress(),
-              ExceptionUtils.getExceptionMessageWithoutTrace(e));
-      throwableHandler.handle(e);
-    });
-
-    // 从业务线程转移到网络线程中去发送
-    invocation.onStartSendRequest();
-    httpClientWithContext.runOnContext(httpClient -> {
-      clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
-      processServiceCombHeaders(invocation, operationMeta);
-      try {
-        restClientRequest.end();
-      } catch (Throwable e) {
-        invocation.getTraceIdLogger().error(LOGGER,
-            "send http request failed, alreadyFailed:{}, local:{}, remote: {}, message={}.",
-            alreadyFailed,
-            getLocalAddress(), ipPort
-            , ExceptionUtils.getExceptionMessageWithoutTrace(e));
-        fail((ConnectionBase) clientRequest.connection(), e);
-      }
+              ExceptionUtils.getExceptionMessageWithoutTrace(failure));
+      throwableHandler.handle(failure);
     });
   }
 

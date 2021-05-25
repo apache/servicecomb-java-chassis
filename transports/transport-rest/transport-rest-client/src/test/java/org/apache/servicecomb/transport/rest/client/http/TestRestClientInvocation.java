@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Part;
-
 import org.apache.log4j.Level;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -74,8 +72,6 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
-import io.vertx.core.net.NetSocket;
-import io.vertx.core.net.SocketAddress;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -86,13 +82,13 @@ public class TestRestClientInvocation {
 
   private static final String TARGET_MICROSERVICE_NAME = "TargetMS";
 
-  Handler<Throwable> exceptionHandler;
-
   Handler<Buffer> bodyHandler;
 
   MultiMap headers = new HeadersMultiMap();
 
   HttpClientRequest request = mock(HttpClientRequest.class);
+
+  HttpClientResponse httpClientResponse = mock(HttpClientResponse.class);
 
   HttpClient httpClient = mock(HttpClient.class);
 
@@ -138,7 +134,7 @@ public class TestRestClientInvocation {
     };
   }
 
-  @SuppressWarnings({"unchecked", "deprecation"})
+  @SuppressWarnings({"unchecked"})
   @Before
   public void setup() {
     Deencapsulation.setField(restClientInvocation, "clientRequest", request);
@@ -159,11 +155,7 @@ public class TestRestClientInvocation {
     when(httpClient.request(Mockito.any()))
         .thenReturn(Future.succeededFuture(request));
     when(request.headers()).thenReturn(headers);
-
-    doAnswer(a -> {
-      exceptionHandler = (Handler<Throwable>) a.getArguments()[0];
-      return request;
-    }).when(request).exceptionHandler(any());
+    when(request.response()).thenReturn(Future.succeededFuture(httpClientResponse));
     doAnswer(a -> {
       headers.add(a.getArgumentAt(0, String.class), a.getArgumentAt(1, String.class));
       return request;
@@ -245,8 +237,7 @@ public class TestRestClientInvocation {
   public void invoke_requestThrow() throws Exception {
     Throwable t = new RuntimeExceptionWithoutStackTrace();
     doAnswer(a -> {
-      exceptionHandler.handle(t);
-      return null;
+      throw t;
     }).when(request).end();
     when(request.send()).thenReturn(Future.succeededFuture(mock(HttpClientResponse.class)));
     restClientInvocation.invoke(invocation, asyncResp);
@@ -308,27 +299,6 @@ public class TestRestClientInvocation {
     bodyHandler.handle(buf);
 
     Assert.assertSame(buf, response.getResult());
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void handleResponse_responseException() {
-    HttpClientResponse httpClientResponse = mock(HttpClientResponse.class);
-
-    NetSocket netSocket = mock(NetSocket.class);
-    when(httpClientResponse.netSocket()).thenReturn(netSocket);
-    when(netSocket.remoteAddress()).thenReturn(mock(SocketAddress.class));
-
-    doAnswer(a -> {
-      exceptionHandler = (Handler<Throwable>) a.getArguments()[0];
-      return httpClientResponse;
-    }).when(httpClientResponse).exceptionHandler(any());
-
-    restClientInvocation.handleResponse(httpClientResponse);
-    RuntimeException error = new RuntimeExceptionWithoutStackTrace();
-    exceptionHandler.handle(error);
-
-    Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(error));
   }
 
   @Test

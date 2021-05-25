@@ -46,7 +46,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.ext.web.Router;
@@ -72,7 +71,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private static final String KEY_MAPPING_PREFIX = "servicecomb.http.dispatcher.edge.http.mappings";
 
-  private Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
+  private final Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
@@ -159,36 +158,30 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     } else {
       httpClient = HttpClients.getClient(HttpTransportHttpClientOptionsSPI.CLIENT_NAME, false).getHttpClient();
     }
-    Future<HttpClientRequest> requestFuture = httpClient
-        .request(requestOptions);
-    if (requestFuture.failed()) {
-      LOG.warn("connect to target {}:{} failed, cause {}", endpointObject.getHostOrIp(), endpointObject.getPort(),
-          requestFuture.cause().getMessage());
+
+    httpClient
+        .request(requestOptions).compose(httpClientRequest -> {
+      context.request().headers().forEach((header) -> {
+        httpClientRequest.headers().set(header.getKey(), header.getValue());
+      });
+      context.request().handler(data -> httpClientRequest.write(data));
+      context.request().endHandler((v) -> httpClientRequest.end());
+
+      return httpClientRequest.send().compose(httpClientResponse -> {
+        context.response().setStatusCode(httpClientResponse.statusCode());
+        httpClientResponse.headers().forEach((header) -> {
+          context.response().headers().set(header.getKey(), header.getValue());
+        });
+        httpClientResponse.handler(this.responseHandler(context, httpClientResponse));
+        httpClientResponse.endHandler((v) -> context.response().end());
+        return Future.succeededFuture();
+      });
+    }).onFailure(failure -> {
+      LOG.warn("send request to target {}:{} failed, cause {}", endpointObject.getHostOrIp(), endpointObject.getPort(),
+          failure.getMessage());
       serverNotReadyResponse(context);
       return;
-    }
-    HttpClientRequest httpClientRequest = requestFuture.result();
-    httpClientRequest.send(asyncResponse -> {
-      if (asyncResponse.failed()) {
-        LOG.warn("send request to target {}:{} failed, cause {}", endpointObject.getHostOrIp(),
-            endpointObject.getPort(),
-            asyncResponse.cause().getMessage());
-        serverNotReadyResponse(context);
-        return;
-      }
-      HttpClientResponse httpClientResponse = asyncResponse.result();
-      context.response().setStatusCode(httpClientResponse.statusCode());
-      httpClientResponse.headers().forEach((header) -> {
-        context.response().headers().set(header.getKey(), header.getValue());
-      });
-      httpClientResponse.handler(this.responseHandler(context, httpClientResponse));
-      httpClientResponse.endHandler((v) -> context.response().end());
     });
-    context.request().headers().forEach((header) -> {
-      httpClientRequest.headers().set(header.getKey(), header.getValue());
-    });
-    context.request().handler(data -> httpClientRequest.write(data));
-    context.request().endHandler((v) -> httpClientRequest.end());
   }
 
   private void serverNotReadyResponse(RoutingContext context) {

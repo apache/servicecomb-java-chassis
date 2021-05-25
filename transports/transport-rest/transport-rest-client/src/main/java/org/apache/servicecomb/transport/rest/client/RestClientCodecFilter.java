@@ -27,6 +27,8 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.vertx.core.http.HttpClientRequest;
+
 @Component
 public class RestClientCodecFilter implements ConsumerFilter {
   public static final String NAME = "rest-client-codec";
@@ -66,7 +68,8 @@ public class RestClientCodecFilter implements ConsumerFilter {
     startClientFiltersRequest(invocation);
 
     return CompletableFuture.completedFuture(null)
-        .thenAccept(v -> prepareTransportContext(invocation))
+        .thenCompose(v -> transportContextFactory.createHttpClientRequest(invocation).toCompletionStage())
+        .thenAccept(httpClientRequest -> prepareTransportContext(invocation, httpClientRequest))
         .thenAccept(v -> encoder.encode(invocation))
         .thenCompose(v -> nextNode.onFilter(invocation))
         .thenApply(response -> decoder.decode(invocation, response))
@@ -77,8 +80,8 @@ public class RestClientCodecFilter implements ConsumerFilter {
     invocation.getInvocationStageTrace().startClientFiltersRequest();
   }
 
-  protected void prepareTransportContext(Invocation invocation) {
-    RestClientTransportContext transportContext = transportContextFactory.create(invocation);
+  protected void prepareTransportContext(Invocation invocation, HttpClientRequest httpClientRequest) {
+    RestClientTransportContext transportContext = transportContextFactory.create(invocation, httpClientRequest);
     invocation.setTransportContext(transportContext);
   }
 

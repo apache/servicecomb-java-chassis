@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Multimap;
 
+import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
@@ -68,8 +69,10 @@ public class RestClientSender {
   public CompletableFuture<Response> send() {
     invocation.onStartSendRequest();
 
-    httpClientRequest.exceptionHandler(future::completeExceptionally);
-    httpClientRequest.send().onComplete(resp -> processResponse(resp.result()));
+    httpClientRequest.send().compose(response -> processResponse(response).compose(buffer -> {
+      future.complete(createResponse(response, buffer));
+      return Future.succeededFuture();
+    })).onFailure(future::completeExceptionally);
 
     // can read metrics of connection in vertx success/exception callback
     // but after the callback, maybe the connection will be reused or closed, metrics is not valid any more
@@ -137,16 +140,14 @@ public class RestClientSender {
         });
   }
 
-  protected void processResponse(HttpClientResponse httpClientResponse) {
+  protected Future<Buffer> processResponse(HttpClientResponse httpClientResponse) {
     transportContext.setHttpClientResponse(httpClientResponse);
 
     if (HttpStatus.isSuccess(httpClientResponse.statusCode()) && transportContext.isDownloadFile()) {
       ReadStreamPart streamPart = new ReadStreamPart(transportContext.getVertxContext(), httpClientResponse);
       future.complete(createResponse(httpClientResponse, streamPart));
     }
-
-    httpClientResponse.exceptionHandler(future::completeExceptionally);
-    httpClientResponse.bodyHandler(buffer -> future.complete(createResponse(httpClientResponse, buffer)));
+    return httpClientResponse.body();
   }
 
   protected Response createResponse(HttpClientResponse httpClientResponse, Object result) {
