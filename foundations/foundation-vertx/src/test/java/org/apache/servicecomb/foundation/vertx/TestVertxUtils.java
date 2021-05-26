@@ -104,7 +104,7 @@ public class TestVertxUtils {
 
   @Test
   public void testVertxUtilsInitNullOptions() {
-    Vertx vertx = VertxUtils.init(null);
+    Vertx vertx = VertxUtils.init(null, null);
     Assert.assertNotEquals(null, vertx);
     VertxUtils.blockCloseVertx(vertx);
   }
@@ -113,7 +113,7 @@ public class TestVertxUtils {
   public void testVertxUtilsInitWithOptions() {
     VertxOptions oOptions = new VertxOptions();
 
-    Vertx vertx = VertxUtils.init(oOptions);
+    Vertx vertx = VertxUtils.init(null, oOptions);
     Assert.assertNotEquals(null, vertx);
     VertxUtils.blockCloseVertx(vertx);
   }

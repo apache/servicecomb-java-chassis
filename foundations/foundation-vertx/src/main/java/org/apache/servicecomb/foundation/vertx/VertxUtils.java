@@ -110,10 +110,6 @@ public final class VertxUtils {
     return vertxMap.computeIfAbsent(name, vertxName -> init(vertxName, vertxOptions));
   }
 
-  public static Vertx init(VertxOptions vertxOptions) {
-    return init(null, vertxOptions);
-  }
-
   public static Vertx init(String name, VertxOptions vertxOptions) {
     if (vertxOptions == null) {
       vertxOptions = new VertxOptions();

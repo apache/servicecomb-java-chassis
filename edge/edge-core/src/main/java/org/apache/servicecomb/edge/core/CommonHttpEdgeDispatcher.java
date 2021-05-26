@@ -167,7 +167,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
       context.request().handler(data -> httpClientRequest.write(data));
       context.request().endHandler((v) -> httpClientRequest.end());
 
-      return httpClientRequest.send().compose(httpClientResponse -> {
+      return httpClientRequest.response().compose(httpClientResponse -> {
         context.response().setStatusCode(httpClientResponse.statusCode());
         httpClientResponse.headers().forEach((header) -> {
           context.response().headers().set(header.getKey(), header.getValue());

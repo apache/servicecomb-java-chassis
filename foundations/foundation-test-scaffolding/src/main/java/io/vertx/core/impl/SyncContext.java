@@ -29,7 +29,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   public SyncContext(VertxInternal vertx) {
-    super(vertx, null, null, null, null, null, null, null);
+    super(vertx, null, null, null, null, null, null);
   }
 
   public VertxInternal owner() {
