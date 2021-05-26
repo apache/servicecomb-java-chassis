@@ -103,7 +103,7 @@ public final class RegistryUtils {
     Map<String, ServiceRegistryConfig> configs = BeanUtils.getBeansOfType(ServiceRegistryConfig.class);
     configs.forEach((k, v) -> {
       ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, configuration);
-      addExtraServiceRegistry(serviceRegistry, v);
+      addExtraServiceRegistry(serviceRegistry);
     });
     executeOnEachServiceRegistry(ServiceRegistry::init);
     executeOnEachServiceRegistry(AfterServiceInstanceRegistryHandler::new);
@@ -251,15 +251,22 @@ public final class RegistryUtils {
     }
   }
 
-  public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry, ServiceRegistryConfig srConfig) {
+  public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry) {
     Objects.requireNonNull(serviceRegistry);
-    if (EXTRA_SERVICE_REGISTRIES.containsKey(serviceRegistry.getName())) {
-      LOGGER.error("Register name {} in Client {} is duplicated, "
-          + "please set different registry names for different client!", serviceRegistry.getName(), srConfig.getClientName());
-      throw new IllegalArgumentException("Registry Name Duplicated");
+    String serviceRegistryName = serviceRegistry.getName();
+    if (serviceRegistryName.equals(ServiceRegistry.DEFAULT_REGISTRY_NAME)) {
+      LOGGER.error("Registry name cannot be same as default registry name!",
+          new IllegalArgumentException("Registry Name Duplicated"));
     }
-    LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistry.getName(), serviceRegistry.getClass());
-    EXTRA_SERVICE_REGISTRIES.put(serviceRegistry.getName(), serviceRegistry);
+    if (EXTRA_SERVICE_REGISTRIES.containsKey(serviceRegistryName)) {
+      LOGGER.error("Registry {} is duplicated between implementation {} and {}"
+          + ", please set different names for each implementations",
+          serviceRegistryName, serviceRegistry.getClass().getName(),
+          EXTRA_SERVICE_REGISTRIES.get(serviceRegistryName).getClass().getName(),
+          new IllegalArgumentException("Registry Name Duplicated"));
+    }
+    LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistryName, serviceRegistry.getClass());
+    EXTRA_SERVICE_REGISTRIES.put(serviceRegistryName, serviceRegistry);
   }
 
   /**
