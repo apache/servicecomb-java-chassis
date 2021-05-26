@@ -92,8 +92,7 @@ public class IpPortManager {
   }
 
   public IpPort getAvailableAddress() {
-    int currentIndex = currentAvailableIndex.incrementAndGet();
-    return getAvailableAddress(currentAvailableIndex.get());
+    return getAvailableAddress(currentAvailableIndex.incrementAndGet());
   }
 
   private IpPort getAvailableAddress(int index) {
