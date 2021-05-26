@@ -32,7 +32,7 @@
   </appender>
   <logger name="org.apache.servicecomb.common.javassist.JavassistUtils" level="WARN"/>
   <logger name="org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory" level="WARN"/>
-  <root level="WARN">
+  <root level="INFO">
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="FILE"/>
   </root>

@@ -60,11 +60,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpConnection;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
-import io.vertx.core.net.SocketAddress;
-import io.vertx.core.net.impl.ConnectionBase;
 
 public class RestClientInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientInvocation.class);
@@ -88,7 +85,7 @@ public class RestClientInvocation {
 
   private HttpClientResponse clientResponse;
 
-  private Handler<Throwable> throwableHandler = e -> fail((ConnectionBase) clientRequest.connection(), e);
+  private Handler<Throwable> throwableHandler = e -> fail(e);
 
   private boolean alreadyFailed = false;
 
@@ -137,7 +134,7 @@ public class RestClientInvocation {
         clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
         clientRequest.response().onComplete(asyncResult -> {
           if (asyncResult.failed()) {
-            fail((ConnectionBase) clientRequest.connection(), asyncResult.cause());
+            fail(asyncResult.cause());
             return;
           }
           handleResponse(asyncResult.result());
@@ -174,12 +171,11 @@ public class RestClientInvocation {
   }
 
   private String getLocalAddress() {
-    HttpConnection connection = clientRequest.connection();
-    if (connection == null) {
+    if (clientRequest == null || clientRequest.connection() == null
+        || clientRequest.connection().localAddress() == null) {
       return "not connected";
     }
-    SocketAddress socketAddress = connection.localAddress();
-    return socketAddress != null ? socketAddress.toString() : "not connected";
+    return clientRequest.connection().localAddress().toString();
   }
 
   private HttpMethod getMethod() {
@@ -222,7 +218,7 @@ public class RestClientInvocation {
       invocation.getTraceIdLogger().error(LOGGER, "Failed to receive response, local:{}, remote:{}, message={}.",
           getLocalAddress(), httpClientResponse.netSocket().remoteAddress(),
           ExceptionUtils.getExceptionMessageWithoutTrace(e));
-      fail((ConnectionBase) clientRequest.connection(), e);
+      fail(e);
     });
 
     clientResponse.bodyHandler(this::processResponseBody);
@@ -256,10 +252,7 @@ public class RestClientInvocation {
           }
         }
       } catch (Throwable e) {
-        // already collection time from httpSocketMetric
-        // and connection maybe already belongs to other invocation in this time
-        // so set connection to null
-        fail(null, e);
+        fail(e);
       }
     });
   }
@@ -269,7 +262,7 @@ public class RestClientInvocation {
     asyncResp.complete(response);
   }
 
-  protected void fail(ConnectionBase connection, Throwable e) {
+  protected void fail(Throwable e) {
     if (alreadyFailed) {
       return;
     }
