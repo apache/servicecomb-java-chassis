@@ -253,8 +253,20 @@ public final class RegistryUtils {
 
   public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry) {
     Objects.requireNonNull(serviceRegistry);
-    LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistry.getName(), serviceRegistry.getClass());
-    EXTRA_SERVICE_REGISTRIES.put(serviceRegistry.getName(), serviceRegistry);
+    String serviceRegistryName = serviceRegistry.getName();
+    if (serviceRegistryName.equals(ServiceRegistry.DEFAULT_REGISTRY_NAME)) {
+      LOGGER.error("Registry name cannot be same as default registry name!");
+      throw new IllegalArgumentException("Registry Name Duplicated");
+    }
+    if (EXTRA_SERVICE_REGISTRIES.containsKey(serviceRegistryName)) {
+      LOGGER.error("Registry {} is duplicated between implementation {} and {}"
+          + ", please set different names for each implementations",
+          serviceRegistryName, serviceRegistry.getClass().getName(),
+          EXTRA_SERVICE_REGISTRIES.get(serviceRegistryName).getClass().getName());
+      throw new IllegalArgumentException("Registry Name Duplicated");
+    }
+    LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistryName, serviceRegistry.getClass());
+    EXTRA_SERVICE_REGISTRIES.put(serviceRegistryName, serviceRegistry);
   }
 
   /**
