@@ -16,14 +16,15 @@
  */
 package org.apache.servicecomb.router.distribute;
 
-import com.netflix.loadbalancer.Server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.apache.servicecomb.router.cache.RouterRuleCache;
+import org.apache.servicecomb.router.custom.MicroserviceCache;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.RouteItem;
 import org.apache.servicecomb.router.model.TagItem;
@@ -31,6 +32,10 @@ import org.apache.servicecomb.router.util.VersionCompareUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+
+import com.netflix.loadbalancer.Server;
+
+import io.vertx.ext.web.Route;
 
 /**
  * @Author GuoYl123
@@ -140,9 +145,6 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
 
 
   public void initLatestVersion(String serviceName, List<T> list) {
-    if (RouterRuleCache.getServiceInfoCacheMap().get(serviceName).getLatestVersionTag() != null) {
-      return;
-    }
     String latestVersion = null;
     for (T server : list) {
       E ms = getIns.apply(server);
