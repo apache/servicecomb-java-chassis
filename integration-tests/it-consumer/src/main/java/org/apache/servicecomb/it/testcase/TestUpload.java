@@ -109,7 +109,6 @@ public class TestUpload {
             .uploadMultiformMix(EndpointUtils.parse(EndpointUtils.formatFromUri("http://149.159.169.179:54321")),
                 fileSystemResource1, singletonList(fileSystemResource2), message, singletonList("2.中文测试")));
 
-    // TODO: vert.x bug #3872 connect timeout not work
     assertThat(throwable)
         .isInstanceOf(InvocationException.class);
     assertThat(throwable.toString())
@@ -119,16 +118,11 @@ public class TestUpload {
                 "for filter"),
             new Condition<>(v -> v.equals(
                 "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]"),
-                "for handler"),
-            // TODO:
-            new Condition<>(v -> v.equals(
-                "InvocationException: code=408;msg=CommonExceptionData{code='SCB.00000004', message='Invocation Timeout.', dynamic={}}"),
-                "for vert.x bug")
+                "for handler")
         ));
-    // TODO:
-//    assertThat(throwable.getCause())
-//        .isInstanceOf(ConnectTimeoutException.class)
-//        .hasMessage("connection timed out: /149.159.169.179:54321");
+    assertThat(throwable.getCause())
+        .isInstanceOf(ConnectTimeoutException.class)
+        .hasMessage("connection timed out: /149.159.169.179:54321");
   }
 
   @Test
