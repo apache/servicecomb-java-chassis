@@ -35,7 +35,9 @@ import javax.ws.rs.core.MediaType;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
+import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
+import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -68,7 +71,7 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected Buffer bodyBuffer;
 
-  private Handler<Throwable> throwableHandler;
+  private final Handler<Throwable> throwableHandler;
 
   public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp) {
     this(request, context, asyncResp, null);
@@ -135,14 +138,12 @@ public class RestClientRequestImpl implements RestClientRequest {
     String boundary = "boundary" + UUID.randomUUID().toString();
     putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
 
-    genBodyForm(boundary);
-
-    attachFiles(boundary);
+    genBodyForm(boundary).onSuccess(v -> attachFiles(boundary)).onFailure(e -> asyncResp.consumerFail(e));
   }
 
-  private void genBodyForm(String boundary) {
+  private Future<Void> genBodyForm(String boundary) {
     if (formMap == null) {
-      return;
+      return Future.succeededFuture();
     }
 
     try {
@@ -156,10 +157,11 @@ public class RestClientRequestImpl implements RestClientRequest {
             output.write(value.getBytes(StandardCharsets.UTF_8));
           }
         }
-        request.write(output.getBuffer());
+
+        return writeBuffer(output.getBuffer());
       }
     } catch (Exception e) {
-      asyncResp.consumerFail(e);
+      return Future.failedFuture(e);
     }
   }
 
@@ -190,8 +192,7 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   private void attachFile(String boundary, Iterator<Entry<String, Part>> uploadsIterator) {
     if (!uploadsIterator.hasNext()) {
-      request.write(boundaryEndInfo(boundary));
-      request.end();
+      writeBuffer(boundaryEndInfo(boundary)).onSuccess(v -> request.end()).onFailure(e -> asyncResp.consumerFail(e));
       return;
     }
 
@@ -203,17 +204,17 @@ public class RestClientRequestImpl implements RestClientRequest {
     String filename = part.getSubmittedFileName();
 
     LOGGER.info("Start attach file [{}:{}].", name, filename);
-    request.write(fileBoundaryInfo(boundary, name, part));
-    new PumpFromPart(context, part).toWriteStream(request, throwableHandler).whenComplete((v, e) -> {
-      if (e != null) {
-        LOGGER.warn("Failed attach file [{}:{}].", name, filename, e);
-        asyncResp.consumerFail(e);
-        return;
-      }
+    writeBuffer(fileBoundaryInfo(boundary, name, part)).onSuccess(r ->
+        new PumpFromPart(context, part).toWriteStream(request, throwableHandler).whenComplete((v, e) -> {
+          if (e != null) {
+            LOGGER.warn("Failed attach file [{}:{}].", name, filename, e);
+            asyncResp.consumerFail(e);
+            return;
+          }
 
-      LOGGER.info("Finish attach file [{}:{}].", name, filename);
-      attachFile(boundary, uploadsIterator);
-    });
+          LOGGER.info("Finish attach file [{}:{}].", name, filename);
+          attachFile(boundary, uploadsIterator);
+        })).onFailure(e -> asyncResp.consumerFail(e));
   }
 
   private Buffer boundaryEndInfo(String boundary) {
@@ -235,6 +236,11 @@ public class RestClientRequestImpl implements RestClientRequest {
     buffer.appendString("Content-Transfer-Encoding: binary\r\n");
     buffer.appendString("\r\n");
     return buffer;
+  }
+
+  protected Future<Void> writeBuffer(Buffer buffer) {
+    return new InputStreamToReadStream(context,
+        new BufferInputStream(buffer.getByteBuf()), true).pipe().endOnComplete(false).to(request);
   }
 
   private void genBodyBuffer() throws Exception {
@@ -287,10 +293,6 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   public Map<String, String> getCookieMap() {
     return cookieMap;
-  }
-
-  public Map<String, Object> getFormMap() {
-    return formMap;
   }
 
   @Override
