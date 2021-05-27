@@ -75,7 +75,7 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp,
-                               Handler<Throwable> throwableHandler) {
+      Handler<Throwable> throwableHandler) {
     this.context = context;
     this.asyncResp = asyncResp;
     this.request = request;
@@ -201,17 +201,17 @@ public class RestClientRequestImpl implements RestClientRequest {
     String name = entry.getKey();
     Part part = entry.getValue();
     String filename = part.getSubmittedFileName();
-    Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
-    request.write(fileHeader);
 
+    LOGGER.info("Start attach file [{}:{}].", name, filename);
+    request.write(fileBoundaryInfo(boundary, name, part));
     new PumpFromPart(context, part).toWriteStream(request, throwableHandler).whenComplete((v, e) -> {
       if (e != null) {
-        LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
+        LOGGER.warn("Failed attach file [{}:{}].", name, filename, e);
         asyncResp.consumerFail(e);
         return;
       }
 
-      LOGGER.debug("finish sending file [{}:{}].", name, filename);
+      LOGGER.info("Finish attach file [{}:{}].", name, filename);
       attachFile(boundary, uploadsIterator);
     });
   }
