@@ -26,7 +26,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestConfigCenterDefaultDeploymentProvder {
+public class TestConfigCenterDefaultDeploymentProvider {
   @Before
   public void start() {
     ArchaiusUtils.resetConfig();

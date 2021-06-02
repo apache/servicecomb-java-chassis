@@ -59,6 +59,10 @@
       <artifactId>foundation-test-scaffolding</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>config-center-client</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

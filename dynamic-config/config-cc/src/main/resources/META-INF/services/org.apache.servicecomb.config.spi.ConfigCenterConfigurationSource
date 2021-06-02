@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl
+org.apache.servicecomb.config.ConfigCenterConfigurationSourceImpl
