@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
-
-import com.google.common.base.Joiner;
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.foundation.vertx.VertxConst;
+package org.apache.servicecomb.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.foundation.vertx.VertxConst;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
 
 public final class ConfigCenterConfig {
   public static final ConfigCenterConfig INSTANCE = new ConfigCenterConfig();
@@ -146,35 +145,21 @@ public final class ConfigCenterConfig {
     return finalConfig.getString(VertxConst.PROXY_PASSWD, null);
   }
 
-  @SuppressWarnings("unchecked")
   public String getServiceName() {
-    String service = BootStrapProperties.readServiceName(finalConfig);
-    String appName = BootStrapProperties.readApplication(finalConfig);
-    String tags;
-    if (appName != null) {
-      service = service + "@" + appName;
-    }
+    return BootStrapProperties.readServiceName(finalConfig);
+  }
 
-    String serviceVersion = BootStrapProperties.readServiceVersion(finalConfig);
-    if (serviceVersion != null) {
-      service = service + "#" + serviceVersion;
-    }
+  public String getAppName() {
+    return BootStrapProperties.readApplication(finalConfig);
+  }
 
-    Object o = BootStrapProperties.readServiceInstanceTags(finalConfig);
-    if (o == null) {
-      return service;
-    }
-    if (o instanceof List) {
-      tags = Joiner.on(",").join((List<String>) o);
-    } else {
-      tags = o.toString();
-    }
-    service += "!" + tags;
-    return service;
+  public String getServiceVersion() {
+    return BootStrapProperties.readServiceVersion(finalConfig);
   }
 
   public List<String> getServerUri() {
-    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL();
+    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER)
+        .getAccessURL();
   }
 
   public boolean getAutoDiscoveryEnabled() {
