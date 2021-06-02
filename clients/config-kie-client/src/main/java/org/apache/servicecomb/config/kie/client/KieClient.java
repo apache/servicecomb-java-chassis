@@ -17,7 +17,14 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import org.apache.commons.lang3.StringUtils;
+import java.io.StringReader;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.config.kie.client.exception.OperationException;
 import org.apache.servicecomb.config.kie.client.model.ConfigConstants;
@@ -26,6 +33,7 @@ import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
 import org.apache.servicecomb.config.kie.client.model.KVDoc;
 import org.apache.servicecomb.config.kie.client.model.KVResponse;
 import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
+import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.config.kie.client.model.ValueType;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
@@ -36,76 +44,52 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ByteArrayResource;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class KieClient implements KieConfigOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieClient.class);
-
-  private AtomicBoolean isFirst = new AtomicBoolean(true);
 
   protected HttpTransport httpTransport;
 
   protected String revision = "0";
 
-  private String url;
+  private final KieAddressManager addressManager;
 
-  private HttpResponse httpResponse = null;
-
-  private KieAddressManager addressManager;
-
-  private Map<String, String> labelsMap;
+  private final KieConfiguration kieConfiguration;
 
   public static final String DEFAULT_KIE_API_VERSION = "v1";
 
-  public KieClient(KieAddressManager addressManager, HttpTransport httpTransport) {
+  public KieClient(KieAddressManager addressManager, HttpTransport httpTransport, KieConfiguration kieConfiguration) {
     this.httpTransport = httpTransport;
     this.addressManager = addressManager;
+    this.kieConfiguration = kieConfiguration;
   }
 
   @Override
   public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request) {
-    boolean isWatch = false;
-    if (Boolean.valueOf(getPropertiesValue(getConfigKeyValue(ConfigConstants.KEY_ENABLELONGPOLLING)))) {
-      isWatch = true;
-    }
     try {
-      url = addressManager.address()
+      String url = addressManager.address()
           + "/"
           + DEFAULT_KIE_API_VERSION
           + "/"
-          + getPropertiesValue(getConfigKeyValue(ConfigConstants.KEY_PROJECT))
-          + "/kie/kv?label=app:"
-          //app 名称作为筛选条件
-          + request.getApplication()
+          + kieConfiguration.getProject()
+          + "/kie/kv?"
+          + request.getLabelsQuery()
           + "&revision="
-          + revision;
+          + request.getRevision()
+          + "&withExact="
+          + request.isWithExact();
 
-      if (isWatch && !isFirst.get()) {
-        url +=
-            "&wait=" + getPropertiesValue(getConfigKeyValue(ConfigConstants.KEY_POLLINGWAITSEC)) + "s";
+      if (kieConfiguration.isEnableLongPolling()) {
+        url += "&wait=" + kieConfiguration.getPollingWaitInSeconds() + "s";
       }
-      isFirst.compareAndSet(true, false);
-      Map<String, String> headers = new HashMap<>();
-      headers.put("environment", request.getEnvironment());
-      HttpRequest httpRequest = new HttpRequest(url, headers, null, HttpRequest.GET);
-      httpResponse = httpTransport.doRequest(httpRequest);
-      if (httpResponse == null) {
-        return null;
-      }
+
+      HttpRequest httpRequest = new HttpRequest(url, null, null, HttpRequest.GET);
+      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
       ConfigurationsResponse configurationsResponse = new ConfigurationsResponse();
       if (httpResponse.getStatusCode() == HttpStatus.SC_OK) {
         revision = httpResponse.getHeader("X-Kie-Revision");
         KVResponse allConfigList = HttpUtils.deserialize(httpResponse.getContent(), KVResponse.class);
-        Map<String, Object> configurations = getConfigByLabel(allConfigList, request);
+        Map<String, Object> configurations = getConfigByLabel(allConfigList);
         configurationsResponse.setConfigurations(configurations);
         configurationsResponse.setChanged(true);
         configurationsResponse.setRevision(revision);
@@ -121,80 +105,41 @@ public class KieClient implements KieConfigOperation {
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
-
     } catch (Exception e) {
       addressManager.nextAddress();
       throw new OperationException("read response failed. ", e);
     }
   }
 
-  private Map<String, Object> getConfigByLabel(KVResponse resp, ConfigurationsRequest request) {
+  private Map<String, Object> getConfigByLabel(KVResponse resp) {
     Map<String, Object> resultMap = new HashMap<>();
-    List<KVDoc> appList = new ArrayList<>();
-    List<KVDoc> serviceList = new ArrayList<>();
-    List<KVDoc> versionList = new ArrayList<>();
-    for (KVDoc kvDoc : resp.getData()) {
-      if (!StringUtils.isEmpty(kvDoc.getStatus()) && !kvDoc.getStatus()
-          .equals(ConfigConstants.STATUS_ENABLED)) {
-        continue;
-      }
-      labelsMap = kvDoc.getLabels();
-      boolean checkApplication = checkValue(ConfigConstants.LABEL_APP, request.getApplication());
-      boolean checkEnvironment = checkValue(ConfigConstants.LABEL_ENV, request.getEnvironment());
-      boolean checkServer = checkValue(ConfigConstants.LABEL_SERVICE, request.getServiceName());
-      boolean checkVersion = checkValue(ConfigConstants.LABEL_VERSION, request.getVersion());
-      if (checkApplication && checkEnvironment && !labelsMap.containsKey(ConfigConstants.LABEL_SERVICE)) {
-          appList.add(kvDoc);
-      }
-      if (checkApplication && checkEnvironment && checkServer && !kvDoc.getLabels().containsKey(ConfigConstants.LABEL_VERSION)) {
-        serviceList.add(kvDoc);
-      }
-      if (checkApplication && checkEnvironment && checkServer && checkVersion) {
-        versionList.add(kvDoc);
-      }
-    }
-    //kv is priority
-    for (KVDoc kvDoc : appList) {
-      resultMap.putAll(processValueType(kvDoc));
-    }
-    for (KVDoc kvDoc : serviceList) {
-      resultMap.putAll(processValueType(kvDoc));
-    }
-    for (KVDoc kvDoc : versionList) {
-      resultMap.putAll(processValueType(kvDoc));
-    }
+    resp.getData().stream()
+        .filter(doc -> doc.getStatus() == null || ConfigConstants.STATUS_ENABLED.equalsIgnoreCase(doc.getStatus()))
+        .map(this::processValueType)
+        .collect(Collectors.toList())
+        .forEach(resultMap::putAll);
     return resultMap;
   }
 
-  private boolean checkValue(String key, String propertyName) {
-    if (!labelsMap.containsKey(key)) {
-      return false;
-    }
-    if (!labelsMap.get(key).equals(propertyName)) {
-      return false;
-    }
-    return true;
-  }
-
   private Map<String, Object> processValueType(KVDoc kvDoc) {
-    ValueType vtype;
+    ValueType valueType;
     try {
-      vtype = ValueType.valueOf(kvDoc.getValueType());
+      valueType = ValueType.valueOf(kvDoc.getValueType());
     } catch (IllegalArgumentException e) {
       throw new OperationException("value type not support");
     }
     Properties properties = new Properties();
     Map<String, Object> kvMap = new HashMap<>();
     try {
-      switch (vtype) {
+      switch (valueType) {
         case yml:
         case yaml:
           YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
           yamlFactory.setResources(new ByteArrayResource(kvDoc.getValue().getBytes()));
-          return toMap(kvDoc.getKey(), yamlFactory.getObject());
+          return toMap(yamlFactory.getObject());
         case properties:
           properties.load(new StringReader(kvDoc.getValue()));
-          return toMap(kvDoc.getKey(), properties);
+          return toMap(properties);
         case text:
         case string:
         default:
@@ -208,7 +153,7 @@ public class KieClient implements KieConfigOperation {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> toMap(String prefix, Properties properties) {
+  private Map<String, Object> toMap(Properties properties) {
     if (properties == null) {
       return Collections.emptyMap();
     }
@@ -217,23 +162,8 @@ public class KieClient implements KieConfigOperation {
     while (keys.hasMoreElements()) {
       String key = keys.nextElement();
       Object value = properties.getProperty(key);
-      if (!StringUtils.isEmpty(prefix)) {
-        key = prefix + "." + key;
-      }
-      if (value != null) {
-        result.put(key, value);
-      } else {
-        result.put(key, null);
-      }
+      result.put(key, value);
     }
     return result;
-  }
-
-  private String getPropertiesValue(String key) {
-    return this.addressManager.getProperties().getProperty(key);
-  }
-
-  private String getConfigKeyValue(String key) {
-    return this.addressManager.getConfigKey().get(key);
   }
 }

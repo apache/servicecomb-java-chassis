@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.kie.client;
+package org.apache.servicecomb.service.center.client.model;
 
-public class ConnFailEvent {
+public class ServiceCenterConfiguration {
 
-  private String msg;
+  /**
+   * for registration service
+   * when swagger is different between local with remote serviceCenter. if ignoreSwaggerDifferent is true.
+   * it will ignore the different and continue the program. otherwise, the program will be stop.
+   */
+  private Boolean ignoreSwaggerDifferent;
 
-  public ConnFailEvent(String msg) {
-    this.msg = msg;
+  public Boolean isIgnoreSwaggerDifferent() {
+    return ignoreSwaggerDifferent;
   }
 
-  public String getMsg() {
-    return msg;
-  }
-
-  public void setMsg(String msg) {
-    this.msg = msg;
+  public ServiceCenterConfiguration setIgnoreSwaggerDifferent(Boolean ignoreSwaggerDifferent) {
+    this.ignoreSwaggerDifferent = ignoreSwaggerDifferent;
+    return this;
   }
 }

@@ -20,6 +20,7 @@ package org.apache.servicecomb.http.client.task;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,14 +59,30 @@ public class AbstractTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTask.class);
 
-  private final ExecutorService taskPool;
+  protected ExecutorService taskPool;
+
+  private volatile boolean running = true;
 
   protected AbstractTask(String taskName) {
+    initTaskPool(taskName);
+    Runtime.getRuntime().addShutdownHook(new Thread(taskName + "-shutdown-hook") {
+      @Override
+      public void run() {
+        AbstractTask.this.stop();
+      }
+    });
+  }
+
+  protected void initTaskPool(String taskName) {
     this.taskPool = Executors.newSingleThreadExecutor((task) ->
         new Thread(task, taskName));
   }
 
   protected void startTask(Task task) {
+    if (!running) {
+      return;
+    }
+
     try {
       this.taskPool.execute(() -> {
         try {
@@ -80,6 +97,12 @@ public class AbstractTask {
   }
 
   public void stop() {
-    this.taskPool.shutdownNow();
+    try {
+      running = false;
+      this.taskPool.shutdown();
+      this.taskPool.awaitTermination(10, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      LOGGER.warn("tasks not shutdown in time {}", e.getMessage());
+    }
   }
 }

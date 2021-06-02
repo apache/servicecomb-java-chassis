@@ -17,12 +17,17 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
+import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
+import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequestFactory;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
+import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.slf4j.Logger;
@@ -40,35 +45,77 @@ public class KieConfigManager extends AbstractTask {
 
   private final EventBus eventBus;
 
-  private ConfigurationsRequest configurationsRequest;
+  private ConfigConverter configConverter;
 
-  private Map<String, Object> lastConfiguration;
+  private List<ConfigurationsRequest> configurationsRequests;
 
-  public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus) {
-    this(configKieClient, eventBus, Collections.emptyMap());
-  }
+  private KieConfiguration kieConfiguration;
 
   public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus,
-      Map<String, Object> lastConfiguration) {
+      KieConfiguration kieConfiguration,
+      ConfigConverter configConverter) {
     super("config-center-configuration-task");
+    this.configurationsRequests = ConfigurationsRequestFactory.buildConfigurationRequests(kieConfiguration);
+    this.configurationsRequests.sort(ConfigurationsRequest::compareTo);
     this.configKieClient = configKieClient;
     this.eventBus = eventBus;
-    this.lastConfiguration = lastConfiguration;
+    this.configConverter = configConverter;
+    this.kieConfiguration = kieConfiguration;
   }
 
-  public void setConfigurationsRequest(ConfigurationsRequest configurationsRequest) {
-    this.configurationsRequest = configurationsRequest;
+  public void firstPull() {
+    try {
+      Map<String, Object> data = new HashMap<>();
+      this.configurationsRequests.forEach(r -> {
+        r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
+        ConfigurationsResponse response = configKieClient.queryConfigurations(r);
+        if (response.isChanged()) {
+          r.setRevision(response.getRevision());
+          r.setLastRawData(response.getConfigurations());
+          data.putAll(response.getConfigurations());
+        } else {
+          throw new IllegalStateException("can not fetch config data.");
+        }
+      });
+      this.configConverter.updateData(data);
+    } catch (RuntimeException e) {
+      if (this.kieConfiguration.isFirstPullRequired()) {
+        throw e;
+      } else {
+        LOGGER.warn("first pull failed, and ignore {}", e.getMessage());
+      }
+    }
+  }
+
+  private void onDataChanged() {
+    Map<String, Object> lastData = new HashMap<>();
+    this.configurationsRequests.forEach(r -> lastData.putAll(r.getLastRawData()));
+
+    ConfigurationChangedEvent event = ConfigurationChangedEvent
+        .createIncremental(lastData, configConverter.getLastRawData());
+    configConverter.updateData(lastData);
+    eventBus.post(event);
+  }
+
+  @Override
+  protected void initTaskPool(String taskName) {
+    this.taskPool = Executors.newFixedThreadPool(3, (task) ->
+        new Thread(task, taskName));
   }
 
   public void startConfigKieManager() {
-    this.startTask(new PollConfigurationTask(0));
+    this.configurationsRequests.forEach((t) ->
+        this.startTask(new PollConfigurationTask(0, t)));
   }
 
   class PollConfigurationTask implements Task {
-    int failCount = 0;
+    final int failCount;
 
-    public PollConfigurationTask(int failCount) {
+    ConfigurationsRequest configurationsRequest;
+
+    public PollConfigurationTask(int failCount, ConfigurationsRequest configurationsRequest) {
       this.failCount = failCount;
+      this.configurationsRequest = configurationsRequest;
     }
 
     @Override
@@ -76,15 +123,19 @@ public class KieConfigManager extends AbstractTask {
       try {
         ConfigurationsResponse response = configKieClient.queryConfigurations(configurationsRequest);
         if (response.isChanged()) {
-          LOGGER.info("The configurations are change, will refresh local configurations.");
           configurationsRequest.setRevision(response.getRevision());
-          eventBus.post(ConfigurationChangedEvent.createIncremental(response.getConfigurations(), lastConfiguration));
-          lastConfiguration = response.getConfigurations();
+          configurationsRequest.setLastRawData(response.getConfigurations());
+          onDataChanged();
         }
-        startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
+        if (KieConfigManager.this.kieConfiguration.isEnableLongPolling()) {
+          startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0, this.configurationsRequest)));
+        } else {
+          startTask(new PollConfigurationTask(0, this.configurationsRequest));
+        }
       } catch (Exception e) {
         LOGGER.error("get configurations from KieConfigCenter failed, and will try again.", e);
-        startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
+        startTask(
+            new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1, this.configurationsRequest)));
       }
     }
   }
