@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.config.center.client;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
+import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
@@ -42,18 +40,14 @@ public class ConfigCenterManager extends AbstractTask {
 
   private QueryConfigurationsRequest queryConfigurationsRequest;
 
-  private Map<String, Object> lastConfiguration;
-
-  public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus) {
-    this(configCenterClient, eventBus, Collections.emptyMap());
-  }
+  private ConfigConverter configConverter;
 
   public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus,
-      Map<String, Object> lastConfiguration) {
+      ConfigConverter configConverter) {
     super("config-center-configuration-task");
     this.configCenterClient = configCenterClient;
     this.eventBus = eventBus;
-    this.lastConfiguration = lastConfiguration;
+    this.configConverter = configConverter;
   }
 
   public void setQueryConfigurationsRequest(QueryConfigurationsRequest queryConfigurationsRequest) {
@@ -77,8 +71,10 @@ public class ConfigCenterManager extends AbstractTask {
         QueryConfigurationsResponse response = configCenterClient.queryConfigurations(queryConfigurationsRequest);
         if (response.isChanged()) {
           queryConfigurationsRequest.setRevision(response.getRevision());
-          eventBus.post(ConfigurationChangedEvent.createIncremental(response.getConfigurations(), lastConfiguration));
-          lastConfiguration = response.getConfigurations();
+          ConfigurationChangedEvent event = ConfigurationChangedEvent
+              .createIncremental(response.getConfigurations(), configConverter.getLastRawData());
+          configConverter.updateData(response.getConfigurations());
+          eventBus.post(event);
         }
         startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
       } catch (Exception e) {

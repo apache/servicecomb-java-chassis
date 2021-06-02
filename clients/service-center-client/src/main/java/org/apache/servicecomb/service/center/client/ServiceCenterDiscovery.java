@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import org.apache.servicecomb.http.client.task.Task;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.PullInstanceEvent;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
+import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +88,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final Map<SubscriptionKey, SubscriptionValue> instancesCache = new ConcurrentHashMap<>();
 
+  private final Map<String, Microservice> microserviceCache = new ConcurrentHashMap<>();
+
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
     super("service-center-discovery-task");
     this.serviceCenterClient = serviceCenterClient;
@@ -123,30 +127,51 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private void pullInstance(SubscriptionKey k, SubscriptionValue v) {
+    if (myselfServiceId == null) {
+      // registration not ready
+      return;
+    }
     try {
       FindMicroserviceInstancesResponse instancesResponse = serviceCenterClient
           .findMicroserviceInstance(myselfServiceId, k.appId, k.serviceName, ALL_VERSION, v.revision);
       if (instancesResponse.isModified()) {
-        // java chassis 实现了空实例保护，这里暂时不实现。
+        List<MicroserviceInstance> instances = instancesResponse.getMicroserviceInstancesResponse().getInstances()
+            == null ? Collections.emptyList() : instancesResponse.getMicroserviceInstancesResponse().getInstances();
+        setMicroserviceInfo(instances);
         LOGGER.info("Instance changed event, "
                 + "current: revision={}, instances={}; "
                 + "origin: revision={}, instances={}; "
                 + "appId={}, serviceName={}",
             instancesResponse.getRevision(),
-            instanceToString(instancesResponse.getMicroserviceInstancesResponse().getInstances()),
+            instanceToString(instances),
             v.revision,
             instanceToString(v.instancesCache),
             k.appId,
             k.serviceName
         );
-        v.instancesCache = instancesResponse.getMicroserviceInstancesResponse().getInstances();
+        v.instancesCache = instances;
         v.revision = instancesResponse.getRevision();
         eventBus.post(new InstanceChangedEvent(k.appId, k.serviceName,
             v.instancesCache));
       }
     } catch (Exception e) {
-      LOGGER.error("find service instance failed.", e);
+      LOGGER.error("find service {}#{} instance failed.", k.appId, k.serviceName, e);
     }
+  }
+
+  private void setMicroserviceInfo(List<MicroserviceInstance> instances) {
+    instances.forEach(instance -> {
+      Microservice microservice = microserviceCache
+          .computeIfAbsent(instance.getServiceId(), id -> {
+            try {
+              return serviceCenterClient.getMicroserviceByServiceId(id);
+            } catch (Exception e) {
+              LOGGER.error("Find microservice by id={} failed", id, e);
+              throw e;
+            }
+          });
+      instance.setMicroservice(microservice);
+    });
   }
 
   class PullInstanceTask implements Task {
@@ -175,6 +200,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
         sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
         sb.append("|");
       }
+      sb.append(instance.getServiceName());
+      sb.append("|");
     }
     sb.append("#");
     return sb.toString();

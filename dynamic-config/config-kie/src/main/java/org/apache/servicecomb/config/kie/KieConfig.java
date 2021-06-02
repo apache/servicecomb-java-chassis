@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.kie.client;
+package org.apache.servicecomb.config.kie;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
@@ -38,6 +38,20 @@ public class KieConfig {
 
   private static final String ENABLE_LONG_POLLING = "servicecomb.kie.enableLongPolling";
 
+  private static final String POLLING_WAIT_TIME = "servicecomb.kie.pollingWaitTime";
+
+  private static final String FIRST_PULL_REQUIRED = "servicecomb.kie.firstPullRequired";
+
+  private static final String CUSTOM_LABEL = "servicecomb.kie.customLabel";
+
+  private static final String CUSTOM_LABEL_VALUE = "servicecomb.kie.customLabelValue";
+
+  private static final String ENABLE_APP_CONFIG = "servicecomb.kie.enableAppConfig";
+
+  private static final String ENABLE_SERVICE_CONFIG = "servicecomb.kie.enableServiceConfig";
+
+  private static final String ENABLE_CUSTOM_CONFIG = "servicecomb.kie.enableCustomConfig";
+
   public static final String CONNECTION_TIME_OUT = "servicecomb.kie.client.timeout.connection";
 
   public static final String EVENT_LOOP_SIZE = "servicecomb.kie.client.eventLoopSize";
@@ -48,9 +62,15 @@ public class KieConfig {
 
   private static final int DEFAULT_REFRESH_INTERVAL = 3000;
 
+  private static final int DEFAULT_POLLING_WAIT_TIME = 10;
+
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
   private static final boolean DEFAULT_ENABLE_LONG_POLLING = true;
+
+  private static final String CUSTOM_LABEL_DEFAULT = "public";
+
+  private static final String CUSTOM_LABEL_VALUE_DEFAULT = "";
 
   private KieConfig() {
   }
@@ -115,8 +135,36 @@ public class KieConfig {
     return finalConfig.getInt(FIRST_REFRESH_INTERVAL, DEFAULT_FIRST_REFRESH_INTERVAL);
   }
 
+  public boolean enableAppConfig() {
+    return finalConfig.getBoolean(ENABLE_APP_CONFIG, true);
+  }
+
+  public boolean enableServiceConfig() {
+    return finalConfig.getBoolean(ENABLE_SERVICE_CONFIG, true);
+  }
+
+  public boolean enableCustomConfig() {
+    return finalConfig.getBoolean(ENABLE_CUSTOM_CONFIG, true);
+  }
+
   public boolean enableLongPolling() {
     return finalConfig.getBoolean(ENABLE_LONG_POLLING, DEFAULT_ENABLE_LONG_POLLING);
+  }
+
+  public int getPollingWaitTime() {
+    return finalConfig.getInt(POLLING_WAIT_TIME, DEFAULT_POLLING_WAIT_TIME);
+  }
+
+  public boolean firstPullRequired() {
+    return finalConfig.getBoolean(FIRST_PULL_REQUIRED, false);
+  }
+
+  public String getCustomLabel() {
+    return finalConfig.getString(CUSTOM_LABEL, CUSTOM_LABEL_DEFAULT);
+  }
+
+  public String getCustomLabelValue() {
+    return finalConfig.getString(CUSTOM_LABEL_VALUE, CUSTOM_LABEL_VALUE_DEFAULT);
   }
 
   public Boolean isProxyEnable() {

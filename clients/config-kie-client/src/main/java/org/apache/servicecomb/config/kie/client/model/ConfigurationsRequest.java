@@ -17,50 +17,27 @@
 
 package org.apache.servicecomb.config.kie.client.model;
 
-public class ConfigurationsRequest {
-  private String environment;
+import java.util.Map;
 
-  private String application;
+public class ConfigurationsRequest implements Comparable<ConfigurationsRequest> {
+  public static final String INITIAL_REVISION = "0";
 
-  private String serviceName;
+  private int order;
 
-  private String version;
+  private String revision = INITIAL_REVISION;
 
-  private String revision;
+  private boolean withExact;
 
-  public String getEnvironment() {
-    return environment;
+  private String labelsQuery;
+
+  private Map<String, Object> lastRawData;
+
+  public int getOrder() {
+    return order;
   }
 
-  public ConfigurationsRequest setEnvironment(String environment) {
-    this.environment = environment;
-    return this;
-  }
-
-  public String getApplication() {
-    return application;
-  }
-
-  public ConfigurationsRequest setApplication(String application) {
-    this.application = application;
-    return this;
-  }
-
-  public String getServiceName() {
-    return serviceName;
-  }
-
-  public ConfigurationsRequest setServiceName(String serviceName) {
-    this.serviceName = serviceName;
-    return this;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public ConfigurationsRequest setVersion(String version) {
-    this.version = version;
+  public ConfigurationsRequest setOrder(int order) {
+    this.order = order;
     return this;
   }
 
@@ -71,5 +48,37 @@ public class ConfigurationsRequest {
   public ConfigurationsRequest setRevision(String revision) {
     this.revision = revision;
     return this;
+  }
+
+  public boolean isWithExact() {
+    return withExact;
+  }
+
+  public ConfigurationsRequest setWithExact(boolean withExact) {
+    this.withExact = withExact;
+    return this;
+  }
+
+  public String getLabelsQuery() {
+    return labelsQuery;
+  }
+
+  public ConfigurationsRequest setLabelsQuery(String labelsQuery) {
+    this.labelsQuery = labelsQuery;
+    return this;
+  }
+
+  public Map<String, Object> getLastRawData() {
+    return lastRawData;
+  }
+
+  public ConfigurationsRequest setLastRawData(Map<String, Object> lastRawData) {
+    this.lastRawData = lastRawData;
+    return this;
+  }
+
+  @Override
+  public int compareTo(ConfigurationsRequest o) {
+    return o.getOrder() - this.order;
   }
 }

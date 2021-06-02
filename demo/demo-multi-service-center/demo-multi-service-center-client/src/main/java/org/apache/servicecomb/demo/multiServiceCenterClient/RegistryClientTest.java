@@ -42,6 +42,7 @@ import org.apache.servicecomb.service.center.client.ServiceCenterRegistration;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
+import org.apache.servicecomb.service.center.client.model.ServiceCenterConfiguration;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
@@ -70,7 +71,9 @@ public class RegistryClientTest implements CategorizedTestCase {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties,
         new DefaultRequestAuthHeaderProvider(), "default", null);
     EventBus eventBus = new SimpleEventBus();
-    ServiceCenterRegistration serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient, eventBus);
+    ServiceCenterConfiguration serviceCenterConfiguration = new ServiceCenterConfiguration();
+    ServiceCenterRegistration serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient,
+        serviceCenterConfiguration, eventBus);
     Microservice microservice = new Microservice();
     microservice.setAppId("app_registry");
     microservice.setServiceName("name_registry");

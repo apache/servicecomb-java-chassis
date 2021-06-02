@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.config.kie.archaius.sources.KieConfigurationSourceImpl
+org.apache.servicecomb.config.kie.KieConfigurationSourceImpl

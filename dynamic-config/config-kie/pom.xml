@@ -61,5 +61,9 @@
       <artifactId>foundation-test-scaffolding</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>config-kie-client</artifactId>
+    </dependency>
   </dependencies>
 </project>
