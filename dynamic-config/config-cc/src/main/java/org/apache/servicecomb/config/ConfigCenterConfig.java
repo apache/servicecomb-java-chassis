@@ -30,6 +30,8 @@ import com.netflix.config.ConcurrentCompositeConfiguration;
 public final class ConfigCenterConfig {
   public static final ConfigCenterConfig INSTANCE = new ConfigCenterConfig();
 
+  public static final String SSL_TAG = "cc.consumer";
+
   private static ConcurrentCompositeConfiguration finalConfig;
 
   private static final String AUTO_DISCOVERY_ENABLED = "servicecomb.service.registry.autodiscovery";
@@ -49,6 +51,8 @@ public final class ConfigCenterConfig {
   private static final String REFRESH_INTERVAL = "servicecomb.config.client.refresh_interval";
 
   private static final String FIRST_REFRESH_INTERVAL = "servicecomb.config.client.first_refresh_interval";
+
+  private static final String FIRST_PULL_REQUIRED = "servicecomb.config.client.firstPullRequired";
 
   public static final String CONNECTION_TIME_OUT = "servicecomb.config.client.timeout.connection";
 
@@ -101,6 +105,10 @@ public final class ConfigCenterConfig {
 
   public String getApiVersion() {
     return finalConfig.getString(URI_API_VERSION, "v3");
+  }
+
+  public boolean firstPullRequired() {
+    return finalConfig.getBoolean(FIRST_PULL_REQUIRED, false);
   }
 
   @SuppressWarnings("unchecked")

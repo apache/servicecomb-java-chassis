@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.AbstractConfiguration;
@@ -30,8 +31,10 @@ import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import org.apache.servicecomb.config.event.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +51,9 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
+import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConfigurationManager;
+import com.netflix.config.WatchedUpdateResult;
 
 /**
  *  Adapt spring PropertySource and Archaius Configuration
@@ -86,6 +91,10 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
 
   private final List<BootStrapService> bootStrapServices = SPIServiceUtils.getSortedService(BootStrapService.class);
 
+  private final Map<String, Object> dynamicData = new ConcurrentHashMap<>();
+
+  private ConfigCenterConfigurationSource configCenterConfigurationSource;
+
   public ConfigurationSpringInitializer() {
     setOrder(Ordered.LOWEST_PRECEDENCE / 2);
     setIgnoreUnresolvablePlaceholders(true);
@@ -106,8 +115,29 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
     syncToSpring(environment);
 
     startupBootStrapService(environment);
-    ConfigCenterConfigurationSource configCenterConfigurationSource = ConfigUtil.installDynamicConfig();
+
+    // watch configuration changes
+    EventManager.register(this);
+    configCenterConfigurationSource = ConfigUtil.installDynamicConfig();
     addDynamicConfigurationToSpring(environment, configCenterConfigurationSource);
+  }
+
+  @Subscribe
+  public void onConfigurationDataChanged(ConfigurationChangedEvent event) {
+    try {
+      WatchedUpdateResult data = event.getEvent();
+      if (data.getDeleted() != null) {
+        data.getDeleted().forEach((k, v) -> dynamicData.remove(k));
+      }
+      if (data.getAdded() != null) {
+        dynamicData.putAll(data.getAdded());
+      }
+      if (data.getChanged() != null) {
+        dynamicData.putAll(data.getChanged());
+      }
+    } catch (Exception e) {
+      LOGGER.error("", e);
+    }
   }
 
   private void syncFromSpring(Environment environment) {
@@ -204,7 +234,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
       if (configCenterConfigurationSource != null) {
         try {
           ce.getPropertySources()
-              .addFirst(new MapPropertySource("dynamic-source", configCenterConfigurationSource.getCurrentData()));
+              .addFirst(new MapPropertySource("dynamic-source", dynamicData));
         } catch (Exception e) {
           LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
         }

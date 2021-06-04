@@ -120,9 +120,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-    String oldUri = requestContext.getUri();
+    String oldUri = requestContext.getIpPort().toString();
     requestContext.setIpPort(ipPortManager.getAvailableAddress());
-    String newUri = requestContext.getUri();
+    String newUri = requestContext.getIpPort().toString();
     LOGGER.warn("invoke service [{}] failed, retry address [{}].", oldUri, newUri);
     requestContext.incrementRetryTimes();
     restClientUtil.httpDo(requestContext, responseHandler);

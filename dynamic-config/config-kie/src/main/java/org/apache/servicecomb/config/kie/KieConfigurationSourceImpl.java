@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config.kie;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private KieConfigManager kieConfigManager;
 
-  private ConfigConverter configConverter = new ConfigConverter(null);
+  private ConfigConverter configConverter;
 
   @Override
   public int getOrder() {
@@ -75,6 +76,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   @Override
   public void init(Configuration localConfiguration) {
+    configConverter = new ConfigConverter(KieConfig.INSTANCE.getFileSources());
     KieAddressManager kieAddressManager = configKieAddressManager();
 
     RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
@@ -83,7 +85,8 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
       requestBuilder.setConnectionRequestTimeout(KieConfig.INSTANCE.getPollingWaitTime() * 2 * 1000);
       requestBuilder.setSocketTimeout(KieConfig.INSTANCE.getPollingWaitTime() * 2 * 1000);
     }
-    HttpTransport httpTransport = createHttpTransport(requestBuilder.build(), localConfiguration);
+    HttpTransport httpTransport = createHttpTransport(kieAddressManager.sslEnabled(), requestBuilder.build(),
+        localConfiguration);
     KieConfiguration kieConfiguration = createKieConfiguration();
     KieClient kieClient = new KieClient(kieAddressManager, httpTransport, kieConfiguration);
     EventManager.register(this);
@@ -114,12 +117,13 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
         .setServiceName(KieConfig.INSTANCE.getServiceName());
   }
 
-  private HttpTransport createHttpTransport(RequestConfig requestConfig, Configuration localConfiguration) {
+  private HttpTransport createHttpTransport(boolean sslEnabled, RequestConfig requestConfig,
+      Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
     return HttpTransportFactory
         .createHttpTransport(
-            TransportUtils.createSSLProperties(localConfiguration, "kie"),
+            TransportUtils.createSSLProperties(sslEnabled, localConfiguration, KieConfig.SSL_TAG),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
@@ -138,6 +142,11 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {
+    LOGGER.info("configuration updated keys, added=[{}], updated=[{}], deleted=[{}]",
+        result.getAdded() == null ? "" : result.getAdded().keySet(),
+        result.getChanged() == null ? "" : result.getChanged().keySet(),
+        result.getDeleted() == null ? "" : result.getDeleted().keySet());
+
     for (WatchedUpdateListener l : listeners) {
       try {
         l.updateConfiguration(result);
@@ -167,6 +176,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   @Override
   public Map<String, Object> getCurrentData() throws Exception {
-    return configConverter.getCurrentData();
+    // data will updated by first pull, set empty to DynamicWatchedConfiguration first.
+    return Collections.emptyMap();
   }
 }

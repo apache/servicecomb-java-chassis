@@ -25,8 +25,13 @@ import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 
 public class TransportUtils {
-  public static SSLProperties createSSLProperties(Configuration configuration, String tag) {
+  public static SSLProperties createSSLProperties(boolean sslEnabled, Configuration configuration, String tag) {
     SSLProperties sslProperties = new SSLProperties();
+    sslProperties.setEnabled(sslEnabled);
+
+    if (!sslEnabled) {
+      return sslProperties;
+    }
 
     SSLOption option = new SSLOption();
     option.setEngine(getStringProperty(configuration,

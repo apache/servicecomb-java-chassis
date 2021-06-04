@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private ConfigCenterManager configCenterManager;
 
-  private ConfigConverter configConverter = new ConfigConverter(null);
+  private ConfigConverter configConverter;
 
   @Override
   public int getOrder() {
@@ -78,27 +79,44 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   @Override
   public void init(Configuration localConfiguration) {
+    configConverter = new ConfigConverter(ConfigCenterConfig.INSTANCE.getFileSources());
+
     AddressManager kieAddressManager = configKieAddressManager();
 
     RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
 
-    HttpTransport httpTransport = createHttpTransport(requestBuilder.build(), localConfiguration);
+    HttpTransport httpTransport = createHttpTransport(kieAddressManager.sslEnabled(), requestBuilder.build(),
+        localConfiguration);
     ConfigCenterClient configCenterClient = new ConfigCenterClient(kieAddressManager, httpTransport);
     EventManager.register(this);
 
-    QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest();
-    QueryConfigurationsResponse response = configCenterClient
-        .queryConfigurations(queryConfigurationsRequest);
-    if (response.isChanged()) {
-      configConverter.updateData(response.getConfigurations());
-      updateConfiguration(WatchedUpdateResult.createIncremental(configConverter.getCurrentData(), null, null));
-    }
-    queryConfigurationsRequest.setRevision(response.getRevision());
+    QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterClient);
 
     configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
         configConverter);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
+  }
+
+  private QueryConfigurationsRequest firstPull(ConfigCenterClient configCenterClient) {
+    QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest();
+    try {
+      QueryConfigurationsResponse response = configCenterClient
+          .queryConfigurations(queryConfigurationsRequest);
+      if (response.isChanged()) {
+        configConverter.updateData(response.getConfigurations());
+        updateConfiguration(WatchedUpdateResult.createIncremental(configConverter.getCurrentData(), null, null));
+      } else {
+        throw new IllegalStateException("can not fetch config data.");
+      }
+      queryConfigurationsRequest.setRevision(response.getRevision());
+    } catch (Exception e) {
+      if (ConfigCenterConfig.INSTANCE.firstPullRequired()) {
+        throw e;
+      }
+      LOGGER.warn("first pull failed, and ignore {}", e.getMessage());
+    }
+    return queryConfigurationsRequest;
   }
 
   @Subscribe
@@ -118,12 +136,13 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return request;
   }
 
-  private HttpTransport createHttpTransport(RequestConfig requestConfig, Configuration localConfiguration) {
+  private HttpTransport createHttpTransport(boolean sslEnabled, RequestConfig requestConfig,
+      Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
     return HttpTransportFactory
         .createHttpTransport(
-            TransportUtils.createSSLProperties(localConfiguration, "kie"),
+            TransportUtils.createSSLProperties(sslEnabled, localConfiguration, ConfigCenterConfig.SSL_TAG),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
@@ -143,6 +162,10 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {
+    LOGGER.info("configuration updated keys, added=[{}], updated=[{}], deleted=[{}]",
+        result.getAdded() == null ? "" : result.getAdded().keySet(),
+        result.getChanged() == null ? "" : result.getChanged().keySet(),
+        result.getDeleted() == null ? "" : result.getDeleted().keySet());
     for (WatchedUpdateListener l : listeners) {
       try {
         l.updateConfiguration(result);
@@ -172,6 +195,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   @Override
   public Map<String, Object> getCurrentData() throws Exception {
-    return configConverter.getCurrentData();
+    // data will updated by first pull, set empty to DynamicWatchedConfiguration first.
+    return Collections.emptyMap();
   }
 }
