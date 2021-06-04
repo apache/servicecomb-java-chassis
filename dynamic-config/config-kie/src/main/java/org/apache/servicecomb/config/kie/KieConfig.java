@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.config.kie;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 
@@ -27,6 +31,8 @@ public class KieConfig {
   public static final KieConfig INSTANCE = new KieConfig();
 
   private static ConcurrentCompositeConfiguration finalConfig;
+
+  public static final String SSL_TAG = "kie.consumer";
 
   private static final String SERVER_URL_KEY = "servicecomb.kie.serverUri";
 
@@ -51,6 +57,8 @@ public class KieConfig {
   private static final String ENABLE_SERVICE_CONFIG = "servicecomb.kie.enableServiceConfig";
 
   private static final String ENABLE_CUSTOM_CONFIG = "servicecomb.kie.enableCustomConfig";
+
+  public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
 
   public static final String CONNECTION_TIME_OUT = "servicecomb.kie.client.timeout.connection";
 
@@ -81,6 +89,20 @@ public class KieConfig {
 
   public static void setFinalConfig(ConcurrentCompositeConfiguration finalConfig) {
     KieConfig.finalConfig = finalConfig;
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<String> getFileSources() {
+    Object property = finalConfig.getProperty(FILE_SOURCE);
+    if (property instanceof String) {
+      List<String> result = new ArrayList<>();
+      result.add((String) property);
+      return result;
+    }
+    if (property instanceof List) {
+      return (List<String>) property;
+    }
+    return Collections.EMPTY_LIST;
   }
 
   public int getConnectionTimeOut() {

@@ -247,14 +247,13 @@ public final class ConfigUtil {
     ConfigCenterConfigurationSource configCenterConfigurationSource =
         createConfigCenterConfigurationSource(compositeConfig);
     if (configCenterConfigurationSource != null) {
+      // add listeners
       createDynamicWatchedConfiguration(compositeConfig, configCenterConfigurationSource);
+      // then init data
+      configCenterConfigurationSource.init(compositeConfig);
     }
 
     ConfigurationManager.install(compositeConfig);
-
-    if (configCenterConfigurationSource != null) {
-      configCenterConfigurationSource.init(compositeConfig);
-    }
 
     return configCenterConfigurationSource;
   }

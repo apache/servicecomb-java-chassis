@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class ServiceCenterTaskMonitor {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterTaskMonitor.class);
 
-  private static final long MAX_TIME_TAKEN = 1000;
+  private static final long MAX_TIME_TAKEN = 3000;
 
   private long beginTime = 0;
 
