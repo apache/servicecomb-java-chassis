@@ -30,10 +30,14 @@ import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class ConfigCenterClient implements ConfigCenterOperation {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterClient.class);
+
   public static final String DEFAULT_APP_SEPARATOR = "@";
 
   public static final String DEFAULT_SERVICE_SEPARATOR = "#";
@@ -57,11 +61,15 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     QueryConfigurationsResponse queryConfigurationsResponse = new QueryConfigurationsResponse();
 
     Map<String, Object> configurations = new HashMap<>();
+
+    String uri = null;
     try {
+      uri = addressManager.address() + "/configuration/items?dimensionsInfo="
+          + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
+
       Map<String, String> headers = new HashMap<>();
       headers.put("x-environment", request.getEnvironment());
-      HttpRequest httpRequest = new HttpRequest(addressManager.address() + "/configuration/items?dimensionsInfo="
-          + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision(), headers, null,
+      HttpRequest httpRequest = new HttpRequest(uri, headers, null,
           HttpRequest.GET);
 
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
@@ -104,7 +112,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
                 + httpResponse.getContent());
       }
     } catch (IOException e) {
-      addressManager.nextAddress();
+      LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }
   }

@@ -19,31 +19,23 @@ package org.apache.servicecomb.config.kie.client.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class KieAddressManager {
   private final List<String> addresses;
 
-  private int index;
+  private int index = 0;
 
   public KieAddressManager(List<String> addresses) {
     this.addresses = new ArrayList<>(addresses.size());
-    addresses.forEach((address -> this.addresses.add(address)));
-    this.index = new Random().nextInt(addresses.size());
+    this.addresses.addAll(addresses);
   }
-
-  public String nextAddress() {
+  
+  public String address() {
     synchronized (this) {
       this.index++;
       if (this.index >= addresses.size()) {
         this.index = 0;
       }
-    }
-    return address();
-  }
-
-  public String address() {
-    synchronized (this) {
       return addresses.get(index);
     }
   }

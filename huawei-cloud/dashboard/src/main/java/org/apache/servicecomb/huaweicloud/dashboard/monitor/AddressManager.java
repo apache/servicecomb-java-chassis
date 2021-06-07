@@ -18,135 +18,64 @@
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 
-import com.google.common.eventbus.Subscribe;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.event.MonitorFailEvent;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 
 public class AddressManager {
-  private static final String MONITR_SERVICE_NAME = "CseMonitoring";
+  private static final String MONITOR_SERVICE_NAME = "CseMonitoring";
 
-  private static final String MONITR_APPLICATION = "default";
+  private static final String MONITOR_APPLICATION = "default";
 
-  private static final String MONITR_VERSION = "latest";
+  private static final String MONITOR_VERSION = "latest";
 
-  static class State {
-    static final long MAX_TIME = 300000;
+  private final List<String> addresses = new ArrayList<>();
 
-    static final int MIN_FAILED = 3;
-
-    private long failedCount = 0;
-
-    private long time;
-
-    public long getTime() {
-      return time;
-    }
-
-    public void setTime(long time) {
-      this.time = time;
-    }
-
-    boolean isIsolated() {
-      if (failedCount < MIN_FAILED) {
-        return false;
-      }
-      if ((System.currentTimeMillis() - time) > MAX_TIME) {
-        time = System.currentTimeMillis();
-        return false;
-      }
-      return true;
-    }
-
-    void setIsolateStatus(boolean isFailed) {
-      if (isFailed) {
-        if (failedCount == 0) {
-          time = System.currentTimeMillis();
-        }
-        failedCount++;
-      } else {
-        failedCount = 0;
-      }
-    }
-  }
-
-  private Map<String, State> addresses = new LinkedHashMap<>();
-
-  private String currentServer;
-
-  private State discoveryState = new State();
+  private int index = 0;
 
   AddressManager() {
     updateAddresses();
+    updateServersFromSC();
     EventManager.register(this);
   }
 
-  public Map<String, State> getAddresses() {
-    return addresses;
-  }
-
-  public void updateAddresses() {
+  private void updateAddresses() {
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
         MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
-    if (addresses.size() > 0) {
-      addresses.clear();
-    }
     if (info != null && info.getAccessURL() != null) {
-      info.getAccessURL().forEach(url -> {
-        addresses.put(url, new State());
-      });
+      addresses.addAll(info.getAccessURL());
     }
-  }
-
-  @Subscribe
-  public void MonitorFailEvent(MonitorFailEvent event) {
-    updateAddresses();
   }
 
   String nextServer() {
-    if (currentServer == null && addresses.size() > 0) {
-      currentServer = addresses.keySet().iterator().next();
-    }
-
-    if (currentServer == null || addresses.get(currentServer).isIsolated()) {
-      currentServer = null;
-      if (!discoveryState.isIsolated()) {
-        updateServersFromSC();
-        discoveryState.setIsolateStatus(true);
+    synchronized (this) {
+      this.index++;
+      if (this.index >= addresses.size()) {
+        this.index = 0;
       }
-      for (Map.Entry<String, State> entry : addresses.entrySet()) {
-        if (!entry.getValue().isIsolated()) {
-          currentServer = entry.getKey();
-          break;
-        }
-      }
+      return addresses.get(index);
     }
-    return currentServer;
   }
 
   private void updateServersFromSC() {
-    List<MicroserviceInstance> servers = RegistryUtils.findServiceInstance(MONITR_APPLICATION,
-        MONITR_SERVICE_NAME,
-        MONITR_VERSION);
+    List<MicroserviceInstance> servers = RegistryUtils.findServiceInstance(MONITOR_APPLICATION,
+        MONITOR_SERVICE_NAME,
+        MONITOR_VERSION);
     if (servers != null) {
       for (MicroserviceInstance server : servers) {
         for (String endpoint : server.getEndpoints()) {
-          addresses.computeIfAbsent(endpoint, key -> new State());
+          if (!addresses.contains(endpoint)) {
+            addresses.add(endpoint);
+          }
         }
       }
     }
-  }
-
-  void updateStates(String server, boolean failed) {
-    addresses.get(server).setIsolateStatus(failed);
   }
 }
