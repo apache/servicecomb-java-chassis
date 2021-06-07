@@ -19,7 +19,6 @@ package org.apache.servicecomb.service.center.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.servicecomb.http.client.common.HttpUtils;
 
@@ -28,13 +27,12 @@ public class AddressManager {
 
   private final List<String> addresses;
 
-  private int index;
+  private int index = 0;
 
   public AddressManager(String projectName, List<String> addresses) {
     this.projectName = projectName;
     this.addresses = new ArrayList<>(addresses.size());
-    addresses.forEach((address -> this.addresses.add(address)));
-    this.index = new Random().nextInt(addresses.size());
+    this.addresses.addAll(addresses);
   }
 
   private String formatAddress(String address) {
@@ -45,21 +43,16 @@ public class AddressManager {
     }
   }
 
-  public void changeAddress() {
-    synchronized (this) {
-      this.index++;
-      if (this.index >= addresses.size()) {
-        this.index = 0;
-      }
-    }
-  }
-
   public boolean sslEnabled() {
     return address().startsWith("https://");
   }
 
   public String address() {
     synchronized (this) {
+      index++;
+      if (index >= addresses.size()) {
+        index = 0;
+      }
       return addresses.get(index);
     }
   }

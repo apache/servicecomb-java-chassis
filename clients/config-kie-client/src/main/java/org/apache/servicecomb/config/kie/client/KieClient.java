@@ -66,19 +66,19 @@ public class KieClient implements KieConfigOperation {
 
   @Override
   public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request) {
-    try {
-      String url = addressManager.address()
-          + "/"
-          + DEFAULT_KIE_API_VERSION
-          + "/"
-          + kieConfiguration.getProject()
-          + "/kie/kv?"
-          + request.getLabelsQuery()
-          + "&revision="
-          + request.getRevision()
-          + "&withExact="
-          + request.isWithExact();
+    String url = addressManager.address()
+        + "/"
+        + DEFAULT_KIE_API_VERSION
+        + "/"
+        + kieConfiguration.getProject()
+        + "/kie/kv?"
+        + request.getLabelsQuery()
+        + "&revision="
+        + request.getRevision()
+        + "&withExact="
+        + request.isWithExact();
 
+    try {
       if (kieConfiguration.isEnableLongPolling()) {
         url += "&wait=" + kieConfiguration.getPollingWaitInSeconds() + "s";
       }
@@ -106,7 +106,7 @@ public class KieClient implements KieConfigOperation {
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
     } catch (Exception e) {
-      addressManager.nextAddress();
+      LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
     }
   }

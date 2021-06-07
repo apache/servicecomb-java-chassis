@@ -19,7 +19,6 @@ package org.apache.servicecomb.config.center.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.http.client.common.HttpUtils;
@@ -31,13 +30,12 @@ public class AddressManager {
 
   private final List<String> addresses;
 
-  private int index;
+  private int index = 0;
 
   public AddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = new ArrayList<>(addresses.size());
     addresses.forEach((address -> this.addresses.add(formatAddress(address))));
-    this.index = new Random().nextInt(addresses.size());
   }
 
   private String formatAddress(String address) {
@@ -48,18 +46,12 @@ public class AddressManager {
     }
   }
 
-  public String nextAddress() {
+  public String address() {
     synchronized (this) {
       this.index++;
       if (this.index >= addresses.size()) {
         this.index = 0;
       }
-    }
-    return address();
-  }
-
-  public String address() {
-    synchronized (this) {
       return addresses.get(index);
     }
   }

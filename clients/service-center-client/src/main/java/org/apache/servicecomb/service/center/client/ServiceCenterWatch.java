@@ -51,15 +51,15 @@ public class ServiceCenterWatch implements WebSocketListener {
 
   private static final long SLEEP_MAX = 10 * 60 * 10000;
 
-  private AddressManager addressManager;
+  private final AddressManager addressManager;
 
-  private SSLProperties sslProperties;
+  private final SSLProperties sslProperties;
 
-  private RequestAuthHeaderProvider requestAuthHeaderProvider;
+  private final RequestAuthHeaderProvider requestAuthHeaderProvider;
 
-  private String tenantName;
+  private final String tenantName;
 
-  private Map<String, String> extraGlobalHeaders;
+  private final Map<String, String> extraGlobalHeaders;
 
   private WebSocketTransport webSocketTransport;
 
@@ -69,11 +69,13 @@ public class ServiceCenterWatch implements WebSocketListener {
 
   private int continuousError = 0;
 
-  private AtomicBoolean reconnecting = new AtomicBoolean(false);
+  private final AtomicBoolean reconnecting = new AtomicBoolean(false);
 
-  private EventBus eventBus;
+  private final EventBus eventBus;
 
-  private ExecutorService connector = Executors.newFixedThreadPool(1, (r) -> new
+  private String currentServerUri;
+
+  private final ExecutorService connector = Executors.newFixedThreadPool(1, (r) -> new
       Thread(r, "web-socket-connector"));
 
   public ServiceCenterWatch(AddressManager addressManager,
@@ -106,8 +108,9 @@ public class ServiceCenterWatch implements WebSocketListener {
         headers.put("x-domain-name", this.tenantName);
         headers.putAll(this.extraGlobalHeaders);
         headers.putAll(this.requestAuthHeaderProvider.loadAuthHeader(null));
-        LOGGER.info("start watch to address {}", addressManager.address());
-        webSocketTransport = new WebSocketTransport(convertAddress(), sslProperties,
+        currentServerUri = convertAddress();
+        LOGGER.info("start watch to address {}", currentServerUri);
+        webSocketTransport = new WebSocketTransport(currentServerUri, sslProperties,
             headers, this);
         webSocketTransport.connectBlocking();
       } catch (Exception e) {
@@ -144,7 +147,6 @@ public class ServiceCenterWatch implements WebSocketListener {
     if (webSocketTransport != null) {
       webSocketTransport.close();
     }
-    addressManager.changeAddress();
     startWatch();
   }
 
@@ -178,7 +180,7 @@ public class ServiceCenterWatch implements WebSocketListener {
 
   @Override
   public void onOpen(ServerHandshake serverHandshake) {
-    LOGGER.info("web socket connected to server {}, status={}, message={}", addressManager.address(),
+    LOGGER.info("web socket connected to server {}, status={}, message={}", currentServerUri,
         serverHandshake.getHttpStatus(),
         serverHandshake.getHttpStatusMessage());
     continuousError = 0;
