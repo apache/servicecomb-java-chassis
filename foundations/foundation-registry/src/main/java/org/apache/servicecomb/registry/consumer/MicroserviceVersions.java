@@ -254,12 +254,15 @@ public class MicroserviceVersions {
       Collection<MicroserviceInstance> inUseInstances) {
     MergedInstances mergedInstances = new MergedInstances();
     pulledInstances.stream().forEach(mergedInstances::addInstance);
+    MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
 
     if (safeMode) {
       // in safe mode, instances will never be deleted
       inUseInstances.forEach(instance -> {
         if (!mergedInstances.instanceIdMap.containsKey(instance.getInstanceId())) {
-          mergedInstances.addInstance(instance);
+          if (ping.ping(instance)) {
+            mergedInstances.addInstance(instance);
+          }
         }
       });
       return mergedInstances;
@@ -267,7 +270,7 @@ public class MicroserviceVersions {
 
     if (pulledInstances.isEmpty() && inUseInstances != null && ServiceRegistryCommonConfig
         .isEmptyInstanceProtectionEnabled()) {
-      MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
+
       inUseInstances.stream().forEach(instance -> {
         if (!mergedInstances.instanceIdMap.containsKey(instance.getInstanceId())) {
           if (ping.ping(instance)) {
