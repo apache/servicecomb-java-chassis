@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.common;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ConfigurationChangedEvent {
   private final Map<String, Object> added;
@@ -26,6 +27,8 @@ public class ConfigurationChangedEvent {
   private final Map<String, Object> deleted;
 
   private final Map<String, Object> updated;
+
+  private Map<String, Object> complete;
 
   private ConfigurationChangedEvent(Map<String, Object> added, Map<String, Object> updated,
       Map<String, Object> deleted) {
@@ -42,19 +45,22 @@ public class ConfigurationChangedEvent {
     for (String itemKey : latest.keySet()) {
       if (!last.containsKey(itemKey)) {
         itemsCreated.put(itemKey, latest.get(itemKey));
-      } else if (!last.get(itemKey).equals(latest.get(itemKey))) {
+      } else if (!Objects.equals(last.get(itemKey), latest.get(itemKey))) {
         itemsModified.put(itemKey, latest.get(itemKey));
       }
     }
     for (String itemKey : last.keySet()) {
       if (!latest.containsKey(itemKey)) {
-        itemsDeleted.put(itemKey, "");
+        itemsDeleted.put(itemKey, null);
       }
     }
-    return ConfigurationChangedEvent.createIncremental(itemsCreated, itemsModified, itemsDeleted);
+    ConfigurationChangedEvent event = ConfigurationChangedEvent
+        .createIncremental(itemsCreated, itemsModified, itemsDeleted);
+    event.complete = latest;
+    return event;
   }
 
-  public static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
+  private static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
       Map<String, Object> deleted) {
     return new ConfigurationChangedEvent(added, updated, deleted);
   }
@@ -74,9 +80,6 @@ public class ConfigurationChangedEvent {
   }
 
   public final Map<String, Object> getComplete() {
-    Map<String, Object> result = new HashMap<>(added.size() + updated.size());
-    result.putAll(added);
-    result.putAll(updated);
-    return result;
+    return complete;
   }
 }

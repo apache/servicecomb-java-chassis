@@ -88,12 +88,12 @@ public class KieConfigManager extends AbstractTask {
   }
 
   private void onDataChanged() {
-    Map<String, Object> lastData = new HashMap<>();
-    this.configurationsRequests.forEach(r -> lastData.putAll(r.getLastRawData()));
+    Map<String, Object> latestData = new HashMap<>();
+    this.configurationsRequests.forEach(r -> latestData.putAll(r.getLastRawData()));
 
+    Map<String, Object> lastData = configConverter.updateData(latestData);
     ConfigurationChangedEvent event = ConfigurationChangedEvent
-        .createIncremental(lastData, configConverter.getLastRawData());
-    configConverter.updateData(lastData);
+        .createIncremental(configConverter.getCurrentData(), lastData);
     eventBus.post(event);
   }
 

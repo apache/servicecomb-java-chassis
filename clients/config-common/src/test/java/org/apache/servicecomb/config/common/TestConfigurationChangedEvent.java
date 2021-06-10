@@ -30,12 +30,17 @@ public class TestConfigurationChangedEvent {
     Map<String, Object> after = new HashMap<>();
     before.put("updated", "1");
     before.put("deleted", "1");
+    before.put("notChanged", null);
+
     after.put("added", 1);
     after.put("updated", 2);
+    after.put("addedNull", null);
+    after.put("notChanged", null);
+
     ConfigurationChangedEvent event = ConfigurationChangedEvent.createIncremental(after, before);
-    Assert.assertEquals(1, event.getAdded().size());
+    Assert.assertEquals(2, event.getAdded().size());
     Assert.assertEquals(1, event.getDeleted().size());
     Assert.assertEquals(1, event.getUpdated().size());
-    Assert.assertEquals(2, event.getComplete().size());
+    Assert.assertEquals(4, event.getComplete().size());
   }
 }

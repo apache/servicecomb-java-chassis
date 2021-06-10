@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.config.center.client;
 
+import java.util.Map;
+
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
@@ -71,9 +73,9 @@ public class ConfigCenterManager extends AbstractTask {
         QueryConfigurationsResponse response = configCenterClient.queryConfigurations(queryConfigurationsRequest);
         if (response.isChanged()) {
           queryConfigurationsRequest.setRevision(response.getRevision());
+          Map<String, Object> lastData = configConverter.updateData(response.getConfigurations());
           ConfigurationChangedEvent event = ConfigurationChangedEvent
-              .createIncremental(response.getConfigurations(), configConverter.getLastRawData());
-          configConverter.updateData(response.getConfigurations());
+              .createIncremental(configConverter.getCurrentData(), lastData);
           eventBus.post(event);
         }
         startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
