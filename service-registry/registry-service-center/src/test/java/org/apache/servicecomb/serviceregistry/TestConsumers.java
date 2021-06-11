@@ -24,7 +24,6 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.MicroserviceKey;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
@@ -89,19 +88,6 @@ public class TestConsumers extends TestRegistryBase {
     key.setAppId(appId);
     key.setServiceName(serviceName);
     eventBus.post(event);
-    Assert.assertEquals(0, microserviceManager.getVersionsByName().size());
-  }
-
-  @Test
-  public void deleteThenRecovery() {
-    MicroserviceVersionRule microserviceVersionRule = appManager
-        .getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
-    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
-
-    mockNotExist();
-    eventBus.post(new RecoveryEvent());
-
     Assert.assertEquals(0, microserviceManager.getVersionsByName().size());
   }
 

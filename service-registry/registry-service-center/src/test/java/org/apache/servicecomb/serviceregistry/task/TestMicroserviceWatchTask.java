@@ -25,8 +25,8 @@ import org.apache.servicecomb.registry.api.registry.WatchAction;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.api.event.task.ExceptionEvent;
-import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
+import org.apache.servicecomb.serviceregistry.event.ExceptionEvent;
+import org.apache.servicecomb.serviceregistry.event.RecoveryEvent;
 import org.junit.Assert;
 import org.junit.Test;
 

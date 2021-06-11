@@ -16,13 +16,12 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.registry.api.event.task.HeartbeatFailEvent;
-import org.apache.servicecomb.registry.api.event.task.HeartbeatSuccEvent;
+import org.apache.servicecomb.serviceregistry.event.HeartbeatFailEvent;
+import org.apache.servicecomb.serviceregistry.event.HeartbeatSuccEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,7 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
       LOGGER.error("Disconnected from service center and heartbeat failed for microservice instance={}/{}",
           microserviceInstance.getServiceId(),
           microserviceInstance.getInstanceId());
-      EventManager.post(new HeartbeatFailEvent());
+      this.eventBus.post(new HeartbeatFailEvent());
       return HeartbeatResult.DISCONNECTED;
     }
 
@@ -79,10 +78,10 @@ public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
       LOGGER.error("Update heartbeat to service center failed, microservice instance={}/{} does not exist",
           microserviceInstance.getServiceId(),
           microserviceInstance.getInstanceId());
-      EventManager.post(new HeartbeatFailEvent());
+      this.eventBus.post(new HeartbeatFailEvent());
       return HeartbeatResult.INSTANCE_NOT_REGISTERED;
     }
-    EventManager.post(new HeartbeatSuccEvent());
+    this.eventBus.post(new HeartbeatSuccEvent());
     return HeartbeatResult.SUCCESS;
   }
 }

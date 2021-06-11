@@ -14,8 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.api.event.task;
 
-public class RecoveryEvent {
+package org.apache.servicecomb.serviceregistry.event;
+
+/**
+ * Service Center Heart Beat failure event
+ *
+ */
+public class HeartbeatFailEvent {
 
 }
+

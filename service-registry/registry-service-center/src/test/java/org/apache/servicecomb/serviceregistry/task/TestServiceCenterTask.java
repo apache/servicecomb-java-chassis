@@ -16,12 +16,8 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import java.util.EventListener;
-
-import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,9 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -56,7 +50,7 @@ public class TestServiceCenterTask {
   @Before
   public void init() {
     serviceCenterTask =
-        new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE.getHeartbeatInterval(), 3,
+        new ServiceCenterTask(eventBus, ServiceRegistryConfig.INSTANCE.getHeartbeatInterval(),
             microserviceServiceCenterTask);
   }
 
@@ -73,10 +67,10 @@ public class TestServiceCenterTask {
     };
     serviceCenterTask.init();
     eventBus.post(instanceEvent);
-    Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
+    Assert.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
 
     eventBus.post(heartBeatEvent);
-    Assert.assertFalse(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
+    Assert.assertFalse(serviceCenterTask.isRegisterInstanceSuccess());
   }
 
   @Test
@@ -92,49 +86,9 @@ public class TestServiceCenterTask {
     };
     serviceCenterTask.init();
     eventBus.post(instanceEvent);
-    Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
+    Assert.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
 
     eventBus.post(heartBeatEvent);
-    Assert.assertTrue(Deencapsulation.getField(serviceCenterTask, "registerInstanceSuccess"));
-  }
-
-  @Test
-  public void testSafeMode(@Mocked MicroserviceInstanceHeartbeatTask succeededTask,
-      @Mocked MicroserviceInstanceHeartbeatTask failedTask) {
-    new Expectations() {
-      {
-        succeededTask.getHeartbeatResult();
-        result = HeartbeatResult.SUCCESS;
-        failedTask.getHeartbeatResult();
-        result = HeartbeatResult.DISCONNECTED;
-      }
-    };
-    Holder<Integer> count = new Holder<>(0);
-    EventListener eventListener = new EventListener() {
-      @Subscribe
-      public void onModeChanged(SafeModeChangeEvent modeChangeEvent) {
-        count.value++;
-      }
-    };
-    eventBus.register(eventListener);
-    Assert.assertEquals(0, count.value.intValue());
-    eventBus.post(failedTask);
-    eventBus.post(failedTask);
-    eventBus.post(failedTask);
-    Assert.assertEquals(0, count.value.intValue());
-    Assert.assertFalse(serviceCenterTask.getSafeMode());
-    eventBus.post(failedTask);
-    Assert.assertEquals(1, count.value.intValue());
-    Assert.assertTrue(serviceCenterTask.getSafeMode());
-
-    eventBus.post(succeededTask);
-    eventBus.post(succeededTask);
-    eventBus.post(succeededTask);
-    Assert.assertTrue(serviceCenterTask.getSafeMode());
-    Assert.assertEquals(1, count.value.intValue());
-    eventBus.post(succeededTask);
-    Assert.assertFalse(serviceCenterTask.getSafeMode());
-    Assert.assertEquals(2, count.value.intValue());
-    eventBus.unregister(eventListener);
+    Assert.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
   }
 }

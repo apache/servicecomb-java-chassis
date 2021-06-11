@@ -33,7 +33,6 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
@@ -58,9 +57,6 @@ public class MicroserviceVersions {
   protected String revision = null;
 
   private List<MicroserviceInstance> pulledInstances;
-
-  // in safe mode, instances will never be deleted
-  private boolean safeMode = false;
 
   private MicroserviceInstances lastPulledResult;
 
@@ -256,18 +252,6 @@ public class MicroserviceVersions {
     pulledInstances.stream().forEach(mergedInstances::addInstance);
     MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
 
-    if (safeMode) {
-      // in safe mode, instances will never be deleted
-      inUseInstances.forEach(instance -> {
-        if (!mergedInstances.instanceIdMap.containsKey(instance.getInstanceId())) {
-          if (ping.ping(instance)) {
-            mergedInstances.addInstance(instance);
-          }
-        }
-      });
-      return mergedInstances;
-    }
-
     if (pulledInstances.isEmpty() && inUseInstances != null && ServiceRegistryCommonConfig
         .isEmptyInstanceProtectionEnabled()) {
 
@@ -323,10 +307,6 @@ public class MicroserviceVersions {
     // EXPIRE::
     //   black/white config in SC changed, we must refresh all data from sc.
     pullInstances();
-  }
-
-  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    this.safeMode = modeChangeEvent.getCurrentMode();
   }
 
   protected boolean isEventAccept(MicroserviceInstanceChangedEvent changedEvent) {

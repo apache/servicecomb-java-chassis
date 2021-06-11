@@ -14,19 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.api.event.task;
+package org.apache.servicecomb.serviceregistry.event;
 
-/**
- * In safe mode, consumer will not delete instances.
- */
-public class SafeModeChangeEvent {
-  private boolean currentMode;
+public class ShutdownEvent {
 
-  public SafeModeChangeEvent(boolean currentMode) {
-    this.currentMode = currentMode;
-  }
-
-  public boolean getCurrentMode() {
-    return currentMode;
-  }
 }

@@ -26,11 +26,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +63,7 @@ public class RefreshableServiceRegistryCache implements ServiceRegistryCache {
     }
 
     try {
-      List<MicroserviceCache> refreshedCaches = refreshInnerState(false);
+      List<MicroserviceCache> refreshedCaches = refreshInnerState();
       notifyWatcher(refreshedCaches);
     } catch (Exception e) {
       LOGGER.error("failed to refresh caches", e);
@@ -73,27 +72,9 @@ public class RefreshableServiceRegistryCache implements ServiceRegistryCache {
     }
   }
 
-  public void forceRefreshCache() {
-    refreshLock.lock();
-    try {
-      List<MicroserviceCache> refreshedCaches = refreshInnerState(true);
-      notifyWatcher(refreshedCaches);
-    } catch (Exception e) {
-      LOGGER.error("failed to refresh caches", e);
-    } finally {
-      refreshLock.unlock();
-    }
-  }
-
-  private List<MicroserviceCache> refreshInnerState(boolean isForced) {
+  private List<MicroserviceCache> refreshInnerState() {
     return microserviceCache.values().stream()
-        .peek(cache -> {
-          if (isForced) {
-            cache.forceRefresh();
-          } else {
-            cache.refresh();
-          }
-        })
+        .peek(cache -> cache.refresh())
         .filter(this::isRefreshedMicroserviceCache)
         .peek(this::removeCacheIfServiceNotFound)
         .collect(Collectors.toList());
@@ -160,12 +141,6 @@ public class RefreshableServiceRegistryCache implements ServiceRegistryCache {
             .collect(Collectors.toList());
 
     notifyWatcher(refreshedCaches);
-  }
-
-  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    for (Entry<MicroserviceCacheKey, RefreshableMicroserviceCache> cacheEntry : microserviceCache.entrySet()) {
-      cacheEntry.getValue().onSafeModeChanged(modeChangeEvent);
-    }
   }
 
   @Override

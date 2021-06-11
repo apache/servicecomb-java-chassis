@@ -25,7 +25,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.registry.api.event.task.ShutdownEvent;
+import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;

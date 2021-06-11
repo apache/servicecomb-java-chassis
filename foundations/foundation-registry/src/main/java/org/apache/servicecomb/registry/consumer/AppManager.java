@@ -24,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,10 +77,6 @@ public class AppManager {
     }
 
     microserviceManager.onMicroserviceInstanceChanged(changedEvent);
-  }
-
-  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    apps.values().forEach(microserviceManager -> microserviceManager.onSafeModeChanged(modeChangeEvent));
   }
 
   public void pullInstances() {
