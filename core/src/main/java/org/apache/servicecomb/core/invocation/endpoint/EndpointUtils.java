@@ -30,18 +30,6 @@ import org.apache.servicecomb.core.exception.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <pre>
- *   http://xxx  -> rest://xxx
- *   https://xxx -> rest://xxx?sslEnabled=true
- *
- *   h2c://xxx   -> rest://xxx?protocol=http2
- *   h2://xxx    -> rest://xxx?sslEnabled=true&protocol=http2
- *
- *   xxx         -> rest://xxx?protocol=http2
- *   other://xxx -> other://xxx
- * </pre>
- **/
 public final class EndpointUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(EndpointUtils.class);
 
@@ -99,6 +87,22 @@ public final class EndpointUtils {
     return new Endpoint(transport, uriEndpoint);
   }
 
+  /**
+   * <pre>
+   *   http://xxx  -> rest://xxx
+   *   https://xxx -> rest://xxx?sslEnabled=true
+   *
+   *   h2c://xxx   -> rest://xxx?protocol=http2
+   *   h2://xxx    -> rest://xxx?sslEnabled=true&protocol=http2
+   *
+   *   xxx         -> rest://xxx:port?protocol=http2
+   *   xxx?a=a1    -> rest://xxx:port?a=a1&protocol=http2
+   *   other://xxx -> other://xxx
+   * </pre>
+   *
+   *  This method provided for convenience of handling user input endpoints, and do not have a strict meaning. Make sure all unit test cases
+   *  work before change.
+   **/
   public static String formatFromUri(String inputUri) {
     try {
       return doFormatFromUri(inputUri);
@@ -111,7 +115,7 @@ public final class EndpointUtils {
     URIBuilder builder = new URIBuilder(inputUri);
     if (builder.getScheme() == null) {
       builder.setScheme(H2C);
-      builder.setHost(builder.getPath());
+      builder.setHost(extractHostFromPath(builder));
       builder.setPath(null);
     }
 
@@ -121,6 +125,20 @@ public final class EndpointUtils {
     }
 
     return format(builder, schemeMeta);
+  }
+
+  private static String extractHostFromPath(URIBuilder builder) {
+    String path = builder.getPath();
+    if (path == null) {
+      return null;
+    }
+    if (path.startsWith("/")) {
+      path = path.substring(1);
+    }
+    if (path.indexOf("/") != -1) {
+      path = path.substring(0, path.indexOf("/"));
+    }
+    return path;
   }
 
   private static String format(URIBuilder builder, SchemeMeta schemeMeta) throws URISyntaxException {

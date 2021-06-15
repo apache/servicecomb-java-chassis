@@ -58,7 +58,7 @@
     <hdr-histogram.version>2.1.10</hdr-histogram.version>
     <hibernate.version>6.0.2.Final</hibernate.version>
     <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
-    <httpcomponents.version>4.5.7</httpcomponents.version>
+    <httpcomponents.version>4.5.13</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
     <jackson.version>2.12.1</jackson.version>
     <javakaffee.version>0.26</javakaffee.version>
