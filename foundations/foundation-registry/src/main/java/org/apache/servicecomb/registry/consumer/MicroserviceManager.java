@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.executor.SinglePoolBlockingExecutor;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,9 +123,5 @@ public class MicroserviceManager {
 
       tryRemoveInvalidMicroservice(microserviceVersions);
     }
-  }
-
-  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    versionsByName.values().forEach(microserviceVersions -> microserviceVersions.onSafeModeChanged(modeChangeEvent));
   }
 }

@@ -16,10 +16,7 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.servicecomb.registry.api.event.task.ExceptionEvent;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
+import org.apache.servicecomb.serviceregistry.event.ExceptionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,25 +31,16 @@ public class ServiceCenterTask implements Runnable {
 
   private int interval;
 
-  private int checkTimes;
-
-  private AtomicLong consecutiveFailedTimes = new AtomicLong();
-
-  private AtomicLong consecutiveSucceededTimes = new AtomicLong();
-
-  private boolean safeMode = false;
-
   private MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
   private boolean registerInstanceSuccess = false;
 
   private ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
 
-  public ServiceCenterTask(EventBus eventBus, int interval, int checkTimes,
+  public ServiceCenterTask(EventBus eventBus, int interval,
       MicroserviceServiceCenterTask microserviceServiceCenterTask) {
     this.eventBus = eventBus;
     this.interval = interval;
-    this.checkTimes = checkTimes;
     this.microserviceServiceCenterTask = microserviceServiceCenterTask;
 
     this.eventBus.register(this);
@@ -75,20 +63,7 @@ public class ServiceCenterTask implements Runnable {
     if (task.getHeartbeatResult() != HeartbeatResult.SUCCESS) {
       LOGGER.info("read MicroserviceInstanceHeartbeatTask status is {}", task.taskStatus);
       onException();
-      if (!safeMode && consecutiveFailedTimes.incrementAndGet() > checkTimes) {
-        LOGGER.warn("service center is unavailable, enter safe mode");
-        eventBus.post(new SafeModeChangeEvent(true));
-        this.safeMode = true;
-      }
-      consecutiveSucceededTimes.set(0);
-      return;
     }
-    if (safeMode && consecutiveSucceededTimes.incrementAndGet() > checkTimes) {
-      LOGGER.warn("service center is recovery, exit safe mode");
-      eventBus.post(new SafeModeChangeEvent(false));
-      this.safeMode = false;
-    }
-    consecutiveFailedTimes.set(0);
   }
 
   // messages given in watch error
@@ -120,7 +95,7 @@ public class ServiceCenterTask implements Runnable {
   }
 
   @VisibleForTesting
-  public boolean getSafeMode() {
-    return safeMode;
+  public boolean isRegisterInstanceSuccess() {
+    return this.registerInstanceSuccess;
   }
 }

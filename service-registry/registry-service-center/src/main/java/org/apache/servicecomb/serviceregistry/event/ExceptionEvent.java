@@ -14,8 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.api.event.task;
+package org.apache.servicecomb.serviceregistry.event;
 
-public class ShutdownEvent {
+public class ExceptionEvent {
+  private Throwable throwable;
 
+  public ExceptionEvent(Throwable throwable) {
+    this.throwable = throwable;
+  }
+
+  public Throwable getThrowable() {
+    return throwable;
+  }
 }

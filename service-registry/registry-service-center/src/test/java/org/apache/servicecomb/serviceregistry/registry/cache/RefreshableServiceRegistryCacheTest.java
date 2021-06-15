@@ -23,8 +23,8 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.junit.Assert;
@@ -121,29 +121,6 @@ public class RefreshableServiceRegistryCacheTest {
     Assert.assertEquals(2, serviceRegistryCache.microserviceCache.size());
     Assert.assertSame(microserviceCache, serviceRegistryCache.microserviceCache.get(microserviceCache.getKey()));
     Assert.assertSame(microserviceCache2, serviceRegistryCache.microserviceCache.get(microserviceCache2.getKey()));
-  }
-
-  @Test
-  public void forceRefreshCache() {
-    RefreshableMicroserviceCache microserviceCache = new RefreshableMicroserviceCache(
-        consumerService,
-        MicroserviceCacheKey.builder().serviceName("svc").appId("appId").env("env").build(),
-        null, false) {
-      @Override
-      public void forceRefresh() {
-        this.status = MicroserviceCacheStatus.REFRESHED;
-      }
-    };
-
-    serviceRegistryCache.microserviceCache.put(microserviceCache.getKey(), microserviceCache);
-
-    List<MicroserviceCache> refreshedCaches = new ArrayList<>();
-    serviceRegistryCache.setCacheRefreshedWatcher(refreshedCaches::addAll);
-
-    serviceRegistryCache.forceRefreshCache();
-
-    Assert.assertEquals(1, refreshedCaches.size());
-    Assert.assertSame(microserviceCache.getKey(), refreshedCaches.get(0).getKey());
   }
 
   @Test

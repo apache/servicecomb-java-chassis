@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.registry.api.event.task;
+package org.apache.servicecomb.serviceregistry.event;
 
 /**
- * Service Center Heart Beat failure event
+ * Service Center Heart Beat success event
  *
  */
-public class HeartbeatFailEvent {
+public class HeartbeatSuccEvent {
 
 }
 

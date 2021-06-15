@@ -24,14 +24,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +46,6 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
   String revisionId;
 
   ServiceRegistryClient srClient;
-
-  boolean safeMode;
 
   MicroserviceCacheStatus status = MicroserviceCacheStatus.INIT;
 
@@ -162,12 +159,6 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
   protected Set<MicroserviceInstance> mergeInstances(List<MicroserviceInstance> pulledInstances) {
     Set<MicroserviceInstance> mergedInstances = new LinkedHashSet<>(pulledInstances);
 
-    if (safeMode) {
-      // in safe mode, instances will never be deleted
-      mergedInstances.addAll(instances);
-      return mergedInstances;
-    }
-
     if (!inEmptyPulledInstancesProtectionSituation(pulledInstances)) {
       return mergedInstances;
     }
@@ -231,10 +222,6 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
       return;
     }
     refresh();
-  }
-
-  void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    this.safeMode = modeChangeEvent.getCurrentMode();
   }
 
   private boolean microserviceMatched(MicroserviceInstanceChangedEvent event) {

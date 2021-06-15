@@ -25,9 +25,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
-import org.apache.servicecomb.registry.api.event.task.ShutdownEvent;
+import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
@@ -147,7 +145,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     MicroserviceServiceCenterTask task =
         new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
     serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig.getHeartbeatInterval(),
-        serviceRegistryConfig.getResendHeartBeatTimes(), task);
+        task);
   }
 
   public boolean unregisterInstance() {
@@ -277,23 +275,5 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           serviceRegistryCache.onMicroserviceInstanceChanged(changedEvent);
           DiscoveryManager.INSTANCE.getAppManager().onMicroserviceInstanceChanged(changedEvent);
         }));
-  }
-
-  // post from watch eventloop, should refresh all instances immediately
-  @Subscribe
-  public void serviceRegistryRecovery(RecoveryEvent event) {
-    executorService.execute(() -> {
-      serviceRegistryCache.forceRefreshCache();
-      DiscoveryManager.INSTANCE.getAppManager().pullInstances();
-    });
-  }
-
-  @Subscribe
-  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    executorService.execute(() -> {
-      LOGGER.warn("receive SafeModeChangeEvent, current mode={}", modeChangeEvent.getCurrentMode());
-      serviceRegistryCache.onSafeModeChanged(modeChangeEvent);
-      DiscoveryManager.INSTANCE.getAppManager().onSafeModeChanged(modeChangeEvent);
-    });
   }
 }

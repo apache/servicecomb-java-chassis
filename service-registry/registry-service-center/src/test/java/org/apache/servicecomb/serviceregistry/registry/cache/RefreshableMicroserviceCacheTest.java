@@ -23,14 +23,13 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -252,54 +251,6 @@ public class RefreshableMicroserviceCacheTest {
     List<MicroserviceInstance> newInstanceList = microserviceCache.getInstances();
     Assert.assertEquals(0, newInstanceList.size());
     Assert.assertSame(oldInstanceList, newInstanceList);
-  }
-
-  @Test
-  public void refresh_safe_mode() {
-    microserviceCache.instances = new ArrayList<>();
-    MicroserviceInstance instance0 = new MicroserviceInstance();
-    instance0.setInstanceId("instanceId0");
-    microserviceCache.instances.add(instance0);
-
-    pulledInstances = new ArrayList<>();
-    MicroserviceInstance instance1 = new MicroserviceInstance();
-    instance1.setInstanceId("instanceId1");
-    pulledInstances.add(instance1);
-
-    microserviceCache.refresh();
-
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
-    Assert.assertEquals(1, microserviceCache.getInstances().size());
-    Assert.assertEquals("instanceId1", microserviceCache.getInstances().get(0).getInstanceId());
-
-    // enter safe mode
-    microserviceCache.onSafeModeChanged(new SafeModeChangeEvent(true));
-
-    pulledInstances = new ArrayList<>();
-    MicroserviceInstance instance2 = new MicroserviceInstance();
-    instance2.setInstanceId("instanceId2");
-    pulledInstances.add(instance2);
-
-    microserviceCache.refresh();
-
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
-    Assert.assertEquals(2, microserviceCache.getInstances().size());
-    Assert.assertEquals("instanceId2", microserviceCache.getInstances().get(0).getInstanceId());
-    Assert.assertEquals("instanceId1", microserviceCache.getInstances().get(1).getInstanceId());
-
-    // exit safe mode
-    microserviceCache.onSafeModeChanged(new SafeModeChangeEvent(false));
-
-    pulledInstances = new ArrayList<>();
-    MicroserviceInstance instance3 = new MicroserviceInstance();
-    instance3.setInstanceId("instanceId3");
-    pulledInstances.add(instance3);
-
-    microserviceCache.refresh();
-
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
-    Assert.assertEquals(1, microserviceCache.getInstances().size());
-    Assert.assertEquals("instanceId3", microserviceCache.getInstances().get(0).getInstanceId());
   }
 
   @Test
