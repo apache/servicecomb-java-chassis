@@ -20,12 +20,12 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - uses: actions/cache@v1
+    - uses: actions/cache@v2
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ runner.os }}-maven
+          ${{ runner.os }}-maven-
     - name: Compilation and Installation
       run: bash scripts/build.sh install
     - name: publish coverage report
