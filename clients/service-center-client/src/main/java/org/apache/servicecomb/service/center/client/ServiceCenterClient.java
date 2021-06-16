@@ -503,6 +503,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         result.setStatusCode(HttpStatus.SC_OK);
         return result;
       } else if (response.getStatusCode() == HttpStatus.SC_NOT_FOUND ||
+          response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED ||
           response.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
         RbacTokenResponse result = new RbacTokenResponse();
         result.setStatusCode(response.getStatusCode());
