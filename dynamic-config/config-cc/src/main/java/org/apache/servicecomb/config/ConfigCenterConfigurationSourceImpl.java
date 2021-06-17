@@ -24,7 +24,13 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.center.client.AddressManager;
 import org.apache.servicecomb.config.center.client.ConfigCenterClient;
 import org.apache.servicecomb.config.center.client.ConfigCenterManager;
@@ -53,7 +59,7 @@ import com.netflix.config.WatchedUpdateResult;
 public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigurationSource {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterConfigurationSourceImpl.class);
 
-  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private ConfigCenterManager configCenterManager;
 
@@ -83,9 +89,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
     AddressManager kieAddressManager = configKieAddressManager();
 
-    RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
-
-    HttpTransport httpTransport = createHttpTransport(kieAddressManager.sslEnabled(), requestBuilder.build(),
+    HttpTransport httpTransport = createHttpTransport(kieAddressManager,
+        HttpTransportFactory.defaultRequestConfig().build(),
         localConfiguration);
     ConfigCenterClient configCenterClient = new ConfigCenterClient(kieAddressManager, httpTransport);
     EventManager.register(this);
@@ -136,13 +141,33 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return request;
   }
 
-  private HttpTransport createHttpTransport(boolean sslEnabled, RequestConfig requestConfig,
+  private HttpTransport createHttpTransport(AddressManager kieAddressManager, RequestConfig requestConfig,
       Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
+    if (ConfigCenterConfig.INSTANCE.isProxyEnable()) {
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
+          setDefaultRequestConfig(requestConfig);
+      HttpHost proxy = new HttpHost(ConfigCenterConfig.INSTANCE.getProxyHost(),
+          ConfigCenterConfig.INSTANCE.getProxyPort(), "http");  // now only support http proxy
+      httpClientBuilder.setProxy(proxy);
+      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(new AuthScope(proxy),
+          new UsernamePasswordCredentials(ConfigCenterConfig.INSTANCE.getProxyUsername(),
+              ConfigCenterConfig.INSTANCE.getProxyPasswd()));
+      httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+      return HttpTransportFactory
+          .createHttpTransport(
+              TransportUtils
+                  .createSSLProperties(kieAddressManager.sslEnabled(), localConfiguration, ConfigCenterConfig.SSL_TAG),
+              getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
+    }
+
     return HttpTransportFactory
         .createHttpTransport(
-            TransportUtils.createSSLProperties(sslEnabled, localConfiguration, ConfigCenterConfig.SSL_TAG),
+            TransportUtils
+                .createSSLProperties(kieAddressManager.sslEnabled(), localConfiguration, ConfigCenterConfig.SSL_TAG),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
@@ -155,10 +180,9 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   }
 
   private AddressManager configKieAddressManager() {
-    AddressManager kieAddressManager = new AddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
+    return new AddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
             .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL());
-    return kieAddressManager;
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

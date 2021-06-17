@@ -28,6 +28,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 
 public class HttpTransportFactory {
   // All parameters set to 5 seconds now.
@@ -45,7 +46,25 @@ public class HttpTransportFactory {
   }
 
   public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,
+      RequestAuthHeaderProvider requestAuthHeaderProvider, HttpClientBuilder httpClientBuilder) {
+    PoolingHttpClientConnectionManager connectionManager = getPoolingHttpClientConnectionManager(sslProperties);
+    httpClientBuilder.setConnectionManager(connectionManager).disableCookieManagement();
+    return new HttpTransportImpl(httpClientBuilder.build(), requestAuthHeaderProvider);
+  }
+
+  public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,
       RequestAuthHeaderProvider requestAuthHeaderProvider, RequestConfig config) {
+    PoolingHttpClientConnectionManager connectionManager = getPoolingHttpClientConnectionManager(sslProperties);
+
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
+        setDefaultRequestConfig(config).
+        setConnectionManager(connectionManager).
+        disableCookieManagement();
+
+    return new HttpTransportImpl(httpClientBuilder.build(), requestAuthHeaderProvider);
+  }
+
+  private static PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(SSLProperties sslProperties) {
     //register http/https socket factory
     RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.<ConnectionSocketFactory>create();
     builder.register("http", PlainConnectionSocketFactory.INSTANCE);
@@ -62,13 +81,7 @@ public class HttpTransportFactory {
         connectionSocketFactoryRegistry);
     connectionManager.setMaxTotal(MAX_TOTAL);
     connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
-
-    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
-        setDefaultRequestConfig(config).
-        setConnectionManager(connectionManager).
-        disableCookieManagement();
-
-    return new HttpTransportImpl(httpClientBuilder.build(), requestAuthHeaderProvider);
+    return connectionManager;
   }
 
   public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,

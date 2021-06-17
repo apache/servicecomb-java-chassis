@@ -60,14 +60,6 @@ public class KieConfig {
 
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
 
-  public static final String CONNECTION_TIME_OUT = "servicecomb.kie.client.timeout.connection";
-
-  public static final String EVENT_LOOP_SIZE = "servicecomb.kie.client.eventLoopSize";
-
-  public static final String VERTICAL_INSTANCE_COUNT = "servicecomb.kie.client.verticalInstanceCount";
-
-  public static final String IDLE_TIMEOUT_IN_SECONDES = "servicecomb.kie.client.idleTimeoutInSeconds";
-
   private static final int DEFAULT_REFRESH_INTERVAL = 3000;
 
   private static final int DEFAULT_POLLING_WAIT_TIME = 10;
@@ -103,22 +95,6 @@ public class KieConfig {
       return (List<String>) property;
     }
     return Collections.EMPTY_LIST;
-  }
-
-  public int getConnectionTimeOut() {
-    return finalConfig.getInt(CONNECTION_TIME_OUT, 1000);
-  }
-
-  public int getEventLoopSize() {
-    return finalConfig.getInt(EVENT_LOOP_SIZE, 2);
-  }
-
-  public int getVerticalInstanceCount() {
-    return finalConfig.getInt(VERTICAL_INSTANCE_COUNT, 1);
-  }
-
-  public int getIdleTimeoutInSeconds() {
-    return finalConfig.getInt(IDLE_TIMEOUT_IN_SECONDES, 60);
   }
 
   public String getVersion() {

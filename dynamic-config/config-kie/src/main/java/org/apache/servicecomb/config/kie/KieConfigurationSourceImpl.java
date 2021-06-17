@@ -26,7 +26,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.KieClient;
@@ -85,7 +91,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
       requestBuilder.setConnectionRequestTimeout(KieConfig.INSTANCE.getPollingWaitTime() * 2 * 1000);
       requestBuilder.setSocketTimeout(KieConfig.INSTANCE.getPollingWaitTime() * 2 * 1000);
     }
-    HttpTransport httpTransport = createHttpTransport(kieAddressManager.sslEnabled(), requestBuilder.build(),
+    HttpTransport httpTransport = createHttpTransport(kieAddressManager, requestBuilder.build(),
         localConfiguration);
     KieConfiguration kieConfiguration = createKieConfiguration();
     KieClient kieClient = new KieClient(kieAddressManager, httpTransport, kieConfiguration);
@@ -117,13 +123,33 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
         .setServiceName(KieConfig.INSTANCE.getServiceName());
   }
 
-  private HttpTransport createHttpTransport(boolean sslEnabled, RequestConfig requestConfig,
+  private HttpTransport createHttpTransport(KieAddressManager kieAddressManager, RequestConfig requestConfig,
       Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
+    if (KieConfig.INSTANCE.isProxyEnable()) {
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
+          setDefaultRequestConfig(requestConfig);
+      HttpHost proxy = new HttpHost(KieConfig.INSTANCE.getProxyHost(),
+          KieConfig.INSTANCE.getProxyPort(),"http"); // now only support http proxy
+      httpClientBuilder.setProxy(proxy);
+      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(new AuthScope(proxy),
+          new UsernamePasswordCredentials(KieConfig.INSTANCE.getProxyUsername(),
+              KieConfig.INSTANCE.getProxyPasswd()));
+      httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+      return HttpTransportFactory
+          .createHttpTransport(
+              TransportUtils
+                  .createSSLProperties(kieAddressManager.sslEnabled(), localConfiguration, KieConfig.SSL_TAG),
+              getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
+    }
+
     return HttpTransportFactory
         .createHttpTransport(
-            TransportUtils.createSSLProperties(sslEnabled, localConfiguration, KieConfig.SSL_TAG),
+            TransportUtils
+                .createSSLProperties(kieAddressManager.sslEnabled(), localConfiguration, KieConfig.SSL_TAG),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
