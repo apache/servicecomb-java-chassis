@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final Map<SubscriptionKey, SubscriptionValue> instancesCache = new ConcurrentHashMap<>();
 
+  private List<SubscriptionKey> failedInstances = new ArrayList<>();
+
   private final Map<String, Microservice> microserviceCache = new ConcurrentHashMap<>();
 
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
@@ -156,6 +159,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
       }
     } catch (Exception e) {
       LOGGER.error("find service {}#{} instance failed.", k.appId, k.serviceName, e);
+      failedInstances.add(k);
     }
   }
 
@@ -187,6 +191,11 @@ public class ServiceCenterDiscovery extends AbstractTask {
     instancesCache.forEach((k, v) -> {
       pullInstance(k, v);
     });
+    if (failedInstances.isEmpty()) {
+      return;
+    }
+    failedInstances.forEach(item -> instancesCache.remove(item));
+    failedInstances.clear();
   }
 
   private static String instanceToString(List<MicroserviceInstance> instances) {

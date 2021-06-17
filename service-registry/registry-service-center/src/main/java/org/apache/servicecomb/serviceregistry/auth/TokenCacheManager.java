@@ -17,38 +17,40 @@
 
 package org.apache.servicecomb.serviceregistry.auth;
 
-import java.time.Clock;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nonnull;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.auth.Cipher;
-import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.common.utils.TimeUtils;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
 import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
 public final class TokenCacheManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenCacheManager.class);
 
+  // special token used for special conditions
+  // e.g. un-authorized: will query token after token expired period
+  // e.g. not found:  will query token after token expired period
+  public static final String INVALID_TOKEN = "invalid";
+
   private static final TokenCacheManager INSTANCE = new TokenCacheManager();
 
-  private Clock clock = TimeUtils.getSystemDefaultZoneClock();
-
-  private ScheduledExecutorService tokenCacheWorker;
 
   private Map<String, TokenCache> tokenCacheMap;
 
@@ -59,16 +61,6 @@ public final class TokenCacheManager {
   }
 
   private TokenCacheManager() {
-    tokenCacheWorker = Executors.newScheduledThreadPool(2, new ThreadFactory() {
-      private final AtomicInteger threadIndexer = new AtomicInteger();
-
-      @Override
-      public Thread newThread(@Nonnull Runnable r) {
-        Thread thread = new Thread(r, "auth-token-cache-" + threadIndexer.getAndIncrement());
-        thread.setDaemon(true);
-        return thread;
-      }
-    });
     tokenCacheMap = new ConcurrentHashMapEx<>();
   }
 
@@ -83,104 +75,102 @@ public final class TokenCacheManager {
       return;
     }
 
-    TokenCache tokenCache = new TokenCache(registryName, accountName, password, cipher, this.clock);
-    tokenCache.setTokenCacheWorker(this.tokenCacheWorker);
-    tokenCacheMap.put(registryName, tokenCache);
-    tokenCache.refreshToken();
+    tokenCacheMap.put(registryName, new TokenCache(registryName, accountName, password, cipher));
   }
 
   public String getToken(String registryName) {
     return Optional.ofNullable(tokenCacheMap.get(registryName))
         .map(TokenCache::getToken)
-        .orElse("");
+        .orElse(null);
   }
 
   public class TokenCache {
+    private static final long TOKEN_REFRESH_TIME_IN_SECONDS = 20 * 60 * 1000;
+
     private final String registryName;
 
     private final String accountName;
 
     private final String password;
 
-    private final Clock clock;
+    private ExecutorService executorService;
 
-    private String token;
-
-    private long nextRefreshTime;
-
-    /**
-     * The life cycle period of a token, in millisecond.
-     * After the {@code tokenLife} time since the token created, it should be refreshed.
-     * <p>
-     * Default life time in sc is 30min, give 2min buffer
-     * </p>
-     */
-    private long tokenLife = TimeUnit.MINUTES.toMillis(30 - 2);
-
-    private ScheduledExecutorService tokenCacheWorker;
+    private LoadingCache<String, String> cache;
 
     private Cipher cipher;
 
     public TokenCache(String registryName, String accountName, String password,
-        Cipher cipher, Clock clock) {
+        Cipher cipher) {
       this.registryName = registryName;
       this.accountName = accountName;
       this.password = password;
       this.cipher = cipher;
-      this.clock = clock;
-    }
 
-    public String getToken() {
-      return token == null ? "" : token;
-    }
+      if (enabled()) {
+        executorService = Executors.newFixedThreadPool(1, t -> new Thread(t, "rbac-executor-" + this.registryName));
+        cache = CacheBuilder.newBuilder()
+            .maximumSize(1)
+            .refreshAfterWrite(refreshTime(), TimeUnit.MILLISECONDS)
+            .build(new CacheLoader<String, String>() {
+              @Override
+              public String load(String key) throws Exception {
+                return createHeaders();
+              }
 
-    public void setTokenCacheWorker(ScheduledExecutorService tokenCacheWorker) {
-      Objects.requireNonNull(tokenCacheWorker, "input tokenCacheWorker is null");
-      if (this.tokenCacheWorker != null) {
-        throw new IllegalStateException("tokenCacheWorker already set!");
+              @Override
+              public ListenableFuture<String> reload(String key, String oldValue) throws Exception {
+                return Futures.submit(() -> createHeaders(), executorService);
+              }
+            });
       }
-
-      this.tokenCacheWorker = tokenCacheWorker;
-      startTokenRefreshTask();
     }
 
-    private void startTokenRefreshTask() {
-      this.tokenCacheWorker.scheduleAtFixedRate(
-          new SuppressedRunnableWrapper(() -> {
-            if (isTokenOutdated()) {
-              refreshToken();
-            }
-          }),
-          1,
-          5,
-          TimeUnit.SECONDS);
-    }
+    private String createHeaders() {
+      LOGGER.info("start to create RBAC headers");
 
-    private boolean isTokenOutdated() {
-      return clock.millis() > nextRefreshTime;
-    }
-
-    private void refreshToken() {
       ServiceCenterClient serviceCenterClient = serviceCenterClients.get(this.registryName);
 
       RbacTokenRequest request = new RbacTokenRequest();
       request.setName(new String(cipher.decrypt(accountName.toCharArray())));
       request.setPassword(new String(cipher.decrypt(password.toCharArray())));
+
       RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request);
-      LOGGER.info("refresh token successfully {}", rbacTokenResponse.getStatusCode());
-      if (StringUtils.isEmpty(this.token)) {
-        if (Status.UNAUTHORIZED.getStatusCode() == rbacTokenResponse.getStatusCode()) {
-          // password wrong, do not try anymore
-          LOGGER.warn("username or password may be wrong!");
-          this.tokenCacheWorker.shutdown();
-        } else if (Status.NOT_FOUND.getStatusCode() == rbacTokenResponse.getStatusCode()) {
-          // service center not support, do not try
-          LOGGER.warn("service center do not support rbac token, you should not config account info");
-          this.tokenCacheWorker.shutdown();
-        }
+
+      if (Status.UNAUTHORIZED.getStatusCode() == rbacTokenResponse.getStatusCode()
+          || Status.FORBIDDEN.getStatusCode() == rbacTokenResponse.getStatusCode()) {
+        // password wrong, do not try anymore
+        LOGGER.warn("username or password may be wrong, stop trying to query tokens.");
+        return INVALID_TOKEN;
+      } else if (Status.NOT_FOUND.getStatusCode() == rbacTokenResponse.getStatusCode()) {
+        // service center not support, do not try
+        LOGGER.warn("service center do not support RBAC token, you should not config account info");
+        return INVALID_TOKEN;
       }
-      this.token = rbacTokenResponse.getToken();
-      this.nextRefreshTime = clock.millis() + tokenLife;
+
+      LOGGER.info("refresh token successfully {}", rbacTokenResponse.getStatusCode());
+      return rbacTokenResponse.getToken();
+    }
+
+    protected long refreshTime() {
+      return TOKEN_REFRESH_TIME_IN_SECONDS;
+    }
+
+    public String getToken() {
+      if (!enabled()) {
+        return null;
+      }
+
+      try {
+        return cache.get(registryName);
+      } catch (Exception e) {
+        LOGGER.error("failed to create token", e);
+        return null;
+      }
+    }
+
+    private boolean enabled() {
+      return !StringUtils.isEmpty(this.accountName)
+          && !StringUtils.isEmpty(this.password);
     }
   }
 }
