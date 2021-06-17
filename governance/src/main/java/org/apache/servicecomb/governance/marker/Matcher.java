@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.servicecomb.governance.marker.operator.RawOperator;
 
 public class Matcher {
+  private String name;
+
   private Map<String, RawOperator> headers;
 
   private RawOperator apiPath;
@@ -50,5 +52,13 @@ public class Matcher {
 
   public void setMethod(List<String> method) {
     this.method = method;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

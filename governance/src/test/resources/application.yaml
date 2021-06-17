@@ -33,8 +33,13 @@ servicecomb:
             exact: "/circuitBreaker"
     demo-bulkhead: |
       matches:
-        - apiPath:
+        - name: matchPath
+          apiPath:
             exact: "/bulkhead"
+        - name: matchHeader
+          headers:
+            x-token:
+              exact: token
     demo-bulkhead-other: |
       matches:
         - apiPath:
