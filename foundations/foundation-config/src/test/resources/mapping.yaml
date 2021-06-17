@@ -14,8 +14,12 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
+servicecomb-config-order: 0
 
 CSE_ENV_MAPPING: servicecomb.testmapping.key
 MY_SERVICES_ENDPOINT:
   - servicecomb.service.mapping.address
   - servicecomb.service1.mapping.address
+SERVICECOMB_ENV:
+  - service_description.environment
+  - service_description.environment.old

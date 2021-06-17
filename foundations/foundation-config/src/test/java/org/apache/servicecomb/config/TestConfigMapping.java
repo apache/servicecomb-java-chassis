@@ -20,19 +20,20 @@ package org.apache.servicecomb.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
-/**
- * Created by   on 2017/1/5.
- */
 public class TestConfigMapping {
   @Test
   public void testMapping() {
-    String value = ConfigMapping.map("SERVICECOMB_ENV");
+    List<String> value = ConfigMapping.map("SERVICECOMB_ENV");
+    assertEquals(2, value.size());
+    assertEquals("service_description.environment", value.get(0));
+    assertEquals("service_description.environment.old", value.get(1));
+
     Map<String, Object> m = ConfigMapping.getMapping();
-    assertEquals("service_description.environment", value);
     assertNotNull(m);
   }
 

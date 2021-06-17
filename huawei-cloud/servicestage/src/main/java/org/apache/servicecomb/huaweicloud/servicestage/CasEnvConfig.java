@@ -28,17 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class CasEnvConfig {
-  private static final String CAS_BASE = "servicecomb.huaweicloud.servicestage.cas.";
+  private static final String APPLICATION_ID = "CAS_APPLICATION_ID";
 
-  private static final String APPLICATION_ID = CAS_BASE + "application-id";
+  private static final String COMPONENT_NAME = "CAS_COMPONENT_NAME";
 
-  private static final String COMPONENT_NAME = CAS_BASE + "component-name";
+  private static final String INSTANCE_VERSION = "CAS_INSTANCE_VERSION";
 
-  private static final String INSTANCE_VERSION = CAS_BASE + "instance-version";
+  private static final String INSTANCE_ID = "CAS_INSTANCE_ID";
 
-  private static final String INSTANCE_ID = CAS_BASE + "instance-id";
-
-  private static final String ENVIRONMENT_ID = CAS_BASE + "environment-id";
+  private static final String ENVIRONMENT_ID = "CAS_ENVIRONMENT_ID";
 
   public static final CasEnvConfig INSTANCE = new CasEnvConfig();
 
@@ -49,15 +47,15 @@ public class CasEnvConfig {
   }
 
   private void init() {
-    properties.put("CAS_APPLICATION_ID", DynamicPropertyFactory
+    properties.put(APPLICATION_ID, DynamicPropertyFactory
         .getInstance().getStringProperty(APPLICATION_ID, EMPTY).get());
-    properties.put("CAS_COMPONENT_NAME", DynamicPropertyFactory
+    properties.put(COMPONENT_NAME, DynamicPropertyFactory
         .getInstance().getStringProperty(COMPONENT_NAME, EMPTY).get());
-    properties.put("CAS_INSTANCE_VERSION", DynamicPropertyFactory
+    properties.put(INSTANCE_VERSION, DynamicPropertyFactory
         .getInstance().getStringProperty(INSTANCE_VERSION, EMPTY).get());
-    properties.put("CAS_INSTANCE_ID", DynamicPropertyFactory
+    properties.put(INSTANCE_ID, DynamicPropertyFactory
         .getInstance().getStringProperty(INSTANCE_ID, EMPTY).get());
-    properties.put("CAS_ENVIRONMENT_ID", DynamicPropertyFactory
+    properties.put(ENVIRONMENT_ID, DynamicPropertyFactory
         .getInstance().getStringProperty(ENVIRONMENT_ID, EMPTY).get());
   }
 

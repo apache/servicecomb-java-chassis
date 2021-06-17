@@ -26,8 +26,8 @@ public class TestCasEnvConfig {
 
   @BeforeClass
   public static void init() {
-    System.setProperty("servicecomb.huaweicloud.servicestage.cas.application-id", "application-id");
-    System.setProperty("servicecomb.huaweicloud.servicestage.cas.environment-id", "env-id");
+    System.setProperty("CAS_APPLICATION_ID", "application-id");
+    System.setProperty("CAS_ENVIRONMENT_ID", "env-id");
   }
 
   @Test
@@ -40,7 +40,7 @@ public class TestCasEnvConfig {
 
   @AfterClass
   public static void destroy() {
-    System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.application-id");
-    System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.environment-id");
+    System.getProperties().remove("CAS_ENVIRONMENT_ID");
+    System.getProperties().remove("CAS_APPLICATION_ID");
   }
 }
