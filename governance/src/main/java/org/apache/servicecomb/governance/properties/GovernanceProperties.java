@@ -105,7 +105,6 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
     Set<String> allKeys = new HashSet<>();
 
     if (!(environment instanceof ConfigurableEnvironment)) {
-      LOGGER.warn("None ConfigurableEnvironment is ignored in {}", this.getClass().getName());
       return allKeys;
     }
 

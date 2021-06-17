@@ -33,7 +33,7 @@ import org.springframework.util.ResourceUtils;
 public abstract class AbstractConfigLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfigLoader.class);
 
-  private static final String ORDER_KEY = "servicecomb-config-order";
+  public static final String ORDER_KEY = "servicecomb-config-order";
 
   protected final List<ConfigModel> configModels = new ArrayList<>();
 
