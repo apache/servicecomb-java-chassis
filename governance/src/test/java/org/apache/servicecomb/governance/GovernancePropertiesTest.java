@@ -121,6 +121,13 @@ public class GovernancePropertiesTest {
     Assert.assertEquals(1, matchers.size());
     Matcher matcher = matchers.get(0);
     Assert.assertEquals("/hello", matcher.getApiPath().get("exact"));
+
+    TrafficMarker demoBulkhead = markers.get("demo-bulkhead");
+    matchers = demoBulkhead.getMatches();
+    Assert.assertEquals(2, matchers.size());
+    matcher = matchers.get(0);
+    Assert.assertEquals("/bulkhead", matcher.getApiPath().get("exact"));
+    Assert.assertEquals("matchPath", matcher.getName());
   }
 
   @Test
