@@ -36,17 +36,7 @@ public final class ConfigCenterConfig {
 
   private static final String AUTO_DISCOVERY_ENABLED = "servicecomb.service.registry.autodiscovery";
 
-  private static final String REFRESH_MODE = "servicecomb.config.client.refreshMode";
-
-  private static final String REFRESH_PORT = "servicecomb.config.client.refreshPort";
-
-  private static final String TENANT_NAME = "servicecomb.config.client.tenantName";
-
   private static final String DOMAIN_NAME = "servicecomb.config.client.domainName";
-
-  private static final String TOKEN_NAME = "servicecomb.config.client.token";
-
-  private static final String URI_API_VERSION = "servicecomb.config.client.api.version";
 
   private static final String REFRESH_INTERVAL = "servicecomb.config.client.refresh_interval";
 
@@ -54,19 +44,7 @@ public final class ConfigCenterConfig {
 
   private static final String FIRST_PULL_REQUIRED = "servicecomb.config.client.firstPullRequired";
 
-  public static final String CONNECTION_TIME_OUT = "servicecomb.config.client.timeout.connection";
-
-  public static final String EVENT_LOOP_SIZE = "servicecomb.config.client.eventLoopSize";
-
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
-
-  public static final String VERTICAL_INSTANCE_COUNT = "servicecomb.config.client.verticalInstanceCount";
-
-  public static final String IDLE_TIMEOUT_IN_SECONDES = "servicecomb.config.client.idleTimeoutInSeconds";
-
-  private static final int DEFAULT_REFRESH_MODE = 0;
-
-  private static final int DEFAULT_REFRESH_PORT = 30104;
 
   private static final int DEFAULT_REFRESH_INTERVAL = 30000;
 
@@ -83,28 +61,9 @@ public final class ConfigCenterConfig {
     return finalConfig;
   }
 
-  public int getRefreshMode() {
-    return finalConfig.getInt(REFRESH_MODE, DEFAULT_REFRESH_MODE);
-  }
-
-  public int getRefreshPort() {
-    return finalConfig.getInt(REFRESH_PORT, DEFAULT_REFRESH_PORT);
-  }
-
-  public String getTenantName() {
-    return finalConfig.getString(TENANT_NAME, "default");
-  }
 
   public String getDomainName() {
     return finalConfig.getString(DOMAIN_NAME, "default");
-  }
-
-  public String getToken() {
-    return finalConfig.getString(TOKEN_NAME, null);
-  }
-
-  public String getApiVersion() {
-    return finalConfig.getString(URI_API_VERSION, "v3");
   }
 
   public boolean firstPullRequired() {
@@ -172,22 +131,6 @@ public final class ConfigCenterConfig {
 
   public boolean getAutoDiscoveryEnabled() {
     return finalConfig.getBoolean(AUTO_DISCOVERY_ENABLED, false);
-  }
-
-  public int getConnectionTimeout() {
-    return finalConfig.getInt(CONNECTION_TIME_OUT, 1000);
-  }
-
-  public int getEventLoopSize() {
-    return finalConfig.getInt(EVENT_LOOP_SIZE, 2);
-  }
-
-  public int getVerticalInstanceCount() {
-    return finalConfig.getInt(VERTICAL_INSTANCE_COUNT, 1);
-  }
-
-  public int getIdleTimeoutInSeconds() {
-    return finalConfig.getInt(IDLE_TIMEOUT_IN_SECONDES, 60);
   }
 
   public String getEnvironment() {
