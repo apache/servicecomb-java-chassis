@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
@@ -85,6 +86,23 @@ public class TestConfigUtil {
   @AfterClass
   public static void tearDown() {
     ArchaiusUtils.resetConfig();
+  }
+
+  @Test
+  public void testArrayData() {
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    Assert.assertEquals("a,b,c", configuration.getString("test.commonSeparatedString"));
+    Assert.assertEquals(1, configuration.getStringArray("test.commonSeparatedString").length);
+    Assert.assertEquals("a,b,c", configuration.getStringArray("test.commonSeparatedString")[0]);
+
+    Assert.assertEquals("b,c,d", configuration.getString("test.commonSeparatedStringHolder"));
+    Assert.assertEquals(1, configuration.getStringArray("test.commonSeparatedStringHolder").length);
+    Assert.assertEquals("b,c,d", configuration.getStringArray("test.commonSeparatedStringHolder")[0]);
+
+    Assert.assertEquals("m", configuration.getString("test.stringArray")); // first element
+    Assert.assertEquals(2, configuration.getStringArray("test.stringArray").length);
+    Assert.assertEquals("m", configuration.getStringArray("test.stringArray")[0]);
+    Assert.assertEquals("n", configuration.getStringArray("test.stringArray")[1]);
   }
 
   @Test
@@ -328,7 +346,7 @@ public class TestConfigUtil {
     Class<?>[] classes = Collections.class.getDeclaredClasses();
     Map<String, String> env = System.getenv();
     for (Class<?> cl : classes) {
-      if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+      if ("java.util.Collections$UnmodifiableMap" .equals(cl.getName())) {
         Field field = cl.getDeclaredField("m");
         field.setAccessible(true);
         Object obj = field.get(env);

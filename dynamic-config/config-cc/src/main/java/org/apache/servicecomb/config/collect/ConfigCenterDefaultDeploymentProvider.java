@@ -17,14 +17,16 @@
 
 package org.apache.servicecomb.config.collect;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
-import java.util.Arrays;
+import com.google.common.annotations.VisibleForTesting;
 
 public class ConfigCenterDefaultDeploymentProvider implements DeploymentProvider {
   public static final String SYSTEM_KEY_CONFIG_CENTER = "ConfigCenter";
@@ -36,12 +38,13 @@ public class ConfigCenterDefaultDeploymentProvider implements DeploymentProvider
     if (!systemKey.equals(SYSTEM_KEY_CONFIG_CENTER)) {
       return null;
     }
-    String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
-    if (ArrayUtils.isEmpty(ccAddresses)) {
+    List<String> ccAddresses = ConfigUtil
+        .parseArrayValue(configuration.getString("servicecomb.config.client.serverUri"));
+    if (ccAddresses.isEmpty()) {
       return null;
     }
     SystemBootstrapInfo cc = new SystemBootstrapInfo();
-    cc.setAccessURL(Arrays.asList(ccAddresses));
+    cc.setAccessURL(ccAddresses);
     return cc;
   }
 

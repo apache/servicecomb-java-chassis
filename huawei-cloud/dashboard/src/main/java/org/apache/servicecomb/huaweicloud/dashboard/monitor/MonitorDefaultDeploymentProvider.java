@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.List;
+
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 
-import java.util.Arrays;
+import com.google.common.annotations.VisibleForTesting;
 
 public class MonitorDefaultDeploymentProvider implements DeploymentProvider {
   private static AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
@@ -40,12 +40,12 @@ public class MonitorDefaultDeploymentProvider implements DeploymentProvider {
     if (!systemKey.equals(MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE)) {
       return null;
     }
-    String[] msAddresses = configuration.getStringArray(MonitorConstant.MONITOR_URI);
-    if (ArrayUtils.isEmpty(msAddresses)) {
+    List<String> msAddresses = ConfigUtil.parseArrayValue(configuration.getString(MonitorConstant.MONITOR_URI));
+    if (msAddresses.isEmpty()) {
       return null;
     }
     SystemBootstrapInfo ms = new SystemBootstrapInfo();
-    ms.setAccessURL(Arrays.asList(msAddresses));
+    ms.setAccessURL(msAddresses);
     return ms;
   }
 

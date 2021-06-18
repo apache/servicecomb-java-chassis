@@ -17,14 +17,15 @@
 
 package org.apache.servicecomb.serviceregistry.collect;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
-import java.util.Arrays;
+import com.google.common.annotations.VisibleForTesting;
 
 public class ServiceCenterDefaultDeploymentProvider implements DeploymentProvider {
   public static final String SYSTEM_KEY_SERVICE_CENTER = "ServiceCenter";
@@ -37,11 +38,11 @@ public class ServiceCenterDefaultDeploymentProvider implements DeploymentProvide
       return null;
     }
     SystemBootstrapInfo sc = new SystemBootstrapInfo();
-    String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
-    if (ArrayUtils.isEmpty(urls)) {
-      urls = new String[]{"http://127.0.0.1:30100"};
+    List<String> urls = ConfigUtil.parseArrayValue(configuration.getString("servicecomb.service.registry.address"));
+    if (urls.isEmpty()) {
+      urls = Arrays.asList("http://127.0.0.1:30100");
     }
-    sc.setAccessURL(Arrays.asList(urls));
+    sc.setAccessURL(urls);
     return sc;
   }
 

@@ -9,6 +9,10 @@ cse:
   v1:
     test:
       foo: foo
+      dynamicString: a,b
+      dynamicArray:
+        - m
+        - n
 ```
 
 * 依次启动 provider、consumer、gateway

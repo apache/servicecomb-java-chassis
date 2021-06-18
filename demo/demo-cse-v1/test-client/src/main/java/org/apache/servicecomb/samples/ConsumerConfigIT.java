@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.samples;
 
+import java.util.List;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.stereotype.Component;
@@ -32,11 +34,20 @@ public class ConsumerConfigIT implements CategorizedTestCase {
     testFooBar();
   }
 
+  @SuppressWarnings("unchecked")
   private void testConfig() {
     String result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v1.test.foo", String.class);
     TestMgr.check("\"foo\"", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v1.test.bar", String.class);
     TestMgr.check("\"bar\"", result);
+    result = template.getForObject(Config.GATEWAY_URL + "/dynamicString?key=cse.v1.test.dynamicString", String.class);
+    TestMgr.check("\"a,b\"", result);
+
+    List<String> listResult = template
+        .getForObject(Config.GATEWAY_URL + "/dynamicArray", List.class);
+    TestMgr.check(2, listResult.size());
+    TestMgr.check("m", listResult.get(0));
+    TestMgr.check("n", listResult.get(1));
   }
 
   private void testFooBar() {

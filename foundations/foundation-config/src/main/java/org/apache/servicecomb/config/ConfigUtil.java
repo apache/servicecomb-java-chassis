@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
-import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -55,10 +55,8 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicProperty;
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicWatchedConfiguration;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
@@ -103,14 +101,17 @@ public final class ConfigUtil {
     return null;
   }
 
-  public static List<String> getStringList(@Nonnull String key) {
-    return getStringList(ConfigurationManager.getConfigInstance(), key);
-  }
-
+  /**
+   * get comma separated list values from yaml string
+   */
   public static List<String> getStringList(@Nonnull Configuration config, @Nonnull String key) {
-    return config.getList(key).stream()
+    return parseArrayValue(config.getString(key)).stream()
         .map(v -> Objects.toString(v, null))
         .collect(Collectors.toList());
+  }
+
+  public static List<String> parseArrayValue(String value) {
+    return PropertyConverter.split(value, ',', true);
   }
 
   public static ConcurrentCompositeConfiguration createLocalConfig() {
@@ -136,25 +137,25 @@ public final class ConfigUtil {
     ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
 
     duplicateCseConfigToServicecomb(config,
-        new ConcurrentMapConfiguration(new SystemConfiguration()),
+        new ConcurrentMapConfigurationExt(new SystemConfiguration()),
         "configFromSystem");
     duplicateCseConfigToServicecomb(config,
-        convertEnvVariable(new ConcurrentMapConfiguration(new EnvironmentConfiguration())),
+        convertEnvVariable(new ConcurrentMapConfigurationExt(new EnvironmentConfiguration())),
         "configFromEnvironment");
     // If there is extra configurations, add it into config.
     EXTRA_CONFIG_MAP.entrySet()
         .stream()
         .filter(mapEntry -> !mapEntry.getValue().isEmpty())
         .forEachOrdered(configMapEntry -> duplicateCseConfigToServicecomb(config,
-            new ConcurrentMapConfiguration(new MapConfiguration(configMapEntry.getValue())),
+            new ConcurrentMapConfigurationExt(configMapEntry.getValue()),
             configMapEntry.getKey()));
     // we have already copy the cse config to the serviceComb config when we load the config from local yaml files
     // hence, we do not need duplicate copy it.
-    config.addConfiguration(new DynamicConfiguration(
+    config.addConfiguration(new DynamicConfigurationExt(
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
     duplicateCseConfigToServicecombAtFront(config,
-        new ConcurrentMapConfiguration(new MapConfiguration(ConfigMapping.getConvertedMap(config))),
+        new ConcurrentMapConfigurationExt(ConfigMapping.getConvertedMap(config)),
         "configFromMapping");
     return config;
   }
@@ -227,12 +228,12 @@ public final class ConfigUtil {
   private static void createDynamicWatchedConfiguration(
       ConcurrentCompositeConfiguration localConfiguration,
       ConfigCenterConfigurationSource configCenterConfigurationSource) {
-    ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfiguration();
+    ConcurrentMapConfiguration injectConfig = new ConcurrentMapConfigurationExt();
     localConfiguration.addConfigurationAtFront(injectConfig, "extraInjectConfig");
     configCenterConfigurationSource.addUpdateListener(new ServiceCombPropertyUpdateListener(injectConfig));
 
-    DynamicWatchedConfiguration configFromConfigCenter =
-        new DynamicWatchedConfiguration(configCenterConfigurationSource);
+    DynamicWatchedConfigurationExt configFromConfigCenter =
+        new DynamicWatchedConfigurationExt(configCenterConfigurationSource);
     duplicateCseConfigToServicecomb(configFromConfigCenter);
     localConfiguration.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
   }
