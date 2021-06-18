@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.config;
 
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -62,5 +64,14 @@ public class TestYAMLUtil {
     Object object = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$UnsafePerson\n"
         + "name: hello", Object.class);
     Assert.assertEquals("hello", ((UnsafePerson) object).getName());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testListValue() {
+    Map<String, Object> result = YAMLUtil.yaml2Properties("hello: a,b");
+    Assert.assertEquals(result.size(), 1);
+    String listValue = (String) result.get("hello");
+    Assert.assertEquals(listValue, "a,b");
   }
 }

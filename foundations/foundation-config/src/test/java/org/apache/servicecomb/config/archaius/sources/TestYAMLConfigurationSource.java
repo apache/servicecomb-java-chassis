@@ -46,7 +46,7 @@ public class TestYAMLConfigurationSource {
     PollResult result = configSource.poll(true, null);
     Map<String, Object> configMap = result.getComplete();
     assertNotNull(configMap);
-    assertEquals(25, configMap.size());
+    assertEquals(29, configMap.size());
     assertNotNull(configMap.get("trace.handler.sampler.percent"));
     assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
   }
@@ -63,7 +63,7 @@ public class TestYAMLConfigurationSource {
 
     assertEquals(3, configSource.getConfigModels().size());
     assertNotNull(configMap);
-    assertEquals(36, configMap.size());
+    assertEquals(40, configMap.size());
     assertNotNull(configMap.get("trace.handler.sampler.percent"));
     assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
 

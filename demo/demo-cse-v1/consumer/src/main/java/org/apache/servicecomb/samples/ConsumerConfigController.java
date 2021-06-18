@@ -17,12 +17,16 @@
 
 package org.apache.servicecomb.samples;
 
+import java.util.List;
+
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 @RestSchema(schemaId = "ConsumerConfigController")
 @RequestMapping(path = "/")
@@ -46,5 +50,22 @@ public class ConsumerConfigController {
   @GetMapping("/bar")
   public String bar() {
     return consumerConfigurationProperties.getBar();
+  }
+
+  @GetMapping("/dynamicString")
+  public String dynamicString(@RequestParam("key") String key) {
+    return DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+  }
+
+  @GetMapping("/dynamicArray")
+  @SuppressWarnings("unchecked")
+  public List<String> dynamicArray() {
+    return consumerConfigurationProperties.getDynamicArray();
+//     DynamicPropertyFactory & Environment do not support arrays like:
+//           key[0]: v0
+//           key[1]: v1
+//    return environment.getProperty(key, List.class);
+//    return Arrays.asList(((AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource())
+//        .getStringArray(key));
   }
 }

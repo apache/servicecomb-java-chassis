@@ -65,3 +65,11 @@ servicecomb:
   cse:
     servicecomb:
       file: value # this is a config for TestConfigUtil.testCreateLocalConfigWithExtraConfig()
+
+holder: b,c,d
+test:
+  commonSeparatedString: a,b,c
+  commonSeparatedStringHolder: ${holder}
+  stringArray:
+    - m
+    - n
