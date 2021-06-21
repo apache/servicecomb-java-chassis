@@ -328,11 +328,6 @@
       <!-- ServiceComb ServiceStage extension -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>dtm</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
         <artifactId>servicestage-environment</artifactId>
         <version>${project.version}</version>
       </dependency>
