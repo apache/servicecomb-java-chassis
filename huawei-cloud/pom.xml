@@ -33,7 +33,6 @@
   <modules>
     <module>servicestage</module>
     <module>environment</module>
-    <module>dtm</module>
     <module>dashboard</module>
   </modules>
 

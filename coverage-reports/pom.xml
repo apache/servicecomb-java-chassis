@@ -274,10 +274,6 @@
     <!-- ServiceComb ServiceStage extension -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>dtm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>servicestage-environment</artifactId>
     </dependency>
     <dependency>
