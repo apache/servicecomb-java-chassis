@@ -62,11 +62,12 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
 
   private static ClientPoolManager<HttpClientWithContext> clientMgr;
 
-  private AddressManager addressManager = new AddressManager();
+  private AddressManager addressManager;
 
   @Override
   public void init() {
     try {
+      addressManager = new AddressManager();
       deployMonitorClient();
     } catch (Exception e) {
       LOGGER.warn("Deploy monitor data publisher failed will not send monitor data.");
