@@ -34,6 +34,24 @@ import mockit.Deencapsulation;
 
 public class TestNetUtils {
   @Test
+  public void testFindProperHostAddress() {
+    NetUtils.resetHostName();
+    String result = NetUtils.getHostName();
+    System.out.println(result);
+    Assert.assertNotNull(result);
+
+    result = NetUtils.getHostAddress();
+    System.out.println(result);
+    Assert.assertNotNull(result);
+
+    result = NetUtils.getIpv6HostAddress();
+    System.out.println(result);
+    if (result != null) {
+      Assert.assertFalse(result.contains("%"));
+    }
+  }
+
+  @Test
   public void testIpPort() {
     IpPort oIPPort = new IpPort("10.145.154.45", 8080);
     Assert.assertEquals("10.145.154.45", oIPPort.getHostOrIp());
