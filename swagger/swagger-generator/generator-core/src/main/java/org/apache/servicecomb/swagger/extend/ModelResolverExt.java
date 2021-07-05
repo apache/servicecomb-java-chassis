@@ -45,6 +45,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
@@ -62,6 +63,13 @@ public class ModelResolverExt extends ModelResolver {
   private static ObjectMapper objectMapper;
 
   private Set<Type> concreteInterfaces = new HashSet<>();
+
+  private static final String DISABLE_DATA_TYPE_CHECK = "servicecomb.swagger.disableDataTypeCheck";
+
+  // This property is used only for compatible usage and is not recommended and may not compatible to
+  // OPEN API standard
+  private final boolean disableDataTypeCheck = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty(DISABLE_DATA_TYPE_CHECK, false).get();
 
   public ModelResolverExt() {
     super(findMapper());
@@ -107,6 +115,10 @@ public class ModelResolverExt extends ModelResolver {
   }
 
   private void checkType(JavaType type) {
+    if (disableDataTypeCheck) {
+      return;
+    }
+
     // 原子类型/string在java中是abstract的
     if (type.getRawClass().isPrimitive()
         || propertyCreatorMap.containsKey(type.getRawClass())
@@ -120,7 +132,7 @@ public class ModelResolverExt extends ModelResolver {
       Class<?> keyTypeClass = type.getKeyType().getRawClass();
       if (!String.class.equals(keyTypeClass)) {
         // swagger中map的key只允许为string
-        throw new Error("Type of key in map must be string, but got " + keyTypeClass.getName());
+        throw new ServiceCombException("Type of key in map must be string, but got " + keyTypeClass.getName());
       }
     }
 
