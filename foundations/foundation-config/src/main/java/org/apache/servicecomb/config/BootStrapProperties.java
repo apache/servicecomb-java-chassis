@@ -71,6 +71,8 @@ public class BootStrapProperties {
 
   public static final String CONFIG_SERVICE_VERSION = "servicecomb.service.version";
 
+  public static final String CONFIG_SERVICE_VERSION_AUTO_GENERATE = "servicecomb.service.versionAutoGenerate";
+
   public static final String CONFIG_SERVICE_ROLE = "servicecomb.service.role";
 
   public static final String CONFIG_SERVICE_DESCRIPTION = "servicecomb.service.description";
@@ -132,8 +134,28 @@ public class BootStrapProperties {
   }
 
   public static String readServiceVersion(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_VERSION, OLD_CONFIG_SERVICE_VERSION,
-        DEFAULT_MICROSERVICE_VERSION);
+    String version = readStringValue(configuration, CONFIG_SERVICE_VERSION, OLD_CONFIG_SERVICE_VERSION,
+            "");
+    String serviceVersionAuto = readServiceVersionAuto(configuration);
+    if(StringUtils.isBlank(version)){
+      if(StringUtils.equalsAnyIgnoreCase(serviceVersionAuto, "timestamp")){
+        version = DateFormatUtils.format(new Date(), "yyyy.MMdd.HHmm:ss");
+      }
+      if(StringUtils.isBlank(version)){
+        version = DEFAULT_MICROSERVICE_VERSION;
+      }
+    }
+    return version;
+  }
+
+  /**
+   * 自动生成版本号（默认为空，不使用）
+   * @param configuration
+   * @return timestamp:使用时间格式生成
+   */
+  public static String readServiceVersionAuto(Configuration configuration) {
+    return readStringValue(configuration, CONFIG_SERVICE_VERSION_AUTO_GENERATE, "",
+            "");
   }
 
   public static String readServiceVersion() {
