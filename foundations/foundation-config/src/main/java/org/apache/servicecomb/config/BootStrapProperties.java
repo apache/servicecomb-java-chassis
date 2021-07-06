@@ -137,7 +137,7 @@ public class BootStrapProperties {
     String serviceVersionAuto = readServiceVersionAuto(configuration);
     if(StringUtils.isBlank(version)){
       if(StringUtils.equalsAnyIgnoreCase(serviceVersionAuto, "timestamp")){
-        version = DateFormatUtils.format(new Date(), "yyyy.MMdd.HHmm:ss");
+        version = DateFormatUtils.format(new Date(), "yyyy.MMdd.HHmm.ss");
       }
       if(StringUtils.isBlank(version)){
         version = DEFAULT_MICROSERVICE_VERSION;
