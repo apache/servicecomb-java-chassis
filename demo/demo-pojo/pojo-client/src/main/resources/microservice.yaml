@@ -30,6 +30,8 @@ servicecomb:
         empty:
           protection: true
   rest.client.enabled: false # using only http2
+  swagger:
+    disableDataTypeCheck: true
   handler:
     chain:
       Consumer:
