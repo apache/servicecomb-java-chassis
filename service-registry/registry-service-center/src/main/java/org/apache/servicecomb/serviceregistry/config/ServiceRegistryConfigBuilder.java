@@ -213,6 +213,8 @@ class ServiceRegistryConfigBuilder {
     return times < 0 ? ServiceRegistryConfig.DEFAULT_CHECK_TIMES : times;
   }
 
+  // 配置项供开发测试使用，减少接口频繁变更情况下，需要修改版本号的工作量。
+  // 生产环境不能打开这个配置项，否则会导致网关、consumer等在provider之前启动的场景下，访问不到新增、更新的接口。
   public boolean isAlwaysOverrideSchema() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
