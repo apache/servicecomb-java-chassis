@@ -25,7 +25,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
-import io.swagger.models.Swagger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
@@ -42,6 +41,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import io.swagger.models.Swagger;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -146,6 +147,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
           microservice.getEnvironment(),
           localSchemas,
           existSchemas);
+      // return true and print log only.
+      // because even schema ids not same, will also check content to see if should fail.
       return true;
     }
 
@@ -252,30 +255,34 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
     String localSchemaSummary = RegistryUtils.calcSchemaSummary(localSchemaEntry.getValue());
     if (!localSchemaSummary.equals(scSchemaSummary)) {
-      if (onlineSchemaIsModifiable()) {
-        LOGGER.warn(
-            "schema[{}]'s content is changed and the current environment is [{}], so re-register it. It's recommended "
-                + " to change servicecomb_description.version after schema change, or restart consumer to"
-                + " make changes get notified.",
-            localSchemaEntry.getKey(),
-            microservice.getEnvironment());
-        return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
-      }
-
-      //if local schema and service center schema is different then print the both schemas and print difference in local schema.
       String scSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
       String localSchemaContent = localSchemaEntry.getValue();
 
-      //if content of local schema and service center schema is equal then return true.
+      //if local schema and service center schema is different then print the
+      // both schemas and print difference in local schema.
+      LOGGER.warn(
+          "service center schema and local schema both are different:"
+              + "\n service center schema:\n[{}\n local schema:\n[{}]",
+          scSchemaContent,
+          localSchemaContent);
+      String diffStringLocal = StringUtils.difference(scSchemaContent, localSchemaContent);
+      if (diffStringLocal.equals("")) {
+        LOGGER.warn("Some APIs are deleted in local schema which are present in service center schema \n");
+      } else {
+        LOGGER.warn("The difference in local schema:\n[{}]", diffStringLocal);
+      }
+
       if (!StringUtils.isEmpty(scSchemaContent) && !StringUtils.isEmpty(localSchemaContent)) {
         Swagger scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
         Swagger localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
         if (scSwagger.equals(localSwagger)) {
+          LOGGER.info("Service center schema and local schema content different, but with same swagger syntax.");
           return true;
         }
       }
 
-      //if the content of local schema and service center schema is different. But the value of isIgnoreSwaggerDifference is true.
+      // 规避开关。这段代码可以删除，主要是为了避免未知bug的情况下（由于每次重启生成的契约不同，服务重启失败），能够提供一个规避手段。
+      // 目前没有发现这个场景。
       if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifference()) {
         LOGGER.warn(
             "service center schema and local schema both are different:\n service center "
@@ -287,15 +294,14 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         return true;
       }
 
-      LOGGER.warn(
-          "service center schema and local schema both are different:\n service center schema:\n[{}\n local schema:\n[{}]",
-          scSchemaContent,
-          localSchemaContent);
-      String diffStringLocal = StringUtils.difference(scSchemaContent, localSchemaContent);
-      if (diffStringLocal.equals("")) {
-        LOGGER.warn("Some APIs are deleted in local schema which are present in service center schema \n");
-      } else {
-        LOGGER.warn("The difference in local schema:\n[{}]", diffStringLocal);
+      if (onlineSchemaIsModifiable()) {
+        LOGGER.warn(
+            "schema[{}]'s content is changed and the current environment is [{}], so re-register it. It's recommended "
+                + " to change servicecomb_description.version after schema change, or restart consumer to"
+                + " make changes get notified.",
+            localSchemaEntry.getKey(),
+            microservice.getEnvironment());
+        return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
       }
 
       // env is not development, throw an exception and break the init procedure
@@ -358,6 +364,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     }
   }
 
+  // 配置项供开发测试使用，减少接口频繁变更情况下，需要修改版本号的工作量。
+  // 生产环境不能打开这个配置项，否则会导致网关、consumer等在provider之前启动的场景下，访问不到新增、更新的接口。
   private boolean onlineSchemaIsModifiable() {
     return ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV.equalsIgnoreCase(microservice.getEnvironment())
         || ServiceRegistryConfig.INSTANCE.isAlwaysOverrideSchema();

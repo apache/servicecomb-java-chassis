@@ -51,13 +51,13 @@ public class Microservice {
 
   private String level;
 
-  private List<String> schemas = new ArrayList<String>();
+  private List<String> schemas = new ArrayList<>();
 
   private List<BasePath> paths = new ArrayList<>();
 
   private MicroserviceStatus status = MicroserviceStatus.UP;
 
-  private Map<String, String> properties = new HashMap<String, String>();
+  private Map<String, String> properties = new HashMap<>();
 
   private List<MicroserviceInstance> instances;
 
