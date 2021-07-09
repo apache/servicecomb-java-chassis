@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
@@ -334,6 +335,7 @@ public class RegistrationManager {
     }
 
     @Subscribe
+    @EnableExceptionPropagation
     public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent event) {
       LOGGER.info("receive MicroserviceInstanceRegisteredEvent event, registration={}, instance id={}",
           event.getRegistrationName(),

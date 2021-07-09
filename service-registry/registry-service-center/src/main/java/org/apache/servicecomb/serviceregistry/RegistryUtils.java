@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -51,9 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.google.common.base.Charsets;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.hash.Hashing;
 
 public final class RegistryUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
@@ -260,7 +259,7 @@ public final class RegistryUtils {
     }
     if (EXTRA_SERVICE_REGISTRIES.containsKey(serviceRegistryName)) {
       LOGGER.error("Registry {} is duplicated between implementation {} and {}"
-          + ", please set different names for each implementations",
+              + ", please set different names for each implementations",
           serviceRegistryName, serviceRegistry.getClass().getName(),
           EXTRA_SERVICE_REGISTRIES.get(serviceRegistryName).getClass().getName());
       throw new IllegalArgumentException("Registry Name Duplicated");
@@ -303,6 +302,7 @@ public final class RegistryUtils {
     }
 
     @Subscribe
+    @EnableExceptionPropagation
     public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
       LOGGER.info("receive MicroserviceInstanceRegisterTask event of [{}]", serviceRegistry.getName());
       if (StringUtils.isEmpty(serviceRegistry.getMicroserviceInstance().getInstanceId())) {
