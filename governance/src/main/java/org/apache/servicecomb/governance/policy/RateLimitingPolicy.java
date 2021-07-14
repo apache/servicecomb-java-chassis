@@ -32,7 +32,7 @@ public class RateLimitingPolicy extends AbstractPolicy {
   private int rate = DEFAULT_LIMIT_FOR_PERIOD;
 
   public String getTimeoutDuration() {
-    return getTimeDuration(timeoutDuration,DEFAULT_TIMEOUT_DURATION);
+    return getTimeDuration(timeoutDuration, DEFAULT_TIMEOUT_DURATION);
   }
 
   public void setTimeoutDuration(String timeoutDuration) {
@@ -40,7 +40,7 @@ public class RateLimitingPolicy extends AbstractPolicy {
   }
 
   public String getLimitRefreshPeriod() {
-    return getTimeDuration(limitRefreshPeriod,DEFAULT_LIMIT_REFRESH_PERIOD);
+    return getTimeDuration(limitRefreshPeriod, DEFAULT_LIMIT_REFRESH_PERIOD);
   }
 
   public void setLimitRefreshPeriod(String limitRefreshPeriod) {

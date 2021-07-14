@@ -54,7 +54,7 @@ public class ServiceCombRetryExtension implements RetryExtension {
   @Override
   @SuppressWarnings({"unchecked", "rawtypes"})
   public Class<? extends Throwable>[] retryExceptions() {
-    return new Class[] {
+    return new Class[]{
         ConnectException.class,
         SocketTimeoutException.class,
         IOException.class,

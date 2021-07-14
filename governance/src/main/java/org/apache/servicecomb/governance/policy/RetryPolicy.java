@@ -29,13 +29,13 @@ public class RetryPolicy extends AbstractPolicy {
 
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS = "502";
 
-  private static final int INITIAL_INTERVAL= 1000;
+  private static final int INITIAL_INTERVAL = 1000;
 
-  private static final float MULTIPLIER= 2;
+  private static final float MULTIPLIER = 2;
 
-  private static final double RANDOMIZATION_FACTOR= 0.5;
+  private static final double RANDOMIZATION_FACTOR = 0.5;
 
-  private static final String DEFAULT_RETRY_STRATEGY= "FixedInterval";
+  private static final String DEFAULT_RETRY_STRATEGY = "FixedInterval";
 
   //最多尝试次数
   private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
@@ -44,7 +44,7 @@ public class RetryPolicy extends AbstractPolicy {
   private String waitDuration;
 
   //需要重试的http status, 逗号分隔
-  private List<String> retryOnResponseStatus =new ArrayList<>();
+  private List<String> retryOnResponseStatus = new ArrayList<>();
 
   private String retryStrategy;
 
@@ -74,10 +74,10 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public String getWaitDuration() {
-    if (Integer.valueOf(getTimeDuration(waitDuration,DEFAULT_WAIT_DURATION))<10) {
+    if (Integer.valueOf(getTimeDuration(waitDuration, DEFAULT_WAIT_DURATION)) < 10) {
       return String.valueOf(DEFAULT_WAIT_DURATION);
     }
-    return getTimeDuration(waitDuration,DEFAULT_WAIT_DURATION);
+    return getTimeDuration(waitDuration, DEFAULT_WAIT_DURATION);
   }
 
   public void setWaitDuration(String waitDuration) {
@@ -85,7 +85,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public String getRetryStrategy() {
-    if (StringUtils.isEmpty(retryStrategy)){
+    if (StringUtils.isEmpty(retryStrategy)) {
       retryStrategy = DEFAULT_RETRY_STRATEGY;
     }
     return retryStrategy;
@@ -96,7 +96,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public String getInitialInterval() {
-    return getTimeDuration(initialInterval,INITIAL_INTERVAL);
+    return getTimeDuration(initialInterval, INITIAL_INTERVAL);
   }
 
   public void setInitialInterval(String initialInterval) {

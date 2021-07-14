@@ -98,7 +98,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   }
 
   public String getWaitDurationInOpenState() {
-    return getTimeDuration(waitDurationInOpenState,DEFAULT_WAIT_DURATION_IN_OPEN_STATUS);
+    return getTimeDuration(waitDurationInOpenState, DEFAULT_WAIT_DURATION_IN_OPEN_STATUS);
   }
 
   public void setWaitDurationInOpenState(String waitDurationInOpenState) {
@@ -106,7 +106,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   }
 
   public String getSlowCallDurationThreshold() {
-    return getTimeDuration(slowCallDurationThreshold,DEFAULT_SLOW_CALL_DURATION_THRESHOLD);
+    return getTimeDuration(slowCallDurationThreshold, DEFAULT_SLOW_CALL_DURATION_THRESHOLD);
   }
 
   public void setSlowCallDurationThreshold(String slowCallDurationThreshold) {

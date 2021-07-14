@@ -36,7 +36,7 @@ public class BulkheadPolicy extends AbstractPolicy {
   }
 
   public String getMaxWaitDuration() {
-    return getTimeDuration(maxWaitDuration,DEFAULT_MAX_WAIT_DURATION);
+    return getTimeDuration(maxWaitDuration, DEFAULT_MAX_WAIT_DURATION);
   }
 
   public void setMaxWaitDuration(String maxWaitDuration) {
