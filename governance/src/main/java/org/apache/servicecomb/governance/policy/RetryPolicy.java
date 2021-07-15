@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class RetryPolicy extends AbstractPolicy {
   private double randomizationFactor = RANDOMIZATION_FACTOR;
 
   public List<String> getRetryOnResponseStatus() {
-    if (StringUtils.isEmpty(retryOnResponseStatus)) {
+    if (CollectionUtils.isEmpty(retryOnResponseStatus)) {
       this.retryOnResponseStatus.add(DEFAULT_RETRY_ON_RESPONSE_STATUS);
     }
     return retryOnResponseStatus;
