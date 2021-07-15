@@ -25,6 +25,7 @@ import org.apache.servicecomb.governance.handler.ext.RetryExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.apache.servicecomb.governance.properties.RetryProperties;
+import org.apache.servicecomb.governance.utils.GovernanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,11 +76,11 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
   }
 
   private IntervalFunction getIntervalFunction(RetryPolicy retryPolicy) {
-    if (retryPolicy.getRetryStrategy().equals("RandomBackoff")) {
-      return IntervalFunction.ofExponentialRandomBackoff(Integer.valueOf(retryPolicy.getInitialInterval()),
+    if (GovernanceUtils.STRATEGY_RANDOM_BACKOFF.equals(retryPolicy.getRetryStrategy())) {
+      return IntervalFunction.ofExponentialRandomBackoff(retryPolicy.getInitialInterval(),
           retryPolicy.getMultiplier(), retryPolicy.getRandomizationFactor());
     }
-    return IntervalFunction.of(Duration.ofMillis(Integer.valueOf(retryPolicy.getWaitDuration())));
+    return IntervalFunction.of(retryPolicy.getWaitDuration());
   }
 
   private Predicate<Object> getPredicate(List<String> statusList) {

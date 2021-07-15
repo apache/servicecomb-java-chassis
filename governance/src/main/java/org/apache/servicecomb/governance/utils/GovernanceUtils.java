@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance.handler.ext;
+package org.apache.servicecomb.governance.utils;
 
-import java.util.List;
-import java.util.stream.IntStream;
+public final class  GovernanceUtils {
+  public static final String DIGIT_REGEX = "[0-9]{1,10}";
 
-public interface RetryExtension {
-  boolean isRetry(List<String> statusList, Object result);
+  public static final String DIGIT_PREFIX = "PT";
 
-  Class<? extends Throwable>[] retryExceptions();
-
+  public static final String STRATEGY_RANDOM_BACKOFF = "RandomBackoff";
 }

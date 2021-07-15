@@ -17,38 +17,33 @@
 
 package org.apache.servicecomb.handler.governance;
 
+import io.vertx.core.VertxException;
+import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
+import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
-import java.util.List;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.servicecomb.governance.handler.ext.RetryExtension;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.stereotype.Component;
-
-import io.vertx.core.VertxException;
 
 @Component
-public class ServiceCombRetryExtension implements RetryExtension {
+public class ServiceCombRetryExtension extends AbstractRetryExtension {
   @Override
-  public boolean isRetry(List<String> statusList, Object result) {
+  protected String extractStatusCode(Object result) {
     if (!(result instanceof Response)) {
-      return false;
+      return null;
     }
     Response resp = (Response) result;
     if (!resp.isFailed()) {
-      return false;
+      return null;
     }
     if (InvocationException.class.isInstance(resp.getResult())) {
       InvocationException e = resp.getResult();
-      return isContain(statusList, String.valueOf(e.getStatusCode()));
+      return String.valueOf(e.getStatusCode());
     }
-    return true;
+    return null;
   }
 
   @Override

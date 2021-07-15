@@ -178,10 +178,10 @@ public class GovernancePropertiesTest {
   public void test_bulkhead_properties_changed() {
     dynamicValues.put("servicecomb.bulkhead.demo-bulkhead", "rules:\n"
         + "maxConcurrentCalls: 2\n"
-        + "maxWaitDuration: 2000ms");
+        + "maxWaitDuration: 2000");
     dynamicValues.put("servicecomb.bulkhead.bulkhead1", "rules:\n"
         + "maxConcurrentCalls: 3\n"
-        + "maxWaitDuration: 3000ms");
+        + "maxWaitDuration: 3000");
 
     EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
@@ -189,13 +189,13 @@ public class GovernancePropertiesTest {
     Assert.assertEquals(2, policies.size());
     BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assert.assertEquals(2, policy.getMaxConcurrentCalls());
-    Assert.assertEquals("2000", policy.getMaxWaitDuration());
+    Assert.assertEquals(2000, policy.getMaxWaitDuration().toMillis());
 
     policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
     policy = policies.get("bulkhead1");
     Assert.assertEquals(3, policy.getMaxConcurrentCalls());
-    Assert.assertEquals("3000", policy.getMaxWaitDuration());
+    Assert.assertEquals(3000, policy.getMaxWaitDuration().toMillis());
     Assert.assertEquals("bulkhead1", policy.getName());
   }
 
@@ -232,4 +232,31 @@ public class GovernancePropertiesTest {
     RetryPolicy policy = policies.get("demo-retry");
     Assert.assertEquals(3, policy.getMaxAttempts());
   }
+
+
+  @Test
+  public void test_properties_changed_to_duration() {
+    dynamicValues.put("servicecomb.bulkhead.test1", "rules:\n"
+        + "maxConcurrentCalls: 2\n"
+        + "maxWaitDuration: 2S");
+    dynamicValues.put("servicecomb.bulkhead.test2", "rules:\n"
+        + "maxConcurrentCalls: 3\n"
+        + "maxWaitDuration: 1M");
+
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+
+    Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
+    Assert.assertEquals(2, policies.size());
+    BulkheadPolicy policy = policies.get("test1");
+    Assert.assertEquals(2, policy.getMaxConcurrentCalls());
+    Assert.assertEquals(2000, policy.getMaxWaitDuration().toMillis());
+
+    policies = bulkheadProperties.getParsedEntity();
+    Assert.assertEquals(2, policies.size());
+    policy = policies.get("test2");
+    Assert.assertEquals(3, policy.getMaxConcurrentCalls());
+    Assert.assertEquals(6000, policy.getMaxWaitDuration().toMillis());
+    Assert.assertEquals("bulkhead1", policy.getName());
+  }
+
 }

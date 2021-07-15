@@ -16,35 +16,37 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import java.time.Duration;
+
 public class RateLimitingPolicy extends AbstractPolicy {
 
-  public static final int DEFAULT_TIMEOUT_DURATION = 0;
+  public static final Duration DEFAULT_TIMEOUT_DURATION = Duration.ofMillis(0);
 
-  public static final int DEFAULT_LIMIT_REFRESH_PERIOD = 1000;
+  public static final Duration DEFAULT_LIMIT_REFRESH_PERIOD = Duration.ofMillis(1000);
 
   public static final int DEFAULT_LIMIT_FOR_PERIOD = 1000;
 
-  private String timeoutDuration;
+  private Duration timeoutDuration=DEFAULT_TIMEOUT_DURATION;
 
-  private String limitRefreshPeriod;
+  private Duration limitRefreshPeriod=DEFAULT_LIMIT_REFRESH_PERIOD;
 
   // 配置项名称使用 rate， 对应于 resilience4j 的 limitForPeriod
   private int rate = DEFAULT_LIMIT_FOR_PERIOD;
 
-  public String getTimeoutDuration() {
-    return getTimeDuration(timeoutDuration, DEFAULT_TIMEOUT_DURATION);
+  public Duration getTimeoutDuration() {
+    return timeoutDuration;
   }
 
   public void setTimeoutDuration(String timeoutDuration) {
-    this.timeoutDuration = timeoutDuration;
+    this.timeoutDuration = parseToDuration(timeoutDuration,DEFAULT_TIMEOUT_DURATION);
   }
 
-  public String getLimitRefreshPeriod() {
-    return getTimeDuration(limitRefreshPeriod, DEFAULT_LIMIT_REFRESH_PERIOD);
+  public Duration getLimitRefreshPeriod() {
+    return limitRefreshPeriod;
   }
 
   public void setLimitRefreshPeriod(String limitRefreshPeriod) {
-    this.limitRefreshPeriod = limitRefreshPeriod;
+    this.limitRefreshPeriod = parseToDuration(limitRefreshPeriod,DEFAULT_LIMIT_REFRESH_PERIOD);
   }
 
   public int getRate() {
@@ -60,10 +62,10 @@ public class RateLimitingPolicy extends AbstractPolicy {
 
   @Override
   public boolean isValid() {
-    if (Integer.valueOf(getTimeoutDuration()) < 0) {
+    if (timeoutDuration.toMillis() < 0) {
       return false;
     }
-    if (Integer.valueOf(getLimitRefreshPeriod()) <= 0) {
+    if (limitRefreshPeriod.toMillis() <= 0) {
       return false;
     }
     if (rate <= 0) {

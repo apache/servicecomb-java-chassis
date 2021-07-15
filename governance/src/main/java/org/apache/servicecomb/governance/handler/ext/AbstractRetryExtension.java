@@ -17,12 +17,30 @@
 
 package org.apache.servicecomb.governance.handler.ext;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 import java.util.stream.IntStream;
 
-public interface RetryExtension {
-  boolean isRetry(List<String> statusList, Object result);
+public abstract class AbstractRetryExtension implements RetryExtension {
+  public boolean isRetry(List<String> statusList, Object result) {
+    String statusCode = extractStatusCode(result);
+    if (StringUtils.isEmpty(statusCode)) {
+      return false;
+    }
+    return isContain(statusList, statusCode);
+  }
 
-  Class<? extends Throwable>[] retryExceptions();
+  protected abstract String extractStatusCode(Object result);
 
+  private boolean isContain(List<String> statusList, String responseStatus) {
+    return statusList.stream().anyMatch(status -> judge(status, responseStatus));
+  }
+
+  private boolean judge(String status, String responseStatus) {
+    char[] statusChar = status.toCharArray();
+    char[] responseChar = responseStatus.toCharArray();
+    return IntStream.range(0, statusChar.length - 1).noneMatch(i ->
+        statusChar[i] != responseChar[i] && statusChar[i] != 'x');
+  }
 }

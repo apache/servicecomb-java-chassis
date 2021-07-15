@@ -18,8 +18,17 @@ package org.apache.servicecomb.governance.policy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
+import org.apache.servicecomb.governance.properties.GovernanceProperties;
+import org.apache.servicecomb.governance.utils.GovernanceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 
 public abstract class AbstractPolicy extends Configurable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPolicy.class);
+
   @Override
   public boolean isValid() {
     if (StringUtils.isEmpty(name)) {
@@ -28,26 +37,18 @@ public abstract class AbstractPolicy extends Configurable {
     return true;
   }
 
-  public String getTimeDuration(String time, int defaultValue) {
-    return String.valueOf(defaultMethod(time, defaultValue));
-  }
-
-  public int defaultMethod(String time, int defaultValue) {
+  public Duration parseToDuration(String time, Duration defaultValue) {
     if (StringUtils.isEmpty(time)) {
       return defaultValue;
     }
-    if (time.endsWith("ms")) {
-      return Integer.valueOf(time.substring(0, time.length() - 2));
+    if(time.matches(GovernanceUtils.DIGIT_REGEX)) {
+      return Duration.ofMillis(Integer.valueOf(time));
     }
-    if (time.endsWith("s")) {
-      return Integer.valueOf(time.substring(0, time.length() - 1)) * 1000;
+    try {
+      return Duration.parse(GovernanceUtils.DIGIT_PREFIX+time);
+    } catch (DateTimeParseException e){
+      LOGGER.warn("Parsed time to be a Duration failed. It will use the default value.");
     }
-    if (time.endsWith("m")) {
-      return Integer.valueOf(time.substring(0, time.length() - 1)) * 60 * 1000;
-    }
-    if (time.endsWith("h")) {
-      return Integer.valueOf(time.substring(0, time.length() - 1)) * 60 * 60 * 1000;
-    }
-    return Integer.valueOf(time) * 1000;
+    return defaultValue;
   }
 }

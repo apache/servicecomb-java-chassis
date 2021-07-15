@@ -19,6 +19,7 @@ package org.apache.servicecomb.governance.policy;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +27,11 @@ public class RetryPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_ATTEMPTS = 3;
 
-  public static final int DEFAULT_WAIT_DURATION = 10;
+  public static final Duration DEFAULT_WAIT_DURATION = Duration.ofMillis(10);
 
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS = "502";
 
-  private static final int INITIAL_INTERVAL = 1000;
+  private static final Duration INITIAL_INTERVAL = Duration.ofMillis(1000);
 
   private static final float MULTIPLIER = 2;
 
@@ -41,15 +42,15 @@ public class RetryPolicy extends AbstractPolicy {
   //最多尝试次数
   private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
-  //每次重试尝试等待的时间，默认给1。 在异步场景下，这个值必须大于0，否则不会重试。
-  private String waitDuration;
+  //每次重试尝试等待的时间。
+  private Duration waitDuration = DEFAULT_WAIT_DURATION;
 
   //需要重试的http status, 逗号分隔
   private List<String> retryOnResponseStatus = new ArrayList<>();
 
-  private String retryStrategy;
+  private String retryStrategy =DEFAULT_RETRY_STRATEGY;
 
-  private String initialInterval;
+  private Duration initialInterval = INITIAL_INTERVAL;
 
   private float multiplier = MULTIPLIER;
 
@@ -74,15 +75,12 @@ public class RetryPolicy extends AbstractPolicy {
     this.maxAttempts = maxAttempts;
   }
 
-  public String getWaitDuration() {
-    if (Integer.valueOf(getTimeDuration(waitDuration, DEFAULT_WAIT_DURATION)) < 10) {
-      return String.valueOf(DEFAULT_WAIT_DURATION);
-    }
-    return getTimeDuration(waitDuration, DEFAULT_WAIT_DURATION);
+  public Duration getWaitDuration() {
+    return waitDuration.toMillis() < 10 ? DEFAULT_WAIT_DURATION : waitDuration;
   }
 
   public void setWaitDuration(String waitDuration) {
-    this.waitDuration = waitDuration;
+    this.waitDuration = parseToDuration(waitDuration,DEFAULT_WAIT_DURATION);
   }
 
   public String getRetryStrategy() {
@@ -96,12 +94,12 @@ public class RetryPolicy extends AbstractPolicy {
     this.retryStrategy = retryStrategy;
   }
 
-  public String getInitialInterval() {
-    return getTimeDuration(initialInterval, INITIAL_INTERVAL);
+  public Duration getInitialInterval() {
+    return initialInterval;
   }
 
   public void setInitialInterval(String initialInterval) {
-    this.initialInterval = initialInterval;
+    this.initialInterval = parseToDuration(initialInterval,INITIAL_INTERVAL);
   }
 
   public float getMultiplier() {
@@ -125,10 +123,10 @@ public class RetryPolicy extends AbstractPolicy {
     if (maxAttempts < 1) {
       return false;
     }
-    if (Integer.valueOf(getWaitDuration()) < 0) {
+    if (waitDuration.toMillis() < 0) {
       return false;
     }
-    if (Integer.valueOf(getInitialInterval()) < 0) {
+    if (initialInterval.toMillis() < 10) {
       return false;
     }
     return super.isValid();

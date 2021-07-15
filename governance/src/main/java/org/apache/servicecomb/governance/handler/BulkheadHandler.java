@@ -58,7 +58,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
     BulkheadConfig config = BulkheadConfig.custom()
         .maxConcurrentCalls(policy.getMaxConcurrentCalls())
-        .maxWaitDuration(Duration.ofMillis(Integer.valueOf(policy.getMaxWaitDuration())))
+        .maxWaitDuration(policy.getMaxWaitDuration())
         .build();
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
