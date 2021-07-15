@@ -77,10 +77,10 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   private IntervalFunction getIntervalFunction(RetryPolicy retryPolicy) {
     if (GovernanceUtils.STRATEGY_RANDOM_BACKOFF.equals(retryPolicy.getRetryStrategy())) {
-      return IntervalFunction.ofExponentialRandomBackoff(retryPolicy.getInitialInterval(),
+      return IntervalFunction.ofExponentialRandomBackoff(Duration.parse(retryPolicy.getInitialInterval()),
           retryPolicy.getMultiplier(), retryPolicy.getRandomizationFactor());
     }
-    return IntervalFunction.of(retryPolicy.getWaitDuration());
+    return IntervalFunction.of(Duration.parse(retryPolicy.getWaitDuration()));
   }
 
   private Predicate<Object> getPredicate(List<String> statusList) {

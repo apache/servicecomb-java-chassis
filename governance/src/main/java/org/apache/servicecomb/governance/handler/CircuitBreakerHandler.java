@@ -61,9 +61,9 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         //熔断 慢请求百分比阈值
         .slowCallRateThreshold(policy.getSlowCallRateThreshold())
         //从开过渡到半开的等待时间
-        .waitDurationInOpenState(policy.getWaitDurationInOpenState())
+        .waitDurationInOpenState(Duration.parse(policy.getWaitDurationInOpenState()))
         //请求时间定义
-        .slowCallDurationThreshold(policy.getSlowCallDurationThreshold())
+        .slowCallDurationThreshold(Duration.parse(policy.getSlowCallDurationThreshold()))
         //进入半开状态时 允许的请求数量
         .permittedNumberOfCallsInHalfOpenState(policy.getPermittedNumberOfCallsInHalfOpenState())
         //可以达到熔断条件的请求数量下限

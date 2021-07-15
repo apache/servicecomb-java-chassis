@@ -68,11 +68,11 @@ servicecomb:
   bulkhead:
     demo-bulkhead: |
       maxConcurrentCalls: 1
-      maxWaitDuration: 3000ms
+      maxWaitDuration: 3000
       services: myself:1.0
     demo-bulkhead-other: |
       maxConcurrentCalls: 1
-      maxWaitDuration: 3000ms
+      maxWaitDuration: 3000
       services: other:1.0
     wrongIngored: |
       rules:

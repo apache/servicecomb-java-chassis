@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.governance.utils;
 
-public final class  GovernanceUtils {
-  public static final String DIGIT_REGEX = "[0-9]{1,10}";
+public final class GovernanceUtils {
+  public static final String DIGIT_REGEX = "-{0,1}[0-9]{1,10}";
 
   public static final String DIGIT_PREFIX = "PT";
 

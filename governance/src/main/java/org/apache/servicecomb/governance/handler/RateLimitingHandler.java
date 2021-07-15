@@ -58,8 +58,8 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
     RateLimiterConfig config;
     config = RateLimiterConfig.custom()
         .limitForPeriod(policy.getRate())
-        .limitRefreshPeriod(policy.getLimitRefreshPeriod())
-        .timeoutDuration(policy.getTimeoutDuration())
+        .limitRefreshPeriod(Duration.parse(policy.getLimitRefreshPeriod()))
+        .timeoutDuration(Duration.parse(policy.getTimeoutDuration()))
         .build();
     RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.of(config);
     return rateLimiterRegistry.rateLimiter(policy.getName());

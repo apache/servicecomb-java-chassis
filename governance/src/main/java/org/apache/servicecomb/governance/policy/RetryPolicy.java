@@ -43,14 +43,14 @@ public class RetryPolicy extends AbstractPolicy {
   private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
   //每次重试尝试等待的时间。
-  private Duration waitDuration = DEFAULT_WAIT_DURATION;
+  private String waitDuration = DEFAULT_WAIT_DURATION.toString();
 
   //需要重试的http status, 逗号分隔
   private List<String> retryOnResponseStatus = new ArrayList<>();
 
   private String retryStrategy = DEFAULT_RETRY_STRATEGY;
 
-  private Duration initialInterval = INITIAL_INTERVAL;
+  private String initialInterval = INITIAL_INTERVAL.toString();
 
   private float multiplier = MULTIPLIER;
 
@@ -75,12 +75,12 @@ public class RetryPolicy extends AbstractPolicy {
     this.maxAttempts = maxAttempts;
   }
 
-  public Duration getWaitDuration() {
-    return waitDuration.toMillis() < 10 ? DEFAULT_WAIT_DURATION : waitDuration;
+  public String getWaitDuration() {
+    return Duration.parse(waitDuration).toMillis() < 10 ? DEFAULT_WAIT_DURATION.toString() : waitDuration;
   }
 
   public void setWaitDuration(String waitDuration) {
-    this.waitDuration = parseToDuration(waitDuration, DEFAULT_WAIT_DURATION);
+    this.waitDuration = StringOfDuration(waitDuration, DEFAULT_WAIT_DURATION);
   }
 
   public String getRetryStrategy() {
@@ -94,12 +94,12 @@ public class RetryPolicy extends AbstractPolicy {
     this.retryStrategy = retryStrategy;
   }
 
-  public Duration getInitialInterval() {
+  public String getInitialInterval() {
     return initialInterval;
   }
 
   public void setInitialInterval(String initialInterval) {
-    this.initialInterval = parseToDuration(initialInterval, INITIAL_INTERVAL);
+    this.initialInterval = StringOfDuration(initialInterval, INITIAL_INTERVAL);
   }
 
   public float getMultiplier() {
@@ -123,10 +123,10 @@ public class RetryPolicy extends AbstractPolicy {
     if (maxAttempts < 1) {
       return false;
     }
-    if (waitDuration.toMillis() < 0) {
+    if (Duration.parse(waitDuration).toMillis() < 0) {
       return false;
     }
-    if (initialInterval.toMillis() < 10) {
+    if (Duration.parse(initialInterval).toMillis() < 10) {
       return false;
     }
     return super.isValid();

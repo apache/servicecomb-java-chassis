@@ -18,7 +18,6 @@ package org.apache.servicecomb.governance.policy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
-import org.apache.servicecomb.governance.properties.GovernanceProperties;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +36,12 @@ public abstract class AbstractPolicy extends Configurable {
     return true;
   }
 
-  public Duration parseToDuration(String time, Duration defaultValue) {
+  private Duration parseToDuration(String time, Duration defaultValue) {
     if (StringUtils.isEmpty(time)) {
       return defaultValue;
     }
     if (time.matches(GovernanceUtils.DIGIT_REGEX)) {
+      if (Integer.valueOf(time) < 0) return Duration.ofMinutes(-1);
       return Duration.ofMillis(Integer.valueOf(time));
     }
     try {
@@ -50,5 +50,9 @@ public abstract class AbstractPolicy extends Configurable {
       LOGGER.warn("Parsed time to be a Duration failed. It will use the default value.");
     }
     return defaultValue;
+  }
+
+  public String StringOfDuration(String time, Duration defaultValue) {
+    return parseToDuration(time, defaultValue).toString();
   }
 }
