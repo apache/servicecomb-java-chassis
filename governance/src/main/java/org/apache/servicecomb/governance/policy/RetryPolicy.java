@@ -48,7 +48,7 @@ public class RetryPolicy extends AbstractPolicy {
   //需要重试的http status, 逗号分隔
   private List<String> retryOnResponseStatus = new ArrayList<>();
 
-  private String retryStrategy =DEFAULT_RETRY_STRATEGY;
+  private String retryStrategy = DEFAULT_RETRY_STRATEGY;
 
   private Duration initialInterval = INITIAL_INTERVAL;
 
@@ -80,7 +80,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public void setWaitDuration(String waitDuration) {
-    this.waitDuration = parseToDuration(waitDuration,DEFAULT_WAIT_DURATION);
+    this.waitDuration = parseToDuration(waitDuration, DEFAULT_WAIT_DURATION);
   }
 
   public String getRetryStrategy() {
@@ -99,7 +99,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public void setInitialInterval(String initialInterval) {
-    this.initialInterval = parseToDuration(initialInterval,INITIAL_INTERVAL);
+    this.initialInterval = parseToDuration(initialInterval, INITIAL_INTERVAL);
   }
 
   public float getMultiplier() {

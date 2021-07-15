@@ -26,9 +26,9 @@ public class RateLimitingPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_LIMIT_FOR_PERIOD = 1000;
 
-  private Duration timeoutDuration=DEFAULT_TIMEOUT_DURATION;
+  private Duration timeoutDuration = DEFAULT_TIMEOUT_DURATION;
 
-  private Duration limitRefreshPeriod=DEFAULT_LIMIT_REFRESH_PERIOD;
+  private Duration limitRefreshPeriod = DEFAULT_LIMIT_REFRESH_PERIOD;
 
   // 配置项名称使用 rate， 对应于 resilience4j 的 limitForPeriod
   private int rate = DEFAULT_LIMIT_FOR_PERIOD;
@@ -38,7 +38,7 @@ public class RateLimitingPolicy extends AbstractPolicy {
   }
 
   public void setTimeoutDuration(String timeoutDuration) {
-    this.timeoutDuration = parseToDuration(timeoutDuration,DEFAULT_TIMEOUT_DURATION);
+    this.timeoutDuration = parseToDuration(timeoutDuration, DEFAULT_TIMEOUT_DURATION);
   }
 
   public Duration getLimitRefreshPeriod() {
@@ -46,7 +46,7 @@ public class RateLimitingPolicy extends AbstractPolicy {
   }
 
   public void setLimitRefreshPeriod(String limitRefreshPeriod) {
-    this.limitRefreshPeriod = parseToDuration(limitRefreshPeriod,DEFAULT_LIMIT_REFRESH_PERIOD);
+    this.limitRefreshPeriod = parseToDuration(limitRefreshPeriod, DEFAULT_LIMIT_REFRESH_PERIOD);
   }
 
   public int getRate() {

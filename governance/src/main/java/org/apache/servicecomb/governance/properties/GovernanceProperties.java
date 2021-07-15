@@ -117,7 +117,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
   }
 
   private void getProperties(PropertySource<?> propertySource,
-      Set<String> allKeys) {
+                             Set<String> allKeys) {
     if (propertySource instanceof CompositePropertySource) {
       // recursively get EnumerablePropertySource
       CompositePropertySource compositePropertySource = (CompositePropertySource) propertySource;

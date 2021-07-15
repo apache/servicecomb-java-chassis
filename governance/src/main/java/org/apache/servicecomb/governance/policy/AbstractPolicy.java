@@ -41,12 +41,12 @@ public abstract class AbstractPolicy extends Configurable {
     if (StringUtils.isEmpty(time)) {
       return defaultValue;
     }
-    if(time.matches(GovernanceUtils.DIGIT_REGEX)) {
+    if (time.matches(GovernanceUtils.DIGIT_REGEX)) {
       return Duration.ofMillis(Integer.valueOf(time));
     }
     try {
-      return Duration.parse(GovernanceUtils.DIGIT_PREFIX+time);
-    } catch (DateTimeParseException e){
+      return Duration.parse(GovernanceUtils.DIGIT_PREFIX + time);
+    } catch (DateTimeParseException e) {
       LOGGER.warn("Parsed time to be a Duration failed. It will use the default value.");
     }
     return defaultValue;

@@ -18,7 +18,6 @@
 package org.apache.servicecomb.governance.handler.ext;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 public interface RetryExtension {
   boolean isRetry(List<String> statusList, Object result);

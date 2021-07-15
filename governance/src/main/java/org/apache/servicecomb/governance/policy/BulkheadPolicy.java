@@ -27,7 +27,7 @@ public class BulkheadPolicy extends AbstractPolicy {
 
   private int maxConcurrentCalls = DEFAULT_MAX_CONCURRENT_CALLS;
 
-  private Duration maxWaitDuration =DEFAULT_MAX_WAIT_DURATION;
+  private Duration maxWaitDuration = DEFAULT_MAX_WAIT_DURATION;
 
   public int getMaxConcurrentCalls() {
     return maxConcurrentCalls;
@@ -42,7 +42,7 @@ public class BulkheadPolicy extends AbstractPolicy {
   }
 
   public void setMaxWaitDuration(String maxWaitDuration) {
-    this.maxWaitDuration = parseToDuration(maxWaitDuration,DEFAULT_MAX_WAIT_DURATION);
+    this.maxWaitDuration = parseToDuration(maxWaitDuration, DEFAULT_MAX_WAIT_DURATION);
   }
 
   @Override

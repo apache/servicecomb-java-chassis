@@ -104,7 +104,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   }
 
   public void setWaitDurationInOpenState(String waitDurationInOpenState) {
-    this.waitDurationInOpenState = parseToDuration(waitDurationInOpenState,DEFAULT_WAIT_DURATION_IN_OPEN_STATUS);
+    this.waitDurationInOpenState = parseToDuration(waitDurationInOpenState, DEFAULT_WAIT_DURATION_IN_OPEN_STATUS);
   }
 
   public Duration getSlowCallDurationThreshold() {
@@ -112,7 +112,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   }
 
   public void setSlowCallDurationThreshold(String slowCallDurationThreshold) {
-    this.slowCallDurationThreshold = parseToDuration(slowCallDurationThreshold,DEFAULT_SLOW_CALL_DURATION_THRESHOLD);
+    this.slowCallDurationThreshold = parseToDuration(slowCallDurationThreshold, DEFAULT_SLOW_CALL_DURATION_THRESHOLD);
   }
 
   public int getPermittedNumberOfCallsInHalfOpenState() {
