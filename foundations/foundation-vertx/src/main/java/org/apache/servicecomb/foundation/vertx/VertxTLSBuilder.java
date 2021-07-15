@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.foundation.ssl.KeyStoreUtil;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -54,12 +53,25 @@ public final class VertxTLSBuilder {
   public static NetServerOptions buildNetServerOptions(SSLOption sslOption, SSLCustom sslCustom,
       NetServerOptions netServerOptions) {
     buildTCPSSLOptions(sslOption, sslCustom, netServerOptions);
-    if (sslOption.isAuthPeer()) {
-      netServerOptions.setClientAuth(ClientAuth.REQUIRED);
-    } else {
-      netServerOptions.setClientAuth(ClientAuth.REQUEST);
-    }
+    setClientAuth(sslOption, netServerOptions);
     return netServerOptions;
+  }
+
+  private static void setClientAuth(SSLOption sslOption, NetServerOptions netServerOptions) {
+    if (sslOption.isAuthPeer() || org.apache.servicecomb.foundation.ssl.ClientAuth.REQUIRED
+        .equals(sslOption.getClientAuth())) {
+      netServerOptions.setClientAuth(ClientAuth.REQUIRED);
+      return;
+    }
+
+    if (org.apache.servicecomb.foundation.ssl.ClientAuth.NONE
+        .equals(sslOption.getClientAuth())) {
+      netServerOptions.setClientAuth(ClientAuth.NONE);
+      return;
+    }
+
+    netServerOptions.setClientAuth(ClientAuth.REQUEST);
+    return;
   }
 
   public static void buildHttpClientOptions(String sslKey, HttpClientOptions httpClientOptions) {

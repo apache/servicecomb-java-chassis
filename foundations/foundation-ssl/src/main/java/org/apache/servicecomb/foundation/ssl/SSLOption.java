@@ -76,6 +76,8 @@ public final class SSLOption {
 
   private boolean allowRenegociate;
 
+  private String clientAuth;
+
   private String storePath;
 
   private String trustStore;
@@ -194,6 +196,14 @@ public final class SSLOption {
     return storePath;
   }
 
+  public String getClientAuth() {
+    return this.clientAuth;
+  }
+
+  public void setClientAuth(String clientAuth) {
+    this.clientAuth = clientAuth;
+  }
+
   public String getTrustStore() {
     return trustStore;
   }
@@ -259,7 +269,7 @@ public final class SSLOption {
     for (String key : keys) {
       if (configSource != null) {
         Object v = configSource.getProperty(key);
-        if (List.class.isInstance(v)) {
+        if (v instanceof List) {
           property = listToString(((List<?>) v).toArray());
         } else {
           property = (String) configSource.getProperty(key);
@@ -340,6 +350,11 @@ public final class SSLOption {
             DEFAULT_OPTION.getStorePath(),
             "ssl." + tag + ".storePath",
             "ssl.storePath");
+    option.clientAuth =
+        getStringProperty(configSource,
+            DEFAULT_OPTION.getClientAuth(),
+            "ssl." + tag + ".storePath",
+            "ssl.clientAuth");
     option.trustStore =
         getStringProperty(configSource,
             DEFAULT_OPTION.getTrustStore(),
@@ -383,6 +398,7 @@ public final class SSLOption {
     this.checkCNWhiteFile = propString(props, "ssl.checkCN.white.file");
     this.allowRenegociate = propBoolean(props, "ssl.allowRenegociate");
     this.storePath = propString(props, "ssl.storePath");
+    this.clientAuth = propString(props, "ssl.clientAuth", false);
     this.trustStore = propString(props, "ssl.trustStore");
     this.trustStoreType = propString(props, "ssl.trustStoreType");
     this.trustStoreValue = propString(props, "ssl.trustStoreValue");
@@ -394,8 +410,12 @@ public final class SSLOption {
   }
 
   private String propString(Properties props, String key) {
+    return propString(props, key, true);
+  }
+
+  private String propString(Properties props, String key, boolean required) {
     String s = props.getProperty(key);
-    if (s == null) {
+    if (s == null && required) {
       throw new IllegalArgumentException("No key :" + key);
     }
     return s;

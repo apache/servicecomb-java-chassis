@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
@@ -100,8 +99,8 @@ public final class SSLManager {
     SSLContext context = createSSLContext(option, custom);
     SSLSocketFactory factory = context.getSocketFactory();
     String[] supported = factory.getSupportedCipherSuites();
-    String[] eanbled = option.getCiphers().split(",");
-    return new SSLSocketFactoryExt(factory, getEnabledCiphers(supported, eanbled),
+    String[] enabled = option.getCiphers().split(",");
+    return new SSLSocketFactoryExt(factory, getEnabledCiphers(supported, enabled),
         option.getProtocols().split(","));
   }
 
@@ -111,9 +110,9 @@ public final class SSLManager {
         context.createSSLEngine();
     engine.setEnabledProtocols(option.getProtocols().split(","));
     String[] supported = engine.getSupportedCipherSuites();
-    String[] eanbled = option.getCiphers().split(",");
-    engine.setEnabledCipherSuites(getEnabledCiphers(supported, eanbled));
-    engine.setNeedClientAuth(option.isAuthPeer());
+    String[] enabled = option.getCiphers().split(",");
+    engine.setEnabledCipherSuites(getEnabledCiphers(supported, enabled));
+    setClientAuth(option, engine);
     return engine;
   }
 
@@ -123,10 +122,36 @@ public final class SSLManager {
         context.createSSLEngine(peerHost, peerPort);
     engine.setEnabledProtocols(option.getProtocols().split(","));
     String[] supported = engine.getSupportedCipherSuites();
-    String[] eanbled = option.getCiphers().split(",");
-    engine.setEnabledCipherSuites(getEnabledCiphers(supported, eanbled));
-    engine.setNeedClientAuth(option.isAuthPeer());
+    String[] enabled = option.getCiphers().split(",");
+    engine.setEnabledCipherSuites(getEnabledCiphers(supported, enabled));
+    setClientAuth(option, engine);
     return engine;
+  }
+
+  private static void setClientAuth(SSLOption option, SSLEngine engine) {
+    if (option.isAuthPeer() || ClientAuth.REQUIRED.equals(option.getClientAuth())) {
+      engine.setNeedClientAuth(true);
+      return;
+    }
+    if (ClientAuth.NONE.equals(option.getClientAuth())) {
+      engine.setNeedClientAuth(false);
+      engine.setWantClientAuth(false);
+      return;
+    }
+    engine.setWantClientAuth(true);
+  }
+
+  private static void setClientAuth(SSLOption option, SSLServerSocket serverSocket) {
+    if (option.isAuthPeer() || ClientAuth.REQUIRED.equals(option.getClientAuth())) {
+      serverSocket.setNeedClientAuth(true);
+      return;
+    }
+    if (ClientAuth.NONE.equals(option.getClientAuth())) {
+      serverSocket.setNeedClientAuth(false);
+      serverSocket.setWantClientAuth(false);
+      return;
+    }
+    serverSocket.setWantClientAuth(true);
   }
 
   public static SSLServerSocket createSSLServerSocket(SSLOption option,
@@ -138,9 +163,9 @@ public final class SSLManager {
           (SSLServerSocket) factory.createServerSocket();
       socket.setEnabledProtocols(option.getProtocols().split(","));
       String[] supported = socket.getSupportedCipherSuites();
-      String[] eanbled = option.getCiphers().split(",");
-      socket.setEnabledCipherSuites(getEnabledCiphers(supported, eanbled));
-      socket.setNeedClientAuth(option.isAuthPeer());
+      String[] enabled = option.getCiphers().split(",");
+      socket.setEnabledCipherSuites(getEnabledCiphers(supported, enabled));
+      setClientAuth(option, socket);
       return socket;
     } catch (UnknownHostException e) {
       throw new IllegalArgumentException("unkown host");
@@ -152,16 +177,16 @@ public final class SSLManager {
   public static SSLSocket createSSLSocket(SSLOption option, SSLCustom custom) {
     try {
       SSLContext context = createSSLContext(option, custom);
-      SSLSocketFactory facroty = context.getSocketFactory();
+      SSLSocketFactory factory = context.getSocketFactory();
       SSLSocket socket =
-          (SSLSocket) facroty.createSocket();
+          (SSLSocket) factory.createSocket();
       socket.setEnabledProtocols(option.getProtocols().split(","));
       String[] supported = socket.getSupportedCipherSuites();
-      String[] eanbled = option.getCiphers().split(",");
-      socket.setEnabledCipherSuites(getEnabledCiphers(supported, eanbled));
+      String[] enabled = option.getCiphers().split(",");
+      socket.setEnabledCipherSuites(getEnabledCiphers(supported, enabled));
       return socket;
     } catch (UnknownHostException e) {
-      throw new IllegalArgumentException("unkown host");
+      throw new IllegalArgumentException("unknown host");
     } catch (IOException e) {
       throw new IllegalArgumentException("unable create socket");
     }

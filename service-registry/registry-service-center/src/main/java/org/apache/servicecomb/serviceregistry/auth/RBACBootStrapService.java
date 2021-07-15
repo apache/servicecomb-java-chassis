@@ -131,6 +131,11 @@ public class RBACBootStrapService implements BootStrapService {
             DEFAULT_OPTION.getStorePath(),
             "ssl." + tag + ".storePath",
             "ssl.storePath"));
+    option.setClientAuth(
+        getStringProperty(environment,
+            DEFAULT_OPTION.getClientAuth(),
+            "ssl." + tag + ".clientAuth",
+            "ssl.clientAuth"));
     option.setTrustStore(
         getStringProperty(environment,
             DEFAULT_OPTION.getTrustStore(),

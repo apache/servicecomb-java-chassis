@@ -120,6 +120,7 @@ public class SSLManagerTest {
       }
     };
     final SSLServerSocket serverSocket = SSLManager.createSSLServerSocket(option, custom);
+    Assert.assertTrue(serverSocket.getNeedClientAuth());
     serverSocket.bind(new InetSocketAddress("127.0.0.1", 8886));
     String[] protos = serverSocket.getEnabledCipherSuites();
     String[] protosExpected =
@@ -201,7 +202,31 @@ public class SSLManagerTest {
     SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
     // if client mode may not decided at initialization. Different JDK is different, do not check it.
     // Assert.assertEquals(false, aSSLEngine.getUseClientMode());
-    Assert.assertNotNull(aSSLEngine);
+    Assert.assertTrue(aSSLEngine.getNeedClientAuth());
+  }
+
+  @Test
+  public void testCreateSSLEngineClientAuthNone() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+    option.setClientAuth("NONE");
+    option.setAuthPeer(false);
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
+
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
+
+    SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
+    // if client mode may not decided at initialization. Different JDK is different, do not check it.
+    // Assert.assertEquals(false, aSSLEngine.getUseClientMode());
+    Assert.assertFalse(aSSLEngine.getNeedClientAuth());
+    Assert.assertFalse(aSSLEngine.getWantClientAuth());
   }
 
   @Test
