@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.utils;
 
-import java.util.List;
+public final class GovernanceUtils {
+  public static final String DIGIT_REGEX = "-{0,1}[0-9]{1,10}";
 
-import org.springframework.stereotype.Component;
+  public static final String DIGIT_PREFIX = "PT";
 
-import org.apache.servicecomb.governance.handler.ext.RetryExtension;
-
-@Component
-public class MockRetryExtension implements RetryExtension {
-  @Override
-  public boolean isRetry(List<String> statusList, Object result) {
-    return false;
-  }
-
-  @Override
-  public Class<? extends Throwable>[] retryExceptions() {
-    return null;
-  }
+  public static final String STRATEGY_RANDOM_BACKOFF = "RandomBackoff";
 }

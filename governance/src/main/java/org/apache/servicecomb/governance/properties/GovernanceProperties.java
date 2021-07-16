@@ -174,7 +174,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
         return null;
       }
       return result;
-    } catch (YAMLException e) {
+    } catch (RuntimeException e) {
       LOGGER.error("governance config yaml is illegal : {}", e.getMessage());
     }
     return null;
