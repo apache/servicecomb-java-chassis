@@ -33,41 +33,41 @@ public class RetryExtensionTest {
 
   @Test
   public void test_status_code_to_contains() {
-    List<String> statusList = Arrays.asList("502","503");
+    List<String> statusList = Arrays.asList("502", "503");
     boolean result = AbstractRetryExtension.statusCodeContains(statusList, "502");
     Assert.assertTrue(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"504");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "504");
     Assert.assertFalse(result);
 
-    statusList = Arrays.asList("5xx","4x4","4x","x32","xx6");
-    result=AbstractRetryExtension.statusCodeContains(statusList,"502");
+    statusList = Arrays.asList("5xx", "4x4", "4x", "x32", "xx6");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "502");
     Assert.assertTrue(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"504");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "504");
     Assert.assertTrue(result);
 
-    statusList = Arrays.asList("4x4","x32","xx6");
-    result=AbstractRetryExtension.statusCodeContains(statusList,"402");
+    statusList = Arrays.asList("4x4", "x32", "xx6");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "402");
     Assert.assertFalse(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"404");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "404");
     Assert.assertTrue(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"332");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "332");
     Assert.assertTrue(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"446");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "446");
     Assert.assertTrue(result);
 
-    statusList = Arrays.asList("4x","x3x","x5");
-    result=AbstractRetryExtension.statusCodeContains(statusList,"446");
+    statusList = Arrays.asList("4x", "x3x", "x5");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "446");
     Assert.assertFalse(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"455");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "455");
     Assert.assertFalse(result);
 
-    result=AbstractRetryExtension.statusCodeContains(statusList,"434");
+    result = AbstractRetryExtension.statusCodeContains(statusList, "434");
     Assert.assertTrue(result);
   }
 }

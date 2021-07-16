@@ -272,25 +272,24 @@ public class OperatorTest {
   public void test_time_changed_to_duration() {
     RetryPolicy retryPolicy = new RetryPolicy();
     String result;
-    result=retryPolicy.stringOfDuration("100", Duration.ofMillis(10));
-    Assert.assertEquals("PT0.1S",result);
-    Assert.assertEquals(100,Duration.parse(result).toMillis());
+    result = retryPolicy.stringOfDuration("100", Duration.ofMillis(10));
+    Assert.assertEquals("PT0.1S", result);
+    Assert.assertEquals(100, Duration.parse(result).toMillis());
 
-    result=retryPolicy.stringOfDuration("3S", Duration.ofMillis(10));
-    Assert.assertEquals("PT3S",result);
-    Assert.assertEquals(3000,Duration.parse(result).toMillis());
+    result = retryPolicy.stringOfDuration("3S", Duration.ofMillis(10));
+    Assert.assertEquals("PT3S", result);
+    Assert.assertEquals(3000, Duration.parse(result).toMillis());
 
-    result=retryPolicy.stringOfDuration("1M", Duration.ofMillis(10));
-    Assert.assertEquals("PT1M",result);
-    Assert.assertEquals(60000,Duration.parse(result).toMillis());
+    result = retryPolicy.stringOfDuration("1M", Duration.ofMillis(10));
+    Assert.assertEquals("PT1M", result);
+    Assert.assertEquals(60000, Duration.parse(result).toMillis());
 
-    result=retryPolicy.stringOfDuration("1H", Duration.ofMillis(10));
-    Assert.assertEquals("PT1H",result);
-    Assert.assertEquals(3600000,Duration.parse(result).toMillis());
+    result = retryPolicy.stringOfDuration("1H", Duration.ofMillis(10));
+    Assert.assertEquals("PT1H", result);
+    Assert.assertEquals(3600000, Duration.parse(result).toMillis());
 
-    result=retryPolicy.stringOfDuration("3", Duration.ofMillis(10));
-    Assert.assertEquals("PT0.003S",result);
-    Assert.assertEquals(3,Duration.parse(result).toMillis());
+    result = retryPolicy.stringOfDuration("3", Duration.ofMillis(10));
+    Assert.assertEquals("PT0.003S", result);
+    Assert.assertEquals(3, Duration.parse(result).toMillis());
   }
-
 }
