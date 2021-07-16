@@ -28,19 +28,22 @@ public abstract class AbstractRetryExtension implements RetryExtension {
     if (StringUtils.isEmpty(statusCode)) {
       return false;
     }
-    return isContain(statusList, statusCode);
+    return statusCodeContains(statusList, statusCode);
   }
 
   protected abstract String extractStatusCode(Object result);
 
-  private boolean isContain(List<String> statusList, String responseStatus) {
-    return statusList.stream().anyMatch(status -> judge(status, responseStatus));
+  protected static boolean statusCodeContains(List<String> statusList, String responseStatus) {
+    return statusList.stream().anyMatch(status -> statusCodeMatch(status, responseStatus));
   }
 
-  private boolean judge(String status, String responseStatus) {
+  private static boolean statusCodeMatch(String status, String responseStatus) {
+    if (3 != status.length()) {
+      return false;
+    }
     char[] statusChar = status.toCharArray();
     char[] responseChar = responseStatus.toCharArray();
-    return IntStream.range(0, statusChar.length - 1).noneMatch(i ->
+    return IntStream.range(0, 3).noneMatch(i ->
         statusChar[i] != responseChar[i] && statusChar[i] != 'x');
   }
 }

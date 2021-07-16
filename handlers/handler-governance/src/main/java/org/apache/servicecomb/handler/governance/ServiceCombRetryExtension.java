@@ -18,6 +18,7 @@
 package org.apache.servicecomb.handler.governance;
 
 import io.vertx.core.VertxException;
+
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -49,7 +50,7 @@ public class ServiceCombRetryExtension extends AbstractRetryExtension {
   @Override
   @SuppressWarnings({"unchecked", "rawtypes"})
   public Class<? extends Throwable>[] retryExceptions() {
-    return new Class[]{
+    return new Class[] {
         ConnectException.class,
         SocketTimeoutException.class,
         IOException.class,

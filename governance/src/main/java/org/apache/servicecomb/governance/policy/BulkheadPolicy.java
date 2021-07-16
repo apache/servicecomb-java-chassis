@@ -42,7 +42,7 @@ public class BulkheadPolicy extends AbstractPolicy {
   }
 
   public void setMaxWaitDuration(String maxWaitDuration) {
-    this.maxWaitDuration = StringOfDuration(maxWaitDuration, DEFAULT_MAX_WAIT_DURATION);
+    this.maxWaitDuration = stringOfDuration(maxWaitDuration, DEFAULT_MAX_WAIT_DURATION);
   }
 
   @Override

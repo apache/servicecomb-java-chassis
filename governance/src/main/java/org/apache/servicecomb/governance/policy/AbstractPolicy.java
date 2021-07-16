@@ -19,21 +19,14 @@ package org.apache.servicecomb.governance.policy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.format.DateTimeParseException;
 
 public abstract class AbstractPolicy extends Configurable {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPolicy.class);
 
   @Override
   public boolean isValid() {
-    if (StringUtils.isEmpty(name)) {
-      return false;
-    }
-    return true;
+    return !StringUtils.isEmpty(name);
   }
 
   private Duration parseToDuration(String time, Duration defaultValue) {
@@ -41,18 +34,15 @@ public abstract class AbstractPolicy extends Configurable {
       return defaultValue;
     }
     if (time.matches(GovernanceUtils.DIGIT_REGEX)) {
-      if (Integer.valueOf(time) < 0) return Duration.ofMinutes(-1);
-      return Duration.ofMillis(Integer.valueOf(time));
+      if (Long.valueOf(time) < 0) {
+        throw new RuntimeException("The value of time should not be less than 0.");
+      }
+      return Duration.ofMillis(Long.valueOf(time));
     }
-    try {
-      return Duration.parse(GovernanceUtils.DIGIT_PREFIX + time);
-    } catch (DateTimeParseException e) {
-      LOGGER.warn("Parsed time to be a Duration failed. It will use the default value.");
-    }
-    return defaultValue;
+    return Duration.parse(GovernanceUtils.DIGIT_PREFIX + time);
   }
 
-  public String StringOfDuration(String time, Duration defaultValue) {
+  public String stringOfDuration(String time, Duration defaultValue) {
     return parseToDuration(time, defaultValue).toString();
   }
 }

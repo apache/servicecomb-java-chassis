@@ -80,7 +80,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public void setWaitDuration(String waitDuration) {
-    this.waitDuration = StringOfDuration(waitDuration, DEFAULT_WAIT_DURATION);
+    this.waitDuration = stringOfDuration(waitDuration, DEFAULT_WAIT_DURATION);
   }
 
   public String getRetryStrategy() {
@@ -99,7 +99,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public void setInitialInterval(String initialInterval) {
-    this.initialInterval = StringOfDuration(initialInterval, INITIAL_INTERVAL);
+    this.initialInterval = stringOfDuration(initialInterval, INITIAL_INTERVAL);
   }
 
   public float getMultiplier() {

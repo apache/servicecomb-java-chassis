@@ -117,7 +117,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
   }
 
   private void getProperties(PropertySource<?> propertySource,
-                             Set<String> allKeys) {
+      Set<String> allKeys) {
     if (propertySource instanceof CompositePropertySource) {
       // recursively get EnumerablePropertySource
       CompositePropertySource compositePropertySource = (CompositePropertySource) propertySource;
@@ -174,7 +174,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
         return null;
       }
       return result;
-    } catch (YAMLException e) {
+    } catch (RuntimeException e) {
       LOGGER.error("governance config yaml is illegal : {}", e.getMessage());
     }
     return null;
