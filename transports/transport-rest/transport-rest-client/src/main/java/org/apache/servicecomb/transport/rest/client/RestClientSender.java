@@ -33,8 +33,6 @@ import org.apache.servicecomb.foundation.vertx.metrics.DefaultClientMetrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +65,6 @@ public class RestClientSender {
   }
 
   public CompletableFuture<Response> send() {
-    invocation.onStartSendRequest();
-
     httpClientRequest.send().compose(response -> processResponse(response).compose(buffer -> {
       future.complete(createResponse(response, buffer));
       return Future.succeededFuture();
@@ -177,12 +173,9 @@ public class RestClientSender {
   protected void processMetrics() {
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
 
-    InvocationContext context = ContextUtils.getInvocationContext();
-    if (context != null) {
-      DefaultRequestMetric requestMetric = context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC);
-      stageTrace.finishGetConnection(requestMetric.getRequestBeginTime());
-      stageTrace.finishWriteToBuffer(requestMetric.getRequestEndTime());
-    }
+    // TODO: after upgrade vert.x , can use request metric to calculate request end time
+    stageTrace.finishWriteToBuffer(System.nanoTime());
+    //
 
     // even failed and did not received response, still set time for it
     // that will help to know the real timeout time

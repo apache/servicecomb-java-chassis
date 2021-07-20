@@ -45,14 +45,9 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-import org.apache.servicecomb.foundation.vertx.metrics.DefaultClientMetrics;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -322,10 +317,6 @@ public class TestRestClientInvocation {
     }
 
     when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
-    InvocationContext context = mock(InvocationContext.class);
-    Mockito.when(context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC))
-        .thenReturn(new DefaultRequestMetric(new DefaultEndpointMetric("localhost:8080")));
-    ContextUtils.setInvocationContext(context);
 
     restClientInvocation.processResponseBody(null);
 
@@ -333,7 +324,6 @@ public class TestRestClientInvocation {
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishGetConnection());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 
@@ -351,19 +341,12 @@ public class TestRestClientInvocation {
     }
 
     when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
-
-    InvocationContext context = mock(InvocationContext.class);
-    Mockito.when(context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC))
-        .thenReturn(new DefaultRequestMetric(new DefaultEndpointMetric("localhost:8080")));
-    ContextUtils.setInvocationContext(context);
-
     restClientInvocation.processResponseBody(null);
 
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishGetConnection());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 

@@ -42,13 +42,9 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
-import org.apache.servicecomb.foundation.vertx.metrics.DefaultClientMetrics;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -71,7 +67,7 @@ public class RestClientInvocation {
       org.apache.servicecomb.core.Const.TARGET_MICROSERVICE
   };
 
-  private HttpClientWithContext httpClientWithContext;
+  private final HttpClientWithContext httpClientWithContext;
 
   private Invocation invocation;
 
@@ -79,13 +75,13 @@ public class RestClientInvocation {
 
   private AsyncResponse asyncResp;
 
-  private List<HttpClientFilter> httpClientFilters;
+  private final List<HttpClientFilter> httpClientFilters;
 
   private HttpClientRequest clientRequest;
 
   private HttpClientResponse clientResponse;
 
-  private Handler<Throwable> throwableHandler = e -> fail(e);
+  private final Handler<Throwable> throwableHandler = this::fail;
 
   private boolean alreadyFailed = false;
 
@@ -106,7 +102,12 @@ public class RestClientInvocation {
 
     Future<HttpClientRequest> requestFuture = createRequest(ipPort, path);
 
+    invocation.onStartSendRequest();
     requestFuture.compose(clientRequest -> {
+      // TODO: after upgrade vert.x , can use request metric to calculate request end time
+      invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
+      //
+
       this.clientRequest = clientRequest;
 
       clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
@@ -129,7 +130,6 @@ public class RestClientInvocation {
       }
 
       // 从业务线程转移到网络线程中去发送
-      invocation.onStartSendRequest();
       httpClientWithContext.runOnContext(httpClient -> {
         clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
         clientRequest.response().onComplete(asyncResult -> {
@@ -229,14 +229,11 @@ public class RestClientInvocation {
    * @param responseBuf response body buffer, when download, responseBuf is null, because download data by ReadStreamPart
    */
   protected void processResponseBody(Buffer responseBuf) {
-    InvocationContext context = ContextUtils.getInvocationContext();
-    if (context != null) {
-      DefaultRequestMetric requestMetric = context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC);
-      invocation.getInvocationStageTrace().finishGetConnection(requestMetric.getRequestBeginTime());
-      invocation.getInvocationStageTrace().finishWriteToBuffer(requestMetric.getRequestEndTime());
-    }
-    invocation.getInvocationStageTrace().finishReceiveResponse();
+    // TODO: after upgrade vert.x , can use request metric to calculate request end time
+    invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime());
+    //
 
+    invocation.getInvocationStageTrace().finishReceiveResponse();
     invocation.getResponseExecutor().execute(() -> {
       try {
         invocation.getInvocationStageTrace().startClientFiltersResponse();
@@ -270,12 +267,12 @@ public class RestClientInvocation {
     alreadyFailed = true;
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    InvocationContext context = ContextUtils.getInvocationContext();
-    if (context != null) {
-      DefaultRequestMetric requestMetric = context.getLocalContext(DefaultClientMetrics.KEY_REQUEST_METRIC);
-      stageTrace.finishGetConnection(requestMetric.getRequestBeginTime());
-      stageTrace.finishWriteToBuffer(requestMetric.getRequestEndTime());
+
+    // TODO: after upgrade vert.x , can use request metric to calculate request end time
+    if (stageTrace.getFinishWriteToBuffer() == 0) {
+      stageTrace.finishWriteToBuffer(System.nanoTime());
     }
+    //
 
     // even failed and did not received response, still set time for it
     // that will help to know the real timeout time

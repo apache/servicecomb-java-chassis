@@ -53,6 +53,7 @@ public class DefaultHttpClientMetrics implements
     ((DefaultClientMetrics) endpointMetric).getClientEndpointMetric().onDisconnect();
   }
 
+  @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
     return new DefaultTcpSocketMetric(
         this.clientEndpointMetricManager.getOrCreateEndpointMetric(remoteAddress.host() + ":" + remoteAddress.port()));

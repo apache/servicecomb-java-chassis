@@ -49,7 +49,7 @@ public class DefaultHttpServerMetrics implements
 
   @Override
   public void requestEnd(DefaultRequestMetric requestMetric, HttpRequest request, long bytesRead) {
-    requestMetric.responseEnd();
+    requestMetric.requestEnd();
   }
 
   @Override

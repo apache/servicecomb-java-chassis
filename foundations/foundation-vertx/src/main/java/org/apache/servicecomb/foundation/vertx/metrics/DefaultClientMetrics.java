@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientTaskMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
@@ -28,13 +27,7 @@ import io.vertx.core.spi.observability.HttpResponse;
 
 public class DefaultClientMetrics implements
     ClientMetrics<DefaultRequestMetric, DefaultClientTaskMetric, HttpRequest, HttpResponse> {
-  public static final String KEY_TASK_METRIC = "x-cse-metric-task";
-
-  public static final String KEY_REQUEST_METRIC = "x-cse-metric-request";
-
   private final DefaultClientEndpointMetric clientEndpointMetric;
-
-  private final RequestContext requestContext = SPIServiceUtils.getTargetService(RequestContext.class);
 
   public DefaultClientMetrics(DefaultClientEndpointMetric clientEndpointMetric) {
     this.clientEndpointMetric = clientEndpointMetric;
@@ -48,7 +41,6 @@ public class DefaultClientMetrics implements
   public DefaultClientTaskMetric enqueueRequest() {
     DefaultClientTaskMetric taskMetric = new DefaultClientTaskMetric();
     taskMetric.enqueueRequest();
-    addLocalContext(KEY_TASK_METRIC, taskMetric);
     return taskMetric;
   }
 
@@ -61,14 +53,7 @@ public class DefaultClientMetrics implements
   public DefaultRequestMetric requestBegin(String uri, HttpRequest request) {
     DefaultRequestMetric requestMetric = new DefaultRequestMetric(this.clientEndpointMetric);
     requestMetric.requestBegin();
-    addLocalContext(KEY_REQUEST_METRIC, requestMetric);
     return requestMetric;
-  }
-
-  private void addLocalContext(String key, Object value) {
-    if (requestContext != null) {
-      requestContext.addLocalContext(key, value);
-    }
   }
 
   @Override

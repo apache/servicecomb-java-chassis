@@ -35,15 +35,12 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
 import io.vertx.core.spi.metrics.TCPMetrics;
 
 public class DefaultVertxMetrics extends DummyVertxMetrics {
-  private final VertxOptions vertxOptions;
-
   // to support listen multiple addresses, must use a map to manage the metric
   private final Map<String, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
 
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   public DefaultVertxMetrics(VertxOptions vertxOptions) {
-    this.vertxOptions = vertxOptions;
     this.clientEndpointMetricManager = new DefaultClientEndpointMetricManager(
         (MetricsOptionsEx) vertxOptions.getMetricsOptions());
   }
