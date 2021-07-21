@@ -64,8 +64,9 @@ public class DefaultHttpServerMetrics implements
 
   @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    endpointMetric.onConnect();
-    return new DefaultTcpSocketMetric(endpointMetric);
+    DefaultTcpSocketMetric socketMetric = new DefaultTcpSocketMetric(endpointMetric);
+    socketMetric.onConnect();
+    return socketMetric;
   }
 
   @Override

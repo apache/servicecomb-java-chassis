@@ -18,6 +18,8 @@ package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.concurrent.atomic.LongAdder;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * for one listen address, include multiple httpClient or httpServer
  */
@@ -33,6 +35,7 @@ public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
     super(address);
   }
 
+  @VisibleForTesting
   public long getLastNanoTime() {
     return lastNanoTime;
   }

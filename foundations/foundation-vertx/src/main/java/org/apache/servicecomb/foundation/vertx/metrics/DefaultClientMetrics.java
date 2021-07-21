@@ -39,7 +39,7 @@ public class DefaultClientMetrics implements
 
   @Override
   public DefaultClientTaskMetric enqueueRequest() {
-    DefaultClientTaskMetric taskMetric = new DefaultClientTaskMetric();
+    DefaultClientTaskMetric taskMetric = new DefaultClientTaskMetric(clientEndpointMetric);
     taskMetric.enqueueRequest();
     return taskMetric;
   }

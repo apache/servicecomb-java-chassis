@@ -16,20 +16,19 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics;
 
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientTaskMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
 
 import io.vertx.core.net.SocketAddress;
-import io.vertx.core.spi.metrics.ClientMetrics;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 
-/**
- * important: not singleton, every HttpClient instance relate to an HttpClientMetrics instance
- */
 public class DefaultHttpClientMetrics implements
     HttpClientMetrics<DefaultRequestMetric, Object, DefaultTcpSocketMetric, DefaultClientTaskMetric> {
+  private static final String PROTOCOL = "http://";
+
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   public DefaultHttpClientMetrics(DefaultClientEndpointMetricManager clientEndpointMetricManager) {
@@ -40,23 +39,20 @@ public class DefaultHttpClientMetrics implements
   public DefaultClientMetrics createEndpointMetrics(
       SocketAddress remoteAddress, int maxPoolSize) {
     return new DefaultClientMetrics(
-        this.clientEndpointMetricManager.getOrCreateEndpointMetric(remoteAddress.host() + ":" + remoteAddress.port()));
+        getOrCreateEndpointMetric(remoteAddress));
   }
 
-  @Override
-  public void endpointConnected(ClientMetrics<DefaultRequestMetric, DefaultClientTaskMetric, ?, ?> endpointMetric) {
-    ((DefaultClientMetrics) endpointMetric).getClientEndpointMetric().onConnect();
-  }
-
-  @Override
-  public void endpointDisconnected(ClientMetrics<DefaultRequestMetric, DefaultClientTaskMetric, ?, ?> endpointMetric) {
-    ((DefaultClientMetrics) endpointMetric).getClientEndpointMetric().onDisconnect();
+  private DefaultClientEndpointMetric getOrCreateEndpointMetric(SocketAddress remoteAddress) {
+    return this.clientEndpointMetricManager
+        .getOrCreateEndpointMetric(PROTOCOL + remoteAddress.host() + ":" + remoteAddress.port());
   }
 
   @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    return new DefaultTcpSocketMetric(
-        this.clientEndpointMetricManager.getOrCreateEndpointMetric(remoteAddress.host() + ":" + remoteAddress.port()));
+    DefaultTcpSocketMetric socketMetric = new DefaultTcpSocketMetric(
+        getOrCreateEndpointMetric(remoteAddress));
+    socketMetric.onConnect();
+    return socketMetric;
   }
 
   @Override

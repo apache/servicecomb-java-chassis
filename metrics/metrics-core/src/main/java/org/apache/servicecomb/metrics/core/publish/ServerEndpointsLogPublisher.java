@@ -32,28 +32,14 @@ public class ServerEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
 
   @Override
   public void print(boolean printDetail) {
+    if (!printDetail) {
+      return;
+    }
     appendLine(sb, "    server.endpoints:");
     appendLine(sb,
         "      connectCount disconnectCount rejectByLimit connections requests latency send(Bps) receive(Bps) listen");
 
-    double connect = 0;
-    double disconnect = 0;
-    double reject = 0;
-    double connections = 0;
-    double requests = 0;
-    double latency = 0;
-    double readSize = 0;
-    double writeSize = 0;
     for (MeasurementNode address : measurementNode.getChildren().values()) {
-      connect += address.findChild(EndpointMeter.CONNECT_COUNT).summary();
-      disconnect += address.findChild(EndpointMeter.DISCONNECT_COUNT).summary();
-      reject += address.findChild(ServerEndpointMeter.REJECT_BY_CONNECTION_LIMIT).summary();
-      connections += address.findChild(EndpointMeter.CONNECTIONS).summary();
-      requests += address.findChild(EndpointMeter.REQUESTS).summary();
-      latency += address.findChild(EndpointMeter.LATENCY).summary();
-      readSize += address.findChild(EndpointMeter.BYTES_READ).summary();
-      writeSize += address.findChild(EndpointMeter.BYTES_WRITTEN).summary();
-
       if (printDetail) {
         appendLine(sb, "      %-12.0f %-15.0f %-13.0f %-11.0f %-8.0f %-7.0f %-9s %-12s %s",
             address.findChild(EndpointMeter.CONNECT_COUNT).summary(),
@@ -68,17 +54,5 @@ public class ServerEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
         );
       }
     }
-
-    appendLine(sb, "      %-12.0f %-15.0f %-13.0f %-11.0f %-8.0f %-7.0f %-9s %-12s %s",
-        connect,
-        disconnect,
-        reject,
-        connections,
-        requests,
-        latency,
-        NetUtils.humanReadableBytes((long) writeSize),
-        NetUtils.humanReadableBytes((long) readSize),
-        "(summary)"
-    );
   }
 }

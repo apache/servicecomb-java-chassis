@@ -27,6 +27,8 @@ import io.vertx.core.spi.metrics.TCPMetrics;
  * important: not singleton, every NetClient instance relate to a TCPMetrics instance
  */
 public class DefaultTcpClientMetrics implements TCPMetrics<DefaultTcpSocketMetric> {
+  private static final String PROTOCOL = "tcp://";
+
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   public DefaultTcpClientMetrics(DefaultClientEndpointMetricManager clientEndpointMetricManager) {
@@ -36,9 +38,10 @@ public class DefaultTcpClientMetrics implements TCPMetrics<DefaultTcpSocketMetri
   @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
     DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager
-        .getOrCreateEndpointMetric(remoteAddress.toString());
-    endpointMetric.onConnect();
-    return new DefaultTcpSocketMetric(endpointMetric);
+        .getOrCreateEndpointMetric(PROTOCOL + remoteAddress.toString());
+    DefaultTcpSocketMetric socketMetric = new DefaultTcpSocketMetric(endpointMetric);
+    socketMetric.onConnect();
+    return socketMetric;
   }
 
   @Override

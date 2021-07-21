@@ -38,8 +38,7 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
     UploadConfig uploadConfig = new UploadConfig();
 
     bodyHandler.setUploadsDirectory(uploadConfig.getLocation());
-    // TODO test
-    bodyHandler.setDeleteUploadedFilesOnEnd(false);
+    bodyHandler.setDeleteUploadedFilesOnEnd(true);
     bodyHandler.setBodyLimit(uploadConfig.getMaxSize());
 
     if (uploadConfig.toMultipartConfigElement() != null) {

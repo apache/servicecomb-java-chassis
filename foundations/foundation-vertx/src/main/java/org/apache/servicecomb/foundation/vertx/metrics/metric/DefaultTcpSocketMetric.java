@@ -38,6 +38,11 @@ public class DefaultTcpSocketMetric {
     return connected;
   }
 
+  public void onConnect() {
+    endpointMetric.onConnect();
+    this.connected = true;
+  }
+
   public void onDisconnect() {
     endpointMetric.onDisconnect();
     this.connected = false;

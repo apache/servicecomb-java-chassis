@@ -80,9 +80,8 @@ public class TestAbstractVertxHttpDispatcher {
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();
 
-    // TODO test
-//    Assert.assertTrue(Deencapsulation.getField(bodyHandler, "deleteUploadedFilesOnEnd"));
-//    Assert.assertNull(Deencapsulation.getField(bodyHandler, "uploadsDir"));
+    Assert.assertTrue(Deencapsulation.getField(bodyHandler, "deleteUploadedFilesOnEnd"));
+    Assert.assertNull(Deencapsulation.getField(bodyHandler, "uploadsDir"));
   }
 
   @Test
@@ -92,8 +91,7 @@ public class TestAbstractVertxHttpDispatcher {
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();
 
-    // TODO test
-//    Assert.assertTrue(Deencapsulation.getField(bodyHandler, "deleteUploadedFilesOnEnd"));
+    Assert.assertTrue(Deencapsulation.getField(bodyHandler, "deleteUploadedFilesOnEnd"));
     Assert.assertEquals("/path", Deencapsulation.getField(bodyHandler, "uploadsDir"));
   }
 }

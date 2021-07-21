@@ -203,7 +203,7 @@ public class RestClientRequestImpl implements RestClientRequest {
     Part part = entry.getValue();
     String filename = part.getSubmittedFileName();
 
-    LOGGER.info("Start attach file [{}:{}].", name, filename);
+    LOGGER.debug("Start attach file [{}:{}].", name, filename);
     writeBuffer(fileBoundaryInfo(boundary, name, part)).onSuccess(r ->
         new PumpFromPart(context, part).toWriteStream(request, throwableHandler).whenComplete((v, e) -> {
           if (e != null) {
@@ -212,7 +212,7 @@ public class RestClientRequestImpl implements RestClientRequest {
             return;
           }
 
-          LOGGER.info("Finish attach file [{}:{}].", name, filename);
+          LOGGER.debug("Finish attach file [{}:{}].", name, filename);
           attachFile(boundary, uploadsIterator);
         })).onFailure(e -> asyncResp.consumerFail(e));
   }

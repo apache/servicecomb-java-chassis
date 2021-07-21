@@ -17,20 +17,18 @@
 
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
-import java.util.concurrent.atomic.LongAdder;
-
 public class DefaultClientTaskMetric {
-  private LongAdder queue = new LongAdder();
+  private DefaultClientEndpointMetric endpointMetric;
 
-  public long getQueueCount() {
-    return queue.longValue();
+  public DefaultClientTaskMetric(DefaultClientEndpointMetric endpointMetric) {
+    this.endpointMetric = endpointMetric;
   }
 
   public void enqueueRequest() {
-    queue.increment();
+    endpointMetric.enqueueRequest();
   }
 
   public void dequeueRequest() {
-    queue.decrement();
+    endpointMetric.dequeueRequest();
   }
 }

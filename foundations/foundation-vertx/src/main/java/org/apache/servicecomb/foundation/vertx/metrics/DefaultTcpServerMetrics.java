@@ -38,8 +38,9 @@ public class DefaultTcpServerMetrics implements TCPMetrics<DefaultTcpSocketMetri
 
   @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    endpointMetric.onConnect();
-    return new DefaultTcpSocketMetric(endpointMetric);
+    DefaultTcpSocketMetric socketMetric = new DefaultTcpSocketMetric(endpointMetric);
+    socketMetric.onConnect();
+    return socketMetric;
   }
 
   @Override
@@ -49,11 +50,11 @@ public class DefaultTcpServerMetrics implements TCPMetrics<DefaultTcpSocketMetri
 
   @Override
   public void bytesRead(DefaultTcpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
-    endpointMetric.addBytesRead(numberOfBytes);
+    socketMetric.getEndpointMetric().addBytesRead(numberOfBytes);
   }
 
   @Override
   public void bytesWritten(DefaultTcpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
-    endpointMetric.addBytesWritten(numberOfBytes);
+    socketMetric.getEndpointMetric().addBytesWritten(numberOfBytes);
   }
 }
