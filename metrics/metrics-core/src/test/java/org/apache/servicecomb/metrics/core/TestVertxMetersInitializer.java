@@ -44,6 +44,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 
@@ -85,15 +87,21 @@ public class TestVertxMetersInitializer {
   }
 
   public static class TestClientVerticle extends AbstractVerticle {
-    @SuppressWarnings("deprecation")
     @Override
     public void start(Promise<Void> startPromise) {
       HttpClient client = vertx.createHttpClient();
-      client.post(port, "127.0.0.1", "/").handler(resp -> {
-        resp.bodyHandler((buffer) -> {
-          startPromise.complete();
-        });
-      }).end(body);
+      client.request(HttpMethod.GET, port, "127.0.0.1", "/", ar -> {
+        if (ar.succeeded()) {
+          HttpClientRequest request = ar.result();
+          request.send(body, resp -> {
+            if (resp.succeeded()) {
+              resp.result().bodyHandler((buffer) -> {
+                startPromise.complete();
+              });
+            }
+          });
+        }
+      });
     }
   }
 
@@ -153,9 +161,7 @@ public class TestVertxMetersInitializer {
         + "    registry   0\n"
         + "    registry-watch 0\n"
         + "    transport  0\n"
-        + "  transport:\n"
-        + "    client.endpoints:\n"
-        + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
+        + "  transport:\n";
 
     int clientLatencyIndex = actual.indexOf("1            0               0             1           1        ")
         + "1            0               0             1           1        ".length();
@@ -164,21 +170,25 @@ public class TestVertxMetersInitializer {
         + "1            0               0             1           1        ".length();
     serverLatency = actual.substring(serverLatencyIndex, actual.indexOf(" ", serverLatencyIndex));
 
+    // in new vert.x version, bytes written must be higher than 4K or will be zero
     if (printDetail) {
+      expect = expect + "    client.endpoints:\n"
+          + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
       expect +=
-          "      1            0               0             1           1        %-7s 4         21           127.0.0.1:%-5s\n";
+          "      1            0               0             1           1        %-7s 4         21           http://127.0.0.1:%-5s\n"
+              +
+              "      1            0               0             1           0        0       0         0            tcp://127.0.0.1:%-5s\n";
     }
     expect += ""
-        + "      1            0               0             1           1        %-7s 4         21           (summary)\n"
         + "    server.endpoints:\n"
         + "      connectCount disconnectCount rejectByLimit connections requests latency send(Bps) receive(Bps) listen\n"
-        + "      1            0               0             1           1        %-7s 21        4            0.0.0.0:0\n"
-        + "      1            0               0             1           1        %-7s 21        4            (summary)\n\n";
+        + "      1            0               0             1           1        %-7s 21        4            0.0.0.0:0\n\n";
 
     if (printDetail) {
-      expect = String.format(expect, clientLatency, port, clientLatency, serverLatency, serverLatency);
+      expect = String
+          .format(expect, clientLatency, port, port, serverLatency);
     } else {
-      expect = String.format(expect, clientLatency, serverLatency, serverLatency);
+      expect = String.format(expect, serverLatency);
     }
 
     Assert.assertEquals(expect, actual);
