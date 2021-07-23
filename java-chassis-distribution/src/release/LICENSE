@@ -242,7 +242,7 @@ You can find a copy of the License at licenses/LICENSE-epl-v20
 * JRuby Core (org.jruby:jruby-core:9.2.6.0 - https://github.com/jruby/jruby/jruby-core)
 * JRuby Lib Setup (org.jruby:jruby-stdlib:9.2.6.0 - https://github.com/jruby/jruby/jruby-stdlib)
 * JRuby Main Maven Artifact (org.jruby:jruby:9.2.6.0 - https://github.com/jruby/jruby/jruby-artifacts/jruby)
-* Vert.x Core (io.vertx:vertx-core:3.9.4 - https://github.com/eclipse-vertx/vert.x)
+* Vert.x Core (io.vertx:vertx-core:3.9.8 - https://github.com/eclipse-vertx/vert.x)
 
 ================================================================
 This product bundles libraries which are licensed under the
@@ -634,7 +634,7 @@ For details, see their respective project links.
 * msg-simple (com.github.fge:msg-simple:1.1 - https://github.com/fge/msg-simple)
 * uri-template (com.github.fge:uri-template:0.9 - https://github.com/fge/uri-template)
 * Javassist (org.javassist:javassist:3.24.0-GA - http://www.javassist.org/)
-* Vert.x Bridge Common (io.vertx:vertx-bridge-common:3.9.4 - https://github.com/vert-x3/vertx-bridge-common)
-* vertx-auth-common (io.vertx:vertx-auth-common:3.9.4 - https://github.com/vert-x3/vertx-auth)
-* vertx-web-common (io.vertx:vertx-web-common:3.9.4 - https://github.com/vert-x3/vertx-web)
-* vertx-web (io.vertx:vertx-web:3.9.4 - https://github.com/vert-x3/vertx-web)
+* Vert.x Bridge Common (io.vertx:vertx-bridge-common:3.9.8 - https://github.com/vert-x3/vertx-bridge-common)
+* vertx-auth-common (io.vertx:vertx-auth-common:3.9.8 - https://github.com/vert-x3/vertx-auth)
+* vertx-web-common (io.vertx:vertx-web-common:3.9.8 - https://github.com/vert-x3/vertx-web)
+* vertx-web (io.vertx:vertx-web:3.9.8 - https://github.com/vert-x3/vertx-web)
