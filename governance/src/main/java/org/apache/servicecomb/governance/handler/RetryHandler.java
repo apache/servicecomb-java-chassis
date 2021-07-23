@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import io.github.resilience4j.core.IntervalFunction;
+
 import org.apache.servicecomb.governance.handler.ext.RetryExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
@@ -65,7 +66,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
     LOGGER.info("applying new policy: {}", retryPolicy.toString());
 
     RetryConfig config = RetryConfig.custom()
-        .maxAttempts(retryPolicy.getMaxAttempts())
+        .maxAttempts(retryPolicy.getMaxAttempts() + 1)
         .retryOnResult(getPredicate(retryPolicy.getRetryOnResponseStatus()))
         .retryExceptions(retryExtension.retryExceptions())
         .intervalFunction(getIntervalFunction(retryPolicy))

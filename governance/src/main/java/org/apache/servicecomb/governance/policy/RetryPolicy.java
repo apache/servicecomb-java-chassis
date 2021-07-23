@@ -68,7 +68,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public int getMaxAttempts() {
-    return maxAttempts + 1;
+    return maxAttempts;
   }
 
   public void setMaxAttempts(int maxAttempts) {

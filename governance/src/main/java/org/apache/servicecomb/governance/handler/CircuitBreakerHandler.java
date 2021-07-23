@@ -71,7 +71,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         //可以选择基于时间的滑动窗口计数或者基于请求数量的滑动窗口计数
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
         //滑动窗口，单位可能是请求数或者秒
-        .slidingWindowSize(policy.getSlidingWindowSize())
+        .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     return circuitBreakerRegistry.circuitBreaker(policy.getName(), circuitBreakerConfig);

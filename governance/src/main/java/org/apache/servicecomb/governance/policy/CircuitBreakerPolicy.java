@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import org.apache.servicecomb.governance.utils.GovernanceUtils;
 import org.springframework.util.StringUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
@@ -38,7 +39,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MINIMUM_NUMBER_CALLS = 100;
 
-  public static final int DEFAULT_SLIDING_WINDOW_SIZE = 100;
+  public static final String DEFAULT_SLIDING_WINDOW_SIZE = "100";
 
   private int failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
 
@@ -54,7 +55,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   private String slidingWindowType;
 
-  private int slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
+  private String slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
 
   public CircuitBreakerPolicy() {
   }
@@ -133,15 +134,12 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public SlidingWindowType getSlidingWindowTypeEnum() {
     if (StringUtils.isEmpty(slidingWindowType)) {
-      slidingWindowType = "count";
+      return SlidingWindowType.TIME_BASED;
     }
-    switch (slidingWindowType) {
-      case "time":
-        return SlidingWindowType.TIME_BASED;
-      case "count":
-      default:
-        return SlidingWindowType.COUNT_BASED;
+    if (SlidingWindowType.COUNT_BASED.equals(slidingWindowType)) {
+      return SlidingWindowType.COUNT_BASED;
     }
+    return SlidingWindowType.TIME_BASED;
   }
 
   public String getSlidingWindowType() {
@@ -153,12 +151,26 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   }
 
   // time's unit is second
-  public int getSlidingWindowSize() {
+  public String getSlidingWindowSize() {
     return slidingWindowSize;
   }
 
-  public void setSlidingWindowSize(int slidingWindowSize) {
-    this.slidingWindowSize = slidingWindowSize;
+  public void setSlidingWindowSize(String slidingWindowSize) {
+    this.slidingWindowSize = getValue(slidingWindowSize);
+  }
+
+  private String getValue(String slidingWindowSize) {
+    if (StringUtils.isEmpty(slidingWindowSize)) {
+      return DEFAULT_SLIDING_WINDOW_SIZE;
+    }
+    if (slidingWindowSize.matches(GovernanceUtils.DIGIT_REGEX)) {
+      if (Long.valueOf(slidingWindowSize) < 0) {
+        throw new RuntimeException("The value should be more than 0.");
+      }
+      return slidingWindowSize;
+    }
+    Duration duration = Duration.parse(GovernanceUtils.DIGIT_PREFIX + slidingWindowSize);
+    return String.valueOf(duration.getSeconds());
   }
 
   @Override

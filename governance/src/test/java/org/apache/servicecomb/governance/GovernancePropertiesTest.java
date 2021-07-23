@@ -215,7 +215,35 @@ public class GovernancePropertiesTest {
     Assert.assertEquals(1, policies.size());
     CircuitBreakerPolicy policy = policies.get("demo-circuitBreaker");
     Assert.assertEquals(2, policy.getMinimumNumberOfCalls());
-    Assert.assertEquals(2, policy.getSlidingWindowSize());
+    Assert.assertEquals("2", policy.getSlidingWindowSize());
+  }
+
+  @Test
+  public void test_circuit_breaker_properties_Of_windows_size() {
+    dynamicValues.put("servicecomb.circuitBreaker.name1", "rules:\n"
+        + "slidingWindowType: count\n"
+        + "slidingWindowSize: 2");
+    dynamicValues.put("servicecomb.circuitBreaker.name2", "rules:\n"
+        + "slidingWindowType: time\n"
+        + "slidingWindowSize: 2");
+    dynamicValues.put("servicecomb.circuitBreaker.name3", "rules:\n"
+        + "slidingWindowType: test\n"
+        + "slidingWindowSize: 1M");
+
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+
+    Map<String, CircuitBreakerPolicy> policies = circuitBreakerProperties.getParsedEntity();
+    Assert.assertEquals(4, policies.size());
+    CircuitBreakerPolicy policy = policies.get("name1");
+    Assert.assertEquals("count", policy.getSlidingWindowType());
+    Assert.assertEquals("2", policy.getSlidingWindowSize());
+
+    policy = policies.get("name2");
+    Assert.assertEquals("time", policy.getSlidingWindowType());
+    Assert.assertEquals("2", policy.getSlidingWindowSize());
+
+    policy = policies.get("name3");
+    Assert.assertEquals("60", policy.getSlidingWindowSize());
   }
 
   @Test
@@ -256,5 +284,4 @@ public class GovernancePropertiesTest {
     policy = policies.get("test2");
     Assert.assertEquals(60000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
   }
-
 }
