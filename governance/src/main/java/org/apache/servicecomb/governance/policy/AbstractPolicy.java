@@ -18,13 +18,31 @@ package org.apache.servicecomb.governance.policy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
+import org.apache.servicecomb.governance.utils.GovernanceUtils;
+
+import java.time.Duration;
 
 public abstract class AbstractPolicy extends Configurable {
+
   @Override
   public boolean isValid() {
-    if (StringUtils.isEmpty(name)) {
-      return false;
+    return !StringUtils.isEmpty(name);
+  }
+
+  private Duration parseToDuration(String time, Duration defaultValue) {
+    if (StringUtils.isEmpty(time)) {
+      return defaultValue;
     }
-    return true;
+    if (time.matches(GovernanceUtils.DIGIT_REGEX)) {
+      if (Long.valueOf(time) < 0) {
+        throw new RuntimeException("The value of time should not be less than 0.");
+      }
+      return Duration.ofMillis(Long.valueOf(time));
+    }
+    return Duration.parse(GovernanceUtils.DIGIT_PREFIX + time);
+  }
+
+  public String stringOfDuration(String time, Duration defaultValue) {
+    return parseToDuration(time, defaultValue).toString();
   }
 }

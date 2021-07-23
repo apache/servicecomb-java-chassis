@@ -17,15 +17,17 @@
 
 package org.apache.servicecomb.governance.policy;
 
+import java.time.Duration;
+
 public class BulkheadPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_CONCURRENT_CALLS = 1000;
 
-  public static final int DEFAULT_MAX_WAIT_DURATION = 0;
+  public static final Duration DEFAULT_MAX_WAIT_DURATION = Duration.ofMillis(0);
 
   private int maxConcurrentCalls = DEFAULT_MAX_CONCURRENT_CALLS;
 
-  private int maxWaitDuration = DEFAULT_MAX_WAIT_DURATION;
+  private String maxWaitDuration = DEFAULT_MAX_WAIT_DURATION.toString();
 
   public int getMaxConcurrentCalls() {
     return maxConcurrentCalls;
@@ -35,12 +37,12 @@ public class BulkheadPolicy extends AbstractPolicy {
     this.maxConcurrentCalls = maxConcurrentCalls;
   }
 
-  public int getMaxWaitDuration() {
+  public String getMaxWaitDuration() {
     return maxWaitDuration;
   }
 
-  public void setMaxWaitDuration(int maxWaitDuration) {
-    this.maxWaitDuration = maxWaitDuration;
+  public void setMaxWaitDuration(String maxWaitDuration) {
+    this.maxWaitDuration = stringOfDuration(maxWaitDuration, DEFAULT_MAX_WAIT_DURATION);
   }
 
   @Override
@@ -48,7 +50,7 @@ public class BulkheadPolicy extends AbstractPolicy {
     if (maxConcurrentCalls <= 0) {
       return false;
     }
-    if (maxWaitDuration < 0) {
+    if (Duration.parse(maxWaitDuration).toMillis() < 0) {
       return false;
     }
     return super.isValid();

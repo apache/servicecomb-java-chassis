@@ -15,10 +15,6 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-# spring boot configurations
-server:
-  port: 9093  # should be same with servicecomb.rest.address to use web container
-
 # override common configurations in common module
 servicecomb-config-order: 10
 

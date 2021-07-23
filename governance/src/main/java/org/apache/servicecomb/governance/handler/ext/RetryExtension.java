@@ -20,7 +20,8 @@ package org.apache.servicecomb.governance.handler.ext;
 import java.util.List;
 
 public interface RetryExtension {
-  boolean isRetry(List<Integer> statusList, Object result);
+  boolean isRetry(List<String> statusList, Object result);
 
   Class<? extends Throwable>[] retryExceptions();
+
 }

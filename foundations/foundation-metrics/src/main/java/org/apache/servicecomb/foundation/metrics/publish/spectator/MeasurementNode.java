@@ -23,7 +23,7 @@ import java.util.Map;
 
 import com.netflix.spectator.api.Measurement;
 
-public class MeasurementNode {
+public class MeasurementNode implements Comparable<MeasurementNode> {
   private String name;
 
   private List<Measurement> measurements = new ArrayList<>();
@@ -88,5 +88,10 @@ public class MeasurementNode {
     }
 
     return result;
+  }
+
+  @Override
+  public int compareTo(MeasurementNode o) {
+    return this.name.compareTo(o.name);
   }
 }

@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package io.vertx.core.http.impl;
+package org.apache.servicecomb.governance.utils;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.vertx.core.impl.ContextInternal;
-import io.vertx.core.impl.VertxInternal;
-import io.vertx.core.spi.metrics.NetworkMetrics;
+public final class GovernanceUtils {
+  public static final String DIGIT_REGEX = "-{0,1}[0-9]{1,10}";
 
-public abstract  class Http1xConnectionBaseEx<S extends WebSocketImplBase<S>> extends Http1xConnectionBase<S>{
-  public Http1xConnectionBaseEx(VertxInternal vertx, ChannelHandlerContext chctx,
-      ContextInternal context) {
-    super(vertx, chctx, context);
-  }
-  
+  public static final String DIGIT_PREFIX = "PT";
+
+  public static final String STRATEGY_RANDOM_BACKOFF = "RandomBackoff";
 }

@@ -20,16 +20,18 @@ import org.springframework.util.StringUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
 
+import java.time.Duration;
+
 public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_FAILURE_RATE_THRESHOLD = 50;
 
   public static final int DEFAULT_SLOW_CALL_RATE_THRESHOLD = 100;
 
-  public static final int DEFAULT_WAIT_DURATION_IN_OPEN_STATUS = 60000;
+  public static final Duration DEFAULT_WAIT_DURATION_IN_OPEN_STATUS = Duration.ofMillis(60000);
 
   //ms
-  public static final int DEFAULT_SLOW_CALL_DURATION_THRESHOLD = 60000;
+  public static final Duration DEFAULT_SLOW_CALL_DURATION_THRESHOLD = Duration.ofMillis(60000);
 
   // the number of permitted calls when the CircuitBreaker is half open.
   public static final int DEFAULT_PERMITTED = 10;
@@ -42,9 +44,9 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   private int slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
 
-  private int waitDurationInOpenState = DEFAULT_WAIT_DURATION_IN_OPEN_STATUS;
+  private String waitDurationInOpenState = DEFAULT_WAIT_DURATION_IN_OPEN_STATUS.toString();
 
-  private int slowCallDurationThreshold = DEFAULT_SLOW_CALL_DURATION_THRESHOLD;
+  private String slowCallDurationThreshold = DEFAULT_SLOW_CALL_DURATION_THRESHOLD.toString();
 
   private int permittedNumberOfCallsInHalfOpenState = DEFAULT_PERMITTED;
 
@@ -65,10 +67,10 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     if (slowCallRateThreshold > 100 || slowCallRateThreshold <= 0) {
       return false;
     }
-    if (waitDurationInOpenState <= 0) {
+    if (Duration.parse(waitDurationInOpenState).toMillis() <= 0) {
       return false;
     }
-    if (slowCallDurationThreshold <= 0) {
+    if (Duration.parse(slowCallDurationThreshold).toMillis() <= 0) {
       return false;
     }
     if (permittedNumberOfCallsInHalfOpenState <= 0) {
@@ -97,20 +99,20 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     this.slowCallRateThreshold = slowCallRateThreshold;
   }
 
-  public int getWaitDurationInOpenState() {
+  public String getWaitDurationInOpenState() {
     return waitDurationInOpenState;
   }
 
-  public void setWaitDurationInOpenState(int waitDurationInOpenState) {
-    this.waitDurationInOpenState = waitDurationInOpenState;
+  public void setWaitDurationInOpenState(String waitDurationInOpenState) {
+    this.waitDurationInOpenState = stringOfDuration(waitDurationInOpenState, DEFAULT_WAIT_DURATION_IN_OPEN_STATUS);
   }
 
-  public int getSlowCallDurationThreshold() {
+  public String getSlowCallDurationThreshold() {
     return slowCallDurationThreshold;
   }
 
-  public void setSlowCallDurationThreshold(int slowCallDurationThreshold) {
-    this.slowCallDurationThreshold = slowCallDurationThreshold;
+  public void setSlowCallDurationThreshold(String slowCallDurationThreshold) {
+    this.slowCallDurationThreshold = stringOfDuration(slowCallDurationThreshold, DEFAULT_SLOW_CALL_DURATION_THRESHOLD);
   }
 
   public int getPermittedNumberOfCallsInHalfOpenState() {

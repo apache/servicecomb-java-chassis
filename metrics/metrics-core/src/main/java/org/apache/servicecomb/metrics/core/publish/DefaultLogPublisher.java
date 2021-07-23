@@ -316,7 +316,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
       if (firstLine) {
@@ -359,7 +359,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, queue, filtersReq, handlersReq, execute, handlersResp, filtersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
@@ -402,7 +402,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         waitResp, wakeConsumer, clientFiltersResp, handlersResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
@@ -449,7 +449,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         waitResp, wakeConsumer, clientFiltersResp, handlersResp, serverFiltersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
@@ -512,7 +512,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       if (client.isExists()) {
         client.print(DynamicPropertyFactory
             .getInstance()
-            .getBooleanProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, false)
+            .getBooleanProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, true)
             .get());
       }
 

@@ -70,6 +70,11 @@ public class TransportUtils {
             DEFAULT_OPTION.getStorePath(),
             "ssl." + tag + ".storePath",
             "ssl.storePath"));
+    option.setClientAuth(
+        getStringProperty(configuration,
+            DEFAULT_OPTION.getClientAuth(),
+            "ssl." + tag + ".clientAuth",
+            "ssl.clientAuth"));
     option.setTrustStore(
         getStringProperty(configuration,
             DEFAULT_OPTION.getTrustStore(),

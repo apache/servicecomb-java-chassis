@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.springboot2.starter;
 
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.TYPE;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -27,7 +29,7 @@ import org.springframework.context.annotation.Import;
  * This annotation enables auto-configuration of Spring beans to integrate with ServiceComb modules.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({TYPE, ANNOTATION_TYPE})
 @Import(ServiceCombSpringConfiguration.class)
 public @interface EnableServiceComb {
 

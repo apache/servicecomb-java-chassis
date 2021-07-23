@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.provider.pojo;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -26,7 +27,7 @@ import java.lang.annotation.Target;
 
 @Documented
 @Retention(RUNTIME)
-@Target(FIELD)
+@Target({FIELD, ANNOTATION_TYPE})
 public @interface RpcReference {
   String microserviceName();
 

@@ -59,6 +59,5 @@ public class TestConfiguration {
     assertEquals(15000, c.getCircuitBreakerSleepWindowInMilliseconds("groupname", test2, "testqualify"));
     assertEquals(20, c.getCircuitBreakerRequestVolumeThreshold("groupname", test2, "testqualify"));
     assertEquals(50, c.getCircuitBreakerErrorThresholdPercentage("groupname", test2, "testqualify"));
-    assertTrue(c.isFallbackEnabled("groupname", test2, "testqualify"));
   }
 }
