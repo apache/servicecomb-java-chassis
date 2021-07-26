@@ -79,6 +79,8 @@ public class GovernancePropertiesTest {
 
   private Map<String, Object> dynamicValues = new HashMap<>();
 
+  private static final float DELTA = 0.0000001f;
+
   @Before
   public void setUp() {
     ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
@@ -244,6 +246,27 @@ public class GovernancePropertiesTest {
 
     policy = policies.get("name3");
     Assert.assertEquals("60", policy.getSlidingWindowSize());
+  }
+
+  @Test
+  public void test_circuit_breaker_properties_Of_type() {
+    dynamicValues.put("servicecomb.circuitBreaker.type1", "rules:\n"
+        + "failureRateThreshold: 20\n"
+        + "slowCallRateThreshold: 100");
+    dynamicValues.put("servicecomb.circuitBreaker.type2", "rules:\n"
+        + "failureRateThreshold: 20.33\n"
+        + "slowCallRateThreshold: 0.01");
+
+    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+
+    Map<String, CircuitBreakerPolicy> policies = circuitBreakerProperties.getParsedEntity();
+    CircuitBreakerPolicy policy = policies.get("type1");
+    Assert.assertEquals(20.0f, policy.getFailureRateThreshold(), DELTA);
+    Assert.assertEquals(100.0f, policy.getSlowCallRateThreshold(), DELTA);
+
+    policy = policies.get("type2");
+    Assert.assertEquals(20.33f, policy.getFailureRateThreshold(), DELTA);
+    Assert.assertEquals(0.01f, policy.getSlowCallRateThreshold(), DELTA);
   }
 
   @Test
