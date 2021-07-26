@@ -25,9 +25,9 @@ import java.time.Duration;
 
 public class CircuitBreakerPolicy extends AbstractPolicy {
 
-  public static final int DEFAULT_FAILURE_RATE_THRESHOLD = 50;
+  public static final float DEFAULT_FAILURE_RATE_THRESHOLD = 50;
 
-  public static final int DEFAULT_SLOW_CALL_RATE_THRESHOLD = 100;
+  public static final float DEFAULT_SLOW_CALL_RATE_THRESHOLD = 100;
 
   public static final Duration DEFAULT_WAIT_DURATION_IN_OPEN_STATUS = Duration.ofMillis(60000);
 
@@ -41,9 +41,9 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final String DEFAULT_SLIDING_WINDOW_SIZE = "100";
 
-  private int failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
+  private float failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
 
-  private int slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
+  private float slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
 
   private String waitDurationInOpenState = DEFAULT_WAIT_DURATION_IN_OPEN_STATUS.toString();
 
@@ -62,10 +62,10 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   @Override
   public boolean isValid() {
-    if (failureRateThreshold > 100 || failureRateThreshold <= 0) {
+    if (failureRateThreshold > 100.0F || failureRateThreshold <= 0.0F) {
       return false;
     }
-    if (slowCallRateThreshold > 100 || slowCallRateThreshold <= 0) {
+    if (slowCallRateThreshold > 100.0F || slowCallRateThreshold <= 0.0F) {
       return false;
     }
     if (Duration.parse(waitDurationInOpenState).toMillis() <= 0) {
@@ -84,19 +84,19 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     return super.isValid();
   }
 
-  public int getFailureRateThreshold() {
+  public float getFailureRateThreshold() {
     return failureRateThreshold;
   }
 
-  public void setFailureRateThreshold(int failureRateThreshold) {
+  public void setFailureRateThreshold(float failureRateThreshold) {
     this.failureRateThreshold = failureRateThreshold;
   }
 
-  public int getSlowCallRateThreshold() {
+  public float getSlowCallRateThreshold() {
     return slowCallRateThreshold;
   }
 
-  public void setSlowCallRateThreshold(int slowCallRateThreshold) {
+  public void setSlowCallRateThreshold(float slowCallRateThreshold) {
     this.slowCallRateThreshold = slowCallRateThreshold;
   }
 
