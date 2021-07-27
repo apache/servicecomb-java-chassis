@@ -282,14 +282,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     }
   }
 
-  /**
-   * Delete a microservice instance
-   *
-   * @param serviceId
-   * @param instanceId
-   * @return
-   * @throws OperationException
-   */
+  @Override
   public void deleteMicroserviceInstance(String serviceId, String instanceId) {
     try {
       HttpResponse response = httpClient
@@ -329,13 +322,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     }
   }
 
-  /**
-   * Batch send heartbeats to service-center
-   *
-   * @param heartbeatsRequest
-   * @return
-   * @throws OperationException
-   */
+  @Override
   public void sendHeartBeats(HeartbeatsRequest heartbeatsRequest) {
     try {
       HttpResponse response = httpClient
@@ -374,17 +361,16 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     }
   }
 
-  /**
-   * Get schemas list of service
-   *
-   * @param serviceId
-   * @return
-   * @throws OperationException
-   */
-  public List<SchemaInfo> getServiceSchemasList(String serviceId) {
+  @Override
+  public List<SchemaInfo> getServiceSchemasList(String serviceId, boolean withContent) {
+    String url = "/registry/microservices/" + serviceId + "/schemas";
+    if (withContent) {
+      url = url + "?withSchema=1";
+    }
+
     try {
       HttpResponse response = httpClient
-          .getHttpRequest("/registry/microservices/" + serviceId + "/schemas", null, null);
+          .getHttpRequest(url, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         GetSchemaListResponse getSchemaResponse = HttpUtils
             .deserialize(response.getContent(), GetSchemaListResponse.class);

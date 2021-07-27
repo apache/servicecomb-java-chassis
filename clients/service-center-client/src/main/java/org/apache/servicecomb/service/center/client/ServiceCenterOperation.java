@@ -17,9 +17,12 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.util.List;
+
 import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.CreateSchemaRequest;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
+import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstanceStatus;
@@ -113,6 +116,13 @@ public interface ServiceCenterOperation {
       String revision);
 
   /**
+   * Delete a microservice instance
+   *
+   * @throws OperationException
+   */
+  void deleteMicroserviceInstance(String serviceId, String instanceId);
+
+  /**
    * Update status of microservice Instance
    *
    * @return if update is successful
@@ -145,11 +155,27 @@ public interface ServiceCenterOperation {
   boolean batchUpdateServiceSchemaContext(String serviceId, ModifySchemasRequest modifySchemasRequest);
 
   /**
+   * Batch send heartbeats to service-center
+   *
+   * @param heartbeatsRequest
+   * @return
+   * @throws OperationException
+   */
+  void sendHeartBeats(HeartbeatsRequest heartbeatsRequest);
+
+  /**
    * send heart beat of this instance.
    * @return if heartbeat is successful
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
   boolean sendHeartBeat(String serviceId, String instanceId);
+
+  /**
+   * Get schemas list of service
+   *
+   * @throws OperationException
+   */
+   List<SchemaInfo> getServiceSchemasList(String serviceId, boolean withContent);
 
   /**
    * query token using user confidential
