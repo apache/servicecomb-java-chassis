@@ -21,7 +21,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.event.ServiceCenterEventBus;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
 
 public final class ServiceRegistryFactory {
@@ -30,10 +32,11 @@ public final class ServiceRegistryFactory {
 
   public static ServiceRegistry create(ServiceRegistryConfig serviceRegistryConfig,
       Configuration configuration) {
-    return create(null, serviceRegistryConfig, configuration);
+    return create(ServiceCenterEventBus.getEventBus(), serviceRegistryConfig, configuration);
   }
 
-  public static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
+  @VisibleForTesting
+  static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       Configuration configuration) {
     if (null == eventBus) {
       eventBus = new SimpleEventBus();
