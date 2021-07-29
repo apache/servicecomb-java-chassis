@@ -32,10 +32,12 @@ import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.service.center.client.OperationEvents.UnAuthorizedOperationEvent;
 import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.CreateMicroserviceInstanceRequest;
 import org.apache.servicecomb.service.center.client.model.CreateMicroserviceRequest;
 import org.apache.servicecomb.service.center.client.model.CreateSchemaRequest;
+import org.apache.servicecomb.service.center.client.model.ErrorMessage;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.GetSchemaListResponse;
 import org.apache.servicecomb.service.center.client.model.GetSchemaResponse;
@@ -56,14 +58,22 @@ import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
+
 public class ServiceCenterClient implements ServiceCenterOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterClient.class);
 
   private ServiceCenterRawClient httpClient;
 
+  private EventBus eventBus;
+
   public ServiceCenterClient(ServiceCenterRawClient httpClient) {
     this.httpClient = httpClient;
+  }
+
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
   }
 
   public ServiceCenterClient(AddressManager addressManager,
@@ -86,12 +96,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       HttpResponse response = httpClient.getHttpRequest("/registry/health", null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return HttpUtils.deserialize(response.getContent(), MicroserviceInstancesResponse.class);
-      } else {
-        throw new OperationException(
-            "get service-center instances fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service-center instances fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service-center instances fails", e);
@@ -107,12 +117,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
           .postHttpRequest("/registry/microservices", null, HttpUtils.serialize(request));
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return HttpUtils.deserialize(response.getContent(), RegisteredMicroserviceResponse.class);
-      } else {
-        throw new OperationException(
-            "register service fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "register service fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "register service fails", e);
@@ -125,12 +135,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       HttpResponse response = httpClient.getHttpRequest("/registry/microservices", null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return HttpUtils.deserialize(response.getContent(), MicroservicesResponse.class);
-      } else {
-        throw new OperationException(
-            "get service List fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service List fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service List fails", e);
@@ -150,12 +160,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       HttpResponse response = httpClient.getHttpRequest(uriBuilder.build().toString(), null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return HttpUtils.deserialize(response.getContent(), RegisteredMicroserviceResponse.class);
-      } else {
-        LOGGER.info("Query serviceId fails, statusCode = " + response.getStatusCode() + "; message = " + response
-            .getMessage()
-            + "; content = " + response.getContent());
-        return null;
       }
+      sendUnAuthorizedEvent(response);
+      LOGGER.info("Query serviceId fails, statusCode = " + response.getStatusCode() + "; message = " + response
+          .getMessage()
+          + "; content = " + response.getContent());
+      return null;
     } catch (IOException e) {
       throw new OperationException(
           "query serviceId fails", e);
@@ -173,12 +183,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         MicroserviceResponse microserviceResponse = HttpUtils
             .deserialize(response.getContent(), MicroserviceResponse.class);
         return microserviceResponse.getService();
-      } else {
-        throw new OperationException(
-            "get service message fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service message fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service message fails", e);
@@ -195,12 +205,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
               HttpUtils.serialize(request));
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return HttpUtils.deserialize(response.getContent(), RegisteredMicroserviceInstanceResponse.class);
-      } else {
-        throw new OperationException(
-            "register service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "register service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "register service instance fails", e);
@@ -227,15 +237,16 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         result.setMicroserviceInstancesResponse(
             HttpUtils.deserialize(response.getContent(), MicroserviceInstancesResponse.class));
         return result;
-      } else if (response.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
+      }
+      if (response.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         result.setModified(false);
         return result;
-      } else {
-        throw new OperationException(
-            "get service instances list fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service instances list fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service instances list fails", e);
@@ -249,12 +260,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
           .getHttpRequest("/registry/microservices/" + serviceId + "/instances", null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return HttpUtils.deserialize(response.getContent(), MicroserviceInstancesResponse.class);
-      } else {
-        throw new OperationException(
-            "get service instances list fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service instances list fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service instances list fails", e);
@@ -270,12 +281,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         MicroserviceInstanceResponse instanceResponse = HttpUtils
             .deserialize(response.getContent(), MicroserviceInstanceResponse.class);
         return instanceResponse.getInstance();
-      } else {
-        throw new OperationException(
-            "get service instance message fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service instance message fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service instance message fails", e);
@@ -289,12 +300,13 @@ public class ServiceCenterClient implements ServiceCenterOperation {
           .deleteHttpRequest("/registry/microservices/" + serviceId + "/instances/" + instanceId, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         LOGGER.info("Delete service instance successfully.");
-      } else {
-        throw new OperationException(
-            "delete service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
+        return;
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "delete service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "delete service instance fails", e);
@@ -308,14 +320,13 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       HttpResponse response = httpClient.putHttpRequest(
           "/registry/microservices/" + serviceId + "/instances/" + instanceId + "/status?value=" + status, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        LOGGER.info("UPDATE STATUS OK");
         return true;
-      } else {
-        throw new OperationException(
-            "update service instance status fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "update service instance status fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "update service instance status fails", e);
@@ -327,14 +338,13 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     try {
       HttpResponse response = httpClient
           .putHttpRequest("/registry/heartbeats", null, HttpUtils.serialize(heartbeatsRequest));
-
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        LOGGER.info("HEARTBEATS SUCCESS");
-      } else {
-        throw new OperationException(
-            "heartbeats fails, statusCode = " + response.getStatusCode() + "; message = " + response.getMessage()
-                + "; content = " + response.getContent());
+        return;
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "heartbeats fails, statusCode = " + response.getStatusCode() + "; message = " + response.getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "heartbeats fails ", e);
@@ -350,11 +360,11 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return true;
-      } else {
-        throw new OperationException(
-            "heartbeats fails, statusCode = " + response.getStatusCode() + "; message = " + response.getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "heartbeats fails, statusCode = " + response.getStatusCode() + "; message = " + response.getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "heartbeats fails ", e);
@@ -375,12 +385,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         GetSchemaListResponse getSchemaResponse = HttpUtils
             .deserialize(response.getContent(), GetSchemaListResponse.class);
         return getSchemaResponse.getSchemas();
-      } else {
-        throw new OperationException(
-            "get service schemas list fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service schemas list fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service schemas list fails", e);
@@ -402,12 +412,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         GetSchemaResponse getSchemaResponse = HttpUtils.deserialize(response.getContent(), GetSchemaResponse.class);
         return getSchemaResponse.getSchema();
-      } else {
-        throw new OperationException(
-            "get service schema context fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "get service schema context fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "get service schemas context fails", e);
@@ -422,12 +432,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
               HttpUtils.serialize(schema));
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return true;
-      } else {
-        throw new OperationException(
-            "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "update service schema fails", e);
@@ -445,12 +455,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
               HttpUtils.serialize(request));
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return true;
-      } else {
-        throw new OperationException(
-            "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "update service schema fails", e);
@@ -464,17 +474,22 @@ public class ServiceCenterClient implements ServiceCenterOperation {
           .postHttpRequest("/registry/microservices/" + serviceId + "/schemas", null,
               HttpUtils.serialize(modifySchemasRequest));
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        LOGGER.info("UPDATE SCHEMA OK");
         return true;
-      } else {
-        throw new OperationException(
-            "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+          "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "update service schema fails", e);
+    }
+  }
+
+  private void sendUnAuthorizedEvent(HttpResponse response) {
+    if (this.eventBus != null && response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+      this.eventBus.post(new UnAuthorizedOperationEvent());
     }
   }
 
@@ -488,18 +503,24 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         RbacTokenResponse result = HttpUtils.deserialize(response.getContent(), RbacTokenResponse.class);
         result.setStatusCode(HttpStatus.SC_OK);
         return result;
-      } else if (response.getStatusCode() == HttpStatus.SC_NOT_FOUND ||
-          response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED ||
-          response.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+      }
+      if (response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
         RbacTokenResponse result = new RbacTokenResponse();
         result.setStatusCode(response.getStatusCode());
         return result;
-      } else {
-        throw new OperationException(
-            "query token failed, statusCode = " + response.getStatusCode() + "; message = " + response
-                .getMessage()
-                + "; content = " + response.getContent());
       }
+      if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED ||
+          response.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+        RbacTokenResponse result = new RbacTokenResponse();
+        result.setStatusCode(response.getStatusCode());
+        ErrorMessage errorMessage = HttpUtils.deserialize(response.getContent(), ErrorMessage.class);
+        result.setErrorCode(errorMessage.getErrorCode());
+        return result;
+      }
+      throw new OperationException(
+          "query token failed, statusCode = " + response.getStatusCode() + "; message = " + response
+              .getMessage()
+              + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
           "query token failed", e);

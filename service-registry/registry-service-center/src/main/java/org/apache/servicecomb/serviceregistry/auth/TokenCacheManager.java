@@ -32,12 +32,15 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
 import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
+import org.apache.servicecomb.serviceregistry.event.NotPermittedEvent;
+import org.apache.servicecomb.serviceregistry.event.ServiceCenterEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -47,7 +50,7 @@ public final class TokenCacheManager {
   // special token used for special conditions
   // e.g. un-authorized: will query token after token expired period
   // e.g. not found:  will query token after token expired period
-  public static final String INVALID_TOKEN = "invalid";
+  public static final String INVALID_TOKEN = "";
 
   private static final TokenCacheManager INSTANCE = new TokenCacheManager();
 
@@ -85,6 +88,8 @@ public final class TokenCacheManager {
   }
 
   public class TokenCache {
+    private static final String UN_AUTHORIZED_CODE_HALF_OPEN = "401202";
+
     private static final long TOKEN_REFRESH_TIME_IN_SECONDS = 20 * 60 * 1000;
 
     private final String registryName;
@@ -98,6 +103,10 @@ public final class TokenCacheManager {
     private LoadingCache<String, String> cache;
 
     private Cipher cipher;
+
+    private int lastStatusCode;
+
+    private String lastErrorCode;
 
     public TokenCache(String registryName, String accountName, String password,
         Cipher cipher) {
@@ -122,7 +131,18 @@ public final class TokenCacheManager {
                 return Futures.submit(() -> createHeaders(), executorService);
               }
             });
+        ServiceCenterEventBus.getEventBus().register(this);
       }
+    }
+
+    @Subscribe
+    public void onNotPermittedEvent(NotPermittedEvent event) {
+      this.executorService.submit(() -> {
+        if (lastStatusCode == Status.UNAUTHORIZED.getStatusCode() && UN_AUTHORIZED_CODE_HALF_OPEN
+            .equals(lastErrorCode)) {
+          cache.refresh(registryName);
+        }
+      });
     }
 
     private String createHeaders() {
@@ -136,12 +156,16 @@ public final class TokenCacheManager {
 
       RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request);
 
+      this.lastStatusCode = rbacTokenResponse.getStatusCode();
+      this.lastErrorCode = rbacTokenResponse.getErrorCode();
+
       if (Status.UNAUTHORIZED.getStatusCode() == rbacTokenResponse.getStatusCode()
           || Status.FORBIDDEN.getStatusCode() == rbacTokenResponse.getStatusCode()) {
         // password wrong, do not try anymore
         LOGGER.warn("username or password may be wrong, stop trying to query tokens.");
         return INVALID_TOKEN;
-      } else if (Status.NOT_FOUND.getStatusCode() == rbacTokenResponse.getStatusCode()) {
+      }
+      if (Status.NOT_FOUND.getStatusCode() == rbacTokenResponse.getStatusCode()) {
         // service center not support, do not try
         LOGGER.warn("service center do not support RBAC token, you should not config account info");
         return INVALID_TOKEN;

@@ -15,36 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client.model;
+package org.apache.servicecomb.serviceregistry.event;
 
-public class RbacTokenResponse {
-  private int statusCode;
-
-  private String token;
-
-  private String errorCode;
-
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
-  public String getToken() {
-    return token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  public String getErrorCode() {
-    return errorCode;
-  }
-
-  public void setErrorCode(String errorCode) {
-    this.errorCode = errorCode;
-  }
+/**
+ * triggered when request service center and 401 is given by server
+ */
+public class NotPermittedEvent {
 }

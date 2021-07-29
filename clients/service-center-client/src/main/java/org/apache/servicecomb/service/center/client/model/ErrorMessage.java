@@ -17,28 +17,12 @@
 
 package org.apache.servicecomb.service.center.client.model;
 
-public class RbacTokenResponse {
-  private int statusCode;
-
-  private String token;
-
+public class ErrorMessage {
   private String errorCode;
 
-  public int getStatusCode() {
-    return statusCode;
-  }
+  private String errorMessage;
 
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
-  public String getToken() {
-    return token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
+  private String detail;
 
   public String getErrorCode() {
     return errorCode;
@@ -46,5 +30,21 @@ public class RbacTokenResponse {
 
   public void setErrorCode(String errorCode) {
     this.errorCode = errorCode;
+  }
+
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
+  }
+
+  public String getDetail() {
+    return detail;
+  }
+
+  public void setDetail(String detail) {
+    this.detail = detail;
   }
 }
