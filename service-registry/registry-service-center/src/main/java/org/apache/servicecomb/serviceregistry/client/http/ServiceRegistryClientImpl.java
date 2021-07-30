@@ -62,6 +62,8 @@ import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.event.NotPermittedEvent;
+import org.apache.servicecomb.serviceregistry.event.ServiceCenterEventBus;
 import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
 import org.slf4j.Logger;
@@ -145,6 +147,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return;
       }
       holder.setStatusCode(response.statusCode());
+      sendUnAuthorizedEvent(response);
       response.exceptionHandler(e -> {
         LOGGER.error("error in processing response.", e);
         countDownLatch.countDown();
@@ -224,6 +227,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         return;
       }
+      sendUnAuthorizedEvent(response);
       response.exceptionHandler(e -> {
         LOGGER.error("error in processing response.", e);
         countDownLatch.countDown();
@@ -236,6 +240,12 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         countDownLatch.countDown();
       });
     };
+  }
+
+  private void sendUnAuthorizedEvent(HttpClientResponse response) {
+    if (response.statusCode() == Status.UNAUTHORIZED.getStatusCode()) {
+      ServiceCenterEventBus.getEventBus().post(new NotPermittedEvent());
+    }
   }
 
   private Handler<RestResponse> syncHandlerForInstances(CountDownLatch countDownLatch,

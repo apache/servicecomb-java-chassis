@@ -15,36 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client.model;
+package org.apache.servicecomb.serviceregistry.event;
 
-public class RbacTokenResponse {
-  private int statusCode;
+import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 
-  private String token;
+import com.google.common.eventbus.EventBus;
 
-  private String errorCode;
+public final class ServiceCenterEventBus {
+  private static final EventBus eventBus = new SimpleEventBus();
 
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
-  public String getToken() {
-    return token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  public String getErrorCode() {
-    return errorCode;
-  }
-
-  public void setErrorCode(String errorCode) {
-    this.errorCode = errorCode;
+  public static EventBus getEventBus() {
+    return eventBus;
   }
 }

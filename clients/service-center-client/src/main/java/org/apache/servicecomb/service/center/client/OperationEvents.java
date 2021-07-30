@@ -15,36 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client.model;
+package org.apache.servicecomb.service.center.client;
 
-public class RbacTokenResponse {
-  private int statusCode;
+public abstract class OperationEvents {
+  public static class UnAuthorizedOperationEvent extends OperationEvents {
 
-  private String token;
-
-  private String errorCode;
-
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
-  public String getToken() {
-    return token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  public String getErrorCode() {
-    return errorCode;
-  }
-
-  public void setErrorCode(String errorCode) {
-    this.errorCode = errorCode;
   }
 }

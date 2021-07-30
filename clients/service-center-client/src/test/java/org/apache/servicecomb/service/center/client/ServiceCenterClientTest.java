@@ -437,7 +437,7 @@ public class ServiceCenterClientTest {
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     List<SchemaInfo> schemaResponse = serviceCenterClient
-        .getServiceSchemasList("111");
+        .getServiceSchemasList("111", false);
 
     ObjectMapper mapper = new ObjectMapper();
     JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(schemaResponse));
