@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.config.event.DynamicConfigurationChangedEvent;
+import org.apache.servicecomb.config.event.RefreshGovernanceConfigurationEvent;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
@@ -37,7 +37,7 @@ public class ServiceCombConfigurationEventAdapter {
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(DynamicConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(RefreshGovernanceConfigurationEvent event) {
     Set<String> changedKeys = new HashSet<>();
     addMap(changedKeys, event.getEvent().getAdded());
     addMap(changedKeys, event.getEvent().getDeleted());
