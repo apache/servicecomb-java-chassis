@@ -26,8 +26,8 @@ import java.util.Set;
 
 import org.apache.servicecomb.governance.MicroserviceMeta;
 import org.apache.servicecomb.governance.entity.Configurable;
-import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
-import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,7 +42,6 @@ import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.representer.Representer;
 
 import com.google.common.eventbus.Subscribe;
@@ -67,7 +66,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
   protected GovernanceProperties(String key) {
     configKey = key;
     representer.getPropertyUtils().setSkipMissingProperties(true);
-    EventManager.register(this);
+    GovernanceEventManager.register(this);
     entityClass = getEntityClass();
   }
 
@@ -77,7 +76,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(GovernanceConfigurationChangedEvent event) {
     for (String key : event.getChangedConfigurations()) {
       if (key.startsWith(configKey + ".")) {
         String mapKey = key.substring((configKey + ".").length());

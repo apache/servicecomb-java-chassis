@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
-import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.apache.servicecomb.governance.marker.Matcher;
 import org.apache.servicecomb.governance.marker.TrafficMarker;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
@@ -107,7 +107,7 @@ public class GovernancePropertiesTest {
   public void tearDown() {
     Set<String> keys = dynamicValues.keySet();
     keys.forEach(k -> dynamicValues.put(k, null));
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
   }
 
   @Test
@@ -141,7 +141,7 @@ public class GovernancePropertiesTest {
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
     Assert.assertEquals(5, markers.size());
     tearDown();
@@ -160,7 +160,7 @@ public class GovernancePropertiesTest {
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
 
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
     Assert.assertEquals(5, markers.size());
@@ -186,7 +186,7 @@ public class GovernancePropertiesTest {
         + "maxConcurrentCalls: 3\n"
         + "maxWaitDuration: 3000");
 
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(2, policies.size());
@@ -263,7 +263,7 @@ public class GovernancePropertiesTest {
         + "slidingWindowType: test\n"
         + "slidingWindowSize: 1M");
 
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, CircuitBreakerPolicy> policies = circuitBreakerProperties.getParsedEntity();
     Assert.assertEquals(4, policies.size());
@@ -288,7 +288,7 @@ public class GovernancePropertiesTest {
         + "failureRateThreshold: 20.33\n"
         + "slowCallRateThreshold: 0.01");
 
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, CircuitBreakerPolicy> policies = circuitBreakerProperties.getParsedEntity();
     CircuitBreakerPolicy policy = policies.get("type1");
@@ -326,7 +326,7 @@ public class GovernancePropertiesTest {
         + "maxConcurrentCalls: 3\n"
         + "maxWaitDuration: 1M");
 
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(3, policies.size());
