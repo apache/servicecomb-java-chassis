@@ -72,8 +72,9 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     this.httpClient = httpClient;
   }
 
-  public void setEventBus(EventBus eventBus) {
+  public ServiceCenterClient setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
+    return this;
   }
 
   public ServiceCenterClient(AddressManager addressManager,
