@@ -47,7 +47,7 @@ public class BulkheadPolicy extends AbstractPolicy {
 
   @Override
   public boolean isValid() {
-    if (maxConcurrentCalls <= 0) {
+    if (maxConcurrentCalls < 0) {
       return false;
     }
     if (Duration.parse(maxWaitDuration).toMillis() < 0) {
