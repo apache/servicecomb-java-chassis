@@ -214,7 +214,7 @@ public class GovernancePropertiesTest {
         + "maxConcurrentCalls: 0\n"
         + "maxWaitDuration: 2S");
 
-    EventManager.post(new ConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
     Assert.assertEquals(4, policies.size());
