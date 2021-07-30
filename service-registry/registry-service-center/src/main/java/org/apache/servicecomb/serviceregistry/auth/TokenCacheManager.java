@@ -88,7 +88,7 @@ public final class TokenCacheManager {
   }
 
   public class TokenCache {
-    private static final String UN_AUTHORIZED_CODE_HALF_OPEN = "401202";
+    private static final String UN_AUTHORIZED_CODE_HALF_OPEN = "401302";
 
     private static final long TOKEN_REFRESH_TIME_IN_SECONDS = 20 * 60 * 1000;
 
