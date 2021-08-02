@@ -31,7 +31,8 @@ import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
-import org.apache.servicecomb.config.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.config.event.DynamicConfigurationChangedEvent;
+import org.apache.servicecomb.config.event.RefreshGovernanceConfigurationEvent;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -123,7 +124,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
   }
 
   @Subscribe
-  public void onConfigurationDataChanged(ConfigurationChangedEvent event) {
+  public void onConfigurationDataChanged(DynamicConfigurationChangedEvent event) {
     try {
       WatchedUpdateResult data = event.getEvent();
       if (data.getDeleted() != null) {
@@ -138,6 +139,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
     } catch (Exception e) {
       LOGGER.error("", e);
     }
+    EventManager.post(new RefreshGovernanceConfigurationEvent(event.getEvent()));
   }
 
   private void syncFromSpring(Environment environment) {

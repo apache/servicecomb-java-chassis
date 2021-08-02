@@ -19,10 +19,10 @@ package org.apache.servicecomb.governance.event;
 
 import java.util.Set;
 
-public class ConfigurationChangedEvent {
+public class GovernanceConfigurationChangedEvent {
   private Set<String> changedConfigurations;
 
-  public ConfigurationChangedEvent(Set<String> changedConfigurations) {
+  public GovernanceConfigurationChangedEvent(Set<String> changedConfigurations) {
     this.changedConfigurations = changedConfigurations;
   }
 

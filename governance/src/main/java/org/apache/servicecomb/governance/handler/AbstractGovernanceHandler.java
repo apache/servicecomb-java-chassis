@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.governance.MatchersManager;
-import org.apache.servicecomb.governance.event.ConfigurationChangedEvent;
-import org.apache.servicecomb.governance.event.EventManager;
+import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
   protected MatchersManager matchersManager;
 
   protected AbstractGovernanceHandler() {
-    EventManager.register(this);
+    GovernanceEventManager.register(this);
   }
 
   public <R> PROCESSOR getActuator(GovernanceRequest governanceRequest) {
@@ -68,7 +68,7 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
   abstract protected PROCESSOR createProcessor(POLICY policy);
 
   @Subscribe
-  public void onDynamicConfigurationListener(ConfigurationChangedEvent event) {
+  public void onDynamicConfigurationListener(GovernanceConfigurationChangedEvent event) {
     event.getChangedConfigurations().forEach(v -> map.remove(v));
   }
 }

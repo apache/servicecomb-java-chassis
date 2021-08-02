@@ -44,7 +44,7 @@ import org.apache.servicecomb.config.archaius.scheduler.NeverStartPollingSchedul
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigurationSource;
-import org.apache.servicecomb.config.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.config.event.DynamicConfigurationChangedEvent;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSourceLoader;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -316,7 +316,7 @@ public final class ConfigUtil {
         }
       }
 
-      EventManager.post(new ConfigurationChangedEvent(watchedUpdateResult));
+      EventManager.post(new DynamicConfigurationChangedEvent(watchedUpdateResult));
     }
   }
 

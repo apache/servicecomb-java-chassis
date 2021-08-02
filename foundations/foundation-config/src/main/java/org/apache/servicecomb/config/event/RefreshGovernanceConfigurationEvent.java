@@ -19,10 +19,10 @@ package org.apache.servicecomb.config.event;
 
 import com.netflix.config.WatchedUpdateResult;
 
-public class ConfigurationChangedEvent {
+public class RefreshGovernanceConfigurationEvent {
   private final WatchedUpdateResult event;
 
-  public ConfigurationChangedEvent(WatchedUpdateResult event) {
+  public RefreshGovernanceConfigurationEvent(WatchedUpdateResult event) {
     this.event = event;
   }
 

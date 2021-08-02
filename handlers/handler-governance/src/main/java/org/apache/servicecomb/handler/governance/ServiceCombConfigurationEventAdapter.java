@@ -22,8 +22,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.config.event.ConfigurationChangedEvent;
+import org.apache.servicecomb.config.event.RefreshGovernanceConfigurationEvent;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
@@ -35,15 +37,14 @@ public class ServiceCombConfigurationEventAdapter {
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(RefreshGovernanceConfigurationEvent event) {
     Set<String> changedKeys = new HashSet<>();
     addMap(changedKeys, event.getEvent().getAdded());
     addMap(changedKeys, event.getEvent().getDeleted());
     addMap(changedKeys, event.getEvent().getChanged());
     addMap(changedKeys, event.getEvent().getComplete());
-    org.apache.servicecomb.governance.event.ConfigurationChangedEvent newEvent =
-        new org.apache.servicecomb.governance.event.ConfigurationChangedEvent(changedKeys);
-    org.apache.servicecomb.governance.event.EventManager.post(newEvent);
+    GovernanceConfigurationChangedEvent newEvent = new GovernanceConfigurationChangedEvent(changedKeys);
+    GovernanceEventManager.post(newEvent);
   }
 
   private void addMap(Set<String> keys, Map<String, Object> changed) {
