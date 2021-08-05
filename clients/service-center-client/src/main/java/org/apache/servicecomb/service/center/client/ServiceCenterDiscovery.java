@@ -38,11 +38,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ServiceCenterDiscovery extends AbstractTask {
+
+  public static final int MAX_INTERVAL = 600000;
+
+  public static final int MIN_INTERVAL = 1000;
+
   private static final String ALL_VERSION = "0+";
-
-  private static final long POLL_INTERVAL = 15000;
-
-  private boolean started = false;
 
   public static class SubscriptionKey {
     final String appId;
@@ -93,11 +94,23 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final Map<String, Microservice> microserviceCache = new ConcurrentHashMap<>();
 
+  private long pollInterval = 15000;
+
+  private boolean started = false;
+
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
     super("service-center-discovery-task");
     this.serviceCenterClient = serviceCenterClient;
     this.eventBus = eventBus;
     this.eventBus.register(this);
+  }
+
+  public ServiceCenterDiscovery setPollInterval(long interval) {
+    if (interval > MAX_INTERVAL || interval < MIN_INTERVAL) {
+      return this;
+    }
+    this.pollInterval = interval;
+    return this;
   }
 
   public void updateMyselfServiceId(String myselfServiceId) {
@@ -183,7 +196,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
     public void execute() {
       pullAllInstance();
 
-      startTask(new BackOffSleepTask(POLL_INTERVAL, new PullInstanceTask()));
+      startTask(new BackOffSleepTask(pollInterval, new PullInstanceTask()));
     }
   }
 

@@ -129,7 +129,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
       return;
     }
 
-    LOGGER.warn("None EnumerablePropertySource ignored in {}, propertySourceName = [{}]", this.getClass().getName(),
+    LOGGER.debug("None EnumerablePropertySource ignored in {}, propertySourceName = [{}]", this.getClass().getName(),
         propertySource.getName());
   }
 
