@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -43,11 +42,16 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
+
+  private static boolean enableEventLoopBlockingCallCheck =
+      DynamicPropertyFactory.getInstance()
+          .getBooleanProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", true).get();
 
   @SuppressWarnings({"unchecked"})
   public static <T> T syncInvoke(String microserviceName, String microserviceVersion, String transport,
@@ -134,11 +138,7 @@ public final class InvokerUtils {
   }
 
   public static boolean isInEventLoop() {
-    return isInEventLoop(Vertx.currentContext());
-  }
-
-  public static boolean isInEventLoop(@Nullable Context context) {
-    return context != null && context.isEventLoopContext();
+    return Context.isOnEventLoopThread();
   }
 
   /**
@@ -148,7 +148,7 @@ public final class InvokerUtils {
    */
   public static Response innerSyncInvoke(Invocation invocation) {
     try {
-      if (isInEventLoop()) {
+      if (enableEventLoopBlockingCallCheck && isInEventLoop()) {
         throw new IllegalStateException("Can not execute sync logic in event loop. ");
       }
       invocation.onStart(null, System.nanoTime());
