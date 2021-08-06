@@ -70,7 +70,7 @@ public class ServiceCenterRegistration extends AbstractTask {
     this.eventBus = eventBus;
   }
 
-  ServiceCenterRegistration setMicroserviceInstance(MicroserviceInstance microserviceInstance) {
+  public ServiceCenterRegistration setMicroserviceInstance(MicroserviceInstance microserviceInstance) {
     this.microserviceInstance = microserviceInstance;
     return this;
   }
