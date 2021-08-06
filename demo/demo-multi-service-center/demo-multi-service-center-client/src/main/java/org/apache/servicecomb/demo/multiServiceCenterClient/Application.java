@@ -44,10 +44,22 @@ public class Application {
   public static void runTest() throws Exception {
     CategorizedTestCaseRunner.runCategorizedTestCase("demo-multi-service-center-serverA");
     testRegistryThreads();
+    testTransportThreads();
     TestMgr.summary();
     if (!TestMgr.errors().isEmpty()) {
       throw new IllegalStateException("tests failed");
     }
+  }
+
+  private static void testTransportThreads() throws Exception {
+    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+    List<String> expectedThread = new ArrayList<>();
+    threadSet.forEach(thread -> {
+      if (thread.getName().contains("transport-")) {
+        expectedThread.add(thread.getName());
+      }
+    });
+    TestMgr.check(6, expectedThread.size());
   }
 
   private static void testRegistryThreads() throws Exception {

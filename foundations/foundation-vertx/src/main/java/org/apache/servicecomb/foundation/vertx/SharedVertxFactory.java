@@ -19,6 +19,8 @@ package org.apache.servicecomb.foundation.vertx;
 import org.apache.servicecomb.foundation.vertx.metrics.DefaultVertxMetricsFactory;
 import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.shareddata.Shareable;
@@ -33,6 +35,15 @@ public class SharedVertxFactory {
 
     public SharedVertxInfo() {
       vertxOptions.setMetricsOptions(metricsOptionsEx);
+      vertxOptions.setEventLoopPoolSize(readEventLoopPoolSize("servicecomb.transport.eventloop.size"));
+    }
+
+    private static int readEventLoopPoolSize(String key) {
+      int count = DynamicPropertyFactory.getInstance().getIntProperty(key, -1).get();
+      if (count > 0) {
+        return count;
+      }
+      return VertxOptions.DEFAULT_EVENT_LOOP_POOL_SIZE;
     }
   }
 
