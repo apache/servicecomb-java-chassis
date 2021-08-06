@@ -39,7 +39,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 
 public class ServiceCenterRegistration extends AbstractTask {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRegistration.class);
+
+  public static final int MAX_INTERVAL = 600000;
+
+  public static final int MIN_INTERVAL = 1000;
 
   private final ServiceCenterClient serviceCenterClient;
 
@@ -53,6 +58,10 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   private ServiceCenterConfiguration serviceCenterConfiguration;
 
+  private long heartBeatInterval = 15000;
+
+  private long heartBeatRequestTimeout = 5000;
+
   public ServiceCenterRegistration(ServiceCenterClient serviceCenterClient, ServiceCenterConfiguration
       serviceCenterConfiguration, EventBus eventBus) {
     super("service-center-registration-task");
@@ -61,16 +70,35 @@ public class ServiceCenterRegistration extends AbstractTask {
     this.eventBus = eventBus;
   }
 
-  public void setMicroserviceInstance(MicroserviceInstance microserviceInstance) {
+  public ServiceCenterRegistration setMicroserviceInstance(MicroserviceInstance microserviceInstance) {
     this.microserviceInstance = microserviceInstance;
+    return this;
   }
 
-  public void setMicroservice(Microservice microservice) {
+  public ServiceCenterRegistration setMicroservice(Microservice microservice) {
     this.microservice = microservice;
+    return this;
   }
 
-  public void setSchemaInfos(List<SchemaInfo> schemaInfos) {
+  public ServiceCenterRegistration setHeartBeatInterval(long interval) {
+    if (interval > MAX_INTERVAL || interval < MIN_INTERVAL) {
+      return this;
+    }
+    this.heartBeatInterval = interval;
+    return this;
+  }
+
+  public ServiceCenterRegistration setHeartBeatRequestTimeout(long timeout) {
+    if (timeout > MAX_INTERVAL || timeout < MIN_INTERVAL) {
+      return this;
+    }
+    this.heartBeatRequestTimeout = timeout;
+    return this;
+  }
+
+  public ServiceCenterRegistration setSchemaInfos(List<SchemaInfo> schemaInfos) {
     this.schemaInfos = schemaInfos;
+    return this;
   }
 
   public void startRegistration() {
@@ -212,10 +240,6 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   class SendHeartBeatTask implements Task {
     final int failedRetry = 3;
-
-    final long heartBeatInterval = 30000;
-
-    final long heartBeatRequestTimeout = 5000;
 
     int failedCount;
 
