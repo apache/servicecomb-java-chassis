@@ -22,7 +22,7 @@ servicecomb:
   service:
     application: demo-java-chassis-cse-v1
     name: provider
-    version: 0.0.1
+    version: 0.0.2
     registry:
       address: https://cse.cn-south-1.myhuaweicloud.com
       instance:
@@ -32,7 +32,7 @@ servicecomb:
       serverUri: https://cse.cn-south-1.myhuaweicloud.com
 
   rest:
-    address: 0.0.0.0:9093 # should be same with server.port to use web container
+    address: 0.0.0.0:9095
 
 # Configure AK/SK credentials if needed. Default not enabled.
   credentials:

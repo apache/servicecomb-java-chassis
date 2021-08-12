@@ -44,7 +44,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
 
   private static final String TYPE_ROUTER = "router";
 
-  private static final String ROUTER_HEADER = "X-RouterContext";
+  public static final String ROUTER_HEADER = "X-RouterContext";
 
   @SuppressWarnings("unchecked")
   private RouterDistributor<ServiceCombServer, Microservice> routerDistributor = BeanUtils

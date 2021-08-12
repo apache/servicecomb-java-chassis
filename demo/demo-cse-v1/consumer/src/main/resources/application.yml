@@ -21,7 +21,7 @@ servicecomb-config-order: 10
 
 servicecomb:
   service:
-    application: demo-cse-v1
+    application: demo-java-chassis-cse-v1
     name: consumer
     version: 0.0.1
     registry:
@@ -36,6 +36,33 @@ servicecomb:
   rest:
     address: 0.0.0.0:9092  # should be same with server.port to use web container
 
+  routeRule:
+    provider: |
+      - precedence: 1
+        match:
+          headers:
+            canary:
+              exact: new
+        route:
+          - weight: 20
+            tags:
+              version: 0.0.1
+          - weight: 80
+            tags:
+              version: 0.0.2
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: old
+        route:
+          - weight: 100
+            tags:
+              version: 0.0.1
+  router:
+    type: router
+    header: canary
+
   # Configure AK/SK credentials if needed. Default not enabled.
   credentials:
     akskEnabled: true
@@ -43,3 +70,5 @@ servicecomb:
     secretKey: ${CREDENTIALS_SK}
     akskCustomCipher: default
     project: cn-south-1
+
+

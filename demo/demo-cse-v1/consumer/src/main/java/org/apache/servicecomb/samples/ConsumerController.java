@@ -20,6 +20,7 @@ package org.apache.servicecomb.samples;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -33,5 +34,10 @@ public class ConsumerController {
   @GetMapping("/sayHello")
   public String sayHello(@RequestParam("name") String name) {
     return providerService.sayHello(name);
+  }
+
+  @GetMapping("/sayHelloCanary")
+  public String sayHelloCanary(@RequestParam("name") String name) {
+    return providerService.sayHelloCanary(name);
   }
 }
