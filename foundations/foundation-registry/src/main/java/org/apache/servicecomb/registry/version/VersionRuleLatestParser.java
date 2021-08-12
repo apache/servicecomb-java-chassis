@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry.version;
 
+import org.apache.servicecomb.foundation.common.Version;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 
 public class VersionRuleLatestParser implements VersionRuleParser {

@@ -19,8 +19,7 @@ package org.apache.servicecomb.router.custom;
 import java.util.Map;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * allow users to filter not necessary headers in request.
  **/
 public interface RouterHeaderFilterExt {
 

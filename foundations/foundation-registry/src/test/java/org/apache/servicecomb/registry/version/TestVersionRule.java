@@ -17,8 +17,7 @@
 
 package org.apache.servicecomb.registry.version;
 
-import org.apache.servicecomb.registry.version.Version;
-import org.apache.servicecomb.registry.version.VersionRule;
+import org.apache.servicecomb.foundation.common.Version;
 import org.junit.Assert;
 import org.junit.Test;
 

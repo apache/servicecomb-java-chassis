@@ -31,7 +31,7 @@ import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
-import org.apache.servicecomb.registry.version.Version;
+import org.apache.servicecomb.foundation.common.Version;
 
 public class MicroserviceFactory {
   public Microservice create() {

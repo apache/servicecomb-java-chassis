@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.registry.version;
 
-import org.apache.servicecomb.registry.version.Version;
+import org.apache.servicecomb.foundation.common.Version;
 
 public interface VersionConst {
   Version v0 = new Version((short) 0, (short) 0, (short) 0, (short) 0);

@@ -20,6 +20,7 @@ package org.apache.servicecomb.registry.version;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.servicecomb.foundation.common.Version;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public final class VersionUtils {

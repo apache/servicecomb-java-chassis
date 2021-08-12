@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.registry.version;
 
+import org.apache.servicecomb.foundation.common.Version;
+
 // fixed, this should be the last parser
 // will not check version format
 public class VersionRuleFixedParser implements VersionRuleParser {

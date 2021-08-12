@@ -14,22 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.custom;
 
-import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.Microservice;
+package org.apache.servicecomb.router;
+
 import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ServiceCombCanaryDistributer extends
-    AbstractRouterDistributor<ServiceCombServer, Microservice> {
-
-  public ServiceCombCanaryDistributer() {
-    init(server -> MicroserviceCache.getInstance()
-            .getService(server.getInstance().getServiceId()),
-        Microservice::getVersion,
-        Microservice::getServiceName,
-        Microservice::getProperties);
+public class ExampleDistributor extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
+  public ExampleDistributor() {
+    init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
   }
 }

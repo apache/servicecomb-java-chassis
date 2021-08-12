@@ -14,40 +14,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.match;
 
+package org.apache.servicecomb.router;
+
+import java.util.HashMap;
 import java.util.Map;
-import org.apache.servicecomb.router.cache.RouterRuleCache;
-import org.apache.servicecomb.router.model.PolicyRuleItem;
 
-/**
- * @Author GuoYl123
- * @Date 2019/10/17
- **/
-public class RouterRuleMatcher {
+public class ServiceIns {
+  String version = "1.1";
 
-  private static RouterRuleMatcher instance = new RouterRuleMatcher();
+  String serverName;
 
-  private RouterRuleMatcher() {
+  Map<String, String> tags = new HashMap<>();
+
+  private final String id;
+
+  public ServiceIns(String id, String serverName) {
+    this.id = id;
+    this.serverName = serverName;
   }
 
-  /**
-   * only match header
-   *
-   * @param serviceName
-   * @return
-   */
-  public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {
-    for (PolicyRuleItem rule : RouterRuleCache.getServiceInfoCacheMap().get(serviceName)
-        .getAllrule()) {
-      if (rule.getMatch() == null || rule.getMatch().match(invokeHeader)) {
-        return rule;
-      }
-    }
-    return null;
+  public String getId() {
+    return id;
   }
 
-  public static RouterRuleMatcher getInstance() {
-    return instance;
+  public String getVersion() {
+    return version;
+  }
+
+  public String getServerName() {
+    return serverName;
+  }
+
+  public Map<String, String> getTags() {
+    return tags;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public void addTags(String key, String v) {
+    tags.put(key, v);
   }
 }
