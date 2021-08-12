@@ -27,7 +27,6 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +42,6 @@ public class RouterInvokeFilter implements HttpServerFilter {
 
   private static final String SERVICECOMB_ROUTER_HEADER = "servicecomb.router.header";
 
-  private static final String ROUTER_HEADER = "X-RouterContext";
-
   private static List<String> allHeader = new ArrayList<>();
 
 
@@ -58,23 +55,21 @@ public class RouterInvokeFilter implements HttpServerFilter {
     return true;
   }
 
-  /**
-   * pass through headers
-   *
-   * @param invocation
-   * @param httpServletRequestEx
-   * @return
-   */
   @Override
   public Response afterReceiveRequest(Invocation invocation,
       HttpServletRequestEx httpServletRequestEx) {
+    if (!StringUtils.isEmpty(invocation.getContext(RouterServerListFilter.ROUTER_HEADER))) {
+      return null;
+    }
+
     if (!isHaveHeadersRule()) {
       return null;
     }
     if (loadHeaders()) {
       Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
       try {
-        invocation.addContext(ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
+        invocation
+            .addContext(RouterServerListFilter.ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
       } catch (JsonProcessingException e) {
         LOGGER.error("canary context serialization failed");
       }
@@ -124,12 +119,6 @@ public class RouterInvokeFilter implements HttpServerFilter {
     return true;
   }
 
-  /**
-   * get header from request
-   *
-   * @param httpServletRequestEx
-   * @return
-   */
   private Map<String, String> getHeaderMap(HttpServletRequestEx httpServletRequestEx) {
     Map<String, String> headerMap = new HashMap<>();
     allHeader.forEach(headerKey -> {

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.registry.version;
 
+import org.apache.servicecomb.foundation.common.Version;
+
 // 1.0.0-2.0.0
 public class VersionRuleRangeParser implements VersionRuleParser {
   class RangeVersionRule extends VersionRule {

@@ -21,13 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +44,13 @@ public class RouterServerListFilter implements ServerListFilterExt {
 
   private static final String TYPE_ROUTER = "router";
 
-  private static final String ROUTER_HEADER = "X-RouterContext";
+  public static final String ROUTER_HEADER = "X-RouterContext";
 
-  RouterDistributor<ServiceCombServer, Microservice> distributer = new ServiceCombCanaryDistributer();
+  @SuppressWarnings("unchecked")
+  private RouterDistributor<ServiceCombServer, Microservice> routerDistributor = BeanUtils
+      .getBean(RouterDistributor.class);
+
+  private RouterFilter routerFilter = BeanUtils.getBean(RouterFilter.class);
 
   @Override
   public boolean enabled() {
@@ -59,9 +64,9 @@ public class RouterServerListFilter implements ServerListFilterExt {
     String targetServiceName = invocation.getMicroserviceName();
     Map<String, String> headers = addHeaders(invocation);
     headers = filterHeaders(headers);
-    return RouterFilter
+    return routerFilter
         .getFilteredListOfServers(list, targetServiceName, headers,
-            distributer);
+            routerDistributor);
   }
 
   private Map<String, String> filterHeaders(Map<String, String> headers) {

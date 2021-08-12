@@ -19,30 +19,30 @@ package org.apache.servicecomb.router;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.apache.servicecomb.router.match.RouterRuleMatcher;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.netflix.loadbalancer.Server;
-
-
-/**
- * @Author GuoYl123
- * @Date 2019/10/16
- **/
+@Component
 public class RouterFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterFilter.class);
 
-  public static <T extends Server, E> List<T> getFilteredListOfServers(List<T> list,
-      String targetServiceName, @NotNull Map<String, String> headers, RouterDistributor<T, E> distributer) {
+  @Autowired
+  private RouterRuleMatcher routerRuleMatcher;
+
+  @Autowired
+  private RouterRuleCache routerRuleCache;
+
+  public <T, E> List<T> getFilteredListOfServers(List<T> list,
+      String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
     if (CollectionUtils.isEmpty(list)) {
       return list;
     }
@@ -52,14 +52,14 @@ public class RouterFilter {
     /**
      * 1.init and cache
      */
-    if (!RouterRuleCache.doInit(targetServiceName)) {
+    if (!routerRuleCache.doInit(targetServiceName)) {
       LOGGER.debug("route management init failed");
       return list;
     }
     /**
      * 2.match rule
      */
-    PolicyRuleItem invokeRule = RouterRuleMatcher.getInstance().match(targetServiceName, headers);
+    PolicyRuleItem invokeRule = routerRuleMatcher.match(targetServiceName, headers);
 
     if (invokeRule == null) {
       LOGGER.debug("route management match rule failed");

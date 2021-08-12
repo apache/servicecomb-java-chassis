@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.registry.version;
 
+import org.apache.servicecomb.foundation.common.Version;
+
 public abstract class VersionRule {
   private final String versionRule;
 

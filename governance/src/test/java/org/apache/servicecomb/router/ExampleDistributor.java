@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.samples;
+package org.apache.servicecomb.router;
 
-public interface ProviderService {
-  String sayHello(String name);
+import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
+import org.springframework.stereotype.Component;
 
-  String sayHelloCanary(String name);
+@Component
+public class ExampleDistributor extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
+  public ExampleDistributor() {
+    init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
+  }
 }

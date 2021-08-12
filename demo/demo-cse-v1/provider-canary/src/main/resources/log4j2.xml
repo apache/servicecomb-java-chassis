@@ -16,12 +16,30 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:cse="http://www.huawei.com/schema/paas/cse/rpc"
-  xsi:schemaLocation="
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+<!--this is sample configuration, please modify as your wish -->
 
-  <context:component-scan base-package="org.apache.servicecomb.router,org.apache.servicecomb.governance"/>
-</beans>
+<configuration>
+  <Properties>
+    <Property name="log_path">./user/log/</Property>
+  </Properties>
+
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n" />
+    </Console>
+    <RollingFile name="DailyRollingFile" fileName="${log_path}/output.log"
+      filePattern="${log_path}/zcrTest%d{yyyy-MM-dd}.log">
+      <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n" />
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" />
+        <SizeBasedTriggeringPolicy size="10MB" />
+      </Policies>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="Console" />
+      <AppenderRef ref="DailyRollingFile" />
+    </Root>
+  </Loggers>
+</configuration>

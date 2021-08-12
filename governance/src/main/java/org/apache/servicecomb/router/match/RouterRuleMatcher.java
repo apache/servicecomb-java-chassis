@@ -14,11 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.router.match;
 
-package org.apache.servicecomb.samples;
+import java.util.Map;
 
-public interface ProviderService {
-  String sayHello(String name);
+import org.apache.servicecomb.router.cache.RouterRuleCache;
+import org.apache.servicecomb.router.model.PolicyRuleItem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-  String sayHelloCanary(String name);
+@Component
+public class RouterRuleMatcher {
+  @Autowired
+  private RouterRuleCache routerRuleCache;
+
+  public RouterRuleMatcher() {
+  }
+
+  public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {
+    for (PolicyRuleItem rule : routerRuleCache.getServiceInfoCacheMap().get(serviceName)
+        .getAllrule()) {
+      if (rule.getMatch() == null || rule.getMatch().match(invokeHeader)) {
+        return rule;
+      }
+    }
+    return null;
+  }
 }

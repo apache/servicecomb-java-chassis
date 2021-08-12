@@ -30,4 +30,9 @@ public class ProviderController {
   public String sayHello(@RequestParam("name") String name) {
     return "Hello " + name;
   }
+
+  @GetMapping("/sayHelloCanary")
+  public String sayHelloCanary(@RequestParam("name") String name) {
+    return "Hello Canary " + name;
+  }
 }

@@ -26,7 +26,7 @@ import org.apache.servicecomb.registry.api.event.DestroyMicroserviceVersionEvent
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.version.Version;
+import org.apache.servicecomb.foundation.common.Version;
 
 public class MicroserviceVersion {
   protected AppManager appManager;

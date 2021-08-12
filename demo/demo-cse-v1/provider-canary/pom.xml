@@ -22,37 +22,30 @@
 
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
-    <artifactId>demo-parent</artifactId>
+    <artifactId>demo-cse-v1</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
-  <artifactId>demo-cse-v1</artifactId>
-  <name>Java Chassis::Demo::CSE-V1</name>
-  <packaging>pom</packaging>
+
+  <artifactId>cse-v1-provider-canary</artifactId>
+  <name>Java Chassis::Demo::CSE-V1::PROVIDER CANARY</name>
+  <packaging>jar</packaging>
+
+  <properties>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>solution-basic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>dashboard</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-service-center</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>servicestage-environment</artifactId>
+      <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
   </dependencies>
 
-  <modules>
-    <module>provider</module>
-    <module>provider-canary</module>
-    <module>consumer</module>
-    <module>gateway</module>
-    <module>test-client</module>
-  </modules>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

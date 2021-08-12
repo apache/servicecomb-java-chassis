@@ -19,8 +19,7 @@ package org.apache.servicecomb.registry.version;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.servicecomb.registry.version.Version;
-import org.apache.servicecomb.registry.version.VersionUtils;
+import org.apache.servicecomb.foundation.common.Version;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

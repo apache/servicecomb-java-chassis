@@ -31,7 +31,7 @@ import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.registry.version.Version;
+import org.apache.servicecomb.foundation.common.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 

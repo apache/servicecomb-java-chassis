@@ -24,24 +24,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
-import org.apache.servicecomb.router.custom.MicroserviceCache;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.RouteItem;
 import org.apache.servicecomb.router.model.TagItem;
 import org.apache.servicecomb.router.util.VersionCompareUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
-import com.netflix.loadbalancer.Server;
-
-import io.vertx.ext.web.Route;
-
-/**
- * @Author GuoYl123
- * @Date 2019/10/17
- **/
-public abstract class AbstractRouterDistributor<T extends Server, E> implements
+public abstract class AbstractRouterDistributor<T, E> implements
     RouterDistributor<T, E> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRouterDistributor.class);
@@ -54,13 +46,16 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
 
   private Function<E, Map<String, String>> getProperties;
 
+  @Autowired
+  private RouterRuleCache routerRuleCache;
+
   @Override
   public List<T> distribute(String targetServiceName, List<T> list, PolicyRuleItem invokeRule) {
     //init LatestVersion
     initLatestVersion(targetServiceName, list);
 
     invokeRule.check(
-        RouterRuleCache.getServiceInfoCacheMap().get(targetServiceName).getLatestVersionTag());
+        routerRuleCache.getServiceInfoCacheMap().get(targetServiceName).getLatestVersionTag());
 
     // get tag list
     Map<TagItem, List<T>> versionServerMap = getDistributList(targetServiceName, list, invokeRule);
@@ -89,7 +84,7 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
   }
 
   public TagItem getFiltedServerTagItem(PolicyRuleItem rule, String targetServiceName) {
-    return RouterRuleCache.getServiceInfoCacheMap().get(targetServiceName)
+    return routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
         .getNextInvokeVersion(rule);
   }
 
@@ -98,15 +93,11 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
    * 2.establish map is a more complicate way than direct traversal， because of multiple matches.
    *
    * the method getProperties() contains other field that we don't need.
-   *
-   * @param serviceName
-   * @param list
-   * @return
    */
   private Map<TagItem, List<T>> getDistributList(String serviceName,
       List<T> list,
       PolicyRuleItem invokeRule) {
-    String latestV = RouterRuleCache.getServiceInfoCacheMap().get(serviceName).getLatestVersionTag()
+    String latestV = routerRuleCache.getServiceInfoCacheMap().get(serviceName).getLatestVersionTag()
         .getVersion();
     Map<TagItem, List<T>> versionServerMap = new HashMap<>();
     for (T server : list) {
@@ -156,16 +147,11 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
       }
     }
     TagItem tagitem = new TagItem(latestVersion);
-    RouterRuleCache.getServiceInfoCacheMap().get(serviceName).setLatestVersionTag(tagitem);
+    routerRuleCache.getServiceInfoCacheMap().get(serviceName).setLatestVersionTag(tagitem);
   }
 
-  /**
-   * @param list
-   * @param targetServiceName
-   * @return
-   */
   public List<T> getLatestVersionList(List<T> list, String targetServiceName) {
-    String latestV = RouterRuleCache.getServiceInfoCacheMap().get(targetServiceName)
+    String latestV = routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
         .getLatestVersionTag().getVersion();
     return list.stream().filter(server ->
         getVersion.apply(getIns.apply(server)).equals(latestV)

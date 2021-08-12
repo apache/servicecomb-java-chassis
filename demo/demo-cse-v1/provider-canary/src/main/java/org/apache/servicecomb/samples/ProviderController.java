@@ -17,8 +17,22 @@
 
 package org.apache.servicecomb.samples;
 
-public interface ProviderService {
-  String sayHello(String name);
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-  String sayHelloCanary(String name);
+@RestSchema(schemaId = "ProviderController")
+@RequestMapping(path = "/")
+public class ProviderController {
+  // a very simple service to echo the request parameter
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return "Hello in canary " + name;
+  }
+
+  @GetMapping("/sayHelloCanary")
+  public String sayHelloCanary(@RequestParam("name") String name) {
+    return "Hello Canary in canary " + name;
+  }
 }

@@ -24,21 +24,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
-import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
-import com.netflix.loadbalancer.Server;
-
-import mockit.Expectations;
-
-/**
- * @author GuoYl123
- **/
+@RunWith(SpringRunner.class)
+@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)
 public class RouterDistributorTest {
+  private static final String TARGET_SERVICE_NAME = "test_server";
 
   private static final String RULE_STRING = ""
       + "      - precedence: 2 #优先级\n"
@@ -69,7 +71,41 @@ public class RouterDistributorTest {
       + "              version: 1\n"
       + "              app: a";
 
-  private static final String TARGET_SERVICE_NAME = "test_server";
+  @Autowired
+  private Environment environment;
+
+  @Autowired
+  private RouterFilter routerFilter;
+
+  @Autowired
+  private RouterDistributor<ServiceIns, ServiceIns> testDistributor;
+
+  private Map<String, Object> dynamicValues = new HashMap<>();
+
+  @Before
+  public void setUp() {
+    ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
+
+    if (configurableEnvironment.getPropertySources().contains("testDynamicChange")) {
+      configurableEnvironment.getPropertySources().remove("testDynamicChange");
+    }
+
+    configurableEnvironment.getPropertySources()
+        .addFirst(new EnumerablePropertySource<Map<String, Object>>("testDynamicChange", dynamicValues) {
+          @Override
+          public Object getProperty(String s) {
+            return this.getSource().get(s);
+          }
+
+          @Override
+          public String[] getPropertyNames() {
+            return this.getSource().keySet().toArray(new String[0]);
+          }
+        });
+
+    dynamicValues.put(RouterRuleCache.ROUTE_RULE_PREFIX + TARGET_SERVICE_NAME, RULE_STRING);
+  }
+
 
   @Test
   public void testHeaderIsEmpty() {
@@ -88,84 +124,34 @@ public class RouterDistributorTest {
     list.remove(1);
     List<ServiceIns> serverList = mainFilter(list, headerMap);
     Assert.assertEquals(1, serverList.size());
-    Assert.assertEquals("01", serverList.get(0).getHost());
+    Assert.assertEquals("01", serverList.get(0).getId());
   }
 
   @Test
   public void testVersionMatch() {
-    Map<String, String> headermap = new HashMap<>();
-    headermap.put("userId", "01");
-    headermap.put("appId", "01");
-    headermap.put("format", "json");
-    List<ServiceIns> serverList = mainFilter(getMockList(), headermap);
+    Map<String, String> headers = new HashMap<>();
+    headers.put("userId", "01");
+    headers.put("appId", "01");
+    headers.put("format", "json");
+    List<ServiceIns> serverList = mainFilter(getMockList(), headers);
     Assert.assertEquals(1, serverList.size());
-    Assert.assertEquals("02", serverList.get(0).getHost());
+    Assert.assertEquals("02", serverList.get(0).getId());
   }
 
   private List<ServiceIns> getMockList() {
     List<ServiceIns> serverList = new ArrayList<>();
-    ServiceIns ins1 = new ServiceIns("01");
+    ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
     ins1.setVersion("2.0");
-    ServiceIns ins2 = new ServiceIns("02");
+    ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME);
     ins2.addTags("app", "a");
     serverList.add(ins1);
     serverList.add(ins2);
     return serverList;
   }
 
-  private List<ServiceIns> mainFilter(List<ServiceIns> serverlist, Map<String, String> headermap) {
-    RouterDistributor<ServiceIns, ServiceIns> testDistributer = new TestDistributor();
-    DynamicPropertyFactory dpf = DynamicPropertyFactory.getInstance();
-    DynamicStringProperty rule = new DynamicStringProperty("", RULE_STRING);
-    new Expectations(dpf) {
-      {
-        dpf.getStringProperty(anyString, null, (Runnable) any);
-        result = rule;
-      }
-    };
-    RouterRuleCache.refresh();
-    return RouterFilter
-        .getFilteredListOfServers(serverlist, TARGET_SERVICE_NAME, headermap,
-            testDistributer);
-  }
-
-  static class ServiceIns extends Server {
-
-    String version = "1.1";
-
-    String serverName = TARGET_SERVICE_NAME;
-
-    Map<String, String> tags = new HashMap<>();
-
-    public ServiceIns(String id) {
-      super(id);
-    }
-
-    public String getVersion() {
-      return version;
-    }
-
-    public String getServerName() {
-      return serverName;
-    }
-
-    public Map<String, String> getTags() {
-      return tags;
-    }
-
-    public void setVersion(String version) {
-      this.version = version;
-    }
-
-    public void addTags(String key, String v) {
-      tags.put(key, v);
-    }
-  }
-
-  static class TestDistributor extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
-
-    public TestDistributor() {
-      init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
-    }
+  private List<ServiceIns> mainFilter(List<ServiceIns> serverList, Map<String, String> headers) {
+    return routerFilter
+        .getFilteredListOfServers(serverList, TARGET_SERVICE_NAME, headers,
+            testDistributor);
   }
 }

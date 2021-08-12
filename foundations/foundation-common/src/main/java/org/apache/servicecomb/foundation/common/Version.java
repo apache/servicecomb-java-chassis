@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.registry.version;
+package org.apache.servicecomb.foundation.common;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 // short version is enough
 public class Version implements Comparable<Version> {
@@ -50,7 +50,7 @@ public class Version implements Comparable<Version> {
     }
 
     if (versions.length < 4) {
-      versions = (String[]) ArrayUtils.addAll(versions, ZERO);
+      versions = ArrayUtils.addAll(versions, ZERO);
     }
     this.major = parseNumber("major", version, versions[0]);
     this.minor = parseNumber("minor", version, versions[1]);
