@@ -74,8 +74,10 @@ public class TestInvocationStageTrace {
     nanoTime = 3;
     stageTrace.startClientFiltersRequest();
     nanoTime = 4;
+    stageTrace.startGetConnection();
     stageTrace.startSend();
-    stageTrace.finishGetConnection(5);
+    nanoTime = 5;
+    stageTrace.finishGetConnection();
     stageTrace.finishWriteToBuffer(6);
     nanoTime = 7;
     stageTrace.finishReceiveResponse();
@@ -178,8 +180,10 @@ public class TestInvocationStageTrace {
     nanoTime = 6;
     stageTrace.startClientFiltersRequest();
     nanoTime = 7;
+    stageTrace.startGetConnection();
     stageTrace.startSend();
-    stageTrace.finishGetConnection(8);
+    nanoTime = 8;
+    stageTrace.finishGetConnection();
     stageTrace.finishWriteToBuffer(9);
     nanoTime = 10;
     stageTrace.finishReceiveResponse();

@@ -117,30 +117,6 @@ public class Invocation extends SwaggerInvocation {
 
   private Map<String, Object> swaggerArguments = Collections.emptyMap();
 
-  public long getInvocationId() {
-    return invocationId;
-  }
-
-  public TraceIdLogger getTraceIdLogger() {
-    return this.traceIdLogger;
-  }
-
-  public HttpServletRequestEx getRequestEx() {
-    return requestEx;
-  }
-
-  public InvocationStageTrace getInvocationStageTrace() {
-    return invocationStageTrace;
-  }
-
-  public String getTraceId() {
-    return getContext(Const.TRACE_ID_NAME);
-  }
-
-  public String getTraceId(String traceIdName) {
-    return getContext(traceIdName);
-  }
-
   public Invocation() {
     // An empty invocation, used to mock or some other scenario do not need operation information.
     traceIdLogger = new TraceIdLogger(this);
@@ -474,6 +450,30 @@ public class Invocation extends SwaggerInvocation {
 
   public boolean isThirdPartyInvocation() {
     return referenceConfig.is3rdPartyService();
+  }
+
+  public long getInvocationId() {
+    return invocationId;
+  }
+
+  public TraceIdLogger getTraceIdLogger() {
+    return this.traceIdLogger;
+  }
+
+  public HttpServletRequestEx getRequestEx() {
+    return requestEx;
+  }
+
+  public InvocationStageTrace getInvocationStageTrace() {
+    return invocationStageTrace;
+  }
+
+  public String getTraceId() {
+    return getContext(Const.TRACE_ID_NAME);
+  }
+
+  public String getTraceId(String traceIdName) {
+    return getContext(traceIdName);
   }
 
   // ensure sync consumer invocation response flow not run in eventLoop

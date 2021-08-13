@@ -52,8 +52,6 @@ public class HighwayClientFilter implements ConsumerFilter {
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint().getEndpoint());
 
-    invocation.getInvocationStageTrace().startClientFiltersRequest();
-
     OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
     return send(invocation, operationProtobuf)
         .thenApply(tcpData -> convertToResponse(invocation, operationProtobuf, tcpData))
@@ -62,11 +60,13 @@ public class HighwayClientFilter implements ConsumerFilter {
   }
 
   protected CompletableFuture<TcpData> send(Invocation invocation, OperationProtobuf operationProtobuf) {
-    invocation.onStartSendRequest();
-
+    invocation.getInvocationStageTrace().startGetConnection();
     HighwayClient highwayClient = ((HighwayTransport) invocation.getTransport()).getHighwayClient();
     HighwayClientPackage clientPackage = highwayClient.createClientPackage(invocation, operationProtobuf);
-    CompletableFuture<TcpData> sendFuture = highwayClient.findClientPool(invocation)
+    HighwayClientConnection clientConnection = highwayClient.findClientPool(invocation);
+    invocation.getInvocationStageTrace().startClientFiltersRequest();
+    invocation.onStartSendRequest();
+    CompletableFuture<TcpData> sendFuture = clientConnection
         .send(clientPackage)
         .whenComplete((tcpData, throwable) -> afterSend(invocation, clientPackage));
     return invocation.optimizeSyncConsumerThread(sendFuture);

@@ -24,6 +24,7 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 
 import com.google.common.collect.Multimap;
 
+import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
 public interface RestClientRequestParameters extends RestClientRequest {
@@ -44,7 +45,7 @@ public interface RestClientRequestParameters extends RestClientRequest {
   }
 
   @Override
-  default void end() {
+  default Future<Void> end() {
     throw new UnsupportedOperationException("should not invoke this method");
   }
 }

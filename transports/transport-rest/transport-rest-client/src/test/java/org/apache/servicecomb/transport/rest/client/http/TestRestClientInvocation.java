@@ -324,7 +324,6 @@ public class TestRestClientInvocation {
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 
   @SuppressWarnings("unchecked")

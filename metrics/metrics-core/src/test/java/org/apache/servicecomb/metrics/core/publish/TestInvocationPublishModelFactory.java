@@ -333,6 +333,7 @@ public class TestInvocationPublishModelFactory {
     Deencapsulation.setField(invocationStageTrace, "startHandlersRequest", 2L);
     Deencapsulation.setField(invocationStageTrace, "startClientFiltersRequest", 3L);
     Deencapsulation.setField(invocationStageTrace, "startSend", 4L);
+    Deencapsulation.setField(invocationStageTrace, "startGetConnection", 4L);
     Deencapsulation.setField(invocationStageTrace, "finishGetConnection", 5L);
     Deencapsulation.setField(invocationStageTrace, "finishWriteToBuffer", 6L);
     Deencapsulation.setField(invocationStageTrace, "finishReceiveResponse", 7L);

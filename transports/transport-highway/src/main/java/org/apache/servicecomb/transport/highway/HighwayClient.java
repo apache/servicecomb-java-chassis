@@ -86,14 +86,14 @@ public class HighwayClient {
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    invocation.getInvocationStageTrace().startClientFiltersRequest();
-    invocation.onStartSendRequest();
-
+    invocation.getInvocationStageTrace().startGetConnection();
     HighwayClientConnection tcpClient = findClientPool(invocation);
 
+    invocation.getInvocationStageTrace().startClientFiltersRequest();
     OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
     HighwayClientPackage clientPackage = createClientPackage(invocation, operationProtobuf);
 
+    invocation.onStartSendRequest();
     tcpClient.send(clientPackage, ar -> {
       invocation.getInvocationStageTrace().finishWriteToBuffer(clientPackage.getFinishWriteToBuffer());
       invocation.getInvocationStageTrace().finishReceiveResponse();
@@ -142,7 +142,7 @@ public class HighwayClient {
     HighwayClientConnection tcpClient = clientMgr.findClientPool(invocation.isSync())
         .findOrCreateClient(invocation.getEndpoint().getEndpoint());
 
-    invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
+    invocation.getInvocationStageTrace().finishGetConnection();
 
     return tcpClient;
   }

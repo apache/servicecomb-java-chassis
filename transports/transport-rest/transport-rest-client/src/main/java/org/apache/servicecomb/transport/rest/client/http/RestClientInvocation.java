@@ -102,11 +102,9 @@ public class RestClientInvocation {
 
     Future<HttpClientRequest> requestFuture = createRequest(ipPort, path);
 
-    invocation.onStartSendRequest();
+    invocation.getInvocationStageTrace().startGetConnection();
     requestFuture.compose(clientRequest -> {
-      // TODO: after upgrade vert.x , can use request metric to calculate request end time
-      invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
-      //
+      invocation.getInvocationStageTrace().finishGetConnection();
 
       this.clientRequest = clientRequest;
 
@@ -130,6 +128,7 @@ public class RestClientInvocation {
       }
 
       // 从业务线程转移到网络线程中去发送
+      invocation.onStartSendRequest();
       httpClientWithContext.runOnContext(httpClient -> {
         clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
         clientRequest.response().onComplete(asyncResult -> {
@@ -140,7 +139,8 @@ public class RestClientInvocation {
           handleResponse(asyncResult.result());
         });
         processServiceCombHeaders(invocation, operationMeta);
-        restClientRequest.end();
+        restClientRequest.end()
+            .onComplete((t) -> invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime()));
       });
       return Future.succeededFuture();
     }).onFailure(failure -> {
@@ -229,10 +229,6 @@ public class RestClientInvocation {
    * @param responseBuf response body buffer, when download, responseBuf is null, because download data by ReadStreamPart
    */
   protected void processResponseBody(Buffer responseBuf) {
-    // TODO: after upgrade vert.x , can use request metric to calculate request end time
-    invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime());
-    //
-
     invocation.getInvocationStageTrace().finishReceiveResponse();
     invocation.getResponseExecutor().execute(() -> {
       try {
@@ -268,11 +264,9 @@ public class RestClientInvocation {
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
 
-    // TODO: after upgrade vert.x , can use request metric to calculate request end time
     if (stageTrace.getFinishWriteToBuffer() == 0) {
       stageTrace.finishWriteToBuffer(System.nanoTime());
     }
-    //
 
     // even failed and did not received response, still set time for it
     // that will help to know the real timeout time
