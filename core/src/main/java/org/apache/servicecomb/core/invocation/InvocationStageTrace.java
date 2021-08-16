@@ -100,6 +100,9 @@ public class InvocationStageTrace {
   private long startSend;
 
   // only for consumer
+  private long startGetConnection;
+
+  // only for consumer
   private long finishGetConnection;
 
   // only for consumer
@@ -200,8 +203,12 @@ public class InvocationStageTrace {
     return finishGetConnection;
   }
 
-  public void finishGetConnection(long finishGetConnection) {
-    this.finishGetConnection = finishGetConnection;
+  public void startGetConnection() {
+    this.startGetConnection = System.nanoTime();
+  }
+
+  public void finishGetConnection() {
+    this.finishGetConnection = System.nanoTime();
   }
 
   public long getFinishWriteToBuffer() {
@@ -325,7 +332,7 @@ public class InvocationStageTrace {
   }
 
   public double calcGetConnectionTime() {
-    return calc(finishGetConnection, startSend);
+    return calc(finishGetConnection, startGetConnection);
   }
 
   public double calcWriteToBufferTime() {

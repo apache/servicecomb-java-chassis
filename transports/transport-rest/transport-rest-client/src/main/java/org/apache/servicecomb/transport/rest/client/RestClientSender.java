@@ -172,11 +172,7 @@ public class RestClientSender {
 
   protected void processMetrics() {
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-
-    // TODO: after upgrade vert.x , can use request metric to calculate request end time
     stageTrace.finishWriteToBuffer(System.nanoTime());
-    //
-
     // even failed and did not received response, still set time for it
     // that will help to know the real timeout time
     stageTrace.finishReceiveResponse();

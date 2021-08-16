@@ -65,10 +65,8 @@ public class RestClientCodecFilter implements ConsumerFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    invocation.getInvocationStageTrace().startGetConnection();
     startClientFiltersRequest(invocation);
-    // TODO: after upgrade vert.x , can use request metric to calculate request end time
-    invocation.onStartSendRequest();
-    //
     return CompletableFuture.completedFuture(null)
         .thenCompose(v -> transportContextFactory.createHttpClientRequest(invocation).toCompletionStage())
         .thenAccept(httpClientRequest -> prepareTransportContext(invocation, httpClientRequest))
@@ -83,9 +81,7 @@ public class RestClientCodecFilter implements ConsumerFilter {
   }
 
   protected void prepareTransportContext(Invocation invocation, HttpClientRequest httpClientRequest) {
-    // TODO: after upgrade vert.x , can use request metric to calculate request end time
-    invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
-    //
+    invocation.getInvocationStageTrace().finishGetConnection();
 
     RestClientTransportContext transportContext = transportContextFactory.create(invocation, httpClientRequest);
     invocation.setTransportContext(transportContext);

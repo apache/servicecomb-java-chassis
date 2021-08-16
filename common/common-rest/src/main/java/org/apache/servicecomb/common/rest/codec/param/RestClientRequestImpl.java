@@ -121,24 +121,23 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   @Override
-  public void end() {
+  public Future<Void> end() {
     writeCookies();
 
     if (!uploads.isEmpty()) {
-      doEndWithUpload();
-      return;
+      return doEndWithUpload();
     }
 
-    doEndNormal();
+    return doEndNormal();
   }
 
-  protected void doEndWithUpload() {
+  protected Future<Void> doEndWithUpload() {
     request.setChunked(true);
 
     String boundary = "boundary" + UUID.randomUUID().toString();
     putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
 
-    genBodyForm(boundary).onSuccess(v -> attachFiles(boundary)).onFailure(e -> asyncResp.consumerFail(e));
+    return genBodyForm(boundary).onSuccess(v -> attachFiles(boundary)).onFailure(e -> asyncResp.consumerFail(e));
   }
 
   private Future<Void> genBodyForm(String boundary) {
@@ -169,20 +168,19 @@ public class RestClientRequestImpl implements RestClientRequest {
     return string.getBytes(StandardCharsets.UTF_8);
   }
 
-  protected void doEndNormal() {
+  protected Future<Void> doEndNormal() {
     try {
       genBodyBuffer();
     } catch (Exception e) {
       asyncResp.consumerFail(e);
-      return;
+      return Future.succeededFuture();
     }
 
     if (bodyBuffer == null) {
-      request.end();
-      return;
+      return request.end();
     }
 
-    request.end(bodyBuffer);
+    return request.end(bodyBuffer);
   }
 
   private void attachFiles(String boundary) {
