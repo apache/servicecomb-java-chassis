@@ -15,6 +15,7 @@ public class CaseInsensitiveCondition extends AbstractCondition {
       return;
     }
     actual = actual.toString().toLowerCase();
+    condition.setActual(key, actual);
   }
 
   @Override

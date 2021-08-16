@@ -7,7 +7,7 @@ public abstract class AbstractCondition implements Condition {
 
   private Object actual;
 
-  private SupportedType type = SupportedType.UNKNON;
+  private SupportedType type = SupportedType.UNKNOWN;
 
   public AbstractCondition(String key, String expected) {
     assertValueNotNull(key, expected);
@@ -29,16 +29,18 @@ public abstract class AbstractCondition implements Condition {
   public void setActual(String key, Object actual) {
     assertValueNotNull(key, "");
     if (this.key.equals(key)) {
-      this.type = SupportedType.STRING;
-    } else if (actual instanceof Number) {
-      this.type = SupportedType.NUMBER;
+      if (actual instanceof String) {
+        this.type = SupportedType.STRING;
+      } else if (actual instanceof Number) {
+        this.type = SupportedType.NUMBER;
+      }
+      this.actual = actual;
     }
-    this.actual = actual;
   }
 
   protected void assertValueNotNull(String key, Object value) {
     if (key == null) {
-      throw new IllegalArgumentException("Key can be null.");
+      throw new IllegalArgumentException("Key can not be null.");
     }
     if (value == null) {
       throw new IllegalArgumentException("Argument can not be null. key = " + key);

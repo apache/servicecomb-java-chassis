@@ -26,4 +26,8 @@ public class DarklaunchRuleJson {
   public void setRuleItems(List<DarklaunchRuleItemJson> ruleItems) {
     this.ruleItems = ruleItems;
   }
+
+  public void addRuleItem(DarklaunchRuleItemJson ruleItem) {
+    this.ruleItems.add(ruleItem);
+  }
 }

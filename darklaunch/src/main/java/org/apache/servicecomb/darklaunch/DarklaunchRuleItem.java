@@ -13,7 +13,7 @@ public class DarklaunchRuleItem {
 
   private Condition policyCondition;
 
-  private List<ServiceCombServer> servers = new ArrayList<>();
+  private List<ServiceCombServer> servers = new ArrayList<ServiceCombServer>();
 
   public DarklaunchRuleItem(String groupName) {
     this.groupName = groupName;
@@ -44,7 +44,7 @@ public class DarklaunchRuleItem {
   }
 
   public List<ServiceCombServer> getServers() {
-    return servers;
+    return this.servers;
   }
 
   public void addServer(ServiceCombServer server) {

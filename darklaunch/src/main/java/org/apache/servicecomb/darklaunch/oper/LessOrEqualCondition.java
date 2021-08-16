@@ -12,7 +12,8 @@ public class LessOrEqualCondition extends AbstractCondition {
       return compareNum(this.getActual(), this.expected()) <= 0;
     } else if (type == SupportedType.STRING) {
       return ((String) this.getActual()).compareTo(this.expected()) <= 0;
+    } else {
+      return false;
     }
-    return false;
   }
 }
