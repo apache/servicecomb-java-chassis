@@ -6,8 +6,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.darklaunch.DarklaunchRule;
 
-import rx.Completable.CompletableOnSubscribe;
-
 public class ConditionFactory {
   public static final String OP_AND = "&&";
 
@@ -17,7 +15,7 @@ public class ConditionFactory {
 
   private static final String[] OP_LIST = {">=", "<=", "!=", "=", ">", "<", "~"};
 
-  public static final String SEP_CPLON = ",";
+  public static final String SEP_COLON = ",";
 
   private static String[] split2Part(String str, String sep) {
     int index = str.indexOf(sep);
@@ -65,8 +63,8 @@ public class ConditionFactory {
     for (int index = 0; index < OP_LIST.length; index++) {
       if (groupCondition.contains(OP_LIST[index])) {
         String[] pairs = split2Part(groupCondition, OP_LIST[index]);
-        if (pairs[1].contains(SEP_CPLON)) {
-          String[] values = split(pairs[1], SEP_CPLON);
+        if (pairs[1].contains(SEP_COLON)) {
+          String[] values = split(pairs[1], SEP_COLON);
           Condition[] conditions = new Condition[values.length];
           for (int i = 0; i < values.length; i++) {
             conditions[i] = buildCondition(index, pairs[0], values[i], caseInsensitive);
@@ -80,7 +78,7 @@ public class ConditionFactory {
     throw new IllegalArgumentException(groupCondition);
   }
 
-  public static Condition buildCondition(int index, String key, String value, boolean caseInsensitive) {
+  private static Condition buildCondition(int index, String key, String value, boolean caseInsensitive) {
     value = caseInsensitive ? value.toLowerCase() : value;
     Condition condition = buildCondition(index, key, value);
     if (caseInsensitive) {

@@ -28,6 +28,11 @@ public class LikeCondition extends AbstractCondition {
 
   @Override
   public boolean match() {
-    return false;
+    SupportedType type = this.getType();
+    if(type == SupportedType.STRING) {
+      return  this.pattern.matcher((String) this.getActual()).matches();
+    } else{
+      return false;
+    }
   }
 }
