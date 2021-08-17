@@ -57,10 +57,10 @@ public class RestTransportClient {
   public void init(Vertx vertx) throws Exception {
     httpClientFilters = SPIServiceUtils.getSortedService(HttpClientFilter.class);
 
-    HttpClientOptions httpClientOptions = createHttpClientOptions(false);
+    HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
-    HttpClientOptions httpClientOptionshttp2 = createHttpClientOptions(true);
+    HttpClientOptions httpClientOptionshttp2 = createHttp2ClientOptions();
 
     clientMgrHttp2 = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptionshttp2));
 
@@ -73,23 +73,31 @@ public class RestTransportClient {
     VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptionshttp2);
   }
 
-  private static HttpClientOptions createHttpClientOptions(boolean http2) {
+  private static HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
-    httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+    httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
+        .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
         .setKeepAliveTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
         .setTryUseCompression(TransportClientConfig.getConnectionCompression())
+        .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize())
         .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize());
-    if (http2) {
-      httpClientOptions.setUseAlpn(TransportClientConfig.getUseAlpn())
-          .setHttp2ClearTextUpgrade(false)
-          .setProtocolVersion(HttpVersion.HTTP_2)
-          .setHttp2MultiplexingLimit(TransportClientConfig.getHttp2MultiplexingLimit())
-          .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize());
-    } else {
-      httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
-          .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
-          .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize());
-    }
+
+    VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
+    return httpClientOptions;
+  }
+
+  private static HttpClientOptions createHttp2ClientOptions() {
+    HttpClientOptions httpClientOptions = new HttpClientOptions();
+    httpClientOptions.setUseAlpn(TransportClientConfig.getUseAlpn())
+        .setHttp2ClearTextUpgrade(false)
+        .setProtocolVersion(HttpVersion.HTTP_2)
+        .setIdleTimeout(TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds())
+        .setHttp2MultiplexingLimit(TransportClientConfig.getHttp2MultiplexingLimit())
+        .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize())
+        .setTryUseCompression(TransportClientConfig.getConnectionCompression())
+        .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize())
+        .setKeepAliveTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
   }
