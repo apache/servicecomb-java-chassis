@@ -341,6 +341,11 @@
         <artifactId>dashboard</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>dashboard</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- ServiceComb: swagger -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
