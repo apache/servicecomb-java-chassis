@@ -104,4 +104,11 @@ public class AppManager {
     }
     LOGGER.info("staticMicroserviceVersionFactory is {}.", staticMicroserviceVersionFactoryClass);
   }
+
+  public void pullInstances() {
+    for (MicroserviceManager microserviceManager : apps.values()) {
+      microserviceManager.pullInstances();
+    }
+  }
+
 }

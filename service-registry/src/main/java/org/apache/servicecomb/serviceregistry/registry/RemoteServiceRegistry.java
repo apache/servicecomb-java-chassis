@@ -18,16 +18,17 @@ package org.apache.servicecomb.serviceregistry.registry;
 
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
-import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
 import org.slf4j.Logger;
@@ -53,18 +54,15 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   public void init() {
     super.init();
     taskPool = new ScheduledThreadPoolExecutor(3,
-        task -> {
-          return new Thread(task) {
-            @Override
-            public void run() {
-              try {
-                setName("Service Center Task [" + task.toString() + "[" + this.getId() + "]]");
-                super.run();
-              } catch (Throwable e) {
-                LOGGER.error("task {} execute error.", getName(), e);
-              }
-            }
-          };
+        new ThreadFactory() {
+          private int taskId = 0;
+          @Override
+          public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r, "Service Center Task [" + (taskId++) + "]");
+            thread.setUncaughtExceptionHandler(
+                (t, e) -> LOGGER.error("Service Center Task Thread is terminated! thread: [{}]", t, e));
+            return thread;
+          }
         },
         (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.toString())
     );
@@ -91,7 +89,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         TimeUnit.SECONDS);
 
     taskPool.scheduleAtFixedRate(
-        () -> eventBus.post(new PeriodicPullEvent()),
+        new SuppressedRunnableWrapper(appManager::pullInstances),
         serviceRegistryConfig.getInstancePullInterval(),
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);
