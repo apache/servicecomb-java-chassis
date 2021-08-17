@@ -128,7 +128,6 @@
     <module>clients</module>
     <module>governance</module>
     <module>huawei-cloud</module>
-    <module>darklaunch</module>
   </modules>
 
   <reporting>
