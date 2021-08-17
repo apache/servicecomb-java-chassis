@@ -343,7 +343,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>dashboard</artifactId>
+        <artifactId>darklaunch</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- ServiceComb: swagger -->
