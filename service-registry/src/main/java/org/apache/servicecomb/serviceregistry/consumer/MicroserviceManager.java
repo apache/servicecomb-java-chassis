@@ -107,25 +107,4 @@ public class MicroserviceManager {
     removeMicroservice(event.getMicroserviceName());
   }
 
-  public void pullInstances() {
-    for (MicroserviceVersions microserviceVersions : versionsByName.values()) {
-      microserviceVersions.pullInstances();
-
-      tryRemoveInvalidMicroservice(microserviceVersions);
-    }
-  }
-
-  private void tryRemoveInvalidMicroservice(MicroserviceVersions microserviceVersions) {
-    if (!microserviceVersions.isValidated()) {
-      return;
-    }
-
-    // remove this microservice if it does not exist or not registered in order to get it back when access it again
-    String microserviceName = microserviceVersions.getMicroserviceName();
-    if (versionsByName.remove(microserviceName) != null) {
-      microserviceVersions.destroy();
-      LOGGER.info("remove microservice, appId={}, microserviceName={}.", appId, microserviceName);
-    }
-  }
-
 }
