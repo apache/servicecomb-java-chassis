@@ -18,6 +18,7 @@ package org.apache.servicecomb.serviceregistry.registry;
 
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -53,18 +54,15 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   public void init() {
     super.init();
     taskPool = new ScheduledThreadPoolExecutor(3,
-        task -> {
-          return new Thread(task) {
-            @Override
-            public void run() {
-              try {
-                setName("Service Center Task [" + task.toString() + "[" + this.getId() + "]]");
-                super.run();
-              } catch (Throwable e) {
-                LOGGER.error("task {} execute error.", getName(), e);
-              }
-            }
-          };
+        new ThreadFactory() {
+          private int taskId = 0;
+          @Override
+          public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r, "Service Center Task [" + (taskId++) + "]");
+            thread.setUncaughtExceptionHandler(
+                (t, e) -> LOGGER.error("Service Center Task Thread is terminated! thread: [{}]", t, e));
+            return thread;
+          }
         },
         (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.toString())
     );
