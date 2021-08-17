@@ -104,5 +104,4 @@ public class AppManager {
     }
     LOGGER.info("staticMicroserviceVersionFactory is {}.", staticMicroserviceVersionFactoryClass);
   }
-
 }

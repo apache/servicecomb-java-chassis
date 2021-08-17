@@ -106,5 +106,4 @@ public class MicroserviceManager {
 
     removeMicroservice(event.getMicroserviceName());
   }
-
 }
