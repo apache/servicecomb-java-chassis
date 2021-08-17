@@ -46,6 +46,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
   public static final String APPLICATION_CONFIG = "application";
 
+  public static final String DARK_LAUNCH = "darklaunch@";
+
   private HttpTransport httpTransport;
 
   private AddressManager addressManager;
@@ -91,6 +93,10 @@ public class ConfigCenterClient implements ConfigCenterOperation {
           configurations.putAll(allConfigMap.get(buildDimensionsInfo(request, false)));
         }
 
+        if (allConfigMap.get(buildDarkLaunchDimensionsInfo(request)) != null) {
+          configurations.putAll(allConfigMap.get(buildDarkLaunchDimensionsInfo(request)));
+        }
+
         if (allConfigMap.get(dimensionsInfo) != null) {
           configurations.putAll(allConfigMap.get(dimensionsInfo));
         }
@@ -126,5 +132,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
           .getVersion();
     }
     return result;
+  }
+
+  private String buildDarkLaunchDimensionsInfo(QueryConfigurationsRequest request) {
+    return DARK_LAUNCH + request.getApplication();
   }
 }

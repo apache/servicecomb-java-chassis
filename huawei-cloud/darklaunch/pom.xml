@@ -22,19 +22,24 @@
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
     <version>2.5.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
-
-  <artifactId>huawei-cloud</artifactId>
-  <name>Java Chassis::Huawei Cloud</name>
-  <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
-  <modules>
-    <module>servicestage</module>
-    <module>environment</module>
-    <module>dashboard</module>
-    <module>darklaunch</module>
-  </modules>
+  <artifactId>darklaunch</artifactId>
+  <name>Java Chassis::darklaunch</name>
 
+<dependencies>
+  <dependency>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>foundation-registry</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>registry-service-center</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>handler-loadbalance</artifactId>
+  </dependency>
+</dependencies>
 </project>
