@@ -96,8 +96,8 @@ public class RestTransportClient {
         .setHttp2MultiplexingLimit(TransportClientConfig.getHttp2MultiplexingLimit())
         .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize())
         .setTryUseCompression(TransportClientConfig.getConnectionCompression())
-        .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize());
-
+        .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize())
+        .setKeepAliveTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
   }
