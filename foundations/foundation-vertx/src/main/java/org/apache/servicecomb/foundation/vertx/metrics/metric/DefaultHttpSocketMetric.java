@@ -29,7 +29,7 @@ public class DefaultHttpSocketMetric extends DefaultTcpSocketMetric {
   }
 
   public long getRequestBeginTime() {
-    return requestBeginTime;
+    return requestBeginTime != 0 ? requestBeginTime : System.nanoTime();
   }
 
   public void requestBegin() {
@@ -37,7 +37,7 @@ public class DefaultHttpSocketMetric extends DefaultTcpSocketMetric {
   }
 
   public long getRequestEndTime() {
-    return requestEndTime;
+    return requestEndTime != 0 ? requestEndTime : System.nanoTime();
   }
 
   public void requestEnd() {
