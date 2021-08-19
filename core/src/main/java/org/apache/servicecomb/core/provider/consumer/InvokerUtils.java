@@ -29,8 +29,16 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.vertx.core.Context;
+
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
+
+  private static boolean enableEventLoopBlockingCallCheck =
+      DynamicPropertyFactory.getInstance()
+          .getBooleanProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", true).get();
 
   public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
     ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
@@ -65,6 +73,9 @@ public final class InvokerUtils {
    */
   public static Response innerSyncInvoke(Invocation invocation) {
     try {
+      if (Context.isOnEventLoopThread() && enableEventLoopBlockingCallCheck) {
+        throw new IllegalStateException("Can not execute sync logic in event loop. ");
+      }
       invocation.onStart(null, System.nanoTime());
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
