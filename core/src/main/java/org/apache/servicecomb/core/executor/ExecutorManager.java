@@ -59,6 +59,12 @@ public final class ExecutorManager {
       return executor;
     }
 
+    // microservice级别
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName());
+    if (executor != null) {
+      return executor;
+    }
+
     executor = findByKey(KEY_EXECUTORS_DEFAULT);
     if (executor != null) {
       return executor;
