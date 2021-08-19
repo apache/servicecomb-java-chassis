@@ -21,15 +21,14 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
@@ -152,9 +151,9 @@ public class SwaggerProducerOperation {
         asyncResp.handle(processException(invocation, ex));
       });
     } catch (Throwable e) {
-      if (shouldPrintErrorLog(e)){
+      if (shouldPrintErrorLog(e)) {
         LOGGER.error("unexpected error operation={}, message={}",
-            invocation.getInvocationQualifiedName(), e.getMessage());
+            invocation.getInvocationQualifiedName(), ExceptionUtils.getExceptionMessageWithoutTrace(e));
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -185,9 +184,9 @@ public class SwaggerProducerOperation {
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
     } catch (Throwable e) {
-      if (shouldPrintErrorLog(e)){
+      if (shouldPrintErrorLog(e)) {
         LOGGER.error("unexpected error operation={}, message={}",
-            invocation.getInvocationQualifiedName(), e.getMessage());
+            invocation.getInvocationQualifiedName(), ExceptionUtils.getExceptionMessageWithoutTrace(e));
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();

@@ -42,12 +42,12 @@ public class TestConfigurePropertyUtils {
     List<BasePath> paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
     Assert.assertEquals(2, paths.size());
     Assert.assertEquals(paths.get(0).getPath(), "/test1/testpath");
-    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
+    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), "false");
 
     System.setProperty(Const.URL_PREFIX, "/webroot");
     paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
     Assert.assertEquals(2, paths.size());
     Assert.assertEquals(paths.get(0).getPath(), "/webroot/test1/testpath");
-    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
+    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), "false");
   }
 }
