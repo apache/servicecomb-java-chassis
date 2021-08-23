@@ -48,7 +48,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
 
   @Override
   public int getOrder() {
-    return Integer.MAX_VALUE;
+    return 10000;
   }
 
   @Override

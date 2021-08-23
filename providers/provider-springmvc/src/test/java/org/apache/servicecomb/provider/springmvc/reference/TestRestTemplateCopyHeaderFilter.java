@@ -37,7 +37,7 @@ public class TestRestTemplateCopyHeaderFilter {
 
   @Test
   public void getOrder() {
-    Assert.assertEquals(Integer.MIN_VALUE, filter.getOrder());
+    Assert.assertEquals(-10000, filter.getOrder());
   }
 
   @Test
