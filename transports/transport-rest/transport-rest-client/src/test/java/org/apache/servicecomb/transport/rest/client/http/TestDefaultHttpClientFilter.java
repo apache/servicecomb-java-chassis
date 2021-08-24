@@ -56,7 +56,7 @@ public class TestDefaultHttpClientFilter {
 
   @Test
   public void testOrder() {
-    Assert.assertEquals(Integer.MAX_VALUE, filter.getOrder());
+    Assert.assertEquals(10000, filter.getOrder());
   }
 
   @Test
