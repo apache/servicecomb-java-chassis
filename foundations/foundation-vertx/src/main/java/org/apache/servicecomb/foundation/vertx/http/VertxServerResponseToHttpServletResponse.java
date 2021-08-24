@@ -30,9 +30,7 @@ import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.streams.ReadStream;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
   private Context context;
