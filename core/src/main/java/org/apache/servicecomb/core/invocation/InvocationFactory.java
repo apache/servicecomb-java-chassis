@@ -27,6 +27,9 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public final class InvocationFactory {
   private InvocationFactory() {
@@ -42,9 +45,25 @@ public final class InvocationFactory {
   }
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
-    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
-    invocation.addContext(Const.SRC_MICROSERVICE, microserviceName);
+    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
+    invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
+    if (isServiceId()) {
+      invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
+    }
+    if (isInstanceId()) {
+      invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
+    }
     return invocation;
+  }
+
+  public static boolean isServiceId() {
+    return DynamicPropertyFactory.getInstance().
+        getBooleanProperty("servicecomb.context.enabled.serviceId", true).get();
+  }
+
+  public static boolean isInstanceId() {
+    return DynamicPropertyFactory.getInstance().
+        getBooleanProperty("servicecomb.context.enabled.instanceId", true).get();
   }
 
   /*
