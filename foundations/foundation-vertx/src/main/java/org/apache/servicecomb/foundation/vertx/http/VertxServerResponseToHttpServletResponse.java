@@ -30,7 +30,9 @@ import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.streams.ReadStream;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
   private Context context;
@@ -123,7 +125,11 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
     DownloadUtils.prepareDownloadHeader(this, part);
-
+    if (part == null) {
+      CompletableFuture<Void> future = new CompletableFuture<>();
+      future.complete(null);
+      return future;
+    }
     return new PumpFromPart(context, part).toWriteStream(serverResponse, null);
   }
 

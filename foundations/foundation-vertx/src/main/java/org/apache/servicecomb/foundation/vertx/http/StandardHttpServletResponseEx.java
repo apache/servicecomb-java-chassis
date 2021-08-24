@@ -104,6 +104,12 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
 
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
+    if (part == null) {
+      CompletableFuture<Void> defaultFuture = new CompletableFuture<>();
+      defaultFuture.complete(null);
+      return defaultFuture;
+    }
+
     DownloadUtils.prepareDownloadHeader(this, part);
 
     OutputStream outputStream;
