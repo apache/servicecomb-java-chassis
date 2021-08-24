@@ -86,7 +86,7 @@ for(Microservice microservice : services.getServices())
 ```
 
 #### Other API
-You can see client API code and tests, go [here](https://github.com/apache/servicecomb-java-chassis/blob/master/client/service-center-client/src/main/java/org/apache/servicecomb/service/center/client/ServiceCenterClient.java) 
+You can see client API code and tests, go [here](https://github.com/apache/servicecomb-java-chassis/blob/master/clients/service-center-client/src/main/java/org/apache/servicecomb/service/center/client/ServiceCenterClient.java) 
 
 
 ### More development
