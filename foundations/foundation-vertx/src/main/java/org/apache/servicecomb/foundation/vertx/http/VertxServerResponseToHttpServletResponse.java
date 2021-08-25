@@ -124,9 +124,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   public CompletableFuture<Void> sendPart(Part part) {
     DownloadUtils.prepareDownloadHeader(this, part);
     if (part == null) {
-      CompletableFuture<Void> future = new CompletableFuture<>();
-      future.complete(null);
-      return future;
+      return CompletableFuture.completedFuture(null);
     }
     return new PumpFromPart(context, part).toWriteStream(serverResponse, null);
   }
