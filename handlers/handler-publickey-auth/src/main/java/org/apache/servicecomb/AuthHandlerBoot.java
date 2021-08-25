@@ -41,7 +41,7 @@ public class AuthHandlerBoot implements BootListener {
       RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
       RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
       RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
-      RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
+      RegistrationManager.INSTANCE.getMicroservice().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
           rsaKeyPairEntry.getPublicKeyEncoded());
     }
   }

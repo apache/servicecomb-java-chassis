@@ -24,8 +24,10 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,5 +60,20 @@ public class TestAuthHandlerBoot {
     authHandlerBoot.onBootEvent(bootEvent);
     Assert.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
     Assert.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
+  }
+
+  @Test
+  public void testMicroservicePublicKey() {
+    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+    Microservice microservice = new Microservice();
+    microservice.setInstance(microserviceInstance);
+
+    AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
+    BootEvent bootEvent = new BootEvent();
+    bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
+    authHandlerBoot.onBootEvent(bootEvent);
+    String publicKey = RegistrationManager.INSTANCE.getMicroservice().
+        getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
+    Assert.assertNotNull(publicKey);
   }
 }
