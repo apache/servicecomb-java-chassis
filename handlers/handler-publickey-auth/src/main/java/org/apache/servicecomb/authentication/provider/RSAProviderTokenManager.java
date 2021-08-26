@@ -22,8 +22,10 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -74,7 +76,10 @@ public class RSAProviderTokenManager {
       throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
     String sign = rsaToken.getSign();
     String content = rsaToken.plainToken();
-    String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
+    String publicKey = getPublicKeyFromMicroservice(rsaToken.getServiceId());
+    if (StringUtils.isEmpty(publicKey)) {
+      publicKey = getPublicKeyFromInstance(rsaToken.getInstanceId(), rsaToken.getServiceId());
+    }
     return RSAUtils.verify(publicKey, sign, content);
   }
 
@@ -89,12 +94,22 @@ public class RSAProviderTokenManager {
     return now > expired;
   }
 
-  private String getPublicKey(String instanceId, String serviceId) {
+  private String getPublicKeyFromInstance(String instanceId, String serviceId) {
     MicroserviceInstance instances = MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
     if (instances != null) {
       return instances.getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
     } else {
       LOGGER.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
+      return "";
+    }
+  }
+
+  private String getPublicKeyFromMicroservice(String serviceId) {
+    Microservice microservice = MicroserviceInstanceCache.getOrCreate(serviceId);
+    if (microservice != null) {
+      return microservice.getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
+    } else {
+      LOGGER.error("not instance found {}, maybe attack", serviceId);
       return "";
     }
   }
