@@ -47,23 +47,23 @@ public final class InvocationFactory {
   public static Invocation setSrcMicroservice(Invocation invocation) {
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
     invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
-    if (isServiceId()) {
+    if (addSourceServiceId()) {
       invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
     }
-    if (isInstanceId()) {
+    if (addSourceInstanceId()) {
       invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
     }
     return invocation;
   }
 
-  public static boolean isServiceId() {
+  public static boolean addSourceServiceId() {
     return DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.context.enabled.serviceId", true).get();
+        getBooleanProperty("servicecomb.context.source.serviceId", true).get();
   }
 
-  public static boolean isInstanceId() {
+  public static boolean addSourceInstanceId() {
     return DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.context.enabled.instanceId", true).get();
+        getBooleanProperty("servicecomb.context.source.instanceId", true).get();
   }
 
   /*
