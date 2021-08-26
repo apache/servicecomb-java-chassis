@@ -41,6 +41,10 @@ public final class Const {
 
   public static final String SRC_MICROSERVICE = "x-cse-src-microservice";
 
+  public static final String SRC_SERVICE_ID = "x-src-serviceId";
+
+  public static final String SRC_INSTANCE_ID = "x-src-instanceId";
+
   public static final String TARGET_MICROSERVICE = "x-cse-target-microservice";
 
   public static final String REMOTE_ADDRESS = "x-cse-remote-address";
