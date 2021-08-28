@@ -53,6 +53,7 @@ public class TestServiceRegistryConfig {
     Assert.assertTrue(oConfig.isSsl());
     Assert.assertEquals(30000, oConfig.getRequestTimeout());
     Assert.assertEquals(3000, oConfig.getHeartBeatRequestTimeout());
+    Assert.assertEquals(30, oConfig.getIdleConnectionTimeout());
     Assert.assertNotEquals(null, oConfig.getResendHeartBeatTimes());
     Assert.assertFalse(oConfig.isPreferIpAddress());
     Assert.assertTrue(oConfig.isWatch());
