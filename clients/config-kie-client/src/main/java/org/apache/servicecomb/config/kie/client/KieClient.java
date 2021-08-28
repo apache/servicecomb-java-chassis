@@ -66,17 +66,7 @@ public class KieClient implements KieConfigOperation {
 
   @Override
   public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request) {
-    String url = addressManager.address()
-        + "/"
-        + DEFAULT_KIE_API_VERSION
-        + "/"
-        + kieConfiguration.getProject()
-        + "/kie/kv?"
-        + request.getLabelsQuery()
-        + "&revision="
-        + request.getRevision()
-        + "&withExact="
-        + request.isWithExact();
+    String url = buildUrl(request);
 
     try {
       if (kieConfiguration.isEnableLongPolling()) {
@@ -109,6 +99,23 @@ public class KieClient implements KieConfigOperation {
       LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
     }
+  }
+
+  private String buildUrl(ConfigurationsRequest request) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(addressManager.address());
+    sb.append("/");
+    sb.append(DEFAULT_KIE_API_VERSION);
+    sb.append("/");
+    sb.append(kieConfiguration.getProject());
+    sb.append("/kie/kv?");
+    sb.append(request.getLabelsQuery());
+    sb.append("&revision=");
+    sb.append(request.getRevision());
+    if (request.isWithExact()) {
+      sb.append("&match=exact");
+    }
+    return sb.toString();
   }
 
   private Map<String, Object> getConfigByLabel(KVResponse resp) {

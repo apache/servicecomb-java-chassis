@@ -15,7 +15,7 @@ cse:
         - n
 ```
 
-* 依次启动 provider、consumer、gateway
+* 依次启动 provider、provider-canary、consumer、gateway
 * 在配置中心增加如下配置：
   * cse.v1.test.bar: bar
 

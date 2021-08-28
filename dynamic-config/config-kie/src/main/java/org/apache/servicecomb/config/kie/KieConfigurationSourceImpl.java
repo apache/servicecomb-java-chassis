@@ -168,7 +168,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {
-    LOGGER.info("configuration updated keys, added=[{}], updated=[{}], deleted=[{}]",
+    LOGGER.info("configuration changed keys, added=[{}], updated=[{}], deleted=[{}]",
         result.getAdded() == null ? "" : result.getAdded().keySet(),
         result.getChanged() == null ? "" : result.getChanged().keySet(),
         result.getDeleted() == null ? "" : result.getDeleted().keySet());

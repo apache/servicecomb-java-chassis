@@ -57,4 +57,9 @@ public class ConsumerConfigController {
   public String common() {
     return consumerConfigurationProperties.getCommon();
   }
+
+  @GetMapping("/extra")
+  public String extra() {
+    return consumerConfigurationProperties.getExtra();
+  }
 }

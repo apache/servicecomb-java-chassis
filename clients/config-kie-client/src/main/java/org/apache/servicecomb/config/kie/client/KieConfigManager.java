@@ -94,7 +94,9 @@ public class KieConfigManager extends AbstractTask {
     Map<String, Object> lastData = configConverter.updateData(latestData);
     ConfigurationChangedEvent event = ConfigurationChangedEvent
         .createIncremental(configConverter.getCurrentData(), lastData);
-    eventBus.post(event);
+    if (event.isChanged()) {
+      eventBus.post(event);
+    }
   }
 
   @Override
