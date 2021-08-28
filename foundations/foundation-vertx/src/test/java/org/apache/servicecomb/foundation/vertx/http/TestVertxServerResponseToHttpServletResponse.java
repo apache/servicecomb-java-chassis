@@ -347,6 +347,12 @@ public class TestVertxServerResponseToHttpServletResponse {
   }
 
   @Test
+  public void sendPart_testPartIsNull(@Mocked Part part) throws InterruptedException, ExecutionException {
+    CompletableFuture<Void> future1 = response.sendPart(null);
+    Assert.assertNull(future1.get());
+  }
+
+  @Test
   public void sendPart_inputStreamBreak(@Mocked Part part, @Mocked InputStream inputStream)
       throws IOException, InterruptedException, ExecutionException {
     IOException ioException = new IOException("forbid read");
