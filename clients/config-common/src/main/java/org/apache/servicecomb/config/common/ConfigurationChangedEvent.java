@@ -28,41 +28,48 @@ public class ConfigurationChangedEvent {
 
   private final Map<String, Object> updated;
 
+  private final boolean changed;
+
   private Map<String, Object> complete;
 
   private ConfigurationChangedEvent(Map<String, Object> added, Map<String, Object> updated,
-      Map<String, Object> deleted) {
+      Map<String, Object> deleted, boolean changed) {
     this.added = added;
     this.deleted = deleted;
     this.updated = updated;
+    this.changed = changed;
   }
 
   public static ConfigurationChangedEvent createIncremental(Map<String, Object> latest, Map<String, Object> last) {
     Map<String, Object> itemsCreated = new HashMap<>();
     Map<String, Object> itemsDeleted = new HashMap<>();
     Map<String, Object> itemsModified = new HashMap<>();
+    boolean changed = false;
 
     for (String itemKey : latest.keySet()) {
       if (!last.containsKey(itemKey)) {
         itemsCreated.put(itemKey, latest.get(itemKey));
+        changed = true;
       } else if (!Objects.equals(last.get(itemKey), latest.get(itemKey))) {
         itemsModified.put(itemKey, latest.get(itemKey));
+        changed = true;
       }
     }
     for (String itemKey : last.keySet()) {
       if (!latest.containsKey(itemKey)) {
         itemsDeleted.put(itemKey, null);
+        changed = true;
       }
     }
     ConfigurationChangedEvent event = ConfigurationChangedEvent
-        .createIncremental(itemsCreated, itemsModified, itemsDeleted);
+        .createIncremental(itemsCreated, itemsModified, itemsDeleted, changed);
     event.complete = latest;
     return event;
   }
 
   private static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
-      Map<String, Object> deleted) {
-    return new ConfigurationChangedEvent(added, updated, deleted);
+      Map<String, Object> deleted, boolean changed) {
+    return new ConfigurationChangedEvent(added, updated, deleted, changed);
   }
 
   public final Map<String, Object> getAdded() {
@@ -81,5 +88,9 @@ public class ConfigurationChangedEvent {
 
   public final Map<String, Object> getComplete() {
     return complete;
+  }
+
+  public final boolean isChanged() {
+    return changed;
   }
 }

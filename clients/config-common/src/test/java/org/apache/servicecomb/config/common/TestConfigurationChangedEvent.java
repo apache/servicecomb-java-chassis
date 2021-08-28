@@ -42,5 +42,6 @@ public class TestConfigurationChangedEvent {
     Assert.assertEquals(1, event.getDeleted().size());
     Assert.assertEquals(1, event.getUpdated().size());
     Assert.assertEquals(4, event.getComplete().size());
+    Assert.assertEquals(true, event.isChanged());
   }
 }

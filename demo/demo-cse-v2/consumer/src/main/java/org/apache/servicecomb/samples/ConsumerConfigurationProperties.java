@@ -31,6 +31,8 @@ public class ConsumerConfigurationProperties {
 
   private String common;
 
+  private String extra;
+
   public String getFoo() {
     return foo;
   }
@@ -61,5 +63,13 @@ public class ConsumerConfigurationProperties {
 
   public void setCommon(String common) {
     this.common = common;
+  }
+
+  public String getExtra() {
+    return extra;
+  }
+
+  public void setExtra(String extra) {
+    this.extra = extra;
   }
 }
