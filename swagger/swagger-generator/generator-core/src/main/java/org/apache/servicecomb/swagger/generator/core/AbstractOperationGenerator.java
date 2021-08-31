@@ -26,12 +26,16 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.pos
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -323,37 +327,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
           parameterGenerator.getParameterName(),
           parameterGenerator.getGenericType(),
           parameterGenerator.getAnnotations());
-
-      if (parameterGenerator.getGenericType().getBindings().getTypeParameters().isEmpty()){
-        convertAnnotationProperty(parameterGenerator.getGenericType().getRawClass());
-      } else {
-        parameterGenerator.getGenericType().getBindings().getTypeParameters().
-            stream().forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
-      }
-
     } catch (Throwable e) {
       throw new IllegalStateException(
           String.format("failed to fill parameter, parameterName=%s.",
               parameterGenerator.getParameterName()),
           e);
     }
-  }
-
-  private void convertAnnotationProperty(Class<?> beanClass){
-    if (beanClass == null) {
-      return;
-    }
-    String simpleName = beanClass.getSimpleName();
-    Arrays.stream(beanClass.getDeclaredFields()).forEach(field -> {
-      NotBlank notBlank = field.getAnnotation(NotBlank.class);
-      NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
-      if (notBlank != null || notEmpty != null){
-        Model model = swagger.getDefinitions().get(simpleName);
-        if (model != null) {
-          model.getProperties().get(field.getName()).setRequired(true);
-        }
-      }
-    });
   }
 
   protected Parameter createParameter(ParameterGenerator parameterGenerator) {
