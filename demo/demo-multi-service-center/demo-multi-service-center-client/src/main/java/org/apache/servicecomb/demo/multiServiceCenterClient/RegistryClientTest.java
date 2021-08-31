@@ -133,7 +133,7 @@ public class RegistryClientTest implements CategorizedTestCase {
     ServiceCenterDiscovery discovery = new ServiceCenterDiscovery(serviceCenterClient, eventBus);
     discovery.updateMyselfServiceId(microservice.getServiceId());
     discovery.startDiscovery();
-    discovery.register(new SubscriptionKey(microservice.getAppId(), microservice.getServiceName()));
+    discovery.registerIfNotPresent(new SubscriptionKey(microservice.getAppId(), microservice.getServiceName()));
     discoveryCounter.await(30000, TimeUnit.MILLISECONDS);
     TestMgr.check(instances != null, true);
     TestMgr.check(instances.size(), 1);
