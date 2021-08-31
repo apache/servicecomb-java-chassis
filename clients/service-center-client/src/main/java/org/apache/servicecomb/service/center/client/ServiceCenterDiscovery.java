@@ -98,6 +98,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private boolean started = false;
 
+  private final Object lock = new Object();
+
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
     super("service-center-discovery-task");
     this.serviceCenterClient = serviceCenterClient;
@@ -124,17 +126,20 @@ public class ServiceCenterDiscovery extends AbstractTask {
     }
   }
 
-  public void register(SubscriptionKey subscriptionKey) {
-    this.instancesCache.computeIfAbsent(subscriptionKey, (key) -> new SubscriptionValue());
-    pullInstance(subscriptionKey, this.instancesCache.get(subscriptionKey));
+  public void registerIfNotPresent(SubscriptionKey subscriptionKey) {
+    if (this.instancesCache.get(subscriptionKey) == null) {
+      synchronized (lock) {
+        if (this.instancesCache.get(subscriptionKey) == null) {
+          SubscriptionValue value = new SubscriptionValue();
+          pullInstance(subscriptionKey, value);
+          this.instancesCache.put(subscriptionKey, value);
+        }
+      }
+    }
   }
 
   public List<MicroserviceInstance> getInstanceCache(SubscriptionKey key) {
     return this.instancesCache.get(key).instancesCache;
-  }
-
-  public boolean isRegistered(SubscriptionKey key) {
-    return this.instancesCache.get(key) != null;
   }
 
   @Subscribe
