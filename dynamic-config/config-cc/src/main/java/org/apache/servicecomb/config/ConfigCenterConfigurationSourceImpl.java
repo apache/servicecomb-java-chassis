@@ -111,10 +111,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       if (response.isChanged()) {
         configConverter.updateData(response.getConfigurations());
         updateConfiguration(WatchedUpdateResult.createIncremental(configConverter.getCurrentData(), null, null));
-      } else {
-        throw new IllegalStateException("can not fetch config data.");
+        queryConfigurationsRequest.setRevision(response.getRevision());
       }
-      queryConfigurationsRequest.setRevision(response.getRevision());
     } catch (Exception e) {
       if (ConfigCenterConfig.INSTANCE.firstPullRequired()) {
         throw e;
