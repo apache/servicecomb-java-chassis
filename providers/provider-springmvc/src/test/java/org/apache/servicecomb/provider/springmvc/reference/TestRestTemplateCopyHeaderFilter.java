@@ -63,7 +63,6 @@ public class TestRestTemplateCopyHeaderFilter {
     httpHeaders.add("headerName0", "headerValue0");
     httpHeaders.add("headerName1", null);
     httpHeaders.add("headerName2", "headerValue2");
-    httpHeaders.add("Accept", "");
     new Expectations() {
       {
         invocation.getHandlerContext();
@@ -76,7 +75,6 @@ public class TestRestTemplateCopyHeaderFilter {
     Assert.assertEquals("headerValue0", requestEx.getHeader("headerName0"));
     Assert.assertEquals("headerValue2", requestEx.getHeader("headerName2"));
     Assert.assertNull(requestEx.getHeader("headerName1"));
-    Assert.assertNull(requestEx.getHeader("Accept"));
   }
 
   @Test

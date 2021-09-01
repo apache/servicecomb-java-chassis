@@ -54,11 +54,6 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
           LOGGER.debug("header value is null, key = [{}]. Will not set this header into request", key);
           continue;
         }
-
-        if (HttpHeaders.ACCEPT.equals(key) && value.isEmpty()) {
-          LOGGER.debug("header value is empty, key = [{}]. Will not set this header into request", key);
-          continue;
-        }
         requestEx.addHeader(key, value);
       }
     });
