@@ -30,6 +30,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     testDownloadFileAndDeleted();
     testDownloadFileNotDeleted();
+    testDownloadFileWithNull();
   }
 
   private void testDownloadFileAndDeleted() throws Exception {
@@ -42,6 +43,19 @@ public class TestDownloadSchema implements CategorizedTestCase {
     boolean exists = restTemplate
         .getForObject("servicecomb://springmvc/download/assertLastFileDeleted", boolean.class);
     TestMgr.check(exists, false);
+  }
+
+  private void testDownloadFileWithNull() throws Exception {
+    RestTemplate restTemplate = RestTemplateBuilder.create();
+    ReadStreamPart readStreamPart = restTemplate
+        .getForObject("servicecomb://springmvc/download/partIsNull?content=test", ReadStreamPart.class);
+    String result = readStreamPart.saveAsString().get();
+    TestMgr.check(result, "test");
+
+    readStreamPart = restTemplate
+        .getForObject("servicecomb://springmvc/download/partIsNull?content=", ReadStreamPart.class);
+    result = readStreamPart.saveAsString().get();
+    TestMgr.check(result, "");
   }
 
   private void testDownloadFileNotDeleted() throws Exception {
