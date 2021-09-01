@@ -83,7 +83,7 @@ public final class TransportClientConfig {
 
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds", 60)
+        .getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds", 30)
         .get();
   }
 
