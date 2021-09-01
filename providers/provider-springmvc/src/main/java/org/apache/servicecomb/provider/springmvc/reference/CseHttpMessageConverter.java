@@ -36,7 +36,7 @@ public class CseHttpMessageConverter implements GenericHttpMessageConverter<Obje
 
   @Override
   public boolean canRead(Class<?> clazz, MediaType mediaType) {
-    return false;
+    return true;
   }
 
   @Override
@@ -72,7 +72,7 @@ public class CseHttpMessageConverter implements GenericHttpMessageConverter<Obje
 
   @Override
   public boolean canRead(Type type, @Nullable Class<?> contextClass, @Nullable MediaType mediaType) {
-    return false;
+    return true;
   }
 
   @Override
