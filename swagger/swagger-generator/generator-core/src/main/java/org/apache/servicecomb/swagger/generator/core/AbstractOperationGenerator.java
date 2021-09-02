@@ -26,14 +26,8 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.pos
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
@@ -100,6 +94,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   // 根据方法上独立的ResponseHeader(s)标注生成的数据
   // 如果Response中不存在对应的header，则会将这些header补充进去
   protected Map<String, Property> methodResponseHeaders = new LinkedHashMap<>();
+
+  private static List<String> NOT_NULL_ANNOTATIONS = Arrays.asList("NotBlank", "NotEmpty");
 
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
@@ -383,6 +379,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     if (parameter instanceof AbstractSerializableParameter) {
       io.swagger.util.ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+      annotations.stream().forEach(annotation -> {
+        if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())){
+          parameter.setRequired(true);
+        }
+      });
       return;
     }
 
@@ -405,8 +406,31 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       }
     }
 
+    // swagger 2.0 do not support NotBlank and NotEmpty annotations, fix it
+    if (((JavaType)type).getBindings().getTypeParameters().isEmpty()){
+      convertAnnotationProperty(((JavaType)type).getRawClass());
+    } else {
+      ((JavaType)type).getBindings().getTypeParameters().stream().
+          forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
+    }
+
     mergeBodyParameter((BodyParameter) parameter, newBodyParameter);
   }
+
+  private void convertAnnotationProperty(Class<?> beanClass) {
+    Map<String, Model> definitions = swagger.getDefinitions();
+    if (definitions == null) {
+      return;
+    }
+    Model model = definitions.get(beanClass.getSimpleName());
+    Arrays.stream(beanClass.getDeclaredFields()).forEach(field -> {
+      boolean requireItem = Arrays.stream(field.getAnnotations()).anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
+      if (requireItem) {
+        model.getProperties().get(field.getName()).setRequired(true);
+      }
+    });
+  }
+
 
   private void mergeBodyParameter(BodyParameter bodyParameter, BodyParameter fromBodyParameter) {
     if (fromBodyParameter.getExamples() != null) {
