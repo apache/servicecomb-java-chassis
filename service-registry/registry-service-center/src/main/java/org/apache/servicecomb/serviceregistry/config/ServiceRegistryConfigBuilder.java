@@ -149,16 +149,6 @@ class ServiceRegistryConfigBuilder {
     return timeout < 1 ? ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
   }
 
-  public int getIdleWatchTimeout() {
-    // watch idle timeout based on SC PING/PONG interval. SC default value is 30.
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.watch",
-                ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_SECONDS * 2);
-    int timeout = property.get();
-    return timeout < 1 ? ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
-  }
-
   public int getRequestTimeout() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
