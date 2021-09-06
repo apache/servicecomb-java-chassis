@@ -20,9 +20,14 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
+import io.swagger.models.properties.Property;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.Matchers;
@@ -30,6 +35,9 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Map;
 
 public class ApiOperationProcessorTest {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
@@ -63,6 +71,48 @@ public class ApiOperationProcessorTest {
     @ApiOperation(value = "testBlankMediaType", consumes = "", produces = "")
     public String testBlankMediaType(String input) {
       return input;
+    }
+
+    @ApiOperation(value = "testBodyParam")
+    public String testBodyParam(@RequestBody TestBodyBean user) {
+      return user.toString();
+    }
+  }
+
+
+  private static class TestBodyBean {
+
+    @NotBlank
+    private String age;
+
+    @NotNull
+    private String name;
+
+    @NotEmpty
+    private String sexes;
+
+    public String getAge() {
+      return age;
+    }
+
+    public void setAge(String age) {
+      this.age = age;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public String getSexes() {
+      return sexes;
+    }
+
+    public void setSexes(String sexes) {
+      this.sexes = sexes;
     }
   }
 
@@ -99,4 +149,15 @@ public class ApiOperationProcessorTest {
     assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_HTML));
     assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.TEXT_HTML));
   }
+
+
+  @Test
+  public void testBodyParam() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
+    Map<String, Property> properties = swaggerOperation.getSwagger().getDefinitions().get("TestBodyBean").getProperties();
+    assertTrue("Support NotBlank annotation", properties.get("age").getRequired());
+    assertTrue("Support NotEmpty annotation", properties.get("sexes").getRequired());
+    assertTrue("Original support NotNull annotation", properties.get("name").getRequired());
+  }
+
 }
