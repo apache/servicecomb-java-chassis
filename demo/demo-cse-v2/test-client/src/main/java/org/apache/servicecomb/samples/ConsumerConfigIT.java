@@ -41,6 +41,8 @@ public class ConsumerConfigIT implements CategorizedTestCase {
     TestMgr.check("\"v3\"", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.common", String.class);
     TestMgr.check("\"common\"", result);
+    result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.extra", String.class);
+    TestMgr.check("\"common\"", result);
   }
 
   private void testFooBar() {
@@ -51,6 +53,8 @@ public class ConsumerConfigIT implements CategorizedTestCase {
     result = template.getForObject(Config.GATEWAY_URL + "/priority", String.class);
     TestMgr.check("\"v3\"", result);
     result = template.getForObject(Config.GATEWAY_URL + "/common", String.class);
+    TestMgr.check("\"common\"", result);
+    result = template.getForObject(Config.GATEWAY_URL + "/extra", String.class);
     TestMgr.check("\"common\"", result);
   }
 }

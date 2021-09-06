@@ -46,7 +46,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -159,20 +158,20 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
       httpClient = HttpClients.getClient(HttpTransportHttpClientOptionsSPI.CLIENT_NAME, false).getHttpClient();
     }
 
+    context.request().pause();
+
     httpClient
         .request(requestOptions).compose(httpClientRequest -> {
-      context.request().headers().forEach((header) -> {
-        httpClientRequest.headers().set(header.getKey(), header.getValue());
-      });
-      context.request().handler(data -> httpClientRequest.write(data));
+      context.request().headers().forEach((header) -> httpClientRequest.headers().set(header.getKey(), header.getValue()));
+
+      context.request().resume();
+      context.request().handler(httpClientRequest::write);
       context.request().endHandler((v) -> httpClientRequest.end());
 
       return httpClientRequest.response().compose(httpClientResponse -> {
         context.response().setStatusCode(httpClientResponse.statusCode());
-        httpClientResponse.headers().forEach((header) -> {
-          context.response().headers().set(header.getKey(), header.getValue());
-        });
-        httpClientResponse.handler(this.responseHandler(context, httpClientResponse));
+        httpClientResponse.headers().forEach((header) -> context.response().headers().set(header.getKey(), header.getValue()));
+        httpClientResponse.handler(this.responseHandler(context));
         httpClientResponse.endHandler((v) -> context.response().end());
         return Future.succeededFuture();
       });
@@ -180,7 +179,6 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
       LOG.warn("send request to target {}:{} failed, cause {}", endpointObject.getHostOrIp(), endpointObject.getPort(),
           failure.getMessage());
       serverNotReadyResponse(context);
-      return;
     });
   }
 
@@ -190,7 +188,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     context.response().end();
   }
 
-  protected Handler<Buffer> responseHandler(RoutingContext routingContext, HttpClientResponse httpClientResponse) {
+  protected Handler<Buffer> responseHandler(RoutingContext routingContext) {
     return data -> routingContext.response().write(data);
   }
 

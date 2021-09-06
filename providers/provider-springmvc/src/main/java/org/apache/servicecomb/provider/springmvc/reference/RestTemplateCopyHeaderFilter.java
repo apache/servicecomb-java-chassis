@@ -32,7 +32,7 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
 
   @Override
   public int getOrder() {
-    return Integer.MIN_VALUE;
+    return -10000;
   }
 
   @Override

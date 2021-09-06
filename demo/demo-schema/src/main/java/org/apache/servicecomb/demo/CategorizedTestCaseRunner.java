@@ -21,8 +21,12 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CategorizedTestCaseRunner {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CategorizedTestCaseRunner.class);
+
   public static void runCategorizedTestCase(String microserviceName) throws Exception {
     Map<String, CategorizedTestCase> tests = BeanUtils.getContext().getBeansOfType(CategorizedTestCase.class);
     for (String transport : DemoConst.transports) {
@@ -42,7 +46,9 @@ public class CategorizedTestCaseRunner {
             testCase.testHighwayTransport();
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          LOGGER.error("run categorized test case " +
+              testCase.getClass().getName() +
+              " failed.", e);
           TestMgr.failed("run categorized test case " +
                   testCase.getClass().getName() +
                   " failed, reason " + e.getMessage(),

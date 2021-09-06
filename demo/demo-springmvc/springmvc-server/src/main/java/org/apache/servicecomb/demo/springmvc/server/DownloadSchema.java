@@ -25,6 +25,7 @@ import java.util.UUID;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.HttpHeaders;
@@ -64,6 +65,21 @@ public class DownloadSchema {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
         .body(new FilePart(null, file)
             .setDeleteAfterFinished(true));
+  }
+
+  @GetMapping(path = "/partIsNull")
+  public ResponseEntity<Part> partIsNull(@RequestParam("content") String content) throws IOException {
+    if (StringUtils.isEmpty(content)) {
+      return ResponseEntity
+          .ok()
+          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+          .body(null);
+    }
+    File file = createTempFile(content);
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+        .body(new FilePart(null, file));
   }
 
   @GetMapping(path = "/notDeleteAfterFinished")

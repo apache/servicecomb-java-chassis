@@ -24,7 +24,7 @@ servicecomb-config-order: 10
 
 servicecomb:
   service:
-    application: demo-cse-v2
+    application: demo-java-chassis-cse-v2
     name: test-client
     version: 0.0.1
     registry:

@@ -73,8 +73,6 @@ public class KieConfigManager extends AbstractTask {
           r.setRevision(response.getRevision());
           r.setLastRawData(response.getConfigurations());
           data.putAll(response.getConfigurations());
-        } else {
-          throw new IllegalStateException("can not fetch config data.");
         }
       });
       this.configConverter.updateData(data);
@@ -94,7 +92,9 @@ public class KieConfigManager extends AbstractTask {
     Map<String, Object> lastData = configConverter.updateData(latestData);
     ConfigurationChangedEvent event = ConfigurationChangedEvent
         .createIncremental(configConverter.getCurrentData(), lastData);
-    eventBus.post(event);
+    if (event.isChanged()) {
+      eventBus.post(event);
+    }
   }
 
   @Override
