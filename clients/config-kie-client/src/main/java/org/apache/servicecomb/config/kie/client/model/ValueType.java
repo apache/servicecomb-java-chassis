@@ -20,6 +20,7 @@ package org.apache.servicecomb.config.kie.client.model;
 public enum ValueType {
   yml,
   yaml,
+  ini,
   string,
   text,
   json,
