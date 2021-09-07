@@ -79,7 +79,7 @@ public class ValidationServiceClient {
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(e.getErrorData().toString().contains("propertyPath=queryValidate.name"), true);
+      TestMgr.check(e.getErrorData().toString().contains("Parameter is not valid for operation"), true);
     }
   }
 }
