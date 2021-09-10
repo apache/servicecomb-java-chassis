@@ -24,6 +24,7 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isC
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -419,17 +420,27 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   private void convertAnnotationProperty(Class<?> beanClass) {
     Map<String, Model> definitions = swagger.getDefinitions();
-    if (definitions == null) {
+    if (definitions == null){
       return;
     }
+    Field[] fields = beanClass.getDeclaredFields();
     Model model = definitions.get(beanClass.getSimpleName());
-    Arrays.stream(beanClass.getDeclaredFields()).forEach(field -> {
-      boolean requireItem = Arrays.stream(field.getAnnotations()).anyMatch(annotation ->
-          NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
-      if (requireItem) {
-        model.getProperties().get(field.getName()).setRequired(true);
-      }
-    });
+    if (fields == null || model == null) {
+      return;
+    }
+    Map<String, Property> properties = model.getProperties();
+    if (properties != null) {
+      Arrays.stream(fields).forEach(field -> {
+        boolean requireItem = Arrays.stream(field.getAnnotations()).
+                anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
+        if (requireItem) {
+          Property property = properties.get(field.getName());
+          if(property != null){
+            property.setRequired(true);
+          }
+        }
+      });
+    }
   }
 
 
