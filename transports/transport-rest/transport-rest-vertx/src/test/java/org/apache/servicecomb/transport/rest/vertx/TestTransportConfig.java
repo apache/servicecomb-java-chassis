@@ -76,6 +76,48 @@ public class TestTransportConfig {
   }
 
   @Test
+  public void testGetDecompressed() {
+    Assert.assertEquals(false, TransportConfig.getDecompression());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.decompressionSupported", true);
+    Assert.assertEquals(true, TransportConfig.getDecompression());
+  }
+
+  @Test
+  public void testGetDecoderInitialBufferSize() {
+    Assert.assertEquals(128, TransportConfig.getDecoderInitialBufferSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.decoderInitialBufferSize", 256);
+    Assert.assertEquals(256, TransportConfig.getDecoderInitialBufferSize());
+  }
+
+  @Test
+  public void testGetHttp2ConnectionWindowSize() {
+    Assert.assertEquals(-1, TransportConfig.getHttp2ConnectionWindowSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2ConnectionWindowSize", 1);
+    Assert.assertEquals(1, TransportConfig.getHttp2ConnectionWindowSize());
+  }
+
+  @Test
+  public void testGetMaxFormAttributeSize() {
+    Assert.assertEquals(2048, TransportConfig.getFormAttributeSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.maxFormAttributeSize", 3072);
+    Assert.assertEquals(3072, TransportConfig.getFormAttributeSize());
+  }
+
+  @Test
+  public void testGeCompressionLevel() {
+    Assert.assertEquals(6, TransportConfig.getCompressionLevel());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.compressionLevel", 8);
+    Assert.assertEquals(8, TransportConfig.getCompressionLevel());
+  }
+
+  @Test
+  public void testGetMaxChunkSize() {
+    Assert.assertEquals(8192, TransportConfig.getMaxChunkSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.maxChunkSize", 65536);
+    Assert.assertEquals(65536, TransportConfig.getMaxChunkSize());
+  }
+
+  @Test
   public void testIsCorsEnabled() {
     Assert.assertFalse(TransportConfig.isCorsEnabled());
     ArchaiusUtils.setProperty("servicecomb.cors.enabled", true);
@@ -151,11 +193,32 @@ public class TestTransportConfig {
   }
 
   @Test
-  public void testMaxConcurrentStreams() {
+  public void testHttp2Setting() {
     Assert.assertEquals(100L, TransportConfig.getMaxConcurrentStreams());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.concurrentStreams", 200L);
     Assert.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
+
+    Assert.assertEquals(4096L, TransportConfig.getHttp2HeaderTableSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.HeaderTableSize", 8192L);
+    Assert.assertEquals(8192L, TransportConfig.getHttp2HeaderTableSize());
+
+    Assert.assertTrue(TransportConfig.getPushEnabled());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.pushEnabled", false);
+    Assert.assertFalse(TransportConfig.getPushEnabled());
+
+    Assert.assertEquals(65535, TransportConfig.getInitialWindowSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.initialWindowSize", 2 * 65535);
+    Assert.assertEquals(2 * 65535, TransportConfig.getInitialWindowSize());
+
+    Assert.assertEquals(16384, TransportConfig.getMaxFrameSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.maxFrameSize", 65535);
+    Assert.assertEquals(65535, TransportConfig.getMaxFrameSize());
+
+    Assert.assertEquals(Integer.MAX_VALUE, TransportConfig.getMaxHeaderListSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.maxHeaderListSize", 65535);
+    Assert.assertEquals(65535, TransportConfig.getMaxHeaderListSize());
   }
+
 
   @Test
   public void testUseAlpn() {
