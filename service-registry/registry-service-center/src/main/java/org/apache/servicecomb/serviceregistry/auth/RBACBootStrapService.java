@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.http.client.auth.DefaultRequestAuthHeaderProvider;
@@ -36,6 +37,8 @@ import org.apache.servicecomb.service.center.client.AddressManager;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.springframework.core.env.Environment;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public class RBACBootStrapService implements BootStrapService {
   private static final String RBAC_ADDRESS = "servicecomb.service.registry.address";
@@ -76,13 +79,14 @@ public class RBACBootStrapService implements BootStrapService {
         getCipher(getStringProperty(environment, DefaultCipher.CIPHER_NAME, CIPHER_KEY)));
   }
 
-  private Cipher getCipher(String cipherName) {
+  @VisibleForTesting
+   Cipher getCipher(String cipherName) {
     if (DefaultCipher.CIPHER_NAME.equals(cipherName)) {
       return DefaultCipher.getInstance();
     }
 
-    Map<String, Cipher> cipherBeans = BeanUtils.getBeansOfType(Cipher.class);
-    return cipherBeans.values().stream().filter(c -> c.name().equals(cipherName)).findFirst()
+    List<Cipher> ciphers = SPIServiceUtils.getOrLoadSortedService(Cipher.class);
+    return ciphers.stream().filter(c -> c.name().equals(cipherName)).findFirst()
         .orElseThrow(() -> new IllegalArgumentException("failed to find cipher named " + cipherName));
   }
 
