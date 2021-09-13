@@ -60,7 +60,7 @@ public final class TransportConfig {
     return address.get();
   }
 
-  public static int getFormAttributeSize() {
+  public static int getMaxFormAttributeSize() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.server.maxFormAttributeSize",
             HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE).get();
@@ -109,7 +109,7 @@ public final class TransportConfig {
         .get();
   }
 
-  public static boolean getDecompression() {
+  public static boolean getDecompressionSupported() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.server.decompressionSupported",
             HttpServerOptions.DEFAULT_DECOMPRESSION_SUPPORTED).get();

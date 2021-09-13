@@ -253,10 +253,10 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
-    serverOptions.setMaxFormAttributeSize(TransportConfig.getFormAttributeSize());
+    serverOptions.setMaxFormAttributeSize(TransportConfig.getMaxFormAttributeSize());
     serverOptions.setCompressionLevel(TransportConfig.getCompressionLevel());
     serverOptions.setMaxChunkSize(TransportConfig.getMaxChunkSize());
-    serverOptions.setDecompressionSupported(TransportConfig.getDecompression());
+    serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
     serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
     serverOptions.setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());

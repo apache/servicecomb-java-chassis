@@ -77,9 +77,9 @@ public class TestTransportConfig {
 
   @Test
   public void testGetDecompressed() {
-    Assert.assertEquals(false, TransportConfig.getDecompression());
+    Assert.assertEquals(false, TransportConfig.getDecompressionSupported());
     ArchaiusUtils.setProperty("servicecomb.rest.server.decompressionSupported", true);
-    Assert.assertEquals(true, TransportConfig.getDecompression());
+    Assert.assertEquals(true, TransportConfig.getDecompressionSupported());
   }
 
   @Test
@@ -98,9 +98,9 @@ public class TestTransportConfig {
 
   @Test
   public void testGetMaxFormAttributeSize() {
-    Assert.assertEquals(2048, TransportConfig.getFormAttributeSize());
+    Assert.assertEquals(2048, TransportConfig.getMaxFormAttributeSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxFormAttributeSize", 3072);
-    Assert.assertEquals(3072, TransportConfig.getFormAttributeSize());
+    Assert.assertEquals(3072, TransportConfig.getMaxFormAttributeSize());
   }
 
   @Test
