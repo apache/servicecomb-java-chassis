@@ -63,4 +63,15 @@ public class RegistryWatchHttpClientOptionsSPI extends RegistryHttpClientOptions
   public boolean isProxyEnable() {
     return false;
   }
+
+  /**
+   * getIdleTimeoutInSeconds configure watch idle timeout
+   * more information see: https://github.com/apache/servicecomb-java-chassis/issues/2571
+   * @return watch idle timeout in seconds
+   */
+  @Override
+  public int getIdleTimeoutInSeconds() {
+    return serviceRegistryConfig.getIdleWatchConnectionTimeout();
+  }
+
 }

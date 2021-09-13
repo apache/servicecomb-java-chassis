@@ -82,6 +82,8 @@ public class ServiceRegistryConfig {
 
   private int idleConnectionTimeout;
 
+  private int idleWatchConnectionTimeout;
+
   private int requestTimeout;
 
   //Set the timeout of the heartbeat request
@@ -222,6 +224,15 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setIdleConnectionTimeout(int idleConnectionTimeout) {
     this.idleConnectionTimeout = idleConnectionTimeout;
+    return this;
+  }
+
+  public int getIdleWatchConnectionTimeout() {
+    return idleWatchConnectionTimeout;
+  }
+
+  public ServiceRegistryConfig setIdleWatchConnectionTimeout(int idleWatchConnectionTimeout) {
+    this.idleWatchConnectionTimeout = idleWatchConnectionTimeout;
     return this;
   }
 
