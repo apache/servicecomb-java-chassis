@@ -38,11 +38,10 @@ public class TestFormRequestSchema implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     testFormRequestFail();
     testFormRequestSuccess();
-    testNormalFormRequestSuccess();
   }
 
   // formSize is less than default maxFormAttributeSize , success
-  private void testNormalFormRequestSuccess() throws Exception {
+  private void testFormRequestSuccess() throws Exception {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -65,36 +64,16 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
     StringBuffer stringBuffer = new StringBuffer();
-    for (int i = 0; i < 3072; i++) {
+    for (int i = 0; i < 4096; i++) {
       stringBuffer.append("a");
     }
     formData.add("formData", String.valueOf(stringBuffer));
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     try {
-      ResponseEntity<String> responseEntity = restTemplate
-          .postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
-      TestMgr.check(responseEntity.getBody(), null);
+      restTemplate.postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
     } catch (InvocationException e) {
-      TestMgr.check(e.getMessage().equals("Size exceed allowed maximum capacity"), true);
+      TestMgr.check(e.getMessage(), "Size exceed allowed maximum capacity");
     }
-  }
-
-  // formSize is greater than default maxFormAttributeSize ,success through external configuration
-  private void testFormRequestSuccess() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-    StringBuffer stringBuffer = new StringBuffer();
-    for (int i = 0; i < 3072; i++) {
-      stringBuffer.append("a");
-    }
-    formData.add("formData", String.valueOf(stringBuffer));
-    formData.add("flag", "true");
-    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
-    ResponseEntity<String> responseEntity = restTemplate
-        .postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
-    TestMgr.check(responseEntity.getBody(), "formRequest success");
   }
 
 }

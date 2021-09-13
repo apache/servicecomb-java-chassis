@@ -18,15 +18,10 @@
 package org.apache.servicecomb.demo.springmvc.server;
 
 
-import javax.ws.rs.FormParam;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import io.vertx.core.http.HttpServerOptions;
 
 
 @RestSchema(schemaId = "FormRequestSchema")
@@ -34,12 +29,8 @@ import io.vertx.core.http.HttpServerOptions;
 public class FormRequestSchema {
 
   @PostMapping(path = "/formRequest")
-  public String formRequest(@FormParam("formData") String formData, @FormParam("flag") String flag) throws Exception {
-    if (formData.getBytes().length <= (flag == null ? HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE
-        : TransportConfig.getMaxFormAttributeSize())) {
-      return "formRequest success";
-    }
-    return null;
+  public String formRequest() throws Exception {
+    return "formRequest success";
   }
 
 }
