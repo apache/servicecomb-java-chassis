@@ -54,25 +54,26 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     ResponseEntity<String> responseEntity = restTemplate
         .postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
-    TestMgr.check(responseEntity.getBody(), "formRequest success");
+    TestMgr.check(responseEntity.getBody(), "formRequest success : 1024");
   }
 
-  // formSize is greater than default maxFormAttributeSize , throw exception
-  private void testFormRequestFail() throws Exception {
+//   formSize is greater than default maxFormAttributeSize , throw exception
+  private void testFormRequestFail() throws Exception{
     RestTemplate restTemplate = RestTemplateBuilder.create();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
     StringBuffer stringBuffer = new StringBuffer();
-    for (int i = 0; i < 4096; i++) {
+    for (int i = 0; i < 5120; i++) {
       stringBuffer.append("a");
     }
     formData.add("formData", String.valueOf(stringBuffer));
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     try {
       restTemplate.postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
-    } catch (InvocationException e) {
-      TestMgr.check(e.getMessage(), "Size exceed allowed maximum capacity");
+      TestMgr.fail("Size exceed allowed maximum capacity");
+    } catch (Throwable e) {
+      TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
     }
   }
 

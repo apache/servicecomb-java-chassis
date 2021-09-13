@@ -18,6 +18,8 @@
 package org.apache.servicecomb.demo.springmvc.server;
 
 
+import javax.ws.rs.FormParam;
+
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class FormRequestSchema {
 
   @PostMapping(path = "/formRequest")
-  public String formRequest() throws Exception {
-    return "formRequest success";
+  public String formRequest(@FormParam(("formData")) String formData) throws Exception {
+    return "formRequest success : " + formData.length();
   }
-
 }
