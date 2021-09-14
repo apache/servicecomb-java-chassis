@@ -24,6 +24,8 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 /**
  *
  * initialize public and private key pair when system boot before registry instance to service center
@@ -36,13 +38,24 @@ public class AuthHandlerBoot implements BootListener {
 
   @Override
   public void onBootEvent(BootEvent event) {
-    if (EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
-      RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
-      RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
-      RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
-      RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
+    if (!EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
+      return;
+    }
+    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
+    RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
+    RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
+    RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
+    if (addMicroservicePublicKey()) {
+      RegistrationManager.INSTANCE.getMicroservice().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
+          rsaKeyPairEntry.getPublicKeyEncoded());
+    } else {
       RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
           rsaKeyPairEntry.getPublicKeyEncoded());
     }
+  }
+
+  private boolean addMicroservicePublicKey() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.publicKey.microservice.enabled", true).get();
   }
 }
