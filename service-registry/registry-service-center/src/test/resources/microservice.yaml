@@ -44,6 +44,7 @@ servicecomb:
         timeout:
           connection: 30000
           idle: 30000
+          watch: 60
       instance:
         watch: true
         preferIpAddress: false
