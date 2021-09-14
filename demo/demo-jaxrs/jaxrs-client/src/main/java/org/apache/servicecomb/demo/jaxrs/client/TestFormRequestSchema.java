@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.demo.jaxrs.client;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,9 +29,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-
 @Component
 public class TestFormRequestSchema implements CategorizedTestCase {
+
+  private RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {
@@ -42,7 +42,6 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   // formSize is less than default maxFormAttributeSize , success
   private void testFormRequestSuccess() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -53,13 +52,12 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     formData.add("formData", String.valueOf(stringBuffer));
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     ResponseEntity<String> responseEntity = restTemplate
-        .postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
+        .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
     TestMgr.check(responseEntity.getBody(), "formRequest success : 1024");
   }
 
-//   formSize is greater than default maxFormAttributeSize , throw exception
+  // formSize is greater than default maxFormAttributeSize , throw exception
   private void testFormRequestFail() throws Exception{
-    RestTemplate restTemplate = RestTemplateBuilder.create();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -70,7 +68,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     formData.add("formData", String.valueOf(stringBuffer));
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     try {
-      restTemplate.postForEntity("servicecomb://springmvc/form/formRequest", requestEntity, String.class);
+      restTemplate.postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
       TestMgr.fail("Size exceed allowed maximum capacity");
     } catch (Throwable e) {
       TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);

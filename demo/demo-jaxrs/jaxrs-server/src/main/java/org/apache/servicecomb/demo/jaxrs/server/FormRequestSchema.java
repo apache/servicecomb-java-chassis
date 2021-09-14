@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.server;
+package org.apache.servicecomb.demo.jaxrs.server;
 
-
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 
 @RestSchema(schemaId = "FormRequestSchema")
-@RequestMapping(path = "/form", produces = MediaType.APPLICATION_JSON_VALUE)
+@Path("/form")
+@Produces(MediaType.APPLICATION_JSON)
 public class FormRequestSchema {
 
-  @PostMapping(path = "/formRequest")
-  public String formRequest(@FormParam(("formData")) String formData) throws Exception {
+  @Path("/formRequest")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String formRequest(@FormParam("formData") String formData) throws Exception {
     return "formRequest success : " + formData.length();
   }
+
 }
