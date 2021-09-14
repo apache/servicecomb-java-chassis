@@ -60,8 +60,8 @@ public class MicroserviceManager {
         microserviceVersions = versionsByName.get(microserviceName);
         if (microserviceVersions == null) {
           microserviceVersions = new MicroserviceVersions(appManager, appId, microserviceName);
-          microserviceVersions.pullInstances();
           versionsByName.put(microserviceName, microserviceVersions);
+          microserviceVersions.pullInstances();
         }
       }
     }
