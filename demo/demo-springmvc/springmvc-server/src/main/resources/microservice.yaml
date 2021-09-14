@@ -56,6 +56,7 @@ servicecomb:
     directory: target
   rest:
     address: 0.0.0.0:8080?sslEnabled=false
+    server:
       compression: true
   highway:
     address: 0.0.0.0:7070?sslEnabled=true
