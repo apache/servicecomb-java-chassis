@@ -36,3 +36,7 @@ servicecomb:
     chain:
       Provider:
         default: bizkeeper-provider
+
+  test:
+    vert:
+      transport: false

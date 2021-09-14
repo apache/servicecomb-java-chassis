@@ -29,6 +29,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 @Component
 public class TestFormRequestSchema implements CategorizedTestCase {
 
@@ -36,8 +38,11 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    testFormRequestFail();
-    testFormRequestSuccess();
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      testFormRequestFail();
+      testFormRequestSuccess();
+    }
   }
 
   // formSize is less than default maxFormAttributeSize , success
