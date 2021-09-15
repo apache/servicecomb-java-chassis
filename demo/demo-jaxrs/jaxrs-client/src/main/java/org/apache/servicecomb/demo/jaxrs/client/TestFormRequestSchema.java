@@ -57,7 +57,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     formData.add("formData", stringBuffer.toString());
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     ResponseEntity<String> responseEntity = restTemplate
-        .postForEntity("cse://jaxrs/form/formRequestSuccess", requestEntity, String.class);
+        .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
     TestMgr.check(responseEntity.getBody(), "formRequest success : 512");
   }
 
@@ -73,7 +73,8 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     formData.add("formData", String.valueOf(stringBuffer));
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     try {
-      restTemplate.postForEntity("cse://jaxrs/form/formRequestFail", requestEntity, String.class);
+      restTemplate.postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
+      Thread.sleep(2000);
       TestMgr.fail("Size exceed allowed maximum capacity");
     } catch (Throwable e) {
       TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
