@@ -31,11 +31,18 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 @Produces(MediaType.APPLICATION_JSON)
 public class FormRequestSchema {
 
-  @Path("/formRequest")
+  @Path("/formRequestSuccess")
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public String formRequest(@FormParam("formData") String formData) throws Exception {
+  public String formRequestSuccess(@FormParam("formData") String formData) throws Exception {
     return "formRequest success : " + formData.length();
+  }
+
+  @Path("/formRequestFail")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String formRequestFail(@FormParam("formData") String formData) throws Exception {
+    return "formRequest Fail : " + formData.length();
   }
 
 }
