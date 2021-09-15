@@ -38,11 +38,4 @@ public class FormRequestSchema {
     return "formRequest success : " + formData.length();
   }
 
-//  @Path("/formRequestFail")
-//  @POST
-//  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//  public String formRequestFail(@FormParam("formData") String formData) throws Exception {
-//    return "formRequest Fail : " + formData.length();
-//  }
-
 }

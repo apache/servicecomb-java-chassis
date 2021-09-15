@@ -41,24 +41,31 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    testFormRequestSuccess();
     testFormRequestFail();
+    // testFormRequestFail会关闭连接，防止下个测试用例失败，睡眠2s
+    Thread.sleep(2000);
+    testFormRequestSuccess();
   }
 
   // formSize is less than default maxFormAttributeSize , success
   private void testFormRequestSuccess() throws Exception {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-    StringBuffer stringBuffer = new StringBuffer();
-    for (int i = 0; i < 512; i++) {
-      stringBuffer.append("a");
+    try {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+      StringBuffer stringBuffer = new StringBuffer();
+      for (int i = 0; i < 512; i++) {
+        stringBuffer.append("a");
+      }
+      formData.add("formData", stringBuffer.toString());
+      HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
+      ResponseEntity<String> responseEntity = restTemplate
+          .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
+      TestMgr.check(responseEntity.getBody(), "formRequest success : 512");
+    } catch (Throwable e) {
+      LOGGER.error("testFormRequestSuccess-->", e);
+      TestMgr.failed("", e);
     }
-    formData.add("formData", stringBuffer.toString());
-    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
-    ResponseEntity<String> responseEntity = restTemplate
-        .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
-    TestMgr.check(responseEntity.getBody(), "formRequest success : 512");
   }
 
   // formSize is greater than default maxFormAttributeSize , throw exception
@@ -74,7 +81,6 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     try {
       restTemplate.postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
-      Thread.sleep(2000);
       TestMgr.fail("Size exceed allowed maximum capacity");
     } catch (Throwable e) {
       TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
