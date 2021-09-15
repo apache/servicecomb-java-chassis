@@ -31,42 +31,38 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class TestFormRequestSchema implements CategorizedTestCase {
 
-  private static final Logger logger = LoggerFactory.getLogger(TestFormRequestSchema.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestFormRequestSchema.class);
 
   private RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+    try {
       testFormRequestFail();
       testFormRequestSuccess();
+    } catch (Throwable e){
+      LOGGER.error("",e);
     }
   }
 
   // formSize is less than default maxFormAttributeSize , success
   private void testFormRequestSuccess() throws Exception {
-    try {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
       StringBuffer stringBuffer = new StringBuffer();
-      for (int i = 0; i < 1024; i++) {
+      for (int i = 0; i < 512; i++) {
         stringBuffer.append("a");
       }
       formData.add("formData", String.valueOf(stringBuffer));
       HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
       ResponseEntity<String> responseEntity = restTemplate
           .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
-      TestMgr.check(responseEntity.getBody(), "formRequest success : 1024");
-    } catch (Throwable th) {
-      logger.error("========FormRequestSuccess=====>", th);
-    }
+      TestMgr.check(responseEntity.getBody(), "formRequest success : 512");
   }
 
   // formSize is greater than default maxFormAttributeSize , throw exception
@@ -75,7 +71,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
     StringBuffer stringBuffer = new StringBuffer();
-    for (int i = 0; i < 5120; i++) {
+    for (int i = 0; i < 1688; i++) {
       stringBuffer.append("a");
     }
     formData.add("formData", String.valueOf(stringBuffer));
@@ -87,4 +83,5 @@ public class TestFormRequestSchema implements CategorizedTestCase {
       TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
     }
   }
+
 }

@@ -33,8 +33,3 @@ servicecomb:
     chain:
       Consumer:
         default: bizkeeper-consumer,loadbalance
-
-
-  test:
-    vert:
-      transport: false
