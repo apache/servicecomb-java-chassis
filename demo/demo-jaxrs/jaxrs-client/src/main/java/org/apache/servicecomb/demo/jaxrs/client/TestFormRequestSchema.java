@@ -41,16 +41,13 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    try {
-      testFormRequestFail();
-      testFormRequestSuccess();
-    } catch (Throwable e){
-      LOGGER.error("",e);
-    }
+    testFormRequestSuccess();
+    testFormRequestFail();
   }
 
   // formSize is less than default maxFormAttributeSize , success
   private void testFormRequestSuccess() throws Exception {
+    try {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -58,15 +55,19 @@ public class TestFormRequestSchema implements CategorizedTestCase {
       for (int i = 0; i < 512; i++) {
         stringBuffer.append("a");
       }
-      formData.add("formData", String.valueOf(stringBuffer));
+      formData.add("formData", stringBuffer.toString());
       HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
       ResponseEntity<String> responseEntity = restTemplate
           .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
       TestMgr.check(responseEntity.getBody(), "formRequest success : 512");
+    } catch (Throwable e) {
+      LOGGER.error("testFormRequestSuccess--->", e);
+      TestMgr.failed("", e);
+    }
   }
 
   // formSize is greater than default maxFormAttributeSize , throw exception
-  private void testFormRequestFail() throws Exception{
+  private void testFormRequestFail() throws Exception {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -83,5 +84,4 @@ public class TestFormRequestSchema implements CategorizedTestCase {
       TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
     }
   }
-
 }
