@@ -253,22 +253,10 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
-    serverOptions.setMaxFormAttributeSize(TransportConfig.getMaxFormAttributeSize());
-    serverOptions.setCompressionLevel(TransportConfig.getCompressionLevel());
-    serverOptions.setMaxChunkSize(TransportConfig.getMaxChunkSize());
-    serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
-    serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
-    serverOptions.setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
-          .setInitialSettings(new Http2Settings().setPushEnabled(TransportConfig.getPushEnabled())
-          .setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams())
-          .setHeaderTableSize(TransportConfig.getHttp2HeaderTableSize())
-          .setInitialWindowSize(TransportConfig.getInitialWindowSize())
-          .setMaxFrameSize(TransportConfig.getMaxFrameSize())
-          .setMaxHeaderListSize(TransportConfig.getMaxHeaderListSize())
-      );
+          .setInitialSettings(new Http2Settings().setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams()));
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =

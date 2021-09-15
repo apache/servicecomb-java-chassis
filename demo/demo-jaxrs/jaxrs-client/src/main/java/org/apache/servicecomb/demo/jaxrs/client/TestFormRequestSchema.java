@@ -20,6 +20,8 @@ package org.apache.servicecomb.demo.jaxrs.client;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,6 +36,8 @@ import com.netflix.config.DynamicPropertyFactory;
 @Component
 public class TestFormRequestSchema implements CategorizedTestCase {
 
+  private static final Logger logger = LoggerFactory.getLogger(TestFormRequestSchema.class);
+
   private RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @Override
@@ -47,18 +51,22 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   // formSize is less than default maxFormAttributeSize , success
   private void testFormRequestSuccess() throws Exception {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-    StringBuffer stringBuffer = new StringBuffer();
-    for (int i = 0; i < 1024; i++) {
-      stringBuffer.append("a");
+    try {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+      StringBuffer stringBuffer = new StringBuffer();
+      for (int i = 0; i < 1024; i++) {
+        stringBuffer.append("a");
+      }
+      formData.add("formData", String.valueOf(stringBuffer));
+      HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
+      ResponseEntity<String> responseEntity = restTemplate
+          .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
+      TestMgr.check(responseEntity.getBody(), "formRequest success : 1024");
+    } catch (Throwable th) {
+      logger.error("========FormRequestSuccess=====>", th);
     }
-    formData.add("formData", String.valueOf(stringBuffer));
-    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
-    ResponseEntity<String> responseEntity = restTemplate
-        .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
-    TestMgr.check(responseEntity.getBody(), "formRequest success : 1024");
   }
 
   // formSize is greater than default maxFormAttributeSize , throw exception
@@ -79,5 +87,4 @@ public class TestFormRequestSchema implements CategorizedTestCase {
       TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
     }
   }
-
 }
