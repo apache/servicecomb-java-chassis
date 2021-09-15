@@ -104,8 +104,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
       Response response = Response.create(responseEx.getStatusType(), result);
       if (response.isFailed()) {
-        LOGGER.warn("invoke operation [{}] failed, status={}", invocation.getMicroserviceQualifiedName(),
-            responseEx.getStatusType().getStatusCode());
+        LOGGER.warn("invoke operation [{}] failed, status={}, msg={}", invocation.getMicroserviceQualifiedName(),
+            responseEx.getStatusType().getStatusCode(), result == null ? "" : result.toString());
       }
       return response;
     } catch (Exception e) {

@@ -28,6 +28,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 import io.vertx.core.Verticle;
+import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpServerOptions;
 
 public final class TransportConfig {
@@ -59,6 +60,36 @@ public final class TransportConfig {
     return address.get();
   }
 
+  public static int getMaxFormAttributeSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.maxFormAttributeSize",
+            HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE).get();
+  }
+
+  public static int getCompressionLevel() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.compressionLevel",
+            HttpServerOptions.DEFAULT_COMPRESSION_LEVEL).get();
+  }
+
+  public static int getMaxChunkSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.maxChunkSize",
+            HttpServerOptions.DEFAULT_MAX_CHUNK_SIZE).get();
+  }
+
+  public static int getDecoderInitialBufferSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.decoderInitialBufferSize",
+            HttpServerOptions.DEFAULT_DECODER_INITIAL_BUFFER_SIZE).get();
+  }
+
+  public static int getHttp2ConnectionWindowSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.http2ConnectionWindowSize",
+            HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE).get();
+  }
+
   public static int getThreadCount() {
     return TransportConfigUtils.readVerticleCount(
         "servicecomb.rest.server.verticle-count",
@@ -78,11 +109,46 @@ public final class TransportConfig {
         .get();
   }
 
+  public static boolean getDecompressionSupported() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.server.decompressionSupported",
+            HttpServerOptions.DEFAULT_DECOMPRESSION_SUPPORTED).get();
+  }
+
   public static long getMaxConcurrentStreams() {
     return DynamicPropertyFactory.getInstance()
         .getLongProperty("servicecomb.rest.server.http2.concurrentStreams",
-            HttpServerOptions.DEFAULT_INITIAL_SETTINGS_MAX_CONCURRENT_STREAMS)
-        .get();
+            HttpServerOptions.DEFAULT_INITIAL_SETTINGS_MAX_CONCURRENT_STREAMS).get();
+  }
+
+  public static long getHttp2HeaderTableSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getLongProperty("servicecomb.rest.server.http2.HeaderTableSize",
+            Http2Settings.DEFAULT_HEADER_TABLE_SIZE).get();
+  }
+
+  public static boolean getPushEnabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.server.http2.pushEnabled",
+            Http2Settings.DEFAULT_ENABLE_PUSH).get();
+  }
+
+  public static int getInitialWindowSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.http2.initialWindowSize",
+            Http2Settings.DEFAULT_INITIAL_WINDOW_SIZE).get();
+  }
+
+  public static int getMaxFrameSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.http2.maxFrameSize",
+            Http2Settings.DEFAULT_MAX_FRAME_SIZE).get();
+  }
+
+  public static int getMaxHeaderListSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.http2.maxHeaderListSize",
+            Http2Settings.DEFAULT_MAX_HEADER_LIST_SIZE).get();
   }
 
   public static boolean getUseAlpn() {
