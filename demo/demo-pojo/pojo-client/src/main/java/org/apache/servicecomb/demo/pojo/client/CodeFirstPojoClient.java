@@ -26,20 +26,21 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
+import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
-import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.stereotype.Component;
 
 import io.vertx.core.Vertx;
 
-public class CodeFirstPojoClient {
+@Component
+public class CodeFirstPojoClient implements CategorizedTestCase {
   @RpcReference(microserviceName = "pojo", schemaId = "org.apache.servicecomb.demo.CodeFirstPojoIntf")
   public CodeFirstPojoClientIntf codeFirstAnnotation;
 
@@ -49,18 +50,16 @@ public class CodeFirstPojoClient {
   @Inject
   private CodeFirstPojoIntf codeFirstFromXml;
 
-  public void testCodeFirst(String microserviceName) {
-    for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
-      TestMgr.setMsg(microserviceName, transport);
-
-      testAll(codeFirstAnnotation);
-      testAll(codeFirstAnnotationEmptySchemaId);
-      testAll(codeFirstFromXml);
-    }
-
-    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, "rest");
+  @Override
+  public void testRestTransport() throws Exception {
     testOnlyRest(codeFirstAnnotation);
+  }
+
+  @Override
+  public void testAllTransport() throws Exception {
+    testAll(codeFirstAnnotation);
+    testAll(codeFirstAnnotationEmptySchemaId);
+    testAll(codeFirstFromXml);
   }
 
   private void testOnlyRest(CodeFirstPojoIntf codeFirst) {
@@ -68,6 +67,7 @@ public class CodeFirstPojoClient {
   }
 
   private void testAll(CodeFirstPojoIntf codeFirst) {
+    remoteCodeFirstPojo_testMap(codeFirst);
     testCodeFirstUserMap(codeFirst);
     testCodeFirstUserArray(codeFirst);
     testCodeFirstStrings(codeFirst);
@@ -121,6 +121,24 @@ public class CodeFirstPojoClient {
     }
   }
 
+  private void remoteCodeFirstPojo_testMap(CodeFirstPojoIntf codeFirst) {
+    Map<String, String> userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", null);
+    Map<String, String> result = codeFirst.testMap(userMap);
+
+    TestMgr.check(result.get("u1"), "u1");
+    TestMgr.check(result.get("u2"), null);
+
+    userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", "u2");
+    result = codeFirst.testMap(userMap);
+
+    TestMgr.check(result.get("u1"), "u1");
+    TestMgr.check(result.get("u2"), "u2");
+  }
+
   private void testCodeFirstUserMap(CodeFirstPojoIntf codeFirst) {
     User user1 = new User();
     user1.setNames(new String[] {"u1", "u2"});
@@ -137,6 +155,15 @@ public class CodeFirstPojoClient {
     TestMgr.check("u2", result.get("u1").getNames()[1]);
     TestMgr.check("u3", result.get("u2").getNames()[0]);
     TestMgr.check("u4", result.get("u2").getNames()[1]);
+
+    userMap = new HashMap<>();
+    userMap.put("u1", user1);
+    userMap.put("u2", null);
+    result = codeFirst.testUserMap(userMap);
+
+    TestMgr.check(result.get("u1").getNames()[0], "u1");
+    TestMgr.check(result.get("u1").getNames()[1], "u2");
+    TestMgr.check(result.get("u2"), null);
   }
 
   private void testCodeFirstUserArray(CodeFirstPojoIntf codeFirst) {

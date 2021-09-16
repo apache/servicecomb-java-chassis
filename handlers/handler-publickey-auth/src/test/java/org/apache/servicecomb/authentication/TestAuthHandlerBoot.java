@@ -63,16 +63,12 @@ public class TestAuthHandlerBoot {
   }
 
   @Test
-  public void testMicroservicePublicKey() {
-    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    Microservice microservice = new Microservice();
-    microservice.setInstance(microserviceInstance);
-
+  public void testMicroserviceInstancePublicKey() {
     AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
     authHandlerBoot.onBootEvent(bootEvent);
-    String publicKey = RegistrationManager.INSTANCE.getMicroservice().
+    String publicKey = RegistrationManager.INSTANCE.getMicroserviceInstance().
         getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
     Assert.assertNotNull(publicKey);
   }
