@@ -20,6 +20,8 @@ package org.apache.servicecomb.config.archaius.sources;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ConfigModel {
 
   private URL url;
@@ -54,6 +56,30 @@ public class ConfigModel {
 
   @Override
   public String toString() {
-    return url == null ? "" : "file: ." + url.toString().substring(System.getProperty("user.dir").length() + 6);
+    return url == null ? "" : convertUrl(url.toString());
+  }
+
+  public static String convertUrl(String urlString) {
+    String allUrl = urlString.substring(urlString.indexOf("file") + 8);
+    return (InitialsInfo(StringUtils.remove(allUrl, fileDetailInfo(allUrl))) + fileDetailInfo(allUrl)).substring(1);
+  }
+
+  private static String fileDetailInfo(String target) {
+    StringBuilder fileDetailString = new StringBuilder();
+    while (fileDetailString.toString().length() <= 20) {
+      fileDetailString.insert(0, target.substring(target.lastIndexOf("/")));
+      target = StringUtils.remove(target, target.substring(target.lastIndexOf("/")));
+    }
+    return fileDetailString.toString();
+  }
+
+  private static String InitialsInfo(String target) {
+    StringBuilder fileDetailString = new StringBuilder();
+    while (target.contains("/")) {
+      String temp = target.substring(target.indexOf("/"), target.indexOf("/") + 2);
+      fileDetailString.append(temp);
+      target = StringUtils.remove(target, temp);
+    }
+    return fileDetailString.toString();
   }
 }

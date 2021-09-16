@@ -102,4 +102,15 @@ public class TestMicroserviceConfigLoader {
       Assert.assertTrue(true);
     }
   }
+
+  @Test
+  public void testConvertUrl() {
+    String fileUrlOne = "file:/C:/gitSpace/servicecomb-java-chassis/transports"
+        + "/transport-highway/target/classes/microservice.yaml";
+    assertEquals("g/s/t/classes/microservice.yaml", ConfigModel.convertUrl(fileUrlOne));
+
+    String fileUrlTwo = "jar:file:/D:/User/.m2/repository/servicecomb"
+        + "/transport-highway/2.3.0/classes/microservice.yaml";
+    assertEquals("U/./r/s/t/2/classes/microservice.yaml", ConfigModel.convertUrl(fileUrlTwo));
+  }
 }
