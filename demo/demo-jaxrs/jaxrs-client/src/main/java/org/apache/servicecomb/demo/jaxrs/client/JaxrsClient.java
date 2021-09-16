@@ -78,6 +78,8 @@ public class JaxrsClient {
     testSpringMvcDefaultValuesJavaPrimitive(templateNew);
     MultiErrorCodeServiceClient.runTest();
 
+    FormRequestClient.testFormRequest(templateNew);
+
     BeanParamPojoClient beanParamPojoClient = new BeanParamPojoClient();
     beanParamPojoClient.testAll();
     BeanParamRestTemplateClient beanParamRestTemplateClient = new BeanParamRestTemplateClient();
