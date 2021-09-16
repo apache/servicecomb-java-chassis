@@ -54,6 +54,6 @@ public class ConfigModel {
 
   @Override
   public String toString() {
-    return url == null ? "" : url.toString();
+    return url == null ? "" : "file: ." + url.toString().substring(System.getProperty("user.dir").length() + 6);
   }
 }
