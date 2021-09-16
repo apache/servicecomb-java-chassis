@@ -22,16 +22,15 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -39,7 +38,7 @@ public class RSAProviderTokenManager {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
-  private static Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
+  private Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
       .build();
 
@@ -57,12 +56,12 @@ public class RSAProviderTokenManager {
         return false;
       }
 
-      if (getValidatedToken().asMap().containsKey(rsaToken)) {
+      if (validatedToken.asMap().containsKey(rsaToken)) {
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
 
       if (isValidToken(rsaToken) && !tokenExpired(rsaToken)) {
-        getValidatedToken().put(rsaToken, true);
+        validatedToken.put(rsaToken, true);
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
       return false;
@@ -76,14 +75,11 @@ public class RSAProviderTokenManager {
       throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
     String sign = rsaToken.getSign();
     String content = rsaToken.plainToken();
-    String publicKey = getPublicKeyFromMicroservice(rsaToken.getServiceId());
-    if (StringUtils.isEmpty(publicKey)) {
-      publicKey = getPublicKeyFromInstance(rsaToken.getInstanceId(), rsaToken.getServiceId());
-    }
+    String publicKey = getPublicKeyFromInstance(rsaToken.getInstanceId(), rsaToken.getServiceId());
     return RSAUtils.verify(publicKey, sign, content);
   }
 
-  public static int getExpiredTime() {
+  protected int getExpiredTime() {
     return 60 * 60 * 1000;
   }
 
@@ -104,17 +100,8 @@ public class RSAProviderTokenManager {
     }
   }
 
-  private String getPublicKeyFromMicroservice(String serviceId) {
-    Microservice microservice = MicroserviceInstanceCache.getOrCreate(serviceId);
-    if (microservice != null) {
-      return microservice.getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
-    } else {
-      LOGGER.error("not instance found {}, maybe attack", serviceId);
-      return "";
-    }
-  }
-
-  public static Cache<RSAAuthenticationToken, Boolean> getValidatedToken() {
+  @VisibleForTesting
+  Cache<RSAAuthenticationToken, Boolean> getValidatedToken() {
     return validatedToken;
   }
 }

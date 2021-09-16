@@ -35,6 +35,11 @@ import io.swagger.annotations.SwaggerDefinition;
 @SwaggerDefinition(basePath = "/pojo/rest")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
   @Override
+  public Map<String, String> testMap(Map<String, String> map) {
+    return map;
+  }
+
+  @Override
   public Map<String, User> testUserMap(Map<String, User> userMap) {
     return userMap;
   }

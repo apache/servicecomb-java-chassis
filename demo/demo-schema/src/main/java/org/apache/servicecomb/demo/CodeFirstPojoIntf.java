@@ -25,6 +25,8 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 
 public interface CodeFirstPojoIntf {
+  Map<String, String> testMap(Map<String, String> map);
+
   Map<String, User> testUserMap(Map<String, User> userMap);
 
   List<User> testUserArray(List<User> users);

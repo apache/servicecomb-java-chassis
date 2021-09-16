@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.authentication;
+package org.apache.servicecomb.authentication.provider;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
-import org.apache.servicecomb.authentication.provider.RSAProviderTokenManager;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
@@ -38,7 +37,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import mockit.Expectations;
 
@@ -75,7 +73,13 @@ public class TestRSAProviderTokenManager {
     String tokenStr =
         "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ@WBYouF6hXYrXzBA31HC3VX8Bw9PNgJUtVqOPAaeW9ye3q/D7WWb0M+XMouBIWxWY6v9Un1dGu5Rkjlx6gZbnlHkb2VO8qFR3Y6lppooWCirzpvEBRjlJQu8LPBur0BCfYGq8XYrEZA2NU6sg2zXieqCSiX6BnMnBHNn4cR9iZpk=";
     RSAAuthenticationToken token = RSAAuthenticationToken.fromStr(tokenStr);
-    RSAProviderTokenManager tokenManager = new RSAProviderTokenManager();
+    RSAProviderTokenManager tokenManager = new RSAProviderTokenManager() {
+      @Override
+      protected int getExpiredTime() {
+        return 500;
+      }
+    };
+
     new Expectations(RSAProviderTokenManager.class, RSAAuthenticationToken.class) {
       {
         token.getGenerateTime();
@@ -83,17 +87,12 @@ public class TestRSAProviderTokenManager {
 
         tokenManager.isValidToken(token);
         result = true;
-
-        RSAProviderTokenManager.getValidatedToken();
-        result = CacheBuilder.newBuilder()
-            .expireAfterAccess(500, TimeUnit.MILLISECONDS)
-            .build();
       }
     };
 
     Assert.assertTrue(tokenManager.valid(tokenStr));
 
-    Cache<RSAAuthenticationToken, Boolean> cache = RSAProviderTokenManager
+    Cache<RSAAuthenticationToken, Boolean> cache = tokenManager
         .getValidatedToken();
     Assert.assertTrue(cache.asMap().containsKey(token));
 
