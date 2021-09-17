@@ -18,9 +18,28 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.Closeable;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class IOUtils {
   @SuppressWarnings("deprecation")
   public static void closeQuietly(final Closeable closeable) {
     org.apache.commons.io.IOUtils.closeQuietly(closeable);
   }
+
+  public static String convertString(String origin) {
+    StringBuilder stringBuilder = new StringBuilder();
+    if (!(origin.contains("/") || origin.contains("\\"))) {
+      return origin;
+    }
+    String identifier = origin.contains("/") ? "/" : "\\";
+    String fileName = origin.substring(origin.lastIndexOf(identifier));
+    String string = StringUtils.remove(origin, fileName);
+    while (string.contains(identifier)) {
+      stringBuilder.append(string, string.indexOf(identifier), string.indexOf(identifier) + 2);
+      string = StringUtils.remove(string, string.substring(string.indexOf(identifier), string.indexOf(identifier) + 2));
+    }
+    string = stringBuilder.toString() + fileName;
+    return string.startsWith(identifier) ? string.substring(1) : string;
+  }
+
 }
