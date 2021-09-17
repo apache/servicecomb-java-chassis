@@ -55,6 +55,13 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
+  credentials:
+    rbac.enabled: false
+    account:
+      name: root
+      password: testtest
+    cipher: testCipher
+  servicecomb.credentials.account.name
 #ssl.keystore.path=
 #ssl.keystore.pass=
 #ssl.truststore.path=
