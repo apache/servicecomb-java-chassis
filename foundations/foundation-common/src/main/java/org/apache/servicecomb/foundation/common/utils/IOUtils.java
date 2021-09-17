@@ -33,13 +33,11 @@ public class IOUtils {
     }
     String identifier = origin.contains("/") ? "/" : "\\";
     String fileName = origin.substring(origin.lastIndexOf(identifier));
-    String string = StringUtils.remove(origin, fileName);
-    while (string.contains(identifier)) {
-      stringBuilder.append(string, string.indexOf(identifier), string.indexOf(identifier) + 2);
-      string = StringUtils.remove(string, string.substring(string.indexOf(identifier), string.indexOf(identifier) + 2));
+    String temp = StringUtils.remove(origin, fileName);
+    while (temp.contains(identifier)) {
+      stringBuilder.append(temp, temp.indexOf(identifier), temp.indexOf(identifier) + 2);
+      temp = StringUtils.remove(temp, temp.substring(temp.indexOf(identifier), temp.indexOf(identifier) + 2));
     }
-    string = stringBuilder.toString() + fileName;
-    return string.startsWith(identifier) ? string.substring(1) : string;
+    return (stringBuilder.toString() + fileName).substring(1);
   }
-
 }
