@@ -26,29 +26,27 @@ public class IOUtils {
     org.apache.commons.io.IOUtils.closeQuietly(closeable);
   }
 
-  public static String convertString(String origin) {
-    return convertString(origin,System.getProperty("file.separator").charAt(0));
-  }
-
-  public static String convertString(String origin, char separator) {
-    if (StringUtils.isEmpty(origin)) {
-      return "";
+  public static String anonymousPath(String path) {
+    if (StringUtils.isEmpty(path)) {
+      return path;
     }
-    StringBuilder stringBuilder = new StringBuilder();
-    char[] chars = origin.toCharArray();
-    boolean byPass = true;
-    for (int i = chars.length - 1; i >= 0; i--) {
-      if (chars[i] == separator) {
-        stringBuilder.insert(0, byPass ? "" : separator);
-        stringBuilder.insert(0, byPass ? "" : chars[i + 1]);
+    StringBuilder result = new StringBuilder();
+    char separator = path.contains("/") ? '/' : '\\';
+    char[] tokens = path.toCharArray();
+    boolean byPass = false;
+    boolean fileName = true;
+    for (int i = tokens.length - 1; i >= 0; i--) {
+      if (tokens[i] == separator) {
+        fileName = false;
         byPass = false;
+        result.append(separator);
         continue;
       }
-      if (byPass) {
-        stringBuilder.insert(0, chars[i]);
+      if (!byPass || fileName) {
+        result.append(tokens[i]);
+        byPass = true;
       }
     }
-    return stringBuilder.toString();
+    return result.reverse().toString();
   }
-
 }

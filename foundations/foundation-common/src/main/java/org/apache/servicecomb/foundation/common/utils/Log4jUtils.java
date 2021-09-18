@@ -109,7 +109,7 @@ public final class Log4jUtils {
 
     File mergedfile = new File(res.getFile().getParentFile(), MERGED_FILE);
     FileUtils.writeStringToFile(mergedfile, content, StandardCharsets.UTF_8, false);
-    log.info("Write merged log4j config file to {}", IOUtils.convertString(mergedfile.getAbsolutePath()));
+    log.info("Write merged log4j config file to {}", IOUtils.anonymousPath(mergedfile.getAbsolutePath()));
   }
 
   private static String genFileContext(List<Resource> resList, Properties properties) throws IOException {

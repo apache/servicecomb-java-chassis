@@ -56,7 +56,7 @@ public class ConfigModel {
 
   @Override
   public String toString() {
-    return url == null ? "" : IOUtils.convertString(url.toString());
+    return url == null ? "" : IOUtils.anonymousPath(url.toString());
   }
 
 }
