@@ -27,10 +27,10 @@ public class TestConvertString {
   public void testConvertString() {
     String StringOne = "jar:file:/D:/User/.m2/repository/servicecomb"
         + "/transport-highway/2.3.0/classes/microservice.yaml";
-    assertEquals("D/U/./r/s/t/2/c/microservice.yaml", IOUtils.convertString(StringOne));
+    assertEquals("D/U/./r/s/t/2/c/microservice.yaml", IOUtils.convertString(StringOne,'/'));
 
     String StringTwo = "file:/D:/User/microservice.yaml";
-    assertEquals("D/U/microservice.yaml", IOUtils.convertString(StringTwo));
+    assertEquals("D/U/microservice.yaml", IOUtils.convertString(StringTwo,'/'));
 
     String StringThree = "file:\\D:\\User\\microservice.yaml";
     assertEquals("D\\U\\microservice.yaml", IOUtils.convertString(StringThree));
@@ -41,8 +41,8 @@ public class TestConvertString {
     String StringFive = "file:\\D:\\a.txt";
     assertEquals("D\\a.txt", IOUtils.convertString(StringFive));
 
-    String StringSix = "D:\\user\\a.txt";
-    assertEquals("u\\a.txt", IOUtils.convertString(StringSix));
+    String StringSix = "D:\\a.txt";
+    assertEquals("a.txt", IOUtils.convertString(StringSix));
 
     String StringSeven = "a.txt";
     assertEquals("a.txt", IOUtils.convertString(StringSeven));

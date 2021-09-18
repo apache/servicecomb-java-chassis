@@ -27,17 +27,28 @@ public class IOUtils {
   }
 
   public static String convertString(String origin) {
-    StringBuilder stringBuilder = new StringBuilder();
-    if (!(origin.contains("/") || origin.contains("\\"))) {
-      return origin;
-    }
-    String identifier = origin.contains("/") ? "/" : "\\";
-    String fileName = origin.substring(origin.lastIndexOf(identifier));
-    String temp = StringUtils.remove(origin, fileName);
-    while (temp.contains(identifier)) {
-      stringBuilder.append(temp, temp.indexOf(identifier), temp.indexOf(identifier) + 2);
-      temp = StringUtils.remove(temp, temp.substring(temp.indexOf(identifier), temp.indexOf(identifier) + 2));
-    }
-    return (stringBuilder.toString() + fileName).substring(1);
+    return convertString(origin,System.getProperty("file.separator").charAt(0));
   }
+
+  public static String convertString(String origin, char separator) {
+    if (StringUtils.isEmpty(origin)) {
+      return "";
+    }
+    StringBuilder stringBuilder = new StringBuilder();
+    char[] chars = origin.toCharArray();
+    boolean byPass = true;
+    for (int i = chars.length - 1; i >= 0; i--) {
+      if (chars[i] == separator) {
+        stringBuilder.insert(0, byPass ? "" : separator);
+        stringBuilder.insert(0, byPass ? "" : chars[i + 1]);
+        byPass = false;
+        continue;
+      }
+      if (byPass) {
+        stringBuilder.insert(0, chars[i]);
+      }
+    }
+    return stringBuilder.toString();
+  }
+
 }
