@@ -30,6 +30,7 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
@@ -67,6 +68,7 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
   }
 
   private void testAll(CodeFirstPojoIntf codeFirst) {
+    remoteCodeFirstPojo_testMapModel(codeFirst);
     remoteCodeFirstPojo_testMap(codeFirst);
     testCodeFirstUserMap(codeFirst);
     testCodeFirstUserArray(codeFirst);
@@ -121,6 +123,32 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
     }
   }
 
+  private void remoteCodeFirstPojo_testMapModel(CodeFirstPojoIntf codeFirst) {
+    MapModel model = new MapModel();
+    model.setName("hello");
+    Map<String, String> userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", null);
+    model.setNames(userMap);
+    MapModel result = codeFirst.testMapModel(model);
+
+    TestMgr.check(result.getName(), "hello");
+    TestMgr.check(result.getNames().get("u1"), "u1");
+    TestMgr.check(result.getNames().get("u2"), null);
+
+    model = new MapModel();
+    model.setName(null);
+    userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", null);
+    model.setNames(userMap);
+    result = codeFirst.testMapModel(model);
+
+    TestMgr.check(result.getName(), null);
+    TestMgr.check(result.getNames().get("u1"), "u1");
+    TestMgr.check(result.getNames().get("u2"), null);
+  }
+
   private void remoteCodeFirstPojo_testMap(CodeFirstPojoIntf codeFirst) {
     Map<String, String> userMap = new HashMap<>();
     userMap.put("u1", "u1");
@@ -137,6 +165,20 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
 
     TestMgr.check(result.get("u1"), "u1");
     TestMgr.check(result.get("u2"), "u2");
+
+    // test large data more than 20M
+    // can not run the test case in CI , because will cause heap size limit
+//    char[] data = new char[30 * 1024 * 1024];
+//    Arrays.fill(data, 'h');
+//    userMap = new HashMap<>();
+//    userMap.put("u1", "u1");
+//    userMap.put("u2", "u2");
+//    userMap.put("u3", new String(data));
+//    result = codeFirst.testMap(userMap);
+//
+//    TestMgr.check(result.get("u1"), "u1");
+//    TestMgr.check(result.get("u2"), "u2");
+//    TestMgr.check(result.get("u3"), new String(data));
   }
 
   private void testCodeFirstUserMap(CodeFirstPojoIntf codeFirst) {

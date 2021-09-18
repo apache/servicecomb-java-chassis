@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -34,6 +35,11 @@ import io.swagger.annotations.SwaggerDefinition;
 @RpcSchema()
 @SwaggerDefinition(basePath = "/pojo/rest")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
+  @Override
+  public MapModel testMapModel(MapModel model) {
+    return model;
+  }
+
   @Override
   public Map<String, String> testMap(Map<String, String> map) {
     return map;

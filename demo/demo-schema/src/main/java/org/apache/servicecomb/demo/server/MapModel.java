@@ -15,40 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.server;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.demo.compute.Person;
-import org.apache.servicecomb.demo.server.MapModel;
-import org.apache.servicecomb.demo.server.User;
+public class MapModel {
+  private String name;
 
-public interface CodeFirstPojoIntf {
-  MapModel testMapModel(MapModel model);
+  private Map<String, String> names;
 
-  Map<String, String> testMap(Map<String, String> map);
+  public String getName() {
+    return name;
+  }
 
-  Map<String, User> testUserMap(Map<String, User> userMap);
+  public void setName(String name) {
+    this.name = name;
+  }
 
-  List<User> testUserArray(List<User> users);
+  public Map<String, String> getNames() {
+    return names;
+  }
 
-  String[] testStrings(String[] input);
-
-  byte[] testBytes(byte[] input);
-
-  int reduce(int a, int b);
-
-  Date addDate(Date date, long second);
-
-  Person sayHello(Person user);
-
-  String saySomething(String prefix, Person user);
-
-  String sayHi(String name);
-
-  boolean isTrue();
-
-  String addString(List<String> s);
+  public void setNames(Map<String, String> names) {
+    this.names = names;
+  }
 }
