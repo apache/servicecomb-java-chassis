@@ -55,6 +55,9 @@ public class AddressManager {
   }
 
   String nextServer() {
+    if (addresses.size() == 0) {
+      return null;
+    }
     synchronized (this) {
       this.index++;
       if (this.index >= addresses.size()) {
