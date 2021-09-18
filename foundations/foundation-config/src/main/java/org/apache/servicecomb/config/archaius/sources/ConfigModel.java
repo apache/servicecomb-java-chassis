@@ -20,6 +20,8 @@ package org.apache.servicecomb.config.archaius.sources;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.IOUtils;
+
 public class ConfigModel {
 
   private URL url;
@@ -54,6 +56,7 @@ public class ConfigModel {
 
   @Override
   public String toString() {
-    return url == null ? "" : url.toString();
+    return url == null ? "" : IOUtils.anonymousPath(url.toString());
   }
+
 }
