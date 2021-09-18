@@ -49,6 +49,9 @@ public class MicroserviceManager {
     return versionsByName;
   }
 
+  /**
+   * update instance information triggered by first timeout pull
+   */
   public MicroserviceVersions getOrCreateMicroserviceVersions(String microserviceName) {
     // do not use ConcurrentHashMap computeIfAbsent for versionsByName
     // because: when create MicroserviceVersions, one creation may depend on another
@@ -109,19 +112,29 @@ public class MicroserviceManager {
     return microserviceVersions.getOrCreateMicroserviceVersionRule(versionRule);
   }
 
+  /**
+   * update instance information triggered by scheduler
+   */
   public void pullInstances() {
-    for (MicroserviceVersions microserviceVersions : versionsByName.values()) {
-      microserviceVersions.pullInstances();
+    synchronized (lock) {
+      for (MicroserviceVersions microserviceVersions : versionsByName.values()) {
+        microserviceVersions.pullInstances();
 
-      tryRemoveInvalidMicroservice(microserviceVersions);
+        tryRemoveInvalidMicroservice(microserviceVersions);
+      }
     }
   }
 
+  /**
+   * update instance information triggered by event
+   */
   public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    for (MicroserviceVersions microserviceVersions : versionsByName.values()) {
-      microserviceVersions.onMicroserviceInstanceChanged(changedEvent);
+    synchronized (lock) {
+      for (MicroserviceVersions microserviceVersions : versionsByName.values()) {
+        microserviceVersions.onMicroserviceInstanceChanged(changedEvent);
 
-      tryRemoveInvalidMicroservice(microserviceVersions);
+        tryRemoveInvalidMicroservice(microserviceVersions);
+      }
     }
   }
 }
