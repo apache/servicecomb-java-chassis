@@ -23,12 +23,18 @@ import java.util.Map;
 
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
 @RpcSchema(schemaId = "codeFirst")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
+
+  @Override
+  public MapModel testMapModel(MapModel model) {
+    return model;
+  }
 
   @Override
   public Map<String, String> testMap(Map<String, String> map) {
