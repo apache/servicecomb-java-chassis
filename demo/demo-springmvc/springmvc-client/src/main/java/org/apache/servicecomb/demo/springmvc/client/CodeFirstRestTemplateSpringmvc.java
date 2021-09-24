@@ -261,9 +261,15 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     map.put("form1", code);
     map.put("form2", "");
     HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
-    // Highway will not distinguish empty string or null
-    TestMgr
-        .check(code + "null", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+
+    map = new HashMap<>();
+    code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
+    map.put("form2", null);
+    formEntiry = new HttpEntity<>(map, formHeaders);
+    TestMgr.check(code + "null",
+        template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 
   private void testCodeFirstTestFormRest(RestTemplate template, String cseUrlPrefix) {
