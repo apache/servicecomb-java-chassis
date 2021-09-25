@@ -294,7 +294,7 @@ public class PojoClient {
   }
 
   private static void testEmptyHighway(Test test) {
-    TestMgr.check("code is 'null'", test.getTestString(""));
+    TestMgr.check("code is ''", test.getTestString(""));
   }
 
   private static void testEmptyRest(Test test) {

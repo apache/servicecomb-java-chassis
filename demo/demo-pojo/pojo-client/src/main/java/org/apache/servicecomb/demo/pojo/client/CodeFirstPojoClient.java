@@ -30,6 +30,8 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.mapnull.ParseRequest;
+import org.apache.servicecomb.demo.mapnull.ParseResponse;
 import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -68,6 +70,7 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
   }
 
   private void testAll(CodeFirstPojoIntf codeFirst) {
+    remoteCodeFirstPojo_testParseResponse(codeFirst);
     remoteCodeFirstPojo_testMapModel(codeFirst);
     remoteCodeFirstPojo_testMap(codeFirst);
     testCodeFirstUserMap(codeFirst);
@@ -123,6 +126,12 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
     }
   }
 
+  private void remoteCodeFirstPojo_testParseResponse(CodeFirstPojoIntf codeFirst) {
+    ParseResponse r = codeFirst.parse(new ParseRequest());
+    TestMgr.check("", r.getMsgHeader().get("K16"));
+    TestMgr.check("CMT", r.getMsgHeader().get("K14"));
+  }
+
   private void remoteCodeFirstPojo_testMapModel(CodeFirstPojoIntf codeFirst) {
     MapModel model = new MapModel();
     model.setName("hello");
@@ -147,6 +156,18 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
     TestMgr.check(result.getName(), null);
     TestMgr.check(result.getNames().get("u1"), "u1");
     TestMgr.check(result.getNames().get("u2"), null);
+
+    model = new MapModel();
+    model.setName(null);
+    userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", "");
+    model.setNames(userMap);
+    result = codeFirst.testMapModel(model);
+
+    TestMgr.check(result.getName(), null);
+    TestMgr.check(result.getNames().get("u1"), "u1");
+    TestMgr.check(result.getNames().get("u2"), "");
   }
 
   private void remoteCodeFirstPojo_testMap(CodeFirstPojoIntf codeFirst) {
@@ -227,6 +248,10 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
     String[] result = codeFirst.testStrings(new String[] {"a", "b"});
     TestMgr.check("aa0", result[0]);
     TestMgr.check("b", result[1]);
+
+    result = codeFirst.testStrings(new String[] {"a", ""});
+    TestMgr.check("aa0", result[0]);
+    TestMgr.check("", result[1]);
   }
 
   private void testCodeFirstBytes(CodeFirstPojoIntf codeFirst) {
@@ -284,6 +309,11 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
 
     Person result = codeFirst.sayHello(input);
     TestMgr.check("hello person name", result.getName());
+
+    input.setName("");
+
+    result = codeFirst.sayHello(input);
+    TestMgr.check("hello ", result.getName());
   }
 
   private void testCodeFirstReduce(CodeFirstPojoIntf codeFirst) {

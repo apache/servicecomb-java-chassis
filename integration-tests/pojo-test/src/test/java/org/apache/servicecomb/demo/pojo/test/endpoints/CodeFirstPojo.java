@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.mapnull.ParseRequest;
+import org.apache.servicecomb.demo.mapnull.ParseResponse;
 import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
@@ -30,6 +32,11 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
 @RpcSchema(schemaId = "codeFirst")
 public class CodeFirstPojo implements CodeFirstPojoIntf {
+
+  @Override
+  public ParseResponse parse(ParseRequest request) {
+    return null;
+  }
 
   @Override
   public MapModel testMapModel(MapModel model) {
