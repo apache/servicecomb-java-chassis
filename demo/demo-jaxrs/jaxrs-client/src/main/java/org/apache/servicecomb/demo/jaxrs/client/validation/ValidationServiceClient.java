@@ -86,7 +86,7 @@ public class ValidationServiceClient {
     try {
       Teacher teacher = new Teacher();
       teacher.setAge("20");
-      template.patchForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
+      template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(e.getErrorData().toString().contains("不能为空"), true);
