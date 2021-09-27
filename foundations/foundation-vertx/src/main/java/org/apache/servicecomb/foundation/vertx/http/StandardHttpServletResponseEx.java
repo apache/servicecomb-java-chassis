@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
@@ -71,6 +72,12 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
   public void setStatus(int sc, String sm) {
     super.setStatus(sc, sm);
     statusType = new HttpStatus(sc, sm);
+  }
+
+  @Override
+  public void setStatus(int sc) {
+    super.setStatus(sc);
+    statusType = Status.fromStatusCode(sc);
   }
 
   @Override

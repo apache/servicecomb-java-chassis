@@ -66,5 +66,6 @@ public class TestServiceRegistryConfig {
     Assert.assertEquals(8080, oConfig.getProxyPort());
     Assert.assertNull(oConfig.getProxyUsername());
     Assert.assertNull(oConfig.getProxyPasswd());
+    Assert.assertEquals(60,  oConfig.getIdleWatchConnectionTimeout());
   }
 }

@@ -151,7 +151,7 @@ public final class TokenCacheManager {
       ServiceCenterClient serviceCenterClient = serviceCenterClients.get(this.registryName);
 
       RbacTokenRequest request = new RbacTokenRequest();
-      request.setName(new String(cipher.decrypt(accountName.toCharArray())));
+      request.setName(accountName);
       request.setPassword(new String(cipher.decrypt(password.toCharArray())));
 
       RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request);

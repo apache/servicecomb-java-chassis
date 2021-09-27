@@ -15,48 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.serviceregistry.auth;
 
-import java.net.URL;
-import java.util.Map;
+import org.apache.servicecomb.foundation.auth.Cipher;
 
-import org.apache.servicecomb.foundation.common.utils.IOUtils;
-
-public class ConfigModel {
-
-  private URL url;
-
-  private int order;
-
-  private Map<String, Object> config;
-
-  public URL getUrl() {
-    return url;
-  }
-
-  public void setUrl(URL url) {
-    this.url = url;
-  }
-
-  public int getOrder() {
-    return order;
-  }
-
-  public void setOrder(int order) {
-    this.order = order;
-  }
-
-  public Map<String, Object> getConfig() {
-    return config;
-  }
-
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
+public class TestCipher implements Cipher {
+  @Override
+  public String name() {
+    return "testCipher";
   }
 
   @Override
-  public String toString() {
-    return url == null ? "" : IOUtils.anonymousPath(url.toString());
+  public char[] decrypt(char[] encrypted) {
+    String encryptedValue = String.valueOf(encrypted);
+    String decryptValue = encryptedValue.substring(0, encryptedValue.length() / 2);
+    return decryptValue.toCharArray();
   }
-
 }

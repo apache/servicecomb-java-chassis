@@ -15,48 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.demo.jaxrs.server;
 
-import java.net.URL;
-import java.util.Map;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.foundation.common.utils.IOUtils;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-public class ConfigModel {
+@RestSchema(schemaId = "FormRequestSchema")
+@Path("/form")
+@Produces(MediaType.APPLICATION_JSON)
+public class FormRequestSchema {
 
-  private URL url;
-
-  private int order;
-
-  private Map<String, Object> config;
-
-  public URL getUrl() {
-    return url;
-  }
-
-  public void setUrl(URL url) {
-    this.url = url;
-  }
-
-  public int getOrder() {
-    return order;
-  }
-
-  public void setOrder(int order) {
-    this.order = order;
-  }
-
-  public Map<String, Object> getConfig() {
-    return config;
-  }
-
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
-  }
-
-  @Override
-  public String toString() {
-    return url == null ? "" : IOUtils.anonymousPath(url.toString());
+  @Path("/formRequest")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String formRequestSuccess(@FormParam("formData") String formData) throws Exception {
+    return "formRequest success : " + formData.length();
   }
 
 }

@@ -30,6 +30,7 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -37,7 +38,7 @@ public class RSAProviderTokenManager {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
-  private static Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
+  private Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
       .build();
 
@@ -55,12 +56,12 @@ public class RSAProviderTokenManager {
         return false;
       }
 
-      if (getValidatedToken().asMap().containsKey(rsaToken)) {
+      if (validatedToken.asMap().containsKey(rsaToken)) {
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
 
       if (isValidToken(rsaToken) && !tokenExpired(rsaToken)) {
-        getValidatedToken().put(rsaToken, true);
+        validatedToken.put(rsaToken, true);
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
       return false;
@@ -74,11 +75,11 @@ public class RSAProviderTokenManager {
       throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
     String sign = rsaToken.getSign();
     String content = rsaToken.plainToken();
-    String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
+    String publicKey = getPublicKeyFromInstance(rsaToken.getInstanceId(), rsaToken.getServiceId());
     return RSAUtils.verify(publicKey, sign, content);
   }
 
-  public static int getExpiredTime() {
+  protected int getExpiredTime() {
     return 60 * 60 * 1000;
   }
 
@@ -89,7 +90,7 @@ public class RSAProviderTokenManager {
     return now > expired;
   }
 
-  private String getPublicKey(String instanceId, String serviceId) {
+  private String getPublicKeyFromInstance(String instanceId, String serviceId) {
     MicroserviceInstance instances = MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
     if (instances != null) {
       return instances.getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
@@ -99,7 +100,8 @@ public class RSAProviderTokenManager {
     }
   }
 
-  public static Cache<RSAAuthenticationToken, Boolean> getValidatedToken() {
+  @VisibleForTesting
+  Cache<RSAAuthenticationToken, Boolean> getValidatedToken() {
     return validatedToken;
   }
 }

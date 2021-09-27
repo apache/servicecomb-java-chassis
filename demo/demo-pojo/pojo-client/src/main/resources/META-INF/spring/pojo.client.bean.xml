@@ -35,9 +35,6 @@
   <cse:rpc-reference id="codeFirstFromXml" microservice-name="pojo"
     schema-id="org.apache.servicecomb.demo.CodeFirstPojoIntf"></cse:rpc-reference>
 
-  <bean class="org.apache.servicecomb.demo.pojo.client.CodeFirstPojoClient">
-  </bean>
-
   <bean class="org.apache.servicecomb.demo.pojo.client.BeanRpcTest" init-method="init">
   </bean>
 </beans>

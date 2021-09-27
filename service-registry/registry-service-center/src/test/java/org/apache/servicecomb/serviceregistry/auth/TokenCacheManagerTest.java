@@ -15,48 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.serviceregistry.auth;
 
-import java.net.URL;
-import java.util.Map;
+import org.apache.servicecomb.foundation.auth.Cipher;
+import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
+import org.junit.Assert;
+import org.junit.Test;
 
-import org.apache.servicecomb.foundation.common.utils.IOUtils;
+public class TokenCacheManagerTest {
+  RBACBootStrapService rbacBootStrapService = new RBACBootStrapService();
 
-public class ConfigModel {
+  @Test
+  public void testCreateHeaders() {
+    Cipher cipher = rbacBootStrapService.getCipher("testCipher");
+    Assert.assertSame(cipher.name(), "testCipher");
 
-  private URL url;
+    RbacTokenRequest request = new RbacTokenRequest();
+    request.setName("root");
+    Assert.assertEquals(request.getName(), "root");
 
-  private int order;
-
-  private Map<String, Object> config;
-
-  public URL getUrl() {
-    return url;
+    request.setPassword(new String(cipher.decrypt("testtest".toCharArray())));
+    Assert.assertEquals(request.getPassword(), "test");
   }
-
-  public void setUrl(URL url) {
-    this.url = url;
-  }
-
-  public int getOrder() {
-    return order;
-  }
-
-  public void setOrder(int order) {
-    this.order = order;
-  }
-
-  public Map<String, Object> getConfig() {
-    return config;
-  }
-
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
-  }
-
-  @Override
-  public String toString() {
-    return url == null ? "" : IOUtils.anonymousPath(url.toString());
-  }
-
 }

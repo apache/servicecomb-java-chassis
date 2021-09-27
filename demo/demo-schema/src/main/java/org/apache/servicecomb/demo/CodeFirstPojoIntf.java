@@ -22,9 +22,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.mapnull.ParseRequest;
+import org.apache.servicecomb.demo.mapnull.ParseResponse;
+import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 
 public interface CodeFirstPojoIntf {
+  ParseResponse parse(ParseRequest request);
+
+  MapModel testMapModel(MapModel model);
+
+  Map<String, String> testMap(Map<String, String> map);
+
   Map<String, User> testUserMap(Map<String, User> userMap);
 
   List<User> testUserArray(List<User> users);

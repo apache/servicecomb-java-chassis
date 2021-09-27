@@ -36,13 +36,14 @@ public class AuthHandlerBoot implements BootListener {
 
   @Override
   public void onBootEvent(BootEvent event) {
-    if (EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
-      RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
-      RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
-      RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
-      RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
-      RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
-          rsaKeyPairEntry.getPublicKeyEncoded());
+    if (!EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
+      return;
     }
+    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
+    RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
+    RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
+    RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
+    RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
+        rsaKeyPairEntry.getPublicKeyEncoded());
   }
 }

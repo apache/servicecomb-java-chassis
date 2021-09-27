@@ -57,8 +57,6 @@ public class PojoClient {
 
   public static final byte buffer[] = new byte[1024];
 
-  public static CodeFirstPojoClient codeFirstPojoClient;
-
   // reference a not exist a microservice, and never use it
   // this should not cause problems
   @RpcReference(microserviceName = "notExist")
@@ -114,7 +112,6 @@ public class PojoClient {
 
     smartcare = BeanUtils.getBean("smartcare");
     String microserviceName = "pojo";
-    codeFirstPojoClient.testCodeFirst(microserviceName);
 
     for (String transport : DemoConst.transports) {
       ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
@@ -297,7 +294,7 @@ public class PojoClient {
   }
 
   private static void testEmptyHighway(Test test) {
-    TestMgr.check("code is 'null'", test.getTestString(""));
+    TestMgr.check("code is ''", test.getTestString(""));
   }
 
   private static void testEmptyRest(Test test) {
@@ -349,10 +346,5 @@ public class PojoClient {
     LOGGER.info("wrap param result:{}", result);
 
     TestMgr.check("User [name=nameA,  users count:1, age=100, index=0]", result);
-  }
-
-  @Inject
-  public void setCodeFirstPojoClient(CodeFirstPojoClient codeFirstPojoClient) {
-    PojoClient.codeFirstPojoClient = codeFirstPojoClient;
   }
 }

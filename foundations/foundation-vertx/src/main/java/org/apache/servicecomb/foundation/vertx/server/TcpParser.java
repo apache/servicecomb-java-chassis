@@ -32,8 +32,6 @@ import io.vertx.core.parsetools.RecordParser;
 public class TcpParser implements Handler<Buffer> {
   public static final byte[] TCP_MAGIC;
 
-  public static final int TCP_MAX_REQUEST_LENGTH = 20 * 1024 * 1024;
-
   public static final int TCP_HEADER_LENGTH = 23;
 
   static {
@@ -102,7 +100,7 @@ public class TcpParser implements Handler<Buffer> {
         msgId = buf.readLong();
         totalLen = buf.readInt();
         headerLen = buf.readInt();
-        if (headerLen > totalLen || headerLen <= 0 || totalLen > TCP_MAX_REQUEST_LENGTH) {
+        if (headerLen > totalLen || headerLen <= 0) {
           throw new IllegalStateException("possibly attack.");
         }
 

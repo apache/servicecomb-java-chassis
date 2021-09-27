@@ -15,48 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.demo.mapnull;
 
-import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.IOUtils;
+public class ParseRequest {
+  public String msgType = "";
 
-public class ConfigModel {
+  public String strMsg;
 
-  private URL url;
+  public String strID = "";
 
-  private int order;
+  public Map<String, Object> flags = new HashMap<>();
 
-  private Map<String, Object> config;
-
-  public URL getUrl() {
-    return url;
+  public String getMsgType() {
+    return msgType;
   }
 
-  public void setUrl(URL url) {
-    this.url = url;
+  public void setMsgType(String msgType) {
+    this.msgType = msgType;
   }
 
-  public int getOrder() {
-    return order;
+  public String getStrMsg() {
+    return strMsg;
   }
 
-  public void setOrder(int order) {
-    this.order = order;
+  public void setStrMsg(String strMsg) {
+    this.strMsg = strMsg;
   }
 
-  public Map<String, Object> getConfig() {
-    return config;
+  public String getStrID() {
+    return strID;
   }
 
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
+  public void setStrID(String strID) {
+    this.strID = strID;
   }
 
-  @Override
-  public String toString() {
-    return url == null ? "" : IOUtils.anonymousPath(url.toString());
+  public Map<String, Object> getFlags() {
+    return flags;
   }
 
+  public void setFlags(Map<String, Object> flags) {
+    this.flags = flags;
+  }
 }

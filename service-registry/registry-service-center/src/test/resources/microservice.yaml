@@ -44,6 +44,7 @@ servicecomb:
         timeout:
           connection: 30000
           idle: 30000
+          watch: 60
       instance:
         watch: true
         preferIpAddress: false
@@ -54,6 +55,12 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
+  credentials:
+    rbac.enabled: false
+    account:
+      name: root
+      password: testtest
+    cipher: testCipher
 #ssl.keystore.path=
 #ssl.keystore.pass=
 #ssl.truststore.path=

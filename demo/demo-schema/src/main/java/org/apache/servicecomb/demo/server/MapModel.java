@@ -15,48 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.demo.server;
 
-import java.net.URL;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.IOUtils;
+public class MapModel {
+  private String name;
 
-public class ConfigModel {
+  private Map<String, String> names;
 
-  private URL url;
-
-  private int order;
-
-  private Map<String, Object> config;
-
-  public URL getUrl() {
-    return url;
+  public String getName() {
+    return name;
   }
 
-  public void setUrl(URL url) {
-    this.url = url;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public int getOrder() {
-    return order;
+  public Map<String, String> getNames() {
+    return names;
   }
 
-  public void setOrder(int order) {
-    this.order = order;
+  public void setNames(Map<String, String> names) {
+    this.names = names;
   }
-
-  public Map<String, Object> getConfig() {
-    return config;
-  }
-
-  public void setConfig(Map<String, Object> config) {
-    this.config = config;
-  }
-
-  @Override
-  public String toString() {
-    return url == null ? "" : IOUtils.anonymousPath(url.toString());
-  }
-
 }
