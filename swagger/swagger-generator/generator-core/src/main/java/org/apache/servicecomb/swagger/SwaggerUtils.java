@@ -76,6 +76,8 @@ public final class SwaggerUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerUtils.class);
 
+  private static String X_JAVA_CLASS = "x-java-class";
+
   private SwaggerUtils() {
   }
 
@@ -216,8 +218,14 @@ public final class SwaggerUtils {
       if (null != swagger.getDefinitions()) {
         Model tempModel = swagger.getDefinitions().get(entry.getKey());
         if (null != tempModel && !tempModel.equals(entry.getValue())) {
-          LOGGER.warn("duplicate param model: " + entry.getKey());
-          throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+          String tempModelClass = (String) tempModel.getVendorExtensions().get(X_JAVA_CLASS);
+          if (tempModelClass.equals(entry.getValue().getVendorExtensions().get(X_JAVA_CLASS))) {
+            swagger.addDefinition(entry.getKey(), tempModel);
+            continue;
+          } else {
+            LOGGER.warn("duplicate param model: " + entry.getKey());
+            throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+          }
         }
       }
       swagger.addDefinition(entry.getKey(), entry.getValue());
