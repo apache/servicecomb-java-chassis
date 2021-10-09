@@ -76,7 +76,6 @@ public final class SwaggerUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerUtils.class);
 
-  private static String X_JAVA_CLASS = "x-java-class";
 
   private SwaggerUtils() {
   }
@@ -212,14 +211,12 @@ public final class SwaggerUtils {
     if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
       return;
     }
-
     Map<String, Model> models = ModelConverters.getInstance().readAll(javaType);
     for (Entry<String, Model> entry : models.entrySet()) {
       if (null != swagger.getDefinitions()) {
         Model tempModel = swagger.getDefinitions().get(entry.getKey());
         if (null != tempModel && !tempModel.equals(entry.getValue())) {
-          String tempModelClass = (String) tempModel.getVendorExtensions().get(X_JAVA_CLASS);
-          if (tempModelClass.equals(entry.getValue().getVendorExtensions().get(X_JAVA_CLASS))) {
+          if (modelNotDuplicate(tempModel, entry.getValue())) {
             swagger.addDefinition(entry.getKey(), tempModel);
             continue;
           } else {
@@ -230,6 +227,12 @@ public final class SwaggerUtils {
       }
       swagger.addDefinition(entry.getKey(), entry.getValue());
     }
+  }
+
+  private static boolean modelNotDuplicate(Model tempModel, Model model){
+    String tempModelClass = (String) tempModel.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
+    String modelClass = (String) model.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
+    return tempModelClass.equals(modelClass);
   }
 
   public static void setParameterType(Swagger swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
