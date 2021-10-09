@@ -85,7 +85,7 @@ public class ValidationServiceClient {
 
     try {
       Teacher teacher = new Teacher();
-      teacher.setAge("teacher");
+      teacher.setName("teacher");
       teacher.setAge("20");
       Teacher response = template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
       TestMgr.check(response.getName(), "teacher");
