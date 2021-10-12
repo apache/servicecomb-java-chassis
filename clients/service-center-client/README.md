@@ -1,7 +1,7 @@
 ## ServiceComb-Service-Center Client for Java
 
    Sample Java client for ServiceComb-Service-Center HTTP API.   
-   If you want more information about the ServiceComb-Service-Center HTTP API, go [here](https://github.com/apache/servicecomb-service-center/blob/master/server/core/swagger/v4.yaml).
+   If you want more information about the ServiceComb-Service-Center HTTP API, go [here](https://github.com/apache/servicecomb-service-center/blob/master/docs/openapi/v4.yaml).
    
 ### Build & Install
    
