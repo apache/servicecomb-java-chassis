@@ -33,6 +33,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  * 将应答流程包装为Runnable，先唤醒业务线程，再在业务线程中执行runnable
  */
 public class SyncResponseExecutor implements Executor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SyncResponseExecutor.class);
+  
   private CountDownLatch latch;
 
   private Runnable cmd;
@@ -86,6 +88,7 @@ public class SyncResponseExecutor implements Executor {
       }
     } catch (InterruptedException e) {
       //ignore
+      LOGGER.warn(" business thread has been interrupted");
     }
     throw new InvocationException(REQUEST_TIMEOUT, ExceptionCodes.INVOCATION_TIMEOUT, "Invocation Timeout.");
   }
