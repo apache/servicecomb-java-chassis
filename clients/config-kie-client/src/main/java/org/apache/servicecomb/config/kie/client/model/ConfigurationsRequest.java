@@ -20,7 +20,7 @@ package org.apache.servicecomb.config.kie.client.model;
 import java.util.Map;
 
 public class ConfigurationsRequest implements Comparable<ConfigurationsRequest> {
-  public static final String INITIAL_REVISION = "0";
+  public static final String INITIAL_REVISION = "-1";
 
   private int order;
 
