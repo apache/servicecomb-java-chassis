@@ -23,6 +23,9 @@ import java.net.Socket;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Simple implementation of .MicroserviceInstancePing using telnet
@@ -30,20 +33,23 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 public class SimpleMicroserviceInstancePing implements MicroserviceInstancePing {
   @Override
   public int getOrder() {
-    return 100;
+      return 100;
   }
 
   @Override
   public boolean ping(MicroserviceInstance instance) {
-    if (instance.getEndpoints() != null && instance.getEndpoints().size() > 0) {
-      IpPort ipPort = NetUtils.parseIpPortFromURI(instance.getEndpoints().get(0));
-      try (Socket s = new Socket()) {
-        s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
-        return true;
-      } catch (IOException e) {
-        // ignore this error
+      // 存在多个ep 有的通即可
+      if (!CollectionUtils.isEmpty(instance.getEndpoints())){
+          for (String endpoint : instance.getEndpoints()) {
+              IpPort ipPort = NetUtils.parseIpPortFromURI(endpoint);
+              try (Socket s = new Socket()) {
+                  s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
+                  return true;
+              } catch (IOException e) {
+                  LOGGER.warn("IOException, probable ping instance failed endpoint is {}", endpoint);
+              }
+          }
       }
+      return false;
     }
-    return false;
-  }
 }
