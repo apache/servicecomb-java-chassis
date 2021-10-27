@@ -31,6 +31,8 @@ import org.springframework.util.CollectionUtils;
  * Simple implementation of .MicroserviceInstancePing using telnet
  */
 public class SimpleMicroserviceInstancePing implements MicroserviceInstancePing {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMicroserviceInstancePing.class);
+  
   @Override
   public int getOrder() {
       return 100;
@@ -38,7 +40,6 @@ public class SimpleMicroserviceInstancePing implements MicroserviceInstancePing 
 
   @Override
   public boolean ping(MicroserviceInstance instance) {
-      // 存在多个ep 有的通即可
       if (!CollectionUtils.isEmpty(instance.getEndpoints())){
           for (String endpoint : instance.getEndpoints()) {
               IpPort ipPort = NetUtils.parseIpPortFromURI(endpoint);
