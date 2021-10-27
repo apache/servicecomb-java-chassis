@@ -32,25 +32,25 @@ import org.springframework.util.CollectionUtils;
  */
 public class SimpleMicroserviceInstancePing implements MicroserviceInstancePing {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMicroserviceInstancePing.class);
-  
+
   @Override
   public int getOrder() {
-      return 100;
+    return 100;
   }
 
   @Override
   public boolean ping(MicroserviceInstance instance) {
-      if (!CollectionUtils.isEmpty(instance.getEndpoints())){
-          for (String endpoint : instance.getEndpoints()) {
-              IpPort ipPort = NetUtils.parseIpPortFromURI(endpoint);
-              try (Socket s = new Socket()) {
-                  s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
-                  return true;
-              } catch (IOException e) {
-                  LOGGER.warn("IOException, probable ping instance failed endpoint is {}", endpoint);
-              }
-          }
+    if (!CollectionUtils.isEmpty(instance.getEndpoints())) {
+      for (String endpoint : instance.getEndpoints()) {
+        IpPort ipPort = NetUtils.parseIpPortFromURI(endpoint);
+        try (Socket s = new Socket()) {
+          s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
+          return true;
+        } catch (IOException e) {
+          LOGGER.warn("ping instance {} endpoint {} failed", instance.getInstanceId(), endpoint);
+        }
       }
-      return false;
     }
+    return false;
+  }
 }
