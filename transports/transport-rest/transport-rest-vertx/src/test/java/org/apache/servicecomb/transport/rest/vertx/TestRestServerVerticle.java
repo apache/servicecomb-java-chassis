@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -195,64 +194,72 @@ public class TestRestServerVerticle {
     ArchaiusUtils.setProperty("servicecomb.cors.allowedHeader", "abc,def");
     ArchaiusUtils.setProperty("servicecomb.cors.exposedHeader", "abc2,def2");
     ArchaiusUtils.setProperty("servicecomb.cors.maxAge", 1);
-    Set<HttpMethod> methodSet = new HashSet<>(3);
-    methodSet.add(HttpMethod.GET);
-    methodSet.add(HttpMethod.PUT);
-    methodSet.add(HttpMethod.POST);
-    AtomicInteger counter = new AtomicInteger(0);
+    try {
+      Set<HttpMethod> methodSet = new HashSet<>(3);
+      methodSet.add(HttpMethod.GET);
+      methodSet.add(HttpMethod.PUT);
+      methodSet.add(HttpMethod.POST);
+      AtomicInteger counter = new AtomicInteger(0);
 
-    CorsHandler corsHandler = new MockUp<CorsHandler>() {
-      @Mock
-      CorsHandler allowCredentials(boolean allow) {
-        Assert.assertFalse(allow);
-        counter.incrementAndGet();
-        return null;
-      }
+      CorsHandler corsHandler = new MockUp<CorsHandler>() {
+        @Mock
+        CorsHandler allowCredentials(boolean allow) {
+          Assert.assertFalse(allow);
+          counter.incrementAndGet();
+          return null;
+        }
 
-      @Mock
-      CorsHandler allowedHeaders(Set<String> headerNames) {
-        Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc", "def"));
-        counter.incrementAndGet();
-        return null;
-      }
+        @Mock
+        CorsHandler allowedHeaders(Set<String> headerNames) {
+          Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc", "def"));
+          counter.incrementAndGet();
+          return null;
+        }
 
-      @Mock
-      CorsHandler exposedHeaders(Set<String> headerNames) {
-        Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc2", "def2"));
-        counter.incrementAndGet();
-        return null;
-      }
+        @Mock
+        CorsHandler exposedHeaders(Set<String> headerNames) {
+          Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc2", "def2"));
+          counter.incrementAndGet();
+          return null;
+        }
 
-      @Mock
-      CorsHandler allowedMethod(HttpMethod method) {
-        Assert.assertTrue(methodSet.contains(method));
-        counter.incrementAndGet();
-        methodSet.remove(method);
-        return null;
-      }
+        @Mock
+        CorsHandler allowedMethod(HttpMethod method) {
+          Assert.assertTrue(methodSet.contains(method));
+          counter.incrementAndGet();
+          methodSet.remove(method);
+          return null;
+        }
 
-      @Mock
-      CorsHandler maxAgeSeconds(int maxAgeSeconds) {
-        Assert.assertEquals(1, maxAgeSeconds);
-        counter.incrementAndGet();
-        return null;
-      }
-    }.getMockInstance();
+        @Mock
+        CorsHandler maxAgeSeconds(int maxAgeSeconds) {
+          Assert.assertEquals(1, maxAgeSeconds);
+          counter.incrementAndGet();
+          return null;
+        }
+      }.getMockInstance();
 
-    new MockUp<RestServerVerticle>() {
-      @Mock
-      CorsHandler getCorsHandler(String corsAllowedOrigin) {
-        Assert.assertEquals("*", corsAllowedOrigin);
-        return corsHandler;
-      }
-    };
-    Router router = Mockito.mock(Router.class);
-    Mockito.when(router.route()).thenReturn(Mockito.mock(Route.class));
+      new MockUp<RestServerVerticle>() {
+        @Mock
+        CorsHandler getCorsHandler(String corsAllowedOrigin) {
+          Assert.assertEquals("*", corsAllowedOrigin);
+          return corsHandler;
+        }
+      };
+      Router router = Mockito.mock(Router.class);
+      Mockito.when(router.route()).thenReturn(Mockito.mock(Route.class));
 
-    RestServerVerticle server = new RestServerVerticle();
+      RestServerVerticle server = new RestServerVerticle();
 
-    Deencapsulation.invoke(server, "mountCorsHandler", router);
-    Assert.assertEquals(7, counter.get());
+      Deencapsulation.invoke(server, "mountCorsHandler", router);
+      Assert.assertEquals(7, counter.get());
+    } finally {
+      ArchaiusUtils.setProperty("servicecomb.cors.enabled", null);
+      ArchaiusUtils.setProperty("servicecomb.cors.allowedMethod", null);
+      ArchaiusUtils.setProperty("servicecomb.cors.allowedHeader", null);
+      ArchaiusUtils.setProperty("servicecomb.cors.exposedHeader", null);
+      ArchaiusUtils.setProperty("servicecomb.cors.maxAge", null);
+    }
   }
 
   @Test
