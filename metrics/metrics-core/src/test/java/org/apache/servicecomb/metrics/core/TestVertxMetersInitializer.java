@@ -169,15 +169,17 @@ public class TestVertxMetersInitializer {
     int serverLatencyIndex = actual.lastIndexOf("1            0               0             1           1        ")
         + "1            0               0             1           1        ".length();
     serverLatency = actual.substring(serverLatencyIndex, actual.indexOf(" ", serverLatencyIndex));
-
+    int portSize = String.valueOf(port).length();
     // in new vert.x version, bytes written must be higher than 4K or will be zero
     if (printDetail) {
       expect = expect + "    client.endpoints:\n"
           + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
       expect +=
-          "      1            0               0             1           1        %-7s 4         21           http://127.0.0.1:%-5s\n"
+          "      1            0               0             1           1        %-7s 4         21           http://127.0.0.1:%-"
+              + portSize + "s\n"
               +
-              "      1            0               0             1           0        0       0         0            tcp://127.0.0.1:%-5s\n";
+              "      1            0               0             1           0        0       0         0            tcp://127.0.0.1:%-"
+              + portSize + "s\n";
     }
     expect += ""
         + "    server.endpoints:\n"
