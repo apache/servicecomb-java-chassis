@@ -98,6 +98,7 @@ public class ValidationServiceClient {
       Teacher teacher = new Teacher();
       teacher.setAge("20");
       template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
+      TestMgr.fail("Name should not  empty");
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(e.getErrorData().toString().contains("不能为空"), true);

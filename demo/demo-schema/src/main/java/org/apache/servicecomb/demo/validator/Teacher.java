@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.demo.validator;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class Teacher {
 
-  @NotBlank
+  @NotNull
   private String name;
 
   private String age;
