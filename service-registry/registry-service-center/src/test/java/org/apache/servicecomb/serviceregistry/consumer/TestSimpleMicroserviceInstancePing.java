@@ -44,4 +44,19 @@ public class TestSimpleMicroserviceInstancePing {
     ss.close();
     Assert.assertFalse(ping.ping(instance));
   }
+  
+  @Test
+  public void testPing_more_endpoin() throws IOException {
+    SimpleMicroserviceInstancePing ping = new SimpleMicroserviceInstancePing();
+    MicroserviceInstance instance = new MicroserviceInstance();
+    List<String> endpoints = new ArrayList<>();
+    ServerSocket ss = new ServerSocket(35677);
+    endpoints.add("http://localhost:35676");
+    endpoints.add("http://localhost:35677");
+    instance.setEndpoints(endpoints);
+    Assert.assertTrue(ping.ping(instance));
+    ss.close();
+    Assert.assertFalse(ping.ping(instance));
+  }
+    
 }

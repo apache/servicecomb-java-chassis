@@ -98,7 +98,7 @@ public class TestTransportConfig {
 
   @Test
   public void testGetMaxFormAttributeSize() {
-    Assert.assertEquals(2048, TransportConfig.getMaxFormAttributeSize());
+    Assert.assertEquals(8192, TransportConfig.getMaxFormAttributeSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxFormAttributeSize", 3072);
     Assert.assertEquals(3072, TransportConfig.getMaxFormAttributeSize());
   }
