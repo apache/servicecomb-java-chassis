@@ -91,17 +91,17 @@ public class ValidationServiceClient {
       TestMgr.check(response.getName(), "teacher");
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
-      TestMgr.check(e.getErrorData().toString().contains("不能为空"), true);
+      TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
     }
 
     try {
       Teacher teacher = new Teacher();
       teacher.setAge("20");
       template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
-      TestMgr.fail("Name should not  empty");
+      TestMgr.fail("Name should not empty");
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
-      TestMgr.check(e.getErrorData().toString().contains("不能为空"), true);
+      TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
     }
 
   }
