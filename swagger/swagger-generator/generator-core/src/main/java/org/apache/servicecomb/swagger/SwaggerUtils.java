@@ -213,23 +213,32 @@ public final class SwaggerUtils {
     }
     Map<String, Model> models = ModelConverters.getInstance().readAll(javaType);
     for (Entry<String, Model> entry : models.entrySet()) {
-      if (null != swagger.getDefinitions()) {
-        Model tempModel = swagger.getDefinitions().get(entry.getKey());
-        if (null != tempModel && !tempModel.equals(entry.getValue())) {
-          if (modelNotDuplicate(tempModel, entry.getValue())) {
-            swagger.addDefinition(entry.getKey(), tempModel);
-            continue;
-          } else {
-            LOGGER.warn("duplicate param model: " + entry.getKey());
-            throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
-          }
-        }
+      if (!modelNotDuplicate(swagger, entry)) {
+        LOGGER.warn("duplicate param model: " + entry.getKey());
+        throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
       }
-      swagger.addDefinition(entry.getKey(), entry.getValue());
     }
   }
 
-  private static boolean modelNotDuplicate(Model tempModel, Model model){
+  private static boolean modelNotDuplicate(Swagger swagger, Entry<String, Model> entry) {
+    if (null == swagger.getDefinitions()) {
+      swagger.addDefinition(entry.getKey(), entry.getValue());
+      return true;
+    }
+    Model tempModel = swagger.getDefinitions().get(entry.getKey());
+    if (null != tempModel && !tempModel.equals(entry.getValue())) {
+      if (modelOfClassNotDuplicate(tempModel, entry.getValue())) {
+        swagger.addDefinition(entry.getKey(), tempModel);
+        return true;
+      } else {
+        return false;
+      }
+    }
+    swagger.addDefinition(entry.getKey(), entry.getValue());
+    return true;
+  }
+
+  private static boolean modelOfClassNotDuplicate(Model tempModel, Model model) {
     String tempModelClass = (String) tempModel.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
     String modelClass = (String) model.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
     return tempModelClass.equals(modelClass);
