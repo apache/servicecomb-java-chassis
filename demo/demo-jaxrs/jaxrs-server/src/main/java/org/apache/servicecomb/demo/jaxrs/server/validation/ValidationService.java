@@ -45,7 +45,7 @@ public class ValidationService {
 
   @Path("/sayTeacherInfo")
   @POST
-  public Teacher sayTeacherInfo(@RequestBody Teacher teacher){
+  public Teacher sayTeacherInfo(@Valid @RequestBody Teacher teacher) {
     return teacher;
   }
 
