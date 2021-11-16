@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot.springmvc.client;
+package org.apache.servicecomb.demo.springmvc;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-/**
- * SpringmvcClient
- *
- *
- */
-@SpringBootApplication
-@EnableServiceComb
-public class SpringmvcClient {
-
-  public static void main(final String[] args) throws Exception {
-
-    new SpringApplicationBuilder().sources(SpringmvcClient.class).web(WebApplicationType.SERVLET).build().run(args);
-
-    org.apache.servicecomb.demo.springmvc.SpringmvcClient.run();
-
-    TestMgr.summary();
+public class SpringmvcServer {
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
   }
 }

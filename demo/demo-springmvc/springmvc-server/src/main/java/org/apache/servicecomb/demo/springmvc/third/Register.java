@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.server;
+package org.apache.servicecomb.demo.springmvc.third;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import java.util.Arrays;
 
-public class SpringmvcServer {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+import org.apache.servicecomb.provider.pojo.registry.ThirdServiceWithInvokerRegister;
+import org.springframework.stereotype.Component;
+
+/**
+ * see: https://github.com/apache/servicecomb-java-chassis/issues/2534
+ */
+@Component
+public class Register extends ThirdServiceWithInvokerRegister {
+  public Register() {
+    super("third");
+    addSchema("heartbeat", HealthSchema.class);
+    setUrls("", Arrays.asList("rest://localhost:8080?sslEnabled=false"));
   }
 }
