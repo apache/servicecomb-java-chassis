@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.util.ArrayList;

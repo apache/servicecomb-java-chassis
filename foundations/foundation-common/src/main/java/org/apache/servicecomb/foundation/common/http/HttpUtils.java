@@ -19,9 +19,10 @@ package org.apache.servicecomb.foundation.common.http;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.springframework.util.StringUtils;
+
 
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.lang3.StringUtils;
 
 public final class HttpUtils {
   private HttpUtils() {

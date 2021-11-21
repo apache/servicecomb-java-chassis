@@ -20,10 +20,11 @@ package org.apache.servicecomb.config.archaius.sources;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+
 
 public class MicroserviceConfigLoader extends YAMLConfigLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceConfigLoader.class);

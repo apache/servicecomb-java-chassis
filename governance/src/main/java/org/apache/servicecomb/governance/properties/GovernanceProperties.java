@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.MicroserviceMeta;
 import org.apache.servicecomb.governance.entity.Configurable;
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
@@ -38,7 +39,6 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;

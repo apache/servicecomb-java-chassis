@@ -24,11 +24,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.util.StringUtils;
+
 
 public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
   public static final String PROPERTIES_SUFFIX = ".properties";

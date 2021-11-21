@@ -19,11 +19,11 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.version.VersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleUtils;
-import org.springframework.util.StringUtils;
 
 public class CompatiblePathVersionMapper {
   // v1 -> 1.0.0-2.0.0

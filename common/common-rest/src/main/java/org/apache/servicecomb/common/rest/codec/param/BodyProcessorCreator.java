@@ -28,6 +28,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -37,7 +38,6 @@ import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectReader;

@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.locator;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -28,7 +29,7 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+
 
 /**
  * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位

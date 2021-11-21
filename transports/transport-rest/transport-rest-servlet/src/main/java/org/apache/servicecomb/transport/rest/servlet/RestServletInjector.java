@@ -22,9 +22,9 @@ import java.util.Arrays;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration.Dynamic;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 public class RestServletInjector {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInjector.class);
