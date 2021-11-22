@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
@@ -50,7 +51,6 @@ import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKe
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.Subscribe;
 
