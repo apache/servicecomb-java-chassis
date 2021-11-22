@@ -37,6 +37,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
      <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-invocation-validator</artifactId>
@@ -58,7 +62,7 @@
   </dependencies>
 
   <properties>
-    <demo.main>org.apache.servicecomb.demo.springmvc.server.SpringmvcServer</demo.main>
+    <demo.main>org.apache.servicecomb.demo.springmvc.SpringmvcServer</demo.main>
   </properties>
   <build>
     <plugins>
