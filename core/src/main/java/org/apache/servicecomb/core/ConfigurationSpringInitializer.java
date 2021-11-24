@@ -245,7 +245,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
     } catch (Exception e) {
       if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
           false).get()) {
-        LOGGER.warn("set up spring property source failed. msg", e);
+        LOGGER.warn("set up spring property source failed.", e);
       } else {
         LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
       }

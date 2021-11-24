@@ -69,9 +69,9 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
       } catch (Exception e) {
         if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
             false).get()) {
-          LOG.warn("fallback failed due to:" + e);
+          LOG.warn("fallback failed.", e);
         } else {
-          LOG.warn("fallback failed due to:" + e.getMessage());
+          LOG.warn("fallback failed due to: {}", e.getMessage());
         }
         throw e;
       }
