@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.bizkeeper;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
@@ -65,7 +67,12 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
         f.onNext(FallbackPolicyManager.getFallbackResponse(type, cause, invocation));
         f.onCompleted();
       } catch (Exception e) {
-        LOG.warn("fallback failed due to:" + e.getMessage());
+        if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+            false).get()) {
+          LOG.warn("fallback failed due to:" + e);
+        } else {
+          LOG.warn("fallback failed due to:" + e.getMessage());
+        }
         throw e;
       }
     });

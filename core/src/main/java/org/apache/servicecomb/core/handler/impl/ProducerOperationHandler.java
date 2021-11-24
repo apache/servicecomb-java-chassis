@@ -20,6 +20,7 @@ package org.apache.servicecomb.core.handler.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
@@ -33,6 +34,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public class ProducerOperationHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerOperationHandler.class);
@@ -125,10 +128,15 @@ public class ProducerOperationHandler implements Handler {
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
     } catch (Throwable e) {
-      if (shouldPrintErrorLog(e)) {
-        invocation.getTraceIdLogger().error(LOGGER, "unexpected error operation={}, message={}",
-            invocation.getInvocationQualifiedName(),
-            org.apache.servicecomb.foundation.common.utils.ExceptionUtils.getExceptionMessageWithoutTrace(e));
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+          false).get()) {
+        LOGGER.error("unexpected error operation={}", invocation.getInvocationQualifiedName(), e);
+      } else {
+        if (shouldPrintErrorLog(e)) {
+          invocation.getTraceIdLogger().error(LOGGER, "unexpected error operation={}, message={}",
+              invocation.getInvocationQualifiedName(),
+              org.apache.servicecomb.foundation.common.utils.ExceptionUtils.getExceptionMessageWithoutTrace(e));
+        }
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();

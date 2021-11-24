@@ -55,6 +55,7 @@ import org.springframework.core.env.PropertySource;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateResult;
 
 /**
@@ -232,15 +233,21 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
 
   private void addDynamicConfigurationToSpring(Environment environment,
       ConfigCenterConfigurationSource configCenterConfigurationSource) {
-    if (environment instanceof ConfigurableEnvironment) {
-      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
-      if (configCenterConfigurationSource != null) {
-        try {
-          ce.getPropertySources()
-              .addFirst(new MapPropertySource("dynamic-source", dynamicData));
-        } catch (Exception e) {
-          LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
-        }
+    if (!(environment instanceof ConfigurableEnvironment)) {
+      return;
+    }
+    ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
+    if (configCenterConfigurationSource == null) {
+      return;
+    }
+    try {
+      ce.getPropertySources().addFirst(new MapPropertySource("dynamic-source", dynamicData));
+    } catch (Exception e) {
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+          false).get()) {
+        LOGGER.warn("set up spring property source failed. msg", e);
+      } else {
+        LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
       }
     }
   }
