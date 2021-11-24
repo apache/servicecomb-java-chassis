@@ -28,20 +28,12 @@ servicecomb:
     name: test-client
     version: 0.0.1
     registry:
-      address: https://cse.cn-south-1.myhuaweicloud.com
+      address: ${CSE_V2_SC}
       instance:
         watch: false
-  config:
-    client:
-      serverUri: https://cse.cn-south-1.myhuaweicloud.com
+  kie:
+    serverUri: ${CSE_V2_CC}
+    customLabel: public
 
   rest:
     address: 0.0.0.0:9097 # should be same with server.port to use web container
-
-  # Configure AK/SK credentials if needed. Default not enabled.
-  credentials:
-    akskEnabled: true
-    accessKey: ${CREDENTIALS_AK}
-    secretKey: ${CREDENTIALS_SK}
-    akskCustomCipher: default
-    project: cn-south-1

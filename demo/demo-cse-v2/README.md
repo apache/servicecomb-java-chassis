@@ -1,6 +1,6 @@
 # 使用微服务引擎2.0的测试用例
 
-* 参考：https://github.com/apache/servicecomb-service-center/tree/master/ux 安装微服务引擎2.0
+* 参考：https://support.huaweicloud.com/devg-cse/cse_devg_0036.html 安装微服务引擎2.0
 
 * 设置环境变量:
   * CSE_V2_SC: 注册中心的地址
