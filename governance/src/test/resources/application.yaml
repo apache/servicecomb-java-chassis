@@ -45,6 +45,10 @@ servicecomb:
         - apiPath:
           exact: "/bulkhead"
       services: other:1.0
+    demo-faultInject: |
+      matches:
+        - apiPath:
+            contains: "/faultInject"
   rateLimiting:
     demo-rateLimiting: |
       rate: 1
@@ -78,3 +82,12 @@ servicecomb:
       rules:
         match: demo-bulkhead.xx
       maxWaitDuration: -1
+  faultInjection:
+    demo-faultInject: |
+      delayTime: 2S
+      type: delay
+      percentage: 100
+      errorCode: 500
+    wrongIngored: |
+      delayTime: -1
+      type: ERROR

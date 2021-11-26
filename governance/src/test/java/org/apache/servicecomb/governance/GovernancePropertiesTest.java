@@ -62,6 +62,9 @@ public class GovernancePropertiesTest {
   private RetryProperties retryProperties;
 
   @Autowired
+  private FaultInjectionProperties faultInjectionProperties;
+
+  @Autowired
   private Environment environment;
 
   private Map<String, Object> dynamicValues = new HashMap<>();
@@ -99,7 +102,7 @@ public class GovernancePropertiesTest {
 
   @Test
   public void test_all_bean_is_loaded() {
-    Assert.assertEquals(4, propertiesList.size());
+    Assert.assertEquals(5, propertiesList.size());
   }
 
   @Test
@@ -324,5 +327,16 @@ public class GovernancePropertiesTest {
     Assert.assertEquals(3, policies.size());
     policy = policies.get("test2");
     Assert.assertEquals(60000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
+  }
+
+  @Test
+  public void test_fault_injection_properties_successfully_loaded() {
+    Map<String, FaultInjectionPolicy> policies = faultInjectionProperties.getParsedEntity();
+    Assert.assertEquals(1, policies.size());
+    FaultInjectionPolicy policy = policies.get("demo-faultInject");
+    Assert.assertEquals("delay", policy.getType());
+    Assert.assertEquals(2000, Duration.parse(policy.getDelayTime()).toMillis());
+    Assert.assertEquals(100.0f, policy.getPercentage(), DELTA);
+    Assert.assertEquals(500, policy.getErrorCode());
   }
 }

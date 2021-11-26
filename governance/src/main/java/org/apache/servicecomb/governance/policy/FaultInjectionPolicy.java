@@ -27,7 +27,7 @@ public class FaultInjectionPolicy extends AbstractPolicy {
 
   private String delayTime = DEFAULT_TIMEOUT_DURATION.toString();
 
-  private int percentage = -1;
+  private float percentage = -1.0f;
 
   private int errorCode = -1;
 
@@ -47,11 +47,11 @@ public class FaultInjectionPolicy extends AbstractPolicy {
     this.delayTime = stringOfDuration(delayTime, Duration.ofMillis(-1));
   }
 
-  public int getPercentage() {
+  public float getPercentage() {
     return percentage;
   }
 
-  public void setPercentage(int percentage) {
+  public void setPercentage(float percentage) {
     this.percentage = percentage;
   }
 
@@ -66,6 +66,9 @@ public class FaultInjectionPolicy extends AbstractPolicy {
   @Override
   public boolean isValid() {
     if (Duration.parse(delayTime).toMillis() < 0) {
+      return false;
+    }
+    if (getErrorCode() < 200 || getErrorCode() > 600) {
       return false;
     }
     return super.isValid();
