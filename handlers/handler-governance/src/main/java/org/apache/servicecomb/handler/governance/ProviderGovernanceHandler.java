@@ -17,17 +17,24 @@
 
 package org.apache.servicecomb.handler.governance;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
+import org.apache.servicecomb.injection.FaultInjectionUtil;
+import org.apache.servicecomb.injection.FaultParam;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -43,6 +50,8 @@ import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 
 public class ProviderGovernanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderGovernanceHandler.class);
@@ -52,6 +61,10 @@ public class ProviderGovernanceHandler implements Handler {
   private CircuitBreakerHandler circuitBreakerHandler = BeanUtils.getBean(CircuitBreakerHandler.class);
 
   private BulkheadHandler bulkheadHandler = BeanUtils.getBean(BulkheadHandler.class);
+
+  private List<Fault> faultInjectionFeatureList = SPIServiceUtils.getSortedService(Fault.class);
+
+  private FaultInjectionHandler faultInjectionHandler = BeanUtils.getBean(FaultInjectionHandler.class);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -65,6 +78,7 @@ public class ProviderGovernanceHandler implements Handler {
       addRateLimiting(dcs, request);
       addCircuitBreaker(dcs, request);
       addBulkhead(dcs, request);
+      addFaultInject(invocation, asyncResp, request);
     } finally {
       ServiceCombInvocationContext.removeInvocationContext();
     }
@@ -113,6 +127,36 @@ public class ProviderGovernanceHandler implements Handler {
     RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
     if (rateLimiter != null) {
       dcs.withRateLimiter(rateLimiter);
+    }
+  }
+
+  private void addFaultInject(Invocation invocation, AsyncResponse asyncResp, GovernanceRequest request) {
+    // prepare the key and lookup for request count.
+    String key = invocation.getTransport().getName() + invocation.getMicroserviceQualifiedName();
+    AtomicLong reqCount = FaultInjectionUtil.getOperMetTotalReq(key);
+    // increment the request count here after checking the delay/abort condition.
+    long reqCountCurrent = reqCount.getAndIncrement();
+
+    FaultParam param = new FaultParam(reqCountCurrent);
+    Context currentContext = Vertx.currentContext();
+    if (currentContext != null && currentContext.isEventLoopContext()) {
+      param.setVertx(currentContext.owner());
+    }
+    ServiceCombInvocationContext.setInvocationContext(invocation);
+    FaultInjectionPolicy faultInject = faultInjectionHandler.getActuator(request);
+    if (faultInject != null) {
+      FaultExecutor executor = new FaultExecutor(faultInjectionFeatureList, invocation, param, faultInject);
+      executor.execute(response -> {
+        try {
+          if (response.isFailed()) {
+            asyncResp.complete(response);
+          } else {
+            invocation.next(asyncResp);
+          }
+        } catch (Exception e) {
+          asyncResp.consumerFail(e);
+        }
+      });
     }
   }
 
