@@ -34,6 +34,10 @@ servicecomb:
   kie:
     serverUri: ${CSE_V2_CC}
     customLabel: public
+  handler:
+    chain:
+      Provider:
+        default: governance-provider1
 
   rest:
     address: 0.0.0.0:9093 # should be same with server.port to use web container

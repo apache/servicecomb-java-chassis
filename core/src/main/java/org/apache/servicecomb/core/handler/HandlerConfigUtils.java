@@ -31,8 +31,9 @@ public final class HandlerConfigUtils {
   private static Config loadConfig() throws Exception {
     Config config = new Config();
 
-    List<Resource> resList =
-        PaaSResourceUtils.getSortedResources("classpath*:config/cse.handler.xml", ".handler.xml");
+    List<Resource> resList = PaaSResourceUtils.getResources(new String[]{"classpath*:config/*.handler.xml"});
+    PaaSResourceUtils.sortResources(resList, ".handler.xml");
+
     for (Resource res : resList) {
       Config tmpConfig = XmlLoaderUtils.load(res, Config.class);
       config.mergeFrom(tmpConfig);
