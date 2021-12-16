@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRegistration.Dynamic;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.UploadConfig;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -36,7 +37,6 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 public class ServletUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletUtils.class);

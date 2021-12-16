@@ -23,11 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {WebMvcAutoConfiguration.class})
 @EnableServiceComb
 public class SpringmvcServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpringmvcServer.class);

@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-dependencies-parent</artifactId>
-    <version>2.6.0-SNAPSHOT</version>
+    <version>2.6.0</version>
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
@@ -97,8 +97,8 @@
     <slf4j.version>1.7.30</slf4j.version>
     <snakeyaml.version>1.27</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
-    <spring.version>5.2.9.RELEASE</spring.version>
-    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+    <spring.version>5.3.12</spring.version>
+    <spring-boot.version>2.5.6</spring-boot.version>
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.6.2</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
@@ -453,6 +453,11 @@
       <dependency>
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_httpserver</artifactId>
+        <version>${prometheus.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.prometheus</groupId>
+        <artifactId>simpleclient_common</artifactId>
         <version>${prometheus.version}</version>
       </dependency>
 

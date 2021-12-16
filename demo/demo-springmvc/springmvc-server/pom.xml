@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-springmvc</artifactId>
-    <version>2.6.0-SNAPSHOT</version>
+    <version>2.6.0</version>
   </parent>
   <artifactId>springmvc-server</artifactId>
   <name>Java Chassis::Demo::Spring MVC::Server</name>
@@ -36,6 +36,10 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
     </dependency>
      <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -58,7 +62,7 @@
   </dependencies>
 
   <properties>
-    <demo.main>org.apache.servicecomb.demo.springmvc.server.SpringmvcServer</demo.main>
+    <demo.main>org.apache.servicecomb.demo.springmvc.SpringmvcServer</demo.main>
   </properties>
   <build>
     <plugins>

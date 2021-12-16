@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
-import org.springframework.util.StringUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
 

@@ -26,7 +26,8 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertyConverter;
 import org.apache.commons.configuration.SubsetConfiguration;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * This class holds configurations that need to be configured

@@ -24,6 +24,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.transport.rest.servlet.ServletConfig;
 import org.apache.servicecomb.transport.rest.servlet.ServletUtils;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.netflix.config.DynamicPropertyFactory;
 

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.YAMLUtil;
@@ -50,10 +51,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.StringUtils;
+
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateResult;
 
 /**
@@ -231,15 +233,21 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
 
   private void addDynamicConfigurationToSpring(Environment environment,
       ConfigCenterConfigurationSource configCenterConfigurationSource) {
-    if (environment instanceof ConfigurableEnvironment) {
-      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
-      if (configCenterConfigurationSource != null) {
-        try {
-          ce.getPropertySources()
-              .addFirst(new MapPropertySource("dynamic-source", dynamicData));
-        } catch (Exception e) {
-          LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
-        }
+    if (!(environment instanceof ConfigurableEnvironment)) {
+      return;
+    }
+    ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
+    if (configCenterConfigurationSource == null) {
+      return;
+    }
+    try {
+      ce.getPropertySources().addFirst(new MapPropertySource("dynamic-source", dynamicData));
+    } catch (Exception e) {
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+          false).get()) {
+        LOGGER.warn("set up spring property source failed.", e);
+      } else {
+        LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
       }
     }
   }

@@ -52,4 +52,7 @@ public final class Const {
   public static final String AUTH_TOKEN = "x-cse-auth-rsatoken";
 
   public static final String TRACE_ID_NAME = "X-B3-TraceId";
+
+  // controlling whether to print stack information with sensitive errors
+  public static final String PRINT_SENSITIVE_ERROR_MESSAGE = "servicecomb.error.printSensitiveErrorMessage";
 }

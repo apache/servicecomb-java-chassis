@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.demo.springmvc;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +27,7 @@ import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
+import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringmvc;
 import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
