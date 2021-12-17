@@ -16,6 +16,6 @@
   -->
 
 <config>
-  <handler id="governance-provider1"
-    class="org.apache.servicecomb.handler.governance.ProviderGovernanceHandler"/>
+  <handler id="test-provider"
+    class="org.apache.servicecomb.samples.handler.ProviderTestHandler"/>
 </config>

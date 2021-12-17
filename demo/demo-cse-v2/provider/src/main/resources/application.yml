@@ -37,7 +37,7 @@ servicecomb:
   handler:
     chain:
       Provider:
-        default: governance-provider1
+        default: test-provider
 
   rest:
     address: 0.0.0.0:9093 # should be same with server.port to use web container

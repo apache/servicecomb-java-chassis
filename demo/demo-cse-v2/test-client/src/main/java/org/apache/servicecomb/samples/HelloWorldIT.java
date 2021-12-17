@@ -21,6 +21,7 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.testng.annotations.Test;
 
 @Component
 public class HelloWorldIT implements CategorizedTestCase {
@@ -35,5 +36,18 @@ public class HelloWorldIT implements CategorizedTestCase {
     String result = template
         .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
     TestMgr.check("\"Hello World\"", result);
+  }
+
+  @Test
+  public void Test01() {
+    String result = template
+        .getForObject(Config.GATEWAY_URL + "/sayHello?name=tom", String.class);
+    TestMgr.check("\"Hello tom\"", result);
+    TestMgr.summary();
+    TestMgr.errors().clear();
+    result = template
+        .getForObject(Config.GATEWAY_URL + "/sayHello?name=sam", String.class);
+    TestMgr.check("\"Hello sam\"", result);
+    TestMgr.summary();
   }
 }
