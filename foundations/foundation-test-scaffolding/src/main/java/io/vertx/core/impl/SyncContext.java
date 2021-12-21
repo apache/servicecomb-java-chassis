@@ -19,6 +19,7 @@ package io.vertx.core.impl;
 import java.util.concurrent.Executor;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.spi.metrics.PoolMetrics;
@@ -31,7 +32,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   public SyncContext(VertxInternal vertx) {
-    super(vertx, null, null, null, null, null, null);
+    super(vertx, null, null, null, null, null, null, false);
   }
 
   public VertxInternal owner() {
@@ -43,7 +44,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
-  public void runOnContext(Handler<Void> task) {
+  public void runOnContext(AbstractContext ctx,Handler<Void> task) {
     task.handle(null);
   }
 
@@ -61,15 +62,18 @@ public class SyncContext extends EventLoopContext {
     res.future().onComplete(asyncResultHandler);
   }
 
-  @Override
-  public <T> void executeBlockingInternal(Handler<Promise<T>> action, Handler<AsyncResult<T>> resultHandler) {
-    syncExecuteBlocking((future) -> {
-      try {
-        action.handle(future);
-      } catch (Throwable e) {
-        future.fail(e);
-      }
-    }, resultHandler);
+  private static <T> Future<T> syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler) {
+    Promise<T> res = Promise.promise();
+
+    try {
+      blockingCodeHandler.handle(res);
+    } catch (Throwable e) {
+      res.fail(e);
+      return res.future();
+    }
+
+    res.complete();
+    return res.future();
   }
 
   @Override
@@ -78,10 +82,7 @@ public class SyncContext extends EventLoopContext {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
   }
 
-  @Override
-  <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler,
-      Handler<AsyncResult<T>> resultHandler,
-      Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
-    syncExecuteBlocking(blockingCodeHandler, resultHandler);
+  public <T> Future<T> executeBlockingInternal(Handler<Promise<T>> blockingCodeHandler) {
+    return syncExecuteBlocking(blockingCodeHandler);
   }
 }

@@ -18,9 +18,10 @@
 package io.vertx.ext.web.impl;
 
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.ext.web.AllowForwardHeaders;
 
 public class HttpServerRequestWrapperForTest extends HttpServerRequestWrapper {
-  HttpServerRequestWrapperForTest(HttpServerRequest request) {
-    super(request);
+  HttpServerRequestWrapperForTest(HttpServerRequest request, AllowForwardHeaders allowForwardHeaders) {
+    super(request, allowForwardHeaders);
   }
 }
