@@ -115,7 +115,7 @@ public class SpringmvcClient {
     changeTransport(microserviceName, "rest");
     String prefix = "cse://springmvc";
     String result = templateUrlWithServiceName.getForObject(prefix + "/controller/sayHello1?name=tom", String.class);
-    TestMgr.check("\"Hello tom,v\"", result);
+    TestMgr.check("Hello tom,v", result);
   }
 
   private static void testHttpClientsIsOk() {
