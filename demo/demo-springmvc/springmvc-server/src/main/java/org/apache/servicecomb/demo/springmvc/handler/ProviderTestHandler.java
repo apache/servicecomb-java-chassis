@@ -14,27 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.demo.springmvc.handler;
 
-package org.apache.servicecomb.samples;
 
-import org.apache.servicecomb.demo.CategorizedTestCase;
-import org.apache.servicecomb.demo.TestMgr;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.testng.annotations.Test;
+import org.apache.servicecomb.core.Handler;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Component
-public class HelloWorldIT implements CategorizedTestCase {
-  RestTemplate template = new RestTemplate();
+
+public class ProviderTestHandler implements Handler {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTestHandler.class);
 
   @Override
-  public void testRestTransport() throws Exception {
-    testHelloWorld();
-  }
-
-  private void testHelloWorld() {
-    String result = template
-        .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
-    TestMgr.check("\"Hello World\"", result);
+  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    invocation.addContext("k", "v");
+    invocation.next(asyncResp);
   }
 }

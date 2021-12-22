@@ -17,5 +17,5 @@
 
 <config>
   <handler id="test-provider"
-    class="org.apache.servicecomb.samples.handler.ProviderTestHandler"/>
+    class="org.apache.servicecomb.demo.springmvc.handler.ProviderTestHandler"/>
 </config>

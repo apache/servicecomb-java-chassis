@@ -34,10 +34,6 @@ servicecomb:
   kie:
     serverUri: ${CSE_V2_CC}
     customLabel: public
-  handler:
-    chain:
-      Provider:
-        default: test-provider
 
   rest:
     address: 0.0.0.0:9093 # should be same with server.port to use web container

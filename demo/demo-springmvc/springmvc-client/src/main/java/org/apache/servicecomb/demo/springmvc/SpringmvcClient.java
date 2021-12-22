@@ -101,15 +101,23 @@ public class SpringmvcClient {
     } catch (Exception e) {
       TestMgr.check("true", "true");
     }
-
+    testHandler(microserviceName);
     CodeFirstRestTemplateSpringmvc codeFirstClient =
         BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
     codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
     codeFirstClient.testCodeFirst(templateUrlWithProviderPrefix, "springmvc", "/pojo/rest/codeFirstSpringmvc/");
-
     testAllTransport(microserviceName);
     testRestTransport(microserviceName, prefix);
     CategorizedTestCaseRunner.runCategorizedTestCase(microserviceName);
+  }
+
+  private static void testHandler(String microserviceName) {
+    changeTransport(microserviceName, "rest");
+    RestTemplate template = new RestTemplate();
+    String prefix = "http://127.0.0.1:8080";
+    String result = template
+        .getForObject(prefix + "/weakSpringmvc/sayHello?name=tom", String.class);
+    TestMgr.check("\"Hello tom,v\"", result);
   }
 
   private static void testHttpClientsIsOk() {
