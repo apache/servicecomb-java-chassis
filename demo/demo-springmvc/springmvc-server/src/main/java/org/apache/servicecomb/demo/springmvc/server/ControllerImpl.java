@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import io.swagger.annotations.ApiOperation;
 
 // This class tests "contract first", the controller.yaml will override annotations defined in class.
 
@@ -76,5 +79,10 @@ public class ControllerImpl {
   @RequestMapping(path = "/sayhei", method = RequestMethod.GET)
   public String sayHei(@RequestHeader("name") String name) {
     return "hei " + name;
+  }
+
+  @RequestMapping(path = "/sayHello1", method = RequestMethod.GET)
+  public String sayHello1(@RequestParam("name") String name) {
+    return "Hello " + name + "," + ContextUtils.getInvocationContext().getContext("k");
   }
 }

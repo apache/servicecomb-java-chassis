@@ -21,7 +21,6 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.testng.annotations.Test;
 
 @Component
 public class HelloWorldIT implements CategorizedTestCase {

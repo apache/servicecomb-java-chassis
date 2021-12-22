@@ -113,10 +113,8 @@ public class SpringmvcClient {
 
   private static void testHandler(String microserviceName) {
     changeTransport(microserviceName, "rest");
-    RestTemplate template = new RestTemplate();
-    String prefix = "http://127.0.0.1:8080";
-    String result = template
-        .getForObject(prefix + "/weakSpringmvc/sayHello?name=tom", String.class);
+    String prefix = "cse://springmvc";
+    String result = templateUrlWithServiceName.getForObject(prefix + "/controller/sayHello1?name=tom", String.class);
     TestMgr.check("\"Hello tom,v\"", result);
   }
 

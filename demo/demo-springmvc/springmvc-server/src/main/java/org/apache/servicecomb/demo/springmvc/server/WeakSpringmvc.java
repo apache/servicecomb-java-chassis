@@ -61,9 +61,4 @@ public class WeakSpringmvc {
     return model;
   }
 
-  @GetMapping(path = "/sayHello")
-  @ApiOperation(value = "sayHello", nickname = "sayHello")
-  public String sayHello(@RequestParam("name") String name) {
-    return "Hello " + name + "," + ContextUtils.getInvocationContext().getContext("k");
-  }
 }
