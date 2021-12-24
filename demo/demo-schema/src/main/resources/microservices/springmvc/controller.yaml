@@ -22,7 +22,7 @@ info:
   title: rest test
   version: 1.0.0
   x-java-interface: org.apache.servicecomb.demo.controller.Controller
-  
+
 # the domain of the service
 #host: api.uber.com
 
@@ -34,7 +34,7 @@ info:
 basePath: /springmvc/controller
 produces:
   - application/json
-  
+
 paths:
   /add:
     get:
@@ -50,13 +50,13 @@ paths:
           required: true
           type: integer
           format: int32
-      responses: 
+      responses:
         "200":
           description: add numer
-          schema: 
+          schema:
             type: integer
             format: int32
-  
+
   /sayhello/{name}:
     post:
       operationId: sayHello
@@ -112,6 +112,19 @@ paths:
       responses:
         "200":
           description: say hei
+          schema:
+            type: string
+  /sayHello1:
+    get:
+      operationId: sayHello1
+      parameters:
+        - name: name
+          in: query
+          required: true
+          type: string
+      responses:
+        "200":
+          description: check the handler is effective
           schema:
             type: string
 
