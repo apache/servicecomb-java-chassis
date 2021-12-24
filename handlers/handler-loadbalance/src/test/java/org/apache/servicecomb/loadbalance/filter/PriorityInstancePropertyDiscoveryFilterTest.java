@@ -29,6 +29,7 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,6 +55,8 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
   @Injectable
   RegistrationManager registrationManager;
 
+  RegistrationManager original;
+
   @Before
   public void setUp() {
     filter = new PriorityInstancePropertyDiscoveryFilter();
@@ -77,6 +80,7 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
     instances.put(instance3.getInstanceId(), instance3);
     instances.put(instance4.getInstanceId(), instance4);
 
+    original = Deencapsulation.getField(RegistrationManager.class, "INSTANCE");
     Deencapsulation.setField(RegistrationManager.class, "INSTANCE", registrationManager);
 
     new Expectations() {
@@ -85,6 +89,11 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
         result = self;
       }
     };
+  }
+
+  @After
+  public void cleanup() {
+    Deencapsulation.setField(RegistrationManager.class, "INSTANCE", original);
   }
 
   @Test
