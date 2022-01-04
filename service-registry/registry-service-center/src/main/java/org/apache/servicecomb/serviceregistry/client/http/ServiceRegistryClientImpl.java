@@ -123,6 +123,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     String oldUri = requestContext.getIpPort().toString();
+    IpPortManager.availableIpCache.put(oldUri,false);
     requestContext.setIpPort(ipPortManager.getAvailableAddress());
     String newUri = requestContext.getIpPort().toString();
     LOGGER.warn("invoke service [{}] failed, retry address [{}].", oldUri, newUri);

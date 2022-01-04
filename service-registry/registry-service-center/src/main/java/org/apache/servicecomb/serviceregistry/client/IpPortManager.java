@@ -20,13 +20,22 @@ package org.apache.servicecomb.serviceregistry.client;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
@@ -36,6 +45,10 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.LoadingCache;
 
 public class IpPortManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
@@ -53,6 +66,19 @@ public class IpPortManager {
   private boolean autoDiscoveryInited = false;
 
   private int maxRetryTimes;
+
+  private final List<String> addresses = new ArrayList<>();
+
+  private int index = 0;
+
+  private List<String> sameAZ = new ArrayList<>();
+
+  private List<String> sameRegion = new ArrayList<>();
+
+  public static final Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
+      .maximumSize(1000)
+      .expireAfterAccess(10, TimeUnit.SECONDS)
+      .build();
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
     this.autoDiscoveryInited = autoDiscoveryInited;
@@ -104,6 +130,18 @@ public class IpPortManager {
       currentAvailableIndex.set(0);
       return defaultIpPort.get(0);
     }
+//    microservices.put("test","true");
+//    microservices.put("test2","true");
+//    for(int i =0;i<10;i++){
+//      try {
+//        Thread.sleep(1000);
+//
+//        microservices.get("test", () ->  "false");
+//      } catch (InterruptedException | ExecutionException e) {
+//        e.printStackTrace();
+//      }
+//    }
+
     maxRetryTimes = defaultIpPort.size() + endpoints.size();
     CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
     return new URIEndpointObject(nextEndpoint.getEndpoint());
@@ -118,4 +156,79 @@ public class IpPortManager {
         DefinitionConst.VERSION_RULE_LATEST);
     return instanceCache.getOrCreateTransportMap().get(defaultTransport);
   }
+
+  private void getIpPort() {
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+    List<CacheEndpoint> endpoints = getDiscoveredIpPort();
+
+//    List<String> sameAZ = new ArrayList<>();
+//    List<String> sameRegion = new ArrayList<>();
+    for (CacheEndpoint cacheEndpoint: endpoints) {
+      availableIpCache.put(getUri(cacheEndpoint.getEndpoint()),true);
+      if(regionAndAZMatch(myself,cacheEndpoint.getInstance())) {
+        sameAZ.add(cacheEndpoint.getEndpoint());
+      } else if(regionMatch(myself,cacheEndpoint.getInstance())) {
+        sameRegion.add(cacheEndpoint.getEndpoint());
+      }
+    }
+  }
+
+  private IpPort getAvailableIpPort() {
+    synchronized (this) {
+      try {
+
+        addresses.addAll(getAvailableAddress(sameAZ));
+        if(!getAvailableAddress(sameAZ).isEmpty()){
+          
+        }
+        this.index++;
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+      if (this.index >= addresses.size()) {
+        this.index = 0;
+      }
+      return addresses.get(index);
+    }
+
+  }
+
+  private List<String> getAvailableAddress(List<String> endpoints) throws ExecutionException {
+    List<String> result = new ArrayList<>();
+    for(String endpoint: endpoints) {
+      if(availableIpCache.get(endpoint,()->true)) {
+        result.add(endpoint);
+      }
+    }
+    return result;
+  }
+
+  private String getUri(String endpoint) {
+    return StringUtils.split(endpoint, "//")[1];
+  }
+
+  private List<String> getSameAZAnd() {
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+    return null;
+  }
+
+  private boolean regionAndAZMatch(MicroserviceInstance myself, MicroserviceInstance target) {
+    if (myself.getDataCenterInfo() == null) {
+      // when instance have no datacenter info, it will match all other datacenters
+      return true;
+    }
+    if (target.getDataCenterInfo() != null) {
+      return myself.getDataCenterInfo().getRegion().equals(target.getDataCenterInfo().getRegion()) &&
+          myself.getDataCenterInfo().getAvailableZone().equals(target.getDataCenterInfo().getAvailableZone());
+    }
+    return false;
+  }
+
+  private boolean regionMatch(MicroserviceInstance myself, MicroserviceInstance target) {
+    if (target.getDataCenterInfo() != null) {
+      return myself.getDataCenterInfo().getRegion().equals(target.getDataCenterInfo().getRegion());
+    }
+    return false;
+  }
+
 }
