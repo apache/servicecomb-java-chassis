@@ -93,7 +93,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
         currentProperty = currentProperty.child();
       }
     }
-    LOGGER.info("Discovery instance filter by {}", currentProperty.toString());
+    LOGGER.debug("Discovery instance filter by {}", currentProperty.toString());
     context.putContextParameter(propertyKey, currentProperty);
 
     // stop push filter stack if property is empty
@@ -117,6 +117,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
   }
 
   class PriorityInstanceProperty {
+    private static final int MAX_LENGTH = 10000;
 
     private static final String SEPARATOR = ".";
 
@@ -134,6 +135,9 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
       propertyKey = key;
       if (Objects.isNull(value)) {
         value = StringUtils.EMPTY;
+      }
+      if (value.length() > MAX_LENGTH) {
+        throw new IllegalArgumentException("property value exceed max length");
       }
       propertyVal = value;
     }
@@ -163,7 +167,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
      * @return result
      */
     public boolean hasChildren() {
-      return StringUtils.isNotEmpty(propertyVal) && propertyVal.length() < 100;
+      return StringUtils.isNotEmpty(propertyVal);
     }
 
     /**
