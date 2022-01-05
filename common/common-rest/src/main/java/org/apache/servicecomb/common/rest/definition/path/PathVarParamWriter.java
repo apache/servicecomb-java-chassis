@@ -43,9 +43,6 @@ public class PathVarParamWriter extends AbstractUrlParamWriter {
 
   private String encodeNotNullValue(Object value) throws Exception {
     String strValue = RestObjectMapperFactory.getRestObjectMapper().convertToString(value);
-    if (strValue.indexOf(';') != -1) {
-      strValue = strValue.substring(0, strValue.indexOf(';'));
-    }
     return HttpUtils.encodePathParam(strValue);
   }
 }

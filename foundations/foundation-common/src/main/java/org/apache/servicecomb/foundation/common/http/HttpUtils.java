@@ -90,6 +90,9 @@ public final class HttpUtils {
    * @return the encoded path param
    */
   public static String encodePathParam(String pathParam) {
+    if (pathParam.indexOf(';') != -1) {
+      pathParam = pathParam.substring(0, pathParam.indexOf(';'));
+    }
     return UrlEscapers.urlPathSegmentEscaper().escape(pathParam);
   }
 
