@@ -114,7 +114,7 @@ public class TestHttpUtils {
    */
   @Test
   public void pathParamEncode_SafeChar() {
-    Assert.assertEquals("-._~!$'()*,;&=@:+", HttpUtils.encodePathParam("-._~!$'()*,;&=@:+"));
+    Assert.assertEquals("-._~!$'()*,", HttpUtils.encodePathParam("-._~!$'()*,;&=@:+"));
   }
 
   @Test
