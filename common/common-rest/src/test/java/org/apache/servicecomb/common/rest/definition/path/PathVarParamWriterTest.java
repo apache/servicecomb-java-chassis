@@ -64,6 +64,17 @@ public class PathVarParamWriterTest {
   }
 
   @Test
+  public void writePathWithSpecialCharacters() throws Exception {
+    PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
+    URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
+    pathBuilder.appendPath("/api/");
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", "1;2.3,");
+    pathVarParamWriter.write(pathBuilder, parameters);
+    Assert.assertEquals("/api/1", pathBuilder.build());
+  }
+
+  @Test
   public void writePathParamWithSlash() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
     URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
@@ -87,7 +98,7 @@ public class PathVarParamWriterTest {
   private PathVarParamWriter createPathVarParamWriter() {
     RestParam restParam = new MockUp<RestParam>() {
       @Mock
-      public String getParamName(){
+      public String getParamName() {
         return "test";
       }
     }.getMockInstance();
