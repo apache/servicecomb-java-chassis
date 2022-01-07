@@ -53,8 +53,9 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
   }
 
   public void loadAndSort() {
+    String configFileFromClasspath = null;
     try {
-      String configFileFromClasspath =
+      configFileFromClasspath =
           System.getProperty(DEFAULT_FILE_NAME) == null ? DEFAULT_CONFIG_FILE_NAME
               : System.getProperty(DEFAULT_FILE_NAME);
       super.load(configFileFromClasspath);
@@ -69,8 +70,8 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
       }
 
       sort();
-    } catch (IOException e) {
-      throw new ServiceCombException("Failed to load microservice config", e);
+    } catch (Exception e) {
+      throw new ServiceCombException("Failed to load microservice configFile " + configFileFromClasspath + " and " + e.getMessage());
     }
   }
 

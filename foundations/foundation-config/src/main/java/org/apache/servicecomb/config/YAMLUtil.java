@@ -99,7 +99,7 @@ public final class YAMLUtil {
         if (!((Map) entry.getValue()).containsValue(null)) {
           result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
         } else {
-          throw new RuntimeException("configuration error and key is " + prefix + entry.getKey());
+          throw new RuntimeException("key is " + prefix + entry.getKey());
         }
       } else {
         String key = prefix + entry.getKey();
