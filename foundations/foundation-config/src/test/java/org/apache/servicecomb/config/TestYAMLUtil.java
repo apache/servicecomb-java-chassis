@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.config;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Map;
 
 import org.junit.Assert;
@@ -64,6 +66,15 @@ public class TestYAMLUtil {
     Object object = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$UnsafePerson\n"
         + "name: hello", Object.class);
     Assert.assertEquals("hello", ((UnsafePerson) object).getName());
+  }
+
+  @Test
+  public void testYamlConfig() {
+    RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+      YAMLUtil.yaml2Properties("servicecomb.service.registry.enabled: {{true}}");
+    });
+    Assert.assertEquals("configuration error and key is servicecomb.service.registry.enabled",
+        runtimeException.getMessage());
   }
 
   @Test

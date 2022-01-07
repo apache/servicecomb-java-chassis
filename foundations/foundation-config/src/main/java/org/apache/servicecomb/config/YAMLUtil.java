@@ -96,7 +96,11 @@ public final class YAMLUtil {
 
     for (Map.Entry<String, Object> entry : propertieMap.entrySet()) {
       if (entry.getValue() instanceof Map) {
-        result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
+        if (!((Map) entry.getValue()).containsValue(null)) {
+          result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
+        } else {
+          throw new RuntimeException("configuration error and key is " + prefix + entry.getKey());
+        }
       } else {
         String key = prefix + entry.getKey();
         if (key.startsWith(CONFIG_CSE_PREFIX)) {
