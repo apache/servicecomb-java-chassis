@@ -123,6 +123,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     String oldUri = requestContext.getIpPort().toString();
+
     IpPortManager.availableIpCache.put(oldUri,false);
     requestContext.setIpPort(ipPortManager.getAvailableAddress());
     String newUri = requestContext.getIpPort().toString();
@@ -673,6 +674,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           response.setOk(true);
           return response;
         }
+        IpPortManager.availableIpCache.put(ipPort.toString(),false);
         LOGGER.warn(holder.value.statusMessage());
         return response;
       }
