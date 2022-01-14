@@ -36,6 +36,10 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
 
   private static final String STRATEGY_NAME = "LeakyBucket";
 
+  public AtomicLong getRequestCount() {
+    return requestCount;
+  }
+
   @Override
   public boolean isLimitNewRequest() {
     if (this.getQpsLimit() == null) {

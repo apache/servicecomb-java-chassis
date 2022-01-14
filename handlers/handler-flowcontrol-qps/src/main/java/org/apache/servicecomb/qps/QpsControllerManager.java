@@ -59,6 +59,10 @@ public class QpsControllerManager {
 
   private final String globalBucketKey;
 
+  public AbstractQpsStrategy getGlobalQpsStrategy() {
+    return globalQpsStrategy;
+  }
+
   public QpsControllerManager(boolean isProvider) {
     if (isProvider) {
       limitKeyPrefix = Config.PROVIDER_LIMIT_KEY_PREFIX;

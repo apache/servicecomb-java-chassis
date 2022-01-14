@@ -109,7 +109,7 @@ public class TestConsumerQpsFlowControlHandler {
     Mockito.verify(asyncResp).consumerFail(captor.capture());
     InvocationException invocationException = captor.getValue();
     assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
-    assertEquals("rejected by qps flowcontrol",
+    assertEquals("consumer request rejected by qps flowcontrol, qpsLimit is 2147483647 and tps is 0",
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
   }
 

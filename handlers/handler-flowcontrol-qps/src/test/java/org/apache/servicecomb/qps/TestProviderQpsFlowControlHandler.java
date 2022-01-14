@@ -161,7 +161,7 @@ public class TestProviderQpsFlowControlHandler {
 
     InvocationException invocationException = captor.getValue();
     assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
-    assertEquals("rejected by qps flowcontrol",
+    assertEquals("provider request rejected by qps flowcontrol, qpsLimit is 2147483647 tps is 0",
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
   }
 

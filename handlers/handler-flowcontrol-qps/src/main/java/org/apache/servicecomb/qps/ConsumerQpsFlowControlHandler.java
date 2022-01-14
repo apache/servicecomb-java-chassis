@@ -19,16 +19,25 @@ package org.apache.servicecomb.qps;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
+import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * For qps flow control on consumer side.
  * Support 3 levels of microservice/schema/operation.
  */
 public class ConsumerQpsFlowControlHandler implements Handler {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerQpsFlowControlHandler.class);
+
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
+
+  private final Long qpsLimit = qpsControllerMgr.getGlobalQpsStrategy().getQpsLimit();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -38,9 +47,20 @@ public class ConsumerQpsFlowControlHandler implements Handler {
     }
 
     QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
+    String name = qpsStrategy.name();
     if (qpsStrategy.isLimitNewRequest()) {
+      long tps = 0;
+      if ("FixedWindow".equals(name)) {
+        FixedWindowStrategy windowStrategy = (FixedWindowStrategy) qpsControllerMgr.getGlobalQpsStrategy();
+        tps = windowStrategy.getRequestCount().longValue() - windowStrategy.getLastRequestCount() + 1;
+      } else {
+        LeakyBucketStrategy bucketStrategy = (LeakyBucketStrategy) qpsControllerMgr.getGlobalQpsStrategy();
+        tps = bucketStrategy.getRequestCount().longValue();
+      }
       // return http status 429
-      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
+      LOGGER.warn("consumer qps flowcontrol open, qpsLimit is {} and tps is {}", qpsLimit, tps);
+      CommonExceptionData errorData = new CommonExceptionData(
+          "consumer request rejected by qps flowcontrol, qpsLimit is " + qpsLimit + " and tps is " + tps);
       asyncResp.consumerFail(
           new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
       return;

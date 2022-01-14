@@ -33,6 +33,14 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
 
   private static final String STRATEGY_NAME = "FixedWindow";
 
+  public AtomicLong getRequestCount() {
+    return requestCount;
+  }
+
+  public long getLastRequestCount() {
+    return lastRequestCount;
+  }
+
   // return true means new request need to be rejected
   public boolean isLimitNewRequest() {
     if (this.getQpsLimit() == null) {
