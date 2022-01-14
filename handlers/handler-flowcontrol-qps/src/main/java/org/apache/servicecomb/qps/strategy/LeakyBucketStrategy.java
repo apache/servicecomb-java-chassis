@@ -19,6 +19,9 @@ package org.apache.servicecomb.qps.strategy;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * leaky bucket algorithm include 2 implementation :
  * 1. as a meter : it's same as the token bucket.
@@ -26,6 +29,8 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  **/
 public class LeakyBucketStrategy extends AbstractQpsStrategy {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LeakyBucketStrategy.class);
 
   // Request count between Interval begin and now in one interval
   private volatile AtomicLong requestCount = new AtomicLong();
@@ -35,10 +40,6 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
   private long remainder = 0;
 
   private static final String STRATEGY_NAME = "LeakyBucket";
-
-  public AtomicLong getRequestCount() {
-    return requestCount;
-  }
 
   @Override
   public boolean isLimitNewRequest() {
@@ -64,6 +65,7 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
       requestCount.incrementAndGet();
       return false;
     }
+    LOGGER.warn("qps flowcontrol open, qpsLimit is {} and tps is {}", this.getQpsLimit(), requestCount.longValue() + 1);
     return true;
   }
 

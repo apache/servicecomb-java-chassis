@@ -18,7 +18,12 @@ package org.apache.servicecomb.qps.strategy;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FixedWindowStrategy extends AbstractQpsStrategy {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(FixedWindowStrategy.class);
 
   // Interval begin time
   private volatile long msCycleBegin;
@@ -32,14 +37,6 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
   private static final int CYCLE_LENGTH = 1000;
 
   private static final String STRATEGY_NAME = "FixedWindow";
-
-  public AtomicLong getRequestCount() {
-    return requestCount;
-  }
-
-  public long getLastRequestCount() {
-    return lastRequestCount;
-  }
 
   // return true means new request need to be rejected
   public boolean isLimitNewRequest() {
@@ -57,7 +54,11 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
 
     // Configuration update and use is at the situation of multi-threaded concurrency
     // It is possible that operation level updated to null,but schema level or microservice level does not updated
-    return newCount - lastRequestCount >= this.getQpsLimit();
+    boolean isLimitRequest = newCount - lastRequestCount >= this.getQpsLimit();
+    if (isLimitRequest){
+      LOGGER.warn("qps flowcontrol open, qpsLimit is {} and tps is {}", this.getQpsLimit(), newCount - lastRequestCount + 1);
+    }
+    return isLimitRequest;
   }
 
   @Override

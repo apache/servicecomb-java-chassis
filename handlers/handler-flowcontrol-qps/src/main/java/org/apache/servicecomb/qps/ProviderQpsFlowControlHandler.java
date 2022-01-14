@@ -20,21 +20,13 @@ package org.apache.servicecomb.qps;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
-import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProviderQpsFlowControlHandler implements Handler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderQpsFlowControlHandler.class);
-
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
-
-  private final Long qpsLimit = qpsControllerMgr.getGlobalQpsStrategy().getQpsLimit();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -57,19 +49,9 @@ public class ProviderQpsFlowControlHandler implements Handler {
   }
 
   private boolean isLimitNewRequest(QpsStrategy qpsStrategy, AsyncResponse asyncResp) {
-    String name = qpsStrategy.name();
     if (qpsStrategy.isLimitNewRequest()) {
-      long tps = 0;
-      if ("FixedWindow".equals(name)) {
-        FixedWindowStrategy windowStrategy = (FixedWindowStrategy) qpsControllerMgr.getGlobalQpsStrategy();
-        tps = windowStrategy.getRequestCount().longValue() - windowStrategy.getLastRequestCount() + 1;
-      } else {
-        LeakyBucketStrategy bucketStrategy = (LeakyBucketStrategy) qpsControllerMgr.getGlobalQpsStrategy();
-        tps = bucketStrategy.getRequestCount().longValue();
-      }
-      LOGGER.warn("provider qps flowcontrol open, qpsLimit is {} and tps is {}", qpsLimit, tps);
       CommonExceptionData errorData = new CommonExceptionData(
-          "provider request rejected by qps flowcontrol, qpsLimit is " + qpsLimit + " tps is " + tps);
+          "provider request rejected by qps flowcontrol");
       asyncResp.producerFail(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
       return true;
     } else {
