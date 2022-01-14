@@ -40,7 +40,7 @@ public class ConsumerQpsFlowControlHandler implements Handler {
     QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
     if (qpsStrategy.isLimitNewRequest()) {
       // return http status 429
-      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
+      CommonExceptionData errorData = new CommonExceptionData("consumer request rejected by qps flowcontrol");
       asyncResp.consumerFail(
           new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
       return;

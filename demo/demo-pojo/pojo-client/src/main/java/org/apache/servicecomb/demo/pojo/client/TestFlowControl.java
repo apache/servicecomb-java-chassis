@@ -43,8 +43,8 @@ public class TestFlowControl {
 
   public void testAllTransport() throws Exception {
     // 1.3.2 未统一。 2.1.5 统一了。
-    String serverMsg = "InvocationException: code=429;msg={message=rejected by qps flowcontrol}";
-    String clientMsg = "InvocationException: code=429;msg=CommonExceptionData [message=rejected by qps flowcontrol]";
+    String serverMsg = "InvocationException: code=429;msg={message=provider request rejected by qps flowcontrol}";
+    String clientMsg = "InvocationException: code=429;msg=CommonExceptionData [message=consumer request rejected by qps flowcontrol]";
 
     testFlowControl((num) -> client1.foo(num), true, serverMsg);
     testFlowControl((num) -> client1.bar(num), false, serverMsg);
