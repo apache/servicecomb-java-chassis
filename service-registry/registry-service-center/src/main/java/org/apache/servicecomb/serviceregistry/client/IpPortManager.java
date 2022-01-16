@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
+import static org.apache.servicecomb.serviceregistry.api.Const.CONFIG_CENTER_NAME;
+import static org.apache.servicecomb.serviceregistry.api.Const.CSE_MONITORING_NAME;
+import static org.apache.servicecomb.serviceregistry.api.Const.KIE_NAME;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
 
@@ -28,8 +31,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.http.client.event.ConfigCenterEndpointChangedEvent;
+import org.apache.servicecomb.http.client.event.KieEndpointEndPointChangeEvent;
+import org.apache.servicecomb.http.client.event.MonitorEndpointChangeEvent;
+import org.apache.servicecomb.http.client.event.ServiceCenterEndpointChangeEvent;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
@@ -54,6 +62,12 @@ public class IpPortManager {
 
   private static final String SC_KEY = "SERVICECENTER@default@@0.0.0.0+";
 
+  private static final String CC_KEY = "CseConfigCenter@default@@0.0.0.0+";
+
+  private static final String KIE_KEY = "KIE@default@@0.0.0.0+";
+
+  private static final String MONITORING_KEY = "CseMonitoring@default@@0.0.0.0+";
+
   private ServiceRegistryConfig serviceRegistryConfig;
 
   InstanceCacheManager instanceCacheManager;
@@ -64,7 +78,7 @@ public class IpPortManager {
 
   private AtomicInteger currentAvailableIndex;
 
-  private boolean autoDiscoveryInited = true;
+  private boolean autoDiscoveryInited = false;
 
   private int maxRetryTimes;
 
@@ -77,8 +91,8 @@ public class IpPortManager {
   private volatile List<String> sameRegion = new ArrayList<>();
 
   public static final Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
-      .maximumSize(1000)
-      .expireAfterAccess(1, TimeUnit.MINUTES)
+      .maximumSize(10)
+      .expireAfterAccess(10, TimeUnit.MINUTES)
       .build();
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
@@ -108,20 +122,101 @@ public class IpPortManager {
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      InstanceCache cache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
-          REGISTRY_SERVICE_NAME,
-          DefinitionConst.VERSION_RULE_LATEST);
+      InitSCEndPointNew();
+      InitKieEndPointNew();
+      InitCCEndPointNew();
+      InitMTEndPointNew();
+    }
+  }
 
-      InstanceCache caches = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
-          REGISTRY_SERVICE_NAME,
-          DefinitionConst.VERSION_RULE_LATEST);
-      if (cache.getInstanceMap().size() <= 0) {
-        setAutoDiscoveryInited(false);
-        return;
-      }
-      initIpPort();
+  private void InitSCEndPointNew() {
+    InstanceCache KieCaches = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+        REGISTRY_SERVICE_NAME,
+        DefinitionConst.VERSION_RULE_LATEST);
+    if (KieCaches.getInstanceMap().size() > 0) {
       setAutoDiscoveryInited(true);
     }
+    List<CacheEndpoint> CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
+      availableIpCache.put(getUri(cacheEndpoint.getEndpoint()), true);
+      if (regionAndAZMatch(myself, cacheEndpoint.getInstance())) {
+        sameAZ.add(cacheEndpoint.getEndpoint());
+      } else if (regionMatch(myself, cacheEndpoint.getInstance())) {
+        sameRegion.add(cacheEndpoint.getEndpoint());
+      }
+    }
+    maxRetryTimes = CacheEndpoints.size();
+    EventManager.post(new ServiceCenterEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
+  }
+
+  private void InitKieEndPointNew() {
+    InstanceCache KieCaches = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+        KIE_NAME,
+        DefinitionConst.VERSION_RULE_LATEST);
+    if (KieCaches.getInstanceMap().size() <= 0) {
+      return;
+    }
+    List<CacheEndpoint> CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
+      if (regionAndAZMatch(myself, cacheEndpoint.getInstance())) {
+        sameAvailableZone.add(cacheEndpoint.getEndpoint());
+      } else if (regionMatch(myself, cacheEndpoint.getInstance())) {
+        sameAvailableRegion.add(cacheEndpoint.getEndpoint());
+      }
+    }
+    EventManager.post(new KieEndpointEndPointChangeEvent(sameAvailableZone, sameAvailableRegion));
+  }
+
+  private void InitCCEndPointNew() {
+    InstanceCache KieCaches = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+        CONFIG_CENTER_NAME,
+        DefinitionConst.VERSION_RULE_LATEST);
+    if (KieCaches.getInstanceMap().size() <= 0) {
+      return;
+    }
+    List<CacheEndpoint> CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
+      if (regionAndAZMatch(myself, cacheEndpoint.getInstance())) {
+        sameAvailableZone.add(cacheEndpoint.getEndpoint());
+      } else if (regionMatch(myself, cacheEndpoint.getInstance())) {
+        sameAvailableRegion.add(cacheEndpoint.getEndpoint());
+      }
+    }
+    EventManager.post(new ConfigCenterEndpointChangedEvent(sameAvailableZone, sameAvailableRegion));
+  }
+
+  private void InitMTEndPointNew() {
+    InstanceCache KieCaches = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+        CSE_MONITORING_NAME,
+        DefinitionConst.VERSION_RULE_LATEST);
+    if (KieCaches.getInstanceMap().size() <= 0) {
+      return;
+    }
+    List<CacheEndpoint> CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
+      if (regionAndAZMatch(myself, cacheEndpoint.getInstance())) {
+        sameAvailableZone.add(cacheEndpoint.getEndpoint());
+      } else if (regionMatch(myself, cacheEndpoint.getInstance())) {
+        sameAvailableRegion.add(cacheEndpoint.getEndpoint());
+      }
+    }
+    EventManager.post(new MonitorEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   @Subscribe
@@ -130,15 +225,79 @@ public class IpPortManager {
     if (null == microserviceCaches || microserviceCaches.isEmpty()) {
       return;
     }
+
     MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
     for (MicroserviceCache microserviceCache : microserviceCaches) {
       if (microserviceCache.getKey().toString().equals(SC_KEY)) {
-        refreshEndPoint(myself, microserviceCache);
+        refreshSCEndPoint(myself, microserviceCache);
+      }
+      if (microserviceCache.getKey().toString().equals(CC_KEY)) {
+        refreshCCEndPoint(myself, microserviceCache);
+      }
+      if (microserviceCache.getKey().toString().equals(KIE_KEY)) {
+        refreshKieEndPoint(myself, microserviceCache);
+      }
+      if (microserviceCache.getKey().toString().equals(MONITORING_KEY)) {
+        refreshMNEndPointNew(myself, microserviceCache);
       }
     }
   }
 
-  private void refreshEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
+  private void refreshKieEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    List<MicroserviceInstance> microserviceCacheInstances = microserviceCache.getInstances();
+
+    microserviceCacheInstances.forEach(microserviceInstance -> {
+      String endPoint = microserviceInstance.getEndpoints().get(0);
+      availableIpCache.put(getUri(endPoint), true);
+      if (regionAndAZMatch(myself, microserviceInstance)) {
+        sameAvailableZone.add(endPoint);
+      } else if (regionMatch(myself, microserviceInstance)) {
+        sameAvailableRegion.add(endPoint);
+      }
+    });
+
+    EventManager.post(new KieEndpointEndPointChangeEvent(sameAvailableZone, sameAvailableRegion));
+  }
+
+  private void refreshCCEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    List<MicroserviceInstance> microserviceCacheInstances = microserviceCache.getInstances();
+
+    microserviceCacheInstances.forEach(microserviceInstance -> {
+      String endPoint = microserviceInstance.getEndpoints().get(0);
+      availableIpCache.put(getUri(endPoint), true);
+      if (regionAndAZMatch(myself, microserviceInstance)) {
+        sameAvailableZone.add(endPoint);
+      } else if (regionMatch(myself, microserviceInstance)) {
+        sameAvailableRegion.add(endPoint);
+      }
+    });
+
+    EventManager.post(new ConfigCenterEndpointChangedEvent(sameAvailableZone, sameAvailableRegion));
+  }
+
+  private void refreshMNEndPointNew(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
+    List<String> sameAvailableZone = new ArrayList<>();
+    List<String> sameAvailableRegion = new ArrayList<>();
+    List<MicroserviceInstance> microserviceCacheInstances = microserviceCache.getInstances();
+
+    microserviceCacheInstances.forEach(microserviceInstance -> {
+      String endPoint = microserviceInstance.getEndpoints().get(0);
+      availableIpCache.put(getUri(endPoint), true);
+      if (regionAndAZMatch(myself, microserviceInstance)) {
+        sameAvailableZone.add(endPoint);
+      } else if (regionMatch(myself, microserviceInstance)) {
+        sameAvailableRegion.add(endPoint);
+      }
+    });
+
+    EventManager.post(new MonitorEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
+  }
+
+  private void refreshSCEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
     List<MicroserviceInstance> microserviceCacheInstances = microserviceCache.getInstances();
     synchronized (lock) {
       sameAZ.clear();
@@ -153,6 +312,7 @@ public class IpPortManager {
         }
       });
     }
+    EventManager.post(new ServiceCenterEndpointChangeEvent(sameAZ, sameRegion));
   }
 
   public IpPort getAvailableAddress() {
@@ -164,21 +324,6 @@ public class IpPortManager {
         REGISTRY_SERVICE_NAME,
         DefinitionConst.VERSION_RULE_LATEST);
     return instanceCache.getOrCreateTransportMap().get(defaultTransport);
-  }
-
-  private void initIpPort() {
-    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
-    List<CacheEndpoint> endpoints = getDiscoveredIpPort();
-
-    for (CacheEndpoint cacheEndpoint : endpoints) {
-      availableIpCache.put(getUri(cacheEndpoint.getEndpoint()), true);
-      if (regionAndAZMatch(myself, cacheEndpoint.getInstance())) {
-        sameAZ.add(cacheEndpoint.getEndpoint());
-      } else if (regionMatch(myself, cacheEndpoint.getInstance())) {
-        sameRegion.add(cacheEndpoint.getEndpoint());
-      }
-    }
-    maxRetryTimes = endpoints.size();
   }
 
   private IpPort getAvailableIpPort() {

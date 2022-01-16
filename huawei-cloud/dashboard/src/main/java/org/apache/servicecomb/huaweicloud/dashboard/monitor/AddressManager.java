@@ -24,9 +24,12 @@ import java.util.List;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.http.client.event.ConfigCenterEndpointChangedEvent;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+
+import com.google.common.eventbus.Subscribe;
 
 
 public class AddressManager {
@@ -80,5 +83,15 @@ public class AddressManager {
         }
       }
     }
+  }
+
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigCenterEndpointChangedEvent event) {
+//    DynamicConfigurationChangedEvent
+    int a =0;
+    int b=2;
+    int c=0;
+    event.getSameAZ();
+    c=a+b;
   }
 }

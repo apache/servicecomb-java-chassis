@@ -52,6 +52,8 @@ public class KieClient implements KieConfigOperation {
 
   protected String revision = "0";
 
+  private String currentAddress = "";
+
   private final KieAddressManager addressManager;
 
   private final KieConfiguration kieConfiguration;
@@ -92,6 +94,7 @@ public class KieClient implements KieConfigOperation {
         configurationsResponse.setChanged(false);
         return configurationsResponse;
       }
+      KieAddressManager.availableIpCache.put(currentAddress, false);
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
@@ -103,7 +106,8 @@ public class KieClient implements KieConfigOperation {
 
   private String buildUrl(ConfigurationsRequest request) {
     StringBuilder sb = new StringBuilder();
-    sb.append(addressManager.address());
+    currentAddress = addressManager.address();
+    sb.append(currentAddress);
     sb.append("/");
     sb.append(DEFAULT_KIE_API_VERSION);
     sb.append("/");

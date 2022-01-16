@@ -185,6 +185,12 @@ public final class Const {
 
   public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 
+  public static final String KIE_NAME = "KIE";
+
+  public static final String CONFIG_CENTER_NAME = "CseConfigCenter";
+
+  public static final String CSE_MONITORING_NAME = "CseMonitoring";
+
   public static final String PATH_CHECKSESSION = "checksession";
 
   public static final int SERVICE_CENTER_ORDER = 100;

@@ -48,6 +48,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
+import org.apache.servicecomb.http.client.event.KieEndpointEndPointChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   private ConfigCenterManager configCenterManager;
 
   private ConfigConverter configConverter;
+
+  AddressManager kieAddressManager;
 
   @Override
   public int getOrder() {
@@ -87,7 +90,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public void init(Configuration localConfiguration) {
     configConverter = new ConfigConverter(ConfigCenterConfig.INSTANCE.getFileSources());
 
-    AddressManager kieAddressManager = configKieAddressManager();
+    kieAddressManager = configKieAddressManager();
 
     HttpTransport httpTransport = createHttpTransport(kieAddressManager,
         HttpTransportFactory.defaultRequestConfig().build(),
@@ -219,5 +222,14 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public Map<String, Object> getCurrentData() throws Exception {
     // data will updated by first pull, set empty to DynamicWatchedConfiguration first.
     return Collections.emptyMap();
+  }
+
+  @Subscribe
+  public void onKieEndpointEndPointChangeEvent(KieEndpointEndPointChangeEvent event) {
+    if (null == event) {
+      return;
+    }
+    kieAddressManager.setAvailableZone(event.getSameAZ());
+    kieAddressManager.setAvailableRegion(event.getSameRegion());
   }
 }
