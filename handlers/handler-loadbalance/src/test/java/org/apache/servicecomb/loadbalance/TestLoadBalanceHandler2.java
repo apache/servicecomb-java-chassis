@@ -880,65 +880,6 @@ public class TestLoadBalanceHandler2 {
   }
 
   /**
-   * Two available instances, first time the normal instance is selected and failed. Then retry to the TRYING status
-   * instance. In the whole procedure, the TRYING status instance should keep the TRYING status.
-   */
-  @Test
-  public void first_normal_instance_then_trying_instance() {
-    ExtensionsManager.addExtentionsFactory(new DefaultRetryExtensionsFactory());
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.retryEnabled", true);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.retryOnNext", 1);
-
-    ArrayList<ServiceCombServer> servers = new ArrayList<>();
-    ServiceCombServer server0 = createMockedServer("instanceId0", "rest://127.0.0.1:8080");
-    ServiceCombServer server1 = createMockedServer("instanceId1", "rest://127.0.0.1:8081");
-    servers.add(server0);
-    servers.add(server1);
-
-    ServiceCombServerStats stats0 = mockServiceCombServerStats(server0, 0, false);
-    ServiceCombServerStats stats1 = mockServiceCombServerStats(server1, 5, true);
-
-    DiscoveryTree discoveryTree = createMockedDiscoveryTree(servers);
-    LoadbalanceHandler handler = new LoadbalanceHandler(discoveryTree);
-
-    Holder<Integer> counter = new Holder<>(0);
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
-        (inv, aysnc) -> {
-          Assert.assertFalse(stats0.isIsolated());
-          Assert.assertTrue(stats1.isIsolated());
-          Assert.assertEquals(5, stats1.getContinuousFailureCount());
-          Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
-          if (counter.value == 0) {
-            Assert.assertEquals("rest://127.0.0.1:8080", inv.getEndpoint().getEndpoint());
-            Assert.assertEquals(0, stats0.getContinuousFailureCount());
-            counter.value++;
-            aysnc.producerFail(new InvocationException(503, "RETRY", "retry to next instance"));
-          } else if (counter.value == 1) {
-            Assert.assertEquals("rest://127.0.0.1:8081", inv.getEndpoint().getEndpoint());
-            Assert.assertEquals(1, stats0.getContinuousFailureCount());
-            counter.value++;
-            aysnc.success("OK");
-          } else {
-            aysnc.producerFail(new InvocationException(400, "UNEXPECTED", "Unexpected Counter Value"));
-          }
-        });
-
-    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
-    invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
-    try {
-      handler.handle(invocation, (response) -> Assert.assertEquals("OK", response.getResult()));
-    } catch (Exception e) {
-      Assert.fail("unexpected exception " + e.getMessage());
-    }
-    Assert.assertEquals("rest://127.0.0.1:8081", invocation.getEndpoint().getEndpoint());
-    Assert.assertFalse(stats0.isIsolated());
-    Assert.assertEquals(1, stats0.getContinuousFailureCount());
-    Assert.assertTrue(stats1.isIsolated());
-    Assert.assertEquals(0, stats1.getContinuousFailureCount());
-    Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
-  }
-
-  /**
    * Mock the statistics of the specified {@code serviceCombServer}, set the failureCount and status.
    * @return the ServiceCombServerStats object corresponding to the param {@code serviceCombServer}
    */

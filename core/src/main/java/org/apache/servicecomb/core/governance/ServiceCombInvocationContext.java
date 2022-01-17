@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.handler.governance;
+package org.apache.servicecomb.core.governance;
 
 import java.util.Collections;
 import java.util.HashMap;

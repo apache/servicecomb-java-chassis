@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.handler.governance;
+package org.apache.servicecomb.core.governance;
 
 import org.apache.servicecomb.governance.MicroserviceMeta;
 import org.apache.servicecomb.registry.RegistrationManager;
