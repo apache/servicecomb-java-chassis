@@ -14,36 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.core.governance;
 
-package org.apache.servicecomb.demo.validator;
+public class RetryContext {
+  public static final String RETRY_CONTEXT = "x-servicecomb-retry";
 
-import javax.validation.constraints.NotBlank;
+  private boolean retry;
 
-public class Teacher {
+  private int triedCount;
 
-  @NotBlank(message = "must not be blank")
-  private String name;
+  private int retryOnSame;
 
-  private String age;
-
-  public String getName() {
-    return name;
+  public RetryContext(int retryOnSame) {
+    this.retryOnSame = retryOnSame;
+    this.retry = false;
+    this.triedCount = 0;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public boolean isRetry() {
+    return retry;
   }
 
-  public String getAge() {
-    return age;
+  public void incrementRetry() {
+    this.retry = true;
+    this.triedCount++;
   }
 
-  public void setAge(String age) {
-    this.age = age;
-  }
-
-  @Override
-  public String toString() {
-    return name + " " + age;
+  public boolean trySameServer() {
+    return triedCount <= retryOnSame;
   }
 }

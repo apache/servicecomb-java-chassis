@@ -237,6 +237,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     int retryResult = template.getForObject(cseUrlPrefix + "retrySuccess?a=2&b=3", Integer.class);
     TestMgr.check(retryResult, 5);
+    retryResult = template.getForObject(cseUrlPrefix + "retrySuccess?a=2&b=3", Integer.class);
+    TestMgr.check(retryResult, 5);
   }
 
   private void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {

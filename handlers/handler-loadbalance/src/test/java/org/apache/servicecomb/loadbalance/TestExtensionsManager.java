@@ -16,22 +16,15 @@
  */
 package org.apache.servicecomb.loadbalance;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.netflix.client.DefaultLoadBalancerRetryHandler;
-import com.netflix.client.RetryHandler;
 
 import mockit.Deencapsulation;
 
@@ -58,7 +51,6 @@ public class TestExtensionsManager {
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
-    extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
 
@@ -83,18 +75,7 @@ public class TestExtensionsManager {
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
-    extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
-    RetryHandler retryHandler = ExtensionsManager.createRetryHandler("mytest1");
-    Assert.assertTrue(DefaultLoadBalancerRetryHandler.class.isInstance(retryHandler));
-    Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), false));
-    Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), true));
-    Assert.assertTrue(retryHandler.isRetriableException(new InvocationException(503, "", ""), true));
-    Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), false));
-    Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), true));
-    Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), false));
-    Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), true));
-    Assert.assertFalse(retryHandler.isRetriableException(new IOException(), true));
   }
 }

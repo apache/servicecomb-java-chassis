@@ -28,9 +28,6 @@ import org.junit.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 
-import mockit.Mock;
-import mockit.MockUp;
-
 /**
  *
  */
@@ -45,9 +42,6 @@ public class TestConfiguration {
 
     assertEquals("servicecomb.loadbalance.", Configuration.ROOT);
     assertEquals("ribbon.", Configuration.ROOT_20);
-    assertEquals("retryEnabled", Configuration.RETRY_ENABLED);
-    assertEquals("retryOnNext", Configuration.RETRY_ON_NEXT);
-    assertEquals("retryOnSame", Configuration.RETRY_ON_SAME);
     assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
     assertEquals("maxSingleTestWindow", Configuration.FILTER_MAX_SINGLE_TEST_WINDOW);
 
@@ -56,100 +50,8 @@ public class TestConfiguration {
 
   @Test
   public void testFullConfigurationWithArgsString() {
-    assertNotNull(Configuration.INSTANCE.getRetryNextServer("test"));
-    assertNotNull(Configuration.INSTANCE.getRetrySameServer("test"));
-    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
     assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
     assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
-  }
-
-  @Test
-  public void testConfigurationWithGetpropertyReturnsStringChar() {
-
-    new MockUp<Configuration>() {
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "tyt";
-      }
-    };
-
-    Configuration.INSTANCE.getRetryNextServer("test");
-
-    assertNotNull(Configuration.INSTANCE.getRetryNextServer("test"));
-  }
-
-  @Test
-  public void testConfigurationWithGetpropertyReturnsStringNum() {
-
-    new MockUp<Configuration>() {
-
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "1234";
-      }
-    };
-
-    Configuration.INSTANCE.getRetryNextServer("test");
-
-    assertNotNull(Configuration.INSTANCE.getRetryNextServer("test"));
-  }
-
-  @Test
-  public void testGetRetryOnSameWithGetpropertyReturnsStringChar() {
-
-    new MockUp<Configuration>() {
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "tyt";
-      }
-    };
-
-    Configuration.INSTANCE.getRetrySameServer("test");
-    assertNotNull(Configuration.INSTANCE.getRetrySameServer("test"));
-  }
-
-  @Test
-  public void testGetRetryOnSameWithGetpropertyReturnsStringNum() {
-
-    new MockUp<Configuration>() {
-
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "1234";
-      }
-    };
-
-    Configuration.INSTANCE.getRetrySameServer("test");
-    assertNotNull(Configuration.INSTANCE.getRetrySameServer("test"));
-  }
-
-  @Test
-  public void testIsRetryEnabledWithGetpropertyReturnsStringChar() {
-
-    new MockUp<Configuration>() {
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "tyt";
-      }
-    };
-
-    Configuration.INSTANCE.isRetryEnabled("test");
-    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-  }
-
-  @Test
-  public void testIsRetryEnabledWithGetpropertyReturnsStringNum() {
-
-    new MockUp<Configuration>() {
-
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "1234";
-      }
-    };
-
-    Configuration.INSTANCE.isRetryEnabled("test");
-    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
   }
 
   @Test

@@ -23,6 +23,8 @@ import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.governance.MatchType;
+import org.apache.servicecomb.core.governance.ServiceCombInvocationContext;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;

@@ -30,7 +30,6 @@ servicecomb:
     strategy:
       name: mycustomrule
     retryEnabled: true
-    retryHandler: mycustomhandler
 
   request:
     timeout: 30000
