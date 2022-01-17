@@ -73,7 +73,7 @@ public class TestYAMLUtil {
     RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
       YAMLUtil.yaml2Properties("servicecomb.service.registry.enabled: {{true}}");
     });
-    Assert.assertEquals("key is servicecomb.service.registry.enabled",
+    Assert.assertEquals("value config error",
         runtimeException.getMessage());
   }
 
