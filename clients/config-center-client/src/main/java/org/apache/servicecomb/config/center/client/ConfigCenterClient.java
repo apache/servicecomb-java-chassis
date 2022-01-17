@@ -65,8 +65,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     Map<String, Object> configurations = new HashMap<>();
 
     String uri = null;
+    String currentAddress = addressManager.address();
     try {
-      uri = addressManager.address() + "/configuration/items?dimensionsInfo="
+      uri = currentAddress + "/configuration/items?dimensionsInfo="
           + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
 
       Map<String, String> headers = new HashMap<>();
@@ -118,6 +119,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
                 + httpResponse.getContent());
       }
     } catch (IOException e) {
+      AddressManager.availableIpCache.put(currentAddress,false);
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }

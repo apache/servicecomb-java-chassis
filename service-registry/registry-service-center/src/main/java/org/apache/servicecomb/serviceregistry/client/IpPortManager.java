@@ -53,6 +53,7 @@ import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheRe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.Subscribe;
@@ -333,12 +334,12 @@ public class IpPortManager {
       ipPort = getDefaultIpPort();
     } else {
       List<String> addresses = getAvailableZoneIpPorts();
-      if (index.get() >= addresses.size()) {
-        index.set(0);
-      }
       if (addresses.isEmpty()) {
         ipPort = getDefaultIpPort();
       } else {
+        if (index.get() >= addresses.size()) {
+          index.set(0);
+        }
         ipPort = new URIEndpointObject(addresses.get(index.get()));
       }
     }

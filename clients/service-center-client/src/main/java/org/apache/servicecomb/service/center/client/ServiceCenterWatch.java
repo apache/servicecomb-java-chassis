@@ -75,6 +75,8 @@ public class ServiceCenterWatch implements WebSocketListener {
 
   private String currentServerUri;
 
+  private String currentAddress;
+
   private final ExecutorService connector = Executors.newFixedThreadPool(1, (r) -> new
       Thread(r, "web-socket-connector"));
 
@@ -114,23 +116,24 @@ public class ServiceCenterWatch implements WebSocketListener {
             headers, this);
         webSocketTransport.connectBlocking();
       } catch (Exception e) {
+        AddressManager.availableIpCache.put(currentAddress, false);
         LOGGER.error("start watch failed. ", e);
       }
     });
   }
 
   private String convertAddress() {
-    String address = addressManager.address();
+    currentAddress = addressManager.address();
     String url = String.format(WATCH, project, serviceId);
-    if (address.startsWith(HTTP)) {
-      return WS + address.substring(HTTP.length()) + url;
+    if (currentAddress.startsWith(HTTP)) {
+      return WS + currentAddress.substring(HTTP.length()) + url;
     }
 
-    if (address.startsWith(HTTPS)) {
-      return WSS + address.substring(HTTPS.length()) + url;
+    if (currentAddress.startsWith(HTTPS)) {
+      return WSS + currentAddress.substring(HTTPS.length()) + url;
     }
 
-    return address + url;
+    return currentAddress + url;
   }
 
   public void stop() {

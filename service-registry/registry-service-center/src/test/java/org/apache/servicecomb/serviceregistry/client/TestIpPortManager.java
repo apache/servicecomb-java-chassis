@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
@@ -112,7 +113,6 @@ public class TestIpPortManager {
     };
 
     // test getAvailableAddress() when auto discovery is disabled
-    manager.initAutoDiscovery();  //init result is false at first time
     IpPort address4 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
     if (address1.getPort() == 9980) {
@@ -120,12 +120,25 @@ public class TestIpPortManager {
     }
     Assert.assertEquals(9980, address4.getPort());
 
-    // test getAvailable address when auto discovery is enabled
-    manager.setAutoDiscoveryInited(true);
     IpPort address5 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9981, address5.getPort());
 
+    //mock RegistrationManager.INSTANCE
+    String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
+    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+    microserviceInstance.setInstanceId(instanceId);
+    Map<String, String> properties = new HashMap<>();
+    microserviceInstance.setProperties(properties);
+    new Expectations(RegistrationManager.INSTANCE) {
+      {
+        RegistrationManager.INSTANCE.getMicroserviceInstance();
+        result = microserviceInstance;
+      }
+    };
+    // test getAvailable address when auto discovery is enabled
+    manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(true);
     IpPort address6 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
     Assert.assertEquals(9982, address6.getPort());
