@@ -48,9 +48,5 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-common</artifactId>
-    </dependency>
   </dependencies>
 </project>

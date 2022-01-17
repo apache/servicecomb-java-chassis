@@ -150,7 +150,8 @@ public class IpPortManager {
       }
     }
     maxRetryTimes = CacheEndpoints.size();
-    EventManager.post(new ServiceCenterEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
+    org.apache.servicecomb.http.client.event.EventManager
+        .post(new ServiceCenterEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   private void InitKieEndPointNew() {

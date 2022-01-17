@@ -22,9 +22,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.event.KieEndpointEndPointChangeEvent;
+import org.apache.servicecomb.http.client.event.EventManager;
 import org.apache.servicecomb.http.client.event.ServiceCenterEndpointChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,5 +144,11 @@ public class AddressManager {
     }
     availableZone = event.getSameAZ();
     availableRegion = event.getSameRegion();
+    refreshCache();
+  }
+
+  private void refreshCache() {
+    availableZone.forEach(address -> availableIpCache.put(address, true));
+    availableRegion.forEach(address -> availableIpCache.put(address, true));
   }
 }

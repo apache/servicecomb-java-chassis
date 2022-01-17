@@ -216,5 +216,11 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
     }
     kieAddressManager.setAvailableZone(event.getSameAZ());
     kieAddressManager.setAvailableRegion(event.getSameRegion());
+    refreshCache();
+  }
+
+  private void refreshCache() {
+    kieAddressManager.getAvailableZone().forEach(address -> KieAddressManager.availableIpCache.put(address, true));
+    kieAddressManager.getAvailableRegion().forEach(address -> KieAddressManager.availableIpCache.put(address, true));
   }
 }
