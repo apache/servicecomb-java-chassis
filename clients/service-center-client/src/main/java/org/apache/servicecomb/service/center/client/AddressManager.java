@@ -43,6 +43,8 @@ public class AddressManager {
 
   private boolean isSSLEnable = false;
 
+  private String currentAddress = "";
+
   private volatile List<String> availableZone = new ArrayList<>();
 
   private volatile List<String> availableRegion = new ArrayList<>();
@@ -134,7 +136,12 @@ public class AddressManager {
   }
 
   public String formatUrl(String url, boolean absoluteUrl) {
-    return absoluteUrl ? address() + url : formatAddress(address()) + url;
+    currentAddress = address();
+    return absoluteUrl ? currentAddress + url : formatAddress(currentAddress) + url;
+  }
+
+  public String getCurrentAddress() {
+    return currentAddress;
   }
 
   @Subscribe
