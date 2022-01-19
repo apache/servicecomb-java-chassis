@@ -119,7 +119,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
                 + httpResponse.getContent());
       }
     } catch (IOException e) {
-      AddressManager.availableIpCache.put(currentAddress,false);
+      addressManager.getEndpointAddress().getAvailableIpCache().put(currentAddress,false);
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }

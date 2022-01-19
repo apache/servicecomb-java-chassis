@@ -53,7 +53,6 @@ import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheRe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.Subscribe;
@@ -92,7 +91,7 @@ public class IpPortManager {
   private volatile List<String> sameRegion = new ArrayList<>();
 
   public static final Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
-      .maximumSize(10)
+      .maximumSize(50)
       .expireAfterAccess(10, TimeUnit.MINUTES)
       .build();
 
@@ -174,7 +173,8 @@ public class IpPortManager {
         sameAvailableRegion.add(cacheEndpoint.getEndpoint());
       }
     }
-    EventManager.post(new KieEndpointEndPointChangeEvent(sameAvailableZone, sameAvailableRegion));
+    org.apache.servicecomb.http.client.event.EventManager
+        .post(new KieEndpointEndPointChangeEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   private void InitCCEndPointNew() {
@@ -196,7 +196,8 @@ public class IpPortManager {
         sameAvailableRegion.add(cacheEndpoint.getEndpoint());
       }
     }
-    EventManager.post(new ConfigCenterEndpointChangedEvent(sameAvailableZone, sameAvailableRegion));
+    org.apache.servicecomb.http.client.event.EventManager
+        .post(new ConfigCenterEndpointChangedEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   private void InitMTEndPointNew() {

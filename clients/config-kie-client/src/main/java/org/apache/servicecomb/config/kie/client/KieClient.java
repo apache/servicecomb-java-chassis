@@ -94,7 +94,7 @@ public class KieClient implements KieConfigOperation {
         configurationsResponse.setChanged(false);
         return configurationsResponse;
       }
-      KieAddressManager.availableIpCache.put(currentAddress, false);
+      addressManager.getEndpointAddress().getAvailableIpCache().put(currentAddress,false);
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
