@@ -85,8 +85,9 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
       try {
         invocation.next(resp -> {
           if (isFailedResponse(resp)) {
-            // e should implements toString
-            LOG.warn("bizkeeper command {} failed due to {}", invocation.getInvocationQualifiedName(),
+            LOG.warn("bizkeeper command {} failed, trace id {}",
+                invocation.getInvocationQualifiedName(),
+                invocation.getTraceId(),
                 resp.getResult());
             f.onError(resp.getResult());
             FallbackPolicyManager.record(type, invocation, resp, false);
@@ -97,7 +98,9 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
           }
         });
       } catch (Exception e) {
-        LOG.warn("bizkeeper command {} execute failed due to {}", invocation.getInvocationQualifiedName(),
+        LOG.warn("bizkeeper command {} execute failed, trace id {}, cause {}",
+            invocation.getInvocationQualifiedName(),
+            invocation.getTraceId(),
             e.getClass().getName());
         f.onError(e);
       }

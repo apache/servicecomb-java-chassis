@@ -17,7 +17,9 @@
 package org.apache.servicecomb.core.governance;
 
 public class RetryContext {
-  public static final String RETRY_CONTEXT = "x-servicecomb-retry";
+  public static final String RETRY_CONTEXT = "x-context-retry";
+
+  public static final String RETRY_LOAD_BALANCE = "x-context-retry-loadbalance";
 
   private boolean retry;
 

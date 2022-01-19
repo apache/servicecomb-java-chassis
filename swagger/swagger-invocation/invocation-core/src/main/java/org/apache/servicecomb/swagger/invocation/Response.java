@@ -179,6 +179,11 @@ public class Response {
     return createFail(exception);
   }
 
+  public static Response createConsumerFail(Throwable throwable, String message) {
+    InvocationException exception = ExceptionFactory.convertConsumerException(throwable, message);
+    return createFail(exception);
+  }
+
   public static Response createProducerFail(Throwable throwable) {
     InvocationException exception = ExceptionFactory.convertProducerException(throwable);
     return createFail(exception);
