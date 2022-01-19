@@ -115,8 +115,10 @@ public class LoadbalanceHandler implements Handler {
     };
 
     if (handleSuppliedEndpoint(invocation, asyncResp)) {
+      invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, false);
       return;
     }
+    invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, true);
 
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
     if (!Objects.equals(strategy, this.strategy)) {
@@ -198,9 +200,6 @@ public class LoadbalanceHandler implements Handler {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
         ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
       }
-      // clear endpoint after invocation finished.  In retry, will choose a new server, this is different than
-      // user defined endpoint
-      invocation.setEndpoint(null);
       asyncResp.handle(resp);
     });
   }
@@ -232,9 +231,10 @@ public class LoadbalanceHandler implements Handler {
       }
     }
 
-    LOGGER.info("retry to instance [{}], last instance [{}], trace id {}",
-        nextServer.getHostPort(),
-        lastServer.getHostPort(),
+    LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
+        invocation.getMicroserviceQualifiedName(),
+        nextServer == null ? "" : nextServer.getHostPort(),
+        lastServer == null ? "" : lastServer.getHostPort(),
         invocation.getTraceId());
     invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, lastServer);
     return lastServer;

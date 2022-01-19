@@ -19,9 +19,8 @@ package org.apache.servicecomb.governance;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import org.apache.servicecomb.governance.handler.ext.RetryExtension;
+import org.springframework.stereotype.Component;
 
 @Component
 public class MockRetryExtension implements RetryExtension {
@@ -31,7 +30,7 @@ public class MockRetryExtension implements RetryExtension {
   }
 
   @Override
-  public Class<? extends Throwable>[] retryExceptions() {
-    return null;
+  public boolean isRetry(Throwable e) {
+    return false;
   }
 }

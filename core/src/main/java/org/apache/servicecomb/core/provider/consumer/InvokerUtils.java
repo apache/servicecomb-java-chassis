@@ -18,18 +18,12 @@
 package org.apache.servicecomb.core.provider.consumer;
 
 import static org.apache.servicecomb.core.exception.Exceptions.toConsumerResponse;
+import static org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory.CONSUMER_INNER_STATUS_CODE;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.SocketTimeoutException;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
@@ -39,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -54,6 +49,7 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.RetryHandler;
+import org.apache.servicecomb.governance.handler.ext.RetryExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -63,7 +59,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.github.resilience4j.decorators.Decorators;
@@ -74,22 +70,9 @@ import io.github.resilience4j.retry.RetryRegistry;
 import io.vavr.CheckedFunction0;
 import io.vavr.control.Try;
 import io.vertx.core.Context;
-import io.vertx.core.VertxException;
 
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
-
-  private static final Map<Class<? extends Throwable>, List<String>> STRICT_RETRIABLE =
-      ImmutableMap.<Class<? extends Throwable>, List<String>>builder()
-          .put(ConnectException.class, Collections.emptyList())
-          .put(SocketTimeoutException.class, Collections.emptyList())
-          /*
-           * deal with some special exceptions caused by the server side close the connection
-           */
-          .put(IOException.class, Collections.singletonList("Connection reset by peer"))
-          .put(VertxException.class, Collections.singletonList("Connection was closed"))
-          .put(NoRouteToHostException.class, Collections.emptyList())
-          .build();
 
   private static final Object LOCK = new Object();
 
@@ -220,37 +203,46 @@ public final class InvokerUtils {
     }
   }
 
-  private static Response innerSyncInvokeImpl(Invocation invocation) {
-    try {
-      if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
-        throw new IllegalStateException("Can not execute sync logic in event loop. ");
-      }
-      updateRetryStatus(invocation);
-      SyncResponseExecutor respExecutor = new SyncResponseExecutor();
-      invocation.setResponseExecutor(respExecutor);
-
-      invocation.onStartHandlersRequest();
-      invocation.next(respExecutor::setResponse);
-
-      Response response = respExecutor.waitResponse(invocation);
-      invocation.getInvocationStageTrace().finishHandlersResponse();
-      invocation.onFinish(response);
-      return response;
-    } catch (Throwable e) {
-      String msg =
-          String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
-      LOGGER.error(msg, e);
-
-      Response response = Response.createConsumerFail(e);
-      invocation.onFinish(response);
-      return response;
+  private static Response innerSyncInvokeImpl(Invocation invocation) throws Throwable {
+    if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
+      throw new IllegalStateException("Can not execute sync logic in event loop. ");
     }
+    updateRetryStatus(invocation);
+    SyncResponseExecutor respExecutor = new SyncResponseExecutor();
+    invocation.setResponseExecutor(respExecutor);
+
+    invocation.onStartHandlersRequest();
+    invocation.next(respExecutor::setResponse);
+
+    Response response = respExecutor.waitResponse(invocation);
+    if (response.isFailed()) {
+      // re-throw exception to make sure retry based on exception
+      // for InvocationException, users can configure status code for retry
+      // for 490, details error are wrapped, need re-throw
+
+      if (!(response.getResult() instanceof InvocationException)) {
+        throw (Throwable) response.getResult();
+      }
+
+      if (((InvocationException) response.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
+        throw (Throwable) response.getResult();
+      }
+    }
+
+    invocation.getInvocationStageTrace().finishHandlersResponse();
+    invocation.onFinish(response);
+    return response;
   }
 
   private static void updateRetryStatus(Invocation invocation) {
     if (invocation.getHandlerIndex() != 0) {
       // for retry, reset index
       invocation.setHandlerIndex(0);
+      if (invocation.getLocalContext(RetryContext.RETRY_LOAD_BALANCE) != null
+          && (boolean) invocation.getLocalContext(RetryContext.RETRY_LOAD_BALANCE)) {
+        // clear last server to avoid using user defined endpoint
+        invocation.setEndpoint(null);
+      }
       RetryContext retryContext = invocation.getLocalContext(RetryContext.RETRY_CONTEXT);
       retryContext.incrementRetry();
       return;
@@ -261,23 +253,36 @@ public final class InvokerUtils {
   }
 
   private static Response decorateSyncRetry(Invocation invocation, GovernanceRequest request) {
-    // governance implementations.
-    RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
-    Retry retry = retryHandler.getActuator(request);
-    if (retry != null) {
-      CheckedFunction0<Response> supplier = Retry.decorateCheckedSupplier(retry, () -> innerSyncInvokeImpl(invocation));
-      return Try.of(supplier).get();
-    }
+    try {
+      // governance implementations.
+      RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
+      Retry retry = retryHandler.getActuator(request);
+      if (retry != null) {
+        CheckedFunction0<Response> supplier = Retry
+            .decorateCheckedSupplier(retry, () -> innerSyncInvokeImpl(invocation));
+        return Try.of(supplier).get();
+      }
 
-    if (isCompatibleRetryEnabled(invocation)) {
-      // compatible implementation for retry in load balance module in old versions.
-      retry = getOrCreateCompatibleRetry(invocation);
-      CheckedFunction0<Response> supplier = Retry.decorateCheckedSupplier(retry, () -> innerSyncInvokeImpl(invocation));
-      return Try.of(supplier).get();
-    }
+      if (isCompatibleRetryEnabled(invocation)) {
+        // compatible implementation for retry in load balance module in old versions.
+        retry = getOrCreateCompatibleRetry(invocation);
+        CheckedFunction0<Response> supplier = Retry
+            .decorateCheckedSupplier(retry, () -> innerSyncInvokeImpl(invocation));
+        return Try.of(supplier).get();
+      }
 
-    // retry not enabled
-    return innerSyncInvokeImpl(invocation);
+      // retry not enabled
+      return innerSyncInvokeImpl(invocation);
+    } catch (Throwable e) {
+      String message = String.format("invoke failed, operation %s, trace id %s",
+          invocation.getMicroserviceQualifiedName(),
+          invocation.getTraceId());
+      LOGGER.error(message, e);
+
+      Response response = Response.createConsumerFail(e, message);
+      invocation.onFinish(response);
+      return response;
+    }
   }
 
   private static boolean isCompatibleRetryEnabled(Invocation invocation) {
@@ -319,12 +324,21 @@ public final class InvokerUtils {
     }
 
     dcs.get().whenComplete((r, e) -> {
+      invocation.getInvocationStageTrace().finishHandlersResponse();
+
       if (e == null) {
+        invocation.onFinish(r);
         asyncResp.complete(r);
         return;
       }
 
-      asyncResp.consumerFail(e);
+      String message = String.format("invoke failed, operation %s, trace id %s",
+          invocation.getMicroserviceQualifiedName(),
+          invocation.getTraceId());
+      LOGGER.error(message, e);
+      Response response = Response.createConsumerFail(e, message);
+      invocation.onFinish(response);
+      asyncResp.complete(response);
     });
   }
 
@@ -356,20 +370,29 @@ public final class InvokerUtils {
         invocation.next(ar -> {
           ContextUtils.setInvocationContext(invocation.getParentContext());
           try {
-            invocation.getInvocationStageTrace().finishHandlersResponse();
-            invocation.onFinish(ar);
+            if (ar.isFailed()) {
+              // re-throw exception to make sure retry based on exception
+              // for InvocationException, users can configure status code for retry
+              // for 490, details error are wrapped, need re-throw
+
+              if (!(ar.getResult() instanceof InvocationException)) {
+                result.completeExceptionally(ar.getResult());
+                return;
+              }
+
+              if (((InvocationException) ar.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
+                result.completeExceptionally(ar.getResult());
+                return;
+              }
+            }
+
             result.complete(ar);
           } finally {
             ContextUtils.removeInvocationContext();
           }
         });
       } catch (Throwable e) {
-        invocation.getInvocationStageTrace().finishHandlersResponse();
-        //if throw exception,we can use 500 for status code ?
-        Response response = Response.createConsumerFail(e);
-        invocation.onFinish(response);
-        LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
-        result.complete(response);
+        result.completeExceptionally(e);
       }
       return result;
     };
@@ -436,7 +459,17 @@ public final class InvokerUtils {
     invocation.onFinish(response);
   }
 
-  private static boolean canRetryForStatusCode(Object response) {
+  @VisibleForTesting
+  static boolean canRetryForException(Throwable e) {
+    if (e instanceof InvocationException && ((InvocationException) e).getStatusCode() == Status.SERVICE_UNAVAILABLE
+        .getStatusCode()) {
+      return true;
+    }
+    return RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, e);
+  }
+
+  @VisibleForTesting
+  static boolean canRetryForStatusCode(Object response) {
     // retry on status code 503
     if (!(response instanceof Response)) {
       return false;
@@ -448,31 +481,6 @@ public final class InvokerUtils {
     if (resp.getResult() instanceof InvocationException) {
       InvocationException e = resp.getResult();
       return e.getStatusCode() == 503;
-    }
-    return false;
-  }
-
-  private static boolean canRetryForException(Throwable throwableToSearchIn) {
-    // retry on exception type on message match
-    int infiniteLoopPreventionCounter = 10;
-    while (throwableToSearchIn != null && infiniteLoopPreventionCounter > 0) {
-      infiniteLoopPreventionCounter--;
-      for (Entry<Class<? extends Throwable>, List<String>> c : STRICT_RETRIABLE.entrySet()) {
-        Class<? extends Throwable> key = c.getKey();
-        if (key.isAssignableFrom(throwableToSearchIn.getClass())) {
-          if (c.getValue() == null || c.getValue().isEmpty()) {
-            return true;
-          } else {
-            String msg = throwableToSearchIn.getMessage();
-            for (String val : c.getValue()) {
-              if (val.equals(msg)) {
-                return true;
-              }
-            }
-          }
-        }
-      }
-      throwableToSearchIn = throwableToSearchIn.getCause();
     }
     return false;
   }
