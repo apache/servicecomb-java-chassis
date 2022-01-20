@@ -33,7 +33,7 @@ public class EndpointAddress {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EndpointAddress.class);
 
-  private  List<String> addresses = new ArrayList<>();
+  private List<String> addresses = new ArrayList<>();
 
   private int index = 0;
 
@@ -51,6 +51,9 @@ public class EndpointAddress {
   }
 
   public String getDefaultAddress() {
+    if (addresses.size() == 0) {
+      return null;
+    }
     synchronized (this) {
       this.index++;
       if (this.index >= addresses.size()) {
