@@ -114,6 +114,9 @@ public class TestRegistry {
     Assert.assertEquals(properties, RegistryUtils.getMicroserviceInstance().getProperties());
 
     Assert.assertEquals(microservice, RegistryUtils.getMicroservice(microservice.getServiceId()));
+    
+    RegistryUtils.updateMicroserviceProperties(properties);
+    Assert.assertEquals(properties, RegistryUtils.getMicroservice().getProperties());
 
     Assert.assertEquals("default", RegistryUtils.getAppId());
   }
