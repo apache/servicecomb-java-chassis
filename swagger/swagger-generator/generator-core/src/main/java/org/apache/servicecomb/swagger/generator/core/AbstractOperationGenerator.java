@@ -60,6 +60,7 @@ import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
+import io.swagger.models.RefModel;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
@@ -247,12 +248,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected boolean isAggregatedParameter(ParameterGenerator parameterGenerator,
-                                          java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter) {
     return false;
   }
 
   protected void extractAggregatedParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap,
-                                                      java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(methodParameter.getParameterizedType());
     BeanDescription beanDescription = Json.mapper().getSerializationConfig().introspect(javaType);
     for (BeanPropertyDefinition propertyDefinition : beanDescription.findProperties()) {
@@ -295,7 +296,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   private void addMethodAnnotationByParameterName(Map<String, List<Annotation>> methodAnnotations, String name,
-                                                  Annotation annotation) {
+      Annotation annotation) {
     if (StringUtils.isEmpty(name)) {
       throw new IllegalStateException(String.format("%s.name should not be empty. method=%s:%s",
           annotation.annotationType().getSimpleName(),
@@ -361,7 +362,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
-                               List<Annotation> annotations) {
+      List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
       ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor != null) {
@@ -381,7 +382,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (parameter instanceof AbstractSerializableParameter) {
       io.swagger.util.ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
       annotations.stream().forEach(annotation -> {
-        if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())){
+        if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())) {
           parameter.setRequired(true);
         }
       });
@@ -398,6 +399,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     BodyParameter newBodyParameter = (BodyParameter) io.swagger.util.ParameterProcessor.applyAnnotations(
         swagger, parameter, type, annotations);
 
+    String ref = method.getParameterTypes()[0].toString().substring(6);
+    if (newBodyParameter.getSchema() instanceof RefModel) {
+      newBodyParameter.setSchema(new RefModel(ref, ((RefModel) newBodyParameter.getSchema()).getRefFormat()));
+    }
+
     // swagger missed enum data, fix it
     ModelImpl model = SwaggerUtils.getModelImpl(swagger, newBodyParameter);
     if (model != null) {
@@ -408,10 +414,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     // swagger 2.0 do not support NotBlank and NotEmpty annotations, fix it
-    if (((JavaType)type).getBindings().getTypeParameters().isEmpty()){
-      convertAnnotationProperty(((JavaType)type).getRawClass());
+    if (((JavaType) type).getBindings().getTypeParameters().isEmpty()) {
+      convertAnnotationProperty(((JavaType) type).getRawClass());
     } else {
-      ((JavaType)type).getBindings().getTypeParameters().stream().
+      ((JavaType) type).getBindings().getTypeParameters().stream().
           forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
     }
 
@@ -420,7 +426,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   private void convertAnnotationProperty(Class<?> beanClass) {
     Map<String, Model> definitions = swagger.getDefinitions();
-    if (definitions == null){
+    if (definitions == null) {
       return;
     }
     Field[] fields = beanClass.getDeclaredFields();
@@ -432,7 +438,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (properties != null) {
       Arrays.stream(fields).forEach(field -> {
         boolean requireItem = Arrays.stream(field.getAnnotations()).
-                anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
+            anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
         if (requireItem) {
           Property property = properties.get(field.getName());
           if(property != null){
