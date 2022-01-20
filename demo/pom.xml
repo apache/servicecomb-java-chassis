@@ -37,6 +37,7 @@
     <module>docker-run-config-local</module>
     <module>demo-schema</module>
     <module>demo-pojo</module>
+    <module>demo-filter</module>
     <module>demo-jaxrs</module>
     <module>demo-springmvc</module>
     <module>demo-crossapp</module>

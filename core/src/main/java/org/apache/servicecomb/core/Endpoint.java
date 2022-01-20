@@ -72,4 +72,17 @@ public class Endpoint {
   public String toString() {
     return endpoint;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Endpoint) {
+      return this.endpoint.equals(((Endpoint) o).getEndpoint());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.endpoint.hashCode();
+  }
 }

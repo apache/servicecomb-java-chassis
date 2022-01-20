@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -52,6 +53,11 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
   public static final String NAME = "simple-load-balance";
 
   private static class Service {
+    public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
+
+    // Enough times to make sure to choose a different server in high volume.
+    private static final int COUNT = 17;
+
     private final String name;
 
     private final DiscoveryTree discoveryTree = new DiscoveryTree();
@@ -87,20 +93,61 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
         throw Exceptions.consumer(LB_ADDRESS_NOT_FOUND, msg);
       }
 
-      List<Endpoint> endpoints = endpointsVersionedCache.data();
-      AtomicInteger index = indexMap.computeIfAbsent(endpointsVersionedCache.name(), name -> {
+      return selectEndpoint(invocation, endpointsVersionedCache.name(), endpointsVersionedCache.data());
+    }
+
+    private Endpoint selectEndpoint(Invocation invocation, String key, List<Endpoint> endpoints) {
+      RetryContext retryContext = invocation.getLocalContext(RetryContext.RETRY_CONTEXT);
+      if (retryContext == null) {
+        return chooseEndpoint(invocation, key, endpoints);
+      }
+
+      if (!retryContext.isRetry()) {
+        Endpoint server = chooseEndpoint(invocation, key, endpoints);
+        invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, server);
+        return server;
+      }
+
+      Endpoint lastServer = invocation.getLocalContext(CONTEXT_KEY_LAST_SERVER);
+      Endpoint nextServer = lastServer;
+      if (!retryContext.trySameServer()) {
+        for (int i = 0; i < COUNT; i++) {
+          Endpoint s = chooseEndpoint(invocation, key, endpoints);
+          if (s == null) {
+            break;
+          }
+          if (!s.equals(nextServer)) {
+            nextServer = s;
+            break;
+          }
+        }
+      }
+
+      LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
+          invocation.getMicroserviceQualifiedName(),
+          nextServer == null ? "" : nextServer.getEndpoint(),
+          lastServer == null ? "" : lastServer.getEndpoint(),
+          invocation.getTraceId());
+      invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, nextServer);
+      return nextServer;
+    }
+
+    private Endpoint chooseEndpoint(Invocation invocation, String key, List<Endpoint> endpoints) {
+      AtomicInteger index = indexMap.computeIfAbsent(key, name -> {
         LOGGER.info("Create loadBalancer for {}.", name);
         return new AtomicInteger();
       });
       LOGGER.debug("invocation {} use discoveryGroup {}.",
           invocation.getMicroserviceQualifiedName(),
-          endpointsVersionedCache.name());
+          key);
 
       int idx = Math.abs(index.getAndIncrement());
       idx = idx % endpoints.size();
+
       return endpoints.get(idx);
     }
   }
+
 
   private final Map<String, Service> servicesByName = new ConcurrentHashMapEx<>();
 
@@ -113,9 +160,10 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     if (invocation.getEndpoint() != null) {
+      invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, false);
       return nextNode.onFilter(invocation);
     }
-
+    invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, true);
     Service service = servicesByName.computeIfAbsent(invocation.getMicroserviceName(), Service::new);
     Endpoint endpoint = service.selectEndpoint(invocation);
     invocation.setEndpoint(endpoint);

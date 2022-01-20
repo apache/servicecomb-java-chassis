@@ -420,6 +420,12 @@ public class Invocation extends SwaggerInvocation {
     finished = true;
   }
 
+  // for retry, reset invocation and try it again
+  public void reset() {
+    finished = false;
+    handlerIndex = 0;
+  }
+
   public boolean isFinished() {
     return finished;
   }
