@@ -148,7 +148,7 @@ public final class RegistryUtils {
 
 
   public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-      String versionRule) {
+                                                               String versionRule) {
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
         MicroserviceCacheKey.builder()
             .appId(appId).serviceName(serviceName)
@@ -158,6 +158,16 @@ public final class RegistryUtils {
     );
     return MicroserviceCacheStatus.SERVICE_NOT_FOUND.equals(serviceCache.getStatus()) ?
         null : serviceCache.getInstances();
+  }
+
+  // update microservice  properties
+  public static boolean updateMicroserviceProperties(Map<String, String> instanceProperties) {
+    Holder<Boolean> resultHolder = new Holder<>(true);
+    executeOnEachServiceRegistry(sr -> {
+      boolean updateResult = sr.updateMicroserviceProperties(instanceProperties);
+      resultHolder.value = updateResult && resultHolder.value;
+    });
+    return resultHolder.value;
   }
 
   // update microservice instance properties
@@ -175,7 +185,7 @@ public final class RegistryUtils {
   }
 
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule) {
+                                                           String versionRule) {
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
         MicroserviceCacheKey.builder()
             .appId(appId)
