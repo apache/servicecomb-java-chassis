@@ -161,10 +161,10 @@ public final class RegistryUtils {
   }
 
   // update microservice  properties
-  public static boolean updateMicroserviceProperties(Map<String, String> instanceProperties) {
+  public static boolean updateMicroserviceProperties(Map<String, String> microserviceProperties) {
     Holder<Boolean> resultHolder = new Holder<>(true);
     executeOnEachServiceRegistry(sr -> {
-      boolean updateResult = sr.updateMicroserviceProperties(instanceProperties);
+      boolean updateResult = sr.updateMicroserviceProperties(microserviceProperties);
       resultHolder.value = updateResult && resultHolder.value;
     });
     return resultHolder.value;
