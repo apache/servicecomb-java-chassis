@@ -116,7 +116,7 @@ public class ServiceCenterWatch implements WebSocketListener {
             headers, this);
         webSocketTransport.connectBlocking();
       } catch (Exception e) {
-        AddressManager.availableIpCache.put(currentAddress, false);
+        addressManager.getEndpointAddress().getAvailableIpCache().put(currentAddress, false);
         LOGGER.error("start watch failed. ", e);
       }
     });

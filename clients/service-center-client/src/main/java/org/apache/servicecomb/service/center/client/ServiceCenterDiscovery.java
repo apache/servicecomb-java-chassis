@@ -154,7 +154,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
       instancesResponse = serviceCenterClient
           .findMicroserviceInstance(myselfServiceId, appId, serviceName, versionRule, null);
     } catch (OperationException operationException) {
-      LOGGER.info("not find the Microservice instance of {}", serviceName);
+      LOGGER.warn("not find the Microservice instance of {}", serviceName);
       return new ArrayList<>();
     }
     return instancesResponse.getMicroserviceInstancesResponse().getInstances();

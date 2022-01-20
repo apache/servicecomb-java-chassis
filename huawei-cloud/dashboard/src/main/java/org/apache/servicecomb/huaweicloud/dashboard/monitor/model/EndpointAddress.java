@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client.model;
+package org.apache.servicecomb.huaweicloud.dashboard.monitor.model;
 
 import java.util.ArrayList;
 import java.util.List;

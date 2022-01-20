@@ -128,7 +128,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
           return Future.succeededFuture();
         }).onFailure(failure -> {
           EventManager.post(new MonitorFailEvent("send monitor data fail."));
-          AddressManager.availableIpCache.put(endpoint, false);
+          addressManager.getEndpointAddress().getAvailableIpCache().put(endpoint, false);
           LOGGER.warn("Send monitor data to {} failed , {}", endpoint, failure);
         });
       });

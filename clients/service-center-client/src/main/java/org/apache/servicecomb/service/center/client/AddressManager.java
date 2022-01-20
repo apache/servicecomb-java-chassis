@@ -17,19 +17,15 @@
 
 package org.apache.servicecomb.service.center.client;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.http.client.common.HttpUtils;
 import org.apache.servicecomb.http.client.event.EventManager;
 import org.apache.servicecomb.http.client.event.ServiceCenterEndpointChangeEvent;
+import org.apache.servicecomb.service.center.client.model.EndpointAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.Subscribe;
 
 public class AddressManager {
@@ -37,27 +33,15 @@ public class AddressManager {
 
   private final String projectName;
 
-  private final List<String> addresses;
-
-  private int index = 0;
+  private EndpointAddress endpointAddress;
 
   private boolean isSSLEnable = false;
 
   private String currentAddress = "";
 
-  private volatile List<String> availableZone = new ArrayList<>();
-
-  private volatile List<String> availableRegion = new ArrayList<>();
-
-  public static final Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
-      .maximumSize(10)
-      .expireAfterAccess(10, TimeUnit.MINUTES)
-      .build();
-
   public AddressManager(String projectName, List<String> addresses) {
     this.projectName = projectName;
-    this.addresses = new ArrayList<>(addresses.size());
-    this.addresses.addAll(addresses);
+    this.endpointAddress = new EndpointAddress(addresses);
     EventManager.register(this);
   }
 
@@ -70,69 +54,12 @@ public class AddressManager {
   }
 
   public String address() {
-    return getAvailableZoneAddress();
-  }
-
-  public String getDefaultAddress() {
-    synchronized (this) {
-      this.index++;
-      if (this.index >= addresses.size()) {
-        this.index = 0;
-      }
-      return addresses.get(index);
-    }
+    return endpointAddress.getAvailableZoneAddress();
   }
 
   public boolean sslEnabled() {
     isSSLEnable = address().startsWith("https://");
     return isSSLEnable;
-  }
-
-  private String getAvailableZoneAddress() {
-    List<String> addresses = getAvailableZoneIpPorts();
-
-    if (!addresses.isEmpty()) {
-      synchronized (this) {
-        this.index++;
-        if (this.index >= addresses.size()) {
-          this.index = 0;
-        }
-        return addresses.get(index);
-      }
-    }
-    return getDefaultAddress();
-  }
-
-  private List<String> getAvailableZoneIpPorts() {
-    List<String> results = new ArrayList<>();
-    if (!getAvailableAddress(availableZone).isEmpty()) {
-      results.addAll(getAvailableAddress(availableZone));
-    } else {
-      results.addAll(getAvailableAddress(availableRegion));
-    }
-    return results;
-  }
-
-  private List<String> getAvailableAddress(List<String> endpoints) {
-    List<String> result = new ArrayList<>();
-    for (String endpoint : endpoints) {
-      try {
-        String uri = getUri(endpoint);
-        if (availableIpCache.get(uri, () -> true)) {
-          result.add(uri);
-        }
-      } catch (ExecutionException e) {
-        LOGGER.error("Not expected to happen, maybe a bug.", e);
-      }
-    }
-    return result;
-  }
-
-  private String getUri(String endpoint) {
-    if (isSSLEnable) {
-      return org.apache.commons.lang3.StringUtils.replace(endpoint, "rest", "https");
-    }
-    return org.apache.commons.lang3.StringUtils.replace(endpoint, "rest", "http");
   }
 
   public String formatUrl(String url, boolean absoluteUrl) {
@@ -144,18 +71,28 @@ public class AddressManager {
     return currentAddress;
   }
 
+  public EndpointAddress getEndpointAddress() {
+    return endpointAddress;
+  }
+
+  public void setEndpointAddress(EndpointAddress endpointAddress) {
+    this.endpointAddress = endpointAddress;
+  }
+
   @Subscribe
   public void onServiceCenterEndpointChangeEvent(ServiceCenterEndpointChangeEvent event) {
     if (null == event) {
       return;
     }
-    availableZone = event.getSameAZ();
-    availableRegion = event.getSameRegion();
+    endpointAddress.setAvailableZone(event.getSameAZ());
+    endpointAddress.setAvailableRegion(event.getSameRegion());
     refreshCache();
   }
 
   private void refreshCache() {
-    availableZone.forEach(address -> availableIpCache.put(address, true));
-    availableRegion.forEach(address -> availableIpCache.put(address, true));
+    endpointAddress.getAvailableZone()
+        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
+    endpointAddress.getAvailableRegion()
+        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
   }
 }
