@@ -14,42 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.demo.springmvc.handler;
 
-package org.apache.servicecomb.qps;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * For qps flow control on consumer side.
- * Support 3 levels of microservice/schema/operation.
- */
-public class ConsumerQpsFlowControlHandler implements Handler {
 
-  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
+public class ProviderTestHandler implements Handler {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTestHandler.class);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (!Config.INSTANCE.isConsumerEnabled()) {
-      invocation.next(asyncResp);
-      return;
-    }
-
-    QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
-    if (qpsStrategy.isLimitNewRequest()) {
-      // return http status 429
-      CommonExceptionData errorData = new CommonExceptionData(
-          "consumer request rejected by qps flowcontrol");
-      asyncResp.consumerFail(
-          new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
-      return;
-    }
-
+    invocation.addContext("k", "v");
     invocation.next(asyncResp);
   }
 }

@@ -73,7 +73,7 @@ servicecomb:
   handler:
     chain:
       Provider:
-        default: bizkeeper-provider, qps-flowcontrol-provider
+        default: test-provider, bizkeeper-provider, qps-flowcontrol-provider
   flowcontrol:
     strategy: MyStrategy
     Provider:
