@@ -154,8 +154,7 @@ public class ApiOperationProcessorTest {
   @Test
   public void testBodyParam() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
-    Map<String, Property> properties = swaggerOperation.getSwagger().getDefinitions().get(
-        "org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiOperationProcessorTest$TestBodyBean")
+    Map<String, Property> properties = swaggerOperation.getSwagger().getDefinitions().get("TestBodyBean")
         .getProperties();
     Property age = properties.get("age");
     assertTrue("Support NotBlank annotation", properties.get("age").getRequired());

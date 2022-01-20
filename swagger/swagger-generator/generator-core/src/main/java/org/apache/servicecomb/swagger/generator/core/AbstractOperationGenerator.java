@@ -60,7 +60,6 @@ import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
-import io.swagger.models.RefModel;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
@@ -399,11 +398,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     BodyParameter newBodyParameter = (BodyParameter) io.swagger.util.ParameterProcessor.applyAnnotations(
         swagger, parameter, type, annotations);
 
-    String ref = method.getParameterTypes()[0].toString().substring(6);
-    if (newBodyParameter.getSchema() instanceof RefModel) {
-      newBodyParameter.setSchema(new RefModel(ref, ((RefModel) newBodyParameter.getSchema()).getRefFormat()));
-    }
-
     // swagger missed enum data, fix it
     ModelImpl model = SwaggerUtils.getModelImpl(swagger, newBodyParameter);
     if (model != null) {
@@ -441,7 +435,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
             anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
         if (requireItem) {
           Property property = properties.get(field.getName());
-          if(property != null){
+          if (property != null) {
             property.setRequired(true);
           }
         }

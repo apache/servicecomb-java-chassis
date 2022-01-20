@@ -23,7 +23,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -43,9 +42,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
-import org.springframework.util.CollectionUtils;
 
-import com.google.common.reflect.TypeToken;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -292,7 +289,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   protected void scanMethods() {
     List<Method> methods = MethodUtils.findSwaggerMethods(cls);
-    LinkedHashMap<String, Model> definitionValues = new LinkedHashMap<>();
+    Map<String, Model> definitions = new LinkedHashMap<>();
     for (Method method : methods) {
       if (isSkipMethod(method)) {
         continue;
@@ -302,10 +299,17 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       operationGenerator.setHttpMethod(httpMethod);
       if (method.getParameterCount() > 0) {
         for (Parameter methodParameter : method.getParameters()) {
-          Type type = TypeToken.of(cls).resolveType(methodParameter.getParameterizedType()).getType();
-          for (Map.Entry<String, Model> entry : ModelConverters.getInstance().readAll(type).entrySet()) {
-            definitionValues
-                .put(entry.getValue().getVendorExtensions().get("x-java-class").toString(), entry.getValue());
+          if (methodParameter.getType().isInterface()) {
+            continue;
+          }
+          for (Map.Entry<String, Model> entry : ModelConverters.getInstance()
+              .readAll(methodParameter.getParameterizedType()).entrySet()) {
+            if (definitions.containsKey(entry.getKey()) && !entry.getValue().equals(definitions.get(entry.getKey()))) {
+              throw new IllegalArgumentException(
+                  "the parameter typeName '" + entry.getKey() + "' duplicate in '" + cls.getName()
+                      + "', need to rename it");
+            }
+            definitions.put(entry.getKey(), entry.getValue());
           }
         }
       }
@@ -327,9 +331,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
         throw new IllegalStateException(
             String.format("OperationId must be unique. method=%s:%s.", cls.getName(), method.getName()));
       }
-    }
-    if (!CollectionUtils.isEmpty(definitionValues)){
-      swagger.setDefinitions(definitionValues);
     }
   }
 
