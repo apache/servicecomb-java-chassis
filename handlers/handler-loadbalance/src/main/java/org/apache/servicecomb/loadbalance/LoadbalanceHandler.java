@@ -236,8 +236,8 @@ public class LoadbalanceHandler implements Handler {
         nextServer == null ? "" : nextServer.getHostPort(),
         lastServer == null ? "" : lastServer.getHostPort(),
         invocation.getTraceId());
-    invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, lastServer);
-    return lastServer;
+    invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, nextServer);
+    return nextServer;
   }
 
   protected boolean isFailedResponse(Response resp) {

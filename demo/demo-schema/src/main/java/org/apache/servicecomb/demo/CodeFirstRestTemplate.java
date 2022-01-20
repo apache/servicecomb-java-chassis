@@ -147,6 +147,7 @@ public class CodeFirstRestTemplate {
         requestEntity,
         JAXBPerson.class);
     TestMgr.check(-1, ProduceProcessorManager.INSTANCE.findProcessor(MediaType.APPLICATION_XML_VALUE, null).getOrder());
+    // test case maybe fail in JDK 11
     TestMgr.check(person, resEntity.getBody());
   }
 

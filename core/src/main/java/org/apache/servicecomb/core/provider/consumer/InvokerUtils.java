@@ -76,7 +76,7 @@ public final class InvokerUtils {
 
   private static final Object LOCK = new Object();
 
-  private static ScheduledExecutorService reactiveRetryPool;
+  private static volatile ScheduledExecutorService reactiveRetryPool;
 
   private static ScheduledExecutorService getOrCreateRetryPool() {
     if (reactiveRetryPool == null) {
@@ -215,6 +215,9 @@ public final class InvokerUtils {
     invocation.next(respExecutor::setResponse);
 
     Response response = respExecutor.waitResponse(invocation);
+    invocation.getInvocationStageTrace().finishHandlersResponse();
+    invocation.onFinish(response);
+
     if (response.isFailed()) {
       // re-throw exception to make sure retry based on exception
       // for InvocationException, users can configure status code for retry
@@ -229,15 +232,12 @@ public final class InvokerUtils {
       }
     }
 
-    invocation.getInvocationStageTrace().finishHandlersResponse();
-    invocation.onFinish(response);
     return response;
   }
 
   private static void updateRetryStatus(Invocation invocation) {
-    if (invocation.getHandlerIndex() != 0) {
-      // for retry, reset index
-      invocation.setHandlerIndex(0);
+    if (invocation.isFinished()) {
+      invocation.reset();
       if (invocation.getLocalContext(RetryContext.RETRY_LOAD_BALANCE) != null
           && (boolean) invocation.getLocalContext(RetryContext.RETRY_LOAD_BALANCE)) {
         // clear last server to avoid using user defined endpoint
@@ -324,10 +324,7 @@ public final class InvokerUtils {
     }
 
     dcs.get().whenComplete((r, e) -> {
-      invocation.getInvocationStageTrace().finishHandlersResponse();
-
       if (e == null) {
-        invocation.onFinish(r);
         asyncResp.complete(r);
         return;
       }
@@ -337,7 +334,6 @@ public final class InvokerUtils {
           invocation.getTraceId());
       LOGGER.error(message, e);
       Response response = Response.createConsumerFail(e, message);
-      invocation.onFinish(response);
       asyncResp.complete(response);
     });
   }
@@ -369,6 +365,9 @@ public final class InvokerUtils {
         invocation.onStartHandlersRequest();
         invocation.next(ar -> {
           ContextUtils.setInvocationContext(invocation.getParentContext());
+
+          invocation.getInvocationStageTrace().finishHandlersResponse();
+          invocation.onFinish(ar);
           try {
             if (ar.isFailed()) {
               // re-throw exception to make sure retry based on exception
@@ -425,11 +424,17 @@ public final class InvokerUtils {
 
     CompletableFuture<Response> result = new CompletableFuture<>();
     dcs.get().whenComplete((r, e) -> {
-      if (e != null) {
-        result.completeExceptionally(e);
-      } else {
+      if (e == null) {
         result.complete(r);
+        return;
       }
+
+      String message = String.format("invoke failed, operation %s, trace id %s",
+          invocation.getMicroserviceQualifiedName(),
+          invocation.getTraceId());
+      LOGGER.error(message, e);
+      Response response = Response.createConsumerFail(e, message);
+      result.complete(response);
     });
     return result;
   }
@@ -446,17 +451,25 @@ public final class InvokerUtils {
     };
   }
 
-  private static void finishInvocation(Invocation invocation, Response response) {
-    processMetrics(invocation, response);
-
-    if (response.isFailed()) {
-      AsyncUtils.rethrow(response.getResult());
-    }
-  }
-
-  private static void processMetrics(Invocation invocation, Response response) {
+  private static void finishInvocation(Invocation invocation, Response ar) {
     invocation.getInvocationStageTrace().finishHandlersResponse();
-    invocation.onFinish(response);
+    invocation.onFinish(ar);
+
+    if (ar.isFailed()) {
+      // re-throw exception to make sure retry based on exception
+      // for InvocationException, users can configure status code for retry
+      // for 490, details error are wrapped, need re-throw
+
+      if (!(ar.getResult() instanceof InvocationException)) {
+        AsyncUtils.rethrow(ar.getResult());
+        return;
+      }
+
+      if (((InvocationException) ar.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
+        AsyncUtils.rethrow(ar.getResult());
+        return;
+      }
+    }
   }
 
   @VisibleForTesting
