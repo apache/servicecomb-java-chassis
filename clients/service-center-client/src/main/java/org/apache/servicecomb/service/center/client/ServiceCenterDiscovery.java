@@ -28,6 +28,7 @@ import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.PullInstanceEvent;
+import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
@@ -145,6 +146,18 @@ public class ServiceCenterDiscovery extends AbstractTask {
   @Subscribe
   public void onPullInstanceEvent(PullInstanceEvent event) {
     pullAllInstance();
+  }
+
+  public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName, String versionRule) {
+    FindMicroserviceInstancesResponse instancesResponse = new FindMicroserviceInstancesResponse();
+    try {
+      instancesResponse = serviceCenterClient
+          .findMicroserviceInstance(myselfServiceId, appId, serviceName, versionRule, null);
+    } catch (OperationException operationException) {
+      LOGGER.info("not find the Microservice instance of {}", serviceName);
+      return new ArrayList<>();
+    }
+    return instancesResponse.getMicroserviceInstancesResponse().getInstances();
   }
 
   private void pullInstance(SubscriptionKey k, SubscriptionValue v) {
