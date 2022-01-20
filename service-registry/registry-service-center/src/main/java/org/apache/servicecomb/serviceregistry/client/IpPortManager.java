@@ -261,7 +261,7 @@ public class IpPortManager {
       }
     });
 
-    EventManager.post(new KieEndpointEndPointChangeEvent(sameAvailableZone, sameAvailableRegion));
+    org.apache.servicecomb.http.client.event.EventManager.post(new KieEndpointEndPointChangeEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   private void refreshCCEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
@@ -279,7 +279,7 @@ public class IpPortManager {
       }
     });
 
-    EventManager.post(new ConfigCenterEndpointChangedEvent(sameAvailableZone, sameAvailableRegion));
+    org.apache.servicecomb.http.client.event.EventManager.post(new ConfigCenterEndpointChangedEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   private void refreshMNEndPointNew(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
@@ -297,7 +297,7 @@ public class IpPortManager {
       }
     });
 
-    EventManager.post(new MonitorEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
+    org.apache.servicecomb.http.client.event.EventManager.post(new MonitorEndpointChangeEvent(sameAvailableZone, sameAvailableRegion));
   }
 
   private void refreshSCEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
@@ -315,7 +315,7 @@ public class IpPortManager {
         }
       });
     }
-    EventManager.post(new ServiceCenterEndpointChangeEvent(sameAZ, sameRegion));
+    org.apache.servicecomb.http.client.event.EventManager.post(new ServiceCenterEndpointChangeEvent(sameAZ, sameRegion));
   }
 
   public IpPort getAvailableAddress() {
