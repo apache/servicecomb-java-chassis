@@ -136,7 +136,7 @@ public class IpPortManager {
 
   private void InitSCEndPointNew() {
     Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(REGISTRY_SERVICE_NAME);
-    if (!zoneAndRegion.isEmpty()) {
+    if (zoneAndRegion != null) {
       setAutoDiscoveryInited(true);
       sameAZ.addAll(zoneAndRegion.get("sameZone"));
       sameRegion.addAll(zoneAndRegion.get("sameRegion"));
@@ -147,7 +147,7 @@ public class IpPortManager {
 
   private void InitKieEndPointNew() {
     Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(KIE_NAME);
-    if (!zoneAndRegion.isEmpty()) {
+    if (zoneAndRegion != null) {
       org.apache.servicecomb.http.client.event.EventManager
           .post(new KieEndpointEndPointChangeEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
     }
@@ -155,7 +155,7 @@ public class IpPortManager {
 
   private void InitCCEndPointNew() {
     Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(CONFIG_CENTER_NAME);
-    if (!zoneAndRegion.isEmpty()) {
+    if (zoneAndRegion != null) {
       org.apache.servicecomb.http.client.event.EventManager
           .post(new ConfigCenterEndpointChangedEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
     }
@@ -163,7 +163,7 @@ public class IpPortManager {
 
   private void InitMTEndPointNew() {
     Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(CSE_MONITORING_NAME);
-    if (!zoneAndRegion.isEmpty()) {
+    if (zoneAndRegion != null) {
       EventManager.post(new MonitorEndpointChangeEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
     }
   }
@@ -311,15 +311,17 @@ public class IpPortManager {
   private Map<String, List<String>> generateZoneAndRegionAddress(String key) {
     InstanceCache KieCaches = instanceCacheManager
         .getOrCreate(REGISTRY_APP_ID, key, DefinitionConst.VERSION_RULE_LATEST);
-    List<CacheEndpoint> CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
-    Map<String, List<String>> zoneAndRegion = new HashMap<>();
-
-    if (KieCaches.getInstanceMap().size() <= 0) {
-      return null;
-    }
+    List<CacheEndpoint> CacheEndpoints = new ArrayList<>();
     if (REGISTRY_SERVICE_NAME.equals(key)) {
+      CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
       maxRetryTimes = CacheEndpoints.size();
+    } else {
+      if (KieCaches.getInstanceMap().size() <= 0) {
+        return null;
+      }
+      CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
     }
+    Map<String, List<String>> zoneAndRegion = new HashMap<>();
     dataCenterInfo = findRegion(CacheEndpoints);
 
     List<String> sameZone = new ArrayList<>();
