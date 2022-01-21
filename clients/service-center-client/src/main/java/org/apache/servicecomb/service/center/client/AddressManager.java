@@ -22,14 +22,13 @@ import java.util.List;
 import org.apache.servicecomb.http.client.common.HttpUtils;
 import org.apache.servicecomb.http.client.event.EventManager;
 import org.apache.servicecomb.http.client.event.ServiceCenterEndpointChangeEvent;
-import org.apache.servicecomb.service.center.client.model.EndpointAddress;
+import org.apache.servicecomb.http.client.common.EndpointAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
 public class AddressManager {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AddressManager.class);
 
   private final String projectName;
 

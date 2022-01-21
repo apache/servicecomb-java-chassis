@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.center.client.model;
+package org.apache.servicecomb.http.client.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,6 @@ public class EndpointAddress {
   private  List<String> addresses = new ArrayList<>();
 
   private int index = 0;
-
-  private boolean isSSLEnable = false;
 
   private volatile List<String> availableZone = new ArrayList<>();
 
@@ -115,22 +113,6 @@ public class EndpointAddress {
 
   public void setAddresses(List<String> addresses) {
     this.addresses = addresses;
-  }
-
-  public int getIndex() {
-    return index;
-  }
-
-  public void setIndex(int index) {
-    this.index = index;
-  }
-
-  public boolean isSSLEnable() {
-    return isSSLEnable;
-  }
-
-  public void setSSLEnable(boolean SSLEnable) {
-    isSSLEnable = SSLEnable;
   }
 
   public List<String> getAvailableZone() {

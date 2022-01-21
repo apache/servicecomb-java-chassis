@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.config.center.client.model.EndpointAddress;
+import org.apache.servicecomb.http.client.common.EndpointAddress;
 import org.apache.servicecomb.http.client.common.HttpUtils;
 import org.apache.servicecomb.http.client.event.ConfigCenterEndpointChangedEvent;
 import org.apache.servicecomb.http.client.event.EventManager;

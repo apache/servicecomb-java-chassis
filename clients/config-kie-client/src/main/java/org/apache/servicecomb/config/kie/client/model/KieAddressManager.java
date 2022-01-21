@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.kie.client.model;
 
 import java.util.List;
 
+import org.apache.servicecomb.http.client.common.EndpointAddress;
 import org.apache.servicecomb.http.client.event.EventManager;
 import org.apache.servicecomb.http.client.event.KieEndpointEndPointChangeEvent;
 
