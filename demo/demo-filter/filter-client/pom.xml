@@ -76,7 +76,7 @@
     <profile>
       <id>docker</id>
       <properties>
-        <demo.service.name>springmvc-server</demo.service.name>
+        <demo.service.name>filter-server</demo.service.name>
       </properties>
       <build>
         <plugins>
