@@ -33,7 +33,7 @@ public class EndpointAddress {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EndpointAddress.class);
 
-  private  List<String> addresses = new ArrayList<>();
+  private List<String> addresses = new ArrayList<>();
 
   private int index = 0;
 
@@ -43,7 +43,7 @@ public class EndpointAddress {
 
   private Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
       .maximumSize(100)
-      .expireAfterAccess(10, TimeUnit.MINUTES)
+      .expireAfterWrite(10, TimeUnit.MINUTES)
       .build();
 
   public EndpointAddress(List<String> addresses) {
@@ -52,6 +52,9 @@ public class EndpointAddress {
 
   public String getDefaultAddress() {
     synchronized (this) {
+      if (addresses.size() == 0) {
+        return null;
+      }
       this.index++;
       if (this.index >= addresses.size()) {
         this.index = 0;
@@ -105,6 +108,11 @@ public class EndpointAddress {
       return StringUtils.replace(endpoint, "rest", "https");
     }
     return StringUtils.replace(endpoint, "rest", "http");
+  }
+
+  public void refreshCache() {
+    availableZone.forEach(address -> availableIpCache.put(address, true));
+    availableRegion.forEach(address -> availableIpCache.put(address, true));
   }
 
   public List<String> getAddresses() {

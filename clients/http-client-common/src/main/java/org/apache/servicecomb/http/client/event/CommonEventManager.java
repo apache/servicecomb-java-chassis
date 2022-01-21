@@ -17,24 +17,37 @@
 
 package org.apache.servicecomb.http.client.event;
 
-import java.util.List;
+import com.google.common.eventbus.EventBus;
 
-public class ConfigCenterEndpointChangedEvent {
+/**
+ * EventManager for chassis events
+ *
+ */
+public class CommonEventManager {
+  public static EventBus eventBus = new EventBus();
 
-  private final List<String> sameAZ;
-
-  private final List<String> sameRegion;
-
-  public ConfigCenterEndpointChangedEvent(List<String> sameAZ, List<String> sameRegion) {
-    this.sameAZ = sameAZ;
-    this.sameRegion = sameRegion;
+  public static EventBus getEventBus() {
+    return eventBus;
   }
 
-  public List<String> getSameAZ() {
-    return sameAZ;
+  /**
+   * Registering listener.
+   */
+  public static void register(Object listener) {
+    eventBus.register(listener);
   }
 
-  public List<String> getSameRegion() {
-    return sameRegion;
+  /**
+   * post event.
+   */
+  public static void post(Object event) {
+    eventBus.post(event);
+  }
+
+  /**
+   * Unregistering listener.
+   */
+  public static void unregister(Object listener) {
+    eventBus.unregister(listener);
   }
 }

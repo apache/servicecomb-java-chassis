@@ -33,13 +33,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.http.client.event.ConfigCenterEndpointChangedEvent;
-import org.apache.servicecomb.http.client.event.KieEndpointEndPointChangeEvent;
-import org.apache.servicecomb.http.client.event.MonitorEndpointChangeEvent;
-import org.apache.servicecomb.http.client.event.ServiceCenterEndpointChangeEvent;
+import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -49,6 +46,7 @@ import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.api.Type;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.event.ServiceCenterEventBus;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
@@ -97,7 +95,7 @@ public class IpPortManager {
 
   public static final Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
       .maximumSize(50)
-      .expireAfterAccess(10, TimeUnit.MINUTES)
+      .expireAfterWrite(10, TimeUnit.MINUTES)
       .build();
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
@@ -127,45 +125,23 @@ public class IpPortManager {
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      InitSCEndPointNew();
-      InitKieEndPointNew();
-      InitCCEndPointNew();
-      InitMTEndPointNew();
+      for (Type type : Type.values()) {
+        InitEndPoint(type.name());
+      }
     }
   }
 
-  private void InitSCEndPointNew() {
-    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(REGISTRY_SERVICE_NAME);
-    if (zoneAndRegion != null) {
+  private void InitEndPoint(String typeName) {
+    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(typeName);
+    if (zoneAndRegion == null) {
+      return;
+    }
+    if (typeName.equals(REGISTRY_SERVICE_NAME)) {
       setAutoDiscoveryInited(true);
       sameAZ.addAll(zoneAndRegion.get("sameZone"));
       sameRegion.addAll(zoneAndRegion.get("sameRegion"));
-      org.apache.servicecomb.http.client.event.EventManager
-          .post(new ServiceCenterEndpointChangeEvent(sameAZ, sameRegion));
     }
-  }
-
-  private void InitKieEndPointNew() {
-    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(KIE_NAME);
-    if (zoneAndRegion != null) {
-      org.apache.servicecomb.http.client.event.EventManager
-          .post(new KieEndpointEndPointChangeEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
-    }
-  }
-
-  private void InitCCEndPointNew() {
-    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(CONFIG_CENTER_NAME);
-    if (zoneAndRegion != null) {
-      org.apache.servicecomb.http.client.event.EventManager
-          .post(new ConfigCenterEndpointChangedEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
-    }
-  }
-
-  private void InitMTEndPointNew() {
-    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(CSE_MONITORING_NAME);
-    if (zoneAndRegion != null) {
-      EventManager.post(new MonitorEndpointChangeEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
-    }
+    CommonEventManager.post(new RefreshEndpointEvent(zoneAndRegion, typeName));
   }
 
   @Subscribe
@@ -175,21 +151,29 @@ public class IpPortManager {
       return;
     }
 
-    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
     for (MicroserviceCache microserviceCache : microserviceCaches) {
       if (microserviceCache.getKey().toString().equals(SC_KEY)) {
-        refreshSCEndPoint(myself, microserviceCache);
+        refreshEndPoints(microserviceCache, REGISTRY_SERVICE_NAME);
       }
       if (microserviceCache.getKey().toString().equals(CC_KEY)) {
-        refreshCCEndPoint(myself, microserviceCache);
+        refreshEndPoints(microserviceCache, KIE_NAME);
       }
       if (microserviceCache.getKey().toString().equals(KIE_KEY)) {
-        refreshKieEndPoint(myself, microserviceCache);
+        refreshEndPoints(microserviceCache, CONFIG_CENTER_NAME);
       }
       if (microserviceCache.getKey().toString().equals(MONITORING_KEY)) {
-        refreshMNEndPointNew(myself, microserviceCache);
+        refreshEndPoints(microserviceCache, CSE_MONITORING_NAME);
       }
     }
+  }
+
+  private void refreshEndPoints(MicroserviceCache microserviceCache, String name) {
+    Map<String, List<String>> zoneAndRegion = refreshEndPoint(microserviceCache);
+    if (name.equals(REGISTRY_SERVICE_NAME)) {
+      sameAZ = zoneAndRegion.get("sameZone");
+      sameRegion = zoneAndRegion.get("sameRegion");
+    }
+    CommonEventManager.post(new RefreshEndpointEvent(zoneAndRegion, name));
   }
 
   private Map<String, List<String>> refreshEndPoint(MicroserviceCache microserviceCache) {
@@ -211,36 +195,6 @@ public class IpPortManager {
     zoneAndRegion.put("sameZone", sameZone);
     zoneAndRegion.put("sameRegion", sameRegion);
     return zoneAndRegion;
-  }
-
-  private void refreshSCEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
-    Map<String, List<String>> zoneAndRegion = new HashMap<>();
-    synchronized (lock) {
-      sameAZ.clear();
-      sameRegion.clear();
-      zoneAndRegion = refreshEndPoint(microserviceCache);
-      sameAZ.addAll(zoneAndRegion.get("sameZone"));
-      sameRegion.addAll(zoneAndRegion.get("sameRegion"));
-    }
-    org.apache.servicecomb.http.client.event.EventManager
-        .post(new ServiceCenterEndpointChangeEvent(sameAZ, sameRegion));
-  }
-
-  private void refreshKieEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
-    Map<String, List<String>> zoneAndRegion = refreshEndPoint(microserviceCache);
-    org.apache.servicecomb.http.client.event.EventManager.
-        post(new KieEndpointEndPointChangeEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
-  }
-
-  private void refreshCCEndPoint(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
-    Map<String, List<String>> zoneAndRegion = refreshEndPoint(microserviceCache);
-    org.apache.servicecomb.http.client.event.EventManager.
-        post(new ConfigCenterEndpointChangedEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
-  }
-
-  private void refreshMNEndPointNew(MicroserviceInstance myself, MicroserviceCache microserviceCache) {
-    Map<String, List<String>> zoneAndRegion = refreshEndPoint(microserviceCache);
-    EventManager.post(new MonitorEndpointChangeEvent(zoneAndRegion.get("sameZone"), zoneAndRegion.get("sameRegion")));
   }
 
   public IpPort getAvailableAddress() {

@@ -23,10 +23,10 @@ import java.util.List;
 
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.http.client.event.MonitorEndpointChangeEvent;
+import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.EndpointAddress;
+import org.apache.servicecomb.http.client.common.EndpointAddress;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -40,7 +40,7 @@ public class AddressManager {
   AddressManager() {
     updateAddresses();
     this.endpointAddress = new EndpointAddress(addresses);
-    EventManager.register(this);
+    CommonEventManager.register(this);
   }
 
   private void updateAddresses() {
@@ -64,19 +64,12 @@ public class AddressManager {
   }
 
   @Subscribe
-  public void onMonitorEndpointChangeEvent(MonitorEndpointChangeEvent event) {
-    if (null == event) {
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    if (null == event || event.getName() != "CseMonitoring") {
       return;
     }
-    endpointAddress.setAvailableZone(event.getSameAZ());
+    endpointAddress.setAvailableZone(event.getSameZone());
     endpointAddress.setAvailableRegion(event.getSameRegion());
-    refreshCache();
-  }
-
-  private void refreshCache() {
-    endpointAddress.getAvailableZone()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
-    endpointAddress.getAvailableRegion()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
+    endpointAddress.refreshCache();
   }
 }

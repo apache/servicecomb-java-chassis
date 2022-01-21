@@ -20,11 +20,9 @@ package org.apache.servicecomb.service.center.client;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.event.EventManager;
-import org.apache.servicecomb.http.client.event.ServiceCenterEndpointChangeEvent;
+import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.apache.servicecomb.http.client.common.EndpointAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -41,7 +39,7 @@ public class AddressManager {
   public AddressManager(String projectName, List<String> addresses) {
     this.projectName = projectName;
     this.endpointAddress = new EndpointAddress(addresses);
-    EventManager.register(this);
+    CommonEventManager.register(this);
   }
 
   private String formatAddress(String address) {
@@ -79,19 +77,12 @@ public class AddressManager {
   }
 
   @Subscribe
-  public void onServiceCenterEndpointChangeEvent(ServiceCenterEndpointChangeEvent event) {
-    if (null == event) {
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    if (null == event || event.getName() != "SERVICECENTER") {
       return;
     }
-    endpointAddress.setAvailableZone(event.getSameAZ());
+    endpointAddress.setAvailableZone(event.getSameZone());
     endpointAddress.setAvailableRegion(event.getSameRegion());
-    refreshCache();
-  }
-
-  private void refreshCache() {
-    endpointAddress.getAvailableZone()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
-    endpointAddress.getAvailableRegion()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
+    endpointAddress.refreshCache();
   }
 }

@@ -20,8 +20,8 @@ package org.apache.servicecomb.config.kie.client.model;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.EndpointAddress;
-import org.apache.servicecomb.http.client.event.EventManager;
-import org.apache.servicecomb.http.client.event.KieEndpointEndPointChangeEvent;
+import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -33,7 +33,7 @@ public class KieAddressManager {
 
   public KieAddressManager(List<String> addresses) {
     this.endpointAddress = new EndpointAddress(addresses);
-    EventManager.register(this);
+    CommonEventManager.register(this);
   }
 
   public String address() {
@@ -54,19 +54,12 @@ public class KieAddressManager {
   }
 
   @Subscribe
-  public void onKieEndpointEndPointChangeEvent(KieEndpointEndPointChangeEvent event) {
-    if (null == event) {
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    if (null == event || event.getName() != "KIE") {
       return;
     }
-    endpointAddress.setAvailableZone(event.getSameAZ());
+    endpointAddress.setAvailableZone(event.getSameZone());
     endpointAddress.setAvailableRegion(event.getSameRegion());
-    refreshCache();
-  }
-
-  private void refreshCache() {
-    endpointAddress.getAvailableZone()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
-    endpointAddress.getAvailableRegion()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
+    endpointAddress.refreshCache();
   }
 }

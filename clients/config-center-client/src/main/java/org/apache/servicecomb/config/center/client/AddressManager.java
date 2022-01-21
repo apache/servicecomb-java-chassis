@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.http.client.common.EndpointAddress;
 import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.event.ConfigCenterEndpointChangedEvent;
-import org.apache.servicecomb.http.client.event.EventManager;
+import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -40,8 +40,9 @@ public class AddressManager {
 
   public AddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    this.endpointAddress = new EndpointAddress(addresses.stream().map(this::formatAddress).collect(Collectors.toList()));
-    EventManager.register(this);
+    this.endpointAddress = new EndpointAddress(
+        addresses.stream().map(this::formatAddress).collect(Collectors.toList()));
+    CommonEventManager.register(this);
   }
 
   private String formatAddress(String address) {
@@ -70,19 +71,12 @@ public class AddressManager {
   }
 
   @Subscribe
-  public void onConfigCenterEndpointChangedEvent(ConfigCenterEndpointChangedEvent event) {
-    if (null == event) {
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    if (null == event || event.getName() != "CseConfigCenter") {
       return;
     }
-    endpointAddress.setAvailableZone(event.getSameAZ());
+    endpointAddress.setAvailableZone(event.getSameZone());
     endpointAddress.setAvailableRegion(event.getSameRegion());
-    refreshCache();
-  }
-
-  private void refreshCache() {
-    endpointAddress.getAvailableZone()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
-    endpointAddress.getAvailableRegion()
-        .forEach(address -> endpointAddress.getAvailableIpCache().put(address, true));
+    endpointAddress.refreshCache();
   }
 }
