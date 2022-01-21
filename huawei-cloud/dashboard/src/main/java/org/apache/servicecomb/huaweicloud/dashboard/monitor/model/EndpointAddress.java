@@ -51,10 +51,10 @@ public class EndpointAddress {
   }
 
   public String getDefaultAddress() {
-    if (addresses.size() == 0) {
-      return null;
-    }
     synchronized (this) {
+      if (addresses.size() == 0) {
+        return null;
+      }
       this.index++;
       if (this.index >= addresses.size()) {
         this.index = 0;
