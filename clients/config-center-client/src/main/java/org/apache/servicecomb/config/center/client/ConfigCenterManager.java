@@ -36,8 +36,6 @@ public class ConfigCenterManager extends AbstractTask {
 
   private static final long POLL_INTERVAL = 15000;
 
-  private int retryTimes = 0;
-
   private ConfigCenterClient configCenterClient;
 
   private final EventBus eventBus;
@@ -79,15 +77,10 @@ public class ConfigCenterManager extends AbstractTask {
           ConfigurationChangedEvent event = ConfigurationChangedEvent
               .createIncremental(configConverter.getCurrentData(), lastData);
           eventBus.post(event);
-          retryTimes=0;
         }
         startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
       } catch (Exception e) {
         LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
-        ++retryTimes;
-        if(retryTimes < 3) {
-          startTask(new BackOffSleepTask(0, new PollConfigurationTask(0)));
-        }
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
       }
     }

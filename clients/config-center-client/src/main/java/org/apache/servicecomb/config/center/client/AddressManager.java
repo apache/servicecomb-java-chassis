@@ -18,65 +18,22 @@
 package org.apache.servicecomb.config.center.client;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.http.client.common.EndpointAddress;
-import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class AddressManager {
+public class AddressManager extends AbstractAddressManager {
 
-  public static final String DEFAULT_PROJECT = "default";
-
-  private final String projectName;
-
-  private EndpointAddress endpointAddress;
-
-  private boolean isSSLEnable = false;
-
-  public AddressManager(String projectName, List<String> addresses) {
-    this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    this.endpointAddress = new EndpointAddress(
-        addresses.stream().map(this::formatAddress).collect(Collectors.toList()));
-    CommonEventManager.register(this);
-  }
-
-  private String formatAddress(String address) {
-    try {
-      return address + "/v3/" + HttpUtils.encodeURLParam(this.projectName);
-    } catch (Exception e) {
-      throw new IllegalStateException("not possible");
-    }
-  }
-
-  public String address() {
-    return endpointAddress.getAvailableZoneAddress();
-  }
-
-  public boolean sslEnabled() {
-    isSSLEnable = address().startsWith("https://");
-    return isSSLEnable;
-  }
-
-  public EndpointAddress getEndpointAddress() {
-    return endpointAddress;
-  }
-
-  public void setEndpointAddress(EndpointAddress endpointAddress) {
-    this.endpointAddress = endpointAddress;
+  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
+    super(projectName, addresses, "/v3/");
+    eventBus.register(this);
   }
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    if (null == event || event.getName() != "CseConfigCenter") {
-      return;
-    }
-    endpointAddress.setAvailableZone(event.getSameZone());
-    endpointAddress.setAvailableRegion(event.getSameRegion());
-    endpointAddress.refreshCache();
+    refreshEndpoint(event, "CseConfigCenter");
   }
 }

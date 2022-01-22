@@ -182,7 +182,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   private AddressManager configKieAddressManager() {
     return new AddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
-            .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL());
+            .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),
+        EventManager.getEventBus());
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

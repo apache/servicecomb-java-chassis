@@ -148,18 +148,6 @@ public class ServiceCenterDiscovery extends AbstractTask {
     pullAllInstance();
   }
 
-  public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName, String versionRule) {
-    FindMicroserviceInstancesResponse instancesResponse = new FindMicroserviceInstancesResponse();
-    try {
-      instancesResponse = serviceCenterClient
-          .findMicroserviceInstance(myselfServiceId, appId, serviceName, versionRule, null);
-    } catch (OperationException operationException) {
-      LOGGER.warn("not find the Microservice instance of {}", serviceName);
-      return new ArrayList<>();
-    }
-    return instancesResponse.getMicroserviceInstancesResponse().getInstances();
-  }
-
   private void pullInstance(SubscriptionKey k, SubscriptionValue v) {
     if (myselfServiceId == null) {
       // registration not ready

@@ -165,7 +165,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private KieAddressManager configKieAddressManager() {
     KieAddressManager kieAddressManager = new KieAddressManager(
-        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")));
+        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), EventManager.getEventBus());
     return kieAddressManager;
   }
 

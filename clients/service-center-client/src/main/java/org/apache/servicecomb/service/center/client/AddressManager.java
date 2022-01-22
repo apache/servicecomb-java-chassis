@@ -19,70 +19,21 @@ package org.apache.servicecomb.service.center.client;
 
 import java.util.List;
 
-import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-import org.apache.servicecomb.http.client.common.EndpointAddress;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class AddressManager {
-
-  private final String projectName;
-
-  private EndpointAddress endpointAddress;
-
-  private boolean isSSLEnable = false;
-
-  private String currentAddress = "";
-
-  public AddressManager(String projectName, List<String> addresses) {
-    this.projectName = projectName;
-    this.endpointAddress = new EndpointAddress(addresses);
-    CommonEventManager.register(this);
+public class AddressManager extends AbstractAddressManager {
+  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
+    super(projectName, addresses, "/v4/");
+    eventBus.register(this);
   }
 
-  private String formatAddress(String address) {
-    try {
-      return address + "/v4/" + HttpUtils.encodeURLParam(this.projectName);
-    } catch (Exception e) {
-      throw new IllegalStateException("not possible");
-    }
-  }
-
-  public String address() {
-    return endpointAddress.getAvailableZoneAddress();
-  }
-
-  public boolean sslEnabled() {
-    isSSLEnable = address().startsWith("https://");
-    return isSSLEnable;
-  }
-
-  public String formatUrl(String url, boolean absoluteUrl) {
-    currentAddress = address();
-    return absoluteUrl ? currentAddress + url : formatAddress(currentAddress) + url;
-  }
-
-  public String getCurrentAddress() {
-    return currentAddress;
-  }
-
-  public EndpointAddress getEndpointAddress() {
-    return endpointAddress;
-  }
-
-  public void setEndpointAddress(EndpointAddress endpointAddress) {
-    this.endpointAddress = endpointAddress;
-  }
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    if (null == event || event.getName() != "SERVICECENTER") {
-      return;
-    }
-    endpointAddress.setAvailableZone(event.getSameZone());
-    endpointAddress.setAvailableRegion(event.getSameRegion());
-    endpointAddress.refreshCache();
+    refreshEndpoint(event, "SERVICECENTER");
   }
 }

@@ -18,58 +18,24 @@
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.http.client.common.EndpointAddress;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 
-public class AddressManager {
+public class AddressManager extends AbstractAddressManager {
 
-  private final List<String> addresses = new ArrayList<>();
-
-  private EndpointAddress endpointAddress;
-
-  AddressManager() {
-    updateAddresses();
-    this.endpointAddress = new EndpointAddress(addresses);
-    CommonEventManager.register(this);
-  }
-
-  private void updateAddresses() {
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
-        MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
-    if (info != null && info.getAccessURL() != null) {
-      addresses.addAll(info.getAccessURL());
-    }
-  }
-
-  String nextServer() {
-    return endpointAddress.getAvailableZoneAddress();
-  }
-
-  public EndpointAddress getEndpointAddress() {
-    return endpointAddress;
-  }
-
-  public void setEndpointAddress(EndpointAddress endpointAddress) {
-    this.endpointAddress = endpointAddress;
+  AddressManager(List<String> addresses, EventBus eventBus) {
+    super(addresses);
+    eventBus.register(this);
   }
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    if (null == event || event.getName() != "CseMonitoring") {
-      return;
-    }
-    endpointAddress.setAvailableZone(event.getSameZone());
-    endpointAddress.setAvailableRegion(event.getSameRegion());
-    endpointAddress.refreshCache();
+    refreshEndpoint(event, "CseMonitoring");
   }
 }

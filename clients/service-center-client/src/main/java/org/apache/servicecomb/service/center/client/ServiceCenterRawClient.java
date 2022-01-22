@@ -80,7 +80,6 @@ public class ServiceCenterRawClient {
     try {
       return httpTransport.doRequest(httpRequest);
     } catch (IOException e) {
-      addressManager.getEndpointAddress().getAvailableIpCache().put(addressManager.getCurrentAddress(), false);
       String retryAddress = addressManager.formatUrl(url, absoluteUrl);
       LOGGER.warn("send request to {} failed and retry to {} once. ", address,
           retryAddress, e);
@@ -88,7 +87,7 @@ public class ServiceCenterRawClient {
       try {
         return httpTransport.doRequest(httpRequest);
       } catch (IOException ioException) {
-        addressManager.getEndpointAddress().getAvailableIpCache().put(addressManager.getCurrentAddress(), false);
+        addressManager.recordFailState();
         LOGGER.warn("retry to {} failed again. ", retryAddress, e);
         throw ioException;
       }

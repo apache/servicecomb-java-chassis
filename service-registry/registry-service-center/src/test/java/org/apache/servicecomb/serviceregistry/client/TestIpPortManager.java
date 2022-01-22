@@ -31,6 +31,7 @@ import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.Assert;
@@ -60,7 +61,8 @@ public class TestIpPortManager {
   @Test
   public void testGetAvailableAddress(@Injectable ServiceRegistryConfig config,
       @Injectable InstanceCacheManager cacheManager,
-      @Injectable InstanceCache cache) {
+      @Injectable InstanceCache cache,
+      @Injectable ClassificationAddress classificationAddress) {
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
     ipPortList.add(new IpPort("127.0.0.1", 9981));
@@ -103,6 +105,8 @@ public class TestIpPortManager {
     List<CacheEndpoint> instances = new ArrayList<>();
     instances.add(new CacheEndpoint("http://127.0.0.1:9982", null));
     addresses.put("rest", instances);
+    ClassificationAddress classificationAddres = new ClassificationAddress(config, cacheManager);
+    manager.classificationAddress =classificationAddres;
     new Expectations() {
       {
         cacheManager.getOrCreate("default", "SERVICECENTER", "latest");

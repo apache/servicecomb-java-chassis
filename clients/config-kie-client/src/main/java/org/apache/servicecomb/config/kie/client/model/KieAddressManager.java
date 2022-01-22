@@ -19,47 +19,21 @@ package org.apache.servicecomb.config.kie.client.model;
 
 import java.util.List;
 
-import org.apache.servicecomb.http.client.common.EndpointAddress;
-import org.apache.servicecomb.http.client.event.CommonEventManager;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class KieAddressManager {
+public class KieAddressManager extends AbstractAddressManager {
 
-  private EndpointAddress endpointAddress;
-
-  private boolean isSSLEnable = false;
-
-  public KieAddressManager(List<String> addresses) {
-    this.endpointAddress = new EndpointAddress(addresses);
-    CommonEventManager.register(this);
-  }
-
-  public String address() {
-    return endpointAddress.getAvailableZoneAddress();
-  }
-
-  public boolean sslEnabled() {
-    isSSLEnable = address().startsWith("https://");
-    return isSSLEnable;
-  }
-
-  public EndpointAddress getEndpointAddress() {
-    return endpointAddress;
-  }
-
-  public void setEndpointAddress(EndpointAddress endpointAddress) {
-    this.endpointAddress = endpointAddress;
+  public KieAddressManager(List<String> addresses, EventBus eventBus) {
+    super(addresses);
+    eventBus.register(this);
   }
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    if (null == event || event.getName() != "KIE") {
-      return;
-    }
-    endpointAddress.setAvailableZone(event.getSameZone());
-    endpointAddress.setAvailableRegion(event.getSameRegion());
-    endpointAddress.refreshCache();
+    refreshEndpoint(event, "KIE");
   }
 }

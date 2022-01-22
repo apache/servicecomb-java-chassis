@@ -26,6 +26,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.google.common.eventbus.EventBus;
+
 /**
  * Created by   on 2019/10/16.
  */
@@ -43,8 +45,7 @@ public class ServiceCenterRawClientTest {
   public void TestDefaultParameter() throws IOException {
 
     HttpTransport httpTransport = Mockito.mock(HttpTransport.class);
-
-    AddressManager addressManager = new AddressManager(PROJECT_NAME, Arrays.asList("http://127.0.0.1:30100"));
+    AddressManager addressManager = new AddressManager(PROJECT_NAME, Arrays.asList("http://127.0.0.1:30100"), new EventBus());
     ServiceCenterRawClient client = new ServiceCenterRawClient.Builder()
         .setHttpTransport(httpTransport)
         .setAddressManager(addressManager)
