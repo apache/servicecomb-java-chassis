@@ -119,7 +119,7 @@ public class AddressManger {
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, "SERVICECENTER");
+    refreshEndpoint(event, RefreshEndpointEvent.SERVICE_CENTER_NAME);
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
