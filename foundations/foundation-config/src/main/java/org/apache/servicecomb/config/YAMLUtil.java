@@ -96,17 +96,17 @@ public final class YAMLUtil {
 
     for (Map.Entry<String, Object> entry : propertieMap.entrySet()) {
       if (entry.getValue() instanceof Map) {
-          result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
+        result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
       } else {
-        if (entry.getKey() instanceof String){
+        if (entry.getKey() instanceof String) {
           String key = prefix + entry.getKey();
           if (key.startsWith(CONFIG_CSE_PREFIX)) {
             String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
             result.put(servicecombKey, entry.getValue());
           }
           result.put(key, entry.getValue());
-        }else {
-          throw new IllegalArgumentException("value config error");
+        } else {
+          throw new IllegalArgumentException("Find invalid configuration item. Prefix is " + prefix);
         }
       }
     }

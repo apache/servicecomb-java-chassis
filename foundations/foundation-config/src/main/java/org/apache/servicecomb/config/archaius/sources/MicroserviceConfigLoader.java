@@ -71,7 +71,7 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
 
       sort();
     } catch (Exception e) {
-      throw new ServiceCombException("Failed to load microservice configFile " + configFileFromClasspath + " and " + e.getMessage());
+      throw new ServiceCombException("Failed to load microservice configFile " + configFileFromClasspath, e);
     }
   }
 
