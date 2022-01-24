@@ -91,13 +91,15 @@ public class SyncResponseExecutor implements Executor {
   }
 
   private long getWaitTime(Invocation invocation) {
-    if (invocation.getOperationMeta().getConfig().getMsRequestTimeout() <= 0) {
+    if (invocation.getOperationMeta().getConfig().getMsInvocationTimeout() > 0) {
+      // if invocation timeout configured, use it.
       return invocation.getOperationMeta().getConfig().getMsInvocationTimeout();
     }
-    if (invocation.getOperationMeta().getConfig().getMsInvocationTimeout() <= 0) {
-      return invocation.getOperationMeta().getConfig().getMsRequestTimeout();
-    }
-    return Math.min(invocation.getOperationMeta().getConfig().getMsRequestTimeout(),
-        invocation.getOperationMeta().getConfig().getMsInvocationTimeout());
+
+    // In invocation handlers, may call other microservices, invocation
+    // timeout may be much longer than request timeout.
+    // But this is quite rare, for simplicity, default two times of request timeout.
+    // If users need longer timeout, can configure invocation timeout.
+    return invocation.getOperationMeta().getConfig().getMsRequestTimeout() * 2;
   }
 }
