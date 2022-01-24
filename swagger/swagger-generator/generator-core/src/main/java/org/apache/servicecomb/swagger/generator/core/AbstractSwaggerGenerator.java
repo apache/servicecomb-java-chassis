@@ -22,7 +22,6 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -42,11 +41,11 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.springframework.util.CollectionUtils;
 
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.Info;
 import io.swagger.models.Model;
 import io.swagger.models.Swagger;
@@ -297,22 +296,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
       AbstractOperationGenerator operationGenerator = createOperationGenerator(method);
       operationGenerator.setHttpMethod(httpMethod);
-      if (method.getParameterCount() > 0) {
-        for (Parameter methodParameter : method.getParameters()) {
-          if (methodParameter.getType().isInterface()) {
-            continue;
-          }
-          for (Map.Entry<String, Model> entry : ModelConverters.getInstance()
-              .readAll(methodParameter.getParameterizedType()).entrySet()) {
-            if (definitions.containsKey(entry.getKey()) && !entry.getValue().equals(definitions.get(entry.getKey()))) {
-              throw new IllegalArgumentException(
-                  "the parameter typeName '" + entry.getKey() + "' duplicate in '" + cls.getName()
-                      + "', need to rename it");
-            }
-            definitions.put(entry.getKey(), entry.getValue());
-          }
-        }
-      }
       try {
         operationGenerator.generate();
       } catch (Throwable e) {
@@ -331,6 +314,21 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
         throw new IllegalStateException(
             String.format("OperationId must be unique. method=%s:%s.", cls.getName(), method.getName()));
       }
+      Map<String, Model> originsDefinitions = swagger.getDefinitions();
+      if (!CollectionUtils.isEmpty(originsDefinitions)) {
+        originsDefinitions.forEach((key,value)->{
+          if (definitions.containsKey(key) && !value.equals(definitions.get(key))) {
+            throw new IllegalArgumentException(
+                "the parameter typeName '" + key + "' duplicate in '" + this.cls.getName()
+                    + "', need to rename it");
+          }
+        });
+        definitions.putAll(originsDefinitions);
+      }
+      swagger.setDefinitions(null);
+    }
+    if (!CollectionUtils.isEmpty(definitions)) {
+      swagger.setDefinitions(definitions);
     }
   }
 
