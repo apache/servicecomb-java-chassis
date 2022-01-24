@@ -23,6 +23,14 @@ import java.util.Map;
 
 public class RefreshEndpointEvent {
 
+  public static final String SERVICE_CENTER_NAME = "SERVICECENTER";
+
+  public static final String KIE_NAME = "KIE";
+
+  public static final String CONFIG_CENTER_NAME = "CseConfigCenter";
+
+  public static final String CSE_MONITORING_NAME = "CseMonitoring";
+
   private static final String SAME_ZONE = "sameZone";
 
   private static final String SAME_REGION = "sameRegion";

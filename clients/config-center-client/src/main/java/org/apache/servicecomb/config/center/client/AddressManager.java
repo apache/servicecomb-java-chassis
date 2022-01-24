@@ -28,12 +28,12 @@ import com.google.common.eventbus.Subscribe;
 public class AddressManager extends AbstractAddressManager {
 
   public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
-    super(projectName, addresses, "/v3/");
+    super(projectName, addresses);
     eventBus.register(this);
   }
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, "CseConfigCenter");
+    refreshEndpoint(event, RefreshEndpointEvent.CONFIG_CENTER_NAME);
   }
 }

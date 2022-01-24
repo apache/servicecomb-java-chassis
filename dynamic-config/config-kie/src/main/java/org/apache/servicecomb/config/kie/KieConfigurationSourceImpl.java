@@ -64,8 +64,6 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private ConfigConverter configConverter;
 
-  KieAddressManager kieAddressManager;
-
   @Override
   public int getOrder() {
     return ORDER_BASE * 2;
@@ -85,7 +83,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
   @Override
   public void init(Configuration localConfiguration) {
     configConverter = new ConfigConverter(KieConfig.INSTANCE.getFileSources());
-    kieAddressManager = configKieAddressManager();
+    KieAddressManager kieAddressManager = configKieAddressManager();
 
     RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
     if (KieConfig.INSTANCE.enableLongPolling()

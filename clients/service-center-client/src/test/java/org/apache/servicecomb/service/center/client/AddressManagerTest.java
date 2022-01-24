@@ -17,32 +17,34 @@
 
 package org.apache.servicecomb.service.center.client;
 
-import java.util.List;
+import java.util.Arrays;
 
-import org.apache.servicecomb.http.client.common.AbstractAddressManager;
-import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
-public class AddressManager extends AbstractAddressManager {
-  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
-    super(projectName, addresses);
-    eventBus.register(this);
-  }
+public class AddressManagerTest {
 
-  @Override
-  protected List<String> transformAddress(List<String> addresses) {
-    return addresses;
-  }
+  private static final String PROJECT_NAME = "default";
 
-  @Override
-  protected String getUrlPrefix(String address) {
-    return address + V4_PREFIX;
-  }
+  @Test
+  public void AddressManagerTest() {
 
-  @Subscribe
-  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, RefreshEndpointEvent.SERVICE_CENTER_NAME);
+    AddressManager addressManager = new AddressManager(PROJECT_NAME, Arrays.asList("http://127.0.0.1:30100"),
+        new EventBus());
+    Assert.assertNotNull(addressManager);
+
+    String addressPrefix = addressManager.getUrlPrefix("http://127.0.0.1:30100");
+    Assert.assertEquals("http://127.0.0.1:30100/v4/", addressPrefix);
+
+    String address = addressManager.address();
+    Assert.assertEquals("http://127.0.0.1:30100", address);
+
+    address = addressManager.formatUrl("/test", false);
+    Assert.assertEquals("http://127.0.0.1:30100/v4/default/test", address);
+
+    address = addressManager.formatUrl("/test", true);
+    Assert.assertEquals("http://127.0.0.1:30100/test", address);
   }
 }

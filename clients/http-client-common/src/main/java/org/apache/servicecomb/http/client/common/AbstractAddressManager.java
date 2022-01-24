@@ -34,17 +34,19 @@ import com.google.common.cache.CacheBuilder;
 public class AbstractAddressManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAddressManager.class);
 
+  public static final String DEFAULT_PROJECT = "default";
+
+  public static final String V4_PREFIX = "/v4/";
+
+  private static final String V3_PREFIX = "/v3/";
+
   private List<String> addresses = new ArrayList<>();
 
   private int index = 0;
 
   private String projectName;
 
-  private String key;
-
   private String currentAddress = "";
-
-  public static final String DEFAULT_PROJECT = "default";
 
   private volatile List<String> availableZone = new ArrayList<>();
 
@@ -59,9 +61,8 @@ public class AbstractAddressManager {
     this.addresses.addAll(addresses);
   }
 
-  public AbstractAddressManager(String projectName, List<String> addresses, String key) {
+  public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    this.key = key;
     this.addresses = this.transformAddress(addresses);
   }
 
@@ -78,16 +79,17 @@ public class AbstractAddressManager {
     return address().startsWith("https://");
   }
 
-  private List<String> transformAddress(List<String> addresses) {
-    if (key == "/v3/") {
-      return addresses.stream().map(this::formatAddress).collect(Collectors.toList());
-    }
-    return addresses;
+  protected List<String> transformAddress(List<String> addresses) {
+    return addresses.stream().map(this::formatAddress).collect(Collectors.toList());
+  }
+
+  protected String getUrlPrefix(String address) {
+    return address + V3_PREFIX;
   }
 
   private String formatAddress(String address) {
     try {
-      return address + key + HttpUtils.encodeURLParam(this.projectName);
+      return getUrlPrefix(address) + HttpUtils.encodeURLParam(this.projectName);
     } catch (Exception e) {
       throw new IllegalStateException("not possible");
     }
@@ -154,7 +156,7 @@ public class AbstractAddressManager {
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
-    if (null == event || event.getName() != key) {
+    if (null == event || !event.getName().equals(key)) {
       return;
     }
     availableZone = event.getSameZone();

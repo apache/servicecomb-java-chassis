@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   @Override
   public void init() {
     try {
-      List<String> addresses = null;
+      List<String> addresses = new ArrayList<>();
       SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
           MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
       if (info != null && info.getAccessURL() != null) {

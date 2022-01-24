@@ -65,8 +65,6 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private ConfigConverter configConverter;
 
-  AddressManager kieAddressManager;
-
   @Override
   public int getOrder() {
     return ORDER_BASE * 2;
@@ -89,7 +87,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public void init(Configuration localConfiguration) {
     configConverter = new ConfigConverter(ConfigCenterConfig.INSTANCE.getFileSources());
 
-    kieAddressManager = configKieAddressManager();
+    AddressManager kieAddressManager = configKieAddressManager();
 
     HttpTransport httpTransport = createHttpTransport(kieAddressManager,
         HttpTransportFactory.defaultRequestConfig().build(),

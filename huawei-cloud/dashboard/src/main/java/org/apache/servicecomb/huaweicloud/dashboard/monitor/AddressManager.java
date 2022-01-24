@@ -36,6 +36,6 @@ public class AddressManager extends AbstractAddressManager {
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, "CseMonitoring");
+    refreshEndpoint(event, RefreshEndpointEvent.CSE_MONITORING_NAME);
   }
 }

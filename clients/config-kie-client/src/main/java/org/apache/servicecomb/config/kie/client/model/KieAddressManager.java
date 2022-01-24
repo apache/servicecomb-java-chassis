@@ -34,6 +34,6 @@ public class KieAddressManager extends AbstractAddressManager {
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, "KIE");
+    refreshEndpoint(event, RefreshEndpointEvent.KIE_NAME);
   }
 }

@@ -65,9 +65,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     Map<String, Object> configurations = new HashMap<>();
 
     String uri = null;
-    String currentAddress = addressManager.address();
     try {
-      uri = currentAddress + "/configuration/items?dimensionsInfo="
+      uri = addressManager.address() + "/configuration/items?dimensionsInfo="
           + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
 
       Map<String, String> headers = new HashMap<>();

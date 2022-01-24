@@ -123,7 +123,7 @@ public class AddressManger {
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
-    if (null == event || event.getName() != key) {
+    if (null == event || !event.getName().equals(key)) {
       return;
     }
     availableZone = event.getSameZone();

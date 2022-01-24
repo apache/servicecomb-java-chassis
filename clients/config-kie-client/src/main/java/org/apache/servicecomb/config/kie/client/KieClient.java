@@ -52,8 +52,6 @@ public class KieClient implements KieConfigOperation {
 
   protected String revision = "0";
 
-  private String currentAddress = "";
-
   private final KieAddressManager addressManager;
 
   private final KieConfiguration kieConfiguration;
