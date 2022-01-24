@@ -316,7 +316,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       }
       Map<String, Model> originsDefinitions = swagger.getDefinitions();
       if (!CollectionUtils.isEmpty(originsDefinitions)) {
-        originsDefinitions.forEach((key,value)->{
+        originsDefinitions.forEach((key, value) -> {
           if (definitions.containsKey(key) && !value.equals(definitions.get(key))) {
             throw new IllegalArgumentException(
                 "the parameter typeName '" + key + "' duplicate in '" + this.cls.getName()
