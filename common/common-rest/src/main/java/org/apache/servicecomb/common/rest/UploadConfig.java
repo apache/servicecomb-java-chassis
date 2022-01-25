@@ -87,10 +87,12 @@ public class UploadConfig {
   }
 
   public MultipartConfigElement toMultipartConfigElement() {
-    String location = DynamicPropertyFactory.getInstance().getStringProperty(RestConst.UPLOAD_DIR, null).get();
     if (location == null) {
       LOGGER.info("{} is null, not support upload.", RestConst.UPLOAD_DIR);
       return null;
+    }
+    if (location.equals("default")){
+      location = RestConst.UPLOAD_DEFAULT_DIR;
     }
 
     return new MultipartConfigElement(
