@@ -36,16 +36,6 @@ public class TestUploadConfig {
   }
 
   @Test
-  public void getMultipartConfig_notSupport() {
-    UploadConfig uploadConfig = new UploadConfig();
-
-    Assert.assertNull(uploadConfig.toMultipartConfigElement());
-    Assert.assertEquals(-1L, uploadConfig.getMaxFileSize());
-    Assert.assertEquals(-1L, uploadConfig.getMaxSize());
-    Assert.assertEquals(0, uploadConfig.getFileSizeThreshold());
-  }
-
-  @Test
   public void getMultipartConfig_default() {
     ArchaiusUtils.setProperty(RestConst.UPLOAD_DIR, "upload");
 

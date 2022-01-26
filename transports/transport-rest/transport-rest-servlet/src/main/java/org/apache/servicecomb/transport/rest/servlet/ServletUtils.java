@@ -107,6 +107,9 @@ public class ServletUtils {
 
   static List<ServletRegistration> findServletRegistrations(ServletContext servletContext,
       Class<?> servletCls) {
+    if (servletContext == null) {
+      return null;
+    }
     return servletContext.getServletRegistrations()
         .values()
         .stream()
@@ -154,21 +157,20 @@ public class ServletUtils {
   static void setServletParameters(ServletContext servletContext) {
     UploadConfig uploadConfig = new UploadConfig();
     MultipartConfigElement multipartConfig = uploadConfig.toMultipartConfigElement();
-    if (multipartConfig == null) {
-      return;
-    }
 
     File dir = createUploadDir(servletContext, multipartConfig.getLocation());
     LOGGER.info("set uploads directory to \"{}\".", dir.getAbsolutePath());
 
     List<ServletRegistration> servlets = findServletRegistrations(servletContext, RestServlet.class);
-    for (ServletRegistration servletRegistration : servlets) {
-      if (!Dynamic.class.isInstance(servletRegistration)) {
-        continue;
-      }
+    if (servlets != null) {
+      for (ServletRegistration servletRegistration : servlets) {
+        if (!Dynamic.class.isInstance(servletRegistration)) {
+          continue;
+        }
 
-      Dynamic dynamic = (Dynamic) servletRegistration;
-      dynamic.setMultipartConfig(multipartConfig);
+        Dynamic dynamic = (Dynamic) servletRegistration;
+        dynamic.setMultipartConfig(multipartConfig);
+      }
     }
   }
 
