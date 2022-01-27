@@ -152,16 +152,18 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     }
 
     if (isPrintStackTrace()) {
-      LOGGER.error("failed to invoke {}, endpoint={}.",
+      LOGGER.error("failed to invoke {}, endpoint={}, trace id={}.",
           invocation.getMicroserviceQualifiedName(),
           invocation.getEndpoint(),
+          invocation.getTraceId(),
           exception);
       return;
     }
 
-    LOGGER.error("failed to invoke {}, endpoint={}, message={}.",
+    LOGGER.error("failed to invoke {}, endpoint={}, trace id={}, message={}.",
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint(),
+        invocation.getTraceId(),
         ExceptionUtils.getExceptionMessageWithoutTrace(exception));
   }
 

@@ -44,13 +44,14 @@ public class TestFlowControl implements CategorizedTestCase {
 
   @Override
   public void testAllTransport() throws Exception {
-    testFlowControl((num) -> client1.foo(num), true);
-    testFlowControl((num) -> client1.bar(num), false);
-    testFlowControl((num) -> client2.foo(num), true);
-    testFlowControl((num) -> client2.bar(num), false);
+    testFlowControl((num) -> client1.foo(num), "provider", true);
+    testFlowControl((num) -> client1.bar(num), "provider", false);
+    testFlowControl((num) -> client2.foo(num), "consumer", true);
+    testFlowControl((num) -> client2.bar(num), "consumer", false);
   }
 
-  private void testFlowControl(Function<Integer, Integer> function, boolean expected) throws InterruptedException {
+  private void testFlowControl(Function<Integer, Integer> function, String role, boolean expected)
+      throws InterruptedException {
     AtomicBoolean failed = new AtomicBoolean(false);
     CountDownLatch countDownLatch = new CountDownLatch(10);
     for (int i = 0; i < 10; i++) {
@@ -65,7 +66,8 @@ public class TestFlowControl implements CategorizedTestCase {
             } catch (InvocationException e) {
               TestMgr.check(e.getStatusCode(), 429);
               TestMgr.check(e.getMessage(),
-                  "InvocationException: code=429;msg=CommonExceptionData [message=rejected by qps flowcontrol]");
+                  "InvocationException: code=429;msg=CommonExceptionData [message=" + role
+                      + " request rejected by qps flowcontrol]");
               failed.set(true);
               break;
             }

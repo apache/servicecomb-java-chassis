@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 
 public class Teacher {
 
-  @NotBlank
+  @NotBlank(message = "must not be blank")
   private String name;
 
   private String age;

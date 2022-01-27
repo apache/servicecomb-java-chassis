@@ -22,8 +22,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.client.RetryHandler;
-
 public class ExtensionsManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionsManager.class);
 
@@ -51,19 +49,5 @@ public class ExtensionsManager {
 
     LOGGER.info("Using load balance rule {} for microservice {}.", rule.getClass().getName(), microservice);
     return rule;
-  }
-
-  public static RetryHandler createRetryHandler(String microservice) {
-    RetryHandler handler = null;
-    for (ExtensionsFactory factory : extentionFactories) {
-      if (factory.isSupport(Configuration.RETRY_HANDLER, Configuration.INSTANCE.getRetryHandler(microservice))) {
-        handler = factory.createRetryHandler(Configuration.INSTANCE.getRetryHandler(microservice), microservice);
-        break;
-      }
-    }
-
-    // handler can not be null. handler will be created for each invocation.
-    LOGGER.debug("Using retry handler {} for microservice {}.", handler.getClass().getName(), microservice);
-    return handler;
   }
 }

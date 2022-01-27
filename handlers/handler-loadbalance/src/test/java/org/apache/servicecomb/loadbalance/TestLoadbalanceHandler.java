@@ -107,6 +107,11 @@ public class TestLoadbalanceHandler {
       void next(AsyncResponse asyncResp) throws Exception {
         asyncResp.handle(sendResponse);
       }
+
+      @Mock
+      public <T> T getLocalContext(String key) {
+        return (T) null;
+      }
     };
 
     new MockUp<TransportManager>(transportManager) {
@@ -126,7 +131,6 @@ public class TestLoadbalanceHandler {
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
-    extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
 
@@ -244,34 +248,10 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void sendWithRetry(@Injectable LoadBalancer loadBalancer) {
-    Holder<String> result = new Holder<>();
-    Deencapsulation.invoke(handler, "sendWithRetry", invocation, (AsyncResponse) resp -> {
-      result.value = resp.getResult();
-    }, loadBalancer);
-
-    // no exception
-  }
-
-  @Test
   public void testIsFailedResponse() {
     Assert.assertFalse(handler.isFailedResponse(Response.create(400, "", "")));
     Assert.assertFalse(handler.isFailedResponse(Response.create(500, "", "")));
     Assert.assertTrue(handler.isFailedResponse(Response.create(490, "", "")));
     Assert.assertTrue(handler.isFailedResponse(Response.consumerFailResp(new NullPointerException())));
-  }
-
-  @Test
-  public void retryPoolDaemon() throws ExecutionException, InterruptedException {
-    ExecutorService RETRY_POOL = Deencapsulation.getField(handler, "RETRY_POOL");
-
-    Holder<Thread> nameHolder = new Holder<>();
-
-    RETRY_POOL.submit(() -> {
-      nameHolder.value = Thread.currentThread();
-    }).get();
-
-    Assert.assertThat(nameHolder.value.getName(), Matchers.startsWith("retry-pool-thread-"));
-    Assert.assertTrue(nameHolder.value.isDaemon());
   }
 }

@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.handler.governance;
+package org.apache.servicecomb.core.governance;
 
-import io.vertx.core.VertxException;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.SocketTimeoutException;
 
 @Component
 public class ServiceCombRetryExtension extends AbstractRetryExtension {
@@ -37,25 +32,21 @@ public class ServiceCombRetryExtension extends AbstractRetryExtension {
       return null;
     }
     Response resp = (Response) result;
-    if (!resp.isFailed()) {
-      return null;
+    if (resp.isFailed()) {
+      if (resp.getResult() instanceof InvocationException) {
+        InvocationException e = resp.getResult();
+        return String.valueOf(e.getStatusCode());
+      }
     }
-    if (InvocationException.class.isInstance(resp.getResult())) {
-      InvocationException e = resp.getResult();
-      return String.valueOf(e.getStatusCode());
-    }
-    return null;
+    return String.valueOf(resp.getStatusCode());
   }
 
   @Override
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public Class<? extends Throwable>[] retryExceptions() {
-    return new Class[] {
-        ConnectException.class,
-        SocketTimeoutException.class,
-        IOException.class,
-        VertxException.class,
-        NoRouteToHostException.class,
-        InvocationException.class};
+  public boolean isRetry(Throwable e) {
+    if (e instanceof InvocationException && ((InvocationException) e).getStatusCode() == Status.SERVICE_UNAVAILABLE
+        .getStatusCode()) {
+      return true;
+    }
+    return super.isRetry(e);
   }
 }

@@ -17,10 +17,6 @@
 package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.function.Predicate;
-
-import io.github.resilience4j.core.IntervalFunction;
 
 import org.apache.servicecomb.governance.handler.ext.RetryExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
@@ -32,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.github.resilience4j.core.IntervalFunction;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -67,8 +64,8 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
     RetryConfig config = RetryConfig.custom()
         .maxAttempts(retryPolicy.getMaxAttempts() + 1)
-        .retryOnResult(getPredicate(retryPolicy.getRetryOnResponseStatus()))
-        .retryExceptions(retryExtension.retryExceptions())
+        .retryOnResult(response -> retryExtension.isRetry(retryPolicy.getRetryOnResponseStatus(), response))
+        .retryOnException(e -> retryExtension.isRetry(e))
         .intervalFunction(getIntervalFunction(retryPolicy))
         .build();
 
@@ -82,9 +79,5 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
           retryPolicy.getMultiplier(), retryPolicy.getRandomizationFactor());
     }
     return IntervalFunction.of(Duration.parse(retryPolicy.getWaitDuration()));
-  }
-
-  private Predicate<Object> getPredicate(List<String> statusList) {
-    return response -> retryExtension.isRetry(statusList, response);
   }
 }

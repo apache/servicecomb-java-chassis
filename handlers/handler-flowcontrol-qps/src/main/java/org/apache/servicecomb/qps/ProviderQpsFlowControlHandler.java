@@ -25,6 +25,7 @@ import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ProviderQpsFlowControlHandler implements Handler {
+
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
@@ -49,7 +50,8 @@ public class ProviderQpsFlowControlHandler implements Handler {
 
   private boolean isLimitNewRequest(QpsStrategy qpsStrategy, AsyncResponse asyncResp) {
     if (qpsStrategy.isLimitNewRequest()) {
-      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
+      CommonExceptionData errorData = new CommonExceptionData(
+          "provider request rejected by qps flowcontrol");
       asyncResp.producerFail(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
       return true;
     } else {

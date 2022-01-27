@@ -22,7 +22,7 @@ service_description:
 servicecomb:
   service:
     registry:
-      address: http://127.0.0.1:9980,http://127.0.0.1:30100
+      address: http://127.0.0.1:30100
       autodiscovery: true
       client:
         timeout:
@@ -34,13 +34,6 @@ servicecomb:
         pull:
           interval: 90
         watch: true
-  # can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
-  config:
-    client:
-      serverUri: http://127.0.0.1:30113
-      refreshMode: 1
-      refresh_interval: 5000
-      refreshPort: 30114
   rest:
     client:
       connection:
@@ -117,6 +110,17 @@ servicecomb:
                           percent: 50
   test:
     duplicate1: newer
+
+# test governance retry
+  matchGroup:
+    retry-governance: |
+      matches:
+        - apiPath:
+            prefix: "/retry/governance/"
+  retry:
+    retry-governance: |
+      maxAttempts: 2
+      retryOnResponseStatus: [500]
 
 cse:
   fallback:
