@@ -28,11 +28,11 @@ import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class AddressManagerNew extends AbstractAddressManager {
+public class AddressManager extends AbstractAddressManager {
 
   private static final String URI_SPLIT = ":";
 
-  public AddressManagerNew(List<String> addresses, EventBus eventBus) {
+  public AddressManager(List<String> addresses, EventBus eventBus) {
     super(addresses);
     eventBus.register(this);
   }

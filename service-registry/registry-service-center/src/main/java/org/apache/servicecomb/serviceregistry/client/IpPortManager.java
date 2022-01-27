@@ -19,7 +19,6 @@ package org.apache.servicecomb.serviceregistry.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -30,8 +29,7 @@ import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.api.Type;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.refresh.AddressManagerNew;
-import org.apache.servicecomb.serviceregistry.refresh.AddressManger;
+import org.apache.servicecomb.serviceregistry.refresh.AddressManager;
 import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +45,7 @@ public class IpPortManager {
 
   private boolean autoDiscoveryInited = false;
 
- private AddressManger  addressManger;
-
-  private AddressManagerNew addressMangerNew;
+  private AddressManager addressManger;
 
   ClassificationAddress classificationAddress;
 
@@ -71,8 +67,7 @@ public class IpPortManager {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     List<String> addresses = defaultIpPort.stream().map(IpPort::toString).collect(Collectors.toList());
-    addressMangerNew = new AddressManagerNew(addresses,EventManager.getEventBus());
-    addressManger = new AddressManger(defaultIpPort, EventManager.getEventBus());
+    addressManger = new AddressManager(addresses,EventManager.getEventBus());
     classificationAddress = new ClassificationAddress(serviceRegistryConfig, instanceCacheManager);
     LOGGER.info("Initial service center address is {}", getAvailableAddress());
   }
@@ -83,20 +78,15 @@ public class IpPortManager {
       for (Type type : Type.values()) {
         classificationAddress.InitEndPoint(type.name());
       }
-      addressManger.setAutoDiscoveryInited(true);
+      setAutoDiscoveryInited(true);
     }
   }
 
   public IpPort getAvailableAddress() {
-    IpPort ipPort1 = addressMangerNew.getAvailableIpPort();
-    IpPort ipPort2 = addressManger.getAvailableIpPort();
-        if(ipPort1.equals(ipPort2)) {
-          System.out.println("good");
-        }
     return addressManger.getAvailableIpPort();
   }
 
   public void recordState(String address) {
-    addressMangerNew.recordFailState(new AddressStatus(null, address));
+    addressManger.recordFailState(new AddressStatus(null, address));
   }
 }

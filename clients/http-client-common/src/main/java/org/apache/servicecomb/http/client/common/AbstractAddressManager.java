@@ -187,8 +187,8 @@ public class AbstractAddressManager {
     }
     availableZone = event.getSameZone().stream().map(this::normalizeUri).collect(Collectors.toList());
     availableRegion = event.getSameRegion().stream().map(this::normalizeUri).collect(Collectors.toList());
-    availableZone.forEach(s -> categoryMap.put(normalizeUri(s), true));
-    availableRegion.forEach(address -> categoryMap.put(normalizeUri(address), false));
+    availableZone.forEach(address -> categoryMap.put(address, true));
+    availableRegion.forEach(address -> categoryMap.put(address, false));
     startCheck();
   }
 
