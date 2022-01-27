@@ -291,6 +291,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 }
                 break;
                 default:
+                  ipPortManager.recordState(requestContext.getIpPort().toString());
                   LOGGER.warn("failed to findInstances: " + bodyBuffer.toString());
                   break;
               }

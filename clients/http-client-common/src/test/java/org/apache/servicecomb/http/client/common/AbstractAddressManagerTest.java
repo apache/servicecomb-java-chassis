@@ -260,32 +260,31 @@ public class AbstractAddressManagerTest {
     Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager1, "recodeStatus");
     Assert.assertEquals(1, (int) recodeStatus.get("http://127.0.0.3:30100"));
 
-//    // test fail 3 times ,it will be isolated
-//    addressManager1.recordFailState(addressStatus1);
-//    addressManager1.recordFailState(addressStatus1);
-//    addressManager1.recordFailState(addressStatus1);
-//    Assert.assertEquals("http://127.0.0.4:30100", addressManager1.address());
-//
-//    // mock cacheAddress status refresh after 10 minute
-//    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-//        .maximumSize(100)
-//        .expireAfterWrite(10, TimeUnit.MINUTES)
-//        .build();
-//    cache.put("http://127.0.0.3:30100", true);
-//
-//    // mock the address telnetTest is access
-//    new Expectations(addressManager1) {
-//      {
-//        Deencapsulation.setField(addressManager1, "cacheAddress", cache);
-//        Deencapsulation.invoke(addressManager1, "telnetTest", "http://127.0.0.3:30100");
-//        result = true;
-//      }
-//    };
-//    // mock invoke checkHistory()
-//    Deencapsulation.invoke(addressManager1, "checkHistory");
-//
-//    // assert the Available zone address is good
-//    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
-//    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
+    // test fail 3 times ,it will be isolated
+    addressManager1.recordFailState(addressStatus1);
+    addressManager1.recordFailState(addressStatus1);
+    addressManager1.recordFailState(addressStatus1);
+    Assert.assertEquals("http://127.0.0.4:30100", addressManager1.address());
+
+    // mock cacheAddress status refresh after 10 minute
+    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
+        .maximumSize(100)
+        .expireAfterWrite(10, TimeUnit.MINUTES)
+        .build();
+    cache.put("http://127.0.0.3:30100", true);
+
+    // mock the address telnetTest is access
+    new Expectations(addressManager1) {
+      {
+        Deencapsulation.setField(addressManager1, "cacheAddress", cache);
+        Deencapsulation.invoke(addressManager1, "telnetTest", "http://127.0.0.3:30100");
+        result = true;
+      }
+    };
+    // mock invoke checkHistory()
+    Deencapsulation.invoke(addressManager1, "checkHistory");
+
+    // assert the Available zone address is good
+    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
   }
 }
