@@ -41,7 +41,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
-import org.springframework.util.CollectionUtils;
 
 
 import io.swagger.annotations.Api;
@@ -84,9 +83,25 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   protected String httpMethod;
 
+
+  class SwaggerExt extends Swagger {
+    @Override
+    public void addDefinition(String key, Model model) {
+      if (this.definitions == null) {
+        this.definitions = new LinkedHashMap<>();
+      }
+      if (this.definitions.containsKey(key) && !this.definitions.get(key).equals(model)) {
+        throw new IllegalArgumentException(
+            "the parameter typeName " + key + " duplicate in " + cls.getName()
+                + ", need to rename it");
+      }
+      this.definitions.put(key, model);
+    }
+  }
+
   @SuppressWarnings("unchecked")
   public AbstractSwaggerGenerator(Class<?> cls) {
-    this.swagger = new Swagger();
+    this.swagger = new SwaggerExt();
     this.cls = cls;
   }
 
@@ -288,7 +303,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   protected void scanMethods() {
     List<Method> methods = MethodUtils.findSwaggerMethods(cls);
-    Map<String, Model> definitions = new LinkedHashMap<>();
     for (Method method : methods) {
       if (isSkipMethod(method)) {
         continue;
@@ -314,21 +328,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
         throw new IllegalStateException(
             String.format("OperationId must be unique. method=%s:%s.", cls.getName(), method.getName()));
       }
-      Map<String, Model> originsDefinitions = swagger.getDefinitions();
-      if (!CollectionUtils.isEmpty(originsDefinitions)) {
-        originsDefinitions.forEach((key, value) -> {
-          if (definitions.containsKey(key) && !value.equals(definitions.get(key))) {
-            throw new IllegalArgumentException(
-                "the parameter typeName '" + key + "' duplicate in '" + this.cls.getName()
-                    + "', need to rename it");
-          }
-        });
-        definitions.putAll(originsDefinitions);
-      }
-      swagger.setDefinitions(null);
-    }
-    if (!CollectionUtils.isEmpty(definitions)) {
-      swagger.setDefinitions(definitions);
     }
   }
 

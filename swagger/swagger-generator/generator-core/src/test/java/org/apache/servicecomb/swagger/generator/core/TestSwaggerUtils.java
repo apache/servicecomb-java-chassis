@@ -247,7 +247,7 @@ public class TestSwaggerUtils {
   @Test
   public void testRepeatOperation() {
     UnitTestSwaggerUtils.testException(
-        "OperationId must be unique. method=org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add.",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add.",
         RepeatOperation.class);
   }
 
