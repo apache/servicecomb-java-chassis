@@ -17,9 +17,19 @@
 
 package org.apache.servicecomb.http.client.common;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -28,8 +38,10 @@ import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class AbstractAddressManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAddressManager.class);
@@ -40,19 +52,30 @@ public class AbstractAddressManager {
 
   private static final String V3_PREFIX = "/v3/";
 
+  private static final int DEFAULT_METRICS_WINDOW_TIME = 1;
+
   private List<String> addresses = new ArrayList<>();
 
   private int index = 0;
 
   private String projectName;
 
-  private String currentAddress = "";
+  private Map<String, Boolean> AZMap = new HashMap<>();
+
+  private Map<String, Integer> recodeStatus = new ConcurrentHashMap<>();
+
+  private Map<String, Boolean> history = new ConcurrentHashMap<>();
 
   private volatile List<String> availableZone = new ArrayList<>();
 
   private volatile List<String> availableRegion = new ArrayList<>();
 
-  private Cache<String, Boolean> availableIpCache = CacheBuilder.newBuilder()
+  private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
+      new ThreadFactoryBuilder()
+          .setNameFormat("check-available-address-%d")
+          .build());
+
+  private Cache<String, Boolean> cacheAddress = CacheBuilder.newBuilder()
       .maximumSize(100)
       .expireAfterWrite(10, TimeUnit.MINUTES)
       .build();
@@ -66,9 +89,17 @@ public class AbstractAddressManager {
     this.addresses = this.transformAddress(addresses);
   }
 
-  public String formatUrl(String url, boolean absoluteUrl) {
-    currentAddress = address();
-    return absoluteUrl ? currentAddress + url : formatAddress(currentAddress) + url;
+  private void startCheck() {
+    executorService.scheduleAtFixedRate(this::checkHistory,
+        0,
+        DEFAULT_METRICS_WINDOW_TIME,
+        TimeUnit.MINUTES);
+  }
+
+  public AddressStatus formatUrl(String url, boolean absoluteUrl) {
+    String currentAddress = address();
+    String formatUrl = absoluteUrl ? currentAddress + url : formatAddress(currentAddress) + url;
+    return new AddressStatus(formatUrl, currentAddress);
   }
 
   public String address() {
@@ -87,7 +118,7 @@ public class AbstractAddressManager {
     return address + V3_PREFIX;
   }
 
-  private String formatAddress(String address) {
+  protected String formatAddress(String address) {
     try {
       return getUrlPrefix(address) + HttpUtils.encodeURLParam(this.projectName);
     } catch (Exception e) {
@@ -117,15 +148,19 @@ public class AbstractAddressManager {
         if (this.index >= addresses.size()) {
           this.index = 0;
         }
-        return addresses.get(index);
+        return joinProject(addresses.get(index));
       }
     }
     return getDefaultAddress();
   }
 
+  protected String joinProject(String address) {
+    return address;
+  }
+
   private List<String> getAvailableZoneIpPorts() {
     List<String> results = new ArrayList<>();
-    if (!getAvailableAddress(availableZone).isEmpty()) {
+    if (!availableZone.isEmpty()) {
       results.addAll(getAvailableAddress(availableZone));
     } else {
       results.addAll(getAvailableAddress(availableRegion));
@@ -134,18 +169,9 @@ public class AbstractAddressManager {
   }
 
   private List<String> getAvailableAddress(List<String> endpoints) {
-    List<String> result = new ArrayList<>();
-    for (String endpoint : endpoints) {
-      try {
-        String uri = getUri(endpoint);
-        if (availableIpCache.get(uri, () -> true)) {
-          result.add(uri);
-        }
-      } catch (ExecutionException e) {
-        LOGGER.error("Not expected to happen, maybe a bug.", e);
-      }
-    }
-    return result;
+    List<String> list = endpoints.stream().filter(uri -> !history.containsKey(uri))
+        .collect(Collectors.toList());
+    return list;
   }
 
   private String getUri(String endpoint) {
@@ -159,13 +185,97 @@ public class AbstractAddressManager {
     if (null == event || !event.getName().equals(key)) {
       return;
     }
-    availableZone = event.getSameZone();
-    availableRegion = event.getSameRegion();
-    availableZone.forEach(address -> availableIpCache.put(address, true));
-    availableRegion.forEach(address -> availableIpCache.put(address, true));
+    availableZone = event.getSameZone().stream().map(this::getUri).collect(Collectors.toList());
+    availableRegion = event.getSameRegion().stream().map(this::getUri).collect(Collectors.toList());
+    for (String s : availableZone) {
+      AZMap.put(getUri(s), true);
+    }
+    for (String address : availableRegion) {
+      AZMap.put(getUri(address), false);
+    }
+    startCheck();
   }
 
-  public void recordFailState() {
-    availableIpCache.put(currentAddress, false);
+  public void recordFailState(AddressStatus addressStatus) {
+    String currentAddress = addressStatus.getCurrentAddress();
+    if (recodeStatus.containsKey(currentAddress)) {
+      int number = recodeStatus.get(currentAddress) + 1;
+      if (number < 3) {
+        recodeStatus.put(currentAddress, number);
+      } else {
+        removeAddress(currentAddress);
+      }
+      return;
+    }
+    recodeStatus.put(currentAddress, 1);
+  }
+
+  public void recordSuccessState(AddressStatus addressStatus) {
+    String currentAddress = addressStatus.getCurrentAddress();
+    if (recodeStatus.containsKey(currentAddress) && recodeStatus.get(currentAddress) >= 1) {
+      recodeStatus.put(currentAddress, recodeStatus.get(currentAddress) - 1);
+    } else {
+      recodeStatus.put(currentAddress, 0);
+    }
+  }
+
+  private void checkHistory() {
+    history.keySet().stream().filter(this::judgeIsolation).forEach(s -> {
+      if (telnetTest(s)) {
+        rejoinAddress(s);
+      } else {
+        cacheAddress.put(s, false);
+      }
+    });
+  }
+
+  private Boolean judgeIsolation(String address) {
+    try {
+      return cacheAddress.get(address, () -> true);
+    } catch (ExecutionException e) {
+      return true;
+    }
+  }
+
+  private boolean telnetTest(String address) {
+    URI ipPort = parseIpPortFromURI(address);
+    try (Socket s = new Socket()) {
+      s.connect(new InetSocketAddress(ipPort.getHost(), ipPort.getPort()), 3000);
+      return true;
+    } catch (IOException e) {
+      LOGGER.warn("ping endpoint {} failed, It will be quarantined again.", address);
+    }
+    return false;
+  }
+
+  private URI parseIpPortFromURI(String uri) {
+    try {
+      return new URI(uri);
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
+  //通过AZmap查询当前地址属于同AZ，还是同region，并添加到对于的序列中，同时在history中删除记录
+  private void rejoinAddress(String address) {
+    if (AZMap.get(address)) {
+      availableZone.add(address);
+    } else {
+      availableRegion.add(address);
+    }
+    history.remove(address);
+  }
+
+  //通过AZmap查询当前地址属于同AZ，还是同region，并从对于记录中删除，同时在history中添加记录，在Cache中添加记录
+  @VisibleForTesting
+  void removeAddress(String address) {
+    if (AZMap.get(address)) {
+      availableZone.remove(address);
+    } else {
+      availableRegion.remove(address);
+    }
+    //记录需要被隔离的ip
+    cacheAddress.put(address, false);
+    history.put(address, AZMap.get(address));  //记录当前被隔离的ip和所属的AZ关系
   }
 }

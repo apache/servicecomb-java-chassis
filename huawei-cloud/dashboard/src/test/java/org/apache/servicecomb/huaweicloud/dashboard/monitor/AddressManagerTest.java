@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -37,40 +36,22 @@ class AddressManagerTest {
 
   private static AddressManager addressManager1;
 
-  private static AddressManager addressManager2;
-
-
   @Test
-  public void getUrlPrefix() {
+  public void kieAddressManagerTest() {
     addresses.add("http://127.0.0.1:30103");
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
+    addresses.add("https://127.0.0.2:30103");
+    addressManager1 = new AddressManager(addresses, new EventBus());
 
     Assert.assertNotNull(addressManager1);
 
     List<String> addresses = Deencapsulation.getField(addressManager1, "addresses");
-    Assert.assertEquals(1, addresses.size());
+    Assert.assertEquals(2, addresses.size());
     Assert.assertEquals("http://127.0.0.1:30103", addresses.get(0));
+
+    Assert.assertEquals("https://127.0.0.2:30103", addressManager1.address());
     Assert.assertEquals("http://127.0.0.1:30103", addressManager1.address());
-    Assert.assertEquals("http://127.0.0.1:30103/v4/", addressManager1.getUrlPrefix("http://127.0.0.1:30103"));
   }
 
-  @Test
-  public void formatUrlTest() {
-    addresses.add("http://127.0.0.1:30103");
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
-    addressManager2 = new AddressManager(null, addresses, new EventBus());
-
-    Assert.assertNotNull(addressManager1);
-    Assert.assertNotNull(addressManager2);
-
-    AddressStatus addressStatus = addressManager1.formatUrl("/test/", false);
-    Assert.assertEquals("http://127.0.0.1:30103/v4/project/test/", addressStatus.getUrl());
-    Assert.assertEquals("http://127.0.0.1:30103", addressStatus.getCurrentAddress());
-
-    addressStatus = addressManager1.formatUrl("/test/", true);
-    Assert.assertEquals("http://127.0.0.1:30103/test/", addressStatus.getUrl());
-    Assert.assertEquals("http://127.0.0.1:30103", addressStatus.getCurrentAddress());
-  }
 
   @Test
   public void onRefreshEndpointEvent() {
@@ -81,9 +62,9 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
-    RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
-    addressManager1.refreshEndpoint(event, "SERVICECENTER");
+    addressManager1 = new AddressManager(addresses, new EventBus());
+    RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseMonitoring");
+    addressManager1.refreshEndpoint(event, "CseMonitoring");
 
     List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
     Assert.assertEquals("http://127.0.0.3:30100", availableZone.get(0));

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.http.client.event;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class RefreshEndpointEvent {
 
   private static final String SAME_REGION = "sameRegion";
 
-  private Map<String, List<String>> zoneAndRegion;
+  private Map<String, List<String>> zoneAndRegion = new HashMap<>();
 
   private String name;
 

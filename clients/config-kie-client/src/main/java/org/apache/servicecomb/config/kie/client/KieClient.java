@@ -35,6 +35,7 @@ import org.apache.servicecomb.config.kie.client.model.KVResponse;
 import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.config.kie.client.model.ValueType;
+import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
@@ -66,8 +67,8 @@ public class KieClient implements KieConfigOperation {
 
   @Override
   public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request) {
-    String url = buildUrl(request);
-
+    AddressStatus addressStatus = buildUrl(request);
+    String url = addressStatus.getUrl();
     try {
       if (kieConfiguration.isEnableLongPolling()) {
         url += "&wait=" + kieConfiguration.getPollingWaitInSeconds() + "s";
@@ -83,6 +84,7 @@ public class KieClient implements KieConfigOperation {
         configurationsResponse.setConfigurations(configurations);
         configurationsResponse.setChanged(true);
         configurationsResponse.setRevision(revision);
+        addressManager.recordSuccessState(addressStatus);
         return configurationsResponse;
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
@@ -90,9 +92,10 @@ public class KieClient implements KieConfigOperation {
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         configurationsResponse.setChanged(false);
+        addressManager.recordSuccessState(addressStatus);
         return configurationsResponse;
       }
-      addressManager.recordFailState();
+      addressManager.recordFailState(addressStatus);
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
@@ -102,9 +105,10 @@ public class KieClient implements KieConfigOperation {
     }
   }
 
-  private String buildUrl(ConfigurationsRequest request) {
+  private AddressStatus buildUrl(ConfigurationsRequest request) {
     StringBuilder sb = new StringBuilder();
-    sb.append(addressManager.address());
+    String currentAddress = addressManager.address();
+    sb.append(currentAddress);
     sb.append("/");
     sb.append(DEFAULT_KIE_API_VERSION);
     sb.append("/");
@@ -116,7 +120,7 @@ public class KieClient implements KieConfigOperation {
     if (request.isWithExact()) {
       sb.append("&match=exact");
     }
-    return sb.toString();
+    return new AddressStatus(sb.toString(), currentAddress);
   }
 
   private Map<String, Object> getConfigByLabel(KVResponse resp) {

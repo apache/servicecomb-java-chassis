@@ -38,6 +38,7 @@ import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.event.MonitorFailEvent;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.event.MonitorSuccEvent;
@@ -104,6 +105,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   }
 
   private void doSend(String endpoint, String jsonData, String url, IpPort host, int times) {
+    AddressStatus addressStatus = new AddressStatus(null,endpoint);
     clientMgr.findThreadBindClientPool().runOnContext(client -> {
       client.request(HttpMethod.POST, host.getPort(), host.getHostOrIp(), url).compose(request -> {
         request.headers().add("environment", RegistryUtils.getMicroservice().getEnvironment());
@@ -121,6 +123,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
         }
         return request.send(jsonData).compose(rsp -> {
           if (rsp.statusCode() != HttpResponseStatus.OK.code()) {
+            addressManager.recordSuccessState(addressStatus);
             if (times < MonitorConstant.MAX_RETRY_TIMES
                 && rsp.statusCode() == HttpResponseStatus.BAD_GATEWAY.code()) {
               doSend(endpoint, jsonData, url, host, times + 1);
@@ -134,12 +137,13 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
               return Future.succeededFuture();
             });
           } else {
+            addressManager.recordSuccessState(addressStatus);
             EventManager.post(new MonitorSuccEvent());
           }
           return Future.succeededFuture();
         }).onFailure(failure -> {
           EventManager.post(new MonitorFailEvent("send monitor data fail."));
-          addressManager.recordFailState();
+          addressManager.recordFailState(addressStatus);
           LOGGER.warn("Send monitor data to {} failed , {}", endpoint, failure);
         });
       });

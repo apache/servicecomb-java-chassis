@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.center.client;
+package org.apache.servicecomb.http.client.common;
 
-import java.util.List;
+public class AddressStatus {
+  private String url;
 
-import org.apache.servicecomb.http.client.common.AbstractAddressManager;
-import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
+  private String currentAddress;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-public class AddressManager extends AbstractAddressManager {
-
-  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
-    super(projectName, addresses);
-    eventBus.register(this);
+  public AddressStatus(String url, String currentAddress) {
+    this.url = url;
+    this.currentAddress = currentAddress;
   }
 
-  @Override
-  public String joinProject(String address) {
-    return formatAddress(address);
+  public String getUrl() {
+    return url;
   }
 
-  @Subscribe
-  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, RefreshEndpointEvent.CONFIG_CENTER_NAME);
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public String getCurrentAddress() {
+    return currentAddress;
+  }
+
+  public void setCurrentAddress(String currentAddress) {
+    this.currentAddress = currentAddress;
   }
 }
