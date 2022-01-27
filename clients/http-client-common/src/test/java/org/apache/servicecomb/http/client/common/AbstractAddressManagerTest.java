@@ -37,8 +37,7 @@ import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.integration.junit4.JMockit;
 
-@RunWith(JMockit.class)
-class AbstractAddressManagerTest {
+public class AbstractAddressManagerTest {
 
   private static List<String> addresses = new ArrayList<>();
 

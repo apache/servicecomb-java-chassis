@@ -110,7 +110,7 @@ public class AddressManger {
   }
 
   private String getUri(String endpoint) {
-    return StringUtils.split(endpoint, "//")[1];
+    return new URIEndpointObject(endpoint).toString();
   }
 
   public void recordFailState(String currentAddress) {

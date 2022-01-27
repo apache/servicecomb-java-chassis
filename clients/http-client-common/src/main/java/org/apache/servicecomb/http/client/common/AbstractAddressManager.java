@@ -60,7 +60,7 @@ public class AbstractAddressManager {
 
   private String projectName;
 
-  private Map<String, Boolean> AZMap = new HashMap<>();
+  private Map<String, Boolean> categoryMap = new HashMap<>();
 
   private Map<String, Integer> recodeStatus = new ConcurrentHashMap<>();
 
@@ -174,7 +174,7 @@ public class AbstractAddressManager {
     return list;
   }
 
-  private String getUri(String endpoint) {
+  protected String normalizeUri(String endpoint) {
     if (endpoint.contains("sslEnabled=true")) {
       return StringUtils.replace(endpoint, "rest", "https");
     }
@@ -185,14 +185,10 @@ public class AbstractAddressManager {
     if (null == event || !event.getName().equals(key)) {
       return;
     }
-    availableZone = event.getSameZone().stream().map(this::getUri).collect(Collectors.toList());
-    availableRegion = event.getSameRegion().stream().map(this::getUri).collect(Collectors.toList());
-    for (String s : availableZone) {
-      AZMap.put(getUri(s), true);
-    }
-    for (String address : availableRegion) {
-      AZMap.put(getUri(address), false);
-    }
+    availableZone = event.getSameZone().stream().map(this::normalizeUri).collect(Collectors.toList());
+    availableRegion = event.getSameRegion().stream().map(this::normalizeUri).collect(Collectors.toList());
+    availableZone.forEach(s -> categoryMap.put(normalizeUri(s), true));
+    availableRegion.forEach(address -> categoryMap.put(normalizeUri(address), false));
     startCheck();
   }
 
@@ -256,9 +252,10 @@ public class AbstractAddressManager {
     }
   }
 
-  //通过AZmap查询当前地址属于同AZ，还是同region，并添加到对于的序列中，同时在history中删除记录
+  //Query whether the current address belongs to the same AZ or region through azmap,
+  // add it to the sequence of, and delete the record in history
   private void rejoinAddress(String address) {
-    if (AZMap.get(address)) {
+    if (categoryMap.get(address)) {
       availableZone.add(address);
     } else {
       availableRegion.add(address);
@@ -266,16 +263,18 @@ public class AbstractAddressManager {
     history.remove(address);
   }
 
-  //通过AZmap查询当前地址属于同AZ，还是同region，并从对于记录中删除，同时在history中添加记录，在Cache中添加记录
+  //Query whether the current address belongs to the same AZ or the same region through AZMap,
+  // and delete it from the record. At the same time, add records in history and cache
   @VisibleForTesting
   void removeAddress(String address) {
-    if (AZMap.get(address)) {
+    if (categoryMap.get(address)) {
       availableZone.remove(address);
     } else {
       availableRegion.remove(address);
     }
-    //记录需要被隔离的ip
+
+    recodeStatus.put(address, 0);
     cacheAddress.put(address, false);
-    history.put(address, AZMap.get(address));  //记录当前被隔离的ip和所属的AZ关系
+    history.put(address, categoryMap.get(address));
   }
 }
