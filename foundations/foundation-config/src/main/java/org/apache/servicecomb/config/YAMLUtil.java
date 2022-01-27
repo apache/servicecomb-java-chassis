@@ -55,13 +55,32 @@ public final class YAMLUtil {
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
     SAFE_PARSER.loadAll(input).forEach(data -> {
-      if (data instanceof Map) {
+      if (data instanceof Map && isValidMap((Map<Object, Object>) data)) {
         configurations.putAll(retrieveItems("", (Map<String, Object>) data));
       } else {
-        LOGGER.warn("input cannot be convert to map");
+        throw new IllegalArgumentException("input cannot be convert to map");
       }
     });
     return configurations;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static boolean isValidMap(Map<Object, Object> data) {
+    boolean flag = false;
+    for (Map.Entry<Object, Object> entry : data.entrySet()) {
+      Object key = entry.getKey();
+      Object value = entry.getValue();
+      if (key instanceof String) {
+        if (value instanceof Map) {
+          return isValidMap((Map<Object, Object>) value);
+        } else {
+          flag = true;
+        }
+      } else {
+        flag = false;
+      }
+    }
+    return flag;
   }
 
   /**
@@ -73,10 +92,10 @@ public final class YAMLUtil {
   public static Map<String, Object> yaml2Properties(String input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
     SAFE_PARSER.loadAll(input).forEach(data -> {
-      if (data instanceof Map) {
+      if (data instanceof Map && isValidMap((Map<Object, Object>) data)) {
         configurations.putAll(retrieveItems("", (Map<String, Object>) data));
       } else {
-        LOGGER.warn("input cannot be convert to map");
+        throw new IllegalArgumentException("input cannot be convert to map");
       }
     });
     return configurations;
@@ -98,16 +117,12 @@ public final class YAMLUtil {
       if (entry.getValue() instanceof Map) {
         result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
       } else {
-        if (entry.getKey() instanceof String) {
-          String key = prefix + entry.getKey();
-          if (key.startsWith(CONFIG_CSE_PREFIX)) {
-            String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
-            result.put(servicecombKey, entry.getValue());
-          }
-          result.put(key, entry.getValue());
-        } else {
-          throw new IllegalArgumentException("Find invalid configuration item. Prefix is " + prefix);
+        String key = prefix + entry.getKey();
+        if (key.startsWith(CONFIG_CSE_PREFIX)) {
+          String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
+          result.put(servicecombKey, entry.getValue());
         }
+        result.put(key, entry.getValue());
       }
     }
     return result;

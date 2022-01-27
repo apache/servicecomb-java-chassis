@@ -73,8 +73,7 @@ public class TestYAMLUtil {
     RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
       YAMLUtil.yaml2Properties("servicecomb.service.registry.enabled: {{true}}");
     });
-    Assert.assertEquals("Find invalid configuration item. Prefix is servicecomb.service.registry.enabled.",
-        runtimeException.getMessage());
+    Assert.assertEquals("input cannot be convert to map", runtimeException.getMessage());
   }
 
   @Test
