@@ -150,6 +150,11 @@ public class AbstractAddressManagerTest {
     // mock invoke checkHistory()
     Deencapsulation.invoke(addressManager1, "checkHistory");
     List<String> availableZone2 = Deencapsulation.getField(addressManager1, "availableZone");
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     Assert.assertEquals(1, availableZone2.size());
     Assert.assertEquals("http://127.0.0.3:30100", availableZone2.get(0));
 
