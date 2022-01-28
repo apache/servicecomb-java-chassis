@@ -126,32 +126,6 @@ public class AbstractAddressManagerTest {
     addressManager.recordFailState(addressStatus1);
     addressManager.recordFailState(addressStatus1);
     Assert.assertEquals("http://127.0.0.4:30100", addressManager.address());
-
-    // mock cacheAddress status refresh after 10 minute
-    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-        .maximumSize(100)
-        .expireAfterWrite(10, TimeUnit.MINUTES)
-        .build();
-    cache.put("http://127.0.0.3:30100", true);
-    Assert.assertEquals(true, cache.get("http://127.0.0.3:30100", () -> false));
-
-    // mock the address telnetTest is access
-    new Expectations(addressManager) {
-      {
-        Deencapsulation.setField(addressManager, "cacheAddress", cache);
-        Deencapsulation.invoke(addressManager, "telnetTest", "http://127.0.0.3:30100");
-        result = true;
-      }
-    };
-    Cache<String, Boolean> result = Deencapsulation.getField(addressManager, "cacheAddress");
-    Assert.assertEquals(true, result.get("http://127.0.0.3:30100", () -> false));
-
-    // mock invoke checkHistory()
-    addressManager.checkHistory();
-    List<String> availableZone = Deencapsulation.getField(addressManager, "availableZone");
-    Assert.assertEquals(1, availableZone.size());
-    Assert.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
-    Assert.assertEquals("http://127.0.0.3:30100", addressManager.address());
   }
 
   @Test
