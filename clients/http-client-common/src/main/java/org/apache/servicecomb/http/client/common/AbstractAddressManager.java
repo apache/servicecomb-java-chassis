@@ -215,7 +215,8 @@ public class AbstractAddressManager {
     }
   }
 
-  private void checkHistory() {
+  @VisibleForTesting
+  protected void checkHistory() {
     history.keySet().stream().filter(this::judgeIsolation).forEach(s -> {
       if (telnetTest(s)) {
         rejoinAddress(s);
