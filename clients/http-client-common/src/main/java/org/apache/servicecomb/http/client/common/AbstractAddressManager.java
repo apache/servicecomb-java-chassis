@@ -255,7 +255,8 @@ public class AbstractAddressManager {
 
   //Query whether the current address belongs to the same AZ or region through azmap,
   // add it to the sequence of, and delete the record in history
-  private void rejoinAddress(String address) {
+  @VisibleForTesting
+   void rejoinAddress(String address) {
     if (categoryMap.get(address)) {
       availableZone.add(address);
     } else {
