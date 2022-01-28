@@ -260,6 +260,7 @@ public class AbstractAddressManager {
     } else {
       availableRegion.add(address);
     }
+    recodeStatus.put(address, 0);
     history.remove(address);
   }
 

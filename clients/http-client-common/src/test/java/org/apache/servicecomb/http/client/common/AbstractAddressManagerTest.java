@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
@@ -91,6 +92,72 @@ public class AbstractAddressManagerTest {
   }
 
   @Test
+  public void recordStateTest() throws ExecutionException {
+    List<String> addressAZ = new ArrayList<>();
+    addressAZ.add("http://127.0.0.3:30100");
+    List<String> addressRG = new ArrayList<>();
+    addressRG.add("http://127.0.0.4:30100");
+    Map<String, List<String>> zoneAndRegion = new HashMap<>();
+    zoneAndRegion.put("sameZone", addressAZ);
+    zoneAndRegion.put("sameRegion", addressRG);
+    RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
+    addressManager1.refreshEndpoint(event, "TEST");
+
+    AddressStatus addressStatus1 = new AddressStatus(null, "http://127.0.0.3:30100");
+    addressManager1.recordFailState(addressStatus1);
+
+    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
+
+    addressManager1.recordFailState(addressStatus1);
+    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
+
+    // test fail 2 times ,it will not be isolated
+    addressManager1.recordSuccessState(addressStatus1);
+    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
+
+    // test recodeStatus times
+    Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager1, "recodeStatus");
+    Assert.assertEquals(1, (int) recodeStatus.get("http://127.0.0.3:30100"));
+
+    // test fail 3 times ,it will be isolated
+    addressManager1.recordFailState(addressStatus1);
+    addressManager1.recordFailState(addressStatus1);
+    addressManager1.recordFailState(addressStatus1);
+    Assert.assertEquals("http://127.0.0.4:30100", addressManager1.address());
+
+    // mock cacheAddress status refresh after 10 minute
+    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
+        .maximumSize(100)
+        .expireAfterWrite(10, TimeUnit.MINUTES)
+        .build();
+    cache.put("http://127.0.0.3:30100", true);
+    Assert.assertEquals(true, cache.get("http://127.0.0.3:30100", () -> false));
+
+    // mock the address telnetTest is access
+    new Expectations(addressManager1) {
+      {
+        Deencapsulation.setField(addressManager1, "cacheAddress", cache);
+        Deencapsulation.invoke(addressManager1, "telnetTest", "http://127.0.0.3:30100");
+        result = true;
+      }
+    };
+    Cache<String, Boolean> result = Deencapsulation.getField(addressManager1, "cacheAddress");
+    Assert.assertEquals(true, result.get("http://127.0.0.3:30100", () -> false));
+
+    List<String> availableZone1 = Deencapsulation.getField(addressManager1, "availableZone");
+    Assert.assertEquals(0, availableZone1.size());
+
+    // mock invoke checkHistory()
+    Deencapsulation.invoke(addressManager1, "checkHistory");
+    List<String> availableZone2 = Deencapsulation.getField(addressManager1, "availableZone");
+    Assert.assertEquals(1, availableZone2.size());
+    Assert.assertEquals("http://127.0.0.3:30100", availableZone2.get(0));
+
+    // assert the Available zone address is good
+    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
+  }
+
+  @Test
   public void addressForOnlyDefaultTest() {
     Assert.assertEquals("https://127.0.0.2:30103", addressManager1.address());
     Assert.assertEquals("http://127.0.0.1:30103", addressManager1.address());
@@ -107,8 +174,8 @@ public class AbstractAddressManagerTest {
     List<String> addressAZ = new ArrayList<>();
     addressAZ.add("http://127.0.0.1:30100");
     addressAZ.add("https://127.0.0.2:30100");
-    addressAZ.add("rest://127.0.0.3:30100?sslEnabled=true");
-    addressAZ.add("rest://127.0.0.4:30100");
+    addressAZ.add("rest://127.0.0.1:30100?sslEnabled=true");
+    addressAZ.add("rest://127.0.0.2:30100");
 
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
@@ -117,8 +184,8 @@ public class AbstractAddressManagerTest {
     addressManager1.refreshEndpoint(event1, "TEST");
 
     Assert.assertEquals("https://127.0.0.2:30100", addressManager1.address());
-    Assert.assertEquals("https://127.0.0.3:30100?sslEnabled=true", addressManager1.address());
-    Assert.assertEquals("http://127.0.0.4:30100", addressManager1.address());
+    Assert.assertEquals("https://127.0.0.1:30100?sslEnabled=true", addressManager1.address());
+    Assert.assertEquals("http://127.0.0.2:30100", addressManager1.address());
     Assert.assertEquals("http://127.0.0.1:30100", addressManager1.address());
     Assert.assertEquals("https://127.0.0.2:30100", addressManager1.address());
   }
@@ -230,61 +297,5 @@ public class AbstractAddressManagerTest {
     addressManager2.refreshEndpoint(event, "TEST");
     Assert.assertEquals("http://127.0.0.1:30100", addressManager2.address());
     Assert.assertEquals("http://127.0.0.1:30100", addressManager2.address());
-  }
-
-  @Test
-  public void recordStateTest() {
-    List<String> addressAZ = new ArrayList<>();
-    addressAZ.add("http://127.0.0.3:30100");
-    List<String> addressRG = new ArrayList<>();
-    addressRG.add("http://127.0.0.4:30100");
-    Map<String, List<String>> zoneAndRegion = new HashMap<>();
-    zoneAndRegion.put("sameZone", addressAZ);
-    zoneAndRegion.put("sameRegion", addressRG);
-    RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
-    addressManager1.refreshEndpoint(event, "TEST");
-
-    AddressStatus addressStatus1 = new AddressStatus(null, "http://127.0.0.3:30100");
-    addressManager1.recordFailState(addressStatus1);
-
-    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
-
-    addressManager1.recordFailState(addressStatus1);
-    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
-
-    // test fail 2 times ,it will not be isolated
-    addressManager1.recordSuccessState(addressStatus1);
-    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
-
-    // test recodeStatus times
-    Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager1, "recodeStatus");
-    Assert.assertEquals(1, (int) recodeStatus.get("http://127.0.0.3:30100"));
-
-    // test fail 3 times ,it will be isolated
-    addressManager1.recordFailState(addressStatus1);
-    addressManager1.recordFailState(addressStatus1);
-    addressManager1.recordFailState(addressStatus1);
-    Assert.assertEquals("http://127.0.0.4:30100", addressManager1.address());
-
-    // mock cacheAddress status refresh after 10 minute
-    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-        .maximumSize(100)
-        .expireAfterWrite(10, TimeUnit.MINUTES)
-        .build();
-    cache.put("http://127.0.0.3:30100", true);
-
-    // mock the address telnetTest is access
-    new Expectations(addressManager1) {
-      {
-        Deencapsulation.setField(addressManager1, "cacheAddress", cache);
-        Deencapsulation.invoke(addressManager1, "telnetTest", "http://127.0.0.3:30100");
-        result = true;
-      }
-    };
-    // mock invoke checkHistory()
-    Deencapsulation.invoke(addressManager1, "checkHistory");
-
-    // assert the Available zone address is good
-    Assert.assertEquals("http://127.0.0.3:30100", addressManager1.address());
   }
 }
