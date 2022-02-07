@@ -88,7 +88,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertTrue(loadedSwagger instanceof Swagger);
+    Assert.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertTrue(loadedSwagger instanceof Swagger);
+    Assert.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -118,7 +118,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertTrue(loadedSwagger instanceof Swagger);
+    Assert.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -142,7 +142,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertTrue(loadedSwagger instanceof Swagger);
+    Assert.assertEquals(swagger, loadedSwagger);
   }
 
   private void mockLocalResource(Swagger swagger, String path) {

@@ -41,6 +41,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.springframework.beans.BeanUtils;
 
 
 import io.swagger.annotations.Api;
@@ -138,7 +139,8 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       addOperationsToSwagger();
 
       correctSwagger();
-
+      Swagger swagger = new Swagger();
+      BeanUtils.copyProperties(this.swagger, swagger);
       return swagger;
     } finally {
       featureThreadLocal.remove();
