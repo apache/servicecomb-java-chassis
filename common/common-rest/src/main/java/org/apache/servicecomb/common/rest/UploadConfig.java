@@ -47,7 +47,8 @@ public class UploadConfig {
   private int fileSizeThreshold;
 
   public UploadConfig() {
-    location = DynamicPropertyFactory.getInstance().getStringProperty(RestConst.UPLOAD_DIR, null).get();
+    location = DynamicPropertyFactory.getInstance()
+        .getStringProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR).get();
     maxFileSize = DynamicPropertyFactory.getInstance().getLongProperty(RestConst.UPLOAD_MAX_FILE_SIZE, -1L).get();
     maxSize = DynamicPropertyFactory.getInstance().getLongProperty(RestConst.UPLOAD_MAX_SIZE, -1L).get();
     fileSizeThreshold = DynamicPropertyFactory.getInstance().getIntProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, 0)
