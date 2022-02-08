@@ -55,13 +55,29 @@ public final class YAMLUtil {
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
     SAFE_PARSER.loadAll(input).forEach(data -> {
-      if (data instanceof Map) {
+      if (data instanceof Map && isValidMap((Map<Object, Object>) data)) {
         configurations.putAll(retrieveItems("", (Map<String, Object>) data));
       } else {
-        LOGGER.warn("input cannot be convert to map");
+        throw new IllegalArgumentException("input cannot be convert to map");
       }
     });
     return configurations;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static boolean isValidMap(Map<Object, Object> data) {
+    for (Map.Entry<Object, Object> entry : data.entrySet()) {
+      Object key = entry.getKey();
+      Object value = entry.getValue();
+      if (key instanceof String) {
+        if (value instanceof Map) {
+          return isValidMap((Map<Object, Object>) value);
+        }
+        continue;
+      }
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -73,10 +89,10 @@ public final class YAMLUtil {
   public static Map<String, Object> yaml2Properties(String input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
     SAFE_PARSER.loadAll(input).forEach(data -> {
-      if (data instanceof Map) {
+      if (data instanceof Map && isValidMap((Map<Object, Object>) data)) {
         configurations.putAll(retrieveItems("", (Map<String, Object>) data));
       } else {
-        LOGGER.warn("input cannot be convert to map");
+        throw new IllegalArgumentException("input cannot be convert to map");
       }
     });
     return configurations;
