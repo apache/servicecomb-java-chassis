@@ -88,8 +88,6 @@ public class UploadConfig {
   }
 
   public MultipartConfigElement toMultipartConfigElement() {
-    String location = DynamicPropertyFactory.getInstance()
-        .getStringProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR).get();
 
     return new MultipartConfigElement(
         location,
