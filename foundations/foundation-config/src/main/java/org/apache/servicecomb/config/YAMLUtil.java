@@ -66,21 +66,18 @@ public final class YAMLUtil {
 
   @SuppressWarnings("unchecked")
   private static boolean isValidMap(Map<Object, Object> data) {
-    boolean flag = false;
     for (Map.Entry<Object, Object> entry : data.entrySet()) {
       Object key = entry.getKey();
       Object value = entry.getValue();
       if (key instanceof String) {
         if (value instanceof Map) {
           return isValidMap((Map<Object, Object>) value);
-        } else {
-          flag = true;
         }
-      } else {
-        flag = false;
+        continue;
       }
+      return false;
     }
-    return flag;
+    return true;
   }
 
   /**
