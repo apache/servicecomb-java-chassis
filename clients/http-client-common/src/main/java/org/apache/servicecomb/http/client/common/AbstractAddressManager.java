@@ -70,6 +70,10 @@ public class AbstractAddressManager {
 
   private volatile List<String> availableRegion = new ArrayList<>();
 
+  private volatile List<String> defaultAddress = new ArrayList<>();
+
+  private boolean isAddressRefresh = false;
+
   private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
           .setNameFormat("check-available-address-%d")
@@ -87,6 +91,7 @@ public class AbstractAddressManager {
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
+    this.defaultAddress = this.addresses;
   }
 
   private void startCheck() {
@@ -158,6 +163,9 @@ public class AbstractAddressManager {
 
   private List<String> getAvailableZoneIpPorts() {
     List<String> results = new ArrayList<>();
+    if (!isAddressRefresh) {
+      return this.defaultAddress;
+    }
     if (!availableZone.isEmpty()) {
       results.addAll(getAvailableAddress(availableZone));
     } else {
@@ -180,6 +188,7 @@ public class AbstractAddressManager {
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
+    this.isAddressRefresh = true;
     if (null == event || !event.getName().equals(key)) {
       return;
     }
@@ -253,10 +262,14 @@ public class AbstractAddressManager {
   // add it to the sequence of, and delete the record in history
   @VisibleForTesting
   void rejoinAddress(String address) {
-    if (categoryMap.get(address)) {
-      availableZone.add(address);
+    if (!isAddressRefresh) {
+      defaultAddress.add(address);
     } else {
-      availableRegion.add(address);
+      if (categoryMap.get(address)) {
+        availableZone.add(address);
+      } else {
+        availableRegion.add(address);
+      }
     }
     recodeStatus.put(address, 0);
     history.remove(address);
@@ -266,14 +279,18 @@ public class AbstractAddressManager {
   // and delete it from the record. At the same time, add records in history and cache
   @VisibleForTesting
   void removeAddress(String address) {
-    if (categoryMap.get(address)) {
-      availableZone.remove(address);
+    if (!isAddressRefresh) {
+      defaultAddress.remove(address);
+      history.put(address, null);
     } else {
-      availableRegion.remove(address);
+      if (categoryMap.get(address)) {
+        availableZone.remove(address);
+      } else {
+        availableRegion.remove(address);
+      }
+      history.put(address, categoryMap.get(address));
     }
-
     recodeStatus.put(address, 0);
     cacheAddress.put(address, false);
-    history.put(address, categoryMap.get(address));
   }
 }
