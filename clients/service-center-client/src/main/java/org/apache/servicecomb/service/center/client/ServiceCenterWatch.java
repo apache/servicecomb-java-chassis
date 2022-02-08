@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
-import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.http.client.common.WebSocketListener;
 import org.apache.servicecomb.http.client.common.WebSocketTransport;
@@ -103,37 +102,35 @@ public class ServiceCenterWatch implements WebSocketListener {
   private void startWatch() {
     connector.submit(() -> {
       backOff();
-      AddressStatus addressStatus = convertAddress();
+      String address = addressManager.address();
       try {
         Map<String, String> headers = new HashMap<>();
         headers.put("x-domain-name", this.tenantName);
         headers.putAll(this.extraGlobalHeaders);
         headers.putAll(this.requestAuthHeaderProvider.loadAuthHeader(null));
-        currentServerUri = addressStatus.getUrl();
+        currentServerUri = convertAddress(address);
         LOGGER.info("start watch to address {}", currentServerUri);
         webSocketTransport = new WebSocketTransport(currentServerUri, sslProperties,
             headers, this);
         webSocketTransport.connectBlocking();
-        addressManager.recordSuccessState(addressStatus);
+        addressManager.recordSuccessState(address);
       } catch (Exception e) {
-        addressManager.recordFailState(addressStatus);
+        addressManager.recordFailState(address);
         LOGGER.error("start watch failed. ", e);
       }
     });
   }
 
-  private AddressStatus convertAddress() {
-    String currentAddress = addressManager.address();
+  private String convertAddress(String address) {
     String url = String.format(WATCH, project, serviceId);
-    if (currentAddress.startsWith(HTTP)) {
-      return new AddressStatus(WS + currentAddress.substring(HTTP.length()) + url,currentAddress);
+    if (address.startsWith(HTTP)) {
+      return WS + address.substring(HTTP.length()) + url;
     }
 
-    if (currentAddress.startsWith(HTTPS)) {
-      return new AddressStatus(WSS + currentAddress.substring(HTTPS.length()) + url,currentAddress);
+    if (address.startsWith(HTTPS)) {
+      return WSS + address.substring(HTTPS.length()) + url;
     }
-
-    return new AddressStatus(currentAddress + url, currentAddress) ;
+    return address + url;
   }
 
   public void stop() {

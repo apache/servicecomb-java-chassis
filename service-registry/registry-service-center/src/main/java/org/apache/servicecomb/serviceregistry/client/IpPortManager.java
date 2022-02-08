@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.registry.consumer.AppManager;
@@ -67,7 +66,7 @@ public class IpPortManager {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     List<String> addresses = defaultIpPort.stream().map(IpPort::toString).collect(Collectors.toList());
-    addressManger = new AddressManager(addresses,EventManager.getEventBus());
+    addressManger = new AddressManager(addresses, EventManager.getEventBus());
     classificationAddress = new ClassificationAddress(serviceRegistryConfig, instanceCacheManager);
     LOGGER.info("Initial service center address is {}", getAvailableAddress());
   }
@@ -76,7 +75,7 @@ public class IpPortManager {
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
       for (Type type : Type.values()) {
-        classificationAddress.InitEndPoint(type.name());
+        classificationAddress.initEndPoint(type.name());
       }
       setAutoDiscoveryInited(true);
     }
@@ -87,6 +86,6 @@ public class IpPortManager {
   }
 
   public void recordState(String address) {
-    addressManger.recordFailState(new AddressStatus(null, address));
+    addressManger.recordFailState(address);
   }
 }

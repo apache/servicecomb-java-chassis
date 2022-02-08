@@ -26,7 +26,6 @@ import org.apache.http.HttpStatus;
 import org.apache.servicecomb.config.center.client.exception.OperationException;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
-import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
@@ -66,9 +65,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     Map<String, Object> configurations = new HashMap<>();
 
     String uri = null;
-    AddressStatus currentAddress = new AddressStatus(null,addressManager.address());
+    String address = addressManager.address();
     try {
-      uri = currentAddress.getCurrentAddress() + "/configuration/items?dimensionsInfo="
+      uri = address + "/configuration/items?dimensionsInfo="
           + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
 
       Map<String, String> headers = new HashMap<>();
@@ -104,11 +103,11 @@ public class ConfigCenterClient implements ConfigCenterOperation {
         }
         queryConfigurationsResponse.setConfigurations(configurations);
         queryConfigurationsResponse.setChanged(true);
-        addressManager.recordSuccessState(currentAddress);
+        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         queryConfigurationsResponse.setChanged(false);
-        addressManager.recordSuccessState(currentAddress);
+        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
         throw new OperationException("Bad request for query configurations.");
@@ -122,7 +121,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
                 + httpResponse.getContent());
       }
     } catch (IOException e) {
-      addressManager.recordFailState(currentAddress);
+      addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }

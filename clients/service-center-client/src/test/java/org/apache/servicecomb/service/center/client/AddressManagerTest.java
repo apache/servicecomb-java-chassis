@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -58,18 +57,15 @@ class AddressManagerTest {
   public void formatUrlTest() {
     addresses.add("http://127.0.0.1:30103");
     addressManager1 = new AddressManager("project", addresses, new EventBus());
-    addressManager2 = new AddressManager(null, addresses, new EventBus());
-
     Assert.assertNotNull(addressManager1);
-    Assert.assertNotNull(addressManager2);
 
-    AddressStatus addressStatus = addressManager1.formatUrl("/test/", false);
-    Assert.assertEquals("http://127.0.0.1:30103/v4/project/test/", addressStatus.getUrl());
-    Assert.assertEquals("http://127.0.0.1:30103", addressStatus.getCurrentAddress());
+    String address = addressManager1.address();
+    Assert.assertEquals("http://127.0.0.1:30103", address);
+    String url = addressManager1.formatUrl("/test/", false, address);
+    Assert.assertEquals("http://127.0.0.1:30103/v4/project/test/", url);
 
-    addressStatus = addressManager1.formatUrl("/test/", true);
-    Assert.assertEquals("http://127.0.0.1:30103/test/", addressStatus.getUrl());
-    Assert.assertEquals("http://127.0.0.1:30103", addressStatus.getCurrentAddress());
+    url = addressManager1.formatUrl("/test/", true, address);
+    Assert.assertEquals("http://127.0.0.1:30103/test/", url);
   }
 
   @Test

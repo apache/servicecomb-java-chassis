@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.http.client.common.AddressStatus;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
@@ -70,12 +69,13 @@ public class ServiceCenterRawClient {
   private HttpResponse doHttpRequest(String url, boolean absoluteUrl, Map<String, String> headers, String content,
       String method)
       throws IOException {
-    AddressStatus address = addressManager.formatUrl(url, absoluteUrl);
+    String address = addressManager.address();
+    String formatUrl = addressManager.formatUrl(url, absoluteUrl, address);
     if (headers == null) {
       headers = new HashMap<>();
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
-    HttpRequest httpRequest = new HttpRequest(address.getUrl(), headers, content, method);
+    HttpRequest httpRequest = new HttpRequest(formatUrl, headers, content, method);
 
     try {
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
@@ -83,15 +83,15 @@ public class ServiceCenterRawClient {
       return httpResponse;
     } catch (IOException e) {
       addressManager.recordFailState(address);
-      AddressStatus retryAddress = addressManager.formatUrl(url, absoluteUrl);
-      LOGGER.warn("send request to {} failed and retry to {} once. ", address.getCurrentAddress(),
-          retryAddress.getCurrentAddress(), e);
-      httpRequest = new HttpRequest(retryAddress.getUrl(), headers, content, method);
+      String retryAddress = addressManager.address();
+      formatUrl = addressManager.formatUrl(url, absoluteUrl, retryAddress);
+      LOGGER.warn("send request to {} failed and retry to {} once. ", address, retryAddress, e);
+      httpRequest = new HttpRequest(formatUrl, headers, content, method);
       try {
         return httpTransport.doRequest(httpRequest);
       } catch (IOException ioException) {
         addressManager.recordFailState(retryAddress);
-        LOGGER.warn("retry to {} failed again. ", retryAddress.getCurrentAddress(), e);
+        LOGGER.warn("retry to {} failed again. ", retryAddress, e);
         throw ioException;
       }
     }

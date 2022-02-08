@@ -96,10 +96,8 @@ public class AbstractAddressManager {
         TimeUnit.MINUTES);
   }
 
-  public AddressStatus formatUrl(String url, boolean absoluteUrl) {
-    String currentAddress = address();
-    String formatUrl = absoluteUrl ? currentAddress + url : formatAddress(currentAddress) + url;
-    return new AddressStatus(formatUrl, currentAddress);
+  public String formatUrl(String url, boolean absoluteUrl, String address) {
+    return absoluteUrl ? address + url : formatAddress(address) + url;
   }
 
   public String address() {
@@ -192,26 +190,24 @@ public class AbstractAddressManager {
     startCheck();
   }
 
-  public void recordFailState(AddressStatus addressStatus) {
-    String currentAddress = addressStatus.getCurrentAddress();
-    if (recodeStatus.containsKey(currentAddress)) {
-      int number = recodeStatus.get(currentAddress) + 1;
+  public void recordFailState(String address) {
+    if (recodeStatus.containsKey(address)) {
+      int number = recodeStatus.get(address) + 1;
       if (number < 3) {
-        recodeStatus.put(currentAddress, number);
+        recodeStatus.put(address, number);
       } else {
-        removeAddress(currentAddress);
+        removeAddress(address);
       }
       return;
     }
-    recodeStatus.put(currentAddress, 1);
+    recodeStatus.put(address, 1);
   }
 
-  public void recordSuccessState(AddressStatus addressStatus) {
-    String currentAddress = addressStatus.getCurrentAddress();
-    if (recodeStatus.containsKey(currentAddress) && recodeStatus.get(currentAddress) >= 1) {
-      recodeStatus.put(currentAddress, recodeStatus.get(currentAddress) - 1);
+  public void recordSuccessState(String address) {
+    if (recodeStatus.containsKey(address) && recodeStatus.get(address) >= 1) {
+      recodeStatus.put(address, recodeStatus.get(address) - 1);
     } else {
-      recodeStatus.put(currentAddress, 0);
+      recodeStatus.put(address, 0);
     }
   }
 
@@ -256,7 +252,7 @@ public class AbstractAddressManager {
   //Query whether the current address belongs to the same AZ or region through azmap,
   // add it to the sequence of, and delete the record in history
   @VisibleForTesting
-   void rejoinAddress(String address) {
+  void rejoinAddress(String address) {
     if (categoryMap.get(address)) {
       availableZone.add(address);
     } else {

@@ -74,24 +74,6 @@ public class AbstractAddressManagerTest {
   }
 
   @Test
-  public void formatUrlTest() {
-    AddressStatus addressStatus = addressManager2.formatUrl("/test", true);
-    Assert.assertNotNull(addressStatus);
-    Assert.assertEquals("https://127.0.0.2:30103/v3/project", addressStatus.getCurrentAddress());
-    Assert.assertEquals("https://127.0.0.2:30103/v3/project/test", addressStatus.getUrl());
-
-    addressStatus = addressManager3.formatUrl("/test", true);
-    Assert.assertNotNull(addressStatus);
-    Assert.assertEquals("https://127.0.0.2:30103/v3/default", addressStatus.getCurrentAddress());
-    Assert.assertEquals("https://127.0.0.2:30103/v3/default/test", addressStatus.getUrl());
-
-    addressStatus = addressManager3.formatUrl("/test", false);
-    Assert.assertNotNull(addressStatus);
-    Assert.assertEquals("http://127.0.0.1:30103/v3/default", addressStatus.getCurrentAddress());
-    Assert.assertEquals("http://127.0.0.1:30103/v3/default/v3/default/test", addressStatus.getUrl());
-  }
-
-  @Test
   public void recordStateTest() throws ExecutionException {
     List<String> addressAZ = new ArrayList<>();
     addressAZ.add("http://127.0.0.3:30100");
@@ -105,16 +87,16 @@ public class AbstractAddressManagerTest {
 
     addressManager.refreshEndpoint(event, "TEST");
 
-    AddressStatus addressStatus1 = new AddressStatus(null, "http://127.0.0.3:30100");
-    addressManager.recordFailState(addressStatus1);
+    String address = "http://127.0.0.3:30100";
+    addressManager.recordFailState(address);
 
     Assert.assertEquals("http://127.0.0.3:30100", addressManager.address());
 
-    addressManager.recordFailState(addressStatus1);
+    addressManager.recordFailState(address);
     Assert.assertEquals("http://127.0.0.3:30100", addressManager.address());
 
     // test fail 2 times ,it will not be isolated
-    addressManager.recordSuccessState(addressStatus1);
+    addressManager.recordSuccessState(address);
     Assert.assertEquals("http://127.0.0.3:30100", addressManager.address());
 
     // test recodeStatus times
@@ -122,9 +104,9 @@ public class AbstractAddressManagerTest {
     Assert.assertEquals(1, (int) recodeStatus.get("http://127.0.0.3:30100"));
 
     // test fail 3 times ,it will be isolated
-    addressManager.recordFailState(addressStatus1);
-    addressManager.recordFailState(addressStatus1);
-    addressManager.recordFailState(addressStatus1);
+    addressManager.recordFailState(address);
+    addressManager.recordFailState(address);
+    addressManager.recordFailState(address);
     Assert.assertEquals("http://127.0.0.4:30100", addressManager.address());
 
     // mock cacheAddress status refresh after 10 minute

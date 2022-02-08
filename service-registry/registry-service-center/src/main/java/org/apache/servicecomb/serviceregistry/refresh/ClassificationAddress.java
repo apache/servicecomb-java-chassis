@@ -73,7 +73,7 @@ public class ClassificationAddress {
     ServiceCenterEventBus.getEventBus().register(this);
   }
 
-  public void InitEndPoint(String typeName) {
+  public void initEndPoint(String typeName) {
     Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(typeName);
     if (zoneAndRegion == null) {
       return;
