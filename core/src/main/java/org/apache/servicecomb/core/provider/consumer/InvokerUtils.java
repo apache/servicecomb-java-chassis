@@ -191,8 +191,6 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static Response innerSyncInvoke(Invocation invocation) {
-    invocation.onStart(null, System.nanoTime());
-
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
     try {
@@ -207,6 +205,7 @@ public final class InvokerUtils {
     if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
       throw new IllegalStateException("Can not execute sync logic in event loop. ");
     }
+    invocation.onStart(null, System.nanoTime());
     updateRetryStatus(invocation);
     SyncResponseExecutor respExecutor = new SyncResponseExecutor();
     invocation.setResponseExecutor(respExecutor);
@@ -309,7 +308,6 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-    invocation.onStart(null, System.nanoTime());
     invocation.setSync(false);
 
     Supplier<CompletionStage<Response>> next = reactiveInvokeImpl(invocation);
@@ -334,6 +332,7 @@ public final class InvokerUtils {
           invocation.getTraceId());
       LOGGER.error(message, e);
       Response response = Response.createConsumerFail(e, message);
+      invocation.onFinish(response);
       asyncResp.complete(response);
     });
   }
@@ -358,6 +357,7 @@ public final class InvokerUtils {
     return () -> {
       CompletableFuture<Response> result = new CompletableFuture<>();
       try {
+        invocation.onStart(null, System.nanoTime());
         updateRetryStatus(invocation);
 
         ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
@@ -434,14 +434,15 @@ public final class InvokerUtils {
           invocation.getTraceId());
       LOGGER.error(message, e);
       Response response = Response.createConsumerFail(e, message);
+      invocation.onFinish(response);
       result.complete(response);
     });
     return result;
   }
 
   private static Supplier<CompletionStage<Response>> invokeImpl(Invocation invocation) {
-    invocation.onStart(null, System.nanoTime());
     return () -> {
+      invocation.onStart(null, System.nanoTime());
       updateRetryStatus(invocation);
       invocation.onStartHandlersRequest();
       return invocation.getMicroserviceMeta().getFilterChain()
