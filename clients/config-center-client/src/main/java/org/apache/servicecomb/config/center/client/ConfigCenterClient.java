@@ -112,6 +112,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
         throw new OperationException("Bad request for query configurations.");
       } else {
+        addressManager.recordFailState(address);
         throw new OperationException(
             "read response failed. status:"
                 + httpResponse.getStatusCode()

@@ -157,22 +157,16 @@ public class AbstractAddressManager {
     return getInitAddress();
   }
 
-  private String getCurrentAddress(List<String> addresses) {
-    synchronized (this) {
-      this.index++;
-      if (this.index >= addresses.size()) {
-        this.index = 0;
-      }
-      return addresses.get(index);
-    }
-  }
-
   // when all available address is fail, it will use all the initial addresses for polling.
   private String getInitAddress() {
+    if (addresses.isEmpty()) {
+      return null;
+    }
+    return getCurrentAddress(addresses);
+  }
+
+  private String getCurrentAddress(List<String> addresses) {
     synchronized (this) {
-      if (addresses.isEmpty()) {
-        return null;
-      }
       this.index++;
       if (this.index >= addresses.size()) {
         this.index = 0;
