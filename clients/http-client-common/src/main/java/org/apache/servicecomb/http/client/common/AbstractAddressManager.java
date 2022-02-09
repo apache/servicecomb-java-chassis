@@ -74,6 +74,8 @@ public class AbstractAddressManager {
 
   private boolean isAddressRefresh = false;
 
+  private final Object lock = new Object();
+
   private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
           .setNameFormat("check-available-address-%d")
@@ -94,6 +96,11 @@ public class AbstractAddressManager {
     this.defaultAddress = this.addresses;
   }
 
+  @VisibleForTesting
+  protected void setAddressRefresh(boolean addressRefresh) {
+    isAddressRefresh = addressRefresh;
+  }
+
   private void startCheck() {
     executorService.scheduleAtFixedRate(this::checkHistory,
         0,
@@ -105,8 +112,13 @@ public class AbstractAddressManager {
     return absoluteUrl ? address + url : formatAddress(address) + url;
   }
 
+  // if isAddressRefresh is false, polling with available initial addresses.
   public String address() {
-    return getAvailableZoneAddress();
+    if (!isAddressRefresh) {
+      return getDefaultAddress();
+    } else {
+      return getAvailableZoneAddress();
+    }
   }
 
   public boolean sslEnabled() {
@@ -130,8 +142,35 @@ public class AbstractAddressManager {
   }
 
   private String getDefaultAddress() {
+    List<String> addresses = getAvailableAddress(defaultAddress);
+    if (!addresses.isEmpty()) {
+      return getCurrentAddress(addresses);
+    }
+    return getInitAddress();
+  }
+
+  private String getAvailableZoneAddress() {
+    List<String> addresses = getAvailableZoneIpPorts();
+    if (!addresses.isEmpty()) {
+      return joinProject(getCurrentAddress(addresses));
+    }
+    return getInitAddress();
+  }
+
+  private String getCurrentAddress(List<String> addresses) {
     synchronized (this) {
-      if (addresses.size() == 0) {
+      this.index++;
+      if (this.index >= addresses.size()) {
+        this.index = 0;
+      }
+      return addresses.get(index);
+    }
+  }
+
+  // when all available address is fail, it will use all the initial addresses for polling.
+  private String getInitAddress() {
+    synchronized (this) {
+      if (addresses.isEmpty()) {
         return null;
       }
       this.index++;
@@ -142,30 +181,12 @@ public class AbstractAddressManager {
     }
   }
 
-  private String getAvailableZoneAddress() {
-    List<String> addresses = getAvailableZoneIpPorts();
-
-    if (!addresses.isEmpty()) {
-      synchronized (this) {
-        this.index++;
-        if (this.index >= addresses.size()) {
-          this.index = 0;
-        }
-        return joinProject(addresses.get(index));
-      }
-    }
-    return getDefaultAddress();
-  }
-
   protected String joinProject(String address) {
     return address;
   }
 
   private List<String> getAvailableZoneIpPorts() {
     List<String> results = new ArrayList<>();
-    if (!isAddressRefresh) {
-      return this.defaultAddress;
-    }
     if (!availableZone.isEmpty()) {
       results.addAll(getAvailableAddress(availableZone));
     } else {
@@ -188,7 +209,7 @@ public class AbstractAddressManager {
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
-    this.isAddressRefresh = true;
+    this.setAddressRefresh(true);
     if (null == event || !event.getName().equals(key)) {
       return;
     }
@@ -200,24 +221,22 @@ public class AbstractAddressManager {
   }
 
   public void recordFailState(String address) {
-    if (recodeStatus.containsKey(address)) {
+    if (!recodeStatus.containsKey(address)) {
+      recodeStatus.put(address, 1);
+      return;
+    }
+    synchronized (lock) {
       int number = recodeStatus.get(address) + 1;
       if (number < 3) {
         recodeStatus.put(address, number);
       } else {
         removeAddress(address);
       }
-      return;
     }
-    recodeStatus.put(address, 1);
   }
 
   public void recordSuccessState(String address) {
-    if (recodeStatus.containsKey(address) && recodeStatus.get(address) >= 1) {
-      recodeStatus.put(address, recodeStatus.get(address) - 1);
-    } else {
-      recodeStatus.put(address, 0);
-    }
+    recodeStatus.put(address, 0);
   }
 
   @VisibleForTesting
@@ -281,7 +300,7 @@ public class AbstractAddressManager {
   void removeAddress(String address) {
     if (!isAddressRefresh) {
       defaultAddress.remove(address);
-      history.put(address, null);
+      history.put(address, false);
     } else {
       if (categoryMap.get(address)) {
         availableZone.remove(address);

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -101,7 +102,7 @@ public class AbstractAddressManagerTest {
 
     // test recodeStatus times
     Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager, "recodeStatus");
-    Assert.assertEquals(1, (int) recodeStatus.get("http://127.0.0.3:30100"));
+    Assert.assertEquals(0, (int) recodeStatus.get("http://127.0.0.3:30100"));
 
     // test fail 3 times ,it will be isolated
     addressManager.recordFailState(address);
@@ -132,6 +133,26 @@ public class AbstractAddressManagerTest {
     addressManager.rejoinAddress("http://127.0.0.3:30100");
     Assert.assertEquals("http://127.0.0.3:30100", addressManager.address());
     Assert.assertEquals("http://127.0.0.3:30100", addressManager.address());
+  }
+
+
+  @Test
+  public void testMiltiThread() throws Exception {
+
+    AbstractAddressManager addressManager = new AbstractAddressManager(addresses);
+    String address = "http://127.0.0.3:30100";
+
+    CountDownLatch latch = new CountDownLatch(2);
+    for (int i = 0; i < 2; i++) {
+      new Thread(() -> {
+        addressManager.recordFailState(address);
+        latch.countDown();
+      }).start();
+    }
+    latch.await(30, TimeUnit.SECONDS);
+
+    Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager, "recodeStatus");
+    Assert.assertEquals(2, (int) recodeStatus.get("http://127.0.0.3:30100"));
   }
 
   @Test
