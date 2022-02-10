@@ -65,8 +65,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     Map<String, Object> configurations = new HashMap<>();
 
     String uri = null;
+    String address = addressManager.address();
     try {
-      uri = addressManager.address() + "/configuration/items?dimensionsInfo="
+      uri = address + "/configuration/items?dimensionsInfo="
           + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
 
       Map<String, String> headers = new HashMap<>();
@@ -102,13 +103,16 @@ public class ConfigCenterClient implements ConfigCenterOperation {
         }
         queryConfigurationsResponse.setConfigurations(configurations);
         queryConfigurationsResponse.setChanged(true);
+        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         queryConfigurationsResponse.setChanged(false);
+        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
         throw new OperationException("Bad request for query configurations.");
       } else {
+        addressManager.recordFailState(address);
         throw new OperationException(
             "read response failed. status:"
                 + httpResponse.getStatusCode()
@@ -118,6 +122,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
                 + httpResponse.getContent());
       }
     } catch (IOException e) {
+      addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }

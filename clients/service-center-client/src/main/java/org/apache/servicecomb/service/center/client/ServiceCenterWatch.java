@@ -102,25 +102,26 @@ public class ServiceCenterWatch implements WebSocketListener {
   private void startWatch() {
     connector.submit(() -> {
       backOff();
-
+      String address = addressManager.address();
       try {
         Map<String, String> headers = new HashMap<>();
         headers.put("x-domain-name", this.tenantName);
         headers.putAll(this.extraGlobalHeaders);
         headers.putAll(this.requestAuthHeaderProvider.loadAuthHeader(null));
-        currentServerUri = convertAddress();
+        currentServerUri = convertAddress(address);
         LOGGER.info("start watch to address {}", currentServerUri);
         webSocketTransport = new WebSocketTransport(currentServerUri, sslProperties,
             headers, this);
         webSocketTransport.connectBlocking();
+        addressManager.recordSuccessState(address);
       } catch (Exception e) {
+        addressManager.recordFailState(address);
         LOGGER.error("start watch failed. ", e);
       }
     });
   }
 
-  private String convertAddress() {
-    String address = addressManager.address();
+  private String convertAddress(String address) {
     String url = String.format(WATCH, project, serviceId);
     if (address.startsWith(HTTP)) {
       return WS + address.substring(HTTP.length()) + url;
@@ -129,7 +130,6 @@ public class ServiceCenterWatch implements WebSocketListener {
     if (address.startsWith(HTTPS)) {
       return WSS + address.substring(HTTPS.length()) + url;
     }
-
     return address + url;
   }
 

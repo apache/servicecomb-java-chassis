@@ -123,6 +123,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   private void retry(RequestContext requestContext, Handler<RestResponse> responseHandler) {
     String oldUri = requestContext.getIpPort().toString();
+    ipPortManager.recordState(oldUri);
     requestContext.setIpPort(ipPortManager.getAvailableAddress());
     String newUri = requestContext.getIpPort().toString();
     LOGGER.warn("invoke service [{}] failed, retry address [{}].", oldUri, newUri);
@@ -290,6 +291,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 }
                 break;
                 default:
+                  ipPortManager.recordState(requestContext.getIpPort().toString());
                   LOGGER.warn("failed to findInstances: " + bodyBuffer.toString());
                   break;
               }
@@ -672,6 +674,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           response.setOk(true);
           return response;
         }
+        ipPortManager.recordState(ipPort.toString());
         LOGGER.warn(holder.value.statusMessage());
         return response;
       }

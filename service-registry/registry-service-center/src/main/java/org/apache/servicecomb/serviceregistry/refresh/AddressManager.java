@@ -15,25 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.kie.client.model;
+package org.apache.servicecomb.serviceregistry.refresh;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class KieAddressManager extends AbstractAddressManager {
+public class AddressManager extends AbstractAddressManager {
 
-  public KieAddressManager(List<String> addresses, EventBus eventBus) {
+  private static final String URI_SPLIT = ":";
+
+  public AddressManager(List<String> addresses, EventBus eventBus) {
     super(addresses);
     eventBus.register(this);
   }
 
+  public IpPort getAvailableIpPort() {
+    return transformIpPort(this.address());
+  }
+
+  @Override
+  protected String normalizeUri(String endpoint) {
+    return new URIEndpointObject(endpoint).toString();
+  }
+
+  private IpPort transformIpPort(String address) {
+    String[] result = StringUtils.split(address, URI_SPLIT);
+    return new IpPort(result[0], Integer.valueOf(result[1]));
+  }
+
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, RefreshEndpointEvent.KIE_NAME);
+    refreshEndpoint(event, RefreshEndpointEvent.SERVICE_CENTER_NAME);
   }
 }

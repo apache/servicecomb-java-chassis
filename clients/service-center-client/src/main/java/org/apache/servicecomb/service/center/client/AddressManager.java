@@ -17,47 +17,32 @@
 
 package org.apache.servicecomb.service.center.client;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
-public class AddressManager {
-  private final String projectName;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
-  private final List<String> addresses;
-
-  private int index = 0;
-
-  public AddressManager(String projectName, List<String> addresses) {
-    this.projectName = projectName;
-    this.addresses = new ArrayList<>(addresses.size());
-    this.addresses.addAll(addresses);
+public class AddressManager extends AbstractAddressManager {
+  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
+    super(projectName, addresses);
+    eventBus.register(this);
   }
 
-  private String formatAddress(String address) {
-    try {
-      return address + "/v4/" + HttpUtils.encodeURLParam(this.projectName);
-    } catch (Exception e) {
-      throw new IllegalStateException("not possible");
-    }
+  @Override
+  protected List<String> transformAddress(List<String> addresses) {
+    return addresses;
   }
 
-  public boolean sslEnabled() {
-    return address().startsWith("https://");
+  @Override
+  protected String getUrlPrefix(String address) {
+    return address + V4_PREFIX;
   }
 
-  public String address() {
-    synchronized (this) {
-      index++;
-      if (index >= addresses.size()) {
-        index = 0;
-      }
-      return addresses.get(index);
-    }
-  }
-
-  public String formatUrl(String url, boolean absoluteUrl) {
-    return absoluteUrl ? address() + url : formatAddress(address()) + url;
+  @Subscribe
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    refreshEndpoint(event, RefreshEndpointEvent.SERVICE_CENTER_NAME);
   }
 }

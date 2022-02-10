@@ -15,25 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.kie.client.model;
+package org.apache.servicecomb.serviceregistry.api;
 
-import java.util.List;
-
-import org.apache.servicecomb.http.client.common.AbstractAddressManager;
-import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-public class KieAddressManager extends AbstractAddressManager {
-
-  public KieAddressManager(List<String> addresses, EventBus eventBus) {
-    super(addresses);
-    eventBus.register(this);
-  }
-
-  @Subscribe
-  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, RefreshEndpointEvent.KIE_NAME);
-  }
+public enum Type {
+  SERVICECENTER,
+  KIE,
+  CseConfigCenter,
+  CseMonitoring
 }

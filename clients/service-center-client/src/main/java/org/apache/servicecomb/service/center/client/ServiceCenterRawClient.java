@@ -69,24 +69,28 @@ public class ServiceCenterRawClient {
   private HttpResponse doHttpRequest(String url, boolean absoluteUrl, Map<String, String> headers, String content,
       String method)
       throws IOException {
-
-    String address = addressManager.formatUrl(url, absoluteUrl);
+    String address = addressManager.address();
+    String formatUrl = addressManager.formatUrl(url, absoluteUrl, address);
     if (headers == null) {
       headers = new HashMap<>();
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
-    HttpRequest httpRequest = new HttpRequest(address, headers, content, method);
+    HttpRequest httpRequest = new HttpRequest(formatUrl, headers, content, method);
 
     try {
-      return httpTransport.doRequest(httpRequest);
+      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
+      addressManager.recordSuccessState(address);
+      return httpResponse;
     } catch (IOException e) {
-      String retryAddress = addressManager.formatUrl(url, absoluteUrl);
-      LOGGER.warn("send request to {} failed and retry to {} once. ", address,
-          retryAddress, e);
-      httpRequest = new HttpRequest(retryAddress, headers, content, method);
+      addressManager.recordFailState(address);
+      String retryAddress = addressManager.address();
+      formatUrl = addressManager.formatUrl(url, absoluteUrl, retryAddress);
+      LOGGER.warn("send request to {} failed and retry to {} once. ", address, retryAddress, e);
+      httpRequest = new HttpRequest(formatUrl, headers, content, method);
       try {
         return httpTransport.doRequest(httpRequest);
       } catch (IOException ioException) {
+        addressManager.recordFailState(retryAddress);
         LOGGER.warn("retry to {} failed again. ", retryAddress, e);
         throw ioException;
       }

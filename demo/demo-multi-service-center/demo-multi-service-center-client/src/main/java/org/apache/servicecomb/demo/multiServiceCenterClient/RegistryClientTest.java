@@ -65,7 +65,7 @@ public class RegistryClientTest implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"));
+    AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"), new EventBus());
     SSLProperties sslProperties = new SSLProperties();
     sslProperties.setEnabled(false);
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties,
