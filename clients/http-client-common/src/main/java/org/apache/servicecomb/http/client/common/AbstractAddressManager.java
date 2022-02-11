@@ -54,6 +54,8 @@ public class AbstractAddressManager {
 
   private static final int DEFAULT_METRICS_WINDOW_TIME = 1;
 
+  private static final int ISOLATION_THRESHOLD = 3;
+
   private List<String> addresses = new ArrayList<>();
 
   private int index = 0;
@@ -196,10 +198,7 @@ public class AbstractAddressManager {
   }
 
   protected String normalizeUri(String endpoint) {
-    if (endpoint.contains("sslEnabled=true")) {
-      return StringUtils.replace(endpoint, "rest", "https");
-    }
-    return StringUtils.replace(endpoint, "rest", "http");
+    return new URLEndPoint(endpoint).toString();
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
@@ -221,7 +220,7 @@ public class AbstractAddressManager {
     }
     synchronized (lock) {
       int number = recodeStatus.get(address) + 1;
-      if (number < 3) {
+      if (number < ISOLATION_THRESHOLD) {
         recodeStatus.put(address, number);
       } else {
         removeAddress(address);

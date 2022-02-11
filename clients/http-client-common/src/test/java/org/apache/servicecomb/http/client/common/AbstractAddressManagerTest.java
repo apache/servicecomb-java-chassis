@@ -173,7 +173,7 @@ public class AbstractAddressManagerTest {
     addressAZ.add("http://127.0.0.1:30100");
     addressAZ.add("https://127.0.0.2:30100");
     addressAZ.add("rest://127.0.0.1:30100?sslEnabled=true");
-    addressAZ.add("rest://127.0.0.2:30100");
+    addressAZ.add("rest://127.0.0.2:30100?sslEnabled=false");
 
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
@@ -182,7 +182,7 @@ public class AbstractAddressManagerTest {
     addressManager1.refreshEndpoint(event1, "TEST");
 
     Assert.assertEquals("https://127.0.0.2:30100", addressManager1.address());
-    Assert.assertEquals("https://127.0.0.1:30100?sslEnabled=true", addressManager1.address());
+    Assert.assertEquals("https://127.0.0.1:30100", addressManager1.address());
     Assert.assertEquals("http://127.0.0.2:30100", addressManager1.address());
     Assert.assertEquals("http://127.0.0.1:30100", addressManager1.address());
     Assert.assertEquals("https://127.0.0.2:30100", addressManager1.address());
@@ -204,7 +204,7 @@ public class AbstractAddressManagerTest {
     Assert.assertEquals("http://127.0.0.6:30100", addressManager1.address());
     Assert.assertEquals("http://127.0.0.7:30100", addressManager1.address());
     Assert.assertEquals("https://127.0.0.8:30100", addressManager1.address());
-    Assert.assertEquals("https://127.0.0.5:30100?sslEnabled=true", addressManager1.address());
+    Assert.assertEquals("https://127.0.0.5:30100", addressManager1.address());
     Assert.assertEquals("http://127.0.0.6:30100", addressManager1.address());
   }
 
@@ -223,17 +223,17 @@ public class AbstractAddressManagerTest {
     addressManager1.refreshEndpoint(event, "TEST");
 
     Assert.assertEquals("https://127.0.0.2:30100", addressManager1.address());
-    Assert.assertEquals("https://127.0.0.1:30100?sslEnabled=true", addressManager1.address());
+    Assert.assertEquals("https://127.0.0.1:30100", addressManager1.address());
     Assert.assertEquals("https://127.0.0.2:30100", addressManager1.address());
 
     addressManager1.removeAddress("https://127.0.0.2:30100");
-    addressManager1.removeAddress("https://127.0.0.1:30100?sslEnabled=true");
-    Assert.assertEquals("https://127.0.0.3:30100?sslEnabled=true", addressManager1.address());
+    addressManager1.removeAddress("https://127.0.0.1:30100");
+    Assert.assertEquals("https://127.0.0.3:30100", addressManager1.address());
     Assert.assertEquals("https://127.0.0.4:30100", addressManager1.address());
-    Assert.assertEquals("https://127.0.0.3:30100?sslEnabled=true", addressManager1.address());
+    Assert.assertEquals("https://127.0.0.3:30100", addressManager1.address());
 
     addressManager1.removeAddress("https://127.0.0.4:30100");
-    addressManager1.removeAddress("https://127.0.0.3:30100?sslEnabled=true");
+    addressManager1.removeAddress("https://127.0.0.3:30100");
     Assert.assertEquals("https://127.0.0.2:30103", addressManager1.address());
     Assert.assertEquals("http://127.0.0.1:30103", addressManager1.address());
     Assert.assertEquals("https://127.0.0.2:30103", addressManager1.address());
@@ -295,5 +295,17 @@ public class AbstractAddressManagerTest {
     addressManager2.refreshEndpoint(event, "TEST");
     Assert.assertEquals("http://127.0.0.1:30100", addressManager2.address());
     Assert.assertEquals("http://127.0.0.1:30100", addressManager2.address());
+  }
+
+  @Test
+  void normalizeUri() {
+    String uri = addressManager1.normalizeUri("rest://127.0.0.1:30100?sslEnabled=true");
+    Assert.assertEquals("https://127.0.0.1:30100", uri);
+
+    uri = addressManager1.normalizeUri("rest://127.0.0.1:30100?sslEnabled=false");
+    Assert.assertEquals("http://127.0.0.1:30100", uri);
+
+    uri = addressManager1.normalizeUri("rest://127.0.0.1:30100");
+    Assert.assertEquals("http://127.0.0.1:30100", uri);
   }
 }
