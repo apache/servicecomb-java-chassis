@@ -25,8 +25,10 @@ import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -110,8 +112,8 @@ public class ClassificationAddress {
   }
 
   private Map<String, List<String>> refreshEndPoint(MicroserviceCache microserviceCache) {
-    List<String> sameZone = new ArrayList<>();
-    List<String> sameRegion = new ArrayList<>();
+    Set<String> sameZone = new HashSet<>();
+    Set<String> sameRegion = new HashSet<>();
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
 
     List<MicroserviceInstance> microserviceCacheInstances = microserviceCache.getInstances();
@@ -124,8 +126,8 @@ public class ClassificationAddress {
         sameRegion.add(endPoint);
       }
     });
-    zoneAndRegion.put("sameZone", sameZone);
-    zoneAndRegion.put("sameRegion", sameRegion);
+    zoneAndRegion.put("sameZone", new ArrayList<>(sameZone));
+    zoneAndRegion.put("sameRegion", new ArrayList<>(sameRegion));
     return zoneAndRegion;
   }
 
@@ -145,8 +147,8 @@ public class ClassificationAddress {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     dataCenterInfo = findRegion(CacheEndpoints);
 
-    List<String> sameZone = new ArrayList<>();
-    List<String> sameRegion = new ArrayList<>();
+    Set<String> sameZone = new HashSet<>();
+    Set<String> sameRegion = new HashSet<>();
     for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
       if (regionAndAZMatch(dataCenterInfo, cacheEndpoint.getInstance())) {
         sameZone.add(cacheEndpoint.getEndpoint());
@@ -154,8 +156,8 @@ public class ClassificationAddress {
         sameRegion.add(cacheEndpoint.getEndpoint());
       }
     }
-    zoneAndRegion.put("sameZone", sameZone);
-    zoneAndRegion.put("sameRegion", sameRegion);
+    zoneAndRegion.put("sameZone", new ArrayList<>(sameZone));
+    zoneAndRegion.put("sameRegion", new ArrayList<>(sameRegion));
     return zoneAndRegion;
   }
 
