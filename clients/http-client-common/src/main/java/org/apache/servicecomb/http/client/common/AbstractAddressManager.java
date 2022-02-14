@@ -154,7 +154,7 @@ public class AbstractAddressManager {
   private String getAvailableZoneAddress() {
     List<String> addresses = getAvailableZoneIpPorts();
     if (!addresses.isEmpty()) {
-      return joinProject(getCurrentAddress(addresses));
+      return getCurrentAddress(addresses);
     }
     return getInitAddress();
   }
@@ -175,10 +175,6 @@ public class AbstractAddressManager {
       }
       return addresses.get(index);
     }
-  }
-
-  protected String joinProject(String address) {
-    return address;
   }
 
   private List<String> getAvailableZoneIpPorts() {
@@ -251,7 +247,7 @@ public class AbstractAddressManager {
     }
   }
 
-  private boolean telnetTest(String address) {
+  protected boolean telnetTest(String address) {
     URI ipPort = parseIpPortFromURI(address);
     try (Socket s = new Socket()) {
       s.connect(new InetSocketAddress(ipPort.getHost(), ipPort.getPort()), 3000);

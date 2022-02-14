@@ -19,17 +19,22 @@ package org.apache.servicecomb.config;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.config.center.client.AddressManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+
+import mockit.Deencapsulation;
 
 class ConfigCenterConfigurationSourceImplTest {
 
   @Test
-  void configKieAddressManagerTest() {
+  void configAddressManagerTest() {
     List<String> addresses = new ArrayList<>();
     addresses.add("http://127.0.0.1:30103");
     addresses.add("http://127.0.0.2:30103");
@@ -37,12 +42,29 @@ class ConfigCenterConfigurationSourceImplTest {
     Assert.assertNotNull(addressManager);
 
     String address = addressManager.address();
-    Assert.assertEquals("http://127.0.0.2:30103/v3/test",address);
+    Assert.assertEquals("http://127.0.0.2:30103/v3/test", address);
     address = addressManager.address();
-    Assert.assertEquals("http://127.0.0.1:30103/v3/test",address);
+    Assert.assertEquals("http://127.0.0.1:30103/v3/test", address);
 
     addressManager = new AddressManager(null, addresses, EventManager.getEventBus());
     address = addressManager.address();
-    Assert.assertEquals("http://127.0.0.2:30103/v3/default",address);
+    Assert.assertEquals("http://127.0.0.2:30103/v3/default", address);
+  }
+
+  @Test
+  void onRefreshEndpointEventTest() {
+    List<String> addresses = new ArrayList<>();
+    addresses.add("http://127.0.0.1:30103");
+    List<String> addressAZ = new ArrayList<>();
+    addressAZ.add("rest://127.0.0.1:30100?sslEnabled=true");
+    Map<String, List<String>> zoneAndRegion = new HashMap<>();
+    zoneAndRegion.put("sameZone", addressAZ);
+    zoneAndRegion.put("sameRegion", new ArrayList<>());
+    RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseConfigCenter");
+    AddressManager addressManager = new AddressManager("test", addresses, EventManager.getEventBus());
+    addressManager.onRefreshEndpointEvent(event);
+
+    List<String> availableAZ = Deencapsulation.getField(addressManager, "availableZone");
+    Assert.assertEquals("https://127.0.0.1:30100/v3/test", availableAZ.get(0));
   }
 }
