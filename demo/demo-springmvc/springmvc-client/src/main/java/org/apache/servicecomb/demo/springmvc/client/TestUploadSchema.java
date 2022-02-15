@@ -46,7 +46,7 @@ public class TestUploadSchema implements CategorizedTestCase {
     String fileUploadMultiRpc(List<Resource> files);
   }
 
-  @RpcReference(microserviceName = "springmvc",schemaId = "UploadScheme")
+  @RpcReference(microserviceName = "springmvc", schemaId = "UploadSchema")
   private FileUploadMultiInf fileUploadMultiInf;
 
   @Override
@@ -101,7 +101,6 @@ public class TestUploadSchema implements CategorizedTestCase {
     files.add(new FileSystemResource(file1));
     files.add(new FileSystemResource(file2));
     String result = fileUploadMultiInf.fileUploadMultiRpc(files);
-    TestMgr.check(result,"fileUploadMulti success, and fileNum is 2");
+    TestMgr.check(result, "fileUploadMulti success, and fileNum is 2");
   }
-
 }
