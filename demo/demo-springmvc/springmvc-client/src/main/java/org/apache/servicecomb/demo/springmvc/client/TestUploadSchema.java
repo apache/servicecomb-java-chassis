@@ -43,7 +43,7 @@ import org.springframework.web.client.RestTemplate;
 public class TestUploadSchema implements CategorizedTestCase {
 
   interface FileUploadMultiInf {
-    String fileUploadMulti(List<Resource> files);
+    String fileUploadMultiRpc(List<Resource> files);
   }
 
   @RpcReference(microserviceName = "springmvc",schemaId = "UploadScheme")
@@ -53,7 +53,7 @@ public class TestUploadSchema implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     testServerStartupSuccess();
     testUploadMultiBigFiles();
-    testFileUploadMulti_Rpc();
+    testFileUploadMultiRpc();
   }
 
   private void testServerStartupSuccess() {
@@ -94,13 +94,13 @@ public class TestUploadSchema implements CategorizedTestCase {
     files.forEach(file -> file.delete());
   }
 
-  private void testFileUploadMulti_Rpc() throws IOException {
+  private void testFileUploadMultiRpc() throws IOException {
     File file1 = File.createTempFile("file1", ".txt");
     File file2 = File.createTempFile("file2", ".txt");
     List<Resource> files = new ArrayList<>();
     files.add(new FileSystemResource(file1));
     files.add(new FileSystemResource(file2));
-    String result = fileUploadMultiInf.fileUploadMulti(files);
+    String result = fileUploadMultiInf.fileUploadMultiRpc(files);
     TestMgr.check(result,"fileUploadMulti success, and fileNum is 2");
   }
 

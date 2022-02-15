@@ -60,9 +60,9 @@ public class UploadSchema {
     return TestMgr.isSuccess();
   }
 
-  @PostMapping(path = "/fileUpload", produces = MediaType.TEXT_PLAIN_VALUE,
+  @PostMapping(path = "/fileUploadMultiRpc", produces = MediaType.TEXT_PLAIN_VALUE,
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public String fileUploadMulti_Rpc(@RequestPart(name = "files") MultipartFile[] files) {
+  public String fileUploadMultiRpc(@RequestPart(name = "files") MultipartFile[] files) {
       return "fileUploadMulti success, and fileNum is " + files.length;
   }
 
