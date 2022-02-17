@@ -106,7 +106,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       }
     });
 
-    DiscoveryTreeNode child = new DiscoveryTreeNode();
+    DiscoveryTreeNode child = parent.children().computeIfAbsent("filterred", etn -> new DiscoveryTreeNode());
     if (ZoneAwareDiscoveryFilter.GROUP_Instances_All
         .equals(context.getContextParameter(ZoneAwareDiscoveryFilter.KEY_ZONE_AWARE_STEP)) && filteredServers.isEmpty()
         && emptyProtection.get()) {
@@ -115,7 +115,6 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     } else {
       child.data(filteredServers);
     }
-    parent.child("filterred", child);
     return child;
   }
 
