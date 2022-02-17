@@ -90,12 +90,13 @@ public class AbstractAddressManager {
 
   public AbstractAddressManager(List<String> addresses) {
     this.addresses.addAll(addresses);
+    this.defaultAddress.addAll(addresses);
   }
 
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
-    this.defaultAddress = this.addresses;
+    this.defaultAddress.addAll(this.addresses);
   }
 
   @VisibleForTesting
