@@ -18,7 +18,7 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 public class ExceptionUtils {
-  private static final int DEPTH = 5;
+  private static final int DEPTH = 2;
 
   private ExceptionUtils() {
 
