@@ -211,11 +211,11 @@ public class AbstractAddressManager {
   }
 
   public void recordFailState(String address) {
-    if (!recodeStatus.containsKey(address)) {
-      recodeStatus.put(address, 1);
-      return;
-    }
     synchronized (lock) {
+      if (!recodeStatus.containsKey(address)) {
+        recodeStatus.put(address, 1);
+        return;
+      }
       int number = recodeStatus.get(address) + 1;
       if (number < ISOLATION_THRESHOLD) {
         recodeStatus.put(address, number);
