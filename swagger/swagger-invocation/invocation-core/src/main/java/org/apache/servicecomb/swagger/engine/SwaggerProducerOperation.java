@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
-import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -153,7 +152,7 @@ public class SwaggerProducerOperation {
     } catch (Throwable e) {
       if (shouldPrintErrorLog(e)) {
         LOGGER.error("unexpected error operation={}, message={}",
-            invocation.getInvocationQualifiedName(), ExceptionUtils.getExceptionMessageWithoutTrace(e));
+            invocation.getInvocationQualifiedName(), e.getMessage());
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -186,7 +185,7 @@ public class SwaggerProducerOperation {
     } catch (Throwable e) {
       if (shouldPrintErrorLog(e)) {
         LOGGER.error("unexpected error operation={}, message={}",
-            invocation.getInvocationQualifiedName(), ExceptionUtils.getExceptionMessageWithoutTrace(e));
+            invocation.getInvocationQualifiedName(), e.getMessage());
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
