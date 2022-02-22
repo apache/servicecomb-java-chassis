@@ -20,6 +20,7 @@ package org.apache.servicecomb.config.center.client;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.common.URLEndPoint;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.EventBus;
@@ -33,7 +34,8 @@ public class AddressManager extends AbstractAddressManager {
   }
 
   @Override
-  public String joinProject(String address) {
+  protected String normalizeUri(String endpoint) {
+    String address = new URLEndPoint(endpoint).toString();
     return formatAddress(address);
   }
 

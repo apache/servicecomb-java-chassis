@@ -59,6 +59,8 @@ public class ClassificationAddress {
 
   private String defaultTransport = "rest";
 
+  private boolean isAutoRefresh;
+
   private DataCenterInfo dataCenterInfo;
 
   InstanceCacheManager instanceCacheManager;
@@ -70,6 +72,7 @@ public class ClassificationAddress {
   public ClassificationAddress(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.defaultTransport = serviceRegistryConfig.getTransport();
     this.defaultIpPort = serviceRegistryConfig.getIpPort();
+    this.isAutoRefresh = serviceRegistryConfig.isRegistryAutoRefresh();
     this.instanceCacheManager = instanceCacheManager;
     this.maxRetryTimes = defaultIpPort.size();
     ServiceCenterEventBus.getEventBus().register(this);
@@ -85,6 +88,11 @@ public class ClassificationAddress {
 
   @Subscribe
   public void onMicroserviceCacheRefreshed(MicroserviceCacheRefreshedEvent event) {
+    //if isAutoRefresh is false, it will not be refresh.
+    if (!isAutoRefresh) {
+      return;
+    }
+
     List<MicroserviceCache> microserviceCaches = event.getMicroserviceCaches();
     if (null == microserviceCaches || microserviceCaches.isEmpty()) {
       return;

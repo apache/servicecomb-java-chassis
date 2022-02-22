@@ -70,9 +70,11 @@ class AddressManagerTest {
     addressManager1.refreshEndpoint(event, "CseConfigCenter");
 
     List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
-    Assert.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
+    Assert.assertEquals("http://127.0.0.3:30100/v3/project", availableZone.get(0));
 
     List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
-    Assert.assertEquals("http://127.0.0.4:30100", availableRegion.get(0));
+    Assert.assertEquals("http://127.0.0.4:30100/v3/project", availableRegion.get(0));
+
+    Assert.assertEquals("http://127.0.0.3:30100/v3/project", addressManager1.address());
   }
 }

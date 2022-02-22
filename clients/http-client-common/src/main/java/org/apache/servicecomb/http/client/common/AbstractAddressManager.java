@@ -90,12 +90,13 @@ public class AbstractAddressManager {
 
   public AbstractAddressManager(List<String> addresses) {
     this.addresses.addAll(addresses);
+    this.defaultAddress.addAll(addresses);
   }
 
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
-    this.defaultAddress = this.addresses;
+    this.defaultAddress.addAll(this.addresses);
   }
 
   @VisibleForTesting
@@ -154,7 +155,7 @@ public class AbstractAddressManager {
   private String getAvailableZoneAddress() {
     List<String> addresses = getAvailableZoneIpPorts();
     if (!addresses.isEmpty()) {
-      return joinProject(getCurrentAddress(addresses));
+      return getCurrentAddress(addresses);
     }
     return getInitAddress();
   }
@@ -175,10 +176,6 @@ public class AbstractAddressManager {
       }
       return addresses.get(index);
     }
-  }
-
-  protected String joinProject(String address) {
-    return address;
   }
 
   private List<String> getAvailableZoneIpPorts() {
@@ -214,11 +211,11 @@ public class AbstractAddressManager {
   }
 
   public void recordFailState(String address) {
-    if (!recodeStatus.containsKey(address)) {
-      recodeStatus.put(address, 1);
-      return;
-    }
     synchronized (lock) {
+      if (!recodeStatus.containsKey(address)) {
+        recodeStatus.put(address, 1);
+        return;
+      }
       int number = recodeStatus.get(address) + 1;
       if (number < ISOLATION_THRESHOLD) {
         recodeStatus.put(address, number);
@@ -251,7 +248,7 @@ public class AbstractAddressManager {
     }
   }
 
-  private boolean telnetTest(String address) {
+  protected boolean telnetTest(String address) {
     URI ipPort = parseIpPortFromURI(address);
     try (Socket s = new Socket()) {
       s.connect(new InetSocketAddress(ipPort.getHost(), ipPort.getPort()), 3000);

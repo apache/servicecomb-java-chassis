@@ -62,6 +62,7 @@ class ServiceRegistryConfigBuilder {
         .setHeartbeatInterval(getHeartbeatInterval())
         .setInstancePullInterval(getInstancePullInterval())
         .setRegistryAutoDiscovery(isRegistryAutoDiscovery())
+        .setRegistryAutoRefresh(isRegistryAutoRefresh())
         .setResendHeartBeatTimes(getResendHeartBeatTimes())
         .setAlwaysOverrideSchema(isAlwaysOverrideSchema())
         .setIgnoreSwaggerDifference(isIgnoreSwaggerDifference())
@@ -153,9 +154,9 @@ class ServiceRegistryConfigBuilder {
   public int getIdleWatchTimeout() {
     // watch idle timeout based on SC PING/PONG interval. SC default value is 30.
     DynamicIntProperty property =
-            DynamicPropertyFactory.getInstance()
-                    .getIntProperty("servicecomb.service.registry.client.timeout.watch",
-                            ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_SECONDS * 2);
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.service.registry.client.timeout.watch",
+                ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_SECONDS * 2);
     int timeout = property.get();
     return timeout < 1 ? ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
   }
@@ -201,6 +202,14 @@ class ServiceRegistryConfigBuilder {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
             .getBooleanProperty("servicecomb.service.registry.autodiscovery",
+                false);
+    return property.get();
+  }
+
+  public boolean isRegistryAutoRefresh() {
+    DynamicBooleanProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.service.registry.autoRefresh",
                 false);
     return property.get();
   }
