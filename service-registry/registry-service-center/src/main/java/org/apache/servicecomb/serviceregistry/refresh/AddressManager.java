@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry.refresh;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,7 @@ import com.google.common.eventbus.Subscribe;
 public class AddressManager extends AbstractAddressManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(AddressManager.class);
 
-  private static final String URI_SPLIT = ":";
+  private static final String URI_PREFIX = "rest://";
 
   public AddressManager(List<String> addresses, EventBus eventBus) {
     super(addresses);
@@ -65,8 +66,8 @@ public class AddressManager extends AbstractAddressManager {
   }
 
   private IpPort transformIpPort(String address) {
-    String[] result = StringUtils.split(address, URI_SPLIT);
-    return new IpPort(result[0], Integer.valueOf(result[1]));
+    URI uri = URI.create(URI_PREFIX + address);
+    return new IpPort(uri.getHost(), uri.getPort());
   }
 
   @Subscribe
