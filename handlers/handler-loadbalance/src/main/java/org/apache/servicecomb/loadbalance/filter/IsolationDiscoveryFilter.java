@@ -115,7 +115,6 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     } else {
       child.data(filteredServers);
     }
-    parent.child("filterred", child);
     return child;
   }
 
