@@ -39,8 +39,12 @@ public class ConfigurationEndpoint {
   private static final Logger LOGGER
       = LoggerFactory.getLogger(ServerEndpoint.class);
 
-  @Autowired
   private Environment environment;
+
+  @Autowired
+  public ConfigurationEndpoint(Environment environment) {
+    this.environment = environment;
+  }
 
   @Value("${demo.multi.service.center.serverB.key1}")
   private String key1;

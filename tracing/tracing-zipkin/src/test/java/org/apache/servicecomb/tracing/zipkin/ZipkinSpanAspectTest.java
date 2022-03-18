@@ -50,18 +50,21 @@ import zipkin2.Span;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ZipkinSpanTestApplication.class, TracingConfig.class})
 public class ZipkinSpanAspectTest {
-
-  @Autowired
   private Queue<Span> spans;
 
-  @Autowired
   private SomeSlowTask someSlowTask;
 
-  @Autowired
   private CustomSpanTask customSpanTask;
 
-  @Autowired
   private Tracing tracing;
+
+  @Autowired
+  public ZipkinSpanAspectTest(Queue<Span> spans, SomeSlowTask someSlowTask, CustomSpanTask customSpanTask, Tracing tracing) {
+    this.spans = spans;
+    this.someSlowTask = someSlowTask;
+    this.customSpanTask = customSpanTask;
+    this.tracing = tracing;
+  }
 
   @After
   public void tearDown() throws Exception {

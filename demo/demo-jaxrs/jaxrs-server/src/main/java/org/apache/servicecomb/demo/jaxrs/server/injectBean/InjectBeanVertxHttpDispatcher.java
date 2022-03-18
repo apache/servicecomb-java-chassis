@@ -23,8 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.vertx.ext.web.Router;
 
 public class InjectBeanVertxHttpDispatcher implements VertxHttpDispatcher {
-  @Autowired
   private InjectBean injectBean;
+
+  @Autowired
+  public InjectBeanVertxHttpDispatcher(InjectBean injectBean) {
+    this.injectBean = injectBean;
+  }
 
   @Override
   public void init(Router router) {

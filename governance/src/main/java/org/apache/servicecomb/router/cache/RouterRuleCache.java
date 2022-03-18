@@ -47,8 +47,12 @@ public class RouterRuleCache {
 
   private static final String ROUTE_RULE = "servicecomb.routeRule.%s";
 
-  @Autowired
   private Environment environment;
+
+  @Autowired
+  public RouterRuleCache(Environment environment) {
+    this.environment = environment;
+  }
 
   private final ConcurrentHashMap<String, ServiceInfoCache> serviceInfoCacheMap = new ConcurrentHashMap<>();
 

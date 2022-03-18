@@ -38,8 +38,12 @@ import java.util.Map;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class OperatorTest {
-  @Autowired
   private RequestProcessor requestProcessor;
+
+  @Autowired
+  public OperatorTest(RequestProcessor requestProcessor) {
+    this.requestProcessor = requestProcessor;
+  }
 
   @Test
   public void test_unknown_operator() {

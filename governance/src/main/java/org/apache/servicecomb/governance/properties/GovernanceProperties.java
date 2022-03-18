@@ -53,11 +53,16 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
 
   private final String configKey;
 
-  @Autowired
   protected Environment environment;
 
-  @Autowired
   private MicroserviceMeta microserviceMeta;
+
+  @Autowired
+  public GovernanceProperties(String configKey, Environment environment, MicroserviceMeta microserviceMeta) {
+    this.configKey = configKey;
+    this.environment = environment;
+    this.microserviceMeta = microserviceMeta;
+  }
 
   protected Map<String, T> parsedEntity;
 

@@ -67,14 +67,18 @@ public class RouterDistributorTest {
       + "              version: 1\n"
       + "              app: a";
 
-  @Autowired
   private Environment environment;
 
-  @Autowired
   private RouterFilter routerFilter;
 
-  @Autowired
   private RouterDistributor<ServiceIns, ServiceIns> testDistributor;
+
+  @Autowired
+  public RouterDistributorTest(Environment environment, RouterFilter routerFilter, RouterDistributor<ServiceIns, ServiceIns> testDistributor) {
+    this.environment = environment;
+    this.routerFilter = routerFilter;
+    this.testDistributor = testDistributor;
+  }
 
   private Map<String, Object> dynamicValues = new HashMap<>();
 

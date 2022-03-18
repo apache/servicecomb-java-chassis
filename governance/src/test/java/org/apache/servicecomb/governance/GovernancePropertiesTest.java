@@ -42,27 +42,30 @@ import java.util.*;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class GovernancePropertiesTest {
-
-  @Autowired
   private List<GovernanceProperties<? extends AbstractPolicy>> propertiesList;
 
-  @Autowired
   private MatchProperties matchProperties;
 
-  @Autowired
   private BulkheadProperties bulkheadProperties;
 
-  @Autowired
   private CircuitBreakerProperties circuitBreakerProperties;
 
-  @Autowired
   private RateLimitProperties rateLimitProperties;
 
-  @Autowired
   private RetryProperties retryProperties;
 
-  @Autowired
   private Environment environment;
+
+  @Autowired
+  public GovernancePropertiesTest(List<GovernanceProperties<? extends AbstractPolicy>> propertiesList, MatchProperties matchProperties, BulkheadProperties bulkheadProperties, CircuitBreakerProperties circuitBreakerProperties, RateLimitProperties rateLimitProperties, RetryProperties retryProperties, Environment environment) {
+    this.propertiesList = propertiesList;
+    this.matchProperties = matchProperties;
+    this.bulkheadProperties = bulkheadProperties;
+    this.circuitBreakerProperties = circuitBreakerProperties;
+    this.rateLimitProperties = rateLimitProperties;
+    this.retryProperties = retryProperties;
+    this.environment = environment;
+  }
 
   private Map<String, Object> dynamicValues = new HashMap<>();
 

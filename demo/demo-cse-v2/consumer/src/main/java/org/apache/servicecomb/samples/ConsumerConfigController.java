@@ -27,11 +27,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestSchema(schemaId = "ConsumerConfigController")
 @RequestMapping(path = "/")
 public class ConsumerConfigController {
-  @Autowired
   private Environment environment;
 
-  @Autowired
   private ConsumerConfigurationProperties consumerConfigurationProperties;
+
+  @Autowired
+  public ConsumerConfigController(Environment environment, ConsumerConfigurationProperties consumerConfigurationProperties) {
+    this.environment = environment;
+    this.consumerConfigurationProperties = consumerConfigurationProperties;
+  }
 
   @GetMapping("/config")
   public String config(@RequestParam("key") String key) {

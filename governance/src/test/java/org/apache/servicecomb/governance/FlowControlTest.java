@@ -39,14 +39,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class FlowControlTest {
-  @Autowired
   private RateLimitingHandler rateLimitingHandler;
 
-  @Autowired
   private RateLimitProperties rateLimitProperties;
 
-  @Autowired
   private MatchersManager matchersManager;
+
+  @Autowired
+  public FlowControlTest(RateLimitingHandler rateLimitingHandler, RateLimitProperties rateLimitProperties, MatchersManager matchersManager) {
+    this.rateLimitingHandler = rateLimitingHandler;
+    this.rateLimitProperties = rateLimitProperties;
+    this.matchersManager = matchersManager;
+  }
 
   @Test
   public void test_rate_limiting_work() throws Throwable {
