@@ -58,9 +58,12 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
   private MicroserviceMeta microserviceMeta;
 
   @Autowired
-  public GovernanceProperties(String configKey, Environment environment, MicroserviceMeta microserviceMeta) {
-    this.configKey = configKey;
+  public void setEnvironment(Environment environment) {
     this.environment = environment;
+  }
+
+  @Autowired
+  public void setMicroserviceMeta(MicroserviceMeta microserviceMeta) {
     this.microserviceMeta = microserviceMeta;
   }
 
@@ -74,6 +77,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
     GovernanceEventManager.register(this);
     entityClass = getEntityClass();
   }
+
 
   @Override
   public void afterPropertiesSet() {

@@ -53,6 +53,9 @@ public abstract class AbstractRouterDistributor<T, E> implements
     this.routerRuleCache = routerRuleCache;
   }
 
+  protected AbstractRouterDistributor() {
+  }
+
   @Override
   public List<T> distribute(String targetServiceName, List<T> list, PolicyRuleItem invokeRule) {
     //init LatestVersion
