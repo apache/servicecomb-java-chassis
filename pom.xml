@@ -370,8 +370,8 @@
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
             <compilerArgs>
-<!--              <arg>-Werror</arg>-->
-<!--              <arg>-Xlint:all</arg>-->
+              <arg>-Werror</arg>
+              <arg>-Xlint:all</arg>
               <!--not care for jdk8/jdk7 compatible problem-->
               <arg>-Xlint:-classfile</arg>
               <!--not care for annotations not processed-->
