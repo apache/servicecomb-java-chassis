@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
@@ -102,11 +103,13 @@ public class TestIpPortManager {
 
     // mock endpoint list
     Map<String, List<CacheEndpoint>> addresses = new HashMap<>();
-    List<CacheEndpoint> instances = new ArrayList<>();
-    instances.add(new CacheEndpoint("http://127.0.0.1:9982", null));
-    addresses.put("rest", instances);
+    List<CacheEndpoint> cacheEndpoints = new ArrayList<>();
+    MicroserviceInstance Instance = new MicroserviceInstance();
+    Instance.setDataCenterInfo(null);
+    cacheEndpoints.add(new CacheEndpoint("http://127.0.0.1:9982", Instance));
+    addresses.put("rest", cacheEndpoints);
     ClassificationAddress classificationAddres = new ClassificationAddress(config, cacheManager);
-    manager.classificationAddress =classificationAddres;
+    manager.classificationAddress = classificationAddres;
     new Expectations() {
       {
         cacheManager.getOrCreate("default", "SERVICECENTER", "latest");
