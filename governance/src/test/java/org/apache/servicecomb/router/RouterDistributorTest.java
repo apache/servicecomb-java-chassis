@@ -74,10 +74,21 @@ public class RouterDistributorTest {
   private RouterDistributor<ServiceIns, ServiceIns> testDistributor;
 
   @Autowired
-  public RouterDistributorTest(Environment environment, RouterFilter routerFilter, RouterDistributor<ServiceIns, ServiceIns> testDistributor) {
+  public void setEnvironment(Environment environment) {
     this.environment = environment;
+  }
+
+  @Autowired
+  public void setRouterFilter(RouterFilter routerFilter) {
     this.routerFilter = routerFilter;
+  }
+
+  @Autowired
+  public void setTestDistributor(RouterDistributor<ServiceIns, ServiceIns> testDistributor) {
     this.testDistributor = testDistributor;
+  }
+
+  public RouterDistributorTest() {
   }
 
   private Map<String, Object> dynamicValues = new HashMap<>();

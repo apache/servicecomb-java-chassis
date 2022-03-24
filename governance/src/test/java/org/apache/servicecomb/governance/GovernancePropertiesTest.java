@@ -57,14 +57,46 @@ public class GovernancePropertiesTest {
   private Environment environment;
 
   @Autowired
-  public GovernancePropertiesTest(List<GovernanceProperties<? extends AbstractPolicy>> propertiesList, MatchProperties matchProperties, BulkheadProperties bulkheadProperties, CircuitBreakerProperties circuitBreakerProperties, RateLimitProperties rateLimitProperties, RetryProperties retryProperties, Environment environment) {
+  public void setPropertiesList(List<GovernanceProperties<? extends AbstractPolicy>> propertiesList) {
     this.propertiesList = propertiesList;
+  }
+
+  @Autowired
+  public void setMatchProperties(MatchProperties matchProperties) {
     this.matchProperties = matchProperties;
+  }
+
+  @Autowired
+  public void setBulkheadProperties(BulkheadProperties bulkheadProperties) {
     this.bulkheadProperties = bulkheadProperties;
+  }
+
+  @Autowired
+  public void setCircuitBreakerProperties(CircuitBreakerProperties circuitBreakerProperties) {
     this.circuitBreakerProperties = circuitBreakerProperties;
+  }
+
+  @Autowired
+  public void setRateLimitProperties(RateLimitProperties rateLimitProperties) {
     this.rateLimitProperties = rateLimitProperties;
+  }
+
+  @Autowired
+  public void setRetryProperties(RetryProperties retryProperties) {
     this.retryProperties = retryProperties;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
     this.environment = environment;
+  }
+
+  @Autowired
+  public void setDynamicValues(Map<String, Object> dynamicValues) {
+    this.dynamicValues = dynamicValues;
+  }
+
+  public GovernancePropertiesTest() {
   }
 
   private Map<String, Object> dynamicValues = new HashMap<>();

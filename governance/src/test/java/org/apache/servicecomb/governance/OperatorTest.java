@@ -41,8 +41,11 @@ public class OperatorTest {
   private RequestProcessor requestProcessor;
 
   @Autowired
-  public OperatorTest(RequestProcessor requestProcessor) {
+  public void setRequestProcessor(RequestProcessor requestProcessor) {
     this.requestProcessor = requestProcessor;
+  }
+
+  public OperatorTest() {
   }
 
   @Test

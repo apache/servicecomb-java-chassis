@@ -49,7 +49,7 @@ public abstract class AbstractRouterDistributor<T, E> implements
   private RouterRuleCache routerRuleCache;
 
   @Autowired
-  public AbstractRouterDistributor(RouterRuleCache routerRuleCache) {
+  public void setRouterRuleCache(RouterRuleCache routerRuleCache) {
     this.routerRuleCache = routerRuleCache;
   }
 

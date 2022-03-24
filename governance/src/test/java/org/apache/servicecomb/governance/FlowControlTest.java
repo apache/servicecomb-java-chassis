@@ -46,10 +46,21 @@ public class FlowControlTest {
   private MatchersManager matchersManager;
 
   @Autowired
-  public FlowControlTest(RateLimitingHandler rateLimitingHandler, RateLimitProperties rateLimitProperties, MatchersManager matchersManager) {
+  public void setRateLimitingHandler(RateLimitingHandler rateLimitingHandler) {
     this.rateLimitingHandler = rateLimitingHandler;
+  }
+
+  @Autowired
+  public void setRateLimitProperties(RateLimitProperties rateLimitProperties) {
     this.rateLimitProperties = rateLimitProperties;
+  }
+
+  @Autowired
+  public void setMatchersManager(MatchersManager matchersManager) {
     this.matchersManager = matchersManager;
+  }
+
+  public FlowControlTest() {
   }
 
   @Test
