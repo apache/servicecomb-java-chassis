@@ -172,15 +172,16 @@ public class ClassificationAddress {
   }
 
   private DataCenterInfo findRegion(List<CacheEndpoint> CacheEndpoints) {
-    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
-    if (myself.getDataCenterInfo() == null) {
-      return null;
-    }
     for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
       boolean isMatch = cacheEndpoint.getEndpoint().contains(this.defaultIpPort.get(0).getHostOrIp());
       if (isMatch && cacheEndpoint.getInstance().getDataCenterInfo() != null) {
         return cacheEndpoint.getInstance().getDataCenterInfo();
       }
+    }
+
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+    if (myself.getDataCenterInfo() == null) {
+      return null;
     }
     return myself.getDataCenterInfo();
   }
