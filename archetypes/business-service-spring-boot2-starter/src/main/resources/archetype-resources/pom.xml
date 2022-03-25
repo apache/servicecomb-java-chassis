@@ -27,7 +27,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- this version is used for archetype, do not need to change when release a new version -->
-    <java-chassis.version>2.0.0</java-chassis.version>
+    <java-chassis.version>2.6.3</java-chassis.version>
     <springboot.version>2.5.6</springboot.version>
   </properties>
 
