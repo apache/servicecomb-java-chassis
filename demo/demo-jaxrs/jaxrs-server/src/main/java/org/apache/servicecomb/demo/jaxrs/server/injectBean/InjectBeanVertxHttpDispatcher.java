@@ -26,7 +26,7 @@ public class InjectBeanVertxHttpDispatcher implements VertxHttpDispatcher {
   private InjectBean injectBean;
 
   @Autowired
-  public InjectBeanVertxHttpDispatcher(InjectBean injectBean) {
+  public void setInjectBean(InjectBean injectBean) {
     this.injectBean = injectBean;
   }
 
