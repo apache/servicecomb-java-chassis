@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.darklaunch;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class DarklaunchRule {
 
     try {
       DarklaunchRuleJson ruleJson = JsonUtils
-          .readValue(ruleStr.getBytes(Charset.forName("UTF-8")), DarklaunchRuleJson.class);
+          .readValue(ruleStr.getBytes(StandardCharsets.UTF_8), DarklaunchRuleJson.class);
       DarklaunchRule rule = new DarklaunchRule(ruleJson.getPolicyType());
       for (DarklaunchRuleItemJson itemJson : ruleJson.getRuleItems()) {
         DarklaunchRuleItem item = new DarklaunchRuleItem(itemJson.getGroupName());
