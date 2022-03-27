@@ -109,7 +109,7 @@ public class TestConsumerQpsFlowControlHandler {
     Mockito.verify(asyncResp).consumerFail(captor.capture());
     InvocationException invocationException = captor.getValue();
     assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
-    assertEquals("rejected by qps flowcontrol",
+    assertEquals("consumer request rejected by qps flowcontrol",
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
   }
 

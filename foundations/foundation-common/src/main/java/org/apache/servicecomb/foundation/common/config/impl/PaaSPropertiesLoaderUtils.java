@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.config.PaaSResourceUtils;
 import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
+
 
 public class PaaSPropertiesLoaderUtils extends org.springframework.core.io.support.PropertiesLoaderUtils {
 

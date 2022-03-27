@@ -36,7 +36,7 @@ public class SpringmvcClient {
 
     new SpringApplicationBuilder().sources(SpringmvcClient.class).web(WebApplicationType.SERVLET).build().run(args);
 
-    org.apache.servicecomb.demo.springmvc.client.SpringmvcClient.run();
+    org.apache.servicecomb.demo.springmvc.SpringmvcClient.run();
 
     TestMgr.summary();
   }

@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.vertx.stream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -77,14 +77,14 @@ public class TestBufferInputStream {
   }
 
   @Test
-  public void testReadByteArray() throws UnsupportedEncodingException {
-    byte[] b = "csr".getBytes("UTF-8");
+  public void testReadByteArray() {
+    byte[] b = "csr".getBytes(StandardCharsets.UTF_8);
     Assert.assertEquals(-1, instance.read(b));
   }
 
   @Test
-  public void testReadByteArrayIntInt() throws UnsupportedEncodingException {
-    byte[] b = "csr".getBytes("UTF-8");
+  public void testReadByteArrayIntInt() {
+    byte[] b = "csr".getBytes(StandardCharsets.UTF_8);
     Assert.assertEquals(-1, instance.read(b, 1, 0));
   }
 

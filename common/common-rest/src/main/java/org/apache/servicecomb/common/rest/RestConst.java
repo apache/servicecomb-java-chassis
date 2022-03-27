@@ -65,6 +65,10 @@ public final class RestConst {
 
   public static final String UPLOAD_DIR = "servicecomb.uploads.directory";
 
+  public static final String UPLOAD_DEFAULT_ENV_VARIABLE = "java.io.tmpdir";
+
+  public static final String UPLOAD_DEFAULT_DIR = System.getProperty(UPLOAD_DEFAULT_ENV_VARIABLE);
+
   // limit of one upload file, only available for servlet rest transport
   public static final String UPLOAD_MAX_FILE_SIZE = "servicecomb.uploads.maxFileSize";
 

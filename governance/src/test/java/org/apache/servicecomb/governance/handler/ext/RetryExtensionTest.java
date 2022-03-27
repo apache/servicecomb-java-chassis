@@ -17,18 +17,24 @@
 
 package org.apache.servicecomb.governance.handler.ext;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.vertx.core.VertxException;
+
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class RetryExtensionTest {
 
   @Test
@@ -69,5 +75,82 @@ public class RetryExtensionTest {
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "434");
     Assert.assertTrue(result);
+  }
+
+  @Test
+  public void testRetryWithConnectionException() {
+    Exception target = new ConnectException("connection refused");
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+  }
+
+  @Test
+  public void testRetryWithSocketTimeout() {
+    Exception target = new SocketTimeoutException("Read timed out");
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+  }
+
+  @Test
+  public void testRetryWithIOException() {
+    Exception target = new IOException("Connection reset by peer");
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+
+    target = new IOException("Target not exist");
+    root = new Exception(target);
+    canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertFalse(canRetry);
+  }
+
+  @Test
+  public void testRetryVertxException() {
+    Exception target = new VertxException("Connection was closed");
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+
+    target = new IOException("");
+    root = new Exception(target);
+    canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertFalse(canRetry);
+  }
+
+  @Test
+  public void testRetryNoRouteToHostException() {
+    Exception target = new NoRouteToHostException("Host is unreachable");
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+
+    target = new NoRouteToHostException("No route to host");
+    root = new Exception(target);
+    canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+  }
+
+  @Test
+  public void testRetryEqualTen() {
+    Exception target = new ConnectException("connectin refused");
+    for (int i = 0; i < 8; i++) {
+      target = new Exception("Level" + i, target);
+    }
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertTrue(canRetry);
+  }
+
+  @Test
+  public void testRetryOverTen() {
+    Exception target = new ConnectException("connectin refused");
+    for (int i = 0; i < 9; i++) {
+      target = new Exception("Level" + i, target);
+    }
+    Exception root = new Exception(target);
+    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    Assert.assertFalse(canRetry);
   }
 }

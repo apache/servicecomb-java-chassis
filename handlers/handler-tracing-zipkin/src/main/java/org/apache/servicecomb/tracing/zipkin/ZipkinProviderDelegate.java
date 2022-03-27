@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import brave.Span;
 import brave.Tracing;

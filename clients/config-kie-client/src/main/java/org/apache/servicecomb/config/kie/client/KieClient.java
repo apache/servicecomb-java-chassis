@@ -66,8 +66,8 @@ public class KieClient implements KieConfigOperation {
 
   @Override
   public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request) {
-    String url = buildUrl(request);
-
+    String address = addressManager.address();
+    String url = buildUrl(request, address);
     try {
       if (kieConfiguration.isEnableLongPolling()) {
         url += "&wait=" + kieConfiguration.getPollingWaitInSeconds() + "s";
@@ -83,6 +83,7 @@ public class KieClient implements KieConfigOperation {
         configurationsResponse.setConfigurations(configurations);
         configurationsResponse.setChanged(true);
         configurationsResponse.setRevision(revision);
+        addressManager.recordSuccessState(address);
         return configurationsResponse;
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
@@ -90,8 +91,10 @@ public class KieClient implements KieConfigOperation {
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         configurationsResponse.setChanged(false);
+        addressManager.recordSuccessState(address);
         return configurationsResponse;
       }
+      addressManager.recordFailState(address);
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
@@ -101,9 +104,9 @@ public class KieClient implements KieConfigOperation {
     }
   }
 
-  private String buildUrl(ConfigurationsRequest request) {
+  private String buildUrl(ConfigurationsRequest request, String currentAddress) {
     StringBuilder sb = new StringBuilder();
-    sb.append(addressManager.address());
+    sb.append(currentAddress);
     sb.append("/");
     sb.append(DEFAULT_KIE_API_VERSION);
     sb.append("/");

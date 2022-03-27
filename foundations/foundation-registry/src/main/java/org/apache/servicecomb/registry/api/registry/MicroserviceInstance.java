@@ -213,17 +213,14 @@ public class MicroserviceInstance {
 
   private static void loadDataCenterInfo(MicroserviceInstance microserviceInstance) {
     String dataCenterName = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.datacenter.name", null)
+        .getStringProperty("servicecomb.datacenter.name", "default")
         .get();
-    if (StringUtils.isNotEmpty(dataCenterName)) {
-      DataCenterInfo dataCenterInfo = new DataCenterInfo();
-      dataCenterInfo.setName(dataCenterName);
-      dataCenterInfo
-          .setRegion(
-              DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.datacenter.region", null).get());
-      dataCenterInfo.setAvailableZone(
-          DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.datacenter.availableZone", null).get());
-      microserviceInstance.setDataCenterInfo(dataCenterInfo);
-    }
+    DataCenterInfo dataCenterInfo = new DataCenterInfo();
+    dataCenterInfo.setName(dataCenterName);
+    dataCenterInfo.setRegion(DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.region", "default").get());
+    dataCenterInfo.setAvailableZone(DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.availableZone", "default").get());
+    microserviceInstance.setDataCenterInfo(dataCenterInfo);
   }
 }

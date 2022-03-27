@@ -17,43 +17,30 @@
 
 package org.apache.servicecomb.governance;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.apache.servicecomb.governance.marker.Matcher;
 import org.apache.servicecomb.governance.marker.TrafficMarker;
-import org.apache.servicecomb.governance.policy.AbstractPolicy;
-import org.apache.servicecomb.governance.policy.BulkheadPolicy;
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
-import org.apache.servicecomb.governance.policy.RetryPolicy;
-import org.apache.servicecomb.governance.properties.BulkheadProperties;
-import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
-import org.apache.servicecomb.governance.properties.GovernanceProperties;
-import org.apache.servicecomb.governance.properties.MatchProperties;
-import org.apache.servicecomb.governance.properties.RateLimitProperties;
-import org.apache.servicecomb.governance.properties.RetryProperties;
+import org.apache.servicecomb.governance.policy.*;
+import org.apache.servicecomb.governance.properties.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Duration;
+import java.util.*;
+
 @RunWith(SpringRunner.class)
-@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class GovernancePropertiesTest {
 
   @Autowired

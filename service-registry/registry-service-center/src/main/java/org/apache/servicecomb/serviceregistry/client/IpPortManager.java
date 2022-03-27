@@ -17,23 +17,19 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
-import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
-import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.registry.cache.CacheEndpoint;
-import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.registry.consumer.AppManager;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.api.Type;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.refresh.AddressManager;
+import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,78 +40,52 @@ public class IpPortManager {
 
   InstanceCacheManager instanceCacheManager;
 
-  private String defaultTransport = "rest";
-
   private ArrayList<IpPort> defaultIpPort;
-
-  private AtomicInteger currentAvailableIndex;
 
   private boolean autoDiscoveryInited = false;
 
-  private int maxRetryTimes;
+  private AddressManager addressManger;
+
+  ClassificationAddress classificationAddress;
+
+  private Object lock = new Object();
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
     this.autoDiscoveryInited = autoDiscoveryInited;
   }
 
   public int getMaxRetryTimes() {
-    return maxRetryTimes;
+    return classificationAddress.getMaxRetryTimes();
   }
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig) {
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.instanceCacheManager = new InstanceCacheManagerNew(new AppManager());
-
-    defaultTransport = serviceRegistryConfig.getTransport();
     defaultIpPort = serviceRegistryConfig.getIpPort();
     if (defaultIpPort.isEmpty()) {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
-    int initialIndex = new Random().nextInt(defaultIpPort.size());
-    currentAvailableIndex = new AtomicInteger(initialIndex);
+    List<String> addresses = defaultIpPort.stream().map(IpPort::toString).collect(Collectors.toList());
+    addressManger = new AddressManager(addresses, EventManager.getEventBus());
+    classificationAddress = new ClassificationAddress(serviceRegistryConfig, instanceCacheManager);
     LOGGER.info("Initial service center address is {}", getAvailableAddress());
-    maxRetryTimes = defaultIpPort.size();
   }
 
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      InstanceCache cache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
-          REGISTRY_SERVICE_NAME,
-          DefinitionConst.VERSION_RULE_LATEST);
-      if (cache.getInstanceMap().size() > 0) {
-        setAutoDiscoveryInited(true);
-      } else {
-        setAutoDiscoveryInited(false);
+      for (Type type : Type.values()) {
+        classificationAddress.initEndPoint(type.name());
       }
+      setAutoDiscoveryInited(true);
     }
   }
 
   public IpPort getAvailableAddress() {
-    return getAvailableAddress(currentAvailableIndex.incrementAndGet());
+    return addressManger.getAvailableIpPort();
   }
 
-  private IpPort getAvailableAddress(int index) {
-    if (index < defaultIpPort.size()) {
-      return defaultIpPort.get(index);
-    }
-    List<CacheEndpoint> endpoints = getDiscoveredIpPort();
-    if (endpoints == null || (index >= defaultIpPort.size() + endpoints.size())) {
-      currentAvailableIndex.set(0);
-      return defaultIpPort.get(0);
-    }
-    maxRetryTimes = defaultIpPort.size() + endpoints.size();
-    CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
-    return new URIEndpointObject(nextEndpoint.getEndpoint());
-  }
-
-  private List<CacheEndpoint> getDiscoveredIpPort() {
-    if (!autoDiscoveryInited || !this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      return null;
-    }
-    InstanceCache instanceCache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
-        REGISTRY_SERVICE_NAME,
-        DefinitionConst.VERSION_RULE_LATEST);
-    return instanceCache.getOrCreateTransportMap().get(defaultTransport);
+  public void recordState(String address) {
+    addressManger.recordFailState(address);
   }
 }

@@ -131,7 +131,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
       HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
           setDefaultRequestConfig(requestConfig);
       HttpHost proxy = new HttpHost(KieConfig.INSTANCE.getProxyHost(),
-          KieConfig.INSTANCE.getProxyPort(),"http"); // now only support http proxy
+          KieConfig.INSTANCE.getProxyPort(), "http"); // now only support http proxy
       httpClientBuilder.setProxy(proxy);
       CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(new AuthScope(proxy),
@@ -163,7 +163,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private KieAddressManager configKieAddressManager() {
     KieAddressManager kieAddressManager = new KieAddressManager(
-        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")));
+        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), EventManager.getEventBus());
     return kieAddressManager;
   }
 

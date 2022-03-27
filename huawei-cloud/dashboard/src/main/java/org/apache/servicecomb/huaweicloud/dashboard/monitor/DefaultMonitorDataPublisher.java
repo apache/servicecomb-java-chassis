@@ -17,9 +17,13 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.auth.SignRequest;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -67,7 +71,14 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   @Override
   public void init() {
     try {
-      addressManager = new AddressManager();
+      List<String> addresses = new ArrayList<>();
+      SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+          MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
+      if (info != null && info.getAccessURL() != null) {
+        addresses.addAll(info.getAccessURL());
+      }
+
+      addressManager = new AddressManager(addresses, EventManager.getEventBus());
       deployMonitorClient();
     } catch (Exception e) {
       LOGGER.warn("Deploy monitor data publisher failed will not send monitor data.");
@@ -80,7 +91,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
     if (data == null) {
       return;
     }
-    String endpoint = addressManager.nextServer();
+    String endpoint = addressManager.address();
     if (endpoint == null) {
       return;
     }
@@ -110,6 +121,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
         }
         return request.send(jsonData).compose(rsp -> {
           if (rsp.statusCode() != HttpResponseStatus.OK.code()) {
+            addressManager.recordSuccessState(endpoint);
             if (times < MonitorConstant.MAX_RETRY_TIMES
                 && rsp.statusCode() == HttpResponseStatus.BAD_GATEWAY.code()) {
               doSend(endpoint, jsonData, url, host, times + 1);
@@ -123,11 +135,13 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
               return Future.succeededFuture();
             });
           } else {
+            addressManager.recordSuccessState(endpoint);
             EventManager.post(new MonitorSuccEvent());
           }
           return Future.succeededFuture();
         }).onFailure(failure -> {
           EventManager.post(new MonitorFailEvent("send monitor data fail."));
+          addressManager.recordFailState(endpoint);
           LOGGER.warn("Send monitor data to {} failed , {}", endpoint, failure);
         });
       });

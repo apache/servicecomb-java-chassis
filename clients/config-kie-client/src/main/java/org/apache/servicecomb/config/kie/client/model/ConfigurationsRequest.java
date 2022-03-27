@@ -17,10 +17,11 @@
 
 package org.apache.servicecomb.config.kie.client.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationsRequest implements Comparable<ConfigurationsRequest> {
-  public static final String INITIAL_REVISION = "0";
+  public static final String INITIAL_REVISION = "-1";
 
   private int order;
 
@@ -30,7 +31,7 @@ public class ConfigurationsRequest implements Comparable<ConfigurationsRequest> 
 
   private String labelsQuery;
 
-  private Map<String, Object> lastRawData;
+  private Map<String, Object> lastRawData = new HashMap<>();
 
   public int getOrder() {
     return order;

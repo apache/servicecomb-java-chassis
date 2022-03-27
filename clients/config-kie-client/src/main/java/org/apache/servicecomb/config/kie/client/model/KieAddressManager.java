@@ -17,30 +17,23 @@
 
 package org.apache.servicecomb.config.kie.client.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class KieAddressManager {
-  private final List<String> addresses;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
-  private int index = 0;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
-  public KieAddressManager(List<String> addresses) {
-    this.addresses = new ArrayList<>(addresses.size());
-    this.addresses.addAll(addresses);
-  }
-  
-  public String address() {
-    synchronized (this) {
-      this.index++;
-      if (this.index >= addresses.size()) {
-        this.index = 0;
-      }
-      return addresses.get(index);
-    }
+public class KieAddressManager extends AbstractAddressManager {
+
+  public KieAddressManager(List<String> addresses, EventBus eventBus) {
+    super(addresses);
+    eventBus.register(this);
   }
 
-  public boolean sslEnabled() {
-    return address().startsWith("https://");
+  @Subscribe
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    refreshEndpoint(event, RefreshEndpointEvent.KIE_NAME);
   }
 }

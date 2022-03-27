@@ -43,12 +43,6 @@ public final class Configuration {
   // retry configurations
   public static final String RETRY_HANDLER = "retryHandler";
 
-  public static final String RETRY_ENABLED = "retryEnabled";
-
-  public static final String RETRY_ON_NEXT = "retryOnNext";
-
-  public static final String RETRY_ON_SAME = "retryOnSame";
-
   // SessionStickinessRule configruation
   public static final String SESSION_TIMEOUT_IN_SECONDS = "SessionStickinessRule.sessionTimeoutInSeconds";
 
@@ -107,43 +101,6 @@ public final class Configuration {
         ROOT + SUCCESSIVE_FAILED_TIMES);
     try {
       return Integer.parseInt(p); // can be negative
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
-  }
-
-  public String getRetryHandler(String microservice) {
-    return getStringProperty("default",
-        ROOT + microservice + "." + RETRY_HANDLER,
-        ROOT + RETRY_HANDLER);
-  }
-
-  public boolean isRetryEnabled(String microservice) {
-    String p = getStringProperty("false",
-        ROOT + microservice + "." + RETRY_ENABLED,
-        ROOT + RETRY_ENABLED);
-    return Boolean.parseBoolean(p);
-  }
-
-  public int getRetryNextServer(String microservice) {
-    return getRetryServer(microservice, RETRY_ON_NEXT);
-  }
-
-  public int getRetrySameServer(String microservice) {
-    return getRetryServer(microservice, RETRY_ON_SAME);
-  }
-
-  private int getRetryServer(String microservice, String retryType) {
-    final int defaultValue = 0;
-    String p = getStringProperty("0",
-        ROOT + microservice + "." + retryType,
-        ROOT + retryType);
-    try {
-      int result = Integer.parseInt(p);
-      if (result > 0) {
-        return result;
-      }
-      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }

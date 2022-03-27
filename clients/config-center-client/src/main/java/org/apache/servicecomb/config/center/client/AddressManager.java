@@ -17,46 +17,30 @@
 
 package org.apache.servicecomb.config.center.client;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.common.URLEndPoint;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
-public class AddressManager {
-  public static final String DEFAULT_PROJECT = "default";
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
-  private final String projectName;
+public class AddressManager extends AbstractAddressManager {
 
-  private final List<String> addresses;
-
-  private int index = 0;
-
-  public AddressManager(String projectName, List<String> addresses) {
-    this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    this.addresses = new ArrayList<>(addresses.size());
-    addresses.forEach((address -> this.addresses.add(formatAddress(address))));
+  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
+    super(projectName, addresses);
+    eventBus.register(this);
   }
 
-  private String formatAddress(String address) {
-    try {
-      return address + "/v3/" + HttpUtils.encodeURLParam(this.projectName);
-    } catch (Exception e) {
-      throw new IllegalStateException("not possible");
-    }
+  @Override
+  protected String normalizeUri(String endpoint) {
+    String address = new URLEndPoint(endpoint).toString();
+    return formatAddress(address);
   }
 
-  public String address() {
-    synchronized (this) {
-      this.index++;
-      if (this.index >= addresses.size()) {
-        this.index = 0;
-      }
-      return addresses.get(index);
-    }
-  }
-
-  public boolean sslEnabled() {
-    return address().startsWith("https://");
+  @Subscribe
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    refreshEndpoint(event, RefreshEndpointEvent.CONFIG_CENTER_NAME);
   }
 }

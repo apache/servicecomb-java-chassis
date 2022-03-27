@@ -185,6 +185,12 @@ public final class Const {
 
   public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 
+  public static final String KIE_NAME = "KIE";
+
+  public static final String CONFIG_CENTER_NAME = "CseConfigCenter";
+
+  public static final String CSE_MONITORING_NAME = "CseMonitoring";
+
   public static final String PATH_CHECKSESSION = "checksession";
 
   public static final int SERVICE_CENTER_ORDER = 100;
@@ -192,4 +198,8 @@ public final class Const {
   public static final String SERVICECENTER_FRAMEWORK_VERSION = "1.0.0";
 
   public static final String SERVICE_CENTER_ENABLED = "servicecomb.service.registry.enabled";
+
+  public static final String SAME_ZONE = "sameZone";
+
+  public static final String SAME_REGION = "sameRegion";
 }

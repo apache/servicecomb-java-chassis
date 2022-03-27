@@ -29,8 +29,6 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.vertx.executor.VertxContextExecutor;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
-import org.apache.servicecomb.foundation.vertx.metrics.DefaultClientMetrics;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -65,14 +63,11 @@ public class RestClientSender {
   }
 
   public CompletableFuture<Response> send() {
-    httpClientRequest.send().compose(response -> processResponse(response).compose(buffer -> {
+    httpClientRequest.response().compose(response -> processResponse(response).compose(buffer -> {
       future.complete(createResponse(response, buffer));
       return Future.succeededFuture();
     })).onFailure(future::completeExceptionally);
 
-    // can read metrics of connection in vertx success/exception callback
-    // but after the callback, maybe the connection will be reused or closed, metrics is not valid any more
-    // so must attach callback before actual send
     CompletableFuture<Response> actualFuture = future.whenComplete(this::afterSend);
     VertxContextExecutor.create(transportContext.getVertxContext()).execute(this::runInVertxContext);
     return actualFuture;

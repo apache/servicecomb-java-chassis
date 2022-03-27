@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -434,7 +434,7 @@ public final class SSLOption {
     Reader reader = null;
     try {
       reader =
-          new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+          new InputStreamReader(inputStream, StandardCharsets.UTF_8);
       props.load(reader);
       fromProperty(props);
     } catch (IOException e) {

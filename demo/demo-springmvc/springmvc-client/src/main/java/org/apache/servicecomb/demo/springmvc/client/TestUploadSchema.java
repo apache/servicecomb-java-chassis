@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,8 +28,10 @@ import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -38,10 +41,19 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class TestUploadSchema implements CategorizedTestCase {
+
+  interface FileUploadMultiInf {
+    String fileUploadMultiRpc(List<Resource> files);
+  }
+
+  @RpcReference(microserviceName = "springmvc", schemaId = "UploadSchema")
+  private FileUploadMultiInf fileUploadMultiInf;
+
   @Override
   public void testRestTransport() throws Exception {
     testServerStartupSuccess();
     testUploadMultiBigFiles();
+    testFileUploadMultiRpc();
   }
 
   private void testServerStartupSuccess() {
@@ -80,5 +92,15 @@ public class TestUploadSchema implements CategorizedTestCase {
     TestMgr.check(result, "success");
 
     files.forEach(file -> file.delete());
+  }
+
+  private void testFileUploadMultiRpc() throws IOException {
+    File file1 = File.createTempFile("file1", ".txt");
+    File file2 = File.createTempFile("file2", ".txt");
+    List<Resource> files = new ArrayList<>();
+    files.add(new FileSystemResource(file1));
+    files.add(new FileSystemResource(file2));
+    String result = fileUploadMultiInf.fileUploadMultiRpc(files);
+    TestMgr.check(result, "fileUploadMulti success, and fileNum is 2");
   }
 }

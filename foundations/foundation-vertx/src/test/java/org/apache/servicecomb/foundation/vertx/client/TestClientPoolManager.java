@@ -49,7 +49,7 @@ public class TestClientPoolManager {
 
   List<HttpClientWithContext> pools;
 
-  Map<String, Object> contextMap = new HashMap<>();
+  Map<Object, Object> contextMap = new HashMap<>();
 
   @Mocked
   Context context;
@@ -61,13 +61,13 @@ public class TestClientPoolManager {
     pools = Deencapsulation.getField(poolMgr, "pools");
     new MockUp<Context>(context) {
       @Mock
-      void put(String key, Object value) {
+      void put(Object key, Object value) {
         contextMap.put(key, value);
       }
 
       @SuppressWarnings("unchecked")
       @Mock
-      <T> T get(String key) {
+      <T> T get(Object key) {
         return (T) contextMap.get(key);
       }
 

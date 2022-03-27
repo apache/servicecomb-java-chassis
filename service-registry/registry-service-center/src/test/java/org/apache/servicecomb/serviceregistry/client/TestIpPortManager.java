@@ -24,12 +24,15 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.Assert;
@@ -59,7 +62,8 @@ public class TestIpPortManager {
   @Test
   public void testGetAvailableAddress(@Injectable ServiceRegistryConfig config,
       @Injectable InstanceCacheManager cacheManager,
-      @Injectable InstanceCache cache) {
+      @Injectable InstanceCache cache,
+      @Injectable ClassificationAddress classificationAddress) {
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
     ipPortList.add(new IpPort("127.0.0.1", 9981));
@@ -99,9 +103,13 @@ public class TestIpPortManager {
 
     // mock endpoint list
     Map<String, List<CacheEndpoint>> addresses = new HashMap<>();
-    List<CacheEndpoint> instances = new ArrayList<>();
-    instances.add(new CacheEndpoint("http://127.0.0.1:9982", null));
-    addresses.put("rest", instances);
+    List<CacheEndpoint> cacheEndpoints = new ArrayList<>();
+    MicroserviceInstance Instance = new MicroserviceInstance();
+    Instance.setDataCenterInfo(null);
+    cacheEndpoints.add(new CacheEndpoint("http://127.0.0.1:9982", Instance));
+    addresses.put("rest", cacheEndpoints);
+    ClassificationAddress classificationAddres = new ClassificationAddress(config, cacheManager);
+    manager.classificationAddress = classificationAddres;
     new Expectations() {
       {
         cacheManager.getOrCreate("default", "SERVICECENTER", "latest");
@@ -112,7 +120,6 @@ public class TestIpPortManager {
     };
 
     // test getAvailableAddress() when auto discovery is disabled
-    manager.initAutoDiscovery();  //init result is false at first time
     IpPort address4 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
     if (address1.getPort() == 9980) {
@@ -120,12 +127,25 @@ public class TestIpPortManager {
     }
     Assert.assertEquals(9980, address4.getPort());
 
-    // test getAvailable address when auto discovery is enabled
-    manager.setAutoDiscoveryInited(true);
     IpPort address5 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9981, address5.getPort());
 
+    //mock RegistrationManager.INSTANCE
+    String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
+    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+    microserviceInstance.setInstanceId(instanceId);
+    Map<String, String> properties = new HashMap<>();
+    microserviceInstance.setProperties(properties);
+    new Expectations(RegistrationManager.INSTANCE) {
+      {
+        RegistrationManager.INSTANCE.getMicroserviceInstance();
+        result = microserviceInstance;
+      }
+    };
+    // test getAvailable address when auto discovery is enabled
+    manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(true);
     IpPort address6 = manager.getAvailableAddress();
     Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
     Assert.assertEquals(9982, address6.getPort());

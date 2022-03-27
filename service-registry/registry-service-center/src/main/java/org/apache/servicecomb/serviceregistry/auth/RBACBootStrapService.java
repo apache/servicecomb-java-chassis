@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -91,7 +92,7 @@ public class RBACBootStrapService implements BootStrapService {
 
   private AddressManager createAddressManager(Environment environment) {
     return new AddressManager(getTenantName(environment),
-        getRBACAddressList(environment));
+        getRBACAddressList(environment), EventManager.getEventBus());
   }
 
   private SSLProperties createSSLProperties(Environment environment, String tag) {

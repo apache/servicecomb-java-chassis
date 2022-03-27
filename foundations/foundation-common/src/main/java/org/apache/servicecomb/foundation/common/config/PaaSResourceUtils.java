@@ -24,16 +24,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.util.StringUtils;
+
 
 public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
   public static final String PROPERTIES_SUFFIX = ".properties";
-
-  public static final String XML_SUFFIX = ".xml";
 
   private static ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
@@ -107,10 +106,6 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
     sortResources(resList, PROPERTIES_SUFFIX);
   }
 
-  public static void sortXmls(List<Resource> resList) {
-    sortResources(resList, XML_SUFFIX);
-  }
-
   public static List<Resource> getSortedResources(String locationPattern, String suffix) {
     if (StringUtils.isEmpty(locationPattern)) {
       throw new RuntimeException("Resource path must not be null or empty");
@@ -134,9 +129,5 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
   public static Properties loadMergedProperties(String locationPattern) throws Exception {
     PropertiesLoader loader = new PropertiesLoader(Arrays.asList(locationPattern));
     return loader.load();
-  }
-
-  public static List<Resource> getSortedXmls(String locationPattern) {
-    return getSortedResources(locationPattern, XML_SUFFIX);
   }
 }

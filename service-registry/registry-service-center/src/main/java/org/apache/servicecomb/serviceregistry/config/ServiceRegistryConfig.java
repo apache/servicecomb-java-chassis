@@ -95,6 +95,8 @@ public class ServiceRegistryConfig {
 
   private boolean registryAutoDiscovery;
 
+  private boolean registryAutoRefresh;
+
   private int resendHeartBeatTimes;
 
   private boolean alwaysOverrideSchema;
@@ -278,6 +280,15 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setRegistryAutoDiscovery(boolean registryAutoDiscovery) {
     this.registryAutoDiscovery = registryAutoDiscovery;
+    return this;
+  }
+
+  public boolean isRegistryAutoRefresh() {
+    return registryAutoRefresh;
+  }
+
+  public ServiceRegistryConfig setRegistryAutoRefresh(boolean registryAutoRefresh) {
+    this.registryAutoRefresh = registryAutoRefresh;
     return this;
   }
 

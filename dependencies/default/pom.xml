@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-dependencies-parent</artifactId>
-    <version>2.6.0-SNAPSHOT</version>
+    <version>2.7.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
@@ -57,7 +57,7 @@
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.10</hdr-histogram.version>
     <hibernate.version>6.0.2.Final</hibernate.version>
-    <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
+    <hibernate-validator.version>6.2.1.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.13</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
     <jackson.version>2.12.1</jackson.version>
@@ -80,7 +80,7 @@
     <mock-server.version>3.10.4</mock-server.version>
     <narayana.version>5.3.2.Final</narayana.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
-    <netty.version>4.1.67.Final</netty.version>
+    <netty.version>4.1.72.Final</netty.version>
     <okhttp3.version>3.14.2</okhttp3.version>
     <powermock.version>1.6.2</powermock.version>
     <prometheus.version>0.6.0</prometheus.version>
@@ -97,15 +97,15 @@
     <slf4j.version>1.7.30</slf4j.version>
     <snakeyaml.version>1.27</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
-    <spring.version>5.2.9.RELEASE</spring.version>
-    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
+    <spring.version>5.3.12</spring.version>
+    <spring-boot.version>2.5.6</spring-boot.version>
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.6.2</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <tcnetty.version>2.0.40.Final</tcnetty.version>
+    <tcnetty.version>2.0.46.Final</tcnetty.version>
     <tec-zkclient.version>0.10</tec-zkclient.version>
     <tomakehurst.version>2.6.0</tomakehurst.version>
-    <vertx.version>4.1.2</vertx.version>
+    <vertx.version>4.1.7</vertx.version>
     <xstream.version>1.4.11.1</xstream.version>
     <zipkin.version>2.19.1</zipkin.version>
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
@@ -455,6 +455,11 @@
         <artifactId>simpleclient_httpserver</artifactId>
         <version>${prometheus.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.prometheus</groupId>
+        <artifactId>simpleclient_common</artifactId>
+        <version>${prometheus.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>io.protostuff</groupId>
@@ -735,17 +740,6 @@
         <artifactId>hamcrest-core</artifactId>
         <version>${hamcrest.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${hibernate.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator-annotation-processor</artifactId>
-        <version>${hibernate.version}</version>
       </dependency>
 
       <dependency>

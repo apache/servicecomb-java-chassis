@@ -93,7 +93,7 @@ import io.vertx.core.json.JsonObject;
 public class CodeFirstSpringmvc {
   private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstSpringmvc.class);
 
-  private AtomicInteger firstInovcation = new AtomicInteger(2);
+  private AtomicInteger invocationCounter = new AtomicInteger(0);
 
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
@@ -114,7 +114,7 @@ public class CodeFirstSpringmvc {
 
   @GetMapping(path = "/retrySuccess")
   public int retrySuccess(@RequestParam("a") int a, @RequestParam("b") int b) {
-    if (firstInovcation.getAndDecrement() > 0) {
+    if (invocationCounter.getAndIncrement() % 3 != 0) {
       throw new InvocationException(Status.SERVICE_UNAVAILABLE, "try again later.");
     }
     return a + b;

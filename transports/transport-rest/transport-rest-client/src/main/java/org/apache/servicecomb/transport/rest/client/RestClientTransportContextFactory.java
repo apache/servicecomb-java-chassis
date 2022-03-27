@@ -19,6 +19,7 @@ package org.apache.servicecomb.transport.rest.client;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_CREATE_REST_CLIENT_TRANSPORT_CONTEXT;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -30,7 +31,6 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpClientRequest;

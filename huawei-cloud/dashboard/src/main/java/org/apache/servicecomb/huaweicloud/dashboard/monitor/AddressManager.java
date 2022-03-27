@@ -18,67 +18,24 @@
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 
-public class AddressManager {
-  private static final String MONITOR_SERVICE_NAME = "CseMonitoring";
+public class AddressManager extends AbstractAddressManager {
 
-  private static final String MONITOR_APPLICATION = "default";
-
-  private static final String MONITOR_VERSION = "latest";
-
-  private final List<String> addresses = new ArrayList<>();
-
-  private int index = 0;
-
-  AddressManager() {
-    updateAddresses();
-    updateServersFromSC();
-    EventManager.register(this);
+  AddressManager(List<String> addresses, EventBus eventBus) {
+    super(addresses);
+    eventBus.register(this);
   }
 
-  private void updateAddresses() {
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
-        MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
-    if (info != null && info.getAccessURL() != null) {
-      addresses.addAll(info.getAccessURL());
-    }
-  }
-
-  String nextServer() {
-    if (addresses.size() == 0) {
-      return null;
-    }
-    synchronized (this) {
-      this.index++;
-      if (this.index >= addresses.size()) {
-        this.index = 0;
-      }
-      return addresses.get(index);
-    }
-  }
-
-  private void updateServersFromSC() {
-    List<MicroserviceInstance> servers = RegistryUtils.findServiceInstance(MONITOR_APPLICATION,
-        MONITOR_SERVICE_NAME,
-        MONITOR_VERSION);
-    if (servers != null) {
-      for (MicroserviceInstance server : servers) {
-        for (String endpoint : server.getEndpoints()) {
-          if (!addresses.contains(endpoint)) {
-            addresses.add(endpoint);
-          }
-        }
-      }
-    }
+  @Subscribe
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    refreshEndpoint(event, RefreshEndpointEvent.CSE_MONITORING_NAME);
   }
 }

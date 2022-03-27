@@ -19,11 +19,11 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import static org.apache.servicecomb.common.rest.RestConst.REST_CLIENT_REQUEST_PATH;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.springframework.util.StringUtils;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;

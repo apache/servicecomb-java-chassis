@@ -18,11 +18,14 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -75,6 +78,63 @@ public class CseUriTemplateHandler extends org.springframework.web.util.DefaultU
     return createUri(uriTemplate, uriComponents);
   }
 
+  @Override
+  protected UriComponentsBuilder initUriComponentsBuilder(String uriTemplate) {
+    UriComponentsBuilder builder = fromUriString(uriTemplate);
+    if (shouldParsePath() && !isStrictEncoding()) {
+      List<String> pathSegments = builder.build().getPathSegments();
+      builder.replacePath(null);
+      for (String pathSegment : pathSegments) {
+        builder.pathSegment(pathSegment);
+      }
+    }
+    return builder;
+  }
+
+  private static UriComponentsBuilder fromUriString(String uri) {
+    Assert.notNull(uri, "URI must not be null");
+    Matcher matcher = URI_PATTERN.matcher(uri);
+    if (matcher.matches()) {
+      UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+      String scheme = matcher.group(2);
+      String userInfo = matcher.group(5);
+      String host = matcher.group(6);
+      String port = matcher.group(8);
+      String path = matcher.group(9);
+      String query = matcher.group(11);
+      String fragment = matcher.group(13);
+      boolean opaque = false;
+      if (StringUtils.hasLength(scheme)) {
+        String rest = uri.substring(scheme.length());
+        if (!rest.startsWith(":/")) {
+          opaque = true;
+        }
+      }
+      builder.scheme(scheme);
+      if (opaque) {
+        String ssp = uri.substring(scheme.length()).substring(1);
+        if (StringUtils.hasLength(fragment)) {
+          ssp = ssp.substring(0, ssp.length() - (fragment.length() + 1));
+        }
+        builder.schemeSpecificPart(ssp);
+      } else {
+        builder.userInfo(userInfo);
+        builder.host(host);
+        if (StringUtils.hasLength(port)) {
+          builder.port(port);
+        }
+        builder.path(path);
+        builder.query(query);
+      }
+      if (StringUtils.hasText(fragment)) {
+        builder.fragment(fragment);
+      }
+      return builder;
+    } else {
+      throw new IllegalArgumentException("[" + uri + "] is not a valid URI");
+    }
+  }
+  
   private URI createUri(String uriTemplate, UriComponents uriComponents) {
     String strUri = uriComponents.toUriString();
 
