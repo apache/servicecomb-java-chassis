@@ -298,7 +298,7 @@ public class AbstractAddressManagerTest {
   }
 
   @Test
-  void normalizeUri() {
+  public void normalizeIPV4Test() {
     String uri = addressManager1.normalizeUri("rest://127.0.0.1:30100?sslEnabled=true");
     Assert.assertEquals("https://127.0.0.1:30100", uri);
 
@@ -307,5 +307,14 @@ public class AbstractAddressManagerTest {
 
     uri = addressManager1.normalizeUri("rest://127.0.0.1:30100");
     Assert.assertEquals("http://127.0.0.1:30100", uri);
+  }
+
+  @Test
+  public void normalizeIPV6Test() {
+    String uri = addressManager1.normalizeUri("rest://[2008::7:957f:b2d6:1af4:a1f8]:30100?sslEnabled=true");
+    Assert.assertEquals("https://[2008::7:957f:b2d6:1af4:a1f8]:30100", uri);
+
+    uri = addressManager1.normalizeUri("rest://[2008::7:957f:b2d6:1af4:a1f8]:30100");
+    Assert.assertEquals("http://[2008::7:957f:b2d6:1af4:a1f8]:30100", uri);
   }
 }

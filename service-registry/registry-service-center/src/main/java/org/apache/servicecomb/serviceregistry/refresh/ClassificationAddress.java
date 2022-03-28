@@ -22,6 +22,8 @@ import static org.apache.servicecomb.serviceregistry.api.Const.CSE_MONITORING_NA
 import static org.apache.servicecomb.serviceregistry.api.Const.KIE_NAME;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
+import static org.apache.servicecomb.serviceregistry.api.Const.SAME_REGION;
+import static org.apache.servicecomb.serviceregistry.api.Const.SAME_ZONE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,6 +61,8 @@ public class ClassificationAddress {
 
   private String defaultTransport = "rest";
 
+  private boolean isAutoRefresh;
+
   private DataCenterInfo dataCenterInfo;
 
   InstanceCacheManager instanceCacheManager;
@@ -70,6 +74,7 @@ public class ClassificationAddress {
   public ClassificationAddress(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.defaultTransport = serviceRegistryConfig.getTransport();
     this.defaultIpPort = serviceRegistryConfig.getIpPort();
+    this.isAutoRefresh = serviceRegistryConfig.isRegistryAutoRefresh();
     this.instanceCacheManager = instanceCacheManager;
     this.maxRetryTimes = defaultIpPort.size();
     ServiceCenterEventBus.getEventBus().register(this);
@@ -85,6 +90,11 @@ public class ClassificationAddress {
 
   @Subscribe
   public void onMicroserviceCacheRefreshed(MicroserviceCacheRefreshedEvent event) {
+    //if isAutoRefresh is false, it will not be refresh.
+    if (!isAutoRefresh) {
+      return;
+    }
+
     List<MicroserviceCache> microserviceCaches = event.getMicroserviceCaches();
     if (null == microserviceCaches || microserviceCaches.isEmpty()) {
       return;
@@ -126,8 +136,8 @@ public class ClassificationAddress {
         sameRegion.add(endPoint);
       }
     });
-    zoneAndRegion.put("sameZone", new ArrayList<>(sameZone));
-    zoneAndRegion.put("sameRegion", new ArrayList<>(sameRegion));
+    zoneAndRegion.put(SAME_ZONE, new ArrayList<>(sameZone));
+    zoneAndRegion.put(SAME_REGION, new ArrayList<>(sameRegion));
     return zoneAndRegion;
   }
 
@@ -156,23 +166,24 @@ public class ClassificationAddress {
         sameRegion.add(cacheEndpoint.getEndpoint());
       }
     }
-    zoneAndRegion.put("sameZone", new ArrayList<>(sameZone));
-    zoneAndRegion.put("sameRegion", new ArrayList<>(sameRegion));
+    zoneAndRegion.put(SAME_ZONE, new ArrayList<>(sameZone));
+    zoneAndRegion.put(SAME_REGION, new ArrayList<>(sameRegion));
     return zoneAndRegion;
   }
 
   private DataCenterInfo findRegion(List<CacheEndpoint> CacheEndpoints) {
-    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
-    if (myself.getDataCenterInfo() == null) {
-      return null;
-    }
     for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
       boolean isMatch = cacheEndpoint.getEndpoint().contains(this.defaultIpPort.get(0).getHostOrIp());
       if (isMatch && cacheEndpoint.getInstance().getDataCenterInfo() != null) {
         return cacheEndpoint.getInstance().getDataCenterInfo();
       }
     }
-    return null;
+
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
+    if (myself.getDataCenterInfo() == null) {
+      return null;
+    }
+    return myself.getDataCenterInfo();
   }
 
   private boolean regionAndAZMatch(DataCenterInfo myself, MicroserviceInstance target) {

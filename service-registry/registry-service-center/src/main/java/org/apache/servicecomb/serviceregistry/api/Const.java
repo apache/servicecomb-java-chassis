@@ -198,4 +198,8 @@ public final class Const {
   public static final String SERVICECENTER_FRAMEWORK_VERSION = "1.0.0";
 
   public static final String SERVICE_CENTER_ENABLED = "servicecomb.service.registry.enabled";
+
+  public static final String SAME_ZONE = "sameZone";
+
+  public static final String SAME_REGION = "sameRegion";
 }

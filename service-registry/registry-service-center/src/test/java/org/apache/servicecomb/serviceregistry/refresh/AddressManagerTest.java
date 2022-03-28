@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.Assert;
@@ -79,5 +80,24 @@ class AddressManagerTest {
 
     List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
     Assert.assertEquals("127.0.0.4:30100", availableRegion.get(0));
+  }
+
+  @Test
+  public void addressIPV6Test() {
+    List<String> addressAZ = new ArrayList<>();
+    addressAZ.add("rest://[2008::7:957f:b2d6:1af4:a1f8]:30100");
+    Map<String, List<String>> zoneAndRegion = new HashMap<>();
+    zoneAndRegion.put("sameZone", addressAZ);
+    zoneAndRegion.put("sameRegion", new ArrayList<>());
+    addressManager1 = new AddressManager(addresses, EventManager.getEventBus());
+    RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
+    addressManager1.refreshEndpoint(event, "SERVICECENTER");
+
+    List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
+    Assert.assertEquals("[2008::7:957f:b2d6:1af4:a1f8]:30100", availableZone.get(0));
+
+    IpPort ipPort = addressManager1.getAvailableIpPort();
+    Assert.assertEquals("[2008::7:957f:b2d6:1af4:a1f8]", ipPort.getHostOrIp());
+    Assert.assertEquals(30100, ipPort.getPort());
   }
 }

@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry.refresh;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,13 +28,16 @@ import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class AddressManager extends AbstractAddressManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddressManager.class);
 
-  private static final String URI_SPLIT = ":";
+  private static final String URI_PREFIX = "rest://";
 
   public AddressManager(List<String> addresses, EventBus eventBus) {
     super(addresses);
@@ -46,9 +53,21 @@ public class AddressManager extends AbstractAddressManager {
     return new URIEndpointObject(endpoint).toString();
   }
 
+  @Override
+  protected boolean telnetTest(String address) {
+    IpPort ipPort = transformIpPort(address);
+    try (Socket s = new Socket()) {
+      s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
+      return true;
+    } catch (IOException e) {
+      LOGGER.warn("ping endpoint {} failed, It will be quarantined again.", address);
+    }
+    return false;
+  }
+
   private IpPort transformIpPort(String address) {
-    String[] result = StringUtils.split(address, URI_SPLIT);
-    return new IpPort(result[0], Integer.valueOf(result[1]));
+    URI uri = URI.create(URI_PREFIX + address);
+    return new IpPort(uri.getHost(), uri.getPort());
   }
 
   @Subscribe

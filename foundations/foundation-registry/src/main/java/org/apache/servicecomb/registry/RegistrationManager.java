@@ -272,6 +272,12 @@ public class RegistrationManager {
         .get();
     publicAddressSetting = publicAddressSetting.trim();
 
+    String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
+    int publishPortSetting = DynamicPropertyFactory.getInstance()
+        .getIntProperty(publishPortKey, 0)
+        .get();
+    int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
+
     if (publicAddressSetting.isEmpty()) {
       InetSocketAddress socketAddress = ipPort.getSocketAddress();
       if (socketAddress.getAddress().isAnyLocalAddress()) {
@@ -282,8 +288,8 @@ public class RegistrationManager {
         LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
             socketAddress,
             host,
-            socketAddress.getPort());
-        return new IpPort(host, ipPort.getPort());
+            publishPort);
+        return new IpPort(host, publishPort);
       }
 
       return ipPort;
@@ -296,11 +302,7 @@ public class RegistrationManager {
           .getHostAddress();
     }
 
-    String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
-    int publishPortSetting = DynamicPropertyFactory.getInstance()
-        .getIntProperty(publishPortKey, 0)
-        .get();
-    int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
+
     return new IpPort(publicAddressSetting, publishPort);
   }
 
