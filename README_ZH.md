@@ -8,7 +8,7 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 开发者可以通过[设计选型参考][design]了解更多特性和设计原理。
 
-[design]: http://servicecomb.gitee.io/servicecomb-java-chassis-doc/java-chassis/zh_CN/start/design/
+[design]: https://servicecomb.apache.org/references/java-chassis/zh_CN/start/design.html
 
 # 为什么使用Java Chassis
 
@@ -60,7 +60,7 @@ public class HelloWorldConsumer  {
 
 请访问 [ServiceComb Java Chassis 开发指南][java-chassis-developer-guide].
 
-[java-chassis-developer-guide]:  http://servicecomb.gitee.io/servicecomb-java-chassis-doc/java-chassis/
+[java-chassis-developer-guide]:  https://servicecomb.apache.org/references/java-chassis/zh_CN/
 
 # 编译Java Chassis
 
