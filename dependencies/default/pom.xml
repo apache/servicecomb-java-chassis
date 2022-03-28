@@ -60,7 +60,8 @@
     <hibernate-validator.version>6.2.1.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.13</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
-    <jackson.version>2.12.6.1</jackson.version>
+    <jackson.version>2.12.1</jackson.version>
+    <jackson.databind.version>2.12.6.1</jackson.databind.version>
     <javakaffee.version>0.26</javakaffee.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
@@ -176,6 +177,12 @@
         <version>${jackson.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.databind.version}</version>
       </dependency>
 
       <dependency>
