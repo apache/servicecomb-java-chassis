@@ -46,8 +46,15 @@ public abstract class AbstractRouterDistributor<T, E> implements
 
   private Function<E, Map<String, String>> getProperties;
 
-  @Autowired
   private RouterRuleCache routerRuleCache;
+
+  @Autowired
+  public void setRouterRuleCache(RouterRuleCache routerRuleCache) {
+    this.routerRuleCache = routerRuleCache;
+  }
+
+  protected AbstractRouterDistributor() {
+  }
 
   @Override
   public List<T> distribute(String targetServiceName, List<T> list, PolicyRuleItem invokeRule) {

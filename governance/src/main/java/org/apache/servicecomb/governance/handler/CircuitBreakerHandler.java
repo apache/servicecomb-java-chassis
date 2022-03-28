@@ -34,8 +34,12 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
-  @Autowired
   private CircuitBreakerProperties circuitBreakerProperties;
+
+  @Autowired
+  public CircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties) {
+    this.circuitBreakerProperties = circuitBreakerProperties;
+  }
 
   @Override
   protected String createKey(CircuitBreakerPolicy policy) {

@@ -34,8 +34,12 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
 
   private final Object lock = new Object();
 
-  @Autowired
   protected MatchersManager matchersManager;
+
+  @Autowired
+  public void setMatchersManager(MatchersManager matchersManager) {
+    this.matchersManager = matchersManager;
+  }
 
   protected AbstractGovernanceHandler() {
     GovernanceEventManager.register(this);

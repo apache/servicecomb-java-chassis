@@ -35,14 +35,18 @@ public class RouterFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterFilter.class);
 
-  @Autowired
   private RouterRuleMatcher routerRuleMatcher;
 
-  @Autowired
   private RouterRuleCache routerRuleCache;
 
+  @Autowired
+  public RouterFilter(RouterRuleMatcher routerRuleMatcher, RouterRuleCache routerRuleCache) {
+    this.routerRuleMatcher = routerRuleMatcher;
+    this.routerRuleCache = routerRuleCache;
+  }
+
   public <T, E> List<T> getFilteredListOfServers(List<T> list,
-      String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
+                                                 String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
     if (CollectionUtils.isEmpty(list)) {
       return list;
     }

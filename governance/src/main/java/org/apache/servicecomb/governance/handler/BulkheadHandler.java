@@ -35,8 +35,12 @@ import io.github.resilience4j.bulkhead.BulkheadRegistry;
 public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, BulkheadPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BulkheadHandler.class);
 
-  @Autowired
   private BulkheadProperties bulkheadProperties;
+
+  @Autowired
+  public BulkheadHandler(BulkheadProperties bulkheadProperties) {
+    this.bulkheadProperties = bulkheadProperties;
+  }
 
   @Override
   protected String createKey(BulkheadPolicy policy) {

@@ -42,27 +42,62 @@ import java.util.*;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class GovernancePropertiesTest {
-
-  @Autowired
   private List<GovernanceProperties<? extends AbstractPolicy>> propertiesList;
 
-  @Autowired
   private MatchProperties matchProperties;
 
-  @Autowired
   private BulkheadProperties bulkheadProperties;
 
-  @Autowired
   private CircuitBreakerProperties circuitBreakerProperties;
 
-  @Autowired
   private RateLimitProperties rateLimitProperties;
 
-  @Autowired
   private RetryProperties retryProperties;
 
-  @Autowired
   private Environment environment;
+
+  @Autowired
+  public void setPropertiesList(List<GovernanceProperties<? extends AbstractPolicy>> propertiesList) {
+    this.propertiesList = propertiesList;
+  }
+
+  @Autowired
+  public void setMatchProperties(MatchProperties matchProperties) {
+    this.matchProperties = matchProperties;
+  }
+
+  @Autowired
+  public void setBulkheadProperties(BulkheadProperties bulkheadProperties) {
+    this.bulkheadProperties = bulkheadProperties;
+  }
+
+  @Autowired
+  public void setCircuitBreakerProperties(CircuitBreakerProperties circuitBreakerProperties) {
+    this.circuitBreakerProperties = circuitBreakerProperties;
+  }
+
+  @Autowired
+  public void setRateLimitProperties(RateLimitProperties rateLimitProperties) {
+    this.rateLimitProperties = rateLimitProperties;
+  }
+
+  @Autowired
+  public void setRetryProperties(RetryProperties retryProperties) {
+    this.retryProperties = retryProperties;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Autowired
+  public void setDynamicValues(Map<String, Object> dynamicValues) {
+    this.dynamicValues = dynamicValues;
+  }
+
+  public GovernancePropertiesTest() {
+  }
 
   private Map<String, Object> dynamicValues = new HashMap<>();
 

@@ -28,11 +28,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MatchersServiceImpl implements MatchersService {
-  @Autowired
   private RequestProcessor requestProcessor;
 
-  @Autowired
   private MatchProperties matchProperties;
+
+  @Autowired
+  public MatchersServiceImpl(RequestProcessor requestProcessor, MatchProperties matchProperties) {
+    this.requestProcessor = requestProcessor;
+    this.matchProperties = matchProperties;
+  }
 
   @Override
   public boolean checkMatch(GovernanceRequest governanceRequest, String key) {
