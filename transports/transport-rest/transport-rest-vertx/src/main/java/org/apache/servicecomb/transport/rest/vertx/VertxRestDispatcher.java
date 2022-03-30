@@ -84,7 +84,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   }
 
   protected void failureHandler(RoutingContext context) {
-    LOGGER.error("http server failed.", context.failure() == null ? null : context.failure().getCause());
+    LOGGER.error("http server failed.", context.failure());
 
     AbstractRestInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
     Throwable e = context.failure();
@@ -151,7 +151,8 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
           .end(wrapResponseBody(invocationException.getReasonPhrase()));
     } else {
       context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
-          .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode()).end(wrapResponseBody(e.getMessage()));
+          .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+          .end(wrapResponseBody(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     }
     context.response().close();
   }
