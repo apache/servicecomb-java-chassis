@@ -35,7 +35,7 @@ public class JaxrsClient {
     RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
 
     new SpringApplicationBuilder().sources(JaxrsClient.class).web(WebApplicationType.NONE).build().run(args);
-    org.apache.servicecomb.demo.jaxrs.client.JaxrsClient.run();
+    org.apache.servicecomb.demo.jaxrs.JaxrsClient.run();
     TestMgr.summary();
   }
 }
