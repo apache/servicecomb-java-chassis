@@ -84,7 +84,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   }
 
   protected void failureHandler(RoutingContext context) {
-    LOGGER.error("http server failed.", context.failure());
+    LOGGER.error("http server failed.", context.failure() == null ? null : context.failure().getCause());
 
     AbstractRestInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
     Throwable e = context.failure();
