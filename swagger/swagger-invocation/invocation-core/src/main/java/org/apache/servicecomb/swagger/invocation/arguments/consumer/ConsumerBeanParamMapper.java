@@ -46,9 +46,9 @@ public final class ConsumerBeanParamMapper extends ConsumerArgumentMapper {
     }
   }
 
-  protected String invocationArgumentName;
+  private final String invocationArgumentName;
 
-  private List<FieldMeta> fields = new ArrayList<>();
+  private final List<FieldMeta> fields = new ArrayList<>();
 
   public ConsumerBeanParamMapper(String invocationArgumentName) {
     this.invocationArgumentName = invocationArgumentName;

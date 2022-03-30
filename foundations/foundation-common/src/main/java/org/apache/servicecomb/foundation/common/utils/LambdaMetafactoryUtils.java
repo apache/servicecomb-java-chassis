@@ -83,7 +83,7 @@ public final class LambdaMetafactoryUtils {
   private LambdaMetafactoryUtils() {
   }
 
-  protected static Method findAbstractMethod(Class<?> functionalInterface) {
+  private static Method findAbstractMethod(Class<?> functionalInterface) {
     for (Method method : functionalInterface.getMethods()) {
       if ((method.getModifiers() & Modifier.ABSTRACT) != 0) {
         return method;

@@ -136,7 +136,7 @@ public final class VertxUtils {
   /**
    * 配置vertx的文件缓存功能，默认关闭
    */
-  protected static void configureVertxFileCaching(VertxOptions vertxOptions) {
+  private static void configureVertxFileCaching(VertxOptions vertxOptions) {
     boolean disableFileCPResolving = DynamicPropertyFactory.getInstance()
         .getBooleanProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, true).get();
     vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(!disableFileCPResolving);
@@ -145,7 +145,7 @@ public final class VertxUtils {
   // try to reference byte[]
   // otherwise copy byte[]
   public static byte[] getBytesFast(InputStream inputStream) throws IOException {
-    if (BufferInputStream.class.isInstance(inputStream)) {
+    if (inputStream instanceof BufferInputStream) {
       return getBytesFast(((BufferInputStream) inputStream).getByteBuf());
     }
 

@@ -22,9 +22,9 @@ import java.util.Map;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public final class ConsumerArgumentSame extends ConsumerArgumentMapper {
-  protected String invocationArgumentName;
+  private final String invocationArgumentName;
 
-  protected String swaggerArgumentName;
+  private final String swaggerArgumentName;
 
   public ConsumerArgumentSame(String invocationArgumentName, String swaggerArgumentName) {
     this.invocationArgumentName = invocationArgumentName;

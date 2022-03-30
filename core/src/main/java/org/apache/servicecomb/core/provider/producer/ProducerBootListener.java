@@ -108,12 +108,12 @@ public class ProducerBootListener implements BootListener {
     }
 
     for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
-      if (ExecutorService.class.isInstance(operationMeta.getExecutor())) {
+      if (operationMeta.getExecutor() instanceof ExecutorService) {
         ((ExecutorService) operationMeta.getExecutor()).shutdown();
         continue;
       }
 
-      if (Closeable.class.isInstance(operationMeta.getExecutor())) {
+      if (operationMeta.getExecutor() instanceof Closeable) {
         IOUtils.closeQuietly((Closeable) operationMeta.getExecutor());
         continue;
       }
