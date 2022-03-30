@@ -151,7 +151,8 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
           .end(wrapResponseBody(invocationException.getReasonPhrase()));
     } else {
       context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
-          .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode()).end(wrapResponseBody(e.getMessage()));
+          .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+          .end(wrapResponseBody(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     }
     context.response().close();
   }
