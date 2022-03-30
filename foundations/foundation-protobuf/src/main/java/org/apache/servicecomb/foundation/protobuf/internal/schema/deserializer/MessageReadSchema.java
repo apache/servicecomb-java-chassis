@@ -166,7 +166,7 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
     } catch (Throwable e) {
       if (fieldSchema != null) {
         Field protoField = fieldSchema.getProtoField();
-        LOGGER.error("Failed to mergeFrom, field={}:{}, type={}",
+        LOGGER.error("Failed to mergeFrom, field={}:{}, type={}, error {}",
             protoField.getType().getCanonicalName(),
             protoField.getName(),
             protoField.getTypeName(),
