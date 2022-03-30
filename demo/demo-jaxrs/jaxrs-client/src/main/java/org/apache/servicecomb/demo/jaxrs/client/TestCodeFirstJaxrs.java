@@ -47,6 +47,7 @@ public class TestCodeFirstJaxrs implements CategorizedTestCase {
   @Override
   public void testAllTransport() throws Exception {
     testCodeFirstJaxrs();
+    testResponseLong();
   }
 
   @Override
@@ -60,6 +61,12 @@ public class TestCodeFirstJaxrs implements CategorizedTestCase {
     File systemTempFile = new File(System.getProperty("java.io.tmpdir"));
     File file = new File(systemTempFile, "hello");
     TestMgr.check(file.exists(), false);
+  }
+
+  private void testResponseLong() {
+    Object result = InvokerUtils.syncInvoke(SERVICE_NAME, SCHEMA_ID, "responseLong", null,
+        Object.class);
+    TestMgr.check(result, Long.MAX_VALUE);
   }
 
   // invoke CodeFirstJaxrs

@@ -21,7 +21,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.demo.jaxrs.client.JaxrsClient;
 import org.junit.Before;
 import org.junit.Test;
 

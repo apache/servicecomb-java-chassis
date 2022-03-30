@@ -243,6 +243,13 @@ public class CodeFirstJaxrs {
     }
   }
 
+  @GET
+  @Path("/responseLong")
+  @ApiResponse(code = 200, response = Object.class, message = "")
+  public Response responseLong() {
+    return Response.createSuccess(Long.MAX_VALUE);
+  }
+
   @Path("/upload2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)

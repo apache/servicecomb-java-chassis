@@ -51,7 +51,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <demo.main>org.apache.servicecomb.demo.jaxrs.server.JaxrsServer</demo.main>
+    <demo.main>org.apache.servicecomb.demo.jaxrs.JaxrsServer</demo.main>
   </properties>
   <build>
     <plugins>
