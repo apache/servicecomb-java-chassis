@@ -83,7 +83,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
       restTemplate.postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
       TestMgr.fail("Size exceed allowed maximum capacity");
     } catch (Throwable e) {
-      TestMgr.check(e.getMessage().contains("Size exceed allowed maximum capacity"), true);
+      TestMgr.check(e.getMessage().contains("Internal Server Error"), true);
     }
   }
 }
