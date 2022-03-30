@@ -211,7 +211,7 @@ public class TestVertxRestDispatcher {
 
   @Test
   public void failureHandlerWithNoRestProducerInvocationAndOtherException(@Mocked RoutingContext context) {
-    String exceptionMessage = "test exception message";
+    String exceptionMessage = "Internal Server Error";
     Exception exception = new Exception(exceptionMessage);
     MockHttpServerResponse response = new MockHttpServerResponse();
     new Expectations() {
