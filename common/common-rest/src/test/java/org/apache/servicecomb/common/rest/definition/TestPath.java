@@ -129,7 +129,7 @@ public class TestPath {
     };
     new MockUp<QueryVarParamWriter>() {
       @Mock
-      protected Object getParamValue(Object[] args) {
+      private Object getParamValue(Object[] args) {
         return args[0];
       }
     };

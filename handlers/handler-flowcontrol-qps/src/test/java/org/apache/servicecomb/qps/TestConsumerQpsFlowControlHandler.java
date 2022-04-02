@@ -98,7 +98,7 @@ public class TestConsumerQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsStrategy create(String qualifiedNameKey) {
+      private QpsStrategy create(String qualifiedNameKey) {
         return qpsStrategy;
       }
     };
@@ -135,7 +135,7 @@ public class TestConsumerQpsFlowControlHandler {
     new MockUp<QpsControllerManager>() {
 
       @Mock
-      protected QpsStrategy create(String qualifiedNameKey) {
+      private QpsStrategy create(String qualifiedNameKey) {
         return qpsStrategy;
       }
     };

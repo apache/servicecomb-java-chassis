@@ -133,8 +133,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @VisibleForTesting
   @SuppressWarnings("unchecked")
-  protected <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls,
-      Holder<T> holder) {
+  public <T> Handler<RestResponse> syncHandler(CountDownLatch countDownLatch, Class<T> cls,
+                                                Holder<T> holder) {
     return restResponse -> {
       RequestContext requestContext = restResponse.getRequestContext();
       HttpClientResponse response = restResponse.getResponse();
