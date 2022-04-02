@@ -35,12 +35,15 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/")
 public class SomeTracedController {
   private static final Logger logger = LoggerFactory.getLogger(SomeTracedController.class);
-
-  @Autowired
   private RestTemplate template;
 
-  @Autowired
   private SlowRepo slowRepo;
+
+  @Autowired
+  public SomeTracedController(RestTemplate template, SlowRepo slowRepo) {
+    this.template = template;
+    this.slowRepo = slowRepo;
+  }
 
   @RequestMapping(value = "/hello", method = GET, produces = TEXT_PLAIN_VALUE)
   public String hello(HttpServletRequest request) throws InterruptedException {

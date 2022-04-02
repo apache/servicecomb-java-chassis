@@ -33,8 +33,12 @@ public class RequestProcessor {
 
   private static final String OPERATOR_SUFFIX = "Operator";
 
-  @Autowired
   private Map<String, MatchOperator> operatorMap;
+
+  @Autowired
+  public RequestProcessor(Map<String, MatchOperator> operatorMap) {
+    this.operatorMap = operatorMap;
+  }
 
   public boolean match(GovernanceRequest request, Matcher matcher) {
     if ((matcher.getMethod() != null && !matcher.getMethod().contains(request.getMethod())) ||

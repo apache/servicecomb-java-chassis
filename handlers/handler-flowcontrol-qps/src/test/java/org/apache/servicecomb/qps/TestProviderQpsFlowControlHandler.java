@@ -145,7 +145,7 @@ public class TestProviderQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsStrategy create(String qualifiedNameKey) {
+      private QpsStrategy create(String qualifiedNameKey) {
         AbstractQpsStrategy strategy = new FixedWindowStrategy();
         strategy.setKey(qualifiedNameKey);
         strategy.setQpsLimit(1L);
@@ -175,7 +175,7 @@ public class TestProviderQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsStrategy create(String qualifiedNameKey) {
+      private QpsStrategy create(String qualifiedNameKey) {
         AbstractQpsStrategy strategy = new FixedWindowStrategy();
         strategy.setKey(qualifiedNameKey);
         strategy.setQpsLimit(1L);

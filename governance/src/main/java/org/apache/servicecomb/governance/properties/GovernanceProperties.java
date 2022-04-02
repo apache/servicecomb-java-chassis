@@ -53,11 +53,19 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
 
   private final String configKey;
 
-  @Autowired
   protected Environment environment;
 
-  @Autowired
   private MicroserviceMeta microserviceMeta;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Autowired
+  public void setMicroserviceMeta(MicroserviceMeta microserviceMeta) {
+    this.microserviceMeta = microserviceMeta;
+  }
 
   protected Map<String, T> parsedEntity;
 
@@ -69,6 +77,7 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
     GovernanceEventManager.register(this);
     entityClass = getEntityClass();
   }
+
 
   @Override
   public void afterPropertiesSet() {

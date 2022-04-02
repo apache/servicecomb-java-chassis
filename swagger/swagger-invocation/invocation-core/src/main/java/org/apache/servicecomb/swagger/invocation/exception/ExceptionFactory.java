@@ -71,13 +71,13 @@ public final class ExceptionFactory {
     return create(PRODUCER_INNER_STATUS, errorData);
   }
 
-  protected static InvocationException doCreate(StatusType status,
-      Object errorData) {
+  private static InvocationException doCreate(StatusType status,
+                                              Object errorData) {
     return new InvocationException(status, errorData);
   }
 
-  protected static InvocationException doCreate(int statusCode, String reasonPhrase, CommonExceptionData data,
-      Throwable e) {
+  private static InvocationException doCreate(int statusCode, String reasonPhrase, CommonExceptionData data,
+                                              Throwable e) {
     return new InvocationException(statusCode, reasonPhrase, data, e);
   }
 
@@ -112,11 +112,11 @@ public final class ExceptionFactory {
   // 如果e中取不出可以直接返回的InvocationException
   // 则需要创建新的InvocationException实例，此时不允许使用e.getMessage，因为可能会涉及关键信息被传给远端
   // 新创建的InvocationException，会使用errorMsg来构建CommonExceptionData
-  protected static InvocationException convertException(int statusCode, String reasonPhrase, Throwable e,
-      String errorMsg) {
+  private static InvocationException convertException(int statusCode, String reasonPhrase, Throwable e,
+                                                      String errorMsg) {
     e = unwrap(e);
 
-    if (InvocationException.class.isInstance(e)) {
+    if (e instanceof InvocationException) {
       return (InvocationException) e;
     }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.jaxrs.server;
+package org.apache.servicecomb.demo.jaxrs;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;

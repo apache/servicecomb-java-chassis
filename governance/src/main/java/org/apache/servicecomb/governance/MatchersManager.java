@@ -27,12 +27,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MatchersManager {
-
-  @Autowired
   private MatchersService matchersService;
 
-  @Autowired
   private InvocationContext invocationContext;
+
+  @Autowired
+  public MatchersManager(MatchersService matchersService, InvocationContext invocationContext) {
+    this.matchersService = matchersService;
+    this.invocationContext = invocationContext;
+  }
 
   public MatchersManager() {
   }

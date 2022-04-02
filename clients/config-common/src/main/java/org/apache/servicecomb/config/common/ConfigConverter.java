@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.config.common;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -74,7 +74,7 @@ public class ConfigConverter {
 
   private Map<String, Object> createFileSource(Object v) {
     YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
-    yamlFactory.setResources(new ByteArrayResource(v.toString().getBytes(Charset.forName("UTF-8"))));
+    yamlFactory.setResources(new ByteArrayResource(v.toString().getBytes(StandardCharsets.UTF_8)));
     return propertiesToMap(yamlFactory.getObject());
   }
 

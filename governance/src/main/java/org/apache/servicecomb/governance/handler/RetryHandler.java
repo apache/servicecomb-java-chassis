@@ -38,11 +38,15 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RetryHandler.class);
 
-  @Autowired
   private RetryProperties retryProperties;
 
-  @Autowired
   private RetryExtension retryExtension;
+
+  @Autowired
+  public RetryHandler(RetryProperties retryProperties, RetryExtension retryExtension) {
+    this.retryProperties = retryProperties;
+    this.retryExtension = retryExtension;
+  }
 
   @Override
   protected String createKey(RetryPolicy policy) {

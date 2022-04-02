@@ -25,8 +25,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RouterRuleMatcher {
-  @Autowired
   private RouterRuleCache routerRuleCache;
+
+  @Autowired
+  public RouterRuleMatcher(RouterRuleCache routerRuleCache) {
+    this.routerRuleCache = routerRuleCache;
+  }
 
   public RouterRuleMatcher() {
   }
