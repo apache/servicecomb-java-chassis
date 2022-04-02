@@ -85,7 +85,7 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
       try {
         invocation.next(resp -> {
           if (isFailedResponse(resp)) {
-            LOG.warn("bizkeeper command {} failed, trace id {}",
+            LOG.warn("bizkeeper command {} failed, trace id {} result {}",
                 invocation.getInvocationQualifiedName(),
                 invocation.getTraceId(),
                 resp.getResult());
