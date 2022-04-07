@@ -94,7 +94,7 @@ public final class ConfigUtil {
   }
 
   public static Object getProperty(Object config, String key) {
-    if (null != config && Configuration.class.isInstance(config)) {
+    if (config instanceof Configuration) {
       Configuration configuration = (Configuration) config;
       return configuration.getProperty(key);
     }
