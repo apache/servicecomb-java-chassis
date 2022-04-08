@@ -40,11 +40,10 @@ public class ConsumerBizkeeperHandler extends BizkeeperHandler {
         .withRequestLogEnabled(false);
     setCommonProperties(invocation, setter);
 
-    BizkeeperCommand command = new ConsumerBizkeeperCommand(groupname, invocation,
+    return new ConsumerBizkeeperCommand(groupname, invocation,
         HystrixObservableCommand.Setter
             .withGroupKey(CommandKey.toHystrixCommandGroupKey(groupname, invocation))
             .andCommandKey(CommandKey.toHystrixCommandKey(groupname, invocation))
             .andCommandPropertiesDefaults(setter));
-    return command;
   }
 }

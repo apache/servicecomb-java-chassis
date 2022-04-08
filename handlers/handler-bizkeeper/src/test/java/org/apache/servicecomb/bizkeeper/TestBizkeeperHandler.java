@@ -116,12 +116,11 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
 
-    BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
+    return new ConsumerBizkeeperCommand("groupname", invocation,
         HystrixObservableCommand.Setter
             .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
             .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
             .andCommandPropertiesDefaults(setter));
-    return bizkeeperCommand;
   }
 
   @Test

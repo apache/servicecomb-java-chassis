@@ -81,7 +81,7 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
 
   @Override
   protected Observable<Response> construct() {
-    Observable<Response> observable = Observable.create(f -> {
+    return Observable.create(f -> {
       try {
         invocation.next(resp -> {
           if (isFailedResponse(resp)) {
@@ -105,7 +105,6 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
         f.onError(e);
       }
     });
-    return observable;
   }
 
   protected abstract boolean isFailedResponse(Response resp);

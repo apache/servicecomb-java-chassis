@@ -189,9 +189,8 @@ public class AbstractAddressManager {
   }
 
   private List<String> getAvailableAddress(List<String> endpoints) {
-    List<String> list = endpoints.stream().filter(uri -> !history.containsKey(uri))
+    return endpoints.stream().filter(uri -> !history.containsKey(uri))
         .collect(Collectors.toList());
-    return list;
   }
 
   protected String normalizeUri(String endpoint) {
