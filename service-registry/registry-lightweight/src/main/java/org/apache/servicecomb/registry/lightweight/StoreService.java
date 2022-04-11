@@ -108,13 +108,12 @@ public class StoreService {
           info.getMicroservice().getSchemaMap().putAll(info.getSchemasById());
           MicroserviceStore microserviceStore = store
               .addMicroservice(info.getMicroservice(), request.getSchemasSummary());
-          InstanceStore instanceStore = doAddInstance(microserviceStore, info.getInstance());
 
           LOGGER.info("add microservice and instance, serviceId={}, instanceId={}, endpoints={}",
               request.getServiceId(),
               request.getInstanceId(),
               request.getEndpoints());
-          return instanceStore;
+          return doAddInstance(microserviceStore, info.getInstance());
         });
   }
 

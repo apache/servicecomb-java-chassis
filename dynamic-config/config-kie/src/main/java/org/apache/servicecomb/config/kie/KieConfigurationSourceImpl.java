@@ -162,9 +162,8 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
   }
 
   private KieAddressManager configKieAddressManager() {
-    KieAddressManager kieAddressManager = new KieAddressManager(
+    return new KieAddressManager(
         Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), EventManager.getEventBus());
-    return kieAddressManager;
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

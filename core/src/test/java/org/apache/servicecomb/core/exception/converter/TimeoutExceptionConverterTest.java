@@ -33,8 +33,7 @@ class TimeoutExceptionConverterTest {
     TimeoutException timeoutException = new TimeoutException(
         "The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080");
 
-    InvocationException exception = Exceptions.convert(null, timeoutException, Status.BAD_REQUEST);
-    return exception;
+    return Exceptions.convert(null, timeoutException, Status.BAD_REQUEST);
   }
 
   @Test

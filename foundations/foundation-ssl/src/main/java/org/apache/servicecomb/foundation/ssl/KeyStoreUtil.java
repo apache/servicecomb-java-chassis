@@ -87,8 +87,7 @@ public final class KeyStoreUtil {
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
       is = new FileInputStream(crlfile);
       Collection c = cf.generateCRLs(is);
-      CRL[] crls = (CRL[]) c.toArray(new CRL[c.size()]);
-      return crls;
+      return (CRL[]) c.toArray(new CRL[c.size()]);
     } catch (CertificateException e) {
       throw new IllegalArgumentException("bad cert file.");
     } catch (FileNotFoundException e) {
@@ -124,8 +123,7 @@ public final class KeyStoreUtil {
       TrustManagerFactory tmfactory =
           TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmfactory.init(keystore);
-      TrustManager[] trustmanagers = tmfactory.getTrustManagers();
-      return trustmanagers;
+      return tmfactory.getTrustManagers();
     } catch (Exception e) {
       throw new IllegalArgumentException("Bad trust store."
           + e.getMessage());
