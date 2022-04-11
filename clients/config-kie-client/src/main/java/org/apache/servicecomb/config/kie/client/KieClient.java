@@ -77,6 +77,11 @@ public class KieClient implements KieConfigOperation {
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
       ConfigurationsResponse configurationsResponse = new ConfigurationsResponse();
       if (httpResponse.getStatusCode() == HttpStatus.SC_OK) {
+        if ("nullserver got a panic,plz check log.".equals(httpResponse.getContent())){
+          configurationsResponse.setChanged(false);
+          addressManager.recordSuccessState(address);
+          return configurationsResponse;
+        }
         revision = httpResponse.getHeader("X-Kie-Revision");
         KVResponse allConfigList = HttpUtils.deserialize(httpResponse.getContent(), KVResponse.class);
         Map<String, Object> configurations = getConfigByLabel(allConfigList);
