@@ -18,55 +18,51 @@
 package org.apache.servicecomb.registry.version;
 
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.registry.version.VersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleFixedParser.FixedVersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleLatestParser.LatestVersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleRangeParser.RangeVersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleStartFromParser.StartFromVersionRule;
-import org.apache.servicecomb.registry.version.VersionRuleUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVersionRuleUtils {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void fixed() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate("1");
-    Assert.assertThat(versionRule, Matchers.instanceOf(FixedVersionRule.class));
+    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(FixedVersionRule.class));
     Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate("1"));
   }
 
   @Test
   public void latest() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate(DefinitionConst.VERSION_RULE_LATEST);
-    Assert.assertThat(versionRule, Matchers.instanceOf(LatestVersionRule.class));
+    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(LatestVersionRule.class));
     Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate(DefinitionConst.VERSION_RULE_LATEST));
   }
 
   @Test
   public void range() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate("1-2");
-    Assert.assertThat(versionRule, Matchers.instanceOf(RangeVersionRule.class));
+    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(RangeVersionRule.class));
     Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate("1-2"));
   }
 
   @Test
   public void startFrom() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate("1+");
-    Assert.assertThat(versionRule, Matchers.instanceOf(StartFromVersionRule.class));
+    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(StartFromVersionRule.class));
     Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate("1+"));
   }
 
   @Test
   public void invalid() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid major \"\", version \"\"."));
-
-    VersionRuleUtils.getOrCreate("");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      VersionRuleUtils.getOrCreate("");
+    });
+    Assertions.assertEquals("Invalid major \"\", version \"\".", exception.getMessage());
   }
 }

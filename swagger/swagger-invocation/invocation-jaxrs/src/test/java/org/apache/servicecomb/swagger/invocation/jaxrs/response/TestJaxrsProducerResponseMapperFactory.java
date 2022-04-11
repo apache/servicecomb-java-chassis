@@ -18,6 +18,7 @@ package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class TestJaxrsProducerResponseMapperFactory {
 
   @Test
   public void createResponseMapper() {
-    Assert.assertThat(factory.createResponseMapper(null, null),
+    MatcherAssert.assertThat(factory.createResponseMapper(null, null),
         Matchers.instanceOf(JaxrsProducerResponseMapper.class));
   }
 }

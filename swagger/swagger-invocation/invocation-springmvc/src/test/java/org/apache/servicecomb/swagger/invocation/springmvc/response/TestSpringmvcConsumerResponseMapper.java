@@ -23,6 +23,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,7 +74,7 @@ public class TestSpringmvcConsumerResponseMapper {
         .mapResponse(response);
     Assert.assertEquals(result, responseEntity.getBody());
     Assert.assertEquals(1, responseEntity.getHeaders().size());
-    Assert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v"));
+    MatcherAssert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v"));
   }
 
   @Test
@@ -98,6 +99,6 @@ public class TestSpringmvcConsumerResponseMapper {
         .mapResponse(response);
     Assert.assertEquals(result, responseEntity.getBody());
     Assert.assertEquals(1, responseEntity.getHeaders().size());
-    Assert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v1", "v2"));
+    MatcherAssert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v1", "v2"));
   }
 }

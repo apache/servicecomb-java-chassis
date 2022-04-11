@@ -29,12 +29,10 @@ import javax.servlet.http.Part;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.buffer.Buffer;
 import mockit.Expectations;
@@ -47,9 +45,6 @@ public class TestStandardHttpServletResponseEx {
   HttpServletResponse response;
 
   StandardHttpServletResponseEx responseEx;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -168,8 +163,8 @@ public class TestStandardHttpServletResponseEx {
       }
     };
 
-    expectedException.expect(Matchers.sameInstance(error));
-
-    responseEx.sendPart(part).get();
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      responseEx.sendPart(part).get();
+    });
   }
 }

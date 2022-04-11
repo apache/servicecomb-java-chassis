@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec.param;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,7 +82,7 @@ public class TestQueryProcessor {
 
     ParamValueProcessor processor = createProcessor("name", String[].class, "multi");
     String[] value = (String[]) processor.getValue(request);
-    Assert.assertThat(value, Matchers.arrayContaining("value", "value2"));
+    MatcherAssert.assertThat(value, Matchers.arrayContaining("value", "value2"));
   }
 
   @Test
@@ -95,7 +96,7 @@ public class TestQueryProcessor {
 
     ParamValueProcessor processor = createProcessor("name", String[].class, "csv");
     String[] value = (String[]) processor.getValue(request);
-    Assert.assertThat(value, Matchers.arrayContaining("value2", "value3"));
+    MatcherAssert.assertThat(value, Matchers.arrayContaining("value2", "value3"));
   }
 
   @Test

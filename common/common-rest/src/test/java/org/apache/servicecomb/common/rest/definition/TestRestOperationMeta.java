@@ -18,7 +18,6 @@
 package org.apache.servicecomb.common.rest.definition;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -375,7 +375,7 @@ public class TestRestOperationMeta {
   public void generatesAbsolutePathWithRootBasePath() {
     findOperation("textCharJsonChar");
 
-    assertThat(operationMeta.getAbsolutePath(), is("/textCharJsonChar/"));
+    MatcherAssert.assertThat(operationMeta.getAbsolutePath(), is("/textCharJsonChar/"));
   }
 
   @Test
@@ -390,7 +390,7 @@ public class TestRestOperationMeta {
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(operationMeta.getOperationMeta());
 
-    assertThat(restOperationMeta.getAbsolutePath(), is("/rest/textCharJsonChar/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/textCharJsonChar/"));
   }
 
   @Test
@@ -411,7 +411,7 @@ public class TestRestOperationMeta {
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(operationMeta.getOperationMeta());
 
-    assertThat(restOperationMeta.getAbsolutePath(), is("/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/"));
   }
 
   @Test
@@ -432,7 +432,7 @@ public class TestRestOperationMeta {
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(operationMeta.getOperationMeta());
 
-    assertThat(restOperationMeta.getAbsolutePath(), is("/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/"));
   }
 
   @Test
@@ -453,20 +453,20 @@ public class TestRestOperationMeta {
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(operationMeta.getOperationMeta());
 
-    assertThat(restOperationMeta.getAbsolutePath(), is("/rest/sayHi/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/sayHi/"));
   }
 
   @Test
   public void testFormDataFlagTrue() {
     findOperation("form");
 
-    assertThat(operationMeta.isFormData(), is(true));
+    MatcherAssert.assertThat(operationMeta.isFormData(), is(true));
   }
 
   @Test
   public void testFormDataFlagFalse() {
     findOperation("json");
 
-    assertThat(operationMeta.isFormData(), is(false));
+    MatcherAssert.assertThat(operationMeta.isFormData(), is(false));
   }
 }

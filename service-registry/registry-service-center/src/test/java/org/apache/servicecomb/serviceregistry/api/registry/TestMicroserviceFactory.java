@@ -25,13 +25,10 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceFactory {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void testAllowCrossApp() {
@@ -111,9 +108,10 @@ public class TestMicroserviceFactory {
     Configuration configuration = ConfigUtil.createLocalConfig();
     configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_VERSION, "x.y.x.1");
 
-    expectedException.equals(IllegalStateException.class);
-    expectedException.expectMessage("Invalid major \"x\", version \"x.y.x.1\".");
-    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    microserviceFactory.create(configuration);
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+      microserviceFactory.create(configuration);
+    });
+    Assertions.assertEquals("Invalid major \"x\", version \"x.y.x.1\".", exception.getMessage());
   }
 }

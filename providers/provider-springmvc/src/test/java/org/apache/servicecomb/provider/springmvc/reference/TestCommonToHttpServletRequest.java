@@ -34,6 +34,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -117,7 +118,7 @@ public class TestCommonToHttpServletRequest {
     queryParams.put("name", Arrays.asList("value"));
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
-    Assert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
+    MatcherAssert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
   }
 
   @Test
@@ -161,7 +162,7 @@ public class TestCommonToHttpServletRequest {
     httpHeaders.put("name", Arrays.asList("value"));
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
-    Assert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
   }
 
   @Test
@@ -186,7 +187,7 @@ public class TestCommonToHttpServletRequest {
     httpHeaders.put("name", Arrays.asList("value"));
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
-    Assert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test
@@ -248,7 +249,7 @@ public class TestCommonToHttpServletRequest {
     HttpServletRequestEx request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
     request.addHeader("name", "v1");
     request.addHeader("name", "v2");
-    Assert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("v1", "v2"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("v1", "v2"));
   }
 
   @Test

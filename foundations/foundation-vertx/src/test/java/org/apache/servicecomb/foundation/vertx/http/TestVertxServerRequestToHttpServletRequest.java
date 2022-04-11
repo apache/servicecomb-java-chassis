@@ -30,6 +30,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -165,7 +166,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
+    MatcherAssert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
   }
 
   @Test
@@ -181,8 +182,8 @@ public class TestVertxServerRequestToHttpServletRequest {
     };
 
     Map<String, String[]> result = request.getParameterMap();
-    Assert.assertThat(result.keySet(), Matchers.contains("name"));
-    Assert.assertThat(result.get("name"), Matchers.arrayContaining("value"));
+    MatcherAssert.assertThat(result.keySet(), Matchers.contains("name"));
+    MatcherAssert.assertThat(result.get("name"), Matchers.arrayContaining("value"));
     Assert.assertSame(result, request.getParameterMap());
   }
 
@@ -218,7 +219,7 @@ public class TestVertxServerRequestToHttpServletRequest {
         result = null;
       }
     };
-    Assert.assertEquals(null, request.getRemoteAddr());
+    Assert.assertNull(request.getRemoteAddr());
   }
 
   @Test
@@ -296,7 +297,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test
@@ -310,7 +311,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
   }
 
   @Test
@@ -472,6 +473,6 @@ public class TestVertxServerRequestToHttpServletRequest {
 
     Assert.assertSame(parameterMap, request.getParameterMap());
 
-    Assert.assertThat(Collections.list(request.getParameterNames()), Matchers.contains("k1", "k2"));
+    MatcherAssert.assertThat(Collections.list(request.getParameterNames()), Matchers.contains("k1", "k2"));
   }
 }

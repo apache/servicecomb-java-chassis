@@ -20,10 +20,10 @@ package org.apache.servicecomb.swagger.engine;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.models.ProducerImpl;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import org.junit.Test;
 import io.swagger.models.Swagger;
 
 public class TestSwaggerEnvironment {
-  private static SwaggerEnvironment env = new SwaggerEnvironment();
+  private static final SwaggerEnvironment env = new SwaggerEnvironment();
 
   private static SwaggerProducer producer;
 
@@ -42,12 +42,12 @@ public class TestSwaggerEnvironment {
 
   @Test
   public void ableToFindVisibleMethod() {
-    assertThat(producer.findOperation("visibleMethod"), is(notNullValue()));
+    MatcherAssert.assertThat(producer.findOperation("visibleMethod"), is(notNullValue()));
   }
 
   @Test
   public void unableToFindHiddenMethod() {
-    assertThat(producer.findOperation("hiddenMethod"), is(nullValue()));
+    MatcherAssert.assertThat(producer.findOperation("hiddenMethod"), is(nullValue()));
   }
 
   interface ConsumerIntf {

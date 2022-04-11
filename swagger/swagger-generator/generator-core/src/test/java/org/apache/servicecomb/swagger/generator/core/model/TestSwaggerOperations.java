@@ -17,15 +17,12 @@
 package org.apache.servicecomb.swagger.generator.core.model;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.models.Swagger;
 
 public class TestSwaggerOperations {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void emptyOperationId() {
@@ -34,9 +31,9 @@ public class TestSwaggerOperations {
         .findFirst().get()
         .getPost().setOperationId("");
 
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage("OperationId can not be empty, path=/testboolean, httpMethod=POST.");
-
-    new SwaggerOperations(swagger);
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      new SwaggerOperations(swagger);
+    });
+    Assertions.assertEquals("OperationId can not be empty, path=/testboolean, httpMethod=POST.", exception.getMessage());
   }
 }

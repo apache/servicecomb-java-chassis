@@ -19,11 +19,11 @@ package org.apache.servicecomb.tests.tracing;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.Collection;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +38,11 @@ public class ZipkinTracingIntegrationTest extends TracingTestBase {
   public void sendsTracingToConfiguredAddress() throws NoSuchMethodException {
     ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/hello", String.class);
 
-    assertThat(entity.getStatusCode(), is(OK));
-    assertThat(entity.getBody(), is("hello world, bonjour le monde, hi pojo"));
+    MatcherAssert.assertThat(entity.getStatusCode(), is(OK));
+    MatcherAssert.assertThat(entity.getBody(), is("hello world, bonjour le monde, hi pojo"));
 
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*in /.*");
-    assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
+    MatcherAssert.assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 
     assertThatSpansReceivedByZipkin(tracingMessages,
         "/hello",

@@ -24,12 +24,10 @@ import java.io.IOException;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.Holder;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -41,9 +39,6 @@ public class TestPartToMultipartFile {
   Part part;
 
   PartToMultipartFile multipartFile;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -163,10 +158,9 @@ public class TestPartToMultipartFile {
       }
     };
 
-    expectedException.expect(IOException.class);
-    expectedException.expectMessage(Matchers.is("open stream failed"));
-
-    multipartFile.getBytes();
+    IOException exception = Assertions.assertThrows(IOException.class,
+            () -> multipartFile.getBytes());
+    Assertions.assertEquals("open stream failed", exception.getMessage());
   }
 
   @Test

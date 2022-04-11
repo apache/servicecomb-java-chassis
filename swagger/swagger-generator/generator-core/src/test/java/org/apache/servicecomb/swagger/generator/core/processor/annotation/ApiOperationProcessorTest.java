@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import io.swagger.models.properties.Property;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -119,7 +120,7 @@ public class ApiOperationProcessorTest {
   @Test
   public void testConvertTags() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("function");
-    assertThat(swaggerOperation.getOperation().getTags(), containsInAnyOrder("tag1", "tag2"));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getTags(), containsInAnyOrder("tag1", "tag2"));
   }
 
   @Test
@@ -131,13 +132,13 @@ public class ApiOperationProcessorTest {
   @Test
   public void testMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingleMediaType");
-    assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN));
-    assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
 
     swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
-    assertThat(swaggerOperation.getOperation().getConsumes(),
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getConsumes(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
-    assertThat(swaggerOperation.getOperation().getProduces(),
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getProduces(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
 
     swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
@@ -146,8 +147,8 @@ public class ApiOperationProcessorTest {
 
     swaggerOperation.getOperation().addConsumes(MediaType.TEXT_HTML);
     swaggerOperation.getOperation().addProduces(MediaType.TEXT_HTML);
-    assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_HTML));
-    assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.TEXT_HTML));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_HTML));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.TEXT_HTML));
   }
 
 

@@ -43,9 +43,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -77,9 +76,6 @@ public class TestRestProducerInvocation {
   static RestOperationMeta restOperationMeta;
 
   static MicroserviceMeta microserviceMeta;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @BeforeClass
   public static void classSetup() {
@@ -167,9 +163,9 @@ public class TestRestProducerInvocation {
     restProducerInvocation = new RestProducerInvocation();
     initRestProducerInvocation();
 
-    expectedException.expect(Exception.class);
-    expectedException.expectMessage("[message=Not Found]");
-    restProducerInvocation.findRestOperation();
+    Exception exception = Assertions.assertThrows(Exception.class,
+            () -> restProducerInvocation.findRestOperation());
+    Assertions.assertTrue(exception.getMessage().contains("[message=Not Found]"));
   }
 
   @Test

@@ -25,9 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.discovery.AbstractEndpointDiscoveryFilter;
-import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -136,7 +134,7 @@ public class TestAbstractTransportDiscoveryFilter {
     result = filter.createDiscoveryTreeNode("a", context, parent);
 
     Assert.assertEquals("parent/a", result.name());
-    Assert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().get(0)));
+    MatcherAssert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().get(0)));
   }
 
   @Test
@@ -153,7 +151,7 @@ public class TestAbstractTransportDiscoveryFilter {
     List<String> expect = new ArrayList<>();
     expect.addAll(instance1.getEndpoints());
     expect.addAll(instance2.getEndpoints());
-    Assert.assertThat(result.collectionData(), Matchers.contains(expect.toArray()));
+    MatcherAssert.assertThat(result.collectionData(), Matchers.contains(expect.toArray()));
   }
 
   @Test
@@ -166,7 +164,7 @@ public class TestAbstractTransportDiscoveryFilter {
     result = filter.createDiscoveryTreeNode("", context, parent);
 
     Assert.assertEquals("parent/", result.name());
-    Assert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().toArray()));
+    MatcherAssert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().toArray()));
   }
 
   @Test
@@ -179,6 +177,6 @@ public class TestAbstractTransportDiscoveryFilter {
     result = filter.createDiscoveryTreeNode("", context, parent);
 
     Assert.assertEquals("parent/", result.name());
-    Assert.assertThat(result.collectionData(), Matchers.empty());
+    MatcherAssert.assertThat(result.collectionData(), Matchers.empty());
   }
 }

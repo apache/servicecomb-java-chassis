@@ -17,7 +17,6 @@
 package org.apache.servicecomb.it.testcase.base;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.Generic;
 import org.apache.servicecomb.it.schema.User;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -270,15 +270,15 @@ public class TestGeneric {
 
     List<List<String>> response = consumers.getIntf().genericNestedListString(nestedListString);
     assertEquals(2, response.size());
-    assertThat(response.get(0), Matchers.contains("abc", "def"));
-    assertThat(response.get(1), Matchers.contains("ghi", "jkl"));
+    MatcherAssert.assertThat(response.get(0), Matchers.contains("abc", "def"));
+    MatcherAssert.assertThat(response.get(1), Matchers.contains("ghi", "jkl"));
 
     @SuppressWarnings("unchecked")
     List<List<String>> response2 = consumers.getSCBRestTemplate()
         .postForObject("/genericNestedListString", nestedListString, List.class);
     assertEquals(2, response2.size());
-    assertThat(response2.get(0), Matchers.contains("abc", "def"));
-    assertThat(response2.get(1), Matchers.contains("ghi", "jkl"));
+    MatcherAssert.assertThat(response2.get(0), Matchers.contains("abc", "def"));
+    MatcherAssert.assertThat(response2.get(1), Matchers.contains("ghi", "jkl"));
   }
 
   @Test
@@ -309,14 +309,14 @@ public class TestGeneric {
 
     List<List<User>> response = consumers.getIntf().genericNestedListUser(nestedListUser);
     assertEquals(2, response.size());
-    assertThat(response.get(0), Matchers.contains(user1, user2));
-    assertThat(response.get(1), Matchers.contains(user3, user4));
+    MatcherAssert.assertThat(response.get(0), Matchers.contains(user1, user2));
+    MatcherAssert.assertThat(response.get(1), Matchers.contains(user3, user4));
 
     @SuppressWarnings("unchecked")
     List<List<User>> response2 = consumers.getSCBRestTemplate()
         .postForObject("/genericNestedListUser", nestedListUser, List.class);
     assertEquals(2, response2.size());
-    assertThat(response2.get(0), Matchers.contains(user1, user2));
-    assertThat(response2.get(1), Matchers.contains(user3, user4));
+    MatcherAssert.assertThat(response2.get(0), Matchers.contains(user1, user2));
+    MatcherAssert.assertThat(response2.get(1), Matchers.contains(user3, user4));
   }
 }

@@ -29,6 +29,7 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.DefaultJsonValueResponse;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class TestAsyncInvoke {
   public void responseEntity_string_intf() {
     BiConsumer<ResponseEntity<String>, Throwable> checkLogic = (responseEntity, ex) -> {
       Assert.assertEquals(203, responseEntity.getStatusCodeValue());
-      Assert.assertThat(responseEntity.getHeaders().get("testH"), Matchers.containsInAnyOrder("testV1", "testV2"));
+      MatcherAssert.assertThat(responseEntity.getHeaders().get("testH"), Matchers.containsInAnyOrder("testV1", "testV2"));
       Assert.assertEquals("TestOK", responseEntity.getBody());
       Assert.assertNull(ex);
     };
@@ -82,7 +83,7 @@ public class TestAsyncInvoke {
   public void responseEntity_dataObject_intf() {
     BiConsumer<ResponseEntity<DefaultJsonValueResponse>, Throwable> checkLogic = (responseEntity, ex) -> {
       Assert.assertEquals(203, responseEntity.getStatusCodeValue());
-      Assert.assertThat(responseEntity.getHeaders().get("testH"), Matchers.containsInAnyOrder("testV1", "testV2"));
+      MatcherAssert.assertThat(responseEntity.getHeaders().get("testH"), Matchers.containsInAnyOrder("testV1", "testV2"));
       Assert.assertEquals(DefaultJsonValueResponse.class, responseEntity.getBody().getClass());
       Assert.assertEquals("TestOK", responseEntity.getBody().getMessage());
       Assert.assertEquals(2, responseEntity.getBody().getType());

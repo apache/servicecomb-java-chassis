@@ -33,9 +33,8 @@ import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -50,9 +49,6 @@ public class TestProviderQpsFlowControlHandler {
   Invocation invocation = Mockito.mock(Invocation.class);
 
   AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setUP() {
@@ -89,11 +85,11 @@ public class TestProviderQpsFlowControlHandler {
 
     ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_GLOBAL, 3);
 
-    expectedException.expect(RuntimeException.class);
-    expectedException.expectMessage("test error");
-
-    gHandler.handle(invocation, asyncResp);
-    gHandler.handle(invocation, asyncResp);
+    RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> {
+      gHandler.handle(invocation, asyncResp);
+      gHandler.handle(invocation, asyncResp);
+    });
+    Assertions.assertEquals("test error", exception.getMessage());
   }
 
   @Test

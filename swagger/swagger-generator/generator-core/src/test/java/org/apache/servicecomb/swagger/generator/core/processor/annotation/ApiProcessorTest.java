@@ -26,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -70,9 +71,9 @@ public class ApiProcessorTest {
     SwaggerOperations swaggerOperations = SwaggerOperations.generate(SwaggerTestTarget.class);
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("op");
 
-    assertThat(swaggerOperation.getOperation().getTags(), contains("tag1", "tag2"));
-    assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getTags(), contains("tag1", "tag2"));
+    MatcherAssert.assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
   }
 
   @Test
@@ -81,31 +82,31 @@ public class ApiProcessorTest {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("op");
 
     assertNull(swaggerOperation.getOperation().getTags());
-    assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void processOverWriteEmptyConsumesAndProduces() {
     Swagger swagger = SwaggerGenerator.generate(OverrideEmptyConsumesAndProduces.class);
 
-    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
-    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void processNotOverWriteValidConsumesAndProduces() {
     Swagger swagger = SwaggerGenerator.generate(OverWriteValidConsumesAndProduces.class);
 
-    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
-    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void processWithConsumesAndProduces() {
     Swagger swagger = SwaggerGenerator.generate(pureApi.class);
 
-    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
-    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
   }
 }

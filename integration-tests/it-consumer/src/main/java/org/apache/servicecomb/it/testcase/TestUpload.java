@@ -35,6 +35,7 @@ import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.assertj.core.api.Condition;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -158,19 +159,6 @@ public class TestUpload {
     Assert.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
   }
 
-//  @Test
-//  public void testJarxUploadArrayList1() {
-//    Map<String, Object> map = new HashMap<>();
-//    ArrayList<FileSystemResource> list = new ArrayList<>();
-//    list.add(fileSystemResource1);
-//    list.add(fileSystemResource2);
-//    map.put("file1", list);
-//    map.put("file2", fileSystemResource3);
-//    String result = consumersJaxrs.getSCBRestTemplate()
-//        .postForObject("/uploadArrayList1", new HttpEntity<>(map), String.class);
-//    Assert.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
-//  }
-
   @Test
   public void testJarxUpload2() {
     Map<String, Object> map = new HashMap<>();
@@ -204,19 +192,6 @@ public class TestUpload {
         .postForObject("/uploadList2", new HttpEntity<>(map), String.class);
     Assert.assertTrue(containsAll(result, "cse3", "中文 2", message));
   }
-
-//  @Test
-//  public void testJarxUploadArrayList2() {
-//    Map<String, Object> map = new HashMap<>();
-//    ArrayList<FileSystemResource> list = new ArrayList<>();
-//    list.add(fileSystemResource2);
-//    list.add(fileSystemResource3);
-//    map.put("file1", list);
-//    map.put("message", message);
-//    String result = consumersJaxrs.getSCBRestTemplate()
-//        .postForObject("/uploadArrayList2", new HttpEntity<>(map), String.class);
-//    Assert.assertTrue(containsAll(result, "cse3", "中文 2", message));
-//  }
 
   @Test
   public void testJarxUploadMix() {
@@ -280,27 +255,6 @@ public class TestUpload {
         .postForObject("/uploadList", new HttpEntity<>(map, headers), String.class);
     Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
-
-//  @Test
-//  public void testFileUploadArrayList() {
-//    ITJUnitUtils.initForDebug("it-producer", "rest");
-//
-//    Map<String, Object> map = new HashMap<>();
-//    ArrayList<FileSystemResource> list1 = new ArrayList<>();
-//    ArrayList<FileSystemResource> list2 = new ArrayList<>();
-//    list1.add(fileSystemResource1);
-//    list1.add(fileSystemResource2);
-//    list2.add(fileSystemResource3);
-//    list2.add(fileSystemResource4);
-//    map.put("file1", list1);
-//    map.put("file2", list2);
-//    map.put("name", message);
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//    String result = consumersSpringmvc.getSCBRestTemplate()
-//        .postForObject("/uploadArrayList", new HttpEntity<>(map, headers), String.class);
-//    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
-//  }
 
   @Test
   public void testFileUploadWithoutAnnotation() {
@@ -382,11 +336,11 @@ public class TestUpload {
             new HttpEntity<>(map, headers), new ParameterizedTypeReference<Map<String, String>>() {
             });
     Map<String, String> responseBody = response.getBody();
-    Assert.assertThat(responseBody, Matchers.notNullValue());
-    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
-    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
-    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
-    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+    MatcherAssert.assertThat(responseBody, Matchers.notNullValue());
+    MatcherAssert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    MatcherAssert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    MatcherAssert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    MatcherAssert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
   }
 
   @Test
@@ -396,10 +350,10 @@ public class TestUpload {
     Map<String, String> responseBody =
         consumersSpringmvc.getIntf().uploadMultiformMix(
             fileSystemResource1, fileList, message, singletonList("2.中文测试"));
-    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
-    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
-    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
-    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+    MatcherAssert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    MatcherAssert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    MatcherAssert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    MatcherAssert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
   }
 
   @Test
@@ -418,11 +372,11 @@ public class TestUpload {
             new HttpEntity<>(map, headers), new ParameterizedTypeReference<Map<String, String>>() {
             });
     Map<String, String> responseBody = response.getBody();
-    Assert.assertThat(responseBody, Matchers.notNullValue());
-    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
-    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
-    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
-    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+    MatcherAssert.assertThat(responseBody, Matchers.notNullValue());
+    MatcherAssert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    MatcherAssert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    MatcherAssert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    MatcherAssert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
   }
 
   @Test
@@ -432,10 +386,10 @@ public class TestUpload {
     Map<String, String> responseBody =
         consumersJaxrs.getIntf().uploadMultiformMix(
             fileSystemResource1, fileList, message, singletonList("2.中文测试"));
-    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
-    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
-    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
-    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+    MatcherAssert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    MatcherAssert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    MatcherAssert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    MatcherAssert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
   }
 
   private static boolean containsAll(String str, String... strings) {

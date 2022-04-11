@@ -28,17 +28,13 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestEngineSchemaListener {
   static SCBEngine scbEngine;
 
   static ServicePathManager spm;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @BeforeClass
   public static void setup() {
@@ -57,36 +53,30 @@ public class TestRestEngineSchemaListener {
 
   @Test
   public void testLocateNotFound() {
-    expectedException.expect(InvocationException.class);
-    expectedException.expectMessage("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]");
-
-    spm.producerLocateOperation("/notExist", "GET");
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/notExist", "GET"));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]", exception.getMessage());
   }
 
   @Test
   public void testLocateNotFoundDynamicRemained() {
-    expectedException.expect(InvocationException.class);
-    expectedException.expectMessage("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]");
-
-    spm.producerLocateOperation("/dynamic/1/2", "GET");
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/dynamic/1/2", "GET"));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]", exception.getMessage());
   }
 
   @Test
   public void testLocateStaticMethodNotAllowed() {
-    expectedException.expect(InvocationException.class);
-    expectedException
-        .expectMessage("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]");
-
-    spm.producerLocateOperation("/staticEx", "POST");
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/staticEx", "POST"));
+    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]", exception.getMessage());
   }
 
   @Test
   public void testLocateDynamicMethodNotAllowed() {
-    expectedException.expect(InvocationException.class);
-    expectedException
-        .expectMessage("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]");
-
-    spm.producerLocateOperation("/dynamic/1", "POST");
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/dynamic/1", "POST"));
+    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]", exception.getMessage());
   }
 
   @Test

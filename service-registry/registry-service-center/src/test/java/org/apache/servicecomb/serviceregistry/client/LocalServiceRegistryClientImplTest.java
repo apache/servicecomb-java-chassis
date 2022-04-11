@@ -30,13 +30,13 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class LocalServiceRegistryClientImplTest {
   LocalServiceRegistryClientImpl registryClient;
@@ -44,9 +44,6 @@ public class LocalServiceRegistryClientImplTest {
   String appId = "appId";
 
   String microserviceName = "ms";
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void loadRegistryFile() throws Exception {
@@ -59,7 +56,7 @@ public class LocalServiceRegistryClientImplTest {
   @Test
   public void testLoadRegistryFile() {
     Assert.assertNotNull(registryClient);
-    Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(2));
+    MatcherAssert.assertThat(registryClient.getAllMicroservices().size(), Is.is(2));
     List<MicroserviceInstance> m =
         registryClient.findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
     Assert.assertEquals(1, m.size());
@@ -125,12 +122,12 @@ public class LocalServiceRegistryClientImplTest {
     List<MicroserviceInstance> result =
         registryClient.findServiceInstance("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
-    Assert.assertThat(result, Matchers.nullValue());
+    MatcherAssert.assertThat(result, Matchers.nullValue());
 
     MicroserviceInstances microserviceInstances =
         registryClient.findServiceInstances("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL, null);
-    Assert.assertThat(microserviceInstances.isMicroserviceNotExist(), Matchers.is(true));
-    Assert.assertThat(microserviceInstances.getInstancesResponse(), Matchers.nullValue());
+    MatcherAssert.assertThat(microserviceInstances.isMicroserviceNotExist(), Matchers.is(true));
+    MatcherAssert.assertThat(microserviceInstances.getInstancesResponse(), Matchers.nullValue());
   }
 
   @Test
@@ -146,23 +143,23 @@ public class LocalServiceRegistryClientImplTest {
     List<MicroserviceInstance> result =
         registryClient.findServiceInstance("self", appId, microserviceName, "1.0.0");
 
-    Assert.assertThat(result, Matchers.contains(instance));
+    MatcherAssert.assertThat(result, Matchers.contains(instance));
 
     MicroserviceInstances microserviceInstances =
         registryClient.findServiceInstances("self", appId, microserviceName, "1.0.0", "0");
     List<MicroserviceInstance> results = microserviceInstances.getInstancesResponse().getInstances();
 
-    Assert.assertThat(results, Matchers.contains(instance));
+    MatcherAssert.assertThat(results, Matchers.contains(instance));
   }
 
   @Test
   public void registerSchema_microserviceNotExist() {
     mockRegisterMicroservice(appId, microserviceName, "1.0.0");
 
-    expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage(Matchers.is("Invalid serviceId, serviceId=notExist"));
-
-    registryClient.registerSchema("notExist", "sid", "content");
+    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      registryClient.registerSchema("notExist", "sid", "content");
+    });
+    Assertions.assertEquals("Invalid serviceId, serviceId=notExist", exception.getMessage());
   }
 
   @Test
@@ -197,7 +194,7 @@ public class LocalServiceRegistryClientImplTest {
   @Test
   public void testLoadSchemaIdsFromRegistryFile() {
     Microservice microservice = registryClient.getMicroservice("002");
-    Assert.assertThat(microservice.getSchemas().size(), Is.is(1));
+    MatcherAssert.assertThat(microservice.getSchemas().size(), Is.is(1));
     Assert.assertTrue(microservice.getSchemas().contains("hello"));
   }
 

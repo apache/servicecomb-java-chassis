@@ -18,11 +18,11 @@
 package org.apache.servicecomb.springboot.jaxrs;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class SpringBootJaxrsIT {
     try {
       JaxrsClient.main(new String[0]);
 
-      assertThat(TestMgr.errors().isEmpty(), is(true));
+      MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
     } catch (Throwable e) {
       e.printStackTrace();
       fail("test case failed, message=" + e.getMessage());

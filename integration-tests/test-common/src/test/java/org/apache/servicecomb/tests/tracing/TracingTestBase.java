@@ -19,15 +19,16 @@ package org.apache.servicecomb.tests.tracing;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.tests.EmbeddedAppender;
 import org.apache.servicecomb.tests.Log4jConfig;
+import org.hamcrest.MatcherAssert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.slf4j.Logger;
@@ -78,7 +79,7 @@ public class TracingTestBase {
 
     tracedValues.forEach(value -> log.info("Received value {}", value));
     log.info("values: " + String.join(",", values));
-    assertThat(tracedValues, containsInAnyOrder(values));
+    MatcherAssert.assertThat(tracedValues, containsInAnyOrder(values));
   }
 
   private List<String> tracedValues(List<Span> spans) {
@@ -89,7 +90,7 @@ public class TracingTestBase {
         .filter(span -> "call.path".equals(span.getKey()) || "http.path".equals(span.getKey())
             || "http.status_code".equals(span.getKey()))
         .filter(span -> span.getValue() != null)
-        .map(annotation -> annotation.getValue())
+        .map(Map.Entry::getValue)
         .distinct()
         .collect(Collectors.toList());
   }

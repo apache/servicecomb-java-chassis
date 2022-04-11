@@ -18,10 +18,10 @@
 package org.apache.servicecomb.demo.filter.retry;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.filter.FilterClient;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +36,6 @@ public class FilterClientIT {
   public void clientGetsNoError() throws Exception {
     FilterClient.main(new String[0]);
 
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
   }
 }

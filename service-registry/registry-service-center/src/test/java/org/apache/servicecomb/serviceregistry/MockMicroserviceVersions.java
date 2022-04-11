@@ -32,6 +32,7 @@ import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.foundation.common.Version;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
@@ -112,7 +113,7 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
 
   public void check(MicroserviceVersionRule microserviceVersionRule, String latestVersion, String... instanceVersions) {
     Assert.assertSame(findMicroserviceVersion(latestVersion), microserviceVersionRule.getLatestMicroserviceVersion());
-    Assert.assertThat(microserviceVersionRule.getInstances().values(),
+    MatcherAssert.assertThat(microserviceVersionRule.getInstances().values(),
         Matchers.containsInAnyOrder(findInstances(instanceVersions).toArray()));
   }
 

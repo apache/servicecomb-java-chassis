@@ -16,13 +16,12 @@
  */
 package org.apache.servicecomb.foundation.vertx.client.tcp;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.impl.ContextInternal;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTcpClientConnectionPool {
   @Mocked
@@ -40,6 +39,6 @@ public class TestTcpClientConnectionPool {
 
   @Test
   public void create() {
-    Assert.assertThat(pool.create("rest://localhost:8765"), Matchers.instanceOf(TcpClientConnection.class));
+    Assertions.assertTrue(pool.create("rest://localhost:8765") instanceof TcpClientConnection);
   }
 }

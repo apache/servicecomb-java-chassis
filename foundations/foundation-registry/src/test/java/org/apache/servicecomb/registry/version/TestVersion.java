@@ -18,11 +18,9 @@
 package org.apache.servicecomb.registry.version;
 
 import org.apache.servicecomb.foundation.common.Version;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVersion {
   Version version;
@@ -30,9 +28,6 @@ public class TestVersion {
   short s1 = 1;
 
   short s2 = 2;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void constructFromStringNormalOnlyMajor() {
@@ -74,84 +69,85 @@ public class TestVersion {
 
   @Test
   public void constructFromStringInvalidNull() {
-    expectedException.expect(NullPointerException.class);
-
-    version = new Version(null);
+    Assertions.assertThrows(NullPointerException.class, () -> {
+      version = new Version(null);
+    });
   }
 
   @Test
   public void constructFromStringInvalidEmpty() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid major \"\", version \"\"."));
-    expectedException.expectCause(Matchers.instanceOf(NumberFormatException.class));
-
-    version = new Version("");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("");
+    });
+    Assertions.assertEquals("Invalid major \"\", version \"\".", exception.getMessage());
+    Assertions.assertTrue(exception.getCause() instanceof NumberFormatException);
   }
 
   @Test
   public void constructFromStringInvalidMajorNegative() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("major \"-1\" can not be negative, version \"-1\"."));
-
-    version = new Version("-1");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("-1");
+    });
+    Assertions.assertEquals("major \"-1\" can not be negative, version \"-1\".", exception.getMessage());
   }
 
   @Test
   public void constructFromStringInvalidMajorDot() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid minor \"\", version \"1.\"."));
-    expectedException.expectCause(Matchers.instanceOf(NumberFormatException.class));
-
-    version = new Version("1.");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.");
+    });
+    Assertions.assertEquals("Invalid minor \"\", version \"1.\".", exception.getMessage());
+    Assertions.assertTrue(exception.getCause() instanceof NumberFormatException);
   }
 
   @Test
   public void constructFromStringInvalidMinorNegative() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("minor \"-1\" can not be negative, version \"1.-1\"."));
-
-    version = new Version("1.-1");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.-1");
+    });
+    Assertions.assertEquals("minor \"-1\" can not be negative, version \"1.-1\".", exception.getMessage());
   }
 
   @Test
   public void constructFromStringInvalidMinorDot() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid patch \"\", version \"1.1.\"."));
-    expectedException.expectCause(Matchers.instanceOf(NumberFormatException.class));
-
-    version = new Version("1.1.");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.1.");
+    });
+    Assertions.assertEquals("Invalid patch \"\", version \"1.1.\".", exception.getMessage());
+    Assertions.assertTrue(exception.getCause() instanceof NumberFormatException);
   }
 
   @Test
   public void constructFromStringInvalidPatchNegative() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("patch \"-1\" can not be negative, version \"1.1.-1\"."));
-
-    version = new Version("1.1.-1");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.1.-1");
+    });
+    Assertions.assertEquals("patch \"-1\" can not be negative, version \"1.1.-1\".", exception.getMessage());
   }
 
   @Test
   public void constructFromStringInvalidPatchDot() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid build \"\", version \"1.1.1.\"."));
-    expectedException.expectCause(Matchers.instanceOf(NumberFormatException.class));
-
-    version = new Version("1.1.1.");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.1.1.");
+    });
+    Assertions.assertEquals("Invalid build \"\", version \"1.1.1.\".", exception.getMessage());
+    Assertions.assertTrue(exception.getCause() instanceof NumberFormatException);
   }
 
   @Test
   public void constructFromStringInvalidBuildNegative() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("build \"-1\" can not be negative, version \"1.1.1.-1\"."));
-
-    version = new Version("1.1.1.-1");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.1.1.-1");
+    });
+    Assertions.assertEquals("build \"-1\" can not be negative, version \"1.1.1.-1\".", exception.getMessage());
   }
 
   @Test
   public void constructFromStringInvalidTooManyPart() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid version \"1.1.1.1.\"."));
-    version = new Version("1.1.1.1.");
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      version = new Version("1.1.1.1.");
+    });
+    Assertions.assertEquals("Invalid version \"1.1.1.1.\".", exception.getMessage());
   }
 
   @Test

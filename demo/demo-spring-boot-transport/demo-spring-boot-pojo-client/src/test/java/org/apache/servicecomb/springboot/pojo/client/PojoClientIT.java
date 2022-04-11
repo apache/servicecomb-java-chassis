@@ -18,9 +18,9 @@
 package org.apache.servicecomb.springboot.pojo.client;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.demo.TestMgr;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -36,6 +36,6 @@ public class PojoClientIT {
   public void clientGetsNoError() throws Exception {
     SpringApplication.run(PojoClient.class);
 
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
   }
 }

@@ -24,12 +24,10 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Mocked;
 
@@ -44,9 +42,6 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
 
   HttpServerFilterBeforeSendResponseExecutor executor =
       new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -71,9 +66,7 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
 
     CompletableFuture<Void> result = executor.run();
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.instanceOf(RuntimeExceptionWithoutStackTrace.class));
-
-    result.get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, result::get);
+    Assertions.assertTrue(exception.getCause() instanceof RuntimeExceptionWithoutStackTrace);
   }
 }

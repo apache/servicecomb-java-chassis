@@ -20,15 +20,11 @@ import java.net.URISyntaxException;
 
 import javax.ws.rs.core.MediaType;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHttpUtils {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void parseParamFromHeaderValue_normal() {
@@ -79,11 +75,10 @@ public class TestHttpUtils {
 
   @Test
   public void uriEncode_failed() {
-    expectedException.expect(IllegalArgumentException.class);
-    expectedException.expectMessage(Matchers.is("uriEncode failed, path=\":\"."));
-    expectedException.expectCause(Matchers.instanceOf(URISyntaxException.class));
-
-    HttpUtils.uriEncodePath(":");
+    IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class,
+            () -> HttpUtils.uriEncodePath(":"));
+    Assertions.assertEquals("uriEncode failed, path=\":\".", illegalArgumentException.getMessage());
+    Assertions.assertTrue(illegalArgumentException.getCause() instanceof URISyntaxException);
   }
 
   @Test
@@ -119,12 +114,10 @@ public class TestHttpUtils {
 
   @Test
   public void uriDecode_failed() {
-    expectedException.expect(IllegalArgumentException.class);
-    expectedException
-        .expectMessage(Matchers.is("uriDecode failed, path=\":\"."));
-    expectedException.expectCause(Matchers.instanceOf(URISyntaxException.class));
-
-    HttpUtils.uriDecodePath(":");
+    IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class,
+            () -> HttpUtils.uriDecodePath(":"));
+    Assertions.assertEquals("uriDecode failed, path=\":\".", illegalArgumentException.getMessage());
+    Assertions.assertTrue(illegalArgumentException.getCause() instanceof URISyntaxException);
   }
 
   @Test

@@ -21,9 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
@@ -31,8 +29,6 @@ import com.netflix.spectator.api.Measurement;
 import mockit.Mocked;
 
 public class TestLatencyDistributionMeter {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void testMeasure(@Mocked Id id) {

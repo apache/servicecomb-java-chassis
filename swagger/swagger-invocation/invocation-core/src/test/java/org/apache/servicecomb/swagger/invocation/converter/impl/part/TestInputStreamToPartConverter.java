@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import javax.servlet.http.Part;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,6 +43,6 @@ public class TestInputStreamToPartConverter {
   @Test
   public void convert() {
     Object part = converter.convert(new ByteArrayInputStream(new byte[] {}));
-    Assert.assertThat(part, Matchers.instanceOf(Part.class));
+    MatcherAssert.assertThat(part, Matchers.instanceOf(Part.class));
   }
 }

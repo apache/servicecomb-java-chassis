@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class TestOperationPerfGroup {
     group.addOperationPerf(opPerf);
     group.addOperationPerf(opPerf);
 
-    Assert.assertThat(group.getOperationPerfs(), Matchers.contains(opPerf, opPerf));
+    MatcherAssert.assertThat(group.getOperationPerfs(), Matchers.contains(opPerf, opPerf));
 
     OperationPerf summary = group.getSummary();
 

@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -168,7 +169,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", String[].class);
     String[] value = (String[]) processor.getValue(request);
-    Assert.assertThat(value, Matchers.arrayContaining("h1v"));
+    MatcherAssert.assertThat(value, Matchers.arrayContaining("h1v"));
   }
 
   @SuppressWarnings("unchecked")
@@ -185,7 +186,7 @@ public class TestHeaderProcessor {
         TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
         null, true);
     Object value = processor.getValue(request);
-    Assert.assertThat((List<String>) value, Matchers.contains("h1v"));
+    MatcherAssert.assertThat((List<String>) value, Matchers.contains("h1v"));
   }
 
   @SuppressWarnings("unchecked")
@@ -202,7 +203,7 @@ public class TestHeaderProcessor {
         TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class),
         null, true);
     Object value = processor.getValue(request);
-    Assert.assertThat((Set<String>) value, Matchers.contains("h1v"));
+    MatcherAssert.assertThat((Set<String>) value, Matchers.contains("h1v"));
   }
 
   @Test

@@ -24,6 +24,7 @@ import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.CustomGeneric;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class TestMessageSchema extends TestSchemaBase {
 
     @SuppressWarnings("unchecked")
     CustomGeneric<User> generic = (CustomGeneric<User>) scbRoot;
-    Assert.assertThat(generic.user, Matchers.instanceOf(User.class));
+    MatcherAssert.assertThat(generic.user, Matchers.instanceOf(User.class));
   }
 
   @Test

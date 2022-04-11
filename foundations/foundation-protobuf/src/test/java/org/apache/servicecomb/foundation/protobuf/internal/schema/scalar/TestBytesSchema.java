@@ -20,10 +20,10 @@ import java.util.HashMap;
 
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.google.protobuf.ByteString;
+import org.junit.jupiter.api.Assertions;
 
 public class TestBytesSchema extends TestSchemaBase {
   public TestBytesSchema() {
@@ -38,13 +38,13 @@ public class TestBytesSchema extends TestSchemaBase {
   }
 
   @Test
-  public void type_invalid() throws Throwable {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto bytes, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:bytes"));
-
-    scbMap = new HashMap<>();
-    scbMap.put("bytes", new User());
-    rootSerializer.serialize(scbMap);
+  public void type_invalid() {
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put("bytes", new User());
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto bytes, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:bytes",
+            exception.getMessage());
   }
 }

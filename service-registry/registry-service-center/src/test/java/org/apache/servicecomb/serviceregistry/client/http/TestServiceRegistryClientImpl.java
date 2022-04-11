@@ -50,6 +50,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -134,7 +135,7 @@ public class TestServiceRegistryClientImpl {
         microservice.getServiceName(),
         microservice.getVersion(),
         microservice.getEnvironment()));
-    Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
+    MatcherAssert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
     Assert.assertNull(oClient.registerMicroservice(microservice));
     Assert.assertNull(oClient.getMicroservice("microserviceId"));
     Assert.assertNull(oClient.getMicroserviceInstance("consumerId", "providerId"));

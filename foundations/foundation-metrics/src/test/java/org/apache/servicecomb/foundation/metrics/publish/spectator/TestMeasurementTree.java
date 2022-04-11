@@ -18,12 +18,10 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
 import java.util.concurrent.TimeUnit;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
@@ -39,9 +37,6 @@ public class TestMeasurementTree {
   Registry registry = new DefaultRegistry(clock);
 
   Timer timer;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -85,11 +80,10 @@ public class TestMeasurementTree {
 
   @Test
   public void from_failed() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("tag key \"notExist\" not exist in Measurement(id:g1=g1v:g2=g2v:statistic=count:t3=t3v:t4=t4v,0,0.0)"));
-
-    MeasurementGroupConfig config = new MeasurementGroupConfig("id", "notExist");
-    tree.from(registry.iterator(), config);
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      MeasurementGroupConfig config = new MeasurementGroupConfig("id", "notExist");
+      tree.from(registry.iterator(), config);
+    });
+    Assertions.assertEquals("tag key \"notExist\" not exist in Measurement(id:g1=g1v:g2=g2v:statistic=count:t3=t3v:t4=t4v,0,0.0)", exception.getMessage());
   }
 }

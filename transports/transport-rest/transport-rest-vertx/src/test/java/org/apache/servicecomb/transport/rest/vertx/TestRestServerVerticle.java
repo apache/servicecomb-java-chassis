@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -38,7 +39,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -211,14 +211,14 @@ public class TestRestServerVerticle {
 
       @Mock
       CorsHandler allowedHeaders(Set<String> headerNames) {
-        Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc", "def"));
+        MatcherAssert.assertThat(headerNames, Matchers.containsInAnyOrder("abc", "def"));
         counter.incrementAndGet();
         return null;
       }
 
       @Mock
       CorsHandler exposedHeaders(Set<String> headerNames) {
-        Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc2", "def2"));
+        MatcherAssert.assertThat(headerNames, Matchers.containsInAnyOrder("abc2", "def2"));
         counter.incrementAndGet();
         return null;
       }

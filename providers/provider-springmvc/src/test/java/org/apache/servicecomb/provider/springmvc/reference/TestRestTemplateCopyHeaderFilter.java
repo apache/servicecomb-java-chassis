@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -93,7 +94,7 @@ public class TestRestTemplateCopyHeaderFilter {
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequest(invocation, requestEx);
-    Assert.assertThat(Collections.list(requestEx.getHeaders("name")), Matchers.contains("value"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test

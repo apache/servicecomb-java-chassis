@@ -49,6 +49,7 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -171,7 +172,7 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertSame(resp, response);
-    Assert.assertThat(headers.names(),
+    MatcherAssert.assertThat(headers.names(),
         Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
             org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
@@ -191,7 +192,7 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertSame(resp, response);
-    Assert.assertThat(headers.names(), Matchers.empty());
+    MatcherAssert.assertThat(headers.names(), Matchers.empty());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
   }
 
@@ -208,7 +209,7 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertSame(resp, response);
-    Assert.assertThat(headers.names(),
+    MatcherAssert.assertThat(headers.names(),
         Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
             org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
@@ -223,7 +224,7 @@ public class TestRestClientInvocation {
     when(request.send()).thenReturn(Future.succeededFuture(mock(HttpClientResponse.class)));
     restClientInvocation.invoke(invocation, asyncResp);
 
-    Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
+    MatcherAssert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
@@ -238,7 +239,7 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
     restClientInvocation.invoke(invocation, asyncResp);
 
-    Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(t));
+    MatcherAssert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(t));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
@@ -342,7 +343,7 @@ public class TestRestClientInvocation {
     when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
     restClientInvocation.processResponseBody(null);
 
-    Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
+    MatcherAssert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());

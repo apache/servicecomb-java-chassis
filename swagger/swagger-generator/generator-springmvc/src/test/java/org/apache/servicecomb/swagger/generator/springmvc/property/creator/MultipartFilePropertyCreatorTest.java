@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.property.creator;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,17 +27,17 @@ import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
 
 public class MultipartFilePropertyCreatorTest {
-  private MultipartFilePropertyCreator multipartFilePropertyCreator = new MultipartFilePropertyCreator();
+  private final MultipartFilePropertyCreator multipartFilePropertyCreator = new MultipartFilePropertyCreator();
 
   @Test
   public void createProperty() {
     Property property = multipartFilePropertyCreator.createProperty();
-    Assert.assertThat(property, Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(property, Matchers.instanceOf(FileProperty.class));
   }
 
   @Test
   public void classes() {
     Class<?>[] classes = multipartFilePropertyCreator.classes();
-    Assert.assertThat(classes, Matchers.arrayContaining(MultipartFile.class));
+    MatcherAssert.assertThat(classes, Matchers.arrayContaining(MultipartFile.class));
   }
 }

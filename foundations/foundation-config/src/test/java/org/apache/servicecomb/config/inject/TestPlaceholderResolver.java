@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,49 +44,49 @@ public class TestPlaceholderResolver {
 
   @Test
   public void unknown() {
-    Assert.assertThat(resolver.replace("prefix${xxx}suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix${xxx}suffix", parameters),
         Matchers.contains("prefix${xxx}suffix"));
   }
 
   @Test
   public void empty() {
-    Assert.assertThat(resolver.replace("prefix${}suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix${}suffix", parameters),
         Matchers.contains("prefix${}suffix"));
   }
 
   @Test
   public void notComplete() {
-    Assert.assertThat(resolver.replace("prefix${suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix${suffix", parameters),
         Matchers.contains("prefix${suffix"));
   }
 
   @Test
   public void normal() {
-    Assert.assertThat(resolver.replace("prefix.${key}.suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.${key}.suffix", parameters),
         Matchers.contains("prefix.value.suffix"));
   }
 
   @Test
   public void disable() {
-    Assert.assertThat(resolver.replace("prefix.\\${key}.suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.\\${key}.suffix", parameters),
         Matchers.contains("prefix.${key}.suffix"));
   }
 
   @Test
   public void varOfVar() {
-    Assert.assertThat(resolver.replace("prefix.${varOfVar}.suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.${varOfVar}.suffix", parameters),
         Matchers.contains("prefix.value.suffix"));
   }
 
   @Test
   public void list() {
-    Assert.assertThat(resolver.replace("prefix.${low-list}.suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.${low-list}.suffix", parameters),
         Matchers.contains("prefix.low-1.suffix", "prefix.low-2.suffix"));
   }
 
   @Test
   public void multi_list() {
-    Assert.assertThat(resolver.replace("prefix.${low-list}.${middle-list}.${high-list}.suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.${low-list}.${middle-list}.${high-list}.suffix", parameters),
         Matchers.contains(
             "prefix.low-1.middle-1.high-1.suffix",
             "prefix.low-1.middle-1.high-2.suffix",
@@ -100,13 +100,13 @@ public class TestPlaceholderResolver {
 
   @Test
   public void nested() {
-    Assert.assertThat(resolver.replace("prefix.${${priority}-list}.suffix", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.${${priority}-list}.suffix", parameters),
         Matchers.contains("prefix.low-1.suffix", "prefix.low-2.suffix"));
   }
 
   @Test
   public void mixed() {
-    Assert.assertThat(resolver.replace("prefix.${${priority}-list}.${key}.${high-list}.suffix ${xxx}", parameters),
+    MatcherAssert.assertThat(resolver.replace("prefix.${${priority}-list}.${key}.${high-list}.suffix ${xxx}", parameters),
         Matchers.contains(
             "prefix.low-1.value.high-1.suffix ${xxx}",
             "prefix.low-2.value.high-1.suffix ${xxx}",

@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -168,7 +169,7 @@ public class TestFormProcessor {
 
     ParamValueProcessor processor = createProcessor("name", String[].class);
     String[] value = (String[]) processor.getValue(request);
-    Assert.assertThat(value, Matchers.arrayContaining("value"));
+    MatcherAssert.assertThat(value, Matchers.arrayContaining("value"));
   }
 
   @SuppressWarnings("unchecked")
@@ -185,7 +186,7 @@ public class TestFormProcessor {
         TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
         null, true);
     Object value = processor.getValue(request);
-    Assert.assertThat((List<String>) value, Matchers.contains("value"));
+    MatcherAssert.assertThat((List<String>) value, Matchers.contains("value"));
   }
 
   @SuppressWarnings("unchecked")
@@ -202,7 +203,7 @@ public class TestFormProcessor {
         TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null,
         true);
     Object value = processor.getValue(request);
-    Assert.assertThat((Set<String>) value, Matchers.contains("value"));
+    MatcherAssert.assertThat((Set<String>) value, Matchers.contains("value"));
   }
 
   @Test

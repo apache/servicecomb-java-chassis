@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -78,7 +79,7 @@ public class TestMeasurementNode {
   public void getMeasurements(@Mocked Measurement measurement) {
     node.addMeasurement(measurement);
 
-    Assert.assertThat(node.getMeasurements(), Matchers.contains(measurement));
+    MatcherAssert.assertThat(node.getMeasurements(), Matchers.contains(measurement));
   }
 
   @Test

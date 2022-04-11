@@ -21,6 +21,7 @@ import java.io.File;
 
 import javax.servlet.http.Part;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,6 +43,6 @@ public class TestFileToPartConverter {
   public void convert() {
     File file = new File("abc");
     Object part = converter.convert(file);
-    Assert.assertThat(part, Matchers.instanceOf(Part.class));
+    MatcherAssert.assertThat(part, Matchers.instanceOf(Part.class));
   }
 }

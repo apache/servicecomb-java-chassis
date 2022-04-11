@@ -21,6 +21,7 @@ import java.util.Arrays;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class PartListToPartArrayConverterTest {
   @Test
   public void convert() {
     Object parts = converter.convert(Arrays.asList(new FilePart("name", "file")));
-    Assert.assertThat(parts, Matchers.instanceOf(Part[].class));
+    MatcherAssert.assertThat(parts, Matchers.instanceOf(Part[].class));
   }
 
   @Test

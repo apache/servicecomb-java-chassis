@@ -20,12 +20,12 @@ package org.apache.servicecomb.swagger.generator.core;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public class TestOperationGenerator {
   public void apiOperationNoTag() {
     SwaggerOperation operation = swaggerOperations.findOperation("apiOperationNoTag");
     List<String> tags = operation.getOperation().getTags();
-    assertThat(tags, contains("default0", "default1"));
+    MatcherAssert.assertThat(tags, contains("default0", "default1"));
     assertEquals("value2", operation.getOperation().getSummary());
   }
 
@@ -88,7 +88,7 @@ public class TestOperationGenerator {
   public void noApiOperation() {
     SwaggerOperation operation = swaggerOperations.findOperation("noApiOperation");
     List<String> tags = operation.getOperation().getTags();
-    assertThat(tags, contains("default0", "default1"));
+    MatcherAssert.assertThat(tags, contains("default0", "default1"));
     assertNull(operation.getOperation().getSummary());
   }
 
@@ -96,7 +96,7 @@ public class TestOperationGenerator {
   public void responseThenApiOperation() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("responseThenApiOperation");
     List<String> tags = swaggerOperation.getOperation().getTags();
-    assertThat(tags, contains("tag1", "tag2"));
+    MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
     assertEquals("200 is ok............", response.getDescription());
@@ -106,10 +106,10 @@ public class TestOperationGenerator {
   }
 
   @Test
-  public void apiOperationThenResponse() throws NoSuchMethodException {
+  public void apiOperationThenResponse() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("apiOperationThenResponse");
     List<String> tags = swaggerOperation.getOperation().getTags();
-    assertThat(tags, contains("tag1", "tag2"));
+    MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
     assertEquals("200 is ok............", response.getDescription());

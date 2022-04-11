@@ -34,6 +34,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -251,7 +252,7 @@ public class TestInvocation {
       }
     };
 
-    Assert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.contains(gen1, gen3));
+    MatcherAssert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.contains(gen1, gen3));
   }
 
   InvocationBaseEvent invocationBaseEvent;

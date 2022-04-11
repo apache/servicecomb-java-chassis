@@ -32,6 +32,7 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -96,7 +97,7 @@ public class IsolationDiscoveryFilterTest {
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
 
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
@@ -110,7 +111,7 @@ public class IsolationDiscoveryFilterTest {
     }
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
@@ -121,7 +122,7 @@ public class IsolationDiscoveryFilterTest {
 
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
     Assert.assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
@@ -142,7 +143,7 @@ public class IsolationDiscoveryFilterTest {
     Assert.assertNull(TestServiceCombServerStats.getTryingIsolatedServerInvocation());
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
@@ -167,7 +168,7 @@ public class IsolationDiscoveryFilterTest {
     // The first invocation can occupy the trying chance
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
@@ -176,7 +177,7 @@ public class IsolationDiscoveryFilterTest {
     // Other invocation cannot get trying chance concurrently
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
 
@@ -186,7 +187,7 @@ public class IsolationDiscoveryFilterTest {
     // Other invocation can get the trying chance
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
@@ -209,7 +210,7 @@ public class IsolationDiscoveryFilterTest {
 
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
 
@@ -219,7 +220,7 @@ public class IsolationDiscoveryFilterTest {
         System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
@@ -238,7 +239,7 @@ public class IsolationDiscoveryFilterTest {
 
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
-    Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
+    MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
     Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));

@@ -31,9 +31,8 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import com.netflix.spectator.api.Counter;
 import com.netflix.spectator.api.DefaultRegistry;
@@ -50,9 +49,6 @@ public class TestPrometheusPublisher {
 
   PrometheusPublisher publisher = new PrometheusPublisher();
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   @AfterClass
   public static void teardown() {
     ArchaiusUtils.resetConfig();
@@ -60,26 +56,26 @@ public class TestPrometheusPublisher {
 
   @Test
   public void testBadPublishAddress() {
-    thrown.expect(ServiceCombException.class);
-
-    ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "a:b:c");
-    publisher.init(globalRegistry, null, null);
+    Assertions.assertThrows(ServiceCombException.class, () -> {
+      ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "a:b:c");
+      publisher.init(globalRegistry, null, null);
+    });
   }
 
   @Test
   public void testBadPublishAddress_BadPort() {
-    thrown.expect(ServiceCombException.class);
-
-    ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:xxxx");
-    publisher.init(globalRegistry, null, null);
+    Assertions.assertThrows(ServiceCombException.class, () -> {
+      ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:xxxx");
+      publisher.init(globalRegistry, null, null);
+    });
   }
 
   @Test
   public void testBadPublishAddress_TooLargePort() {
-    thrown.expect(ServiceCombException.class);
-
-    ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:9999999");
-    publisher.init(globalRegistry, null, null);
+    Assertions.assertThrows(ServiceCombException.class, () -> {
+      ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:9999999");
+      publisher.init(globalRegistry, null, null);
+    });
   }
 
   @Test

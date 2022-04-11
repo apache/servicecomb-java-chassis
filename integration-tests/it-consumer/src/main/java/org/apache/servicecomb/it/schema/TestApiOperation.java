@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,35 +41,35 @@ public class TestApiOperation {
   @Test
   public void jaxrs_TestMediaType1() {
     Operation operation = getOperation("apiOperationJaxrsSchema", "testMediaType1");
-    Assert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    Assert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
   }
 
   @Test
   public void jaxrs_TestMediaType2() {
     Operation operation = getOperation("apiOperationJaxrsSchema", "testMediaType2");
-    Assert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    Assert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
   }
 
   @Test
   public void springMVC_TestMediaType1() {
     Operation operation = getOperation("apiOperationSpringMVCSchema", "testMediaType1");
-    Assert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    Assert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
   }
 
   @Test
   public void springMVC_TestMediaType2() {
     Operation operation = getOperation("apiOperationSpringMVCSchema", "testMediaType2");
-    Assert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    Assert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(operation.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(operation.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
   }
 
   @Test
   public void springMVC_TestSwaggerDefinitionMediaType() {
     Swagger swagger = microserviceMeta.findSchemaMeta("apiOperationSpringMVCSchema").getSwagger();
-    Assert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
-    Assert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
   }
 }

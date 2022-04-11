@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class TestAnySchema extends TestSchemaBase {
 
     scbRootBytes = rootSerializer.serialize(root);
     root = rootDeserializer.deserialize(scbRootBytes);
-    Assert.assertThat(root.getAnys(), Matchers.contains("abc", "123"));
+    MatcherAssert.assertThat(root.getAnys(), Matchers.contains("abc", "123"));
   }
 
   @Test
@@ -81,12 +82,12 @@ public class TestAnySchema extends TestSchemaBase {
 
     scbRootBytes = rootSerializer.serialize(root);
     root = rootDeserializer.deserialize(scbRootBytes);
-    Assert.assertThat(root.getAny(), Matchers.instanceOf(Map.class));
-    Assert.assertThat((Map<? extends String, ? extends String>) root.getAny(), Matchers.hasEntry("name", "n1"));
+    MatcherAssert.assertThat(root.getAny(), Matchers.instanceOf(Map.class));
+    MatcherAssert.assertThat((Map<? extends String, ? extends String>) root.getAny(), Matchers.hasEntry("name", "n1"));
 
     RootDeserializer<Map<String, Object>> deserializer = protoMapper.createRootDeserializer("Root", Map.class);
     map = deserializer.deserialize(scbRootBytes);
-    Assert.assertThat((Map<? extends String, ? extends String>) map.get("any"), Matchers.hasEntry("name", "n1"));
+    MatcherAssert.assertThat((Map<? extends String, ? extends String>) map.get("any"), Matchers.hasEntry("name", "n1"));
   }
 
   @Test

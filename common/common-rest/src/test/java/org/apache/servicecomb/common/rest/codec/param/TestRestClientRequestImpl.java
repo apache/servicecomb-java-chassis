@@ -25,6 +25,7 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -137,7 +138,7 @@ public class TestRestClientRequestImpl {
 
     Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
     Assert.assertEquals(1, uploads.size());
-    Assert.assertThat(uploads.asMap(), Matchers.hasEntry(fileName, Arrays.asList(part)));
+    MatcherAssert.assertThat(uploads.asMap(), Matchers.hasEntry(fileName, Arrays.asList(part)));
   }
 
   @Test

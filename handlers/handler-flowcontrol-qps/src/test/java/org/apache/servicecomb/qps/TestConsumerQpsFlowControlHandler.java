@@ -32,9 +32,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -51,9 +49,6 @@ public class TestConsumerQpsFlowControlHandler {
   AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
   OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setUP() {

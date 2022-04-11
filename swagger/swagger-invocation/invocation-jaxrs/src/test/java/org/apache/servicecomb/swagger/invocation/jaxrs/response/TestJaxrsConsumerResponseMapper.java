@@ -24,6 +24,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,6 +76,6 @@ public class TestJaxrsConsumerResponseMapper {
     Response jaxrsResponse = (Response) operation.getResponseMapper().mapResponse(response);
     Assert.assertEquals(result, jaxrsResponse.getEntity());
     Assert.assertEquals(1, jaxrsResponse.getHeaders().size());
-    Assert.assertThat(jaxrsResponse.getHeaders().get("h"), Matchers.contains("v1", "v2"));
+    MatcherAssert.assertThat(jaxrsResponse.getHeaders().get("h"), Matchers.contains("v1", "v2"));
   }
 }
