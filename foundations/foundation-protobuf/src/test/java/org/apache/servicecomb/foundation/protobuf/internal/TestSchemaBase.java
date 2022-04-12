@@ -29,8 +29,6 @@ import org.apache.servicecomb.foundation.protobuf.internal.model.PrimitiveWrappe
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
 import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 
 import io.protostuff.compiler.model.Field;
 
@@ -57,9 +55,6 @@ public class TestSchemaBase {
 
   protected static RootDeserializer<Map<String, Object>> mapRootDeserializer = protoMapper
       .createRootDeserializer("Root", Map.class);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   protected Object scbRoot;
 

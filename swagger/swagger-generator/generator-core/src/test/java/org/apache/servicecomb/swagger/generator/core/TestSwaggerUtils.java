@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
@@ -40,10 +39,10 @@ import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeade
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.swagger.models.Swagger;
@@ -56,8 +55,6 @@ import io.swagger.models.properties.StringProperty;
 import mockit.Expectations;
 
 public class TestSwaggerUtils {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   private void testSchemaMethod(String resultName, String... methodNames) {
     UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
@@ -271,9 +268,9 @@ public class TestSwaggerUtils {
       }
     };
 
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(
-        "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
+            () -> SwaggerGeneratorUtils.collectParameterName(parameter));
+    String expectedMsg = "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
             + "solution:\n"
             + "  change pom.xml, add compiler argument: -parameters, for example:\n"
             + "    <plugin>\n"
@@ -282,8 +279,8 @@ public class TestSwaggerUtils {
             + "      <configuration>\n"
             + "        <compilerArgument>-parameters</compilerArgument>\n"
             + "      </configuration>\n"
-            + "    </plugin>");
-    SwaggerGeneratorUtils.collectParameterName(parameter);
+            + "    </plugin>";
+    Assertions.assertEquals(expectedMsg, exception.getMessage());
   }
 
   @Test
@@ -349,7 +346,7 @@ public class TestSwaggerUtils {
           testExcep(fields1[i].getGenericType(), fields2[j].getGenericType());
           fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-          assertThat(e.getMessage(), containsString("duplicate param model:"));
+          MatcherAssert.assertThat(e.getMessage(), containsString("duplicate param model:"));
         }
       }
     }

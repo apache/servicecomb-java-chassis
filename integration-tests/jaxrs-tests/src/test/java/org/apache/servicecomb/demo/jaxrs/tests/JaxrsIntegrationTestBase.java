@@ -21,7 +21,6 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -40,6 +39,7 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
+import org.hamcrest.MatcherAssert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -69,8 +69,8 @@ public class JaxrsIntegrationTestBase {
     ResponseEntity<String> responseEntity = restTemplate
         .getForEntity(baseUrl + "sayHi?name=Mike", String.class);
 
-    assertThat(responseEntity.getStatusCode(), is(OK));
-    assertThat(responseEntity.getBody(), is("Hi Mike"));
+    MatcherAssert.assertThat(responseEntity.getStatusCode(), is(OK));
+    MatcherAssert.assertThat(responseEntity.getBody(), is("Hi Mike"));
   }
 
   @Test
@@ -78,8 +78,8 @@ public class JaxrsIntegrationTestBase {
     ResponseEntity<String> responseEntity = restTemplate
         .getForEntity(baseUrl, String.class);
 
-    assertThat(responseEntity.getStatusCode(), is(OK));
-    assertThat(responseEntity.getBody(), is("Welcome home"));
+    MatcherAssert.assertThat(responseEntity.getStatusCode(), is(OK));
+    MatcherAssert.assertThat(responseEntity.getBody(), is("Welcome home"));
   }
 
   @Test
@@ -96,7 +96,7 @@ public class JaxrsIntegrationTestBase {
           jsonRequest(users),
           reference);
 
-      assertThat(responseEntity.getStatusCode(), is(OK));
+      MatcherAssert.assertThat(responseEntity.getStatusCode(), is(OK));
 
       Map<String, User> body = responseEntity.getBody();
       assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
@@ -198,7 +198,7 @@ public class JaxrsIntegrationTestBase {
       ResponseEntity<String> responseEntity = restTemplate
           .exchange(url + "sayhi/{name}", PUT, null, String.class, "world");
 
-      assertThat(responseEntity.getStatusCode(), is(ACCEPTED));
+      MatcherAssert.assertThat(responseEntity.getStatusCode(), is(ACCEPTED));
       assertEquals("world sayhi", jsonBodyOf(responseEntity, String.class));
     }
   }
@@ -299,7 +299,7 @@ public class JaxrsIntegrationTestBase {
         Integer.class,
         params);
 
-    assertThat(result.getBody(), is(2));
+    MatcherAssert.assertThat(result.getBody(), is(2));
   }
 
   @Test
@@ -313,7 +313,7 @@ public class JaxrsIntegrationTestBase {
         Integer.class,
         params);
 
-    assertThat(result.getBody(), is(2));
+    MatcherAssert.assertThat(result.getBody(), is(2));
   }
 
   @Test
@@ -321,7 +321,7 @@ public class JaxrsIntegrationTestBase {
     for (String url : urls) {
       int result = restTemplate.getForObject(url, Integer.class);
 
-      assertThat(result, is(100));
+      MatcherAssert.assertThat(result, is(100));
     }
   }
 

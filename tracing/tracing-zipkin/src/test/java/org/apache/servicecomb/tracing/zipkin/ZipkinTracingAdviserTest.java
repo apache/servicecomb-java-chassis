@@ -24,7 +24,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Array;
@@ -40,6 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Test;
 
@@ -82,12 +82,12 @@ public class ZipkinTracingAdviserTest {
   public void startsNewRootSpan() throws Throwable {
     String result = tracingAdviser.invoke(spanName, path, supplier);
 
-    assertThat(result, is(expected));
+    MatcherAssert.assertThat(result, is(expected));
     await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
 
     zipkin2.Span span = traces.values().iterator().next().poll();
-    assertThat(span.name(), is(spanName));
-    assertThat(tracedValues(span), contains(this.getClass().getCanonicalName()));
+    MatcherAssert.assertThat(span.name(), is(spanName));
+    MatcherAssert.assertThat(tracedValues(span), contains(this.getClass().getCanonicalName()));
   }
 
   @Test
@@ -104,8 +104,8 @@ public class ZipkinTracingAdviserTest {
     await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
 
     zipkin2.Span span = traces.values().iterator().next().poll();
-    assertThat(span.name(), is(spanName));
-    assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
+    MatcherAssert.assertThat(span.name(), is(spanName));
+    MatcherAssert.assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
   }
 
   @SuppressWarnings({"unused", "try"})
@@ -121,7 +121,7 @@ public class ZipkinTracingAdviserTest {
         waitTillAllAreReady(cyclicBarrier);
 
         try (SpanInScope spanInScope = tracing.tracer().withSpanInScope(currentSpan)) {
-          assertThat(tracingAdviser.invoke(spanName, path, supplier), is(expected));
+          MatcherAssert.assertThat(tracingAdviser.invoke(spanName, path, supplier), is(expected));
         } catch (Throwable throwable) {
           fail(throwable.getMessage());
         } finally {
@@ -132,16 +132,16 @@ public class ZipkinTracingAdviserTest {
 
     CompletableFuture.allOf(futures).join();
 
-    assertThat(traces.size(), is(nThreads));
+    MatcherAssert.assertThat(traces.size(), is(nThreads));
 
     for (Queue<zipkin2.Span> queue : traces.values()) {
       zipkin2.Span child = queue.poll();
-      assertThat(child.name(), is(spanName));
+      MatcherAssert.assertThat(child.name(), is(spanName));
 
       zipkin2.Span parent = queue.poll();
-      assertThat(child.parentId(), is(parent.id()));
-      assertThat(child.traceId(), is(parent.traceId()));
-      assertThat(tracedValues(child), contains(this.getClass().getCanonicalName()));
+      MatcherAssert.assertThat(child.parentId(), is(parent.id()));
+      MatcherAssert.assertThat(child.traceId(), is(parent.traceId()));
+      MatcherAssert.assertThat(tracedValues(child), contains(this.getClass().getCanonicalName()));
     }
   }
 
@@ -157,7 +157,7 @@ public class ZipkinTracingAdviserTest {
     return spans.tags().entrySet().stream()
         .filter(span -> CALL_PATH.equals(span.getKey()) || "error".equals(span.getKey()))
         .filter(span -> span.getValue() != null)
-        .map(annotation -> new String(annotation.getValue()))
+        .map(Map.Entry::getValue)
         .distinct()
         .collect(Collectors.toList());
   }

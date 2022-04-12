@@ -26,18 +26,14 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
-import org.apache.servicecomb.registry.discovery.DiscoveryTree;
-import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -63,9 +59,6 @@ public class TestDiscoveryTree {
 
   DiscoveryTreeNode result;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
   public void loadFromSPI(@Mocked DiscoveryFilter f1, @Mocked DiscoveryFilter f2) {
     Class<? extends DiscoveryFilter> cls = DiscoveryFilter.class;
@@ -78,7 +71,7 @@ public class TestDiscoveryTree {
 
     discoveryTree.loadFromSPI(cls);
 
-    Assert.assertThat(filters, Matchers.contains(f1, f2));
+    MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
   }
 
   @Test
@@ -104,7 +97,7 @@ public class TestDiscoveryTree {
     discoveryTree.addFilter(f1);
     discoveryTree.sort();
 
-    Assert.assertThat(filters, Matchers.contains(f1, f2));
+    MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
   }
 
   @Test
@@ -222,10 +215,11 @@ public class TestDiscoveryTree {
     };
     discoveryTree.addFilter(filter);
 
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is(filter.getClass().getName() + " discovery return null."));
-
-    result = discoveryTree.discovery(context, null, null, null);
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> {
+              result = discoveryTree.discovery(context, null, null, null);
+            });
+    Assertions.assertEquals(filter.getClass().getName() + " discovery return null.", exception.getMessage());
   }
 
   @Test

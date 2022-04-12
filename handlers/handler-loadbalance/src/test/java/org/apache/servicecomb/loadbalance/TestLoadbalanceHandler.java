@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -38,17 +36,13 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
-import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.netflix.loadbalancer.LoadBalancerStats;
 
@@ -66,13 +60,9 @@ import mockit.Mocked;
 public class TestLoadbalanceHandler {
   static SCBEngine scbEngine;
 
-  static InstanceCacheManager instanceCacheManager;
-
   static TransportManager transportManager;
 
   String microserviceName = "ms";
-
-//  IRule rule = Mockito.mock(IRule.class);
 
   LoadbalanceHandler handler;
 
@@ -85,11 +75,6 @@ public class TestLoadbalanceHandler {
   Transport restTransport;
 
   Response sendResponse;
-
-//  List<String> results = new ArrayList<>();
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setUp() {

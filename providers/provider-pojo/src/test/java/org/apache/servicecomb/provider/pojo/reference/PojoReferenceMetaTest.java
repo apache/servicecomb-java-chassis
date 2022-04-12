@@ -26,6 +26,7 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,8 +54,8 @@ public class PojoReferenceMetaTest {
     pojoReferenceMeta.afterPropertiesSet();
 
     Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
-    assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
-    Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
+    MatcherAssert.assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
+    Assert.assertTrue(pojoReferenceMeta.isSingleton());
 
     scbEngine.destroy();
   }

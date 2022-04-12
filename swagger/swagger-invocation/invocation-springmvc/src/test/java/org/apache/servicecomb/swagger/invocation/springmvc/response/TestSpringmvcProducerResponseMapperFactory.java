@@ -24,6 +24,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -67,10 +68,10 @@ public class TestSpringmvcProducerResponseMapperFactory {
 
     ProducerResponseMapper mapper = factory
         .createResponseMapper(factorys, responseEntityMethod.getGenericReturnType());
-    Assert.assertThat(mapper, Matchers.instanceOf(SpringmvcProducerResponseMapper.class));
+    MatcherAssert.assertThat(mapper, Matchers.instanceOf(SpringmvcProducerResponseMapper.class));
 
     ResponseEntity<String[]> responseEntity = new ResponseEntity<>(new String[] {"a", "b"}, HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
-    Assert.assertThat(response.getResult(), Matchers.arrayContaining("a", "b"));
+    MatcherAssert.assertThat(response.getResult(), Matchers.arrayContaining("a", "b"));
   }
 }

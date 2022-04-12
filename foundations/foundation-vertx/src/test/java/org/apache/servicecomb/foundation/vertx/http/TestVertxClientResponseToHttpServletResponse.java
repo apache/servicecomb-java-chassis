@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.StatusType;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -109,7 +110,7 @@ public class TestVertxClientResponseToHttpServletResponse {
       }
     };
 
-    Assert.assertThat(response.getHeaders("name"), Matchers.contains("v1", "v2"));
+    MatcherAssert.assertThat(response.getHeaders("name"), Matchers.contains("v1", "v2"));
   }
 
   @Test
@@ -124,6 +125,6 @@ public class TestVertxClientResponseToHttpServletResponse {
       }
     };
 
-    Assert.assertThat(response.getHeaderNames(), Matchers.contains("n1", "n2"));
+    MatcherAssert.assertThat(response.getHeaderNames(), Matchers.contains("n1", "n2"));
   }
 }

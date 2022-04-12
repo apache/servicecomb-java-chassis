@@ -18,10 +18,10 @@
 package org.apache.servicecomb.demo.localRegistryClient;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.localRegistryClient.Application;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +35,6 @@ public class LocalRegistryIT {
   public void clientGetsNoError() throws Exception {
     Application.main(new String[0]);
 
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
   }
 }

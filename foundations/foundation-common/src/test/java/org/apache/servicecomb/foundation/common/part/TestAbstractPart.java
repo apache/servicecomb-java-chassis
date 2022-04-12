@@ -21,28 +21,21 @@ import java.io.IOException;
 
 import javax.ws.rs.core.MediaType;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAbstractPart {
   AbstractPart part = new AbstractPart();
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  private void initExpectedException() {
-    expectedException.expect(Error.class);
-    expectedException.expectMessage(Matchers.is("not supported method"));
+  private void checkError(Error error) {
+    Assertions.assertEquals("not supported method", error.getMessage());
   }
 
   @Test
   public void getInputStream() throws IOException {
-    initExpectedException();
-
-    part.getInputStream();
+    Error error = Assertions.assertThrows(Error.class, () -> part.getInputStream());
+    checkError(error);
   }
 
   @Test
@@ -96,43 +89,37 @@ public class TestAbstractPart {
 
   @Test
   public void getSize() {
-    initExpectedException();
-
-    part.getSize();
+    Error error = Assertions.assertThrows(Error.class, () -> part.getSize());
+    checkError(error);
   }
 
   @Test
   public void write() throws IOException {
-    initExpectedException();
-
-    part.write("file");
+    Error error = Assertions.assertThrows(Error.class, () -> part.write("file"));
+    checkError(error);
   }
 
   @Test
   public void delete() throws IOException {
-    initExpectedException();
-
-    part.delete();
+    Error error = Assertions.assertThrows(Error.class, () -> part.delete());
+    checkError(error);
   }
 
   @Test
   public void getHeader() {
-    initExpectedException();
-
-    part.getHeader("header");
+    Error error = Assertions.assertThrows(Error.class, () -> part.getHeader("header"));
+    checkError(error);
   }
 
   @Test
   public void getHeaders() {
-    initExpectedException();
-
-    part.getHeaders("header");
+    Error error = Assertions.assertThrows(Error.class, () -> part.getHeaders("header"));
+    checkError(error);
   }
 
   @Test
   public void getHeaderNames() {
-    initExpectedException();
-
-    part.getHeaderNames();
+    Error error = Assertions.assertThrows(Error.class, () -> part.getHeaderNames());
+    checkError(error);
   }
 }

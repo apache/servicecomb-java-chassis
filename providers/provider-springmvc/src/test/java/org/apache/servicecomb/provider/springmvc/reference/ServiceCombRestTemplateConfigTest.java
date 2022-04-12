@@ -18,8 +18,8 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,6 +31,6 @@ public class ServiceCombRestTemplateConfigTest {
   public void exposesServiceCombRestTemplate() {
     RestTemplate restTemplate = config.restTemplate();
 
-    assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
+    MatcherAssert.assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
   }
 }

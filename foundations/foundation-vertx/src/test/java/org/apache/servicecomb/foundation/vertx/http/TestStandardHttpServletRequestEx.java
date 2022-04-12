@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -104,7 +105,7 @@ public class TestStandardHttpServletRequestEx {
     };
 
     Assert.assertSame(inherited, requestEx.getParameterMap());
-    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1"));
     Assert.assertSame(v1, requestEx.getParameterValues("p1"));
     Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
   }
@@ -130,8 +131,8 @@ public class TestStandardHttpServletRequestEx {
       }
     };
 
-    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
-    Assert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
+    MatcherAssert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
     Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
   }
 
@@ -148,6 +149,6 @@ public class TestStandardHttpServletRequestEx {
 
     Assert.assertSame(parameterMap, requestEx.getParameterMap());
 
-    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("k1", "k2"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("k1", "k2"));
   }
 }

@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,7 +67,7 @@ public class TestSpringmvcProducerResponseMapper {
     ResponseEntity<String[]> responseEntity =
         new ResponseEntity<>(arrResult, org.springframework.http.HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
-    Assert.assertThat((List<String>) response.getResult(), Matchers.contains("a", "b"));
+    MatcherAssert.assertThat((List<String>) response.getResult(), Matchers.contains("a", "b"));
     Assert.assertEquals(Status.OK, response.getStatus());
   }
 
@@ -89,6 +90,6 @@ public class TestSpringmvcProducerResponseMapper {
     Response response = mapper.mapResponse(null, responseEntity);
 
     List<String> hv = response.getHeaders("h");
-    Assert.assertThat(hv, Matchers.contains("v"));
+    MatcherAssert.assertThat(hv, Matchers.contains("v"));
   }
 }

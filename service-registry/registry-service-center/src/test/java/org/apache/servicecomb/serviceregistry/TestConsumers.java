@@ -29,6 +29,7 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -104,7 +105,7 @@ public class TestConsumers extends TestRegistryBase {
       appManager.getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
       Assert.assertEquals(0, microserviceManager.getVersionsByName().size());
 
-      Assert.assertThat(collector.getEvents().stream()
+      MatcherAssert.assertThat(collector.getEvents().stream()
               .filter(e -> e.getThrowableInformation() != null)
               .map(e -> e.getThrowableInformation().getThrowable().getMessage())
               .toArray(),
@@ -132,7 +133,7 @@ public class TestConsumers extends TestRegistryBase {
         .registerMicroserviceMapping("3rd", "1.0.0", Arrays.asList(microserviceInstance), Hello.class);
 
     MicroserviceVersionRule microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId, "3rd", "0+");
-    Assert.assertThat(microserviceVersionRule.getInstances().values(), Matchers.contains(microserviceInstance));
+    MatcherAssert.assertThat(microserviceVersionRule.getInstances().values(), Matchers.contains(microserviceInstance));
   }
 
   @Test
@@ -145,7 +146,7 @@ public class TestConsumers extends TestRegistryBase {
 
     MicroserviceVersionRule microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId, "3rd", "0+");
     Assert.assertEquals(2, microserviceVersionRule.getInstances().size());
-    Assert.assertThat(microserviceVersionRule.getInstances().values().stream()
+    MatcherAssert.assertThat(microserviceVersionRule.getInstances().values().stream()
             .flatMap(inst -> inst.getEndpoints().stream())
             .toArray(),
         Matchers.arrayContainingInAnyOrder("cse://127.0.0.1:8080", "cse://127.0.0.1:8081"));

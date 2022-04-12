@@ -26,6 +26,7 @@ import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -70,9 +71,9 @@ public class TestHealthBootListener {
     event.setScbEngine(scbEngine);
     listener.onBeforeProducerProvider(event);
 
-    Assert.assertThat(producerMetas, Matchers.contains(producerMeta));
-    Assert.assertThat(producerMeta.getSchemaId(), Matchers.equalTo("healthEndpoint"));
-    Assert.assertThat(producerMeta.getInstance(), Matchers.instanceOf(HealthCheckerRestPublisher.class));
+    MatcherAssert.assertThat(producerMetas, Matchers.contains(producerMeta));
+    MatcherAssert.assertThat(producerMeta.getSchemaId(), Matchers.equalTo("healthEndpoint"));
+    MatcherAssert.assertThat(producerMeta.getInstance(), Matchers.instanceOf(HealthCheckerRestPublisher.class));
   }
 
   @Test
@@ -99,6 +100,6 @@ public class TestHealthBootListener {
     event.setScbEngine(scbEngine);
     listener.onBeforeProducerProvider(event);
 
-    Assert.assertThat(producerMetas, Matchers.empty());
+    MatcherAssert.assertThat(producerMetas, Matchers.empty());
   }
 }

@@ -41,6 +41,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -112,17 +113,17 @@ public class Test3rdPartyInvocation {
     String testParam2 = "test2";
     List<String> response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
     // user defined header, even though start with x-cse, will not be removed
-    Assert.assertThat(response, Matchers.contains("host", "x_cse_test", "x_cse_test2"));
+    MatcherAssert.assertThat(response, Matchers.contains("host", "x_cse_test", "x_cse_test2"));
 
     ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled", "false");
     response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
-    Assert.assertThat(response,
+    MatcherAssert.assertThat(response,
         Matchers.contains("host", "x-cse-context", "x-cse-target-microservice", "x_cse_test", "x_cse_test2"));
 
     ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled", "true");
     ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled.3rdPartyDataTypeJaxrs", "false");
     response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
-    Assert.assertThat(response,
+    MatcherAssert.assertThat(response,
         Matchers.contains("host", "x-cse-context", "x-cse-target-microservice", "x_cse_test", "x_cse_test2"));
 
     ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled.3rdPartyDataTypeJaxrs", "true");

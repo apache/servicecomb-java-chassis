@@ -24,6 +24,7 @@ import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -87,7 +88,7 @@ public class TestRestVertxTransportConfig {
       fail("an exception is expected!");
     } catch (InvocationException e) {
       // in slow environment, may cause connection close. 
-      Assert.assertThat(ExceptionUtils.getExceptionMessageWithoutTrace(e),
+      MatcherAssert.assertThat(ExceptionUtils.getExceptionMessageWithoutTrace(e),
           CoreMatchers.anyOf(CoreMatchers.containsString("HTTP header is larger than 10000 bytes"),
               CoreMatchers.containsString("Connection was closed")));
     }

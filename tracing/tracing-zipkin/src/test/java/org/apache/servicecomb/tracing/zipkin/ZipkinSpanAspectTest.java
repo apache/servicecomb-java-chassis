@@ -22,9 +22,9 @@ import static org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser.CALL_PA
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
@@ -33,6 +33,7 @@ import org.apache.servicecomb.tracing.zipkin.ZipkinSpanAspectTest.TracingConfig;
 import org.apache.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication;
 import org.apache.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.CustomSpanTask;
 import org.apache.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.SomeSlowTask;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,25 +94,25 @@ public class ZipkinSpanAspectTest {
     await().atMost(2, SECONDS).until(() -> !spans.isEmpty());
 
     zipkin2.Span span = spans.poll();
-    assertThat(span.name(), is("crawl"));
-    assertThat(tracedValues(span), contains(SomeSlowTask.class.getMethod("crawl").toString()));
+    MatcherAssert.assertThat(span.name(), is("crawl"));
+    MatcherAssert.assertThat(tracedValues(span), contains(SomeSlowTask.class.getMethod("crawl").toString()));
   }
 
   @Test
-  public void reportCustomSpanInfomation() throws Exception {
+  public void reportCustomSpanInformation() {
     customSpanTask.invoke();
     await().atMost(2, SECONDS).until(() -> !spans.isEmpty());
 
     zipkin2.Span span = spans.poll();
-    assertThat(span.name(), is("transaction1"));
-    assertThat(tracedValues(span), contains("startA"));
+    MatcherAssert.assertThat(span.name(), is("transaction1"));
+    MatcherAssert.assertThat(tracedValues(span), contains("startA"));
   }
 
   private List<String> tracedValues(zipkin2.Span spans) {
     return spans.tags().entrySet().stream()
         .filter(span -> CALL_PATH.equals(span.getKey()) || "error".equals(span.getKey()))
         .filter(span -> span.getValue() != null)
-        .map(annotation -> new String(annotation.getValue()))
+        .map(Map.Entry::getValue)
         .distinct()
         .collect(Collectors.toList());
   }

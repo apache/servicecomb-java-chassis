@@ -22,6 +22,7 @@ import java.util.Collections;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,7 +97,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test
@@ -110,7 +111,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
   }
 
   @Test
@@ -125,7 +126,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.setHeader("name", "v1");
     request.setHeader("name", "v2");
-    Assert.assertThat(headers.getAll("name"), Matchers.contains("v2"));
+    MatcherAssert.assertThat(headers.getAll("name"), Matchers.contains("v2"));
   }
 
   @Test
@@ -140,7 +141,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.addHeader("name", "v1");
     request.addHeader("name", "v2");
-    Assert.assertThat(headers.getAll("name"), Matchers.contains("v1", "v2"));
+    MatcherAssert.assertThat(headers.getAll("name"), Matchers.contains("v1", "v2"));
   }
 
   @Test

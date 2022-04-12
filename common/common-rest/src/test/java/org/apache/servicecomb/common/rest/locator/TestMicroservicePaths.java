@@ -27,9 +27,8 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -39,9 +38,6 @@ public class TestMicroservicePaths {
   static SCBEngine scbEngine;
 
   static MicroservicePaths paths;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @BeforeClass
   public static void setup() {
@@ -82,10 +78,9 @@ public class TestMicroservicePaths {
       }
     };
 
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("operation with url /static/, method POST is duplicated.");
-
-    paths.addResource(staticResPost);
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> paths.addResource(staticResPost));
+    Assertions.assertEquals("operation with url /static/, method POST is duplicated.", exception.getMessage());
   }
 
   @Test

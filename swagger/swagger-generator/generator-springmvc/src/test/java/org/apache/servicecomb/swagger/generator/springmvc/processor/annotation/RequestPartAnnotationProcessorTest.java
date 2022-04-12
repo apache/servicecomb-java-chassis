@@ -22,6 +22,7 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -60,7 +61,7 @@ public class RequestPartAnnotationProcessorTest {
 
     Parameter stringParam = parameters[0];
     RequestPart stringParamAnnotation = stringParam.getAnnotation(RequestPart.class);
-    Assert.assertThat(requestPartAnnotationProcessor.getParameterName(stringParamAnnotation),
+    MatcherAssert.assertThat(requestPartAnnotationProcessor.getParameterName(stringParamAnnotation),
         Matchers.is("stringParam"));
   }
 
@@ -70,13 +71,13 @@ public class RequestPartAnnotationProcessorTest {
 
     Parameter intParam = parameters[1];
     RequestPart intParamAnnotation = intParam.getAnnotation(RequestPart.class);
-    Assert.assertThat(requestPartAnnotationProcessor.getParameterName(intParamAnnotation),
+    MatcherAssert.assertThat(requestPartAnnotationProcessor.getParameterName(intParamAnnotation),
         Matchers.is("intParam"));
   }
 
   @Test
   public void getHttpParameterType() {
-    Assert.assertThat(requestPartAnnotationProcessor.getHttpParameterType(null),
+    MatcherAssert.assertThat(requestPartAnnotationProcessor.getHttpParameterType(null),
         Matchers.is(HttpParameterType.FORM));
   }
 
@@ -88,8 +89,8 @@ public class RequestPartAnnotationProcessorTest {
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    Assert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    Assert.assertThat(formParameter.getType(), Matchers.is("string"));
+    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
+    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("string"));
   }
 
   @Test
@@ -100,9 +101,9 @@ public class RequestPartAnnotationProcessorTest {
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    Assert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    Assert.assertThat(formParameter.getType(), Matchers.is("array"));
-    Assert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
+    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
+    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
+    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
   }
 
   @Test
@@ -113,9 +114,9 @@ public class RequestPartAnnotationProcessorTest {
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    Assert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    Assert.assertThat(formParameter.getType(), Matchers.is("array"));
-    Assert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
+    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
+    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
+    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
   }
 
   @Test
@@ -126,8 +127,8 @@ public class RequestPartAnnotationProcessorTest {
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    Assert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    Assert.assertThat(formParameter.getType(), Matchers.is("file"));
+    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
+    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("file"));
   }
 
   @Test
@@ -138,9 +139,9 @@ public class RequestPartAnnotationProcessorTest {
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    Assert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    Assert.assertThat(formParameter.getType(), Matchers.is("array"));
-    Assert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
+    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
+    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
   }
 
   @Test
@@ -151,9 +152,9 @@ public class RequestPartAnnotationProcessorTest {
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    Assert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    Assert.assertThat(formParameter.getType(), Matchers.is("array"));
-    Assert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
+    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
+    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
   }
 
   public static class DemoRest {

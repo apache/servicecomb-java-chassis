@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -119,22 +120,22 @@ public class SwaggerDefinitionProcessorTest {
     assertEquals("testValue", tag.getExternalDocs().getDescription());
     assertEquals("testUrl", tag.getExternalDocs().getUrl());
     assertEquals("127.0.0.1", swagger.getHost());
-    assertThat(swagger.getSchemes(), contains(io.swagger.models.Scheme.HTTP, io.swagger.models.Scheme.HTTPS));
+    MatcherAssert.assertThat(swagger.getSchemes(), contains(io.swagger.models.Scheme.HTTP, io.swagger.models.Scheme.HTTPS));
     io.swagger.models.Info info = swagger.getInfo();
     assertEquals("title", info.getTitle());
     assertEquals("version", info.getVersion());
     assertEquals("desc", info.getDescription());
     assertEquals("contactName", info.getContact().getName());
     assertEquals("licenseName", info.getLicense().getName());
-    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
-    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
+    MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
   }
 
   @Test
   public void testProcess_emptyMediaType() {
     Swagger swagger = SwaggerGenerator.generate(SwaggerTestTarget_EmptyMediaType.class);
-    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_XML));
-    assertThat(swagger.getProduces(), Matchers.contains(MediaType.TEXT_PLAIN));
+    MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.TEXT_PLAIN));
   }
 
   @Test

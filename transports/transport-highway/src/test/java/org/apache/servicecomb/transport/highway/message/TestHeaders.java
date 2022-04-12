@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,8 +30,8 @@ public class TestHeaders {
   @Test
   public void test1() {
     Headers headers = new Headers();
-    Assert.assertEquals(null, headers.getFirst("h1"));
-    Assert.assertEquals(null, headers.getHeader("h1"));
+    Assert.assertNull(headers.getFirst("h1"));
+    Assert.assertNull(headers.getHeader("h1"));
 
     Map<String, List<Object>> headerMap = new HashMap<>();
     List<Object> h1Value = Arrays.asList("h1v1", "h1v2");
@@ -41,8 +42,8 @@ public class TestHeaders {
 
     Assert.assertEquals(headerMap, headers.getHeaderMap());
     Assert.assertEquals("h1v1", headers.getFirst("h1"));
-    Assert.assertEquals(null, headers.getFirst("h2"));
-    Assert.assertEquals(null, headers.getFirst("h3"));
+    Assert.assertNull(headers.getFirst("h2"));
+    Assert.assertNull(headers.getFirst("h3"));
     Assert.assertEquals(h1Value, headers.getHeader("h1"));
   }
 
@@ -61,6 +62,6 @@ public class TestHeaders {
     headers.addHeader("h", Arrays.asList("v1", "v2"));
     headers.addHeader("h", Arrays.asList("v3"));
 
-    Assert.assertThat(headers.getHeader("h"), Matchers.contains("v1", "v2", "v3"));
+    MatcherAssert.assertThat(headers.getHeader("h"), Matchers.contains("v1", "v2", "v3"));
   }
 }

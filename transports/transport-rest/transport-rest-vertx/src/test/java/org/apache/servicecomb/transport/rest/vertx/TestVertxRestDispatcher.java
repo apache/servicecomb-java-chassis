@@ -38,6 +38,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -201,10 +202,10 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
-    Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
-    Assert.assertThat(response.responseChunk,
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
+    MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
+    MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\"}"));
     Assert.assertTrue(response.responseEnded);
   }
@@ -227,9 +228,9 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
-    Assert.assertThat(response.responseChunk,
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+    MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + exceptionMessage + "\"}"));
     Assert.assertTrue(response.responseEnded);
   }
@@ -252,8 +253,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
     Assert.assertTrue(response.responseEnded);
   }
 
@@ -275,10 +276,10 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
-    Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    Assert.assertThat(response.responseChunk,
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+    MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\"}"));
     Assert.assertTrue(response.responseEnded);
   }

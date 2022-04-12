@@ -33,6 +33,7 @@ import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class TestLambdaMetafactoryUtils {
     setter.accept(1);
     int f1 = (int) getter.get();
     Assert.assertEquals(1, f1);
-    Assert.assertThat((List<Integer>) echo.apply(Arrays.asList(2)), Matchers.contains(2));
+    MatcherAssert.assertThat((List<Integer>) echo.apply(Arrays.asList(2)), Matchers.contains(2));
   }
 
   @SuppressWarnings("unchecked")
@@ -96,7 +97,7 @@ public class TestLambdaMetafactoryUtils {
     setter.set(model, 1);
     int f1 = getter.get(model);
     Assert.assertEquals(1, f1);
-    Assert.assertThat((List<Integer>) echo.apply(model, Arrays.asList(2)), Matchers.contains(2));
+    MatcherAssert.assertThat((List<Integer>) echo.apply(model, Arrays.asList(2)), Matchers.contains(2));
 
     fluentSetter.set(model, 2);
     int ff1 = getter.get(model);

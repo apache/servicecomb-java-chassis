@@ -29,13 +29,11 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
-import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -63,9 +61,6 @@ public class TestReadStreamPart {
   InputStreamToReadStream readStream = new InputStreamToReadStream(context, inputStream, true);
 
   ReadStreamPart part = new ReadStreamPart(context, readStream);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() throws IOException {
@@ -147,15 +142,14 @@ public class TestReadStreamPart {
       }
     }.getMockInstance();
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.sameInstance(error));
-
-    part.saveToWriteStream(writeStream).get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
+      part.saveToWriteStream(writeStream).get();
+    });
+    Assertions.assertTrue(exception.getCause() instanceof RuntimeException);
   }
 
   @Test
-  public void saveToWrite_readException(@Mocked WriteStream<Buffer> writeStream)
-      throws InterruptedException, ExecutionException {
+  public void saveToWrite_readException(@Mocked WriteStream<Buffer> writeStream) {
     RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     new MockUp<InputStream>(inputStream) {
       @Mock
@@ -164,10 +158,10 @@ public class TestReadStreamPart {
       }
     };
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.sameInstance(error));
-
-    part.saveToWriteStream(writeStream).get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
+      part.saveToWriteStream(writeStream).get();
+    });
+    Assertions.assertTrue(exception.getCause() instanceof RuntimeException);
   }
 
   @Test
@@ -202,10 +196,10 @@ public class TestReadStreamPart {
 
     Assert.assertFalse(dir.exists());
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.instanceOf(FileSystemException.class));
-
-    OpenOptions openOptions = new OpenOptions().setCreateNew(false);
-    part.saveToFile(file, openOptions).get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
+      OpenOptions openOptions = new OpenOptions().setCreateNew(false);
+      part.saveToFile(file, openOptions).get();
+    });
+    Assertions.assertTrue(exception.getCause() instanceof FileSystemException);
   }
 }

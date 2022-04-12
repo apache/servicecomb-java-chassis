@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +33,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 /**
- * Test SPIServiceUtils 
+ * Test SPIServiceUtils
  *
  *
  */
@@ -81,9 +82,9 @@ public class TestSPIServiceUtils {
       }
     };
 
-    Assert.assertThat(SPIServiceUtils.getSortedService(Ordered.class), Matchers.contains(o1, o2));
-    Assert.assertThat(SPIServiceUtils.getAllService(Ordered.class), Matchers.contains(o1, o2));
-    Assert.assertThat(SPIServiceUtils.getPriorityHighestService(Ordered.class), Matchers.is(o1));
+    MatcherAssert.assertThat(SPIServiceUtils.getSortedService(Ordered.class), Matchers.contains(o1, o2));
+    MatcherAssert.assertThat(SPIServiceUtils.getAllService(Ordered.class), Matchers.contains(o1, o2));
+    MatcherAssert.assertThat(SPIServiceUtils.getPriorityHighestService(Ordered.class), Matchers.is(o1));
 
     Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
     cache.clear();
@@ -123,9 +124,9 @@ public class TestSPIServiceUtils {
     @Override
     public String toString() {
       return "PriorityImpl{" +
-          "name='" + name + '\'' +
-          ", order=" + order +
-          '}';
+              "name='" + name + '\'' +
+              ", order=" + order +
+              '}';
     }
   }
 
@@ -148,8 +149,8 @@ public class TestSPIServiceUtils {
       }
     };
 
-    Assert.assertThat(SPIServiceUtils.getPriorityHighestServices(inst -> inst.getName(), PriorityIntf.class),
-        Matchers.containsInAnyOrder(instances.get("2"), instances.get("5")));
+    MatcherAssert.assertThat(SPIServiceUtils.getPriorityHighestServices(PriorityIntf::getName, PriorityIntf.class),
+            Matchers.containsInAnyOrder(instances.get("2"), instances.get("5")));
 
     Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
     cache.clear();

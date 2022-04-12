@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -94,7 +95,7 @@ public class TestClientPoolManager {
 
     Assert.assertSame(pool, poolMgr.createClientPool(context));
     Assert.assertSame(pool, context.get(id));
-    Assert.assertThat(pools, Matchers.contains(pool));
+    MatcherAssert.assertThat(pools, Matchers.contains(pool));
   }
 
   @Test

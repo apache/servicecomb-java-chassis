@@ -21,6 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,6 +70,6 @@ public class TestJaxrsProducerResponseMapper {
     Assert.assertEquals(Status.OK, response.getStatus());
     Assert.assertEquals("result", response.getResult());
     Assert.assertEquals(1, response.getHeaders().size());
-    Assert.assertThat(response.getHeaders("h"), Matchers.contains("v"));
+    MatcherAssert.assertThat(response.getHeaders("h"), Matchers.contains("v"));
   }
 }

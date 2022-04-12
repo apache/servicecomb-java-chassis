@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.protobuf.internal.model.User;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestBoolSchema extends TestSchemaBase {
   public TestBoolSchema() {
@@ -75,13 +76,13 @@ public class TestBoolSchema extends TestSchemaBase {
 
   @Test
   public void type_invalid() throws Throwable {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto bool, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:bool"));
-
-    scbMap = new HashMap<>();
-    scbMap.put("bool", new User());
-    rootSerializer.serialize(scbMap);
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put("bool", new User());
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto bool, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:bool",
+            exception.getMessage());
   }
 }
 

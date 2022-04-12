@@ -18,6 +18,7 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
 import javax.servlet.http.Part;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,6 +39,6 @@ public class TestBytesToPartConverter {
   @Test
   public void convert() {
     Object part = converter.convert(new byte[] {});
-    Assert.assertThat(part, Matchers.instanceOf(Part.class));
+    MatcherAssert.assertThat(part, Matchers.instanceOf(Part.class));
   }
 }

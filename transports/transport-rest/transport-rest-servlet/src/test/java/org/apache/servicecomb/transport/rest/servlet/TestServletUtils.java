@@ -40,6 +40,7 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -107,17 +108,17 @@ public class TestServletUtils {
 
     Collection<String> urlPatterns = Arrays.asList(urlPattern);
     String[] result = ServletUtils.filterUrlPatterns(urlPatterns);
-    Assert.assertThat(result, Matchers.arrayContaining("/r1/*"));
+    MatcherAssert.assertThat(result, Matchers.arrayContaining("/r1/*"));
 
     result = ServletUtils.filterUrlPatterns(urlPattern);
-    Assert.assertThat(result, Matchers.arrayContaining("/r1/*"));
+    MatcherAssert.assertThat(result, Matchers.arrayContaining("/r1/*"));
   }
 
   @Test
   public void testFilterUrlPatternsEmpty() {
     Collection<String> urlPatterns = Arrays.asList(" ", "\t");
     String[] result = ServletUtils.filterUrlPatterns(urlPatterns);
-    Assert.assertThat(result, Matchers.emptyArray());
+    MatcherAssert.assertThat(result, Matchers.emptyArray());
   }
 
   @Test
@@ -144,7 +145,7 @@ public class TestServletUtils {
     };
 
     String[] result = ServletUtils.collectUrlPatterns(servletContext, RestServlet.class);
-    Assert.assertThat(result, Matchers.emptyArray());
+    MatcherAssert.assertThat(result, Matchers.emptyArray());
   }
 
   @Test
@@ -170,7 +171,7 @@ public class TestServletUtils {
     };
 
     String[] result = ServletUtils.collectUrlPatterns(servletContext, RestServlet.class);
-    Assert.assertThat(result, Matchers.arrayContaining("/r1/*", "/r1/1/*"));
+    MatcherAssert.assertThat(result, Matchers.arrayContaining("/r1/*", "/r1/1/*"));
   }
 
   @Test
@@ -202,7 +203,7 @@ public class TestServletUtils {
 
     ServletUtils.saveUrlPrefix(servletContext);
 
-    Assert.assertThat(ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX),
+    MatcherAssert.assertThat(ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX),
         Matchers.is("/root/rest"));
     ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }

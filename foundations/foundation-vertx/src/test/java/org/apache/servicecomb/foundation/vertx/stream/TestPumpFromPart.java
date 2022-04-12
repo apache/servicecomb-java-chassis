@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream.ReadResult;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -109,8 +110,8 @@ public class TestPumpFromPart {
       run(context, true);
       Assert.fail("must throw exception");
     } catch (Throwable e) {
-      Assert.assertThat(e, Matchers.instanceOf(ExecutionException.class));
-      Assert.assertThat(e.getCause(), Matchers.sameInstance(error));
+      MatcherAssert.assertThat(e, Matchers.instanceOf(ExecutionException.class));
+      MatcherAssert.assertThat(e.getCause(), Matchers.sameInstance(error));
     }
 
     Assert.assertTrue(inputStreamClosed);

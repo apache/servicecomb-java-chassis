@@ -19,8 +19,8 @@ package org.apache.servicecomb.foundation.common.event;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -75,7 +75,7 @@ public class TestEventBus {
     eventBus.register(new SubscriberWithOrderForTest(events));
 
     eventBus.post("value");
-    Assert.assertThat(events, Matchers.contains("s2:value", "s1:value"));
+    MatcherAssert.assertThat(events, Matchers.contains("s2:value", "s1:value"));
   }
 
   @Test
@@ -95,7 +95,7 @@ public class TestEventBus {
     eventBus.post(0.1);
     eventBus.post(1);
     eventBus.post("str");
-    Assert.assertThat(events, Matchers.contains(1, "str"));
+    MatcherAssert.assertThat(events, Matchers.contains(1, "str"));
 
     eventBus.unregister(obj);
 
@@ -103,7 +103,7 @@ public class TestEventBus {
     eventBus.post(0.1);
     eventBus.post(1);
     eventBus.post("str");
-    Assert.assertThat(events, Matchers.empty());
+    MatcherAssert.assertThat(events, Matchers.empty());
   }
 
   @Test
@@ -117,13 +117,13 @@ public class TestEventBus {
     eventBus.post(0.1);
     eventBus.post(1);
     eventBus.post("str");
-    Assert.assertThat(events, Matchers.contains(1, 1, "str", "str"));
+    MatcherAssert.assertThat(events, Matchers.contains(1, 1, "str", "str"));
 
     events.clear();
     eventBus.unregister(obj1);
     eventBus.post(0.1);
     eventBus.post(1);
     eventBus.post("str");
-    Assert.assertThat(events, Matchers.contains(1, "str"));
+    MatcherAssert.assertThat(events, Matchers.contains(1, "str"));
   }
 }

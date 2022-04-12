@@ -25,9 +25,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -38,8 +37,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestSwaggerUtils {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void swaggerToStringNormal() {
@@ -58,10 +55,9 @@ public class TestSwaggerUtils {
         result = new RuntimeExceptionWithoutStackTrace();
       }
     };
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("Convert swagger to string failed, ");
-
-    SwaggerUtils.swaggerToString(swagger);
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> SwaggerUtils.swaggerToString(swagger));
+    Assertions.assertEquals("Convert swagger to string failed, ", exception.getMessage());
   }
 
   @Test
@@ -88,18 +84,16 @@ public class TestSwaggerUtils {
       }
     };
 
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("Parse swagger from url failed, ");
-
-    SwaggerUtils.parseSwagger(url);
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> SwaggerUtils.parseSwagger(url));
+    Assertions.assertTrue(exception.getMessage().contains("Parse swagger from url failed, "));
   }
 
   @Test
-  public void parseSwaggerContentException() throws IOException {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("Parse swagger from content failed, ");
-
-    SwaggerUtils.parseSwagger("");
+  public void parseSwaggerContentException() {
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> SwaggerUtils.parseSwagger(""));
+    Assertions.assertEquals("Parse swagger from content failed, ", exception.getMessage());
   }
 
   @Test
@@ -176,14 +170,14 @@ public class TestSwaggerUtils {
   }
 
   @Test(expected = ServiceCombException.class)
-  public void testInvalidate() throws Exception {
+  public void testInvalidate() {
     URL resource = TestSwaggerUtils.class.getResource("/swagger1.yaml");
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
     SwaggerUtils.validateSwagger(swagger);
   }
 
   @Test
-  public void testInvalidateValid() throws Exception {
+  public void testInvalidateValid() {
     URL resource = TestSwaggerUtils.class.getResource("/swagger2.yaml");
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
     SwaggerUtils.validateSwagger(swagger);

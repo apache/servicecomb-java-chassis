@@ -33,12 +33,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
@@ -74,9 +74,6 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Mocked
   Context context;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   boolean chunked;
 
@@ -176,10 +173,10 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     };
 
-    expectedException.expect(NullPointerException.class);
-    expectedException.expectMessage(Matchers.is("must run in vertx context."));
-
-    new VertxServerResponseToHttpServletResponse(serverResponse);
+    NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> {
+      new VertxServerResponseToHttpServletResponse(serverResponse);
+    });
+    Assertions.assertEquals("must run in vertx context.", exception.getMessage());
   }
 
   @Test
@@ -212,8 +209,8 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.addHeader("n2", "v2");
 
     Assert.assertEquals(2, headers.size());
-    Assert.assertThat(headers.getAll("n1"), Matchers.contains("v1_1", "v1_2"));
-    Assert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
+    MatcherAssert.assertThat(headers.getAll("n1"), Matchers.contains("v1_1", "v1_2"));
+    MatcherAssert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
   }
 
   @Test
@@ -223,8 +220,8 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.setHeader("n2", "v2");
 
     Assert.assertEquals(2, headers.size());
-    Assert.assertThat(headers.getAll("n1"), Matchers.contains("v1_2"));
-    Assert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
+    MatcherAssert.assertThat(headers.getAll("n1"), Matchers.contains("v1_2"));
+    MatcherAssert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
   }
 
   @Test
@@ -249,7 +246,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     headers.add("h1", "h1_1");
     headers.add("h1", "h1_2");
 
-    Assert.assertThat(response.getHeaders("h1"), Matchers.contains("h1_1", "h1_2"));
+    MatcherAssert.assertThat(response.getHeaders("h1"), Matchers.contains("h1_1", "h1_2"));
   }
 
   @Test
@@ -257,7 +254,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     headers.add("h1", "h1");
     headers.add("h2", "h2");
 
-    Assert.assertThat(response.getHeaderNames(), Matchers.contains("h1", "h2"));
+    MatcherAssert.assertThat(response.getHeaderNames(), Matchers.contains("h1", "h2"));
   }
 
   @Test
@@ -329,7 +326,7 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void sendPart_openInputStreamFailed(@Mocked Part part)
-      throws IOException, InterruptedException, ExecutionException {
+      throws IOException {
     IOException ioException = new IOException("forbid open stream");
     new Expectations() {
       {
@@ -340,10 +337,8 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     CompletableFuture<Void> future = response.sendPart(part);
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.sameInstance(ioException));
-
-    future.get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, future::get);
+    Assertions.assertTrue(exception.getCause() instanceof IOException);
   }
 
   @Test
@@ -354,7 +349,7 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void sendPart_inputStreamBreak(@Mocked Part part, @Mocked InputStream inputStream)
-      throws IOException, InterruptedException, ExecutionException {
+      throws IOException {
     IOException ioException = new IOException("forbid read");
     new Expectations() {
       {
@@ -367,10 +362,8 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     CompletableFuture<Void> future = response.sendPart(part);
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.sameInstance(ioException));
-
-    future.get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, future::get);
+    Assertions.assertTrue(exception.getCause() instanceof IOException);
   }
 
   @Test

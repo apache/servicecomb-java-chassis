@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,7 +72,7 @@ public class InvocationContextItemTest {
     when(invocation.getContext(INVOCATION_CONTEXT_KEY)).thenReturn(INVOCATION_CONTEXT_VALUE);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(INVOCATION_CONTEXT_VALUE));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(INVOCATION_CONTEXT_VALUE));
   }
 
   @Test
@@ -82,7 +83,7 @@ public class InvocationContextItemTest {
     context.put(INVOCATION_CONTEXT_KEY, INVOCATION_CONTEXT_VALUE);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(INVOCATION_CONTEXT_VALUE));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(INVOCATION_CONTEXT_VALUE));
   }
 
   @Test
@@ -94,7 +95,7 @@ public class InvocationContextItemTest {
     when(invocation.getContext(INVOCATION_CONTEXT_KEY)).thenReturn(null);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -105,7 +106,7 @@ public class InvocationContextItemTest {
     context.put(INVOCATION_CONTEXT_KEY, null);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -114,7 +115,7 @@ public class InvocationContextItemTest {
     when(routingContext.data()).thenReturn(routingContextData);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -124,14 +125,14 @@ public class InvocationContextItemTest {
     when(invocation.getContext()).thenReturn(context);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
   public void testGetFormattedItemOnRoutingContextDataNotFound() {
     when(routingContext.data()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -139,13 +140,13 @@ public class InvocationContextItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getContext()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
   public void clientGetFormattedItemOnInvocationNotFound() {
     when(finishEvent.getInvocation()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
+    MatcherAssert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 }

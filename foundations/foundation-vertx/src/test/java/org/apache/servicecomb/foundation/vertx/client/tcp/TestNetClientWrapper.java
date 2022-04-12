@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx.client.tcp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -106,6 +107,6 @@ public class TestNetClientWrapper {
       socks.add(asyncSocket.result());
     });
 
-    Assert.assertThat(socks, Matchers.contains(normalSocket, sslSocket));
+    MatcherAssert.assertThat(socks, Matchers.contains(normalSocket, sslSocket));
   }
 }

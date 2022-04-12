@@ -17,10 +17,6 @@
 package org.apache.servicecomb.serviceregistry.swagger;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.core.Is.is;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -46,9 +42,8 @@ import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.models.Swagger;
 import mockit.Deencapsulation;
@@ -57,8 +52,6 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestSwaggerLoader extends TestRegistryBase {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void registerSwagger() {
@@ -212,46 +205,44 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void should_throw_exception_when_register_invalid_swagger_in_location() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage("failed to register swaggers, microserviceName=default, location=location.");
-    expectedException.expectCause(instanceOf(ServiceCombException.class));
-    expectedException.expectCause(allOf(instanceOf(ServiceCombException.class),
-        hasProperty("message", is("Parse swagger from url failed, url=location/invalid.yaml"))));
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      URL url = new MockUp<URL>() {
 
-    URL url = new MockUp<URL>() {
+        private String path = "location/invalid.yaml";
 
-      private String path = "location/invalid.yaml";
+        @Mock
+        String getPath() {
+          return path;
+        }
 
-      @Mock
-      String getPath() {
-        return path;
-      }
+        @Mock
+        String toExternalForm() {
+          return path;
+        }
+      }.getMockInstance();
+      URI uri = new MockUp<URI>() {
+        @Mock
+        URL toURL() {
+          return url;
+        }
+      }.getMockInstance();
+      new MockUp<ResourceUtil>() {
+        @Mock
+        List<URI> findResources(String directory, Predicate<Path> filter) {
+          return Collections.singletonList(uri);
+        }
+      };
+      new MockUp<IOUtils>() {
+        @Mock
+        String toString(final URL url, final Charset encoding) {
+          return "invalid yaml content";
+        }
+      };
 
-      @Mock
-      String toExternalForm() {
-        return path;
-      }
-    }.getMockInstance();
-    URI uri = new MockUp<URI>() {
-      @Mock
-      URL toURL() {
-        return url;
-      }
-    }.getMockInstance();
-    new MockUp<ResourceUtil>() {
-      @Mock
-      List<URI> findResources(String directory, Predicate<Path> filter) {
-        return Collections.singletonList(uri);
-      }
-    };
-    new MockUp<IOUtils>() {
-      @Mock
-      String toString(final URL url, final Charset encoding) {
-        return "invalid yaml content";
-      }
-    };
-
-    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("location");
+      RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("location");
+    });
+    Assertions.assertEquals("failed to register swaggers, microserviceName=default, location=location.", exception.getMessage());
+    Assertions.assertTrue(exception.getCause() instanceof ServiceCombException);
   }
 
   @Test

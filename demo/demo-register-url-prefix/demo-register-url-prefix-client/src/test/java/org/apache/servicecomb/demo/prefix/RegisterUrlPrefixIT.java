@@ -18,9 +18,9 @@
 package org.apache.servicecomb.demo.prefix;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.demo.TestMgr;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -37,6 +37,6 @@ public class RegisterUrlPrefixIT {
 
     Application.runTest();
 
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
   }
 }

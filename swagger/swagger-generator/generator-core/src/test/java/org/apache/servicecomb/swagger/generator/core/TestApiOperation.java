@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -27,6 +26,7 @@ import java.util.Map;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
@@ -98,7 +98,7 @@ public class TestApiOperation {
     testMap(swagger.getPath("/testMap"));
     testList(swagger.getPath("/testList"));
     testSet(swagger.getPath("/testSet"));
-    assertThat(swagger.getPath("/testHidden"), is(nullValue()));
+    MatcherAssert.assertThat(swagger.getPath("/testHidden"), is(nullValue()));
   }
 
   @Test

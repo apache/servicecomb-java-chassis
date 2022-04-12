@@ -31,6 +31,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -145,7 +146,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
+    MatcherAssert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
   }
 
   @Test
@@ -166,9 +167,9 @@ public class TestInvocationToHttpServletRequest {
     };
 
     Map<String, String[]> params = request.getParameterMap();
-    Assert.assertThat(params.size(), Matchers.is(2));
-    Assert.assertThat(params, Matchers.hasEntry("p1", new String[] {"v1"}));
-    Assert.assertThat(params, Matchers.hasEntry("p2", new String[] {"v2"}));
+    MatcherAssert.assertThat(params.size(), Matchers.is(2));
+    MatcherAssert.assertThat(params, Matchers.hasEntry("p1", new String[] {"v1"}));
+    MatcherAssert.assertThat(params, Matchers.hasEntry("p2", new String[] {"v2"}));
   }
 
   @Test

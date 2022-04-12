@@ -28,7 +28,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -75,7 +75,7 @@ public class TraceIdItemTest {
     data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is(traceIdTest));
+    MatcherAssert.assertThat(strBuilder.toString(), is(traceIdTest));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class TraceIdItemTest {
     when(invocation.getContext()).thenReturn(clientContext);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is(traceIdTest));
+    MatcherAssert.assertThat(strBuilder.toString(), is(traceIdTest));
   }
 
   @Test
@@ -100,7 +100,7 @@ public class TraceIdItemTest {
     when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(traceIdTest);
     when(routingContext.request()).thenReturn(serverRequest);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is(traceIdTest));
+    MatcherAssert.assertThat(strBuilder.toString(), is(traceIdTest));
   }
 
   @Test
@@ -113,12 +113,12 @@ public class TraceIdItemTest {
     when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(null);
     when(routingContext.request()).thenReturn(serverRequest);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is("-"));
+    MatcherAssert.assertThat(strBuilder.toString(), is("-"));
 
     strBuilder = new StringBuilder();
     when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is("-"));
+    MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
 
   @Test
@@ -128,7 +128,7 @@ public class TraceIdItemTest {
     when(invocation.getContext()).thenReturn(clientContext);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is("-"));
+    MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
 
   @Test
@@ -137,7 +137,7 @@ public class TraceIdItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is("-"));
+    MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
 
   @Test
@@ -146,7 +146,7 @@ public class TraceIdItemTest {
     when(invocation.getContext()).thenReturn(null);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is("-"));
+    MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
 
   @Test
@@ -155,6 +155,6 @@ public class TraceIdItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(routingContext.data()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), is("-"));
+    MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
 }

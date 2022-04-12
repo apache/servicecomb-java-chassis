@@ -72,13 +72,13 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -106,9 +106,6 @@ public class TestAbstractRestInvocation {
   Map<String, Object> arguments;
 
   Invocation invocation;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   static SCBEngine scbEngine;
 
@@ -202,12 +199,9 @@ public class TestAbstractRestInvocation {
     };
     initRestInvocation();
 
-    expectedException.expect(InvocationException.class);
-    expectedException
-        .expectMessage(
-            "InvocationException: code=406;msg=CommonExceptionData [message=Accept notExistType is not supported]");
-
-    restInvocation.initProduceProcessor();
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> restInvocation.initProduceProcessor());
+    Assertions.assertEquals("InvocationException: code=406;msg=CommonExceptionData [message=Accept notExistType is not supported]", exception.getMessage());
   }
 
   @Test
@@ -262,8 +256,8 @@ public class TestAbstractRestInvocation {
     };
 
     restInvocation.setContext();
-    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
-    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("name", "value"));
+    MatcherAssert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    MatcherAssert.assertThat(invocation.getContext(), Matchers.hasEntry("name", "value"));
   }
 
   @Test
@@ -278,8 +272,8 @@ public class TestAbstractRestInvocation {
     invocation.addContext("X-B3-traceId", "value1");
     //if request has no traceId, use invocation's traceId
     restInvocation.setContext();
-    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
-    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value1"));
+    MatcherAssert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    MatcherAssert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value1"));
 
     context.put("X-B3-traceId", "value2");
     new Expectations() {
@@ -290,8 +284,8 @@ public class TestAbstractRestInvocation {
     };
     //if request has traceId, use request's traceId
     restInvocation.setContext();
-    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
-    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value2"));
+    MatcherAssert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    MatcherAssert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value2"));
   }
 
   @Test
@@ -818,16 +812,15 @@ public class TestAbstractRestInvocation {
   public void findRestOperationServicePathManagerNull(@Mocked MicroserviceMeta microserviceMeta) {
     new Expectations(ServicePathManager.class) {
       {
-        requestEx.getHeader(Const.TARGET_MICROSERVICE);
-        result = "ms";
         ServicePathManager.getServicePathManager(microserviceMeta);
         result = null;
       }
     };
 
-    expectedException.expect(InvocationException.class);
-    expectedException.expectMessage("CommonExceptionData [message=Not Found]");
-    restInvocation.findRestOperation(microserviceMeta);
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> restInvocation.findRestOperation(microserviceMeta));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]",
+            exception.getMessage());
   }
 
   @Test

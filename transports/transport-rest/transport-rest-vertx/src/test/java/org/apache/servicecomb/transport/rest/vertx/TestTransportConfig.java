@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.vertx;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -70,16 +71,16 @@ public class TestTransportConfig {
   @Test
   public void testGetCompressedAndHeaderSize() {
     ArchaiusUtils.setProperty("servicecomb.rest.server.compression", true);
-    Assert.assertEquals(true, TransportConfig.getCompressed());
+    Assert.assertTrue(TransportConfig.getCompressed());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxHeaderSize", 2048);
     Assert.assertEquals(2048, TransportConfig.getMaxHeaderSize());
   }
 
   @Test
   public void testGetDecompressed() {
-    Assert.assertEquals(false, TransportConfig.getDecompressionSupported());
+    Assert.assertFalse(TransportConfig.getDecompressionSupported());
     ArchaiusUtils.setProperty("servicecomb.rest.server.decompressionSupported", true);
-    Assert.assertEquals(true, TransportConfig.getDecompressionSupported());
+    Assert.assertTrue(TransportConfig.getDecompressionSupported());
   }
 
   @Test
@@ -148,11 +149,11 @@ public class TestTransportConfig {
     String configKey = "servicecomb.cors.allowedHeader";
     Assert.assertTrue(TransportConfig.getCorsAllowedHeaders().isEmpty());
     ArchaiusUtils.setProperty(configKey, "abc");
-    Assert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc"));
+    MatcherAssert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc"));
     ArchaiusUtils.setProperty(configKey, "abc, def");
-    Assert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
+    MatcherAssert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
     ArchaiusUtils.setProperty(configKey, "abc ,, def");
-    Assert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
+    MatcherAssert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
     ArchaiusUtils.setProperty(configKey, "");
     Assert.assertTrue(TransportConfig.getCorsAllowedHeaders().isEmpty());
   }
@@ -162,11 +163,11 @@ public class TestTransportConfig {
     String configKey = "servicecomb.cors.allowedMethod";
     Assert.assertTrue(TransportConfig.getCorsAllowedMethods().isEmpty());
     ArchaiusUtils.setProperty(configKey, "GET");
-    Assert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET"));
+    MatcherAssert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET"));
     ArchaiusUtils.setProperty(configKey, "GET, POST");
-    Assert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET", "POST"));
+    MatcherAssert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET", "POST"));
     ArchaiusUtils.setProperty(configKey, "GET,,POST");
-    Assert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET", "POST"));
+    MatcherAssert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET", "POST"));
     ArchaiusUtils.setProperty(configKey, "");
     Assert.assertTrue(TransportConfig.getCorsAllowedMethods().isEmpty());
   }
@@ -176,11 +177,11 @@ public class TestTransportConfig {
     String configKey = "servicecomb.cors.exposedHeader";
     Assert.assertTrue(TransportConfig.getCorsExposedHeaders().isEmpty());
     ArchaiusUtils.setProperty(configKey, "abc");
-    Assert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc"));
+    MatcherAssert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc"));
     ArchaiusUtils.setProperty(configKey, "abc, def");
-    Assert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
+    MatcherAssert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
     ArchaiusUtils.setProperty(configKey, "abc ,, def");
-    Assert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
+    MatcherAssert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
     ArchaiusUtils.setProperty(configKey, "");
     Assert.assertTrue(TransportConfig.getCorsExposedHeaders().isEmpty());
   }

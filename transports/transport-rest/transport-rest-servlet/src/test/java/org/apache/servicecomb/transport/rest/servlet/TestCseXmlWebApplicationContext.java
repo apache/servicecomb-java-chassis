@@ -22,6 +22,7 @@ import javax.servlet.ServletRegistration.Dynamic;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +48,7 @@ public class TestCseXmlWebApplicationContext {
   @Test
   public void testGetConfigLocationsEmpty() {
     String[] result = context.getConfigLocations();
-    Assert.assertThat(result,
+    MatcherAssert.assertThat(result,
         Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE));
   }
 
@@ -55,7 +56,7 @@ public class TestCseXmlWebApplicationContext {
   public void testGetConfigLocationsEmptyAndDefaultEmpty() {
     context.setDefaultBeanResource(null);
     String[] result = context.getConfigLocations();
-    Assert.assertThat(result,
+    MatcherAssert.assertThat(result,
         Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE));
   }
 
@@ -69,7 +70,7 @@ public class TestCseXmlWebApplicationContext {
     };
 
     String[] result = context.getConfigLocations();
-    Assert.assertThat(result, Matchers
+    MatcherAssert.assertThat(result, Matchers
         .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
   }
 
@@ -82,7 +83,7 @@ public class TestCseXmlWebApplicationContext {
       }
     };
     String[] result = context.getConfigLocations();
-    Assert.assertThat(result, Matchers
+    MatcherAssert.assertThat(result, Matchers
         .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
   }
 
@@ -95,7 +96,7 @@ public class TestCseXmlWebApplicationContext {
       }
     };
     String[] result = context.getConfigLocations();
-    Assert.assertThat(result, Matchers
+    MatcherAssert.assertThat(result, Matchers
         .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
   }
 
@@ -108,7 +109,7 @@ public class TestCseXmlWebApplicationContext {
       }
     };
     String[] result = context.getConfigLocations();
-    Assert.assertThat(result, Matchers
+    MatcherAssert.assertThat(result, Matchers
         .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b", "c"));
   }
 

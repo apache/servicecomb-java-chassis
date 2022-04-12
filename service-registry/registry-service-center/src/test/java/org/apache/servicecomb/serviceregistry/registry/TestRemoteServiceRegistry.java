@@ -16,14 +16,12 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -32,9 +30,7 @@ import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientI
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.google.common.eventbus.EventBus;
 
@@ -56,16 +52,9 @@ public class TestRemoteServiceRegistry {
     }
   }
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
   public void testLifeCycle(@Injectable ServiceRegistryConfig config,
       @Injectable ServiceRegistry registry) throws InterruptedException {
-    ArrayList<IpPort> ipPortList = new ArrayList<>();
-    ipPortList.add(new IpPort("127.0.0.1", 9980));
-    ipPortList.add(new IpPort("127.0.0.1", 9981));
-
     CountDownLatch latch = new CountDownLatch(1);
     ServiceRegistryTaskInitializer initializer = new MockUp<ServiceRegistryTaskInitializer>() {
       @Mock

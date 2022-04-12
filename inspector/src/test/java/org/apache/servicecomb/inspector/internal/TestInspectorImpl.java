@@ -55,6 +55,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.servlet.ServletRestTransport;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -124,7 +125,7 @@ public class TestInspectorImpl {
 
   @Test
   public void getSchemaIds() {
-    Assert.assertThat(inspector.getSchemaIds(), Matchers.contains("schema1", "schema2"));
+    MatcherAssert.assertThat(inspector.getSchemaIds(), Matchers.contains("schema1", "schema2"));
   }
 
   @Test
@@ -356,7 +357,7 @@ public class TestInspectorImpl {
 
     List<PriorityPropertyView> views = inspector.priorityProperties();
     Assert.assertEquals(1, views.size());
-    Assert.assertThat(
+    MatcherAssert.assertThat(
         views.get(0).getDynamicProperties().stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
         Matchers.contains("high", "low"));
   }

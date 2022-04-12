@@ -18,10 +18,10 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -57,6 +57,6 @@ public class TestSwaggerGenerator {
     swaggerGenerator.addDefaultTag(null);
     swaggerGenerator.addDefaultTag("test2");
 
-    assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
+    MatcherAssert.assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
   }
 }
