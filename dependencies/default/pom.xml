@@ -74,7 +74,7 @@
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.8.2</junit5.version>
     <log4j.version>1.2.17</log4j.version>
-    <log4j2.version>2.13.2</log4j2.version>
+    <log4j2.version>2.17.2</log4j2.version>
     <logback.version>1.2.3</logback.version>
     <mockito.version>1.10.19</mockito.version>
     <mock-server.version>3.10.4</mock-server.version>
@@ -94,7 +94,7 @@
     <servo.version>0.12.25</servo.version>
     <servlet-api.version>4.0.3</servlet-api.version>
     <activation.version>1.2.1</activation.version>
-    <slf4j.version>1.7.30</slf4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
     <snakeyaml.version>1.27</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
     <spring.version>5.3.18</spring.version>
