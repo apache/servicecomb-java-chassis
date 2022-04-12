@@ -41,6 +41,7 @@
     <java.version>1.8</java.version>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
+    <werror.properties>-Werror</werror.properties>
     <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
   </properties>
 
@@ -371,7 +372,7 @@
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
             <compilerArgs>
-              <arg>-Werror</arg>
+              <arg>${werror.properties}</arg>
               <arg>-Xlint:all</arg>
               <!--not care for jdk8/jdk7 compatible problem-->
               <arg>-Xlint:-classfile</arg>
@@ -627,6 +628,15 @@
           </plugin>
         </plugins>
       </reporting>
+    </profile>
+    <profile>
+      <id>jdk17</id>
+      <activation>
+        <jdk>[17,)</jdk>
+      </activation>
+      <properties>
+        <werror.properties/>
+      </properties>
     </profile>
   </profiles>
 
