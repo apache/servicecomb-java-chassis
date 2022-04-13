@@ -53,7 +53,8 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     // no view annotations shouldn't be included in JSON
-    disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+    this._deserializationConfig = this._deserializationConfig.without(MapperFeature.DEFAULT_VIEW_INCLUSION);
+    this._serializationConfig = this._serializationConfig.without(MapperFeature.DEFAULT_VIEW_INCLUSION);
     disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
     enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
