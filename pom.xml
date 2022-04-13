@@ -42,7 +42,11 @@
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
     <werror.properties>-Werror</werror.properties>
+    <test.additional.args/>
+    <!-- plugin version start -->
     <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
+    <surefire-maven.version>3.0.0-M6</surefire-maven.version>
+    <!-- plugin version end -->
   </properties>
 
   <licenses>
@@ -255,8 +259,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M5</version>
+        <version>${surefire-maven.version}</version>
         <configuration>
+          <argLine>${test.additional.args}</argLine>
           <skip>${maven.test.skip}</skip>
           <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
           <excludes>
@@ -636,6 +641,12 @@
       </activation>
       <properties>
         <werror.properties/>
+        <test.additional.args>
+          -Djdk.attach.allowAttachSelf
+          --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+          --add-opens java.base/java.lang=ALL-UNNAMED
+          --add-opens java.base/java.io=ALL-UNNAMED
+        </test.additional.args>
       </properties>
     </profile>
   </profiles>

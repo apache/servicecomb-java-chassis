@@ -48,7 +48,6 @@ import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
 
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -184,7 +183,7 @@ public class TestConfigUtil {
 
     AbstractConfiguration config = new DynamicConfiguration();
     config.addProperty("cse.list", list);
-    Deencapsulation.invoke(ConfigUtil.class, "duplicateCseConfigToServicecomb", config);
+    ConfigUtil.duplicateCseConfigToServicecomb(config);
 
     Object result = config.getProperty("servicecomb.list");
     MatcherAssert.assertThat(result, instanceOf(List.class));
