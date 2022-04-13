@@ -459,7 +459,8 @@ public final class SSLOption {
     }
   }
 
-  private void load(String path) {
+  // visible for testing
+  void load(String path) {
     try {
       load(new FileInputStream(path));
     } catch (FileNotFoundException e) {
