@@ -44,7 +44,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
-    return "servicecomb.bulkhead." + policy.getName();
+    return BulkheadProperties.MATCH_BULKHEAD__KEY + "." + policy.getName();
   }
 
   @Override

@@ -17,25 +17,24 @@
 
 package org.apache.servicecomb.governance;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.marker.Matcher;
-import org.apache.servicecomb.governance.marker.RequestProcessor;
-import org.apache.servicecomb.governance.marker.operator.RawOperator;
-import org.apache.servicecomb.governance.policy.RetryPolicy;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(SpringRunner.class)
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.Matcher;
+import org.apache.servicecomb.governance.marker.RequestProcessor;
+import org.apache.servicecomb.governance.marker.operator.RawOperator;
+import org.apache.servicecomb.governance.policy.RetryPolicy;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+
+@SpringBootTest
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class OperatorTest {
   private RequestProcessor requestProcessor;
@@ -56,7 +55,7 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("unknown", "/test");
     matcher.setApiPath(apiPath);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -67,7 +66,7 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("exact", "/bulkhead");
     matcher.setApiPath(apiPath);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -78,7 +77,7 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("prefix", "/bulkhead");
     matcher.setApiPath(apiPath);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -89,7 +88,7 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("prefix", null);
     matcher.setApiPath(apiPath);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -100,7 +99,7 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("suffix", "/bulkhead");
     matcher.setApiPath(apiPath);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -111,7 +110,7 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("suffix", null);
     matcher.setApiPath(apiPath);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -122,16 +121,16 @@ public class OperatorTest {
     RawOperator apiPath = new RawOperator();
     apiPath.put("exact", "/bulkhead");
     matcher.setApiPath(apiPath);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     request.setUri("/bulkhead");
     request.setUri(null);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     request.setUri("/bulkhead");
     apiPath.clear();
     matcher.setApiPath(apiPath);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -152,7 +151,7 @@ public class OperatorTest {
     header1.put("exact", "value1");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -173,11 +172,11 @@ public class OperatorTest {
     header1.put("exact", "value1");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     reqHeaders.clear();
     request.setHeaders(reqHeaders);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -192,7 +191,7 @@ public class OperatorTest {
     header1.put("compare", ">10");
     headers.put("HeAder", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -208,31 +207,31 @@ public class OperatorTest {
     header1.put("compare", ">10");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", ">=10");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", "<1000");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", "<=1000");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", "=100");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertTrue(requestProcessor.match(request, matcher));
+    Assertions.assertTrue(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -248,31 +247,31 @@ public class OperatorTest {
     header1.put("compare", ">1000");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", ">=1000");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", "<10");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", "<=10");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
 
     header1 = new RawOperator();
     header1.put("compare", "=200");
     headers.put("header1", header1);
     matcher.setHeaders(headers);
-    Assert.assertFalse(requestProcessor.match(request, matcher));
+    Assertions.assertFalse(requestProcessor.match(request, matcher));
   }
 
   @Test
@@ -280,23 +279,23 @@ public class OperatorTest {
     RetryPolicy retryPolicy = new RetryPolicy();
     String result;
     result = retryPolicy.stringOfDuration("100", Duration.ofMillis(10));
-    Assert.assertEquals("PT0.1S", result);
-    Assert.assertEquals(100, Duration.parse(result).toMillis());
+    Assertions.assertEquals("PT0.1S", result);
+    Assertions.assertEquals(100, Duration.parse(result).toMillis());
 
     result = retryPolicy.stringOfDuration("3S", Duration.ofMillis(10));
-    Assert.assertEquals("PT3S", result);
-    Assert.assertEquals(3000, Duration.parse(result).toMillis());
+    Assertions.assertEquals("PT3S", result);
+    Assertions.assertEquals(3000, Duration.parse(result).toMillis());
 
     result = retryPolicy.stringOfDuration("1M", Duration.ofMillis(10));
-    Assert.assertEquals("PT1M", result);
-    Assert.assertEquals(60000, Duration.parse(result).toMillis());
+    Assertions.assertEquals("PT1M", result);
+    Assertions.assertEquals(60000, Duration.parse(result).toMillis());
 
     result = retryPolicy.stringOfDuration("1H", Duration.ofMillis(10));
-    Assert.assertEquals("PT1H", result);
-    Assert.assertEquals(3600000, Duration.parse(result).toMillis());
+    Assertions.assertEquals("PT1H", result);
+    Assertions.assertEquals(3600000, Duration.parse(result).toMillis());
 
     result = retryPolicy.stringOfDuration("3", Duration.ofMillis(10));
-    Assert.assertEquals("PT0.003S", result);
-    Assert.assertEquals(3, Duration.parse(result).toMillis());
+    Assertions.assertEquals("PT0.003S", result);
+    Assertions.assertEquals(3, Duration.parse(result).toMillis());
   }
 }

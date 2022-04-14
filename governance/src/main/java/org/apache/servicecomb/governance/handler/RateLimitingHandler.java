@@ -43,7 +43,7 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
-    return "servicecomb.rateLimiting." + policy.getName();
+    return RateLimitProperties.MATCH_RATE_LIMIT_KEY + "." + policy.getName();
   }
 
   @Override

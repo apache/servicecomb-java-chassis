@@ -17,26 +17,26 @@
 
 package org.apache.servicecomb.governance;
 
-import io.github.resilience4j.decorators.Decorators;
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
-import io.github.resilience4j.ratelimiter.RateLimiter;
-import io.github.resilience4j.ratelimiter.RequestNotPermitted;
-import org.apache.servicecomb.governance.handler.RateLimitingHandler;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.properties.RateLimitProperties;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@RunWith(SpringRunner.class)
+import org.apache.servicecomb.governance.handler.RateLimitingHandler;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.properties.RateLimitProperties;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+
+import io.github.resilience4j.decorators.Decorators;
+import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
+import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+
+@SpringBootTest
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class FlowControlTest {
   private RateLimitingHandler rateLimitingHandler;
@@ -75,7 +75,7 @@ public class FlowControlTest {
     RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
     ds.withRateLimiter(rateLimiter);
 
-    Assert.assertEquals("test", ds.get());
+    Assertions.assertEquals("test", ds.get());
 
     // flow control
     CountDownLatch cd = new CountDownLatch(10);
@@ -101,7 +101,7 @@ public class FlowControlTest {
       }.start();
     }
     cd.await(1, TimeUnit.SECONDS);
-    Assert.assertTrue(expected.get());
-    Assert.assertFalse(notExpected.get());
+    Assertions.assertTrue(expected.get());
+    Assertions.assertFalse(notExpected.get());
   }
 }

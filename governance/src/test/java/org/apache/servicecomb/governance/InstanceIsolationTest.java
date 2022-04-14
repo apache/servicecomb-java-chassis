@@ -21,20 +21,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class InstanceIsolationTest {
   private InstanceIsolationHandler instanceIsolationHandler;
@@ -72,7 +70,7 @@ public class InstanceIsolationTest {
     ds.withCircuitBreaker(circuitBreaker);
 
     // isolation from error
-    Assert.assertEquals("test", ds.get());
+    Assertions.assertEquals("test", ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
@@ -85,17 +83,17 @@ public class InstanceIsolationTest {
     CircuitBreaker circuitBreaker2 = instanceIsolationHandler.getActuator(request2);
     ds2.withCircuitBreaker(circuitBreaker2);
 
-    Assert.assertEquals("test", ds2.get());
-    Assert.assertEquals("test", ds2.get());
-    Assert.assertEquals("test", ds2.get());
-    Assert.assertEquals("test", ds2.get());
+    Assertions.assertEquals("test", ds2.get());
+    Assertions.assertEquals("test", ds2.get());
+    Assertions.assertEquals("test", ds2.get());
+    Assertions.assertEquals("test", ds2.get());
 
     // recover from isolation
     Thread.sleep(1000);
 
-    Assert.assertEquals("test", ds.get());
-    Assert.assertEquals("test", ds.get());
-    Assert.assertEquals("test", ds2.get());
-    Assert.assertEquals("test", ds2.get());
+    Assertions.assertEquals("test", ds.get());
+    Assertions.assertEquals("test", ds.get());
+    Assertions.assertEquals("test", ds2.get());
+    Assertions.assertEquals("test", ds2.get());
   }
 }

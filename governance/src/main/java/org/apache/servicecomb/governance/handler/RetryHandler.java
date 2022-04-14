@@ -50,7 +50,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, RetryPolicy policy) {
-    return "servicecomb.retry." + policy.getName();
+    return RetryProperties.MATCH_RETRY_KEY + "." + policy.getName();
   }
 
   @Override

@@ -43,7 +43,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return "servicecomb.circuitBreaker." + policy.getName();
+    return CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + "." + policy.getName();
   }
 
   @Override
@@ -60,21 +60,13 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
     LOGGER.info("applying new policy: {}", policy.toString());
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
-        //熔断 失败率(请求)百分比阈值
         .failureRateThreshold(policy.getFailureRateThreshold())
-        //熔断 慢请求百分比阈值
         .slowCallRateThreshold(policy.getSlowCallRateThreshold())
-        //从开过渡到半开的等待时间
         .waitDurationInOpenState(Duration.parse(policy.getWaitDurationInOpenState()))
-        //请求时间定义
         .slowCallDurationThreshold(Duration.parse(policy.getSlowCallDurationThreshold()))
-        //进入半开状态时 允许的请求数量
         .permittedNumberOfCallsInHalfOpenState(policy.getPermittedNumberOfCallsInHalfOpenState())
-        //可以达到熔断条件的请求数量下限
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
-        //可以选择基于时间的滑动窗口计数或者基于请求数量的滑动窗口计数
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
-        //滑动窗口，单位可能是请求数或者秒
         .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
