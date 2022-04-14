@@ -49,7 +49,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
   }
 
   @Override
-  protected String createKey(RetryPolicy policy) {
+  protected String createKey(GovernanceRequest governanceRequest, RetryPolicy policy) {
     return "servicecomb.retry." + policy.getName();
   }
 
@@ -59,7 +59,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
   }
 
   @Override
-  protected Retry createProcessor(RetryPolicy policy) {
+  protected Retry createProcessor(GovernanceRequest governanceRequest, RetryPolicy policy) {
     return getRetry(policy);
   }
 

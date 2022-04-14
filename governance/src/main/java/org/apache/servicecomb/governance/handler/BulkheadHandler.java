@@ -43,7 +43,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
   }
 
   @Override
-  protected String createKey(BulkheadPolicy policy) {
+  protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
     return "servicecomb.bulkhead." + policy.getName();
   }
 
@@ -53,7 +53,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
   }
 
   @Override
-  protected Bulkhead createProcessor(BulkheadPolicy policy) {
+  protected Bulkhead createProcessor(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
     return getBulkhead(policy);
   }
 

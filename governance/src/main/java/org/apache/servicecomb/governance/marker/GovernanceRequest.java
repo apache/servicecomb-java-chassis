@@ -27,6 +27,12 @@ public class GovernanceRequest {
 
   private String method;
 
+  // instance id with request, maybe null.
+  private String instanceId;
+
+  // microservice id (microservice name or application name + microservice name) with this request, maybe null.
+  private String serviceId;
+
   public Map<String, String> getHeaders() {
     return headers;
   }
@@ -51,5 +57,22 @@ public class GovernanceRequest {
 
   public void setMethod(String method) {
     this.method = method;
+  }
+
+
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
+
+  public String getServiceId() {
+    return serviceId;
+  }
+
+  public void setServiceId(String serviceId) {
+    this.serviceId = serviceId;
   }
 }

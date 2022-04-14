@@ -50,6 +50,8 @@ public class GovernancePropertiesTest {
 
   private CircuitBreakerProperties circuitBreakerProperties;
 
+  private InstanceIsolationProperties instanceIsolationProperties;
+
   private RateLimitProperties rateLimitProperties;
 
   private RetryProperties retryProperties;
@@ -79,6 +81,11 @@ public class GovernancePropertiesTest {
   @Autowired
   public void setRateLimitProperties(RateLimitProperties rateLimitProperties) {
     this.rateLimitProperties = rateLimitProperties;
+  }
+
+  @Autowired
+  public void setInstanceIsolationProperties(InstanceIsolationProperties instanceIsolationProperties) {
+    this.instanceIsolationProperties = instanceIsolationProperties;
   }
 
   @Autowired
@@ -134,7 +141,7 @@ public class GovernancePropertiesTest {
 
   @Test
   public void test_all_bean_is_loaded() {
-    Assert.assertEquals(4, propertiesList.size());
+    Assert.assertEquals(5, propertiesList.size());
   }
 
   @Test
@@ -359,5 +366,14 @@ public class GovernancePropertiesTest {
     Assert.assertEquals(3, policies.size());
     policy = policies.get("test2");
     Assert.assertEquals(60000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
+  }
+
+  @Test
+  public void test_instance_isolation_properties_successfully_loaded() {
+    Map<String, CircuitBreakerPolicy> policies = instanceIsolationProperties.getParsedEntity();
+    Assert.assertEquals(1, policies.size());
+    CircuitBreakerPolicy policy = policies.get("default");
+    Assert.assertEquals(2, policy.getMinimumNumberOfCalls());
+    Assert.assertEquals("2", policy.getSlidingWindowSize());
   }
 }

@@ -51,13 +51,13 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
       return null;
     }
 
-    String key = createKey(policy);
+    String key = createKey(governanceRequest, policy);
     PROCESSOR processor = map.get(key);
     if (processor == null) {
       synchronized (lock) {
         processor = map.get(key);
         if (processor == null) {
-          processor = createProcessor(policy);
+          processor = createProcessor(governanceRequest, policy);
           map.put(key, processor);
         }
       }
@@ -65,11 +65,11 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     return processor;
   }
 
-  abstract protected String createKey(POLICY policy);
+  abstract protected String createKey(GovernanceRequest governanceRequest, POLICY policy);
 
   abstract protected POLICY matchPolicy(GovernanceRequest governanceRequest);
 
-  abstract protected PROCESSOR createProcessor(POLICY policy);
+  abstract protected PROCESSOR createProcessor(GovernanceRequest governanceRequest, POLICY policy);
 
   @Subscribe
   public void onDynamicConfigurationListener(GovernanceConfigurationChangedEvent event) {

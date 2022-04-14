@@ -42,7 +42,7 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
   }
 
   @Override
-  protected String createKey(RateLimitingPolicy policy) {
+  protected String createKey(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
     return "servicecomb.rateLimiting." + policy.getName();
   }
 
@@ -52,7 +52,7 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
   }
 
   @Override
-  protected RateLimiter createProcessor(RateLimitingPolicy policy) {
+  protected RateLimiter createProcessor(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
     return getRateLimiter(policy);
   }
 

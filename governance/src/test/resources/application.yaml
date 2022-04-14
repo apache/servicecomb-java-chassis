@@ -78,3 +78,9 @@ servicecomb:
       rules:
         match: demo-bulkhead.xx
       maxWaitDuration: -1
+  instanceIsolation:
+    default: |
+      minimumNumberOfCalls: 2
+      slidingWindowSize: 2
+      slidingWindowType: count
+      waitDurationInOpenState: 1000

@@ -14,13 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +33,45 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 @Component
-public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
+public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
-  private CircuitBreakerProperties circuitBreakerProperties;
+  private static final String DEFAULT_SERVICE_NAME = "default";
+
+  private InstanceIsolationProperties instanceIsolationProperties;
 
   @Autowired
-  public CircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties) {
-    this.circuitBreakerProperties = circuitBreakerProperties;
+  public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties) {
+    this.instanceIsolationProperties = instanceIsolationProperties;
   }
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return "servicecomb.circuitBreaker." + policy.getName();
+    return "servicecomb.instanceIsolation." + governanceRequest.getInstanceId();
   }
 
   @Override
   public CircuitBreakerPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, circuitBreakerProperties.getParsedEntity());
+    if (StringUtils.isEmpty(governanceRequest.getServiceId()) || StringUtils.isEmpty(
+        governanceRequest.getInstanceId())) {
+      LOGGER.info("Isolation is not properly configured, service id or instance id is empty.");
+      return null;
+    }
+    CircuitBreakerPolicy circuitBreakerPolicy =
+        instanceIsolationProperties.getParsedEntity().get(governanceRequest.getServiceId());
+
+    if (circuitBreakerPolicy == null) {
+      return instanceIsolationProperties.getParsedEntity().get(DEFAULT_SERVICE_NAME);
+    }
+    return circuitBreakerPolicy;
   }
 
   @Override
   protected CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return getCircuitBreaker(policy);
+    return getCircuitBreaker(governanceRequest, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(CircuitBreakerPolicy policy) {
+  private CircuitBreaker getCircuitBreaker(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy: {}", policy.toString());
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
@@ -78,6 +93,6 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
-    return circuitBreakerRegistry.circuitBreaker(policy.getName(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(governanceRequest.getInstanceId(), circuitBreakerConfig);
   }
 }
