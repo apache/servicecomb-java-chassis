@@ -72,15 +72,15 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertEquals(true, authPeer);
+    Assert.assertTrue(authPeer);
 
     boolean checkCNHost = option.isCheckCNHost();
     option.setCheckCNHost(checkCNHost);
-    Assert.assertEquals(true, checkCNHost);
+    Assert.assertTrue(checkCNHost);
 
     boolean checkCNWhite = option.isCheckCNWhite();
     option.setCheckCNWhite(checkCNWhite);
-    Assert.assertEquals(true, checkCNWhite);
+    Assert.assertTrue(checkCNWhite);
 
     String checkCNWhiteFile = option.getCheckCNWhiteFile();
     option.setCheckCNWhiteFile(checkCNWhiteFile);
@@ -88,7 +88,7 @@ public class SSLOptionTest {
 
     boolean allowRenegociate = option.isAllowRenegociate();
     option.setAllowRenegociate(allowRenegociate);
-    Assert.assertEquals(false, allowRenegociate);
+    Assert.assertFalse(allowRenegociate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
@@ -155,15 +155,15 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertEquals(true, authPeer);
+    Assert.assertTrue(authPeer);
 
     boolean checkCNHost = option.isCheckCNHost();
     option.setCheckCNHost(checkCNHost);
-    Assert.assertEquals(true, checkCNHost);
+    Assert.assertTrue(checkCNHost);
 
     boolean checkCNWhite = option.isCheckCNWhite();
     option.setCheckCNWhite(checkCNWhite);
-    Assert.assertEquals(true, checkCNWhite);
+    Assert.assertTrue(checkCNWhite);
 
     String checkCNWhiteFile = option.getCheckCNWhiteFile();
     option.setCheckCNWhiteFile(checkCNWhiteFile);
@@ -171,7 +171,7 @@ public class SSLOptionTest {
 
     boolean allowRenegociate = option.isAllowRenegociate();
     option.setAllowRenegociate(allowRenegociate);
-    Assert.assertEquals(false, allowRenegociate);
+    Assert.assertFalse(allowRenegociate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
@@ -233,7 +233,7 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertEquals(false, authPeer);
+    Assert.assertFalse(authPeer);
     System.getProperties().remove("ssl.authPeer");
   }
 
@@ -246,7 +246,7 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertEquals(true, authPeer);
+    Assert.assertTrue(authPeer);
     System.getProperties().remove("ssl.authPeer");
   }
 
@@ -270,15 +270,15 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertEquals(true, authPeer);
+    Assert.assertTrue(authPeer);
 
     boolean checkCNHost = option.isCheckCNHost();
     option.setCheckCNHost(checkCNHost);
-    Assert.assertEquals(true, checkCNHost);
+    Assert.assertTrue(checkCNHost);
 
     boolean checkCNWhite = option.isCheckCNWhite();
     option.setCheckCNWhite(checkCNWhite);
-    Assert.assertEquals(true, checkCNWhite);
+    Assert.assertTrue(checkCNWhite);
 
     String checkCNWhiteFile = option.getCheckCNWhiteFile();
     option.setCheckCNWhiteFile(checkCNWhiteFile);
@@ -286,7 +286,7 @@ public class SSLOptionTest {
 
     boolean allowRenegociate = option.isAllowRenegociate();
     option.setAllowRenegociate(allowRenegociate);
-    Assert.assertEquals(false, allowRenegociate);
+    Assert.assertFalse(allowRenegociate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
@@ -391,7 +391,7 @@ public class SSLOptionTest {
     SSLOption option = new SSLOption();
     boolean validAssert = true;
     try {
-      Deencapsulation.invoke(option, "load", "test");
+      option.load("test");
     } catch (Exception e) {
       Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
       validAssert = false;

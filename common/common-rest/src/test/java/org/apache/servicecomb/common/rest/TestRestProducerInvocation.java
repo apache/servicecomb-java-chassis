@@ -103,7 +103,8 @@ public class TestRestProducerInvocation {
   }
 
   @Test
-  public void invokeSendFail(@Mocked InvocationException expected) {
+  public void invokeSendFail() {
+    InvocationException expected = new InvocationException(javax.ws.rs.core.Response.Status.BAD_REQUEST, "test");
     restProducerInvocation = new MockUp<RestProducerInvocation>() {
       @Mock
       void sendFailResponse(Throwable throwable) {

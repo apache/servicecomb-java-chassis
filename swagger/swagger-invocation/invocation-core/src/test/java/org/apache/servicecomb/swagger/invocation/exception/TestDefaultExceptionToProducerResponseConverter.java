@@ -18,22 +18,23 @@ package org.apache.servicecomb.swagger.invocation.exception;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.junit.Assert;
-import org.junit.Test;
 
 import mockit.Mocked;
+import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultExceptionToProducerResponseConverter {
   DefaultExceptionToProducerResponseConverter converter = new DefaultExceptionToProducerResponseConverter();
 
   @Test
   public void getExceptionClass() {
-    Assert.assertNull(converter.getExceptionClass());
+    Assertions.assertNull(converter.getExceptionClass());
   }
 
   @Test
-  public void convert(@Mocked SwaggerInvocation swaggerInvocation, @Mocked Error e) {
-    Response response = converter.convert(swaggerInvocation, e);
-    Assert.assertSame(e, ((InvocationException) response.getResult()).getCause());
+  public void convert(@Mocked SwaggerInvocation swaggerInvocation) {
+    IllegalStateException stateException = new IllegalStateException("test");
+    Response response = converter.convert(swaggerInvocation, stateException);
+    Assertions.assertSame(stateException, ((InvocationException) response.getResult()).getCause());
   }
 }

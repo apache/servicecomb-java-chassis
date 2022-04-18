@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
@@ -174,8 +175,9 @@ public final class ConfigUtil {
     return source;
   }
 
-  //inject a copy of servicecomb.xxx for cse.xxx
-  private static void duplicateCseConfigToServicecomb(AbstractConfiguration source) {
+  // inject a copy of servicecomb.xxx for cse.xxx
+  @VisibleForTesting
+  static void duplicateCseConfigToServicecomb(AbstractConfiguration source) {
     Iterator<String> keys = source.getKeys();
     while (keys.hasNext()) {
       String key = keys.next();
