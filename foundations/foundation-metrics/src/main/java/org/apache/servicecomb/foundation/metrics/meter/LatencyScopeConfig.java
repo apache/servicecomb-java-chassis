@@ -20,9 +20,9 @@ public class LatencyScopeConfig {
   // [min, max)
   // even max equals Long.MAX_VALUE, still not include it
   // because it will never happened in real cases
-  private long msMin;
+  private final long msMin;
 
-  private long msMax;
+  private final long msMax;
 
   public LatencyScopeConfig(long msMin, long msMax) {
     this.msMin = msMin;

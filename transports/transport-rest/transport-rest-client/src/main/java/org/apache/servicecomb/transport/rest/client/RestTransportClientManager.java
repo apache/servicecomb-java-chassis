@@ -27,7 +27,7 @@ public final class RestTransportClientManager {
   // same instance in AbstractTransport. need refactor in future.
   private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
 
-  private RestTransportClient restClient;
+  private final RestTransportClient restClient;
 
   private RestTransportClientManager() {
     try {

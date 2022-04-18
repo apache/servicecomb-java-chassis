@@ -19,7 +19,7 @@ package org.apache.servicecomb.registry.api.event;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 
 public class CreateMicroserviceVersionEvent {
-  private MicroserviceVersion microserviceVersion;
+  private final MicroserviceVersion microserviceVersion;
 
   public CreateMicroserviceVersionEvent(MicroserviceVersion microserviceVersion) {
     this.microserviceVersion = microserviceVersion;

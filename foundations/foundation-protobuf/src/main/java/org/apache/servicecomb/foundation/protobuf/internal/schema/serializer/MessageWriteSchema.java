@@ -53,7 +53,7 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
 
   protected Message message;
 
-  private JavaType javaType;
+  private final JavaType javaType;
 
   // mostly, one message only relate to one pojo
   private final Class<T> mainPojoCls;

@@ -33,9 +33,9 @@ public class InvocationException extends RuntimeException {
    * http header中的statusCode
    * 不直接使用Status类型，是为了支持业务自定义code
    */
-  private StatusType status;
+  private final StatusType status;
 
-  private Object errorData;
+  private final Object errorData;
 
   public InvocationException(StatusType status, Object errorData) {
     this.status = status;

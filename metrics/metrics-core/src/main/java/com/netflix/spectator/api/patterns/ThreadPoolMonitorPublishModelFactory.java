@@ -31,9 +31,9 @@ public class ThreadPoolMonitorPublishModelFactory {
     void set(ThreadPoolPublishModel model, Measurement measurement);
   }
 
-  private MeasurementTree tree;
+  private final MeasurementTree tree;
 
-  private Map<String, ThreadPoolPublishModel> threadPools;
+  private final Map<String, ThreadPoolPublishModel> threadPools;
 
   public ThreadPoolMonitorPublishModelFactory(MeasurementTree tree,
       Map<String, ThreadPoolPublishModel> threadPools) {

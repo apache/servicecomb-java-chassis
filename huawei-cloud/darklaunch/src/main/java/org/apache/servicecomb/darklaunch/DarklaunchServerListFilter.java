@@ -36,7 +36,7 @@ public class DarklaunchServerListFilter implements ServerListFilterExt {
 
   private static final int HUNDRED = 100;
 
-  private Random random = new Random();
+  private final Random random = new Random();
 
   public DarklaunchServerListFilter() {
   }

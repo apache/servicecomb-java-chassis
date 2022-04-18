@@ -31,14 +31,14 @@ import io.vertx.core.Vertx;
 public class MicroserviceManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceManager.class);
 
-  private AppManager appManager;
+  private final AppManager appManager;
 
-  private String appId;
+  private final String appId;
 
   // key: microserviceName
-  private Map<String, MicroserviceVersions> versionsByName = new ConcurrentHashMapEx<>();
+  private final Map<String, MicroserviceVersions> versionsByName = new ConcurrentHashMapEx<>();
 
-  private Object lock = new Object();
+  private final Object lock = new Object();
 
   public MicroserviceManager(AppManager appManager, String appId) {
     this.appManager = appManager;

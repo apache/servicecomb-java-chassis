@@ -46,7 +46,7 @@ public final class ExceptionFactory {
 
   public static final String CONSUMER_INNER_REASON_PHRASE = "Unexpected consumer error, please check logs for details";
 
-  private static ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
+  private static final ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
   public static final StatusType CONSUMER_INNER_STATUS =
       new HttpStatus(CONSUMER_INNER_STATUS_CODE, CONSUMER_INNER_REASON_PHRASE);

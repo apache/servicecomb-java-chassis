@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class TestEnvAdapterManager {
 
-  private EnvAdapterManager manager = EnvAdapterManager.INSTANCE;
+  private final EnvAdapterManager manager = EnvAdapterManager.INSTANCE;
 
   @Test
   public void testLoadAdapter() {

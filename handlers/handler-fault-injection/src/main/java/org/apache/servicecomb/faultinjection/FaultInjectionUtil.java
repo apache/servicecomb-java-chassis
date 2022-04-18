@@ -37,10 +37,10 @@ public class FaultInjectionUtil {
   }
 
   // key is transport+operQualifiedName
-  private static Map<String, AtomicLong> requestCount = new ConcurrentHashMapEx<>();
+  private static final Map<String, AtomicLong> requestCount = new ConcurrentHashMapEx<>();
 
   // key is config paramter
-  private static Map<String, AtomicInteger> configCenterValue = new ConcurrentHashMapEx<>();
+  private static final Map<String, AtomicInteger> configCenterValue = new ConcurrentHashMapEx<>();
 
   /**
    * Returns total requests per provider for operational level.

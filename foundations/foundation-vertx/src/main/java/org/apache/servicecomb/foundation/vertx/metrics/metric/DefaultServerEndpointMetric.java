@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.vertx.metrics.metric;
 import java.util.concurrent.atomic.LongAdder;
 
 public class DefaultServerEndpointMetric extends DefaultEndpointMetric {
-  private LongAdder rejectByConnectionLimitCount = new LongAdder();
+  private final LongAdder rejectByConnectionLimitCount = new LongAdder();
 
   public DefaultServerEndpointMetric(String address) {
     super(address);

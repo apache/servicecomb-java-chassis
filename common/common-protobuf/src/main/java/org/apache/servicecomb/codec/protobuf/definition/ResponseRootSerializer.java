@@ -23,11 +23,11 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
 public class ResponseRootSerializer {
-  private RootSerializer rootSerializer;
+  private final RootSerializer rootSerializer;
 
-  private boolean noTypesInfo;
+  private final boolean noTypesInfo;
 
-  private boolean isWrap;
+  private final boolean isWrap;
 
   public ResponseRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
     this.rootSerializer = serializer;

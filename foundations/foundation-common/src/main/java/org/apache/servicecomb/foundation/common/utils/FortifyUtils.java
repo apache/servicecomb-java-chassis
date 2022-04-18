@@ -36,9 +36,9 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public final class FortifyUtils {
 
-  private static Method getMessageMethod;
+  private static final Method getMessageMethod;
 
-  private static Method printStackTraceMethod;
+  private static final Method printStackTraceMethod;
 
   static {
     try {

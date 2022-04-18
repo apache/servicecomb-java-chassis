@@ -18,7 +18,7 @@
 package org.apache.servicecomb.darklaunch.oper;
 
 public class OrCondition extends AbstractCondition {
-  private Condition[] conditions;
+  private final Condition[] conditions;
 
   public OrCondition(Condition... conditions) {
     super("or", "or");

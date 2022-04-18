@@ -80,7 +80,7 @@ public class DiscoveryTree {
 
   private final Object lock = new Object();
 
-  private List<DiscoveryFilter> filters = new ArrayList<>();
+  private final List<DiscoveryFilter> filters = new ArrayList<>();
 
   public void loadFromSPI(Class<? extends DiscoveryFilter> cls) {
     filters.addAll(SPIServiceUtils.getSortedService(cls));

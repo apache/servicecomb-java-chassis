@@ -32,7 +32,7 @@ public class DefaultClientEndpointMetricManager {
 
   // to avoid save too many endpoint that not exist any more
   // must check expired periodically
-  private Map<String, DefaultClientEndpointMetric> clientEndpointMetricMap = new ConcurrentHashMapEx<>();
+  private final Map<String, DefaultClientEndpointMetric> clientEndpointMetricMap = new ConcurrentHashMapEx<>();
 
   // clientEndpointMetricMap is thread safe
   // but get/isExpired/remove is not safe

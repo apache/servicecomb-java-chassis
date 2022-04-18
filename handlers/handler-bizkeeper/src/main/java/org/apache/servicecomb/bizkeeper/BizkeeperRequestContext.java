@@ -24,7 +24,7 @@ import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
  *
  */
 public final class BizkeeperRequestContext {
-  private HystrixRequestContext context;
+  private final HystrixRequestContext context;
 
   private BizkeeperRequestContext(HystrixRequestContext context) {
     this.context = context;

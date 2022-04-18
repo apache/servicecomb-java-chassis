@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 public class OptionalProducerResponseMapper implements ProducerResponseMapper {
-  private ProducerResponseMapper realMapper;
+  private final ProducerResponseMapper realMapper;
 
   public OptionalProducerResponseMapper(ProducerResponseMapper realMapper) {
     this.realMapper = realMapper;

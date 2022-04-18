@@ -38,9 +38,9 @@ import io.vertx.core.streams.WriteStream;
 public class PumpFromPart {
   private static final Logger LOGGER = LoggerFactory.getLogger(PumpFromPart.class);
 
-  private Context context;
+  private final Context context;
 
-  private Part part;
+  private final Part part;
 
   public PumpFromPart(Context context, Part part) {
     this.context = context;

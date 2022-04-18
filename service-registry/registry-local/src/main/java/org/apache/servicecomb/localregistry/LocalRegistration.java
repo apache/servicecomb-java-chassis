@@ -32,7 +32,7 @@ import com.netflix.config.DynamicPropertyFactory;
 public class LocalRegistration implements Registration {
   public static final String NAME = "local registration";
 
-  private LocalRegistryStore localRegistrationStore = LocalRegistryStore.INSTANCE;
+  private final LocalRegistryStore localRegistrationStore = LocalRegistryStore.INSTANCE;
 
   @Override
   public void init() {

@@ -26,9 +26,9 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
 public class VertxHttpTransportContext extends HttpTransportContext implements VertxTransportContext {
-  private RoutingContext routingContext;
+  private final RoutingContext routingContext;
 
-  private Context vertxContext;
+  private final Context vertxContext;
 
   public VertxHttpTransportContext(RoutingContext routingContext, HttpServletRequestEx requestEx,
       HttpServletResponseEx responseEx, ProduceProcessor produceProcessor) {

@@ -22,23 +22,23 @@ import java.util.concurrent.atomic.LongAdder;
  * for one listen address, include multiple httpClient or httpServer
  */
 public class DefaultEndpointMetric {
-  private String address;
+  private final String address;
 
   // summary of connect times from boot
   // by this, we can know how many new connections connected recently
-  private LongAdder connectCount = new LongAdder();
+  private final LongAdder connectCount = new LongAdder();
 
   // summary of disconnect times from boot
   // by this, we can know how many connections disconnected recently
-  private LongAdder disconnectCount = new LongAdder();
+  private final LongAdder disconnectCount = new LongAdder();
 
-  private LongAdder bytesRead = new LongAdder();
+  private final LongAdder bytesRead = new LongAdder();
 
-  private LongAdder bytesWritten = new LongAdder();
+  private final LongAdder bytesWritten = new LongAdder();
 
-  private LongAdder requests = new LongAdder();
+  private final LongAdder requests = new LongAdder();
 
-  private LongAdder latency = new LongAdder();
+  private final LongAdder latency = new LongAdder();
 
   public DefaultEndpointMetric(String address) {
     this.address = address;

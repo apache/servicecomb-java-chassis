@@ -26,7 +26,7 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
  *
  */
 public class TcpOutputStream extends BufferOutputStream {
-  private long msgId;
+  private final long msgId;
 
   public TcpOutputStream(long msgId) {
     super();

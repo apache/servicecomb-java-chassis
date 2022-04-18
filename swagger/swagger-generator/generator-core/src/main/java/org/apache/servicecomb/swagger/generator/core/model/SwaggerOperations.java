@@ -34,10 +34,10 @@ public class SwaggerOperations {
     return new SwaggerOperations(swagger);
   }
 
-  private Swagger swagger;
+  private final Swagger swagger;
 
   // key is operationId
-  private Map<String, SwaggerOperation> operations = new HashMap<>();
+  private final Map<String, SwaggerOperation> operations = new HashMap<>();
 
   public SwaggerOperations(Swagger swagger) {
     this.swagger = swagger;

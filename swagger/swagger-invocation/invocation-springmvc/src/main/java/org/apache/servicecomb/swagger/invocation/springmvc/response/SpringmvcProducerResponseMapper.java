@@ -28,7 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
-  private ProducerResponseMapper realMapper;
+  private final ProducerResponseMapper realMapper;
 
   public SpringmvcProducerResponseMapper(ProducerResponseMapper realMapper) {
     this.realMapper = realMapper;

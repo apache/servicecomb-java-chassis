@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
 public class RegisterManager<KEY, VALUE> {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegisterManager.class);
 
-  private String name;
+  private final String name;
 
   private String registerErrorFmt = "Not allow register repeat data, name=%s, key=%s";
 
-  private Map<KEY, VALUE> objMap = new ConcurrentHashMap<>();
+  private final Map<KEY, VALUE> objMap = new ConcurrentHashMap<>();
 
-  private Object lockObj = new Object();
+  private final Object lockObj = new Object();
 
   protected Map<KEY, VALUE> getObjMap() {
     return objMap;

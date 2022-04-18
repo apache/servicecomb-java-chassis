@@ -35,9 +35,9 @@ public class RouterFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterFilter.class);
 
-  private RouterRuleMatcher routerRuleMatcher;
+  private final RouterRuleMatcher routerRuleMatcher;
 
-  private RouterRuleCache routerRuleCache;
+  private final RouterRuleCache routerRuleCache;
 
   @Autowired
   public RouterFilter(RouterRuleMatcher routerRuleMatcher, RouterRuleCache routerRuleCache) {

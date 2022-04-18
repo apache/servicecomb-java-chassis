@@ -23,7 +23,7 @@ import org.springframework.http.HttpEntity;
 @SuppressWarnings("deprecation")
 // TODO : upgrade to spring 5 will having warning's , we'll fix it later
 public class CseAsyncRequestCallback<T> implements org.springframework.web.client.AsyncRequestCallback {
-  private HttpEntity<T> requestBody;
+  private final HttpEntity<T> requestBody;
 
   CseAsyncRequestCallback(HttpEntity<T> requestBody) {
     this.requestBody = requestBody;

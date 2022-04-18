@@ -50,7 +50,7 @@ public class SwaggerLoader {
   // first key : appId
   // second key: microservice short name
   // third key : schemaId
-  private Map<String, Map<String, Map<String, Swagger>>> apps = new ConcurrentHashMapEx<>();
+  private final Map<String, Map<String, Map<String, Swagger>>> apps = new ConcurrentHashMapEx<>();
 
   public SwaggerLoader() {
   }

@@ -29,13 +29,13 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 public class SimpleSubscriber {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSubscriber.class);
 
-  private Object instance;
+  private final Object instance;
 
-  private Method method;
+  private final Method method;
 
   private int order;
 
-  private boolean enableExceptionPropagation;
+  private final boolean enableExceptionPropagation;
 
   // generated from method
   private Consumer<Object> lambda;

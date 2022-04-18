@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class BeanDescriptorManager {
-  private SerializationConfig serializationConfig;
+  private final SerializationConfig serializationConfig;
 
-  private Map<Type, BeanDescriptor> beanDescriptors = new ConcurrentHashMapEx<>();
+  private final Map<Type, BeanDescriptor> beanDescriptors = new ConcurrentHashMapEx<>();
 
   public BeanDescriptorManager(SerializationConfig serializationConfig) {
     this.serializationConfig = serializationConfig;

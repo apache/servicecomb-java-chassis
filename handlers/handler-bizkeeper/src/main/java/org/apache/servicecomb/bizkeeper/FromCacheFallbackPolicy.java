@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class FromCacheFallbackPolicy implements FallbackPolicy {
   private static final String POLICY_NAME = "fromCache";
 
-  private Map<String, Response> cachedResponse = new ConcurrentHashMap<>();
+  private final Map<String, Response> cachedResponse = new ConcurrentHashMap<>();
 
   @Override
   public String name() {

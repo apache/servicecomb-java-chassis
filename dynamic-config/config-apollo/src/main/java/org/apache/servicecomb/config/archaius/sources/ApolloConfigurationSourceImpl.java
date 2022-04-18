@@ -45,7 +45,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
-  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private static final String APOLLO_CONFIG_URL_KEY = "apollo.config.serverUri";
 

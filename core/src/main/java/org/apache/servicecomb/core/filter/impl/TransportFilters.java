@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class TransportFilters implements InternalFilter {
   public static final String NAME = "transport-filters";
 
-  private Map<String, FilterNode> chainByTransport = new HashMap<>();
+  private final Map<String, FilterNode> chainByTransport = new HashMap<>();
 
   @Nonnull
   @Override

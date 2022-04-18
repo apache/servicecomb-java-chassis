@@ -18,7 +18,7 @@
 package org.apache.servicecomb.serviceregistry.client.http;
 
 public class WebsocketClientPool extends AbstractClientPool {
-  private String clientName;
+  private final String clientName;
 
   WebsocketClientPool(String clientName) {
     this.clientName = clientName;

@@ -50,7 +50,7 @@ public class SSLManagerTest {
   public void testSSLManagerServerAndClient(final @Mocked NetworkInterface nif) throws Exception {
     final InetAddress ia = Inet4Address.getByName("10.57.65.225");
     final Enumeration<NetworkInterface> interfaces = new Enumeration<NetworkInterface>() {
-      int count = 1;
+      final int count = 1;
 
       int cur = 0;
 
@@ -70,7 +70,7 @@ public class SSLManagerTest {
     };
 
     final Enumeration<InetAddress> ias = new Enumeration<InetAddress>() {
-      int count = 1;
+      final int count = 1;
 
       int cur = 0;
 

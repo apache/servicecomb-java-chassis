@@ -30,7 +30,7 @@ import com.netflix.config.DynamicPropertyFactory;
 public class LocalDiscovery implements Discovery {
   public static final String NAME = "local discovery";
 
-  private LocalRegistryStore localDiscoveryStore = LocalRegistryStore.INSTANCE;
+  private final LocalRegistryStore localDiscoveryStore = LocalRegistryStore.INSTANCE;
 
   @Override
   public void init() {

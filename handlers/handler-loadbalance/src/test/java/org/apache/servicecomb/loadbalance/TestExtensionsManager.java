@@ -21,21 +21,21 @@ import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestExtensionsManager {
-  @Before
+  @BeforeEach
   public void setUp() {
     ConfigUtil.createLocalConfig();
     Deencapsulation.setField(ExtensionsManager.class, "extentionFactories", new ArrayList<>());
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     Deencapsulation.setField(ExtensionsManager.class, "extentionFactories", new ArrayList<>());
     ArchaiusUtils.resetConfig();
@@ -54,13 +54,13 @@ public class TestExtensionsManager {
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
 
-    Assert.assertEquals(RoundRobinRuleExt.class.getName(),
+    Assertions.assertEquals(RoundRobinRuleExt.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest1").getClass().getName());
-    Assert.assertEquals(RandomRuleExt.class.getName(),
+    Assertions.assertEquals(RandomRuleExt.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
-    Assert.assertEquals(WeightedResponseTimeRuleExt.class.getName(),
+    Assertions.assertEquals(WeightedResponseTimeRuleExt.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
-    Assert.assertEquals(SessionStickinessRule.class.getName(),
+    Assertions.assertEquals(SessionStickinessRule.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
 
     System.getProperties().remove("servicecomb.loadbalance.mytest1.strategy.name");

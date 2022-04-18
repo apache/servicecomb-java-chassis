@@ -23,7 +23,7 @@ import io.protostuff.ProtobufOutputEx;
 import io.protostuff.SchemaEx;
 
 public class RootSerializer {
-  private SchemaEx<Object> schema;
+  private final SchemaEx<Object> schema;
 
   public RootSerializer(SchemaEx<Object> schema) {
     this.schema = schema;

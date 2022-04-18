@@ -20,7 +20,7 @@ package org.apache.servicecomb.governance.event;
 import com.google.common.eventbus.EventBus;
 
 public class GovernanceEventManager {
-  private static EventBus eventBus = new EventBus();
+  private static final EventBus eventBus = new EventBus();
 
   public static EventBus getEventBus() {
     return eventBus;

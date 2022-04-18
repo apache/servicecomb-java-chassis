@@ -40,7 +40,7 @@ public class InvocationRuntimeType {
 
   private Method associatedMethod;
 
-  private ResponsesMeta responsesMeta;
+  private final ResponsesMeta responsesMeta;
 
   private ArgumentsMapper argumentsMapper;
 

@@ -65,7 +65,7 @@ public class ServiceCombServerStats {
 
   private boolean isolated = false;
 
-  private String microserviceName;
+  private final String microserviceName;
 
   public ServiceCombServerStats(String microserviceName) {
     this(microserviceName, TimeUtils.getSystemDefaultZoneClock());

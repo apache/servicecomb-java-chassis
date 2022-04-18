@@ -18,9 +18,9 @@
 package org.apache.servicecomb.darklaunch.oper;
 
 public abstract class AbstractCondition implements Condition {
-  private String key;
+  private final String key;
 
-  private String expected;
+  private final String expected;
 
   private Object actual;
 

@@ -20,7 +20,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
 public class ConsumerMicroserviceVersionsMeta extends MicroserviceVersionsMeta {
-  private MicroserviceVersions microserviceVersions;
+  private final MicroserviceVersions microserviceVersions;
 
   public ConsumerMicroserviceVersionsMeta(SCBEngine scbEngine, MicroserviceVersions microserviceVersions) {
     super(scbEngine, microserviceVersions.getMicroserviceName());

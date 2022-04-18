@@ -30,7 +30,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestServiceCenterTask {
-  private EventBus eventBus = new EventBus();
+  private final EventBus eventBus = new EventBus();
 
   @Mocked
   private MicroserviceServiceCenterTask microserviceServiceCenterTask;

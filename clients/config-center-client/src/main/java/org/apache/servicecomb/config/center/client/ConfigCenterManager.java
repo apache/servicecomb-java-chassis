@@ -36,13 +36,13 @@ public class ConfigCenterManager extends AbstractTask {
 
   private static final long POLL_INTERVAL = 15000;
 
-  private ConfigCenterClient configCenterClient;
+  private final ConfigCenterClient configCenterClient;
 
   private final EventBus eventBus;
 
   private QueryConfigurationsRequest queryConfigurationsRequest;
 
-  private ConfigConverter configConverter;
+  private final ConfigConverter configConverter;
 
   public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus,
       ConfigConverter configConverter) {

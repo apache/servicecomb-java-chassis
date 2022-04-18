@@ -39,7 +39,7 @@ import mockit.MockUp;
 
 public class TestVertxRestTransport {
 
-  private VertxRestTransport instance = new VertxRestTransport();
+  private final VertxRestTransport instance = new VertxRestTransport();
 
   @Test
   public void testGetInstance() {

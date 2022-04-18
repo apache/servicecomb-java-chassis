@@ -29,7 +29,7 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
   private volatile long msCycleBegin;
 
   // Request count between Interval begin and now in one interval
-  private AtomicLong requestCount = new AtomicLong();
+  private final AtomicLong requestCount = new AtomicLong();
 
   // request count  before an interval
   private volatile long lastRequestCount = 1;

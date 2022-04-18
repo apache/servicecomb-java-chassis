@@ -21,11 +21,11 @@ import java.security.PublicKey;
 
 public final class RSAKeyPairEntry {
 
-  private PrivateKey privateKey;
+  private final PrivateKey privateKey;
 
-  private PublicKey publicKey;
+  private final PublicKey publicKey;
 
-  private String publicKeyEncoded;
+  private final String publicKeyEncoded;
 
   public RSAKeyPairEntry(PrivateKey privateKey, PublicKey publicKey, String publicKeyEncoded) {
     this.privateKey = privateKey;

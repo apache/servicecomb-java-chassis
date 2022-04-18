@@ -17,7 +17,7 @@
 package org.apache.servicecomb.swagger.generator;
 
 public class SwaggerGeneratorFeature {
-  private static ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = new ThreadLocal<>();
+  private static final ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = new ThreadLocal<>();
 
   public static ThreadLocal<SwaggerGeneratorFeature> getFeatureThreadLocal() {
     return featureThreadLocal;

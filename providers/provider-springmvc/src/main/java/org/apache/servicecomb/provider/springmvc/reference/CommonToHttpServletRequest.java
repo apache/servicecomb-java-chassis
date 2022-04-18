@@ -41,9 +41,9 @@ import com.google.common.annotations.VisibleForTesting;
 
 // restTemplate convert parameters to invocation args.
 public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
-  private Map<String, List<String>> queryParams;
+  private final Map<String, List<String>> queryParams;
 
-  private Map<String, List<String>> httpHeaders;
+  private final Map<String, List<String>> httpHeaders;
 
   //contains all the file key in the parts
   private List<String> fileKeys = new ArrayList<>();

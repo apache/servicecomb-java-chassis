@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 public class TransportManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(TransportManager.class);
 
-  private List<Transport> transports = new ArrayList<>(SPIServiceUtils.getOrLoadSortedService(Transport.class));
+  private final List<Transport> transports = new ArrayList<>(SPIServiceUtils.getOrLoadSortedService(Transport.class));
 
-  private Map<String, Transport> transportMap = new HashMap<>();
+  private final Map<String, Transport> transportMap = new HashMap<>();
 
   public void clearTransportBeforeInit() {
     transports.clear();

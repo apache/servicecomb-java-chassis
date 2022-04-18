@@ -31,9 +31,9 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
  */
 public class URLPathBuilder {
 
-  private List<UrlParamWriter> pathParamWriterList = new ArrayList<>();
+  private final List<UrlParamWriter> pathParamWriterList = new ArrayList<>();
 
-  private List<UrlParamWriter> queryParamWriterList = new ArrayList<>();
+  private final List<UrlParamWriter> queryParamWriterList = new ArrayList<>();
 
   private static final String SLASH = "/";
 
@@ -120,7 +120,7 @@ public class URLPathBuilder {
   }
 
   public static class URLPathStringBuilder {
-    private StringBuilder stringBuilder = new StringBuilder();
+    private final StringBuilder stringBuilder = new StringBuilder();
 
     private boolean queryPrefixNotWrite = true;
 

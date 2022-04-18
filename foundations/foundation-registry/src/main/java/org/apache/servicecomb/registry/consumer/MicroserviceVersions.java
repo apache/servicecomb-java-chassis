@@ -80,7 +80,7 @@ public class MicroserviceVersions {
 
   private boolean waitingDelete = false;
 
-  private VendorExtensions vendorExtensions = new VendorExtensions();
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
 
   public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     this.appManager = appManager;

@@ -28,7 +28,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestHttpClientPoolFactory {
-  private HttpClientOptions httpClientOptions = new HttpClientOptions();
+  private final HttpClientOptions httpClientOptions = new HttpClientOptions();
 
   HttpClientPoolFactory factory = new HttpClientPoolFactory(httpClientOptions);
 

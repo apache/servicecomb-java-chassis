@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.vertx.server.TcpServerConnection;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class HighwayServer extends TcpServer {
-  private Endpoint endpoint;
+  private final Endpoint endpoint;
 
   public HighwayServer(Endpoint endpoint) {
     super((URIEndpointObject) endpoint.getAddress());

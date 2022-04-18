@@ -24,11 +24,15 @@ import org.apache.servicecomb.foundation.common.Version;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public final class VersionUtils {
-  private static Map<String, Version> versionCache = new ConcurrentHashMapEx<>();
+  private static final Map<String, Version> versionCache = new ConcurrentHashMapEx<>();
 
   public static Version getOrCreate(String strVersion) {
     Objects.requireNonNull(strVersion);
 
     return versionCache.computeIfAbsent(strVersion, Version::new);
+  }
+
+  public static void clear() {
+    versionCache.clear();
   }
 }

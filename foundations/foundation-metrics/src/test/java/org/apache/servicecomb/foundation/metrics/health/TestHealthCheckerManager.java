@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class TestHealthCheckerManager {
 
-  private HealthChecker good = new HealthChecker() {
+  private final HealthChecker good = new HealthChecker() {
     @Override
     public String getName() {
       return "testBad";
@@ -37,7 +37,7 @@ public class TestHealthCheckerManager {
     }
   };
 
-  private HealthChecker bad = new HealthChecker() {
+  private final HealthChecker bad = new HealthChecker() {
     @Override
     public String getName() {
       return "testGood";

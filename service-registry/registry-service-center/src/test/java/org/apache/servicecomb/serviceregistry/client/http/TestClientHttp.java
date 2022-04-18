@@ -42,7 +42,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestClientHttp {
-  private Microservice microservice = new Microservice();
+  private final Microservice microservice = new Microservice();
 
   @SuppressWarnings("unchecked")
   @Test

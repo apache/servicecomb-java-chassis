@@ -39,17 +39,17 @@ import io.vertx.core.Vertx;
  * sync/async is not about net operation, just about consumer invoke mode.
  */
 public class ClientPoolManager<CLIENT_POOL> {
-  private Vertx vertx;
+  private final Vertx vertx;
 
-  private String id = UUID.randomUUID().toString();
+  private final String id = UUID.randomUUID().toString();
 
-  private ClientPoolFactory<CLIENT_POOL> factory;
+  private final ClientPoolFactory<CLIENT_POOL> factory;
 
-  private List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
+  private final List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
 
   // reactive mode, when call from other thread, must select a context for it
   // if we use threadId to hash a context, will always select the same context from one thread
-  private AtomicInteger reactiveNextIndex = new AtomicInteger();
+  private final AtomicInteger reactiveNextIndex = new AtomicInteger();
 
   public ClientPoolManager(Vertx vertx, ClientPoolFactory<CLIENT_POOL> factory) {
     this.vertx = vertx;

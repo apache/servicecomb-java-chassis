@@ -39,19 +39,19 @@ public class KieConfigManager extends AbstractTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieConfigManager.class);
 
-  private static long LONG_POLLING_INTERVAL = 1000;
+  private static final long LONG_POLLING_INTERVAL = 1000;
 
-  private static long POLLING_INTERVAL = 15000;
+  private static final long POLLING_INTERVAL = 15000;
 
-  private KieConfigOperation configKieClient;
+  private final KieConfigOperation configKieClient;
 
   private final EventBus eventBus;
 
-  private ConfigConverter configConverter;
+  private final ConfigConverter configConverter;
 
-  private List<ConfigurationsRequest> configurationsRequests;
+  private final List<ConfigurationsRequest> configurationsRequests;
 
-  private KieConfiguration kieConfiguration;
+  private final KieConfiguration kieConfiguration;
 
   public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus,
       KieConfiguration kieConfiguration,

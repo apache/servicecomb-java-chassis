@@ -89,15 +89,15 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   private static final String ERR_SCHEMA_NOT_EXISTS = "400016";
 
-  private IpPortManager ipPortManager;
+  private final IpPortManager ipPortManager;
 
   // key是本进程的微服务id和服务管理中心的id
   // extract this, ServiceRegistryClient is better to be no status.
-  private Map<String, Boolean> watchServices = new ConcurrentHashMap<>();
+  private final Map<String, Boolean> watchServices = new ConcurrentHashMap<>();
 
-  private RestClientUtil restClientUtil;
+  private final RestClientUtil restClientUtil;
 
-  private WebsocketClientUtil websocketClientUtil;
+  private final WebsocketClientUtil websocketClientUtil;
 
   public ServiceRegistryClientImpl(ServiceRegistryConfig serviceRegistryConfig) {
     this.ipPortManager = new IpPortManager(serviceRegistryConfig);
@@ -105,7 +105,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     this.websocketClientUtil = new WebsocketClientUtil(serviceRegistryConfig);
   }
 
-  private LoadingCache<String, Map<String, String>> schemaCache = CacheBuilder.newBuilder()
+  private final LoadingCache<String, Map<String, String>> schemaCache = CacheBuilder.newBuilder()
       .expireAfterAccess(60, TimeUnit.SECONDS).build(new CacheLoader<String, Map<String, String>>() {
         public Map<String, String> load(String key) {
           Holder<List<GetSchemaResponse>> result = getSchemas(key, true, true);

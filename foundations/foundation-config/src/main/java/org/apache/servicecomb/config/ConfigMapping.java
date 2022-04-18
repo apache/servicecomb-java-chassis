@@ -40,7 +40,7 @@ import com.google.common.annotations.VisibleForTesting;
  * Created by   on 2017/1/5.
  */
 public final class ConfigMapping {
-  private static Map<String, Object> configMap;
+  private static final Map<String, Object> configMap;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMapping.class);
 

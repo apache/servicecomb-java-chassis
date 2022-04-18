@@ -24,7 +24,7 @@ import com.google.common.annotations.VisibleForTesting;
  * for one listen address, include multiple httpClient or httpServer
  */
 public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
-  private LongAdder queue = new LongAdder();
+  private final LongAdder queue = new LongAdder();
 
   // control if the metric instance will be expired
   // all invoker about incRefCount/isExpired, must lock: DefaultClientEndpointMetricManager

@@ -34,13 +34,13 @@ import io.protostuff.compiler.parser.ProtoContext;
 public class ProtoParser {
   private static final String DEFAULT_PROTO_NAME = "default.proto";
 
-  private Injector injector = Guice.createInjector(new ParserModule());
+  private final Injector injector = Guice.createInjector(new ParserModule());
 
-  private FileReaderFactory fileReaderFactory = injector.getInstance(FileReaderFactory.class);
+  private final FileReaderFactory fileReaderFactory = injector.getInstance(FileReaderFactory.class);
 
-  private FileReader defaultReader = fileReaderFactory.create(Collections.emptyList());
+  private final FileReader defaultReader = fileReaderFactory.create(Collections.emptyList());
 
-  private FileDescriptorLoader loader = injector.getInstance(FileDescriptorLoader.class);
+  private final FileDescriptorLoader loader = injector.getInstance(FileDescriptorLoader.class);
 
   public Proto parseFromContent(String content) {
     // io.protostuff.compiler.parser.ClasspathFileReader will use ContextClassLoader load resource, but in some environment,

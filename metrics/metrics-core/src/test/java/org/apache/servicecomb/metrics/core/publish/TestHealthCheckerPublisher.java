@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestHealthCheckerPublisher {
-  private HealthChecker good = new HealthChecker() {
+  private final HealthChecker good = new HealthChecker() {
     @Override
     public String getName() {
       return "test";
@@ -39,7 +39,7 @@ public class TestHealthCheckerPublisher {
     }
   };
 
-  private HealthChecker bad = new HealthChecker() {
+  private final HealthChecker bad = new HealthChecker() {
     @Override
     public String getName() {
       return "test2";

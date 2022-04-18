@@ -58,11 +58,11 @@ import io.swagger.models.properties.StringProperty;
 import io.swagger.util.PrimitiveType;
 
 public class ModelResolverExt extends ModelResolver {
-  private Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
+  private final Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
 
   private static ObjectMapper objectMapper;
 
-  private Set<Type> concreteInterfaces = new HashSet<>();
+  private final Set<Type> concreteInterfaces = new HashSet<>();
 
   private static final String DISABLE_DATA_TYPE_CHECK = "servicecomb.swagger.disableDataTypeCheck";
 

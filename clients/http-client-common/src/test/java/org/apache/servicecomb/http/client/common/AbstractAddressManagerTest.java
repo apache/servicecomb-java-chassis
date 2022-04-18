@@ -39,7 +39,7 @@ import mockit.Expectations;
 
 public class AbstractAddressManagerTest {
 
-  private static List<String> addresses = new ArrayList<>();
+  private static final List<String> addresses = new ArrayList<>();
 
   private static AbstractAddressManager addressManager1;
 

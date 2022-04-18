@@ -49,9 +49,9 @@ public class TcpConnection {
   // so this optimization:
   // 1.avoid vertx's lock
   // 2.reduce netty's task schedule
-  private Queue<ByteBuf> writeQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<ByteBuf> writeQueue = new ConcurrentLinkedQueue<>();
 
-  private AtomicLong writeQueueSize = new AtomicLong();
+  private final AtomicLong writeQueueSize = new AtomicLong();
 
   public String getProtocol() {
     return protocol;

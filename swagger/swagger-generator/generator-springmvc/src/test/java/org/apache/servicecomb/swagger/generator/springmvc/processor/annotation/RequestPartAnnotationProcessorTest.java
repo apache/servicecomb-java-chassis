@@ -37,7 +37,7 @@ import io.swagger.models.properties.StringProperty;
 public class RequestPartAnnotationProcessorTest {
   private static Method producerMethod;
 
-  private static RequestPartAnnotationProcessor requestPartAnnotationProcessor = new RequestPartAnnotationProcessor();
+  private static final RequestPartAnnotationProcessor requestPartAnnotationProcessor = new RequestPartAnnotationProcessor();
 
   @BeforeClass
   public static void beforeClass() {

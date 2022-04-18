@@ -38,7 +38,7 @@ public class HttpTransportImpl implements HttpTransport {
 
   private Map<String, String> globalHeaders;
 
-  private RequestAuthHeaderProvider requestAuthHeaderProvider;
+  private final RequestAuthHeaderProvider requestAuthHeaderProvider;
 
   public HttpTransportImpl(HttpClient httpClient, RequestAuthHeaderProvider requestAuthHeaderProvider) {
     this.httpClient = httpClient;

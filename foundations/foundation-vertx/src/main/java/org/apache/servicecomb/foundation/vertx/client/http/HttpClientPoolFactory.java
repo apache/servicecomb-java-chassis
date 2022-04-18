@@ -29,7 +29,7 @@ import io.vertx.core.http.HttpClientOptions;
 public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithContext> {
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPoolFactory.class);
 
-  private HttpClientOptions httpClientOptions;
+  private final HttpClientOptions httpClientOptions;
 
   public HttpClientPoolFactory(HttpClientOptions httpClientOptions) {
     this.httpClientOptions = httpClientOptions;

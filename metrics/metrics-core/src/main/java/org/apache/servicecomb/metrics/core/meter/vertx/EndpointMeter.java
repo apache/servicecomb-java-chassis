@@ -47,19 +47,19 @@ public class EndpointMeter {
 
   protected Id id;
 
-  private Id idConnect;
+  private final Id idConnect;
 
-  private Id idDisconnect;
+  private final Id idDisconnect;
 
-  private Id idConnections;
+  private final Id idConnections;
 
-  private Id idBytesRead;
+  private final Id idBytesRead;
 
-  private Id idBytesWritten;
+  private final Id idBytesWritten;
 
-  private Id idRequests;
+  private final Id idRequests;
 
-  private Id idLatency;
+  private final Id idLatency;
 
   protected DefaultEndpointMetric metric;
 

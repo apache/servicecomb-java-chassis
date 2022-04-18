@@ -17,32 +17,29 @@
 
 package org.apache.servicecomb.registry.version;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.servicecomb.foundation.common.Version;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-import mockit.Deencapsulation;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionUtils {
-  @Before
+  @BeforeEach
   public void setup() {
-    Deencapsulation.setField(VersionUtils.class, "versionCache", new ConcurrentHashMap<>());
+    VersionUtils.clear();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
-    Deencapsulation.setField(VersionUtils.class, "versionCache", new ConcurrentHashMap<>());
+    VersionUtils.clear();
   }
 
   @Test
   public void getOrCreate() {
     Version v = VersionUtils.getOrCreate("1.0.0");
 
-    Assert.assertEquals("1.0.0.0", v.getVersion());
-    Assert.assertSame(v, VersionUtils.getOrCreate("1.0.0"));
+    Assertions.assertEquals("1.0.0.0", v.getVersion());
+    Assertions.assertSame(v, VersionUtils.getOrCreate("1.0.0"));
   }
 }

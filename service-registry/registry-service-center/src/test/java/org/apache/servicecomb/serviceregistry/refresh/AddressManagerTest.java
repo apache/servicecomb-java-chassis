@@ -35,7 +35,7 @@ import mockit.Deencapsulation;
 
 class AddressManagerTest {
 
-  private static List<String> addresses = new ArrayList<>();
+  private static final List<String> addresses = new ArrayList<>();
 
   private static AddressManager addressManager1;
 

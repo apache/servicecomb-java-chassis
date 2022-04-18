@@ -45,12 +45,12 @@ import io.swagger.models.Swagger;
 public class ProducerProviderManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerProviderManager.class);
 
-  private List<ProducerProvider> producerProviderList = new ArrayList<>(
+  private final List<ProducerProvider> producerProviderList = new ArrayList<>(
       SPIServiceUtils.getOrLoadSortedService(ProducerProvider.class));
 
-  private SCBEngine scbEngine;
+  private final SCBEngine scbEngine;
 
-  private List<ProducerMeta> producerMetas = new ArrayList<>();
+  private final List<ProducerMeta> producerMetas = new ArrayList<>();
 
   public ProducerProviderManager(SCBEngine scbEngine) {
     this.scbEngine = scbEngine;

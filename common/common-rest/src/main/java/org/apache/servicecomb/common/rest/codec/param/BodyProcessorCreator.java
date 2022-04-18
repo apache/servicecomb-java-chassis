@@ -61,7 +61,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   private static final JavaType OBJECT_TYPE = SimpleType.constructUnsafe(Object.class);
 
   // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-  private static boolean decodeAsObject = DynamicPropertyFactory.getInstance()
+  private static final boolean decodeAsObject = DynamicPropertyFactory.getInstance()
       .getBooleanProperty("servicecomb.rest.parameter.decodeAsObject", false).get();
 
   public static class BodyProcessor implements ParamValueProcessor {
@@ -69,7 +69,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     protected Class<?> serialViewClass;
 
-    private boolean isString;
+    private final boolean isString;
 
     protected boolean isRequired;
 

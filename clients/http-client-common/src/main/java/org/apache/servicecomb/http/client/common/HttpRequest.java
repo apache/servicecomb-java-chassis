@@ -41,11 +41,11 @@ public class HttpRequest {
 
   private String method;
 
-  private String url;
+  private final String url;
 
   private Map<String, String> headers;
 
-  private String content;
+  private final String content;
 
   public HttpRequest(String url, Map<String, String> headers, String content, String method) {
     this.url = url;

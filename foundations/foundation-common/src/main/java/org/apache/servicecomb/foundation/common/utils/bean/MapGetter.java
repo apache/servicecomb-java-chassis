@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.common.utils.bean;
 import java.util.Map;
 
 public class MapGetter<K, V> implements Getter<Map<K, V>, V> {
-  private K key;
+  private final K key;
 
   public MapGetter(K key) {
     this.key = key;

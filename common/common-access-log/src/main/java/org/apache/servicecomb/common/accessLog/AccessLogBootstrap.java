@@ -22,7 +22,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import com.google.common.eventbus.EventBus;
 
 public class AccessLogBootstrap {
-  private static AccessLogConfig config = AccessLogConfig.INSTANCE;
+  private static final AccessLogConfig config = AccessLogConfig.INSTANCE;
 
   private EventBus eventBus;
 

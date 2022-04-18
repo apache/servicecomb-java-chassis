@@ -24,15 +24,15 @@ import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 
 public class SwaggerOperation {
-  private Swagger swagger;
+  private final Swagger swagger;
 
-  private String path;
+  private final String path;
 
-  private HttpMethod httpMethod;
+  private final HttpMethod httpMethod;
 
-  private Operation operation;
+  private final Operation operation;
 
-  private Map<String, Integer> parameterIndexes = new HashMap<>();
+  private final Map<String, Integer> parameterIndexes = new HashMap<>();
 
   public SwaggerOperation(Swagger swagger, String path, HttpMethod httpMethod, Operation operation) {
     this.swagger = swagger;

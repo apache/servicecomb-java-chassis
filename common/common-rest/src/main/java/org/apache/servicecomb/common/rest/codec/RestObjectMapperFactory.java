@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RestObjectMapperFactory {
   private static AbstractRestObjectMapper defaultMapper = new RestObjectMapper();
 
-  private static AbstractRestObjectMapper viewMapper = new RestObjectMapper();
+  private static final AbstractRestObjectMapper viewMapper = new RestObjectMapper();
 
   private static AbstractRestObjectMapper consumerWriterMapper = defaultMapper;
 

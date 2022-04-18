@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class ServiceCombInvocationContext implements InvocationContext {
   private static final String CONTEXT_KEY = "x-servicecomb-governance-match";
 
-  private static ThreadLocal<org.apache.servicecomb.swagger.invocation.context.InvocationContext> contextMgr = new ThreadLocal<>();
+  private static final ThreadLocal<org.apache.servicecomb.swagger.invocation.context.InvocationContext> contextMgr = new ThreadLocal<>();
 
   public static void setInvocationContext(
       org.apache.servicecomb.swagger.invocation.context.InvocationContext invocationContext) {

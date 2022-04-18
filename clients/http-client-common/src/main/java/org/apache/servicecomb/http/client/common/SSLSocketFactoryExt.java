@@ -24,11 +24,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class SSLSocketFactoryExt extends SSLSocketFactory {
-  private SSLSocketFactory sslSocketFactory;
+  private final SSLSocketFactory sslSocketFactory;
 
-  private String host;
+  private final String host;
 
-  private int port;
+  private final int port;
 
   public SSLSocketFactoryExt(SSLSocketFactory factory, String host, int port) {
     this.sslSocketFactory = factory;

@@ -22,7 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestSwaggerProducerOperation {
-  private static SwaggerEnvironment env = new SwaggerEnvironment();
+  private static final SwaggerEnvironment env = new SwaggerEnvironment();
 
   private static SwaggerProducer producer;
 

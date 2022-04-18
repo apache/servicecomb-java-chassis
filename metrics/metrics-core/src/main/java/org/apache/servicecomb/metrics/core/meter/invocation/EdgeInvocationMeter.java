@@ -28,13 +28,13 @@ import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
 
 public class EdgeInvocationMeter extends ConsumerInvocationMeter {
-  private SimpleTimer executorQueueTimer;
+  private final SimpleTimer executorQueueTimer;
 
-  private SimpleTimer serverFiltersRequestTimer;
+  private final SimpleTimer serverFiltersRequestTimer;
 
-  private SimpleTimer serverFiltersResponseTimer;
+  private final SimpleTimer serverFiltersResponseTimer;
 
-  private SimpleTimer sendResponseTimer;
+  private final SimpleTimer sendResponseTimer;
 
   public EdgeInvocationMeter(Registry registry, Id id) {
     super(registry, id);

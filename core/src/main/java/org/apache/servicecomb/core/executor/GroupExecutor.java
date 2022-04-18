@@ -64,13 +64,13 @@ public class GroupExecutor implements Executor, Closeable {
   protected int maxQueueSize;
 
   // to avoid multiple network thread conflicted when put tasks to executor queue
-  private List<ExecutorService> executorList = new ArrayList<>();
+  private final List<ExecutorService> executorList = new ArrayList<>();
 
   // for bind network thread to one executor
   // it's impossible that has too many network thread, so index will not too big that less than 0
-  private AtomicInteger index = new AtomicInteger();
+  private final AtomicInteger index = new AtomicInteger();
 
-  private Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
+  private final Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
 
   public GroupExecutor init() {
     return init("group");

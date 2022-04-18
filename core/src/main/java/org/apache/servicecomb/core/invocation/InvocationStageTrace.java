@@ -85,7 +85,7 @@ public class InvocationStageTrace {
 
   public static final String PRODUCER_SEND_RESPONSE = "send response";
 
-  private Invocation invocation;
+  private final Invocation invocation;
 
   // current time for start invocation
   private long startTimeMillis;

@@ -27,19 +27,19 @@ import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
-  private SimpleTimer clientFiltersRequestTimer;
+  private final SimpleTimer clientFiltersRequestTimer;
 
-  private SimpleTimer consumerSendRequestTimer;
+  private final SimpleTimer consumerSendRequestTimer;
 
-  private SimpleTimer consumerGetConnectionTimer;
+  private final SimpleTimer consumerGetConnectionTimer;
 
-  private SimpleTimer consumerWriteToBufTimer;
+  private final SimpleTimer consumerWriteToBufTimer;
 
-  private SimpleTimer consumerWaitResponseTimer;
+  private final SimpleTimer consumerWaitResponseTimer;
 
-  private SimpleTimer consumerWakeConsumerTimer;
+  private final SimpleTimer consumerWakeConsumerTimer;
 
-  private SimpleTimer clientFiltersResponseTimer;
+  private final SimpleTimer clientFiltersResponseTimer;
 
   public ConsumerInvocationMeter(Registry registry, Id id) {
     super(registry, id);

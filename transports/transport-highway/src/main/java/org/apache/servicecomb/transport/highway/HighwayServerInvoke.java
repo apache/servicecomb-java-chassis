@@ -58,13 +58,13 @@ public class HighwayServerInvoke {
 
   private Buffer bodyBuffer;
 
-  private Endpoint endpoint;
+  private final Endpoint endpoint;
 
   private Invocation invocation;
 
   private OperationProtobuf operationProtobuf;
 
-  private long start;
+  private final long start;
 
   public HighwayServerInvoke(Endpoint endpoint) {
     this.start = System.nanoTime();

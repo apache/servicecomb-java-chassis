@@ -41,7 +41,7 @@ public class InvocationContextItemTest {
 
   public static final String INVOCATION_CONTEXT_VALUE = "testValue";
 
-  private static InvocationContextAccessItem ITEM = new InvocationContextAccessItem(INVOCATION_CONTEXT_KEY);
+  private static final InvocationContextAccessItem ITEM = new InvocationContextAccessItem(INVOCATION_CONTEXT_KEY);
 
   private StringBuilder strBuilder;
 

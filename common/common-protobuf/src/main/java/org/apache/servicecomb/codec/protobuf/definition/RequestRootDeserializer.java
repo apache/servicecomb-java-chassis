@@ -24,11 +24,11 @@ import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
 public class RequestRootDeserializer<T> {
-  private boolean wrapArgument;
+  private final boolean wrapArgument;
 
-  private String parameterName;
+  private final String parameterName;
 
-  private RootDeserializer<T> rootDeserializer;
+  private final RootDeserializer<T> rootDeserializer;
 
   public RequestRootDeserializer(RootDeserializer<T> rootDeserializer, boolean wrapArgument, String parameterName) {
     this.rootDeserializer = rootDeserializer;

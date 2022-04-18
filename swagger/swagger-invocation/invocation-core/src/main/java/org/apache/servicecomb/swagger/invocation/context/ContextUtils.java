@@ -26,7 +26,7 @@ public final class ContextUtils {
   private ContextUtils() {
   }
 
-  private static ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
+  private static final ThreadLocal<InvocationContext> contextMgr = new ThreadLocal<>();
 
   public static InvocationContext getInvocationContext() {
     return contextMgr.get();

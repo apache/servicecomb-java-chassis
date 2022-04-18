@@ -50,7 +50,7 @@ public class SwaggerProducerOperation {
 
   private ProducerResponseMapper responseMapper;
 
-  private List<ProducerInvokeExtension> producerInvokeExtenstionList =
+  private final List<ProducerInvokeExtension> producerInvokeExtenstionList =
       SPIServiceUtils.getSortedService(ProducerInvokeExtension.class);
 
   public String getOperationId() {

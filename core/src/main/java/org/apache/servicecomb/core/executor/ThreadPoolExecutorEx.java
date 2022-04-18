@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadPoolExecutorEx extends ThreadPoolExecutor {
-  private AtomicInteger submittedCount = new AtomicInteger();
+  private final AtomicInteger submittedCount = new AtomicInteger();
 
-  private AtomicInteger finishedCount = new AtomicInteger();
+  private final AtomicInteger finishedCount = new AtomicInteger();
 
-  private AtomicInteger rejectedCount = new AtomicInteger();
+  private final AtomicInteger rejectedCount = new AtomicInteger();
 
   public ThreadPoolExecutorEx(int coreThreads, int maxThreads, int maxIdleInSecond, TimeUnit timeUnit,
       BlockingQueue<Runnable> queue, ThreadFactory threadFactory) {

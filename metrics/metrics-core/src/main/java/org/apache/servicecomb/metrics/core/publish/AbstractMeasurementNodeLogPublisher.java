@@ -24,7 +24,7 @@ public abstract class AbstractMeasurementNodeLogPublisher {
 
   protected MeasurementNode measurementNode;
 
-  private boolean exists;
+  private final boolean exists;
 
   public AbstractMeasurementNodeLogPublisher(MeasurementTree tree, StringBuilder sb, String... childNames) {
     this.sb = sb;

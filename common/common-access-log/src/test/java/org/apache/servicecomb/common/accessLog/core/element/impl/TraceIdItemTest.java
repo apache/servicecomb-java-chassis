@@ -51,7 +51,7 @@ public class TraceIdItemTest {
 
   private Invocation invocation;
 
-  private Map<String, String> clientContext = new HashMap<>();
+  private final Map<String, String> clientContext = new HashMap<>();
 
   @Before
   public void initStrBuilder() {

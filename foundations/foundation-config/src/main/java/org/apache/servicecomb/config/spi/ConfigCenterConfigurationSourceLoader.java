@@ -23,7 +23,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class ConfigCenterConfigurationSourceLoader {
-  private static List<ConfigCenterConfigurationSource> configCenterConfigurationSources =
+  private static final List<ConfigCenterConfigurationSource> configCenterConfigurationSources =
       SPIServiceUtils.getSortedService(ConfigCenterConfigurationSource.class);
 
   public static ConfigCenterConfigurationSource getConfigCenterConfigurationSource(Configuration localConfiguration) {

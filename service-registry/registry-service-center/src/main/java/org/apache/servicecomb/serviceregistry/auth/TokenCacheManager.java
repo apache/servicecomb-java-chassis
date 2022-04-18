@@ -55,7 +55,7 @@ public final class TokenCacheManager {
   private static final TokenCacheManager INSTANCE = new TokenCacheManager();
 
 
-  private Map<String, TokenCache> tokenCacheMap;
+  private final Map<String, TokenCache> tokenCacheMap;
 
   private Map<String, ServiceCenterClient> serviceCenterClients;
 
@@ -102,7 +102,7 @@ public final class TokenCacheManager {
 
     private LoadingCache<String, String> cache;
 
-    private Cipher cipher;
+    private final Cipher cipher;
 
     private int lastStatusCode;
 

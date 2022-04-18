@@ -25,7 +25,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ProviderAuthHanlder implements Handler {
 
-  private RSAProviderTokenManager authenticationTokenManager = new RSAProviderTokenManager();
+  private final RSAProviderTokenManager authenticationTokenManager = new RSAProviderTokenManager();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {

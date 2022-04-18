@@ -50,7 +50,7 @@ public class AnyEntrySchema implements SchemaEx<Object> {
 
   private final int valueTag = WireFormat.makeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
 
-  private Type anyTargetType;
+  private final Type anyTargetType;
 
   public AnyEntrySchema(ProtoMapper protoMapper, Type type) {
     this.protoMapper = protoMapper;

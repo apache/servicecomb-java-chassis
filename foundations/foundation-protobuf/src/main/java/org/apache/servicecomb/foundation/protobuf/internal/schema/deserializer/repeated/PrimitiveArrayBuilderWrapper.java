@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 import com.fasterxml.jackson.databind.util.PrimitiveArrayBuilder;
 
 public class PrimitiveArrayBuilderWrapper<T> {
-  private PrimitiveArrayBuilder<T> builder;
+  private final PrimitiveArrayBuilder<T> builder;
 
   private T array;
 

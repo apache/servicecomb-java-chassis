@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class MeasurementGroupConfig {
   // key is measurement id name
-  private Map<String, List<TagFinder>> groups = new HashMap<>();
+  private final Map<String, List<TagFinder>> groups = new HashMap<>();
 
   public MeasurementGroupConfig() {
   }

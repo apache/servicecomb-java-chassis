@@ -44,9 +44,9 @@ public class OsMeter extends AbstractPeriodMeter {
 
   public static final String OS_TYPE_NET = "net";
 
-  private CpuMeter cpuMeter;
+  private final CpuMeter cpuMeter;
 
-  private NetMeter netMeter;
+  private final NetMeter netMeter;
 
   public OsMeter(Registry registry) {
     this.id = registry.createId(OS_NAME);

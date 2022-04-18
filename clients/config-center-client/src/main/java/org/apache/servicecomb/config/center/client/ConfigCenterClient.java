@@ -48,9 +48,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
   public static final String DARK_LAUNCH = "darklaunch@";
 
-  private HttpTransport httpTransport;
+  private final HttpTransport httpTransport;
 
-  private AddressManager addressManager;
+  private final AddressManager addressManager;
 
   public ConfigCenterClient(AddressManager addressManager, HttpTransport httpTransport) {
     this.addressManager = addressManager;

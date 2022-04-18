@@ -34,7 +34,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
   public static final String PROPERTIES_SUFFIX = ".properties";
 
-  private static ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+  private static final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
   /**
    * 失败，则返回空数组

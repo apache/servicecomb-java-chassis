@@ -27,15 +27,15 @@ import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
 
 public class ProducerInvocationMeter extends AbstractInvocationMeter {
-  private SimpleTimer executorQueueTimer;
+  private final SimpleTimer executorQueueTimer;
 
-  private SimpleTimer executionTimer;
+  private final SimpleTimer executionTimer;
 
-  private SimpleTimer serverFiltersRequestTimer;
+  private final SimpleTimer serverFiltersRequestTimer;
 
-  private SimpleTimer serverFiltersResponseTimer;
+  private final SimpleTimer serverFiltersResponseTimer;
 
-  private SimpleTimer sendResponseTimer;
+  private final SimpleTimer sendResponseTimer;
 
   public ProducerInvocationMeter(Registry registry, Id id) {
     super(registry, id);

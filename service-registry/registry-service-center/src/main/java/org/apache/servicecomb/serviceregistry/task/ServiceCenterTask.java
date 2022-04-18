@@ -27,15 +27,15 @@ import com.google.common.eventbus.Subscribe;
 public class ServiceCenterTask implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterTask.class);
 
-  private EventBus eventBus;
+  private final EventBus eventBus;
 
-  private int interval;
+  private final int interval;
 
-  private MicroserviceServiceCenterTask microserviceServiceCenterTask;
+  private final MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
   private boolean registerInstanceSuccess = false;
 
-  private ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
+  private final ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
 
   public ServiceCenterTask(EventBus eventBus, int interval,
       MicroserviceServiceCenterTask microserviceServiceCenterTask) {

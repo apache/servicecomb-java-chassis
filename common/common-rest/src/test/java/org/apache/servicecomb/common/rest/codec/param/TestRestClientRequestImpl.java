@@ -64,7 +64,7 @@ public class TestRestClientRequestImpl {
   public void testCookie() throws Exception {
     HttpClientRequest request = new MockUp<HttpClientRequest>() {
 
-      MultiMap map = MultiMap.caseInsensitiveMultiMap();
+      final MultiMap map = MultiMap.caseInsensitiveMultiMap();
 
       @Mock
       public HttpClientRequest putHeader(CharSequence key, CharSequence val) {

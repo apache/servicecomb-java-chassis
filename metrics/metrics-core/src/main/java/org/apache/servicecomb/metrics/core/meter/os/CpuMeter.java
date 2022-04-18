@@ -30,10 +30,10 @@ public class CpuMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CpuMeter.class);
 
   // read from /proc/stat
-  private OsCpuUsage allCpuUsage;
+  private final OsCpuUsage allCpuUsage;
 
   // read from /proc/self/stat /proc/uptime
-  private ProcessCpuUsage processCpuUsage;
+  private final ProcessCpuUsage processCpuUsage;
 
   public CpuMeter(Id id) {
     allCpuUsage = new OsCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU));

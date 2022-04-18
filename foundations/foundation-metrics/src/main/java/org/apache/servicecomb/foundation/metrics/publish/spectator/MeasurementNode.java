@@ -24,9 +24,9 @@ import java.util.Map;
 import com.netflix.spectator.api.Measurement;
 
 public class MeasurementNode implements Comparable<MeasurementNode> {
-  private String name;
+  private final String name;
 
-  private List<Measurement> measurements = new ArrayList<>();
+  private final List<Measurement> measurements = new ArrayList<>();
 
   private Map<String, MeasurementNode> children;
 

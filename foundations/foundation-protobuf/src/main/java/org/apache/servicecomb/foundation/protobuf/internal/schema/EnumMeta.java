@@ -26,11 +26,11 @@ import io.protostuff.compiler.model.EnumConstant;
 import io.protostuff.compiler.model.Field;
 
 public class EnumMeta {
-  private Map<String, Integer> enumNameToValueMap = new HashMap<>();
+  private final Map<String, Integer> enumNameToValueMap = new HashMap<>();
 
   // key is idl defined enum value
   // value is Enum<?> or null
-  private Map<Integer, Enum<?>> enumValues = new HashMap<>();
+  private final Map<Integer, Enum<?>> enumValues = new HashMap<>();
 
   public EnumMeta(Field protoField, JavaType javaType) {
     io.protostuff.compiler.model.Enum enumType = (io.protostuff.compiler.model.Enum) protoField.getType();

@@ -41,24 +41,24 @@ public class InstanceCache {
   // 如果相等，可能会导致其他没感知删除的模块，在更新流程上，遇到问题
   private static final AtomicInteger VERSION = new AtomicInteger();
 
-  private int cacheVersion;
+  private final int cacheVersion;
 
-  private String appId;
+  private final String appId;
 
-  private String microserviceName;
+  private final String microserviceName;
 
   // 1.0或1.0+或latest等等，只是规则，不一定表示一个确定的版本
-  private String microserviceVersionRule;
+  private final String microserviceVersionRule;
 
   // key为instanceId
-  private Map<String, MicroserviceInstance> instanceMap;
+  private final Map<String, MicroserviceInstance> instanceMap;
 
-  private VersionedCache versionedCache;
+  private final VersionedCache versionedCache;
 
   // 缓存CacheEndpoint
   private volatile Map<String, List<CacheEndpoint>> transportMap;
 
-  private Object lockObj = new Object();
+  private final Object lockObj = new Object();
 
   /**
    * 用于初始化场景

@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response.StatusType;
  *  InvocationContext is used to pass data between microservices or in microservice different layer.
  */
 public class InvocationContext {
-  private static HttpStatusManager statusMgr = new HttpStatusManager();
+  private static final HttpStatusManager statusMgr = new HttpStatusManager();
 
   protected StatusType httpStatus;
 

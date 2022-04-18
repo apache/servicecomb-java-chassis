@@ -28,7 +28,7 @@ import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
  * map consumer arguments to swagger arguments
  */
 public class ArgumentsMapperCommon implements ArgumentsMapper {
-  private List<ArgumentMapper> mappers;
+  private final List<ArgumentMapper> mappers;
 
   public ArgumentsMapperCommon(List<ArgumentMapper> mappers) {
     this.mappers = mappers;

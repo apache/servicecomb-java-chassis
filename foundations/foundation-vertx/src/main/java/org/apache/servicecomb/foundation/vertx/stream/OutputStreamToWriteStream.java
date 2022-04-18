@@ -40,11 +40,11 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
 
   private static final int SMALLEST_MAX_BUFFERS = 2;
 
-  private OutputStream outputStream;
+  private final OutputStream outputStream;
 
-  private Context context;
+  private final Context context;
 
-  private boolean autoCloseOutputStream;
+  private final boolean autoCloseOutputStream;
 
   private Handler<Throwable> exceptionHandler;
 
@@ -58,7 +58,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
 
   // buffers.size() need to loop all node, and maybe result is not correct in concurrent condition
   // we just need to flow control by pump, so use another size
-  private Queue<Buffer> buffers = new ConcurrentLinkedQueue<>();
+  private final Queue<Buffer> buffers = new ConcurrentLinkedQueue<>();
 
   private int currentBufferCount;
 

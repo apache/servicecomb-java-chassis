@@ -41,9 +41,9 @@ import io.vertx.core.http.WebSocketConnectOptions;
 public final class WebsocketClientUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketClientUtil.class);
 
-  private WebsocketClientPool websocketClientPool;
+  private final WebsocketClientPool websocketClientPool;
 
-  private List<AuthHeaderProvider> authHeaderProviders;
+  private final List<AuthHeaderProvider> authHeaderProviders;
 
   WebsocketClientUtil(ServiceRegistryConfig serviceRegistryConfig) {
     websocketClientPool = new WebsocketClientPool(serviceRegistryConfig.getWatchClientName());

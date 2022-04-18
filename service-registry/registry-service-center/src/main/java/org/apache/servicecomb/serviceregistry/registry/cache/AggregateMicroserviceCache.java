@@ -32,7 +32,7 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class AggregateMicroserviceCache implements MicroserviceCache {
-  private MicroserviceCacheKey key;
+  private final MicroserviceCacheKey key;
 
   Map<String, MicroserviceCache> caches;
 

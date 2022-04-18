@@ -58,7 +58,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieConfigurationSourceImpl.class);
 
-  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private KieConfigManager kieConfigManager;
 

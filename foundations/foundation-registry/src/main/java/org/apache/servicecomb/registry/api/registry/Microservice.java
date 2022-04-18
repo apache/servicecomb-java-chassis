@@ -66,7 +66,7 @@ public class Microservice {
   private List<String> schemas = new ArrayList<>();
 
   @JsonIgnore
-  private Map<String, String> schemaMap = new HashMap<>();
+  private final Map<String, String> schemaMap = new HashMap<>();
 
   private List<BasePath> paths = new ArrayList<>();
 

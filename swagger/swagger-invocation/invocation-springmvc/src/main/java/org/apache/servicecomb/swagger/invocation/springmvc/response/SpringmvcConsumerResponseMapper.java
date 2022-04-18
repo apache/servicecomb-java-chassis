@@ -27,7 +27,7 @@ import org.springframework.http.ResponseEntity;
 import io.vertx.core.MultiMap;
 
 public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
-  private ConsumerResponseMapper realMapper;
+  private final ConsumerResponseMapper realMapper;
 
   public SpringmvcConsumerResponseMapper(ConsumerResponseMapper realMapper) {
     this.realMapper = realMapper;

@@ -53,7 +53,7 @@ public class NetMeter {
 
   private final Id id;
 
-  private Map<String, InterfaceUsage> interfaceUsageMap = new ConcurrentHashMap<>();
+  private final Map<String, InterfaceUsage> interfaceUsageMap = new ConcurrentHashMap<>();
 
   public NetMeter(Id id) {
     this.id = id;

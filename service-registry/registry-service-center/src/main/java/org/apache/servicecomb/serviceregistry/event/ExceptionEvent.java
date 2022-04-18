@@ -17,7 +17,7 @@
 package org.apache.servicecomb.serviceregistry.event;
 
 public class ExceptionEvent {
-  private Throwable throwable;
+  private final Throwable throwable;
 
   public ExceptionEvent(Throwable throwable) {
     this.throwable = throwable;

@@ -26,7 +26,7 @@ import org.junit.Test;
 import mockit.Deencapsulation;
 
 public class TestVersionedCache {
-  private static AtomicInteger VERSION = Deencapsulation.getField(VersionedCache.class, "VERSION");
+  private static final AtomicInteger VERSION = Deencapsulation.getField(VersionedCache.class, "VERSION");
 
   @Test
   public void construct() {

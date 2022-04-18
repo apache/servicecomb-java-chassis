@@ -477,7 +477,7 @@ public class TestAbstractRestInvocation {
   }
 
   public static class SendResponseQuietlyNormalEventHandler {
-    private Holder<InvocationFinishEvent> eventHolder;
+    private final Holder<InvocationFinishEvent> eventHolder;
 
     public SendResponseQuietlyNormalEventHandler(Holder<InvocationFinishEvent> eventHolder) {
       this.eventHolder = eventHolder;
@@ -590,7 +590,7 @@ public class TestAbstractRestInvocation {
 
     Map<String, Object> result = new HashMap<>();
     responseEx = new MockUp<HttpServletResponseEx>() {
-      private Map<String, Object> attributes = new HashMap<>();
+      private final Map<String, Object> attributes = new HashMap<>();
 
       @Mock
       public void setAttribute(String key, Object value) {
@@ -644,7 +644,7 @@ public class TestAbstractRestInvocation {
 
     MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
     responseEx = new MockUp<HttpServletResponseEx>() {
-      private Map<String, Object> attributes = new HashMap<>();
+      private final Map<String, Object> attributes = new HashMap<>();
 
       @Mock
       public void setAttribute(String key, Object value) {
@@ -688,7 +688,7 @@ public class TestAbstractRestInvocation {
 
     MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
     responseEx = new MockUp<HttpServletResponseEx>() {
-      private Map<String, Object> attributes = new HashMap<>();
+      private final Map<String, Object> attributes = new HashMap<>();
 
       @Mock
       public void setAttribute(String key, Object value) {
@@ -728,7 +728,7 @@ public class TestAbstractRestInvocation {
 
     Buffer buffer = Buffer.buffer();
     responseEx = new MockUp<HttpServletResponseEx>() {
-      private Map<String, Object> attributes = new HashMap<>();
+      private final Map<String, Object> attributes = new HashMap<>();
 
       @Mock
       public void setAttribute(String key, Object value) {
@@ -773,7 +773,7 @@ public class TestAbstractRestInvocation {
 
     Buffer buffer = Buffer.buffer();
     responseEx = new MockUp<HttpServletResponseEx>() {
-      private Map<String, Object> attributes = new HashMap<>();
+      private final Map<String, Object> attributes = new HashMap<>();
 
       @Mock
       public void setAttribute(String key, Object value) {
@@ -957,7 +957,7 @@ public class TestAbstractRestInvocation {
   }
 
   public static class ScheduleInvocationEventHandler {
-    private Holder<InvocationStartEvent> eventHolder;
+    private final Holder<InvocationStartEvent> eventHolder;
 
     public ScheduleInvocationEventHandler(Holder<InvocationStartEvent> eventHolder) {
       this.eventHolder = eventHolder;

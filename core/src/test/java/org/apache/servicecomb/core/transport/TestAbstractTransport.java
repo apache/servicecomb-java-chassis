@@ -39,7 +39,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
-  private Method updatePropertyMethod =
+  private final Method updatePropertyMethod =
       ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
 
   private void updateProperty(String key, Object value) {

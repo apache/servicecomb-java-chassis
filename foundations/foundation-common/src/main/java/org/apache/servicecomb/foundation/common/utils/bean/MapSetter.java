@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.common.utils.bean;
 import java.util.Map;
 
 public class MapSetter<K, V> implements Setter<Map<K, V>, V> {
-  private K key;
+  private final K key;
 
   public MapSetter(K key) {
     this.key = key;

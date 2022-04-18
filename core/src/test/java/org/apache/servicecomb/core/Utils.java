@@ -24,7 +24,7 @@ import org.springframework.util.ReflectionUtils;
 import com.netflix.config.DynamicProperty;
 
 public class Utils {
-  private static Method updatePropertyMethod =
+  private static final Method updatePropertyMethod =
       ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
 
   static {

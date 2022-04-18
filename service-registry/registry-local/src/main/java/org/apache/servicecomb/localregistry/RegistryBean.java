@@ -69,7 +69,7 @@ public class RegistryBean {
 
   private List<String> schemaIds = new ArrayList<>();
 
-  private Map<String, Class<?>> schemaInterfaces = new HashMap<>();
+  private final Map<String, Class<?>> schemaInterfaces = new HashMap<>();
 
   private Instances instances;
 

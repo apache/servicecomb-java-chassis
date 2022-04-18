@@ -24,11 +24,11 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.web.client.RequestCallback;
 
 public class CseRequestCallback implements RequestCallback {
-  private Object requestBody;
+  private final Object requestBody;
 
-  private RequestCallback orgCallback;
+  private final RequestCallback orgCallback;
 
-  private Type responseType;
+  private final Type responseType;
 
   public CseRequestCallback(Object requestBody, RequestCallback orgCallback, Type responseType) {
     this.requestBody = requestBody;

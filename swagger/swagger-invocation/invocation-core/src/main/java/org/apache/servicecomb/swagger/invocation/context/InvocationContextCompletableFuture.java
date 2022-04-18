@@ -20,7 +20,7 @@ package org.apache.servicecomb.swagger.invocation.context;
 import java.util.concurrent.CompletableFuture;
 
 public class InvocationContextCompletableFuture<T> extends CompletableFuture<T> {
-  private InvocationContext context;
+  private final InvocationContext context;
 
   public InvocationContextCompletableFuture(InvocationContext context) {
     this.context = context;

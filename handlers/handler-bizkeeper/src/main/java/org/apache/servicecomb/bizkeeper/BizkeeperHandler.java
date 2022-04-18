@@ -61,7 +61,7 @@ public abstract class BizkeeperHandler implements Handler {
     }
   }
 
-  private BizkeeperHandlerDelegate delegate;
+  private final BizkeeperHandlerDelegate delegate;
 
   public BizkeeperHandler(String groupname) {
     this.groupname = groupname;

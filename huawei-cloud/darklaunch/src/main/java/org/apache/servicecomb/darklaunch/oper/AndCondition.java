@@ -18,7 +18,7 @@
 package org.apache.servicecomb.darklaunch.oper;
 
 public class AndCondition extends AbstractCondition {
-  private Condition[] conditions;
+  private final Condition[] conditions;
 
   public AndCondition(Condition... conditions) {
     super("and", "and");

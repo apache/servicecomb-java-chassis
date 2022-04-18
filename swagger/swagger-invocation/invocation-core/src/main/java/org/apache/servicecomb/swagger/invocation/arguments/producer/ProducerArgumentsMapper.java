@@ -29,7 +29,7 @@ import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
  * map swagger arguments to producer arguments
  */
 public class ProducerArgumentsMapper implements ArgumentsMapper {
-  private List<ArgumentMapper> producerArgMapperList;
+  private final List<ArgumentMapper> producerArgMapperList;
 
   public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList) {
     this.producerArgMapperList = producerArgMapperList;

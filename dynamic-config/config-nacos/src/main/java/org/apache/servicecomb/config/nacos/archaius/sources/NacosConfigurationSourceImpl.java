@@ -45,7 +45,7 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
-  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   public NacosConfigurationSourceImpl() {
   }

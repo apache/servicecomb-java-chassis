@@ -33,7 +33,7 @@ import org.junit.Test;
 
 public class RefreshableServiceRegistryCacheTest {
 
-  private Holder<Function<String, MicroserviceInstances>> pullInstanceFromServiceCenterLogic = new Holder<>(
+  private final Holder<Function<String, MicroserviceInstances>> pullInstanceFromServiceCenterLogic = new Holder<>(
       rev -> {
         MicroserviceInstances microserviceInstances = new MicroserviceInstances();
         microserviceInstances.setMicroserviceNotExist(false);

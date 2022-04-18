@@ -37,9 +37,9 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   public static final int DEFAULT_READ_BUFFER_SIZE = 1024 * 1024;
 
-  private Context context;
+  private final Context context;
 
-  private InputStream inputStream;
+  private final InputStream inputStream;
 
   private boolean closed;
 
@@ -55,7 +55,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   private Handler<Void> endHandler;
 
-  private boolean autoCloseInputStream;
+  private final boolean autoCloseInputStream;
 
   public InputStreamToReadStream(Context context, InputStream inputStream,
       boolean autoCloseInputStream) {

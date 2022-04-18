@@ -41,7 +41,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   // swagger parameter types relate to producer
   // because features of @BeanParam/query, and rpc mode parameter wrapper
   // types is not always equals to producerMethod parameter types directly
-  private Map<String, Type> swaggerParameterTypes;
+  private final Map<String, Type> swaggerParameterTypes;
 
   public ProducerArgumentsMapperCreator(SerializationConfig serializationConfig,
       Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> producerClass,

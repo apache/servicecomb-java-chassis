@@ -32,7 +32,7 @@ import org.apache.servicecomb.provider.pojo.schema.PojoProducerMeta;
 import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
 
 public class PojoProducerProvider extends AbstractProducerProvider {
-  private Map<String, InstanceFactory> instanceFactoryMgr = new HashMap<>();
+  private final Map<String, InstanceFactory> instanceFactoryMgr = new HashMap<>();
 
   private void registerInstanceFactory(InstanceFactory instanceFactory) {
     instanceFactoryMgr.put(instanceFactory.getImplName(), instanceFactory);

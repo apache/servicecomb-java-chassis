@@ -43,7 +43,7 @@ import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 public abstract class AbstractHttpServletRequest extends BodyBufferSupportImpl implements HttpServletRequestEx {
-  private Map<String, Object> attributeMap = new HashMap<>();
+  private final Map<String, Object> attributeMap = new HashMap<>();
 
   @Override
   public Object getAttribute(String name) {

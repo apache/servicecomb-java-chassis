@@ -40,7 +40,7 @@ public class CasEnvConfig {
 
   public static final CasEnvConfig INSTANCE = new CasEnvConfig();
 
-  private Map<String, String> properties = new HashMap<>();
+  private final Map<String, String> properties = new HashMap<>();
 
   private CasEnvConfig() {
     init();

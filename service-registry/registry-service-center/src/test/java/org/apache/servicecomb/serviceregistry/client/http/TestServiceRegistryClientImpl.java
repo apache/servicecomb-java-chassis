@@ -75,7 +75,7 @@ import mockit.Mocked;
 public class TestServiceRegistryClientImpl {
   private ServiceRegistryClientImpl oClient = null;
 
-  private Microservice microservice = new Microservice();
+  private final Microservice microservice = new Microservice();
 
   @Before
   public void setUp() throws Exception {

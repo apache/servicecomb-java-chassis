@@ -90,7 +90,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final Map<SubscriptionKey, SubscriptionValue> instancesCache = new ConcurrentHashMap<>();
 
-  private List<SubscriptionKey> failedInstances = new ArrayList<>();
+  private final List<SubscriptionKey> failedInstances = new ArrayList<>();
 
   private final Map<String, Microservice> microserviceCache = new ConcurrentHashMap<>();
 

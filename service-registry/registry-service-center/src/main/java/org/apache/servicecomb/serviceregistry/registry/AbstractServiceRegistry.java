@@ -53,7 +53,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
 
-  private MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+  private final MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
   protected EventBus eventBus;
 

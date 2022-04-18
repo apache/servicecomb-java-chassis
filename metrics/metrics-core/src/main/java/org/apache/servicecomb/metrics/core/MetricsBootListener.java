@@ -28,7 +28,7 @@ import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class MetricsBootListener implements BootListener {
-  private MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
+  private final MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
 
   private SlowInvocationLogger slowInvocationLogger;
 

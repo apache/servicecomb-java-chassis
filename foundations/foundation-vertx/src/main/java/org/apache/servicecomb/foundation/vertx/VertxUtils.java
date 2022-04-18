@@ -59,7 +59,7 @@ public final class VertxUtils {
   private static final long BLOCKED_THREAD_CHECK_INTERVAL = Long.MAX_VALUE / 2;
 
   // key为vertx实例名称，以支撑vertx功能分组
-  private static Map<String, Vertx> vertxMap = new ConcurrentHashMapEx<>();
+  private static final Map<String, Vertx> vertxMap = new ConcurrentHashMapEx<>();
 
   private VertxUtils() {
   }

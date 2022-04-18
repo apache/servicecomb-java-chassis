@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PartToMultipartFile implements MultipartFile {
-  private Part part;
+  private final Part part;
 
   public PartToMultipartFile(Part part) {
     this.part = part;

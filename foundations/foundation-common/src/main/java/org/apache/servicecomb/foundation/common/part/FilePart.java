@@ -25,7 +25,7 @@ import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
 
 public class FilePart extends AbstractPart implements FilePartForSend {
-  private File file;
+  private final File file;
 
   private boolean deleteAfterFinished;
 

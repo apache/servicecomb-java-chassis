@@ -55,7 +55,7 @@ public class CseClientHttpResponse implements ClientHttpResponse {
     }
   };
 
-  private Response response;
+  private final Response response;
 
   private HttpHeaders httpHeaders;
 

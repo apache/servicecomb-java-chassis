@@ -21,7 +21,7 @@ import java.util.Optional;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 public class OptionalConsumerResponseMapper implements ConsumerResponseMapper {
-  private ConsumerResponseMapper realMapper;
+  private final ConsumerResponseMapper realMapper;
 
   public OptionalConsumerResponseMapper(ConsumerResponseMapper realMapper) {
     this.realMapper = realMapper;

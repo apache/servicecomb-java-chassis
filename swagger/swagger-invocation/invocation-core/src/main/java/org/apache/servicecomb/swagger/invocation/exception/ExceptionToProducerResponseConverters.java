@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class ExceptionToProducerResponseConverters {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionToProducerResponseConverters.class);
 
-  private Map<Class<?>, ExceptionToProducerResponseConverter<Throwable>> exceptionToProducerResponseConverters =
+  private final Map<Class<?>, ExceptionToProducerResponseConverter<Throwable>> exceptionToProducerResponseConverters =
       new HashMap<>();
 
   private ExceptionToProducerResponseConverter<Throwable> defaultConverter;

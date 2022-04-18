@@ -71,7 +71,7 @@ public final class ConverterMgr {
   // value is related java class
   private static final Map<String, JavaType> TYPE_FORMAT_MAP = new HashMap<>();
 
-  private static Map<Class<?>, Converter> converterMap = new HashMap<>();
+  private static final Map<Class<?>, Converter> converterMap = new HashMap<>();
 
   static {
     initPropertyMap();

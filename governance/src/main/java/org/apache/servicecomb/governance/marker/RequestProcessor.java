@@ -33,7 +33,7 @@ public class RequestProcessor {
 
   private static final String OPERATOR_SUFFIX = "Operator";
 
-  private Map<String, MatchOperator> operatorMap;
+  private final Map<String, MatchOperator> operatorMap;
 
   @Autowired
   public RequestProcessor(Map<String, MatchOperator> operatorMap) {
