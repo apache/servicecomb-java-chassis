@@ -39,7 +39,7 @@ public class EnumWriteSchemas {
   }
 
   private static class EnumDynamicSchema<T> extends FieldSchema<T> {
-    private EnumMeta enumMeta;
+    private final EnumMeta enumMeta;
 
     public EnumDynamicSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

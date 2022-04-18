@@ -38,7 +38,7 @@ public class MetricsBootstrap {
 
   private EventBus eventBus;
 
-  private MetricsBootstrapConfig config = new MetricsBootstrapConfig();
+  private final MetricsBootstrapConfig config = new MetricsBootstrapConfig();
 
   private ScheduledExecutorService executorService;
 

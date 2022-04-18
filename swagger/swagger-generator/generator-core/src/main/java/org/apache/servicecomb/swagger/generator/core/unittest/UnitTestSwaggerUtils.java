@@ -33,7 +33,7 @@ import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
 public final class UnitTestSwaggerUtils {
-  private static ObjectWriter writer = Yaml.pretty();
+  private static final ObjectWriter writer = Yaml.pretty();
 
   private UnitTestSwaggerUtils() {
   }

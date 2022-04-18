@@ -36,7 +36,7 @@ public final class FaultInjectionConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(FaultInjectionConfig.class);
 
   // key is configuration parameter.
-  private static Map<String, String> cfgCallback = new ConcurrentHashMapEx<>();
+  private static final Map<String, String> cfgCallback = new ConcurrentHashMapEx<>();
 
   public static int getConfigVal(String config, int defaultValue) {
     DynamicIntProperty dynamicIntProperty = DynamicPropertyFactory.getInstance().getIntProperty(config,

@@ -96,7 +96,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   // 如果Response中不存在对应的header，则会将这些header补充进去
   protected Map<String, Property> methodResponseHeaders = new LinkedHashMap<>();
 
-  private static List<String> NOT_NULL_ANNOTATIONS = Arrays.asList("NotBlank", "NotEmpty");
+  private static final List<String> NOT_NULL_ANNOTATIONS = Arrays.asList("NotBlank", "NotEmpty");
 
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;

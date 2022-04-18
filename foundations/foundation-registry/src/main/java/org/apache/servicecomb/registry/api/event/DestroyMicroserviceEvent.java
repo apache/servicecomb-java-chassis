@@ -19,7 +19,7 @@ package org.apache.servicecomb.registry.api.event;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
 public class DestroyMicroserviceEvent {
-  private MicroserviceVersions microserviceVersions;
+  private final MicroserviceVersions microserviceVersions;
 
   public DestroyMicroserviceEvent(MicroserviceVersions microserviceVersions) {
     this.microserviceVersions = microserviceVersions;

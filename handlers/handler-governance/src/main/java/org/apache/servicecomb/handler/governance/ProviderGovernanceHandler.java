@@ -49,11 +49,11 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 public class ProviderGovernanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderGovernanceHandler.class);
 
-  private RateLimitingHandler rateLimitingHandler = BeanUtils.getBean(RateLimitingHandler.class);
+  private final RateLimitingHandler rateLimitingHandler = BeanUtils.getBean(RateLimitingHandler.class);
 
-  private CircuitBreakerHandler circuitBreakerHandler = BeanUtils.getBean(CircuitBreakerHandler.class);
+  private final CircuitBreakerHandler circuitBreakerHandler = BeanUtils.getBean(CircuitBreakerHandler.class);
 
-  private BulkheadHandler bulkheadHandler = BeanUtils.getBean(BulkheadHandler.class);
+  private final BulkheadHandler bulkheadHandler = BeanUtils.getBean(BulkheadHandler.class);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {

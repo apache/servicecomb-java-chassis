@@ -31,7 +31,7 @@ import com.netflix.spectator.api.Measurement;
 public class InterfaceUsage {
   private final String name;
 
-  private List<NetStat> netStats = new ArrayList<>();
+  private final List<NetStat> netStats = new ArrayList<>();
 
   public InterfaceUsage(Id id, String name) {
     this.name = name;

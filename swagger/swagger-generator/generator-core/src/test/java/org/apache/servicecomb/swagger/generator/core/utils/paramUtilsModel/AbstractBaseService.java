@@ -20,7 +20,7 @@ package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 import java.util.List;
 
 public class AbstractBaseService<T extends AbstractBean> implements IBaseService<T> {
-  private IBaseService<T> target;
+  private final IBaseService<T> target;
 
   protected AbstractBaseService(IBaseService<T> t) {
     target = t;

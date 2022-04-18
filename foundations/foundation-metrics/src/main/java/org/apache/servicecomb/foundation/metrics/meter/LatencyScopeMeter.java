@@ -23,15 +23,15 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
 public class LatencyScopeMeter {
-  private Id scopeId;
+  private final Id scopeId;
 
-  private LongAdder times = new LongAdder();
+  private final LongAdder times = new LongAdder();
 
   private long lastTimes = 0L;
 
-  private long nanoMin;
+  private final long nanoMin;
 
-  private long nanoMax;
+  private final long nanoMax;
 
   public LatencyScopeMeter(Id latencyDistributionId, LatencyScopeConfig config) {
     nanoMin = TimeUnit.MILLISECONDS.toNanos(config.getMsMin());

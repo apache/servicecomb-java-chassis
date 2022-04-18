@@ -31,7 +31,7 @@ import com.google.common.eventbus.Subscribe;
 public class MicroserviceInstanceHeartbeatTask extends AbstractTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceHeartbeatTask.class);
 
-  private MicroserviceInstance microserviceInstance;
+  private final MicroserviceInstance microserviceInstance;
 
   private HeartbeatResult heartbeatResult;
 

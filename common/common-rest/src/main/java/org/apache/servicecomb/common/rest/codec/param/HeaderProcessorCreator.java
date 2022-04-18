@@ -45,10 +45,10 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
 
   public static class HeaderProcessor extends AbstractParamProcessor {
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+    private final boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false).get();
 
-    private boolean repeatedType;
+    private final boolean repeatedType;
 
     public HeaderProcessor(HeaderParameter headerParameter, JavaType targetType) {
       super(headerParameter.getName(), targetType, headerParameter.getDefaultValue(), headerParameter.getRequired());

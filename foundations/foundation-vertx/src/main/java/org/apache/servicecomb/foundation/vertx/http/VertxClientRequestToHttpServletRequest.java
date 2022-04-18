@@ -28,7 +28,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 
 public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletRequest {
-  private HttpClientRequest clientRequest;
+  private final HttpClientRequest clientRequest;
 
   private String characterEncoding;
 

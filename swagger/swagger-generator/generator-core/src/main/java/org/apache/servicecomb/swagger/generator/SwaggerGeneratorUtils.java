@@ -50,23 +50,23 @@ public final class SwaggerGeneratorUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGeneratorUtils.class);
 
   // all static fields load from SPI and stateless
-  private static Set<JavaType> contextTypes = SPIServiceUtils.getOrLoadSortedService(SwaggerContextRegister.class)
+  private static final Set<JavaType> contextTypes = SPIServiceUtils.getOrLoadSortedService(SwaggerContextRegister.class)
       .stream()
       .map(swaggerContextRegister -> TypeFactory.defaultInstance()
           .constructType(swaggerContextRegister.getContextType()))
       .collect(Collectors.toSet());
 
-  private static Map<Type, ClassAnnotationProcessor<?>> classAnnotationProcessors = new HashMap<>();
+  private static final Map<Type, ClassAnnotationProcessor<?>> classAnnotationProcessors = new HashMap<>();
 
-  private static Map<Type, MethodAnnotationProcessor<?>> methodAnnotationProcessors = new HashMap<>();
+  private static final Map<Type, MethodAnnotationProcessor<?>> methodAnnotationProcessors = new HashMap<>();
 
-  private static Map<JavaType, ParameterProcessor<?, ?>> parameterProcessors = new HashMap<>();
+  private static final Map<JavaType, ParameterProcessor<?, ?>> parameterProcessors = new HashMap<>();
 
-  private static Map<Type, ResponseTypeProcessor> responseTypeProcessors = new HashMap<>();
+  private static final Map<Type, ResponseTypeProcessor> responseTypeProcessors = new HashMap<>();
 
-  private static DefaultResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
+  private static final DefaultResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
 
-  private static List<OperationPostProcessor> operationPostProcessors = SPIServiceUtils
+  private static final List<OperationPostProcessor> operationPostProcessors = SPIServiceUtils
       .getOrLoadSortedService(OperationPostProcessor.class);
 
   static {

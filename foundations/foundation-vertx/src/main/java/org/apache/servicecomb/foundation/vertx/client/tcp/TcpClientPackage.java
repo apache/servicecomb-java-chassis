@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.vertx.client.tcp;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 public class TcpClientPackage extends AbstractTcpClientPackage {
-  private TcpOutputStream os;
+  private final TcpOutputStream os;
 
   public TcpClientPackage(TcpOutputStream os) {
     this.os = os;

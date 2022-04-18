@@ -39,7 +39,7 @@ public class MicroserviceInstanceCache {
 
   private static final Logger logger = LoggerFactory.getLogger(MicroserviceInstanceCache.class);
 
-  private static Cache<String, MicroserviceInstance> instances = CacheBuilder.newBuilder()
+  private static final Cache<String, MicroserviceInstance> instances = CacheBuilder.newBuilder()
       .maximumSize(1000)
       .expireAfterAccess(30, TimeUnit.MINUTES)
       .build();

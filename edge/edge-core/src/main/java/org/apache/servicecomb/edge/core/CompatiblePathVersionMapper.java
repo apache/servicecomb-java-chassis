@@ -28,7 +28,7 @@ import org.apache.servicecomb.registry.version.VersionRuleUtils;
 public class CompatiblePathVersionMapper {
   // v1 -> 1.0.0-2.0.0
   // v2 -> 2.0.0-3.0.0
-  private Map<String, VersionRule> mapper = new ConcurrentHashMapEx<>();
+  private final Map<String, VersionRule> mapper = new ConcurrentHashMapEx<>();
 
   public VersionRule getOrCreate(String pathVersion) {
     return mapper.computeIfAbsent(pathVersion, this::createVersionRule);

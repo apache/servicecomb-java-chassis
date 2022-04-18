@@ -36,7 +36,7 @@ import io.swagger.models.Swagger;
  */
 public class ScopedProtobufSchemaManager {
   // Because this class belongs to each SchemaMeta, the key is the schema id.
-  private Map<String, ProtoMapper> mapperCache = new ConcurrentHashMapEx<>();
+  private final Map<String, ProtoMapper> mapperCache = new ConcurrentHashMapEx<>();
 
   public ScopedProtobufSchemaManager() {
 

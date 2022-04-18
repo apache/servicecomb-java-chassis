@@ -38,11 +38,11 @@ public class RSAProviderTokenManager {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
-  private Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
+  private final Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
       .build();
 
-  private AccessController accessController = new AccessController();
+  private final AccessController accessController = new AccessController();
 
   public boolean valid(String token) {
     try {

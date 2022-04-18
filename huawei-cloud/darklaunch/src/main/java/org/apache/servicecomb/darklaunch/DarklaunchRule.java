@@ -38,7 +38,7 @@ public class DarklaunchRule {
 
   private PolicyType policyType;
 
-  private List<DarklaunchRuleItem> ruleItems = new ArrayList<>();
+  private final List<DarklaunchRuleItem> ruleItems = new ArrayList<>();
 
   public static DarklaunchRule parse(String ruleStr) {
     if (StringUtils.isEmpty(ruleStr)) {

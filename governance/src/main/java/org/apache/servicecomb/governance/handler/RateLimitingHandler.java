@@ -34,7 +34,7 @@ import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, RateLimitingPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitingHandler.class);
 
-  private RateLimitProperties rateLimitProperties;
+  private final RateLimitProperties rateLimitProperties;
 
   @Autowired
   public RateLimitingHandler(RateLimitProperties rateLimitProperties) {

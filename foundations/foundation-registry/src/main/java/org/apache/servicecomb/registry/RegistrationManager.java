@@ -63,7 +63,7 @@ public class RegistrationManager {
 
   private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
-  private static SwaggerLoader swaggerLoader = new SwaggerLoader();
+  private static final SwaggerLoader swaggerLoader = new SwaggerLoader();
 
   public static RegistrationManager INSTANCE = new RegistrationManager();
 
@@ -331,7 +331,7 @@ public class RegistrationManager {
   }
 
   public static class AfterServiceInstanceRegistryHandler {
-    private AtomicInteger instanceRegisterCounter;
+    private final AtomicInteger instanceRegisterCounter;
 
     AfterServiceInstanceRegistryHandler(int counter) {
       instanceRegisterCounter = new AtomicInteger(counter);

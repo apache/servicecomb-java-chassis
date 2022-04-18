@@ -84,7 +84,7 @@ public final class FilePerm {
    */
   public static final int FILE_PERM_MASK = 511;
 
-  private static AclEntryPermission[] permList = new AclEntryPermission[] {
+  private static final AclEntryPermission[] permList = new AclEntryPermission[] {
       AclEntryPermission.READ_DATA,
       AclEntryPermission.READ_ATTRIBUTES,
       AclEntryPermission.READ_NAMED_ATTRS,

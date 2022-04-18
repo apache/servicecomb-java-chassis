@@ -36,7 +36,7 @@ import java.util.Map;
 public class SignUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(SignUtil.class);
 
-  private static List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.
+  private static final List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.
       getSortedService(AuthHeaderProvider.class);
 
   public static SignRequest createSignRequest(String method, String endpoint, Map<String, String>

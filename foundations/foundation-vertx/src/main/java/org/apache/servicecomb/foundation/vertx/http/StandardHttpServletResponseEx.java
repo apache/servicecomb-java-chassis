@@ -37,9 +37,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletResponseEx extends HttpServletResponseWrapper implements HttpServletResponseEx {
-  private BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
+  private final BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
 
-  private Map<String, Object> attributes = new HashMap<>();
+  private final Map<String, Object> attributes = new HashMap<>();
 
   private StatusType statusType;
 

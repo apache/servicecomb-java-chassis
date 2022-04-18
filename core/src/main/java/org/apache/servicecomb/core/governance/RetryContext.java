@@ -25,7 +25,7 @@ public class RetryContext {
 
   private int triedCount;
 
-  private int retryOnSame;
+  private final int retryOnSame;
 
   public RetryContext(int retryOnSame) {
     this.retryOnSame = retryOnSame;

@@ -34,13 +34,13 @@ public class URLEndPoint {
 
   private static final String HTTPS_KEY = "https://";
 
-  private boolean sslEnabled;
+  private final boolean sslEnabled;
 
-  private Map<String, List<String>> querys;
+  private final Map<String, List<String>> querys;
 
-  private String hostOrIp;
+  private final String hostOrIp;
 
-  private int port;
+  private final int port;
 
   public URLEndPoint(String endpoint) {
     URI uri = URI.create(endpoint);

@@ -29,7 +29,7 @@ public class RSAConsumerTokenManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RSAConsumerTokenManager.class);
 
-  private Object lock = new Object();
+  private final Object lock = new Object();
 
   private RSAAuthenticationToken token;
 

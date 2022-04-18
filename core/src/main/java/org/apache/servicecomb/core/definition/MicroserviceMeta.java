@@ -41,29 +41,29 @@ public class MicroserviceMeta {
 
   private MicroserviceVersionsMeta microserviceVersionsMeta;
 
-  private String appId;
+  private final String appId;
 
   // always not include appId
-  private String shortName;
+  private final String shortName;
 
   // inside app: equals to shortName
   // cross app: appId:shortName
-  private String microserviceName;
+  private final String microserviceName;
 
   // key is schemaId, this is all schemas
-  private Map<String, SchemaMeta> schemaMetas = new HashMap<>();
+  private final Map<String, SchemaMeta> schemaMetas = new HashMap<>();
 
   // key is schema interface
   // only when list have only one element, then allow query by interface
   // otherwise must query by schemaId
   //
   // value is synchronizedList, only for low frequency query
-  private Map<Class<?>, List<SchemaMeta>> intfSchemaMetas = new HashMap<>();
+  private final Map<Class<?>, List<SchemaMeta>> intfSchemaMetas = new HashMap<>();
 
   // key is OperationMeta.getMicroserviceQualifiedName()
-  private Map<String, OperationMeta> operationMetas = new HashMap<>();
+  private final Map<String, OperationMeta> operationMetas = new HashMap<>();
 
-  private boolean consumer;
+  private final boolean consumer;
 
   private List<Handler> handlerChain = Collections.singletonList((invocation, ar) -> ar.success(null));
 
@@ -75,7 +75,7 @@ public class MicroserviceMeta {
   // providerQpsFlowControlHandlerSearched is a temporary field, only for internal usage
   private boolean providerQpsFlowControlHandlerSearched;
 
-  private VendorExtensions vendorExtensions = new VendorExtensions();
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
 
   public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, boolean consumer) {
     this.scbEngine = scbEngine;

@@ -48,7 +48,7 @@ public class TestRestCodec {
 
   private static RestOperationMeta restOperation;
 
-  private static Map<String, String> header = new HashMap<>();
+  private static final Map<String, String> header = new HashMap<>();
 
   private static RestClientRequest clientRequest = new RestClientRequestImpl(null, null, null) {
     public void putHeader(String name, String value) {

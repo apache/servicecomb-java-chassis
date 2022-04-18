@@ -27,7 +27,7 @@ import com.netflix.spectator.api.Measurement;
 public class HttpClientEndpointMeter extends EndpointMeter {
   public static final String QUEUE_COUNT = "queueCount";
 
-  private Id idQueueCount;
+  private final Id idQueueCount;
 
   public HttpClientEndpointMeter(Id id, DefaultEndpointMetric metric) {
     super(id, metric);

@@ -63,13 +63,13 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   private static final String X_SERVICE_PROJECT = "X-Service-Project";
 
-  private Map<String, String> headers = new HashMap<>();
+  private final Map<String, String> headers = new HashMap<>();
 
   private final Configuration configuration;
 
   private boolean enabled;
 
-  private boolean loaded = false;
+  private final boolean loaded = false;
 
   public AKSKAuthHeaderProvider() {
     this(ConfigUtil.createLocalConfig());

@@ -33,17 +33,17 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 
 public class PojoConsumerOperationMeta {
-  private PojoConsumerMeta pojoConsumerMeta;
+  private final PojoConsumerMeta pojoConsumerMeta;
 
-  private OperationMeta operationMeta;
+  private final OperationMeta operationMeta;
 
-  private SwaggerConsumerOperation swaggerConsumerOperation;
+  private final SwaggerConsumerOperation swaggerConsumerOperation;
 
   private JavaType responseType;
 
   private InvocationRuntimeType invocationRuntimeType;
 
-  private boolean sync;
+  private final boolean sync;
 
   public PojoConsumerOperationMeta(PojoConsumerMeta pojoConsumerMeta, OperationMeta operationMeta,
       SwaggerConsumerOperation swaggerConsumerOperation) {

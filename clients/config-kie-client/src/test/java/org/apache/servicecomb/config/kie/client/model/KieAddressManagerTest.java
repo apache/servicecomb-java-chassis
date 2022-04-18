@@ -32,7 +32,7 @@ import mockit.Deencapsulation;
 
 class KieAddressManagerTest {
 
-  private static List<String> addresses = new ArrayList<>();
+  private static final List<String> addresses = new ArrayList<>();
 
   private static KieAddressManager addressManager1;
 

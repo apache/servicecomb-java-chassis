@@ -21,7 +21,7 @@ import com.netflix.spectator.api.Id;
 public class NetStat {
   private final int index;
 
-  private Id id;
+  private final Id id;
 
   // send/recv bytes/packets
   private long lastValue;

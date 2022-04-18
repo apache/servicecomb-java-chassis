@@ -24,9 +24,9 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
 public final class MicroserviceCache {
-  private static MicroserviceCache instance = new MicroserviceCache();
+  private static final MicroserviceCache instance = new MicroserviceCache();
 
-  private Map<String, Microservice> services = new HashMap<>();
+  private final Map<String, Microservice> services = new HashMap<>();
 
   private MicroserviceCache() {
   }

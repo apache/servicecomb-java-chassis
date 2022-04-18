@@ -64,7 +64,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterClient.class);
 
-  private ServiceCenterRawClient httpClient;
+  private final ServiceCenterRawClient httpClient;
 
   private EventBus eventBus;
 

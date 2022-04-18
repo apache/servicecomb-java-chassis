@@ -32,9 +32,9 @@ import com.google.common.eventbus.Subscribe;
 public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceInstanceRegisterTask.class);
 
-  private ServiceRegistryConfig serviceRegistryConfig;
+  private final ServiceRegistryConfig serviceRegistryConfig;
 
-  private MicroserviceInstance microserviceInstance;
+  private final MicroserviceInstance microserviceInstance;
 
   public MicroserviceInstanceRegisterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       ServiceRegistryClient srClient,

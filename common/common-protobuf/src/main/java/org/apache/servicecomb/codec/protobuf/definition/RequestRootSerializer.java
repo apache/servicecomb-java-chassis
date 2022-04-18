@@ -24,11 +24,11 @@ import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import io.vertx.core.json.JsonObject;
 
 public class RequestRootSerializer {
-  private RootSerializer rootSerializer;
+  private final RootSerializer rootSerializer;
 
-  private boolean noTypesInfo;
+  private final boolean noTypesInfo;
 
-  private boolean isWrap;
+  private final boolean isWrap;
 
   public RequestRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
     this.rootSerializer = serializer;

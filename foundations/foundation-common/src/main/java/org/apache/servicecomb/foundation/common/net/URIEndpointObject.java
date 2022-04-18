@@ -37,11 +37,11 @@ public class URIEndpointObject extends IpPort {
 
   private static final String HTTP2 = "http2";
 
-  private boolean sslEnabled;
+  private final boolean sslEnabled;
 
   private boolean http2Enabled;
 
-  private Map<String, List<String>> querys;
+  private final Map<String, List<String>> querys;
 
   public URIEndpointObject(String endpoint) {
     URI uri = URI.create(endpoint);

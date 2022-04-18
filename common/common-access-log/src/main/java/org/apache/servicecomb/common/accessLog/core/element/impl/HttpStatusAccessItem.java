@@ -28,7 +28,7 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 public class HttpStatusAccessItem implements AccessLogItem<RoutingContext> {
-  private static Logger LOGGER = LoggerFactory.getLogger(HttpStatusAccessItem.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpStatusAccessItem.class);
 
   public static final String EMPTY_RESULT = "-";
 

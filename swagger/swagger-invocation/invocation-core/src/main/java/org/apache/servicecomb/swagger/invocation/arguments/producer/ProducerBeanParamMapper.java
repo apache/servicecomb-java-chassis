@@ -40,7 +40,7 @@ public class ProducerBeanParamMapper extends ProducerArgumentMapper {
 
   private final Class<?> producerParamType;
 
-  private List<FieldMeta> fields = new ArrayList<>();
+  private final List<FieldMeta> fields = new ArrayList<>();
 
   public ProducerBeanParamMapper(String invocationArgumentName, Class<?> producerParamType) {
     this.invocationArgumentName = invocationArgumentName;

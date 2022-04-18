@@ -18,7 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 public class DefaultClientTaskMetric {
-  private DefaultClientEndpointMetric endpointMetric;
+  private final DefaultClientEndpointMetric endpointMetric;
 
   public DefaultClientTaskMetric(DefaultClientEndpointMetric endpointMetric) {
     this.endpointMetric = endpointMetric;

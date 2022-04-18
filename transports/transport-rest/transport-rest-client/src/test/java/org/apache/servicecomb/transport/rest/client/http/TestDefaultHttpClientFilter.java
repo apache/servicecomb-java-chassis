@@ -52,7 +52,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestDefaultHttpClientFilter {
-  private DefaultHttpClientFilter filter = new DefaultHttpClientFilter();
+  private final DefaultHttpClientFilter filter = new DefaultHttpClientFilter();
 
   @Test
   public void testOrder() {

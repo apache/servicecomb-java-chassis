@@ -34,15 +34,17 @@ import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
 import mockit.Deencapsulation;
 import mockit.Mocked;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IsolationDiscoveryFilterTest {
 
   private DiscoveryContext discoveryContext;
@@ -63,7 +65,7 @@ public class IsolationDiscoveryFilterTest {
     }
   };
 
-  @Before
+  @BeforeEach
   public void before() {
     discoveryContext = new DiscoveryContext();
     discoveryContext.setInputParameters(invocation);
@@ -86,25 +88,25 @@ public class IsolationDiscoveryFilterTest {
     TestServiceCombServerStats.releaseTryingChance();
   }
 
-  @After
+  @AfterEach
   public void after() {
     Deencapsulation.invoke(ServiceCombLoadBalancerStats.INSTANCE, "init");
     TestServiceCombServerStats.releaseTryingChance();
   }
 
   @Test
-  public void discovery_no_instance_reach_error_threshold() {
+  public void discoveryNoInstanceReachErrorThreshold() {
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
 
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
   }
 
   @Test
-  public void discovery_isolate_error_instance() {
+  public void discoveryIsolateErrorInstance() {
     ServiceCombServer server0 = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(data.get("i0"));
     for (int i = 0; i < 4; ++i) {
       ServiceCombLoadBalancerStats.INSTANCE.markFailure(server0);
@@ -112,24 +114,24 @@ public class IsolationDiscoveryFilterTest {
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
 
     // by default 5 times continuous failure will cause isolation
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server0);
-    Assert.assertFalse(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
+    Assertions.assertFalse(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
 
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
-    Assert.assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
   }
 
   @Test
-  public void discovery_try_isolated_instance_after_singleTestTime() {
+  public void discoveryTryIsolatedInstanceAfterSingleTestTime() {
     ServiceCombServer server0 = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(data.get("i0"));
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
         .getServiceCombServerStats(server0);
@@ -139,21 +141,21 @@ public class IsolationDiscoveryFilterTest {
     letIsolatedInstancePassSingleTestTime(serviceCombServerStats);
     ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server0, true);
 
-    Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
-    Assert.assertNull(TestServiceCombServerStats.getTryingIsolatedServerInvocation());
+    Assertions.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
+    Assertions.assertNull(TestServiceCombServerStats.getTryingIsolatedServerInvocation());
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
-    Assert.assertTrue(serviceCombServerStats.isIsolated());
-    Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
-    Assert.assertSame(invocation, TestServiceCombServerStats.getTryingIsolatedServerInvocation());
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertTrue(serviceCombServerStats.isIsolated());
+    Assertions.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
+    Assertions.assertSame(invocation, TestServiceCombServerStats.getTryingIsolatedServerInvocation());
   }
 
   @Test
-  public void discovery_not_try_isolated_instance_concurrently() {
+  public void discoveryNotTryIsolatedInstanceConcurrently() {
     ServiceCombServer server0 = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(data.get("i0"));
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
         .getServiceCombServerStats(server0);
@@ -163,23 +165,23 @@ public class IsolationDiscoveryFilterTest {
     ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server0, true);
     letIsolatedInstancePassSingleTestTime(serviceCombServerStats);
 
-    Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
+    Assertions.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
 
     // The first invocation can occupy the trying chance
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
-    Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
 
     // Other invocation cannot get trying chance concurrently
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
 
     ServiceCombServerStats
         .checkAndReleaseTryingChance(invocation); // after the first invocation releases the trying chance
@@ -188,10 +190,10 @@ public class IsolationDiscoveryFilterTest {
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
-    Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
   }
 
   private ServiceCombServerStats letIsolatedInstancePassSingleTestTime(ServiceCombServerStats serviceCombServerStats) {
@@ -203,7 +205,7 @@ public class IsolationDiscoveryFilterTest {
   }
 
   @Test
-  public void discovery_keep_minIsolationTime() {
+  public void discoveryKeepMinIsolationTime() {
     ServiceCombServer server0 = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(data.get("i0"));
     ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server0, true);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server0);
@@ -211,8 +213,8 @@ public class IsolationDiscoveryFilterTest {
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i1", "i2"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
 
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
         .getServiceCombServerStats(server0);
@@ -221,13 +223,13 @@ public class IsolationDiscoveryFilterTest {
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
   }
 
   @Test
-  public void discovery_recover_instance() {
+  public void discoveryRecoverInstance() {
     ServiceCombServer server0 = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(data.get("i0"));
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server0);
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
@@ -240,9 +242,9 @@ public class IsolationDiscoveryFilterTest {
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     MatcherAssert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
-    Assert.assertEquals(data.get("i0"), childNodeData.get("i0"));
-    Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
-    Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
-    Assert.assertFalse(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
+    Assertions.assertEquals(data.get("i0"), childNodeData.get("i0"));
+    Assertions.assertEquals(data.get("i1"), childNodeData.get("i1"));
+    Assertions.assertEquals(data.get("i2"), childNodeData.get("i2"));
+    Assertions.assertFalse(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server0).isIsolated());
   }
 }

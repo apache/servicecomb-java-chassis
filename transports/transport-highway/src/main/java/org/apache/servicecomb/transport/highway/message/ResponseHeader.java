@@ -29,13 +29,13 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
-  private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
+  private static final ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  private static RootDeserializer<ResponseHeader> rootDeserializer = protoMapperFactory
+  private static final RootDeserializer<ResponseHeader> rootDeserializer = protoMapperFactory
       .createFromName("ResponseHeader.proto")
       .createRootDeserializer("ResponseHeader", ResponseHeader.class);
 
-  private static RootSerializer rootSerializer = protoMapperFactory.createFromName("ResponseHeader.proto")
+  private static final RootSerializer rootSerializer = protoMapperFactory.createFromName("ResponseHeader.proto")
       .createRootSerializer("ResponseHeader", ResponseHeader.class);
 
   public static RootSerializer getRootSerializer() {

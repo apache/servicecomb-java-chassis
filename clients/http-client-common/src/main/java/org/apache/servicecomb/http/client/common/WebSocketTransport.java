@@ -31,7 +31,7 @@ import org.java_websocket.handshake.ServerHandshake;
 public class WebSocketTransport extends WebSocketClient {
   public static final int CONNECT_TIMEOUT = 5000;
 
-  private WebSocketListener webSocketListener;
+  private final WebSocketListener webSocketListener;
 
   public WebSocketTransport(String serverUri, HttpConfiguration.SSLProperties sslProperties,
       Map<String, String> headers, WebSocketListener webSocketListener)

@@ -58,7 +58,7 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
 
   private FieldMapEx<T> fieldMap;
 
-  private Instantiator<T> instantiator;
+  private final Instantiator<T> instantiator;
 
   private JavaType javaType;
 

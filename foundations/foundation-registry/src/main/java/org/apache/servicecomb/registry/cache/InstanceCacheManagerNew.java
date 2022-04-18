@@ -21,7 +21,7 @@ import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.registry.consumer.AppManager;
 
 public class InstanceCacheManagerNew implements InstanceCacheManager {
-  private AppManager appManager;
+  private final AppManager appManager;
 
   public InstanceCacheManagerNew(AppManager appManager) {
     this.appManager = appManager;

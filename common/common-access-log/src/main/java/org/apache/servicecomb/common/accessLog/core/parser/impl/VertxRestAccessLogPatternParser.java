@@ -60,7 +60,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
         : result;
   };
 
-  private List<VertxRestAccessLogItemMeta> metaList = new ArrayList<>();
+  private final List<VertxRestAccessLogItemMeta> metaList = new ArrayList<>();
 
   public VertxRestAccessLogPatternParser() {
     List<VertxRestAccessLogItemMeta> loadedMeta = loadVertxRestLogItemMeta();

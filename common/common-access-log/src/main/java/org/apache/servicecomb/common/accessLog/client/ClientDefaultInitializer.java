@@ -31,7 +31,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ClientDefaultInitializer implements AccessLogInitializer {
-  private static Logger LOGGER = LoggerFactory.getLogger("requestlog");
+  private static final Logger LOGGER = LoggerFactory.getLogger("requestlog");
 
   private AccessLogGenerator accessLogGenerator;
 

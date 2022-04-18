@@ -22,7 +22,7 @@ import java.util.function.Function;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class VendorExtensions {
-  private Map<Object, Object> store = new ConcurrentHashMapEx<>();
+  private final Map<Object, Object> store = new ConcurrentHashMapEx<>();
 
   public Map<Object, Object> getStore() {
     return store;

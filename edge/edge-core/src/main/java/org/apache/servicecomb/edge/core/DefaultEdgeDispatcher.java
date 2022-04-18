@@ -52,7 +52,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   public static final String VERSION = "param1";
 
-  private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
+  private final CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
 
   private String prefix;
 

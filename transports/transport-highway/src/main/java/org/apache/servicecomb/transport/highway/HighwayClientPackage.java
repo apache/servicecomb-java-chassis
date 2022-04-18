@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 public class HighwayClientPackage extends AbstractTcpClientPackage {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientPackage.class);
 
-  private Invocation invocation;
+  private final Invocation invocation;
 
-  private OperationProtobuf operationProtobuf;
+  private final OperationProtobuf operationProtobuf;
 
   public HighwayClientPackage(Invocation invocation, OperationProtobuf operationProtobuf, long msRequestTimeout) {
     this.invocation = invocation;

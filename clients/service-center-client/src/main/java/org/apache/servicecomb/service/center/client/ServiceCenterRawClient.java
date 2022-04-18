@@ -32,11 +32,11 @@ public class ServiceCenterRawClient {
 
   private static final String HEADER_TENANT_NAME = "x-domain-name";
 
-  private String tenantName;
+  private final String tenantName;
 
-  private HttpTransport httpTransport;
+  private final HttpTransport httpTransport;
 
-  private AddressManager addressManager;
+  private final AddressManager addressManager;
 
   private ServiceCenterRawClient(String tenantName, HttpTransport httpTransport,
       AddressManager addressManager) {

@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class TestLoadBalancer {
-  private RuleExt rule = Mockito.mock(RuleExt.class);
+  private final RuleExt rule = Mockito.mock(RuleExt.class);
 
   @Test
   public void testLoadBalancerFullOperationWithoutException() {

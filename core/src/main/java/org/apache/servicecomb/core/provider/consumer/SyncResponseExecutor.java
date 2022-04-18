@@ -33,7 +33,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  * 将应答流程包装为Runnable，先唤醒业务线程，再在业务线程中执行runnable
  */
 public class SyncResponseExecutor implements Executor {
-  private CountDownLatch latch;
+  private final CountDownLatch latch;
 
   private Runnable cmd;
 

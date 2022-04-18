@@ -47,7 +47,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
-    private boolean repeatedType;
+    private final boolean repeatedType;
 
     public FormProcessor(FormParameter formParameter, JavaType targetType) {
       super(formParameter.getName(), targetType, formParameter.getDefaultValue(), formParameter.getRequired());
@@ -119,23 +119,23 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
-    private static Type partListType = Types.newParameterizedType(List.class, Part.class);
+    private static final Type partListType = Types.newParameterizedType(List.class, Part.class);
 
     // key is target type
-    private static Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
+    private static final Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
         .stream()
         .filter(c -> partListType.equals(c.getSrcType()))
         .collect(Collectors.toMap(Converter::getTargetType, Function.identity()));
 
     // key is target type
-    private static Map<Type, Converter> partToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
+    private static final Map<Type, Converter> partToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
         .stream()
         .filter(c -> c.getSrcType() instanceof Class && Part.class.isAssignableFrom((Class<?>) c.getSrcType()))
         .collect(Collectors.toMap(Converter::getTargetType, Function.identity()));
 
-    private boolean repeatedType;
+    private final boolean repeatedType;
 
-    private Type genericParamType;
+    private final Type genericParamType;
 
     private Converter converter;
 

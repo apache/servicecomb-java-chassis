@@ -22,7 +22,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 
 public class AccessLogBootListener implements BootListener {
 
-  private AccessLogBootstrap accessLogBootstrap = new AccessLogBootstrap();
+  private final AccessLogBootstrap accessLogBootstrap = new AccessLogBootstrap();
 
   @Override
   public void onAfterRegistry(BootEvent event) {

@@ -71,7 +71,7 @@ public class VertxRestAccessLogPatternParserTest {
       + "%{ctx}SCB-ctx"
       + "%SCB-transport";
 
-  private static VertxRestAccessLogPatternParser logPatternParser = new VertxRestAccessLogPatternParser();
+  private static final VertxRestAccessLogPatternParser logPatternParser = new VertxRestAccessLogPatternParser();
 
   private ServerAccessLogEvent accessLogEvent;
 

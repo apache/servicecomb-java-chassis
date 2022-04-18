@@ -28,9 +28,9 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
 public class VertxEndpointsMeter extends AbstractPeriodMeter {
-  private Map<String, DefaultEndpointMetric> endpointMetricMap;
+  private final Map<String, DefaultEndpointMetric> endpointMetricMap;
 
-  private Map<String, EndpointMeter> endpointMeterMap = new ConcurrentHashMapEx<>();
+  private final Map<String, EndpointMeter> endpointMeterMap = new ConcurrentHashMapEx<>();
 
   @SuppressWarnings("unchecked")
   public <T extends DefaultEndpointMetric> VertxEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {

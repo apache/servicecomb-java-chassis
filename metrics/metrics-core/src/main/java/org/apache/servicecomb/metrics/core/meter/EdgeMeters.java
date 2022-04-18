@@ -23,7 +23,7 @@ import org.apache.servicecomb.metrics.core.meter.invocation.EdgeInvocationMeters
 import com.netflix.spectator.api.Registry;
 
 public class EdgeMeters {
-  private AbstractInvocationMeters invocationMeters;
+  private final AbstractInvocationMeters invocationMeters;
 
 
   public EdgeMeters(Registry registry) {

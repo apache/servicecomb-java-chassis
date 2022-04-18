@@ -23,7 +23,7 @@ import java.io.InputStream;
 import org.springframework.core.io.Resource;
 
 public class ResourcePart extends AbstractPart {
-  private Resource resource;
+  private final Resource resource;
 
   public ResourcePart(String name, Resource resource) {
     this.name = name;

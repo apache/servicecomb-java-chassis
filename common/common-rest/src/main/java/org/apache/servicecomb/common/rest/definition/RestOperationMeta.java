@@ -76,7 +76,7 @@ public class RestOperationMeta {
   protected List<String> fileKeys = new ArrayList<>();
 
   // key为数据类型，比如json之类
-  private Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
+  private final Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
 
   // 不一定等于mgr中的default，因为本operation可能不支持mgr中的default
   private ProduceProcessor defaultProcessor;

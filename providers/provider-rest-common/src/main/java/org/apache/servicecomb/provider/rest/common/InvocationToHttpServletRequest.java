@@ -34,9 +34,9 @@ import io.vertx.core.net.SocketAddress;
  * when transport is not over http, mock an HttpServletRequest from Invocation
  */
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
-  private RestOperationMeta swaggerOperation;
+  private final RestOperationMeta swaggerOperation;
 
-  private Invocation invocation;
+  private final Invocation invocation;
 
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);

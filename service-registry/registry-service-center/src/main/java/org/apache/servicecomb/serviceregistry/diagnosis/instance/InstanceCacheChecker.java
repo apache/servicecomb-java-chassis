@@ -43,11 +43,11 @@ public class InstanceCacheChecker {
 
   Clock clock = TimeUtils.getSystemDefaultZoneClock();
 
-  private AppManager appManager;
+  private final AppManager appManager;
 
-  private Set<Status> statuses = new HashSet<>();
+  private final Set<Status> statuses = new HashSet<>();
 
-  private InstanceCacheSummary instanceCacheSummary = new InstanceCacheSummary();
+  private final InstanceCacheSummary instanceCacheSummary = new InstanceCacheSummary();
 
   public InstanceCacheChecker(AppManager appManager) {
     this.appManager = appManager;

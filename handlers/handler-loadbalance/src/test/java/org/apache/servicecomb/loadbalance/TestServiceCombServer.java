@@ -33,7 +33,7 @@ import org.mockito.Mockito;
  */
 public class TestServiceCombServer {
 
-  private Transport transport = Mockito.mock(Transport.class);
+  private final Transport transport = Mockito.mock(Transport.class);
 
   private ServiceCombServer cs;
 

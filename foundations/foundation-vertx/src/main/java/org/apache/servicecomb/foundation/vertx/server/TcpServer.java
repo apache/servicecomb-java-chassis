@@ -39,7 +39,7 @@ import io.vertx.core.net.impl.NetSocketImpl;
 public class TcpServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(TcpServer.class);
 
-  private URIEndpointObject endpointObject;
+  private final URIEndpointObject endpointObject;
 
   public TcpServer(URIEndpointObject endpointObject) {
     this.endpointObject = endpointObject;

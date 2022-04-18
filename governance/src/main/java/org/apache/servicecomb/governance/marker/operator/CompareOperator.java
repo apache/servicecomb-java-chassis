@@ -27,7 +27,7 @@ import org.apache.servicecomb.governance.exception.IllegalArgsOperatorException;
 @Component
 public class CompareOperator implements MatchOperator {
 
-  private Set<Character> charSet = new HashSet<>();
+  private final Set<Character> charSet = new HashSet<>();
 
   public CompareOperator() {
     charSet.add('>');

@@ -62,28 +62,28 @@ public class AbstractAddressManager {
 
   private String projectName;
 
-  private Map<String, Boolean> categoryMap = new HashMap<>();
+  private final Map<String, Boolean> categoryMap = new HashMap<>();
 
-  private Map<String, Integer> recodeStatus = new ConcurrentHashMap<>();
+  private final Map<String, Integer> recodeStatus = new ConcurrentHashMap<>();
 
-  private Map<String, Boolean> history = new ConcurrentHashMap<>();
+  private final Map<String, Boolean> history = new ConcurrentHashMap<>();
 
   private volatile List<String> availableZone = new ArrayList<>();
 
   private volatile List<String> availableRegion = new ArrayList<>();
 
-  private volatile List<String> defaultAddress = new ArrayList<>();
+  private final List<String> defaultAddress = new ArrayList<>();
 
   private boolean isAddressRefresh = false;
 
   private final Object lock = new Object();
 
-  private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
+  private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
           .setNameFormat("check-available-address-%d")
           .build());
 
-  private Cache<String, Boolean> cacheAddress = CacheBuilder.newBuilder()
+  private final Cache<String, Boolean> cacheAddress = CacheBuilder.newBuilder()
       .maximumSize(100)
       .expireAfterWrite(10, TimeUnit.MINUTES)
       .build();

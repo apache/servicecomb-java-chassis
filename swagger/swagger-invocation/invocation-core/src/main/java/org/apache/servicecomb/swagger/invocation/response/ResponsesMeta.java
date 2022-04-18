@@ -70,7 +70,7 @@ public class ResponsesMeta {
   private static final ResponseMetaMapper GLOBAL_DEFAULT_MAPPER = SPIServiceUtils
       .getPriorityHighestService(ResponseMetaMapper.class);
 
-  private Map<Integer, JavaType> responseMap = new HashMap<>();
+  private final Map<Integer, JavaType> responseMap = new HashMap<>();
 
   private JavaType defaultResponse;
 

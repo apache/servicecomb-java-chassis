@@ -34,13 +34,13 @@ import com.netflix.loadbalancer.LoadBalancerStats;
 public class LoadBalancer {
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalancer.class);
 
-  private static AtomicInteger id = new AtomicInteger(0);
+  private static final AtomicInteger id = new AtomicInteger(0);
 
-  private RuleExt rule;
+  private final RuleExt rule;
 
-  private LoadBalancerStats lbStats;
+  private final LoadBalancerStats lbStats;
 
-  private String microServiceName;
+  private final String microServiceName;
 
   private List<ServerListFilterExt> filters;
 

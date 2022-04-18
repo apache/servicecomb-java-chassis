@@ -24,13 +24,13 @@ import java.util.Stack;
 public class DiscoveryContext {
   private Object inputParameters;
 
-  private Map<String, Object> contextParameters = new HashMap<>();
+  private final Map<String, Object> contextParameters = new HashMap<>();
 
   // some filter support rerun logic, eg:ZoneAware
   // instances grouping to self zone, other zone, and so on
   // first try self zone, after other filter(Isolation Filter), no instances are available
   // then try other zone
-  private Stack<DiscoveryTreeNode> rerunStack = new Stack<>();
+  private final Stack<DiscoveryTreeNode> rerunStack = new Stack<>();
 
   private DiscoveryTreeNode currentNode;
 

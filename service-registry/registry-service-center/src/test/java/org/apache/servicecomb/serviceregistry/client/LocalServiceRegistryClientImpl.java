@@ -61,13 +61,13 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   public static final String LOCAL_REGISTRY_FILE_KEY = "local.registry.file";
 
   // key is microservice id
-  private Map<String, Microservice> microserviceIdMap = new ConcurrentHashMap<>();
+  private final Map<String, Microservice> microserviceIdMap = new ConcurrentHashMap<>();
 
   // first key is microservice id
   // second key is instance id
-  private Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
+  private final Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
 
-  private AtomicInteger revision = new AtomicInteger(0);
+  private final AtomicInteger revision = new AtomicInteger(0);
 
   public LocalServiceRegistryClientImpl() {
     this(System.getProperty(LOCAL_REGISTRY_FILE_KEY));

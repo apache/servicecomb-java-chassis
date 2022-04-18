@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 public class ArgumentsBeanDescriptor extends SimpleType {
   private static final long serialVersionUID = 1L;
 
-  private BeanDescriptor beanDescriptor;
+  private final BeanDescriptor beanDescriptor;
 
   public ArgumentsBeanDescriptor(BeanDescriptor beanDescriptor) {
     super(ArgumentsBeanDescriptor.class);

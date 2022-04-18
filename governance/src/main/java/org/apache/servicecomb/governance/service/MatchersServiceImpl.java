@@ -28,9 +28,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MatchersServiceImpl implements MatchersService {
-  private RequestProcessor requestProcessor;
+  private final RequestProcessor requestProcessor;
 
-  private MatchProperties matchProperties;
+  private final MatchProperties matchProperties;
 
   @Autowired
   public MatchersServiceImpl(RequestProcessor requestProcessor, MatchProperties matchProperties) {

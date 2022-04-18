@@ -30,9 +30,9 @@ import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.SpectatorUtils;
 
 public class GlobalRegistry {
-  private Clock clock;
+  private final Clock clock;
 
-  private List<Registry> registries = new CopyOnWriteArrayList<>();
+  private final List<Registry> registries = new CopyOnWriteArrayList<>();
 
   private Registry defaultRegistry;
 

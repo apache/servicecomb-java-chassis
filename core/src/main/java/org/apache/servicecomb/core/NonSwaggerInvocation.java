@@ -20,13 +20,13 @@ package org.apache.servicecomb.core;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 public class NonSwaggerInvocation extends Invocation {
-  private String appId;
+  private final String appId;
 
-  private String microserviceName;
+  private final String microserviceName;
 
-  private String versionRule;
+  private final String versionRule;
 
-  private Handler nextHandler;
+  private final Handler nextHandler;
 
   public NonSwaggerInvocation(String appId, String microserviceName, String versionRule, Handler nextHandler) {
     this.appId = appId;

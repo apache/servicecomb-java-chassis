@@ -20,7 +20,7 @@ package org.apache.servicecomb.darklaunch.oper;
 import java.util.regex.Pattern;
 
 public class LikeCondition extends AbstractCondition {
-  private Pattern pattern;
+  private final Pattern pattern;
 
   public LikeCondition(String key, String expected) {
     super(key, expected);

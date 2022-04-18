@@ -33,9 +33,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
-  private Context context;
+  private final Context context;
 
-  private HttpServerResponse serverResponse;
+  private final HttpServerResponse serverResponse;
 
   private StatusType statusType;
 

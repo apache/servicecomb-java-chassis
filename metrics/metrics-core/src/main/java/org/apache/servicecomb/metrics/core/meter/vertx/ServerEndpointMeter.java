@@ -27,7 +27,7 @@ import com.netflix.spectator.api.Measurement;
 public class ServerEndpointMeter extends EndpointMeter {
   public static final String REJECT_BY_CONNECTION_LIMIT = "rejectByConnectionLimit";
 
-  private Id idRejectByConnectionLimit;
+  private final Id idRejectByConnectionLimit;
 
   private long lastRejectByConnectionLimit;
 

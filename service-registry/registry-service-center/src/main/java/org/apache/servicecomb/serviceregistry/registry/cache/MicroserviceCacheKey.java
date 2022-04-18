@@ -91,7 +91,7 @@ public class MicroserviceCacheKey {
   }
 
   public static class MicroserviceCacheKeyBuilder {
-    private MicroserviceCacheKey microserviceCacheKey;
+    private final MicroserviceCacheKey microserviceCacheKey;
 
     public MicroserviceCacheKey build() {
       microserviceCacheKey.validate();

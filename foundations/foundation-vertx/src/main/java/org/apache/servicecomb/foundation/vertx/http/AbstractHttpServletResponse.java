@@ -31,7 +31,7 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.Response.StatusType;
 
 public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl implements HttpServletResponseEx {
-  private Map<String, Object> attributes = new HashMap<>();
+  private final Map<String, Object> attributes = new HashMap<>();
 
   @Override
   public String getCharacterEncoding() {

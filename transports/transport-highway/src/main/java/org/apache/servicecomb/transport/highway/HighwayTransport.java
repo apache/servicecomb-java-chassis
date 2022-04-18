@@ -30,7 +30,7 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import io.vertx.core.DeploymentOptions;
 
 public class HighwayTransport extends AbstractTransport {
-  private HighwayClient highwayClient = new HighwayClient();
+  private final HighwayClient highwayClient = new HighwayClient();
 
   @Override
   public String getName() {

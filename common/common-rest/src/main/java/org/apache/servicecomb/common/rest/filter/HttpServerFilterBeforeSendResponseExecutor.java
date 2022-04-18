@@ -23,15 +23,15 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 
 public class HttpServerFilterBeforeSendResponseExecutor {
-  private List<HttpServerFilter> httpServerFilters;
+  private final List<HttpServerFilter> httpServerFilters;
 
-  private Invocation invocation;
+  private final Invocation invocation;
 
-  private HttpServletResponseEx responseEx;
+  private final HttpServletResponseEx responseEx;
 
   private int currentIndex;
 
-  private CompletableFuture<Void> future = new CompletableFuture<Void>();
+  private final CompletableFuture<Void> future = new CompletableFuture<Void>();
 
   public HttpServerFilterBeforeSendResponseExecutor(List<HttpServerFilter> httpServerFilters, Invocation invocation,
       HttpServletResponseEx responseEx) {

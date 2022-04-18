@@ -37,13 +37,13 @@ import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
 
 public class ServletRestDispatcher {
-  private RestAsyncListener restAsyncListener = new RestAsyncListener();
+  private final RestAsyncListener restAsyncListener = new RestAsyncListener();
 
   private Transport transport;
 
   private MicroserviceMeta microserviceMeta;
 
-  private List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+  private final List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
   public void service(HttpServletRequest request, HttpServletResponse response) {
     if (transport == null) {

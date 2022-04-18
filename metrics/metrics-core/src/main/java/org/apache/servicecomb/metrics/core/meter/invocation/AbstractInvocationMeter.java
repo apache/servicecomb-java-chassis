@@ -34,19 +34,19 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   private final Registry registry;
 
   //total time
-  private SimpleTimer totalTimer;
+  private final SimpleTimer totalTimer;
 
   // prepare time
-  private SimpleTimer prepareTimer;
+  private final SimpleTimer prepareTimer;
 
   // handler request
-  private SimpleTimer handlersRequestTimer;
+  private final SimpleTimer handlersRequestTimer;
 
   // handler response
-  private SimpleTimer handlersResponseTimer;
+  private final SimpleTimer handlersResponseTimer;
 
   // latency distribution
-  private LatencyDistributionMeter latencyDistributionMeter;
+  private final LatencyDistributionMeter latencyDistributionMeter;
 
   private long lastUpdated;
 

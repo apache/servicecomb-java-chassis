@@ -43,13 +43,13 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
-  private Map<String, ProduceProcessor> nonSerialViewMap = new HashMap<>();
+  private final Map<String, ProduceProcessor> nonSerialViewMap = new HashMap<>();
 
-  private Map<String, ProduceProcessor> jsonProcessorMap;
+  private final Map<String, ProduceProcessor> jsonProcessorMap;
 
-  private Map<String, ProduceProcessor> plainProcessorMap;
+  private final Map<String, ProduceProcessor> plainProcessorMap;
 
-  private Map<String, ProduceProcessor> defaultProcessorMap;
+  private final Map<String, ProduceProcessor> defaultProcessorMap;
 
   private ProduceProcessorManager() {
     super(NAME);

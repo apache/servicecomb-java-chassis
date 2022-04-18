@@ -41,10 +41,10 @@ import org.slf4j.LoggerFactory;
 public class SimpleLoadBalanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceHandler.class);
 
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  private final DiscoveryTree discoveryTree = new DiscoveryTree();
 
   // key为grouping filter qualified name
-  private volatile Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
+  private final Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
 
   public SimpleLoadBalanceHandler() {
     discoveryTree.loadFromSPI(DiscoveryFilter.class);

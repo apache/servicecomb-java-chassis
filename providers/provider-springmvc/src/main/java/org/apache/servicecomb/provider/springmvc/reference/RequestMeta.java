@@ -27,13 +27,13 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
  * 封装每一次调用的元数据
  */
 public class RequestMeta {
-  private ReferenceConfig referenceConfig;
+  private final ReferenceConfig referenceConfig;
 
-  private OperationMeta operationMeta;
+  private final OperationMeta operationMeta;
 
-  private RestOperationMeta swaggerRestOperation;
+  private final RestOperationMeta swaggerRestOperation;
 
-  private Map<String, String> pathParams;
+  private final Map<String, String> pathParams;
 
   public RequestMeta(ReferenceConfig referenceConfig, RestOperationMeta swaggerRestOperation,
       Map<String, String> pathParams) {

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MockInvocationContext implements InvocationContext {
-  private ThreadLocal<Map<String, Boolean>> context = new ThreadLocal<>();
+  private final ThreadLocal<Map<String, Boolean>> context = new ThreadLocal<>();
 
   @Override
   public Map<String, Boolean> getCalculatedMatches() {

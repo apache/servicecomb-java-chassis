@@ -24,7 +24,7 @@ import org.apache.servicecomb.core.ConsumerProvider;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class ConsumerProviderManager {
-  private List<ConsumerProvider> consumerProviderList = new ArrayList<>(
+  private final List<ConsumerProvider> consumerProviderList = new ArrayList<>(
       SPIServiceUtils.getOrLoadSortedService(ConsumerProvider.class));
 
   public List<ConsumerProvider> getConsumerProviderList() {

@@ -33,7 +33,7 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
   private static final Logger LOGGER = LoggerFactory.getLogger(LeakyBucketStrategy.class);
 
   // Request count between Interval begin and now in one interval
-  private volatile AtomicLong requestCount = new AtomicLong();
+  private final AtomicLong requestCount = new AtomicLong();
 
   private volatile long lastTime;
 

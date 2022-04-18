@@ -26,13 +26,13 @@ import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import io.vertx.core.buffer.Buffer;
 
 public class RequestHeader {
-  private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
+  private static final ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  private static RootDeserializer<RequestHeader> rootDeserializer = protoMapperFactory
+  private static final RootDeserializer<RequestHeader> rootDeserializer = protoMapperFactory
       .createFromName("RequestHeader.proto")
       .createRootDeserializer("RequestHeader", RequestHeader.class);
 
-  private static RootSerializer rootSerializer = protoMapperFactory.createFromName("RequestHeader.proto")
+  private static final RootSerializer rootSerializer = protoMapperFactory.createFromName("RequestHeader.proto")
       .createRootSerializer("RequestHeader", RequestHeader.class);
 
   public static RootSerializer getRootSerializer() {

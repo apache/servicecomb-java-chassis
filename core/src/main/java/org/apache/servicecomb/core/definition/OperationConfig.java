@@ -81,7 +81,7 @@ public class OperationConfig {
   /**
    * producer wait in thread pool timeout
    */
-  private Map<String, Long> nanoRequestWaitInPoolTimeoutByTransport = new HashMap<>();
+  private final Map<String, Long> nanoRequestWaitInPoolTimeoutByTransport = new HashMap<>();
 
   @InjectProperty(keys = "Provider.requestWaitInPoolTimeout${op-priority}", defaultValue = "30000")
   private long msDefaultRequestWaitInPoolTimeout;

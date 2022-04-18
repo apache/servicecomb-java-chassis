@@ -25,30 +25,30 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class IsolationServerEvent extends AlarmEvent {
 
-  private String microserviceName;
+  private final String microserviceName;
 
-  private Endpoint endpoint;
+  private final Endpoint endpoint;
 
-  private MicroserviceInstance instance;
+  private final MicroserviceInstance instance;
 
   //当前实例总请求数
-  private long currentTotalRequest;
+  private final long currentTotalRequest;
 
   //当前实例连续出错次数
-  private long currentCountinuousFailureCount;
+  private final long currentCountinuousFailureCount;
 
   //当前实例出错百分比
-  private double currentErrorPercentage;
+  private final double currentErrorPercentage;
 
-  private int minIsolationTime;
+  private final int minIsolationTime;
 
-  private long enableRequestThreshold;
+  private final long enableRequestThreshold;
 
-  private int continuousFailureThreshold;
+  private final int continuousFailureThreshold;
 
-  private int errorThresholdPercentage;
+  private final int errorThresholdPercentage;
 
-  private long singleTestTime;
+  private final long singleTestTime;
 
   public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
       ServiceCombServerStats serverStats,

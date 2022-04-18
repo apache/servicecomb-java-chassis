@@ -30,11 +30,11 @@ import javax.net.ssl.SSLSocketFactory;
  *
  */
 public class SSLSocketFactoryExt extends SSLSocketFactory {
-  private SSLSocketFactory sslSocketFactory;
+  private final SSLSocketFactory sslSocketFactory;
 
-  private String[] ciphers;
+  private final String[] ciphers;
 
-  private String[] protos;
+  private final String[] protos;
 
   public SSLSocketFactoryExt(SSLSocketFactory factory, String[] ciphers, String[] protos) {
     this.sslSocketFactory = factory;

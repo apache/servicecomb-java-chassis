@@ -47,7 +47,7 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletRequestEx extends HttpServletRequestWrapper implements HttpServletRequestEx {
-  private BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
+  private final BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
 
   private boolean cacheRequest;
 

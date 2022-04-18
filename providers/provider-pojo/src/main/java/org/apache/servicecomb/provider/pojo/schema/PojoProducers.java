@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PojoProducers implements BeanPostProcessor {
-  private List<ProducerMeta> producerMetas = new ArrayList<>();
+  private final List<ProducerMeta> producerMetas = new ArrayList<>();
 
   public synchronized void registerPojoProducer(PojoProducerMeta pojoProducer) {
     producerMetas.add(pojoProducer);

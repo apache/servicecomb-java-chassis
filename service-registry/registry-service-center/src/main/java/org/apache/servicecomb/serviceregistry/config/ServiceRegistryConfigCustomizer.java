@@ -31,7 +31,7 @@ import com.netflix.config.DynamicPropertyFactory;
  * easier way to have new customized copies of ServiceRegistryConfig
  */
 public class ServiceRegistryConfigCustomizer {
-  private ServiceRegistryConfig original;
+  private final ServiceRegistryConfig original;
 
   private ServiceRegistryConfigCustomizer(ServiceRegistryConfig original) {
     this.original = original;

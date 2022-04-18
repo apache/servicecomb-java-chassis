@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class ResponseMapperFactorys<MAPPER> {
-  private List<ResponseMapperFactory<MAPPER>> factorys;
+  private final List<ResponseMapperFactory<MAPPER>> factorys;
 
   @SuppressWarnings("unchecked")
   public ResponseMapperFactorys(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls) {

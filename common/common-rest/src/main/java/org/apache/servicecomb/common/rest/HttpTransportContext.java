@@ -22,11 +22,11 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.context.TransportContext;
 
 public class HttpTransportContext implements TransportContext {
-  private HttpServletRequestEx requestEx;
+  private final HttpServletRequestEx requestEx;
 
-  private HttpServletResponseEx responseEx;
+  private final HttpServletResponseEx responseEx;
 
-  private ProduceProcessor produceProcessor;
+  private final ProduceProcessor produceProcessor;
 
   public HttpTransportContext(HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
       ProduceProcessor produceProcessor) {

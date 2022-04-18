@@ -23,7 +23,7 @@ import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPath
 
 public class StaticUrlParamWriter implements UrlParamWriter {
 
-  private String staticPath;
+  private final String staticPath;
 
   public StaticUrlParamWriter(String staticPath) {
     this.staticPath = staticPath;

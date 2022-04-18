@@ -37,7 +37,7 @@ public class SignRequest {
   /**
    * Map of the headers included in this request
    */
-  private Map<String, String> headers = new HashMap<>();
+  private final Map<String, String> headers = new HashMap<>();
 
   /**
    * The service endpoint to which this request should be sent
@@ -58,7 +58,7 @@ public class SignRequest {
    * The datetime in milliseconds for which the signature needs to be
    * computed.
    */
-  private long signingDateTimeMilli = System.currentTimeMillis();
+  private final long signingDateTimeMilli = System.currentTimeMillis();
 
   /**
    * The scope of the signature.

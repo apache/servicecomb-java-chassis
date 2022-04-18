@@ -28,12 +28,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class TestEventBus {
-  private EventBus eventBus = new SimpleEventBus();
+  private final EventBus eventBus = new SimpleEventBus();
 
-  private List<Object> events = new ArrayList<>();
+  private final List<Object> events = new ArrayList<>();
 
   public static class SubscriberForTest {
-    private List<Object> events;
+    private final List<Object> events;
 
     public SubscriberForTest( List<Object> events) {
       this.events = events;
@@ -51,7 +51,7 @@ public class TestEventBus {
   }
 
   public static class SubscriberWithOrderForTest {
-    private List<Object> events;
+    private final List<Object> events;
 
     public SubscriberWithOrderForTest( List<Object> events) {
       this.events = events;

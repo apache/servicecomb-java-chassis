@@ -39,7 +39,7 @@ import mockit.MockUp;
 
 public class RefreshableMicroserviceCacheTest {
 
-  private Holder<Function<Object[], MicroserviceInstances>> findServiceInstancesOprHolder = new Holder<>();
+  private final Holder<Function<Object[], MicroserviceInstances>> findServiceInstancesOprHolder = new Holder<>();
 
   private ServiceRegistryClient srClient;
 

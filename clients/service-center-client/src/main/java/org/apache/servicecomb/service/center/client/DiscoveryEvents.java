@@ -23,11 +23,11 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 
 public abstract class DiscoveryEvents {
   public static class InstanceChangedEvent extends DiscoveryEvents {
-    private String appName;
+    private final String appName;
 
-    private String serviceName;
+    private final String serviceName;
 
-    private List<MicroserviceInstance> instances;
+    private final List<MicroserviceInstance> instances;
 
     public InstanceChangedEvent(String appName, String serviceName, List<MicroserviceInstance> instances) {
       this.appName = appName;

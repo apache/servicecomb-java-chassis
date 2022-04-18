@@ -33,7 +33,7 @@ public class AppManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(AppManager.class);
 
   // key: appId
-  private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
+  private final Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
 
   public AppManager() {
     getEventBus().register(this);

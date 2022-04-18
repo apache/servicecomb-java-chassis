@@ -18,7 +18,7 @@
 package org.apache.servicecomb.serviceregistry.client.http;
 
 class HttpClientPool extends AbstractClientPool {
-  private String clientName;
+  private final String clientName;
 
   HttpClientPool(String clientName) {
     this.clientName = clientName;

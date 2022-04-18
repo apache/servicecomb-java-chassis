@@ -23,7 +23,7 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
 public class LatencyDistributionMeter extends AbstractPeriodMeter {
-  private List<LatencyScopeMeter> latencyScopeMeters = new ArrayList<>();
+  private final List<LatencyScopeMeter> latencyScopeMeters = new ArrayList<>();
 
   public LatencyDistributionMeter(Id id, String config) {
     this.id = id;

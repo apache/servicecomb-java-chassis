@@ -93,9 +93,9 @@ public class SCBEngine {
 
   private FilterChainsManager filterChainsManager;
 
-  private ConsumerHandlerManager consumerHandlerManager = new ConsumerHandlerManager();
+  private final ConsumerHandlerManager consumerHandlerManager = new ConsumerHandlerManager();
 
-  private ProducerHandlerManager producerHandlerManager = new ProducerHandlerManager();
+  private final ProducerHandlerManager producerHandlerManager = new ProducerHandlerManager();
 
   private ProducerProviderManager producerProviderManager;
 
@@ -105,7 +105,7 @@ public class SCBEngine {
 
   private TransportManager transportManager = new TransportManager();
 
-  private List<BootListener> bootListeners = new ArrayList<>(
+  private final List<BootListener> bootListeners = new ArrayList<>(
       SPIServiceUtils.getOrLoadSortedService(BootListener.class));
 
   private final AtomicLong invocationStartedCounter = new AtomicLong();
@@ -114,7 +114,7 @@ public class SCBEngine {
 
   private volatile SCBStatus status = SCBStatus.DOWN;
 
-  private EventBus eventBus;
+  private final EventBus eventBus;
 
   private ExecutorManager executorManager = new ExecutorManager();
 
@@ -123,11 +123,11 @@ public class SCBEngine {
   protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
       .getSortedService(BootUpInformationCollector.class);
 
-  private ServiceRegistryListener serviceRegistryListener;
+  private final ServiceRegistryListener serviceRegistryListener;
 
-  private SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
+  private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-  private VendorExtensions vendorExtensions = new VendorExtensions();
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
 
   private Thread shutdownHook;
 
@@ -617,7 +617,7 @@ public class SCBEngine {
   }
 
   public static class AfterRegistryEventHanlder {
-    private SCBEngine engine;
+    private final SCBEngine engine;
 
     public AfterRegistryEventHanlder(SCBEngine engine) {
       this.engine = engine;

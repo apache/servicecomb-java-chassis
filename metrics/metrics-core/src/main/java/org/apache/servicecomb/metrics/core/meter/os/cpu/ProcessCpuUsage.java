@@ -39,11 +39,11 @@ import com.netflix.spectator.api.Id;
 public class ProcessCpuUsage extends AbstractCpuUsage {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCpuUsage.class);
 
-  private Period busy = new Period();
+  private final Period busy = new Period();
 
-  private Period total = new Period();
+  private final Period total = new Period();
 
-  private int userHZ = CpuUtils.calcHertz();
+  private final int userHZ = CpuUtils.calcHertz();
 
   public ProcessCpuUsage(Id id) {
     super(id);

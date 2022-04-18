@@ -26,9 +26,9 @@ import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import com.fasterxml.jackson.databind.JavaType;
 
 public class ResponseRootDeserializer<T> {
-  private RootDeserializer<T> rootDeserializer;
+  private final RootDeserializer<T> rootDeserializer;
 
-  private boolean empty;
+  private final boolean empty;
 
   public ResponseRootDeserializer(RootDeserializer<T> rootDeserializer, boolean empty) {
     this.rootDeserializer = rootDeserializer;

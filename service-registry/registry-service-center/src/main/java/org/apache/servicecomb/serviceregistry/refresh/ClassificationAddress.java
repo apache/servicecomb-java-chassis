@@ -61,13 +61,13 @@ public class ClassificationAddress {
 
   private String defaultTransport = "rest";
 
-  private boolean isAutoRefresh;
+  private final boolean isAutoRefresh;
 
   private DataCenterInfo dataCenterInfo;
 
   InstanceCacheManager instanceCacheManager;
 
-  private ArrayList<IpPort> defaultIpPort;
+  private final ArrayList<IpPort> defaultIpPort;
 
   private int maxRetryTimes;
 

@@ -24,7 +24,7 @@ import com.netflix.config.DynamicPropertyFactory;
 public class RegistryWatchHttpClientOptionsSPI extends RegistryHttpClientOptionsSPI {
   public static final String CLIENT_NAME = "registry-watch";
 
-  private ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
+  private final ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
 
   @Override
   public String clientName() {

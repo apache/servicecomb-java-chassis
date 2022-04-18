@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OperationPerfGroup {
-  private String transport;
+  private final String transport;
 
-  private String status;
+  private final String status;
 
-  private List<OperationPerf> operationPerfs = new ArrayList<>();
+  private final List<OperationPerf> operationPerfs = new ArrayList<>();
 
   private OperationPerf summary;
 

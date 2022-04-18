@@ -25,9 +25,9 @@ import java.util.Objects;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public final class VersionRuleUtils {
-  private static List<VersionRuleParser> parsers = new ArrayList<>();
+  private static final List<VersionRuleParser> parsers = new ArrayList<>();
 
-  private static Map<String, VersionRule> versionRuleCache = new ConcurrentHashMapEx<>();
+  private static final Map<String, VersionRule> versionRuleCache = new ConcurrentHashMapEx<>();
 
   static {
     parsers.add(new VersionRuleLatestParser());

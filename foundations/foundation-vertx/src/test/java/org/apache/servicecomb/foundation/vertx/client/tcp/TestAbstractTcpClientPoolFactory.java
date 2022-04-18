@@ -24,9 +24,9 @@ import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
 public class TestAbstractTcpClientPoolFactory {
-  private TcpClientConfig normalClientConfig = new TcpClientConfig();
+  private final TcpClientConfig normalClientConfig = new TcpClientConfig();
 
-  private TcpClientConfig sslClientConfig = new TcpClientConfig();
+  private final TcpClientConfig sslClientConfig = new TcpClientConfig();
 
   TcpClientPoolFactory factory = new TcpClientPoolFactory(normalClientConfig, sslClientConfig);
 

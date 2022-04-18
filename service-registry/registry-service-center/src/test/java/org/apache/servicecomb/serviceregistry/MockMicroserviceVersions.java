@@ -41,9 +41,9 @@ import mockit.MockUp;
 
 public class MockMicroserviceVersions extends MicroserviceVersions {
   // key is serviceId
-  private Map<String, Microservice> mockedMicroservices = new HashMap<>();
+  private final Map<String, Microservice> mockedMicroservices = new HashMap<>();
 
-  private List<MicroserviceInstance> mockedInstances = new ArrayList<>();
+  private final List<MicroserviceInstance> mockedInstances = new ArrayList<>();
 
   public MockMicroserviceVersions() {
     super(new AppManager(), "appId", "msName");

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompositeTask implements Runnable {
-  private List<Runnable> taskList = new ArrayList<>();
+  private final List<Runnable> taskList = new ArrayList<>();
 
   public void addTask(Runnable task) {
     taskList.add(task);

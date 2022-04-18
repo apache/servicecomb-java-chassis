@@ -43,7 +43,7 @@ public class MicroserviceVersion {
 
   protected Collection<MicroserviceInstance> instances;
 
-  private VendorExtensions vendorExtensions = new VendorExtensions();
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
 
   public MicroserviceVersion(MicroserviceVersions microserviceVersions, String microserviceId,
       String microserviceName,

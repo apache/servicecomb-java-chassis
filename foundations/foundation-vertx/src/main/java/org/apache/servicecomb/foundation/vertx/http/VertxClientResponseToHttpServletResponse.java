@@ -28,7 +28,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 
 public class VertxClientResponseToHttpServletResponse extends AbstractHttpServletResponse {
-  private HttpClientResponse clientResponse;
+  private final HttpClientResponse clientResponse;
 
   private StatusType statusType;
 

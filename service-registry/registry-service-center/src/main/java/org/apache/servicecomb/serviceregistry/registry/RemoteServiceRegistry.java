@@ -41,10 +41,10 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
   private ScheduledThreadPoolExecutor taskPool;
 
-  private List<ServiceRegistryTaskInitializer> taskInitializers = SPIServiceUtils
+  private final List<ServiceRegistryTaskInitializer> taskInitializers = SPIServiceUtils
       .getOrLoadSortedService(ServiceRegistryTaskInitializer.class);
 
-  private AtomicBoolean heartBeatStatus = new AtomicBoolean(true);
+  private final AtomicBoolean heartBeatStatus = new AtomicBoolean(true);
 
   public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       Configuration configuration) {

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class LatencyDistributionConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(LatencyDistributionConfig.class);
 
-  private List<LatencyScopeConfig> scopeConfigs = new ArrayList<>();
+  private final List<LatencyScopeConfig> scopeConfigs = new ArrayList<>();
 
   /**
    *

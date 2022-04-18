@@ -302,9 +302,9 @@ public final class RegistryUtils {
   }
 
   public static class AfterServiceInstanceRegistryHandler {
-    private static AtomicInteger instanceRegisterCounter = new AtomicInteger(EXTRA_SERVICE_REGISTRIES.size() + 1);
+    private static final AtomicInteger instanceRegisterCounter = new AtomicInteger(EXTRA_SERVICE_REGISTRIES.size() + 1);
 
-    private ServiceRegistry serviceRegistry;
+    private final ServiceRegistry serviceRegistry;
 
     AfterServiceInstanceRegistryHandler(ServiceRegistry serviceRegistry) {
       this.serviceRegistry = serviceRegistry;

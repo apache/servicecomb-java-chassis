@@ -53,24 +53,24 @@ public class TcpClientConnection extends TcpConnection {
     WORKING
   }
 
-  private NetClientWrapper netClientWrapper;
+  private final NetClientWrapper netClientWrapper;
 
-  private TcpClientConfig clientConfig;
+  private final TcpClientConfig clientConfig;
 
-  private URIEndpointObject endpoint;
+  private final URIEndpointObject endpoint;
 
-  private InetSocketAddress socketAddress;
+  private final InetSocketAddress socketAddress;
 
   private boolean localSupportLogin = false;
 
-  private boolean remoteSupportLogin;
+  private final boolean remoteSupportLogin;
 
   private volatile Status status = Status.DISCONNECTED;
 
   // save msg before login success.
   // before login, we can not know parameters, like: zip/codec compatible, and so on
   // so can only save package, can not save byteBuf
-  private Queue<AbstractTcpClientPackage> packageQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<AbstractTcpClientPackage> packageQueue = new ConcurrentLinkedQueue<>();
 
   private volatile Map<Long, TcpRequest> requestMap = new ConcurrentHashMap<>();
 

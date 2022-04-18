@@ -43,7 +43,7 @@ public class TcpParser implements Handler<Buffer> {
     TCP_PAYLOAD
   }
 
-  private TcpBufferHandler outputHandler;
+  private final TcpBufferHandler outputHandler;
 
   private RecordParser parser;
 

@@ -30,7 +30,7 @@ import io.vertx.core.http.HttpVersion;
 public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
   public static final String CLIENT_NAME = "registry";
 
-  private ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
+  private final ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
 
   @Override
   public String clientName() {

@@ -208,7 +208,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
       URL url = new MockUp<URL>() {
 
-        private String path = "location/invalid.yaml";
+        private final String path = "location/invalid.yaml";
 
         @Mock
         String getPath() {

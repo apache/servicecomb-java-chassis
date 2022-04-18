@@ -26,7 +26,7 @@ import org.apache.servicecomb.core.Invocation;
  * A round robin rule
  */
 public class RoundRobinRuleExt implements RuleExt {
-  private AtomicInteger counter = new AtomicInteger(0);
+  private final AtomicInteger counter = new AtomicInteger(0);
 
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {

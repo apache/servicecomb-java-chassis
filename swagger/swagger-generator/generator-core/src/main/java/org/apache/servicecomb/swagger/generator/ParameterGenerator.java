@@ -30,14 +30,14 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.models.parameters.Parameter;
 
 public class ParameterGenerator {
-  private String parameterName;
+  private final String parameterName;
 
-  private List<Annotation> annotations;
+  private final List<Annotation> annotations;
 
   /**
    * when wrap parameters to body, genericType is null
    */
-  private JavaType genericType;
+  private final JavaType genericType;
 
   private HttpParameterType httpParameterType;
 

@@ -25,11 +25,11 @@ import java.lang.management.ThreadMXBean;
 public class CPUMonitorCalc {
   private static final int PERCENTAGE = 100;
 
-  private static CPUMonitorCalc instance = new CPUMonitorCalc();
+  private static final CPUMonitorCalc instance = new CPUMonitorCalc();
 
-  private OperatingSystemMXBean osMxBean;
+  private final OperatingSystemMXBean osMxBean;
 
-  private ThreadMXBean threadMXBean;
+  private final ThreadMXBean threadMXBean;
 
   private long preTime = System.nanoTime();
 

@@ -40,7 +40,7 @@ import mockit.MockUp;
 public class TestHighwayTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHighwayTransport.class);
 
-  private HighwayTransport transport = new HighwayTransport();
+  private final HighwayTransport transport = new HighwayTransport();
 
   @BeforeClass
   public static void setup() {

@@ -36,19 +36,19 @@ import org.slf4j.LoggerFactory;
 public class IpPortManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
 
-  private ServiceRegistryConfig serviceRegistryConfig;
+  private final ServiceRegistryConfig serviceRegistryConfig;
 
   InstanceCacheManager instanceCacheManager;
 
-  private ArrayList<IpPort> defaultIpPort;
+  private final ArrayList<IpPort> defaultIpPort;
 
   private boolean autoDiscoveryInited = false;
 
-  private AddressManager addressManger;
+  private final AddressManager addressManger;
 
   ClassificationAddress classificationAddress;
 
-  private Object lock = new Object();
+  private final Object lock = new Object();
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
     this.autoDiscoveryInited = autoDiscoveryInited;

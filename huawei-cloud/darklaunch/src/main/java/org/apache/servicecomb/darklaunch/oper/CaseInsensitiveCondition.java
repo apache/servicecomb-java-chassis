@@ -18,7 +18,7 @@
 package org.apache.servicecomb.darklaunch.oper;
 
 public class CaseInsensitiveCondition extends AbstractCondition {
-  private Condition condition;
+  private final Condition condition;
 
   public CaseInsensitiveCondition(Condition condition) {
     super(condition.key(), condition.expected());

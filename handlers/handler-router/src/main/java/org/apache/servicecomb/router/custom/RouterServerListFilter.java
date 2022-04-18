@@ -47,10 +47,10 @@ public class RouterServerListFilter implements ServerListFilterExt {
   public static final String ROUTER_HEADER = "X-RouterContext";
 
   @SuppressWarnings("unchecked")
-  private RouterDistributor<ServiceCombServer, Microservice> routerDistributor = BeanUtils
+  private final RouterDistributor<ServiceCombServer, Microservice> routerDistributor = BeanUtils
       .getBean(RouterDistributor.class);
 
-  private RouterFilter routerFilter = BeanUtils.getBean(RouterFilter.class);
+  private final RouterFilter routerFilter = BeanUtils.getBean(RouterFilter.class);
 
   @Override
   public boolean enabled() {

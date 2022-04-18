@@ -32,13 +32,13 @@ import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class RestProducers implements BeanPostProcessor {
-  private List<ProducerMeta> producerMetaList = new ArrayList<>();
+  private final List<ProducerMeta> producerMetaList = new ArrayList<>();
 
   @SuppressWarnings("unchecked")
-  private Class<? extends Annotation> restControllerCls = (Class<? extends Annotation>) ReflectUtils
+  private final Class<? extends Annotation> restControllerCls = (Class<? extends Annotation>) ReflectUtils
       .getClassByName("org.springframework.web.bind.annotation.RestController");
 
-  private boolean scanRestController = restControllerCls != null &&
+  private final boolean scanRestController = restControllerCls != null &&
       DynamicPropertyFactory.getInstance().getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true).get();
 
   public List<ProducerMeta> getProducerMetaList() {

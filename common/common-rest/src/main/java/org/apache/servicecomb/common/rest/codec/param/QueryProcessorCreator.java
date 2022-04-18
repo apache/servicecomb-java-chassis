@@ -41,20 +41,20 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
 
   public static class QueryProcessor extends AbstractParamProcessor {
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean emptyAsNull = DynamicPropertyFactory.getInstance()
+    private final boolean emptyAsNull = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.emptyAsNull", false).get();
 
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
+    private final boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false).get();
 
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+    private final boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false).get();
 
-    private boolean repeatedType;
+    private final boolean repeatedType;
 
-    private QueryCodec queryCodec;
+    private final QueryCodec queryCodec;
 
     public QueryProcessor(QueryParameter queryParameter, JavaType targetType) {
       super(queryParameter.getName(), targetType, queryParameter.getDefaultValue(), queryParameter.getRequired());

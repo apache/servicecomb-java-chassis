@@ -28,11 +28,11 @@ import io.protostuff.compiler.model.Proto;
 public class ProtoMapperFactory {
   // 1.to support "any" type
   // 2.to find bean properties
-  private ObjectMapper jsonMapper = new ObjectMapper();
+  private final ObjectMapper jsonMapper = new ObjectMapper();
 
-  private BeanDescriptorManager beanDescriptorManager;
+  private final BeanDescriptorManager beanDescriptorManager;
 
-  private ProtoParser protoParser = new ProtoParser();
+  private final ProtoParser protoParser = new ProtoParser();
 
   public ProtoMapperFactory() {
     jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

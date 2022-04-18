@@ -38,7 +38,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   private static final String DEFAULT_SERVICE_NAME = "default";
 
-  private InstanceIsolationProperties instanceIsolationProperties;
+  private final InstanceIsolationProperties instanceIsolationProperties;
 
   @Autowired
   public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties) {

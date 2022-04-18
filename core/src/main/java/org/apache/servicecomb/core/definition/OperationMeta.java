@@ -45,11 +45,11 @@ public class OperationMeta {
   // run in this executor
   private Executor executor;
 
-  private ResponsesMeta responsesMeta = new ResponsesMeta();
+  private final ResponsesMeta responsesMeta = new ResponsesMeta();
 
   private OperationConfig config;
 
-  private VendorExtensions vendorExtensions = new VendorExtensions();
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
 
   public OperationMeta init(SchemaMeta schemaMeta, SwaggerOperation swaggerOperation) {
     this.schemaMeta = schemaMeta;

@@ -91,7 +91,7 @@ public class RouterDistributorTest {
   public RouterDistributorTest() {
   }
 
-  private Map<String, Object> dynamicValues = new HashMap<>();
+  private final Map<String, Object> dynamicValues = new HashMap<>();
 
   @Before
   public void setUp() {

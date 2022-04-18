@@ -28,13 +28,13 @@ import org.apache.servicecomb.swagger.invocation.Response;
  * Implements the fault feature execution one after other.
  */
 public class FaultExecutor {
-  private List<Fault> faultInjectList;
+  private final List<Fault> faultInjectList;
 
   private int handlerIndex = 0;
 
-  private Invocation invocation;
+  private final Invocation invocation;
 
-  private FaultParam param;
+  private final FaultParam param;
 
   public FaultExecutor(List<Fault> faultInjectList, Invocation invocation, FaultParam param) {
     this.faultInjectList = faultInjectList;

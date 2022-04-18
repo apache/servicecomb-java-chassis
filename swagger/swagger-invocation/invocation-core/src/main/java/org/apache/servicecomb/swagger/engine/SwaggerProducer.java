@@ -30,7 +30,7 @@ public class SwaggerProducer {
   private Swagger swagger;
 
   // key is operationId
-  private Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
+  private final Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
 
   public Class<?> getProducerCls() {
     return producerCls;

@@ -31,7 +31,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestPropertiesLoader {
-  private static MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+  private static final MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
   @Test
   public void testEmptyExtendedClass() {

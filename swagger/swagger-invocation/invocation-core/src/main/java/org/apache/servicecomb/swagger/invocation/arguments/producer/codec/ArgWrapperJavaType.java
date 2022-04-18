@@ -47,7 +47,7 @@ public class ArgWrapperJavaType extends SimpleType {
     }
   }
 
-  private Map<String, ArgInfo> argInfos = new HashMap<>();
+  private final Map<String, ArgInfo> argInfos = new HashMap<>();
 
   public ArgWrapperJavaType() {
     super(Object.class);

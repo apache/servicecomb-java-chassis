@@ -32,7 +32,7 @@ import com.google.common.eventbus.Subscribe;
 public class MicroserviceWatchTask extends AbstractTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceWatchTask.class);
 
-  private ServiceRegistryConfig serviceRegistryConfig;
+  private final ServiceRegistryConfig serviceRegistryConfig;
 
   public MicroserviceWatchTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       ServiceRegistryClient srClient, Microservice microservice) {

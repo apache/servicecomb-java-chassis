@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TransportChainsConfig {
-  private Map<String, List<String>> chainByTransport = new HashMap<>();
+  private final Map<String, List<String>> chainByTransport = new HashMap<>();
 
   public Map<String, List<String>> getChainByTransport() {
     return chainByTransport;

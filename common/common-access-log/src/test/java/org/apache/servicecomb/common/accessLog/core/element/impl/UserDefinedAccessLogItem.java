@@ -28,7 +28,7 @@ import io.vertx.ext.web.RoutingContext;
  * For access log extension test
  */
 public class UserDefinedAccessLogItem implements AccessLogItem<RoutingContext> {
-  private String config;
+  private final String config;
 
   public UserDefinedAccessLogItem(String config) {
     this.config = config;

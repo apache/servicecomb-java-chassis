@@ -33,7 +33,7 @@ public class CircutBreakerEventNotifier extends HystrixEventNotifier {
   /**
    * 使用circuitFlag来记录被熔断的接口
    */
-  private ConcurrentHashMapEx<String, AtomicBoolean> circuitFlag = new ConcurrentHashMapEx<>();
+  private final ConcurrentHashMapEx<String, AtomicBoolean> circuitFlag = new ConcurrentHashMapEx<>();
 
   EventBus eventBus = EventManager.getEventBus();
 

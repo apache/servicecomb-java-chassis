@@ -51,9 +51,9 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private static final EmptyAsyncContext EMPTY_ASYNC_CONTEXT = new EmptyAsyncContext();
 
-  private RoutingContext context;
+  private final RoutingContext context;
 
-  private HttpServerRequest vertxRequest;
+  private final HttpServerRequest vertxRequest;
 
   private Cookie[] cookies;
 
@@ -61,7 +61,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private String path;
 
-  private SocketAddress socketAddress;
+  private final SocketAddress socketAddress;
 
   // cache from convert vertx parameters to servlet parameters
   private Map<String, String[]> parameterMap;

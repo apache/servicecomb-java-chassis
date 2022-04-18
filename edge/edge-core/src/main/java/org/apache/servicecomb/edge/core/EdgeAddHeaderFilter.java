@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 public class EdgeAddHeaderFilter implements ConsumerFilter {
   public static final String NAME = "edge-add-headers";
 
-  private EdgeAddHeaderClientFilter filter = new EdgeAddHeaderClientFilter();
+  private final EdgeAddHeaderClientFilter filter = new EdgeAddHeaderClientFilter();
 
   @Nonnull
   @Override

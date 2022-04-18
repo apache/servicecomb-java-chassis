@@ -37,7 +37,7 @@ public class ExecutorManager {
 
   public static final String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREADPOOL;
 
-  private Map<String, Executor> executors = new ConcurrentHashMapEx<>();
+  private final Map<String, Executor> executors = new ConcurrentHashMapEx<>();
 
   public ExecutorManager() {
     registerExecutor(EXECUTOR_REACTIVE, new ReactiveExecutor());

@@ -27,7 +27,7 @@ public class SwaggerConsumer {
   private Class<?> consumerIntf;
 
   // key is consumer method name
-  private Map<Method, SwaggerConsumerOperation> operations = new HashMap<>();
+  private final Map<Method, SwaggerConsumerOperation> operations = new HashMap<>();
 
   public Class<?> getConsumerIntf() {
     return consumerIntf;

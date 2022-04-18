@@ -53,7 +53,7 @@ public class ServiceCombLoadBalancerStats {
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
-  private Map<String, ServiceCombServer> serviceCombServers = new ConcurrentHashMap<>();
+  private final Map<String, ServiceCombServer> serviceCombServers = new ConcurrentHashMap<>();
 
   public static ServiceCombLoadBalancerStats INSTANCE;
 
@@ -156,7 +156,7 @@ public class ServiceCombLoadBalancerStats {
 
     timer = new Timer("LoadBalancerStatsTimer", true);
     timer.schedule(new TimerTask() {
-      private MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
+      private final MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
 
       @Override
       public void run() {

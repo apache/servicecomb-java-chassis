@@ -31,7 +31,7 @@ public class VertxContextExecutor implements Executor {
     return new VertxContextExecutor(context);
   }
 
-  private Context context;
+  private final Context context;
 
   private VertxContextExecutor(Context context) {
     this.context = context;

@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class Deployment {
-  private static List<DeploymentProvider> providerList = SPIServiceUtils.getSortedService(DeploymentProvider.class);
+  private static final List<DeploymentProvider> providerList = SPIServiceUtils.getSortedService(DeploymentProvider.class);
 
   public static SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
     for (DeploymentProvider provider : providerList) {

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public abstract class DynamicEnum<T> {
-  private T value;
+  private final T value;
 
   @JsonIgnore
   private boolean dynamic = false;

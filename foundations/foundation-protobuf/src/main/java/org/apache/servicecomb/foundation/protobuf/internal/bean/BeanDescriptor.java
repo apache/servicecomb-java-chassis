@@ -33,7 +33,7 @@ public class BeanDescriptor {
 
   private JavaType javaType;
 
-  private Map<String, PropertyDescriptor> propertyDescriptors = new HashMap<>();
+  private final Map<String, PropertyDescriptor> propertyDescriptors = new HashMap<>();
 
   public JavaType getJavaType() {
     return javaType;

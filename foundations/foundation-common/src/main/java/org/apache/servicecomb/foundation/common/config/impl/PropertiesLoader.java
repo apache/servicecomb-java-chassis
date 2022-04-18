@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.common.config.PaaSResourceUtils;
 import org.springframework.core.io.Resource;
 
 public class PropertiesLoader extends AbstractLoader {
-  private List<Resource> foundResList = new ArrayList<>();
+  private final List<Resource> foundResList = new ArrayList<>();
 
   public PropertiesLoader(List<String> locationPatternList) {
     super(locationPatternList);

@@ -50,11 +50,11 @@ public class TrustManagerExt extends X509ExtendedTrustManager {
 
   private static final int WHITE_SIZE = 1024;
 
-  private X509ExtendedTrustManager trustManager;
+  private final X509ExtendedTrustManager trustManager;
 
-  private SSLOption option;
+  private final SSLOption option;
 
-  private SSLCustom custom;
+  private final SSLCustom custom;
 
   public TrustManagerExt(X509ExtendedTrustManager manager, SSLOption option,
       SSLCustom custom) {

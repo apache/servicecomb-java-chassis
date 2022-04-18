@@ -38,9 +38,9 @@ public class AccessLogGenerator {
   /*
    * traversal this array to generate access log segment.
    */
-  private AccessLogItem<RoutingContext>[] accessLogItems;
+  private final AccessLogItem<RoutingContext>[] accessLogItems;
 
-  private AccessLogPatternParser<RoutingContext> logPatternParser = new VertxRestAccessLogPatternParser();
+  private final AccessLogPatternParser<RoutingContext> logPatternParser = new VertxRestAccessLogPatternParser();
 
   @SuppressWarnings("unchecked")
   public AccessLogGenerator(String rawPattern) {

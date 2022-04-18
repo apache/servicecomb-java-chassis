@@ -56,7 +56,7 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   private List<SchemaInfo> schemaInfos;
 
-  private ServiceCenterConfiguration serviceCenterConfiguration;
+  private final ServiceCenterConfiguration serviceCenterConfiguration;
 
   private long heartBeatInterval = 15000;
 

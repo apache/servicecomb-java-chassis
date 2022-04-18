@@ -28,7 +28,7 @@ import rx.subjects.ReplaySubject;
 
 public class BizkeeperHandlerDelegate {
 
-  private BizkeeperHandler handler;
+  private final BizkeeperHandler handler;
 
   public BizkeeperHandlerDelegate(BizkeeperHandler handler) {
     this.handler = handler;
