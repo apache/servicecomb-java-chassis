@@ -25,15 +25,12 @@ import org.apache.servicecomb.governance.properties.RetryProperties;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.github.resilience4j.core.IntervalFunction;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 
-@Component
 public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RetryHandler.class);
@@ -42,7 +39,6 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   private final RetryExtension retryExtension;
 
-  @Autowired
   public RetryHandler(RetryProperties retryProperties, RetryExtension retryExtension) {
     this.retryProperties = retryProperties;
     this.retryExtension = retryExtension;

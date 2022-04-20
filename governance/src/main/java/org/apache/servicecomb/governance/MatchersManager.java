@@ -22,22 +22,15 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.apache.servicecomb.governance.service.MatchersService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MatchersManager {
   private MatchersService matchersService;
 
   private InvocationContext invocationContext;
 
-  @Autowired
   public MatchersManager(MatchersService matchersService, InvocationContext invocationContext) {
     this.matchersService = matchersService;
     this.invocationContext = invocationContext;
-  }
-
-  public MatchersManager() {
   }
 
   public <T extends AbstractPolicy> T match(GovernanceRequest request, Map<String, T> policies) {

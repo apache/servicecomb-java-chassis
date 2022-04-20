@@ -20,9 +20,7 @@ package org.apache.servicecomb.governance;
 import java.util.List;
 
 import org.apache.servicecomb.governance.handler.ext.RetryExtension;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MockRetryExtension implements RetryExtension {
   @Override
   public boolean isRetry(List<String> statusList, Object result) {

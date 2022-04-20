@@ -23,16 +23,12 @@ import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.governance.marker.TrafficMarker;
 import org.apache.servicecomb.governance.properties.MatchProperties;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MatchersServiceImpl implements MatchersService {
   private final RequestProcessor requestProcessor;
 
   private final MatchProperties matchProperties;
 
-  @Autowired
   public MatchersServiceImpl(RequestProcessor requestProcessor, MatchProperties matchProperties) {
     this.requestProcessor = requestProcessor;
     this.matchProperties = matchProperties;

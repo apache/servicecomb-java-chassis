@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.governance;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
@@ -24,25 +25,28 @@ import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootTest
-@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
+@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
 public class InstanceIsolationTest {
   private InstanceIsolationHandler instanceIsolationHandler;
 
-  @Autowired
-  public void setInstanceIsolationHandler(InstanceIsolationHandler instanceIsolationHandler) {
-    this.instanceIsolationHandler = instanceIsolationHandler;
-  }
+  private MeterRegistry meterRegistry;
 
-  public InstanceIsolationTest() {
+  @Autowired
+  public void setInstanceIsolationHandler(InstanceIsolationHandler instanceIsolationHandler,
+      MeterRegistry meterRegistry) {
+    this.instanceIsolationHandler = instanceIsolationHandler;
+    this.meterRegistry = meterRegistry;
   }
 
   @Test
@@ -72,8 +76,13 @@ public class InstanceIsolationTest {
     // isolation from error
     Assertions.assertEquals("test", ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+
+//    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+//    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+//
+//    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+//    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+//    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
 
     // isolation do not influence other instances
     GovernanceRequest request2 = new GovernanceRequest();
@@ -87,6 +96,9 @@ public class InstanceIsolationTest {
     Assertions.assertEquals("test", ds2.get());
     Assertions.assertEquals("test", ds2.get());
     Assertions.assertEquals("test", ds2.get());
+    printmetrics();
+
+    System.out.println("------------------------");
 
     // recover from isolation
     Thread.sleep(1000);
@@ -95,5 +107,22 @@ public class InstanceIsolationTest {
     Assertions.assertEquals("test", ds.get());
     Assertions.assertEquals("test", ds2.get());
     Assertions.assertEquals("test", ds2.get());
+
+    printmetrics();
+  }
+
+  private void printmetrics() {
+    List<Meter> meters = meterRegistry.getMeters();
+    for (Meter meter : meters) {
+//      if(!meter.getId().getName().equals("resilience4j.circuitbreaker.calls")) {
+//        continue;
+//      }
+      System.out.println(meter.getId().getName() + ":" + meter.getId().getTag("name") + ":" +
+          meter.getId().getTag("kind") + ":" + meter.getId().getTag("state"));
+      Iterable<Measurement> measurements = meter.measure();
+      for (Measurement measurement : measurements) {
+        System.out.println(measurement.getStatistic().name() + ":" + measurement.getValue());
+      }
+    }
   }
 }

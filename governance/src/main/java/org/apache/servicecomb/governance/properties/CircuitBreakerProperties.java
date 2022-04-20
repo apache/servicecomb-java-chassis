@@ -17,9 +17,7 @@
 package org.apache.servicecomb.governance.properties;
 
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.springframework.stereotype.Component;
 
-@Component
 public class CircuitBreakerProperties extends PolicyProperties<CircuitBreakerPolicy> {
   public static final String MATCH_CIRCUITBREAKER_KEY = "servicecomb.circuitBreaker";
 

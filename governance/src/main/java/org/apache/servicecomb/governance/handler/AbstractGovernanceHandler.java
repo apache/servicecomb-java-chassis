@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.Subscribe;
 
 public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
-  private final Map<String, PROCESSOR> map = new ConcurrentHashMap<>();
+  protected Map<String, PROCESSOR> processors = new ConcurrentHashMap<>();
 
   private final Object lock = new Object();
 
@@ -52,13 +52,13 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     }
 
     String key = createKey(governanceRequest, policy);
-    PROCESSOR processor = map.get(key);
+    PROCESSOR processor = processors.get(key);
     if (processor == null) {
       synchronized (lock) {
-        processor = map.get(key);
+        processor = processors.get(key);
         if (processor == null) {
           processor = createProcessor(governanceRequest, policy);
-          map.put(key, processor);
+          processors.put(key, processor);
         }
       }
     }
@@ -71,8 +71,12 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
 
   abstract protected PROCESSOR createProcessor(GovernanceRequest governanceRequest, POLICY policy);
 
+  protected void onConfigurationChanged(String key) {
+    processors.remove(key);
+  }
+
   @Subscribe
   public void onDynamicConfigurationListener(GovernanceConfigurationChangedEvent event) {
-    event.getChangedConfigurations().forEach(v -> map.remove(v));
+    event.getChangedConfigurations().forEach(v -> onConfigurationChanged(v));
   }
 }

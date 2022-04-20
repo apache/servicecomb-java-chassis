@@ -25,14 +25,13 @@ import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.micrometer.tagged.TaggedCircuitBreakerMetrics;
+import io.micrometer.core.instrument.MeterRegistry;
 
-@Component
 public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
@@ -40,14 +39,30 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   private final InstanceIsolationProperties instanceIsolationProperties;
 
-  @Autowired
-  public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties) {
+  private MeterRegistry meterRegistry;
+
+  public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
+      MeterRegistry meterRegistry) {
     this.instanceIsolationProperties = instanceIsolationProperties;
+    this.meterRegistry = meterRegistry;
   }
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + "." + governanceRequest.getInstanceId();
+    return InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
+        + "." + governanceRequest.getServiceId()
+        + "." + governanceRequest.getInstanceId();
+  }
+
+  @Override
+  protected void onConfigurationChanged(String key) {
+    if (key.startsWith(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY)) {
+      for (String processorKey : processors.keySet()) {
+        if (processorKey.startsWith(key)) {
+          processors.remove(processorKey);
+        }
+      }
+    }
   }
 
   @Override
@@ -85,6 +100,9 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
         .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
+    TaggedCircuitBreakerMetrics
+        .ofCircuitBreakerRegistry(circuitBreakerRegistry)
+        .bindTo(meterRegistry);
     return circuitBreakerRegistry.circuitBreaker(governanceRequest.getInstanceId(), circuitBreakerConfig);
   }
 }

@@ -30,21 +30,17 @@ import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
+@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
 public class OperatorTest {
   private RequestProcessor requestProcessor;
 
   @Autowired
   public void setRequestProcessor(RequestProcessor requestProcessor) {
     this.requestProcessor = requestProcessor;
-  }
-
-  public OperatorTest() {
   }
 
   @Test
