@@ -42,9 +42,9 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRegistration.class);
 
-  public static final int MAX_INTERVAL = 600000;
+  public static final int MAX_INTERVAL = 60;
 
-  public static final int MIN_INTERVAL = 1000;
+  public static final int MIN_INTERVAL = 1;
 
   private final ServiceCenterClient serviceCenterClient;
 
@@ -58,9 +58,9 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   private final ServiceCenterConfiguration serviceCenterConfiguration;
 
-  private long heartBeatInterval = 15000;
+  private long heartBeatInterval = 15;
 
-  private long heartBeatRequestTimeout = 5000;
+  private long heartBeatRequestTimeout = 5;
 
   public ServiceCenterRegistration(ServiceCenterClient serviceCenterClient, ServiceCenterConfiguration
       serviceCenterConfiguration, EventBus eventBus) {
