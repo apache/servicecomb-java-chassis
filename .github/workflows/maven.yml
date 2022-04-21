@@ -20,10 +20,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: maven-settings-xml-action
-      uses: whelk-io/maven-settings-xml-action@v4
-      with:
-        repositories: '[{ "id": "aliyun-repository", "name": "aliyun-repository", "url": "http://maven.aliyun.com/nexus/content/groups/public/", "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" } }]'
     - uses: actions/cache@v2
       with:
         path: ~/.m2/repository
