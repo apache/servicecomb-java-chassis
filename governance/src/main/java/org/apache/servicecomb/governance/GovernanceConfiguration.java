@@ -40,20 +40,14 @@ import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
 import org.apache.servicecomb.governance.service.MatchersService;
 import org.apache.servicecomb.governance.service.MatchersServiceImpl;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 @Configuration
 public class GovernanceConfiguration {
-  // metrics configuration
-  @Bean
-  public MeterRegistry meterRegistry() {
-    return new SimpleMeterRegistry();
-  }
-
   // properties configuration
   @Bean
   public BulkheadProperties bulkheadProperties() {
@@ -92,13 +86,14 @@ public class GovernanceConfiguration {
   }
 
   @Bean
-  public CircuitBreakerHandler circuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties) {
-    return new CircuitBreakerHandler(circuitBreakerProperties);
+  public CircuitBreakerHandler circuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
+      ObjectProvider<MeterRegistry> meterRegistry) {
+    return new CircuitBreakerHandler(circuitBreakerProperties, meterRegistry);
   }
 
   @Bean
   public InstanceIsolationHandler instanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
-      MeterRegistry meterRegistry) {
+      ObjectProvider<MeterRegistry> meterRegistry) {
     return new InstanceIsolationHandler(instanceIsolationProperties, meterRegistry);
   }
 

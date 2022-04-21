@@ -25,6 +25,7 @@ import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -39,12 +40,12 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   private final InstanceIsolationProperties instanceIsolationProperties;
 
-  private MeterRegistry meterRegistry;
+  private final MeterRegistry meterRegistry;
 
   public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
-      MeterRegistry meterRegistry) {
+      ObjectProvider<MeterRegistry> meterRegistry) {
     this.instanceIsolationProperties = instanceIsolationProperties;
-    this.meterRegistry = meterRegistry;
+    this.meterRegistry = meterRegistry.getIfAvailable();
   }
 
   @Override
@@ -97,12 +98,14 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
         .permittedNumberOfCallsInHalfOpenState(policy.getPermittedNumberOfCallsInHalfOpenState())
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
-        .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
+        .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
-    TaggedCircuitBreakerMetrics
-        .ofCircuitBreakerRegistry(circuitBreakerRegistry)
-        .bindTo(meterRegistry);
+    if (meterRegistry != null) {
+      TaggedCircuitBreakerMetrics
+          .ofCircuitBreakerRegistry(circuitBreakerRegistry)
+          .bindTo(meterRegistry);
+    }
     return circuitBreakerRegistry.circuitBreaker(governanceRequest.getInstanceId(), circuitBreakerConfig);
   }
 }

@@ -23,18 +23,25 @@ import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.micrometer.tagged.TaggedCircuitBreakerMetrics;
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
 
   private final CircuitBreakerProperties circuitBreakerProperties;
 
-  public CircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties) {
+  private final MeterRegistry meterRegistry;
+
+  public CircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
+      ObjectProvider<MeterRegistry> meterRegistry) {
     this.circuitBreakerProperties = circuitBreakerProperties;
+    this.meterRegistry = meterRegistry.getIfAvailable();
   }
 
   @Override
@@ -66,6 +73,11 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
+    if (meterRegistry != null) {
+      TaggedCircuitBreakerMetrics
+          .ofCircuitBreakerRegistry(circuitBreakerRegistry)
+          .bindTo(meterRegistry);
+    }
     return circuitBreakerRegistry.circuitBreaker(policy.getName(), circuitBreakerConfig);
   }
 }

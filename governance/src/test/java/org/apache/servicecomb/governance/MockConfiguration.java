@@ -20,6 +20,9 @@ package org.apache.servicecomb.governance;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+
 @Configuration
 public class MockConfiguration {
   @Bean
@@ -35,5 +38,10 @@ public class MockConfiguration {
   @Bean
   public MockRetryExtension mockRetryExtension() {
     return new MockRetryExtension();
+  }
+
+  @Bean
+  public PrometheusMeterRegistry meterRegistry() {
+    return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
   }
 }
