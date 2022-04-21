@@ -24,25 +24,27 @@ import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 
 @SpringBootTest
-@ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
+@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
 public class InstanceIsolationTest {
   private InstanceIsolationHandler instanceIsolationHandler;
 
-  @Autowired
-  public void setInstanceIsolationHandler(InstanceIsolationHandler instanceIsolationHandler) {
-    this.instanceIsolationHandler = instanceIsolationHandler;
-  }
+  private MeterRegistry meterRegistry;
 
-  public InstanceIsolationTest() {
+  @Autowired
+  public void setInstanceIsolationHandler(InstanceIsolationHandler instanceIsolationHandler,
+      MeterRegistry meterRegistry) {
+    this.instanceIsolationHandler = instanceIsolationHandler;
+    this.meterRegistry = meterRegistry;
   }
 
   @Test
@@ -72,6 +74,11 @@ public class InstanceIsolationTest {
     // isolation from error
     Assertions.assertEquals("test", ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+
+    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+
+    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
     Assertions.assertThrows(RuntimeException.class, () -> ds.get());
 
@@ -88,6 +95,8 @@ public class InstanceIsolationTest {
     Assertions.assertEquals("test", ds2.get());
     Assertions.assertEquals("test", ds2.get());
 
+    assertMetricsNotFinish();
+
     // recover from isolation
     Thread.sleep(1000);
 
@@ -95,5 +104,31 @@ public class InstanceIsolationTest {
     Assertions.assertEquals("test", ds.get());
     Assertions.assertEquals("test", ds2.get());
     Assertions.assertEquals("test", ds2.get());
+
+    assertMetricsFinish();
+  }
+
+  private void assertMetricsNotFinish() {
+    String result = ((PrometheusMeterRegistry) meterRegistry).scrape();
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_state{name=\"instance01\",state=\"open\",} 1.0"));
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_state{name=\"instance02\",state=\"closed\",} 1.0"));
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"instance01\",} 1.0"));
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"instance02\",} 4.0"));
+  }
+
+  private void assertMetricsFinish() {
+    String result = ((PrometheusMeterRegistry) meterRegistry).scrape();
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_state{name=\"instance01\",state=\"closed\",} 1.0"));
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_state{name=\"instance02\",state=\"closed\",} 1.0"));
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"instance01\",} 3.0"));
+    Assertions.assertTrue(result.contains(
+        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"instance02\",} 6.0"));
   }
 }

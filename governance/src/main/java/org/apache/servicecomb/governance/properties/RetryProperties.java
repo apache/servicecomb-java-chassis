@@ -17,9 +17,7 @@
 package org.apache.servicecomb.governance.properties;
 
 import org.apache.servicecomb.governance.policy.RetryPolicy;
-import org.springframework.stereotype.Component;
 
-@Component
 public class RetryProperties extends PolicyProperties<RetryPolicy> {
   public static final String MATCH_RETRY_KEY = "servicecomb.retry";
 

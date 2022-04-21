@@ -18,9 +18,7 @@
 package org.apache.servicecomb.governance.marker.operator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
-@Component
 public class SuffixOperator implements MatchOperator {
   @Override
   public boolean match(String requestValue, String patternValue) {

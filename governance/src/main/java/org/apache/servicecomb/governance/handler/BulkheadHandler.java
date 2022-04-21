@@ -24,20 +24,16 @@ import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
 
-@Component
 public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, BulkheadPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BulkheadHandler.class);
 
   private final BulkheadProperties bulkheadProperties;
 
-  @Autowired
   public BulkheadHandler(BulkheadProperties bulkheadProperties) {
     this.bulkheadProperties = bulkheadProperties;
   }

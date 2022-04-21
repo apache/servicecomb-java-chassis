@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.governance;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class MockMicroserviceMeta implements MicroserviceMeta {
   @Override
   public String getName() {

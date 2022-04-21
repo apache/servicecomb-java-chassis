@@ -94,7 +94,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
       }
     }
 
-    familySamples.add(new MetricFamilySamples("ServiceComb_Metrics", Type.UNTYPED, "ServiceComb Metrics", samples));
+    familySamples.add(new MetricFamilySamples("ServiceComb_Metrics", Type.UNKNOWN, "ServiceComb Metrics", samples));
 
     return familySamples;
   }
@@ -126,7 +126,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
       return;
     }
 
-    httpServer.stop();
+    httpServer.close();
     httpServer = null;
     LOGGER.info("Prometheus httpServer stopped.");
   }

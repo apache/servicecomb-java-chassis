@@ -23,10 +23,7 @@ import org.apache.servicecomb.governance.marker.operator.MatchOperator;
 import org.apache.servicecomb.governance.marker.operator.RawOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class RequestProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
@@ -35,7 +32,6 @@ public class RequestProcessor {
 
   private final Map<String, MatchOperator> operatorMap;
 
-  @Autowired
   public RequestProcessor(Map<String, MatchOperator> operatorMap) {
     this.operatorMap = operatorMap;
   }

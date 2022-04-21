@@ -15,19 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance.properties;
+package org.apache.servicecomb.governance;
 
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class InstanceIsolationProperties extends PolicyProperties<CircuitBreakerPolicy> {
-  public static final String MATCH_INSTANCE_ISOLATION_KEY = "servicecomb.instanceIsolation";
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 
-  public InstanceIsolationProperties() {
-    super(MATCH_INSTANCE_ISOLATION_KEY);
+@Configuration
+public class MockConfiguration {
+  @Bean
+  public MockInvocationContext mockInvocationContext() {
+    return new MockInvocationContext();
   }
 
-  @Override
-  public Class<CircuitBreakerPolicy> getEntityClass() {
-    return CircuitBreakerPolicy.class;
+  @Bean
+  public MockMicroserviceMeta mockMicroserviceMeta() {
+    return new MockMicroserviceMeta();
+  }
+
+  @Bean
+  public MockRetryExtension mockRetryExtension() {
+    return new MockRetryExtension();
+  }
+
+  @Bean
+  public PrometheusMeterRegistry meterRegistry() {
+    return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
   }
 }

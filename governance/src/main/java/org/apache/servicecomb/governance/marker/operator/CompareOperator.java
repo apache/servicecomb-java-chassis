@@ -19,12 +19,8 @@ package org.apache.servicecomb.governance.marker.operator;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
 import org.apache.servicecomb.governance.exception.IllegalArgsOperatorException;
 
-
-@Component
 public class CompareOperator implements MatchOperator {
 
   private final Set<Character> charSet = new HashSet<>();
