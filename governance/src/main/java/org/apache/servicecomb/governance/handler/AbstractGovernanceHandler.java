@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.Subscribe;
 
 public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
-  protected Map<String, PROCESSOR> processors = new ConcurrentHashMap<>();
+  protected final Map<String, PROCESSOR> processors = new ConcurrentHashMap<>();
 
   private final Object lock = new Object();
 
