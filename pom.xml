@@ -45,6 +45,7 @@
     <test.additional.args/>
     <!-- plugin version start -->
     <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
+    <spotbug-maven.version>4.6.0.0</spotbug-maven.version>
     <surefire-maven.version>3.0.0-M6</surefire-maven.version>
     <!-- plugin version end -->
   </properties>
@@ -295,6 +296,23 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <failOnError>true</failOnError>
+          <threshold>Medium</threshold>
+          <excludeFilterFile>ci/spotbugs/exclude.xml</excludeFilterFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -447,6 +465,11 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${spotbug-maven.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

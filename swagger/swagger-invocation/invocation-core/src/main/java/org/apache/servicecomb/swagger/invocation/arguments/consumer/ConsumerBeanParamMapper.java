@@ -35,7 +35,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
  * </pre>
  */
 public final class ConsumerBeanParamMapper extends ConsumerArgumentMapper {
-  private class FieldMeta {
+  private static class FieldMeta {
     String swaggerArgumentName;
 
     Getter<Object, Object> getter;

@@ -28,10 +28,8 @@ import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
 
 public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
-  private final Registry registry;
 
   //total time
   private final SimpleTimer totalTimer;
@@ -48,10 +46,7 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   // latency distribution
   private final LatencyDistributionMeter latencyDistributionMeter;
 
-  private long lastUpdated;
-
-  public AbstractInvocationMeter(Registry registry, Id id) {
-    this.registry = registry;
+  public AbstractInvocationMeter(Id id) {
     this.id = id;
     latencyDistributionMeter = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
     totalTimer = createStageTimer(MeterInvocationConst.STAGE_TOTAL);
@@ -81,8 +76,6 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   }
 
   public void onInvocationFinish(InvocationFinishEvent event) {
-    lastUpdated = registry.clock().wallTime();
-
     InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
     latencyDistributionMeter.record((long) stageTrace.calcTotalTime());
     totalTimer.record((long) stageTrace.calcTotalTime());

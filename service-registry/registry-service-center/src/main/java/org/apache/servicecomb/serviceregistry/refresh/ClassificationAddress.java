@@ -144,7 +144,7 @@ public class ClassificationAddress {
   private Map<String, List<String>> generateZoneAndRegionAddress(String key) {
     InstanceCache KieCaches = instanceCacheManager
         .getOrCreate(REGISTRY_APP_ID, key, DefinitionConst.VERSION_RULE_LATEST);
-    List<CacheEndpoint> CacheEndpoints = new ArrayList<>();
+    List<CacheEndpoint> CacheEndpoints;
     if (REGISTRY_SERVICE_NAME.equals(key)) {
       CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
       maxRetryTimes = CacheEndpoints.size();

@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.parser;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
@@ -27,7 +28,7 @@ public class YamlParser implements Parser {
   @Override
   public Map<String, Object> parse(String content, String prefix, boolean addPrefix) {
     YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
-    yamlFactory.setResources(new ByteArrayResource(content.getBytes()));
+    yamlFactory.setResources(new ByteArrayResource(content.getBytes(StandardCharsets.UTF_8)));
     Properties properties = yamlFactory.getObject();
     return Parser.propertiesToMap(properties, prefix, addPrefix);
   }

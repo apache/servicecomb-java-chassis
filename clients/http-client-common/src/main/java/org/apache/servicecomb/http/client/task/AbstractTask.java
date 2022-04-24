@@ -27,16 +27,16 @@ import org.slf4j.LoggerFactory;
 
 public class AbstractTask {
   public class BackOffSleepTask implements Task {
-    final long base = 3000;
+    private static final long BASE = 3000;
 
-    final long max = 10 * 60 * 10000;
+    private static final long MAX = 10 * 60 * 10000;
 
     long waitTime;
 
     Task nextTask;
 
     public BackOffSleepTask(int failedCount, Task nextTask) {
-      this.waitTime = failedCount * failedCount * base;
+      this.waitTime = failedCount * failedCount * BASE;
       this.nextTask = nextTask;
     }
 
@@ -47,7 +47,7 @@ public class AbstractTask {
 
     @Override
     public void execute() {
-      long time = Math.min(max, waitTime);
+      long time = Math.min(MAX, waitTime);
       try {
         Thread.sleep(time);
       } catch (InterruptedException e) {

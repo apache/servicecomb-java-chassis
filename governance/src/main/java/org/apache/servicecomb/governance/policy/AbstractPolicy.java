@@ -34,10 +34,10 @@ public abstract class AbstractPolicy extends Configurable {
       return defaultValue;
     }
     if (time.matches(GovernanceUtils.DIGIT_REGEX)) {
-      if (Long.valueOf(time) < 0) {
+      if (Long.parseLong(time) < 0) {
         throw new RuntimeException("The value of time should not be less than 0.");
       }
-      return Duration.ofMillis(Long.valueOf(time));
+      return Duration.ofMillis(Long.parseLong(time));
     }
     return Duration.parse(GovernanceUtils.DIGIT_PREFIX + time);
   }

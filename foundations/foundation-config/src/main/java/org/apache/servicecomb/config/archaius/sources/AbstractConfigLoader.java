@@ -98,7 +98,7 @@ public abstract class AbstractConfigLoader {
     return urlList;
   }
 
-  private class ConfigModelWrapper {
+  private static class ConfigModelWrapper {
     ConfigModel model;
 
     int addOrder;

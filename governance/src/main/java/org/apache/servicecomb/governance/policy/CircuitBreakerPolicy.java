@@ -164,7 +164,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
       return DEFAULT_SLIDING_WINDOW_SIZE;
     }
     if (slidingWindowSize.matches(GovernanceUtils.DIGIT_REGEX)) {
-      if (Long.valueOf(slidingWindowSize) < 0) {
+      if (Long.parseLong(slidingWindowSize) < 0) {
         throw new RuntimeException("The value should be more than 0.");
       }
       return slidingWindowSize;

@@ -24,7 +24,6 @@ import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
   private final SimpleTimer clientFiltersRequestTimer;
@@ -41,8 +40,8 @@ public class ConsumerInvocationMeter extends AbstractInvocationMeter {
 
   private final SimpleTimer clientFiltersResponseTimer;
 
-  public ConsumerInvocationMeter(Registry registry, Id id) {
-    super(registry, id);
+  public ConsumerInvocationMeter(Id id) {
+    super(id);
     clientFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
     consumerSendRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
     consumerGetConnectionTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);

@@ -56,7 +56,7 @@ import io.vertx.core.buffer.impl.BufferImpl;
 public class BodyProcessorCreator implements ParamValueProcessorCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
-  public static final String PARAMTYPE = "body";
+  public static final String PARAM_TYPE = "body";
 
   private static final JavaType OBJECT_TYPE = SimpleType.constructUnsafe(Object.class);
 
@@ -164,7 +164,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         if (!(arg instanceof String)) {
           throw new IllegalArgumentException("Content-Type is text/plain while arg type is not String");
         }
-        return new BufferImpl().appendBytes(((String) arg).getBytes());
+        return new BufferImpl().appendBytes(((String) arg).getBytes(StandardCharsets.UTF_8));
       }
 
       try (BufferOutputStream output = new BufferOutputStream()) {
@@ -190,7 +190,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public String getProcessorType() {
-      return PARAMTYPE;
+      return PARAM_TYPE;
     }
   }
 
@@ -232,7 +232,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   }
 
   public BodyProcessorCreator() {
-    ParamValueProcessorCreatorManager.INSTANCE.register(PARAMTYPE, this);
+    ParamValueProcessorCreatorManager.INSTANCE.register(PARAM_TYPE, this);
   }
 
   @Override

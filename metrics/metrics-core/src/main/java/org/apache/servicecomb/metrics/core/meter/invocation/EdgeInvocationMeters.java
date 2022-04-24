@@ -27,6 +27,6 @@ public class EdgeInvocationMeters extends ConsumerInvocationMeters {
 
   @Override
   protected AbstractInvocationMeter createMeter(Id id) {
-    return new EdgeInvocationMeter(registry, id);
+    return new EdgeInvocationMeter(id);
   }
 }

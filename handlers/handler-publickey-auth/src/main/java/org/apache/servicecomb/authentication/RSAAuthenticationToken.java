@@ -85,7 +85,7 @@ public class RSAAuthenticationToken {
       return null;
     }
     return new RSAAuthenticationToken(tokenArr[0], tokenArr[1],
-        Long.valueOf(tokenArr[2]), tokenArr[3], tokenArr[4]);
+        Long.parseLong(tokenArr[2]), tokenArr[3], tokenArr[4]);
   }
 
   public String getServiceId() {
