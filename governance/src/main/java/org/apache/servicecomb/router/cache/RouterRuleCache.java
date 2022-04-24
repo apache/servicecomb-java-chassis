@@ -49,20 +49,17 @@ public class RouterRuleCache {
 
   private Environment environment;
 
-  @Autowired
-  public RouterRuleCache(Environment environment) {
-    this.environment = environment;
-  }
-
   private final ConcurrentHashMap<String, ServiceInfoCache> serviceInfoCacheMap = new ConcurrentHashMap<>();
 
   private final Object lock = new Object();
 
   private final Representer representer = new Representer();
 
-  public RouterRuleCache() {
+  @Autowired
+  public RouterRuleCache(Environment environment) {
     representer.getPropertyUtils().setSkipMissingProperties(true);
     GovernanceEventManager.register(this);
+    this.environment = environment;
   }
 
   /**
