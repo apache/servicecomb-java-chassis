@@ -60,7 +60,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
   }
 
   private CircuitBreaker getCircuitBreaker(CircuitBreakerPolicy policy) {
-    LOGGER.info("applying new policy: {}", policy.toString());
+    LOGGER.info("applying new policy: {}", policy);
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
         .failureRateThreshold(policy.getFailureRateThreshold())
@@ -70,7 +70,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         .permittedNumberOfCallsInHalfOpenState(policy.getPermittedNumberOfCallsInHalfOpenState())
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
-        .slidingWindowSize(Integer.valueOf(policy.getSlidingWindowSize()))
+        .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     if (meterRegistry != null) {

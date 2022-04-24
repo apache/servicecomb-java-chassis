@@ -207,15 +207,10 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       return;
     }
 
-    if (cls.isInterface()) {// && !isInterfaceReactive(cls)) {
+    if (cls.isInterface()) {
       info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getName());
       return;
     }
-
-//    if (cls.getInterfaces().length > 0) {
-//      info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getInterfaces()[0].getName());
-//      return;
-//    }
 
     if (StringUtils.isEmpty(swaggerGeneratorFeature.getPackageName())) {
       return;
@@ -224,23 +219,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     String intfName = swaggerGeneratorFeature.getPackageName() + "." + cls.getSimpleName() + "Intf";
     info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, intfName);
   }
-
-//  /**
-//   * to avoid old invocation bug.
-//   * @param interfaceCls
-//   * @return
-//   */
-//  private boolean isInterfaceReactive(Class<?> interfaceCls) {
-//    for (Method method : interfaceCls.getDeclaredMethods()) {
-//      if (isSkipMethod(method)) {
-//        continue;
-//      }
-//      if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
-//        return true;
-//      }
-//    }
-//    return false;
-//  }
 
   @Override
   public void replaceMethodWhiteList(String... methodNames) {

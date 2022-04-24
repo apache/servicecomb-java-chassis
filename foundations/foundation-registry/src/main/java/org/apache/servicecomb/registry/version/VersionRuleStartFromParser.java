@@ -21,7 +21,7 @@ import org.apache.servicecomb.foundation.common.Version;
 
 // 1.0.0+
 public class VersionRuleStartFromParser implements VersionRuleParser {
-  class StartFromVersionRule extends VersionRule {
+  static class StartFromVersionRule extends VersionRule {
     private final Version from;
 
     public StartFromVersionRule(String versionRule, Version from) {

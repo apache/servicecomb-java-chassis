@@ -69,7 +69,7 @@ public class ServletUtils {
     }
 
     int idx = urlPattern.indexOf("/*");
-    if (idx < 0 || (idx >= 0 && idx != urlPattern.length() - 2)) {
+    if (idx < 0 || idx != urlPattern.length() - 2) {
       throw new ServiceCombException("only support rule like /* or /path/* or /path1/path2/* and so on.");
     }
   }

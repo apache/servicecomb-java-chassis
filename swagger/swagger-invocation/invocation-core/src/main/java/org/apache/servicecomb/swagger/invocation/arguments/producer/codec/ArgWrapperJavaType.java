@@ -37,7 +37,7 @@ import io.swagger.util.Json;
 public class ArgWrapperJavaType extends SimpleType {
   private static final long serialVersionUID = 964882360361204479L;
 
-  class ArgInfo {
+  static class ArgInfo {
     JavaType javaType;
 
     JsonDeserializer<Object> deserializer;

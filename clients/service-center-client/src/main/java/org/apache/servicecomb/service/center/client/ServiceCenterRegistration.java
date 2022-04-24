@@ -239,7 +239,7 @@ public class ServiceCenterRegistration extends AbstractTask {
   }
 
   class SendHeartBeatTask implements Task {
-    final int failedRetry = 3;
+    private static final int FAILED_RETRY = 3;
 
     int failedCount;
 
@@ -250,7 +250,7 @@ public class ServiceCenterRegistration extends AbstractTask {
     @Override
     public void execute() {
       try {
-        if (failedCount >= failedRetry) {
+        if (failedCount >= FAILED_RETRY) {
           eventBus.post(new HeartBeatEvent(false));
           startTask(new RegisterMicroserviceTask(0));
           return;

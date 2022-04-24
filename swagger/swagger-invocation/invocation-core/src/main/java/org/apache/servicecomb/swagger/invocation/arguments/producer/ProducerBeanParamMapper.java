@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class ProducerBeanParamMapper extends ProducerArgumentMapper {
-  private class FieldMeta {
+  private static class FieldMeta {
     String swaggerParameterName;
 
     Setter<Object, Object> setter;

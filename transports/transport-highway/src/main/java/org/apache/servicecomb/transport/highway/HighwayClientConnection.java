@@ -58,7 +58,7 @@ public class HighwayClientConnection extends TcpClientConnection {
   @Override
   protected boolean onLoginResponse(Buffer bodyBuffer) {
     try {
-      LoginResponse response = LoginResponse.readObject(bodyBuffer);
+      LoginResponse.readObject(bodyBuffer);
       return true;
     } catch (Throwable e) {
       LOGGER.error("decode login response failed.", e);

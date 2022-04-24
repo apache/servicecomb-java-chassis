@@ -26,6 +26,6 @@ public class ProducerInvocationMeters extends AbstractInvocationMeters {
 
   @Override
   protected AbstractInvocationMeter createMeter(Id id) {
-    return new ProducerInvocationMeter(registry, id);
+    return new ProducerInvocationMeter(id);
   }
 }

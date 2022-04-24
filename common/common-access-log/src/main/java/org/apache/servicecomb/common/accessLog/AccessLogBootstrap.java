@@ -24,10 +24,7 @@ import com.google.common.eventbus.EventBus;
 public class AccessLogBootstrap {
   private static final AccessLogConfig config = AccessLogConfig.INSTANCE;
 
-  private EventBus eventBus;
-
   public void start(EventBus eventBus) {
-    this.eventBus = eventBus;
     SPIServiceUtils.getSortedService(AccessLogInitializer.class)
         .forEach(initializer -> initializer.init(eventBus, config));
   }

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config.kie.client;
 
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -145,7 +146,7 @@ public class KieClient implements KieConfigOperation {
         case yml:
         case yaml:
           YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
-          yamlFactory.setResources(new ByteArrayResource(kvDoc.getValue().getBytes()));
+          yamlFactory.setResources(new ByteArrayResource(kvDoc.getValue().getBytes(StandardCharsets.UTF_8)));
           return toMap(yamlFactory.getObject());
         case properties:
           properties.load(new StringReader(kvDoc.getValue()));

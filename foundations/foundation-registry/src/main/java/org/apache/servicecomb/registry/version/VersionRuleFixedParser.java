@@ -22,7 +22,7 @@ import org.apache.servicecomb.foundation.common.Version;
 // fixed, this should be the last parser
 // will not check version format
 public class VersionRuleFixedParser implements VersionRuleParser {
-  class FixedVersionRule extends VersionRule {
+  static class FixedVersionRule extends VersionRule {
     private final Version version;
 
     public FixedVersionRule(String versionRule, Version version) {

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -76,10 +77,10 @@ public class RSAUtils {
    * if has performance problem ,change Signature to ThreadLocal instance 
    */
   public static String sign(String content, PrivateKey privateKey)
-      throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
+      throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
     Signature signature = Signature.getInstance(SIGN_ALG);
     signature.initSign(privateKey);
-    signature.update(content.getBytes());
+    signature.update(content.getBytes(StandardCharsets.UTF_8));
     byte[] signByte = signature.sign();
     return encoder.encodeToString(signByte);
   }
@@ -106,7 +107,7 @@ public class RSAUtils {
     PublicKey pubKey = kf.generatePublic(keySpec);
     Signature signature = Signature.getInstance(SIGN_ALG);
     signature.initVerify(pubKey);
-    signature.update(content.getBytes());
+    signature.update(content.getBytes(StandardCharsets.UTF_8));
     return signature.verify(decoder.decode(sign));
   }
 }

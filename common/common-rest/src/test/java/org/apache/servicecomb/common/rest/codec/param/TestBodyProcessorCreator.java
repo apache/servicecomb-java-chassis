@@ -29,7 +29,7 @@ public class TestBodyProcessorCreator {
   @Test
   public void testCreateNormal() {
     ParamValueProcessorCreator creator =
-        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
     BodyParameter param = new BodyParameter();
 
     ParamValueProcessor processor = creator.create(param, String.class);
@@ -40,7 +40,7 @@ public class TestBodyProcessorCreator {
   @Test
   public void testCreateRawJson() {
     ParamValueProcessorCreator creator =
-        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
     BodyParameter param = new BodyParameter();
     param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
