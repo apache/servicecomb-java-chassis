@@ -35,7 +35,7 @@ import com.netflix.config.DynamicPropertyFactory;
  * Add black / white list control to service access
  */
 public class AccessController {
-  class ConfigurationItem {
+  static class ConfigurationItem {
     static final String CATEGORY_PROPERTY = "property";
 
     String category;
