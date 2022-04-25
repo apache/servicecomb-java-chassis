@@ -156,10 +156,6 @@
     </Match>
 
     <Match>
-        <Bug pattern="SA_FIELD_SELF_COMPARISON"/>
-    </Match>
-
-    <Match>
         <Bug pattern="SE_BAD_FIELD"/>
     </Match>
 
