@@ -47,7 +47,7 @@ public class RouterRuleCache {
 
   private static final String ROUTE_RULE = "servicecomb.routeRule.%s";
 
-  private Environment environment;
+  private final Environment environment;
 
   private final ConcurrentHashMap<String, ServiceInfoCache> serviceInfoCacheMap = new ConcurrentHashMap<>();
 
@@ -57,9 +57,9 @@ public class RouterRuleCache {
 
   @Autowired
   public RouterRuleCache(Environment environment) {
+    this.environment = environment;
     representer.getPropertyUtils().setSkipMissingProperties(true);
     GovernanceEventManager.register(this);
-    this.environment = environment;
   }
 
   /**
