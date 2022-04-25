@@ -44,9 +44,29 @@
     <werror.properties>-Werror</werror.properties>
     <test.additional.args/>
     <!-- plugin version start -->
-    <dependency-check-maven.version>7.0.4</dependency-check-maven.version>
-    <spotbug-maven.version>4.6.0.0</spotbug-maven.version>
-    <surefire-maven.version>3.0.0-M6</surefire-maven.version>
+    <!-- sort by alpha -->
+    <checkstyle-maven-plugin.version>2.17</checkstyle-maven-plugin.version>
+    <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+    <dependency-check-maven-plugin.version>7.0.4</dependency-check-maven-plugin.version>
+    <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
+    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+    <findbugs-maven-plugin.version>3.0.1</findbugs-maven-plugin.version>
+    <gmaven-plugin.version>1.5</gmaven-plugin.version>
+    <gpg-maven-plugin.version>1.6</gpg-maven-plugin.version>
+    <lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
+    <jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
+    <javadoc-maven-plugin.version>2.9.1</javadoc-maven-plugin.version>
+    <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <maven-project-info-reports-plugin.version>2.4</maven-project-info-reports-plugin.version>
+    <maven-remote-resources-plugin.version>1.5</maven-remote-resources-plugin.version>
+    <puppycrawl-checkstyle.version>8.29</puppycrawl-checkstyle.version>
+    <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
+    <site-maven-plugin.version>3.12.0</site-maven-plugin.version>
+    <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
+    <spotbug-maven-plugin.version>4.6.0.0</spotbug-maven-plugin.version>
+    <spring-boot-maven-plugin.version>2.6.6</spring-boot-maven-plugin.version>
+    <surefire-maven-plugin.version>3.0.0-M6</surefire-maven-plugin.version>
     <!-- plugin version end -->
   </properties>
 
@@ -142,7 +162,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>${maven-jxr-plugin.version}</version>
       </plugin>
     </plugins>
   </reporting>
@@ -248,7 +268,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
+        <version>${exec-maven-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -260,7 +280,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-maven.version}</version>
+        <version>${surefire-maven-plugin.version}</version>
         <configuration>
           <argLine>${test.additional.args}</argLine>
           <skip>${maven.test.skip}</skip>
@@ -276,7 +296,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>${findbugs-maven-plugin.version}</version>
         <configuration>
           <findbugsXmlOutput>true</findbugsXmlOutput>
           <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
@@ -319,7 +339,7 @@
         <plugin>
           <groupId>org.eluder.coveralls</groupId>
           <artifactId>coveralls-maven-plugin</artifactId>
-          <version>4.3.0</version>
+          <version>${coveralls-maven-plugin.version}</version>
           <configuration>
             <jacocoReports>
               <jacocoReport>${project.basedir}/coverage-reports/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
@@ -328,22 +348,22 @@
         </plugin>
         <plugin>
           <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>1.5</version>
+          <version>${maven-remote-resources-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.33.0</version>
+          <version>${docker-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.gmaven</groupId>
           <artifactId>gmaven-plugin</artifactId>
-          <version>1.5</version>
+          <version>${gmaven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.8</version>
+          <version>${jacoco-maven-plugin.version}</version>
           <configuration>
             <excludes>
               <exclude>*$Impl_*</exclude>
@@ -387,7 +407,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <compilerArgument>-parameters</compilerArgument>
             <source>1.8</source>
@@ -407,7 +427,7 @@
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
+          <version>${lifecycle-mapping-plugin.version}</version>
           <configuration>
             <lifecycleMappingMetadata>
               <pluginExecutions>
@@ -431,30 +451,30 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>2.4</version>
+          <version>${maven-project-info-reports-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.4</version>
+          <version>${site-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.17</version>
+          <version>${checkstyle-maven-plugin.version}</version>
           <inherited>true</inherited>
           <dependencies>
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>8.29</version>
+              <version>${puppycrawl-checkstyle.version}</version>
             </dependency>
           </dependencies>
         </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>2.5.12</version>
+          <version>${spring-boot-maven-plugin.version}</version>
           <executions>
             <execution>
               <goals>
@@ -469,7 +489,7 @@
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>${spotbug-maven.version}</version>
+          <version>${spotbug-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -490,7 +510,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>${gpg-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -504,7 +524,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
+            <version>${source-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -517,7 +537,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9.1</version>
+            <version>${javadoc-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -541,7 +561,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>2.5.3</version>
+            <version>${release-maven-plugin.version}</version>
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <useReleaseProfile>false</useReleaseProfile>
@@ -611,7 +631,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>${dependency-check-maven.version}</version>
+            <version>${dependency-check-maven-plugin.version}</version>
             <configuration>
               <suppressionFiles>
                 <suppressionFile>src/owasp-dependency-check-suppressions.xml</suppressionFile>
@@ -645,7 +665,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>${dependency-check-maven.version}</version>
+            <version>${dependency-check-maven-plugin.version}</version>
             <reportSets>
               <reportSet>
                 <reports>
