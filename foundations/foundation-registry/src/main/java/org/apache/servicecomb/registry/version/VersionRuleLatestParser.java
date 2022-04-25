@@ -21,7 +21,7 @@ import org.apache.servicecomb.foundation.common.Version;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 
 public class VersionRuleLatestParser implements VersionRuleParser {
-  class LatestVersionRule extends VersionRule {
+  static class LatestVersionRule extends VersionRule {
     public LatestVersionRule(String versionRule) {
       super(versionRule);
     }

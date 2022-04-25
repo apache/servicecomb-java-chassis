@@ -42,8 +42,6 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -54,7 +52,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 public class CseClientHttpRequest implements ClientHttpRequest {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CseClientHttpRequest.class);
 
   // URL format：cse://microserviceName/business url
   private URI uri;

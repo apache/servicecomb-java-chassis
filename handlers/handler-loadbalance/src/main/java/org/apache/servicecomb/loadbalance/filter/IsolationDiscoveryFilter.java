@@ -53,7 +53,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
 
-  public class Settings {
+  public static class Settings {
     public int errorThresholdPercentage;
 
     public long singleTestTime;
