@@ -41,7 +41,7 @@ public class TestInvocationContext {
     InvocationContext invocationContext2 = new InvocationContext();
     Map<String, String> otherContext2 = new HashMap<>();
     otherContext2.put("key3", "value3");
-    invocationContext2.context = otherContext2;
+    invocationContext2.setContext(otherContext2);
     invocationContext.addContext(invocationContext2);
     Assert.assertEquals(3, invocationContext.getContext().size());
   }
@@ -69,7 +69,7 @@ public class TestInvocationContext {
     Map<String, String> otherContext = new HashMap<>();
     otherContext.put("key1", "value1");
     InvocationContext context2 = new InvocationContext();
-    context2.context = otherContext;
+    context2.setContext(otherContext);
     invocationContext.mergeContext(context2);
     Assert.assertEquals(1, invocationContext.getContext().size());
     Assert.assertEquals("value1", invocationContext.getContext("key1"));
