@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.invocation.context;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
@@ -32,9 +31,9 @@ public class InvocationContext {
 
   protected StatusType httpStatus;
 
-  protected Map<String, String> context = new HashMap<>();
+  protected final Map<String, String> context = new HashMap<>();
 
-  protected Map<String, Object> localContext = new HashMap<>();
+  protected final Map<String, Object> localContext = new HashMap<>();
 
   protected TransportContext transportContext;
 
@@ -47,7 +46,8 @@ public class InvocationContext {
   }
 
   public void setContext(Map<String, String> context) {
-    this.context = context;
+    this.context.clear();
+    this.addContext(context);
   }
 
   public void addContext(String key, String value) {
@@ -78,13 +78,6 @@ public class InvocationContext {
     if (otherContext == null) {
       return;
     }
-    if (otherContext.size() > context.size()) {
-      for (Entry<String, String> entry : context.entrySet()) {
-        otherContext.putIfAbsent(entry.getKey(), entry.getValue());
-      }
-      this.context = otherContext;
-      return;
-    }
     context.putAll(otherContext);
   }
 
@@ -93,7 +86,8 @@ public class InvocationContext {
   }
 
   public void setLocalContext(Map<String, Object> localContext) {
-    this.localContext = localContext;
+    this.localContext.clear();
+    this.addLocalContext(localContext);
   }
 
   public void addLocalContext(String key, Object value) {
