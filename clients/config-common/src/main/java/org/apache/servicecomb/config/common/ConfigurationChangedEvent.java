@@ -46,12 +46,13 @@ public class ConfigurationChangedEvent {
     Map<String, Object> itemsModified = new HashMap<>();
     boolean changed = false;
 
-    for (String itemKey : latest.keySet()) {
+    for (Map.Entry<String, Object> entry : latest.entrySet()) {
+      String itemKey = entry.getKey();
       if (!last.containsKey(itemKey)) {
-        itemsCreated.put(itemKey, latest.get(itemKey));
+        itemsCreated.put(itemKey, entry.getValue());
         changed = true;
       } else if (!Objects.equals(last.get(itemKey), latest.get(itemKey))) {
-        itemsModified.put(itemKey, latest.get(itemKey));
+        itemsModified.put(itemKey, entry.getValue());
         changed = true;
       }
     }

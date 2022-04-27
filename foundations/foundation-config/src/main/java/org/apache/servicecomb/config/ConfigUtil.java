@@ -291,10 +291,11 @@ public final class ConfigUtil {
     public void updateConfiguration(WatchedUpdateResult watchedUpdateResult) {
       Map<String, Object> adds = watchedUpdateResult.getAdded();
       if (adds != null) {
-        for (String add : adds.keySet()) {
+        for (Map.Entry<String, Object> entry : adds.entrySet()) {
+          String add = entry.getKey();
           if (add.startsWith(CONFIG_CSE_PREFIX)) {
             String key = CONFIG_SERVICECOMB_PREFIX + add.substring(add.indexOf(".") + 1);
-            injectConfig.addProperty(key, adds.get(add));
+            injectConfig.addProperty(key, entry.getValue());
           }
         }
       }
@@ -310,10 +311,11 @@ public final class ConfigUtil {
 
       Map<String, Object> changes = watchedUpdateResult.getChanged();
       if (changes != null) {
-        for (String change : changes.keySet()) {
+        for (Map.Entry<String, Object> entry : changes.entrySet()) {
+          String change = entry.getKey();
           if (change.startsWith(CONFIG_CSE_PREFIX)) {
             String key = CONFIG_SERVICECOMB_PREFIX + change.substring(change.indexOf(".") + 1);
-            injectConfig.setProperty(key, changes.get(change));
+            injectConfig.setProperty(key, entry.getValue());
           }
         }
       }
