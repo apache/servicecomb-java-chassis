@@ -91,10 +91,7 @@ public class RouteItem implements Comparable<RouteItem> {
 
   @Override
   public int compareTo(RouteItem param) {
-    if (param.weight == this.weight) {
-      return 0;
-    }
-    return param.weight > this.weight ? 1 : -1;
+    return Integer.compare(param.weight, this.weight);
   }
 
   @Override
