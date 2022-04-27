@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
+import io.vertx.core.file.impl.FileResolverImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -35,7 +36,6 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.impl.FileResolver;
 
 public class TestVertxUtils {
   @Test
@@ -60,7 +60,7 @@ public class TestVertxUtils {
     ArchaiusUtils.resetConfig();
 
     // create .vertx folder
-    ArchaiusUtils.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, false);
+    ArchaiusUtils.setProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, false);
     deleteCacheFile();
     VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingFalse", null);
     Assert.assertTrue(isCacheFileExists());
@@ -69,7 +69,7 @@ public class TestVertxUtils {
     // don't create .vertx folder
     deleteCacheFile();
     Assert.assertFalse(isCacheFileExists());
-    ArchaiusUtils.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, true);
+    ArchaiusUtils.setProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true);
     VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingTrue", null);
     Assert.assertFalse(isCacheFileExists());
     VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingTrue");
@@ -78,7 +78,7 @@ public class TestVertxUtils {
   }
 
   private void deleteCacheFile() {
-    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME,
+    String cacheDirBase = System.getProperty(FileResolverImpl.CACHE_DIR_BASE_PROP_NAME,
         System.getProperty("java.io.tmpdir", "."));
     File folder = new File(cacheDirBase);
     File[] files = folder.listFiles();
@@ -90,7 +90,7 @@ public class TestVertxUtils {
   }
 
   private boolean isCacheFileExists() {
-    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME,
+    String cacheDirBase = System.getProperty(FileResolverImpl.CACHE_DIR_BASE_PROP_NAME,
         System.getProperty("java.io.tmpdir", "."));
     File folder = new File(cacheDirBase);
     File[] files = folder.listFiles();

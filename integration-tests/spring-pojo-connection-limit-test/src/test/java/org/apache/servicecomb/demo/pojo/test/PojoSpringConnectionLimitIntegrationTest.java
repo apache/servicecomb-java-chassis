@@ -38,7 +38,7 @@ public class PojoSpringConnectionLimitIntegrationTest {
       PojoService.hello.SayHello("whatever");
       fail("connection limit failed");
     } catch (Exception e) {
-      Assert.assertEquals("io.vertx.core.VertxException: Connection was closed", e.getCause().toString());
+      Assert.assertEquals("io.vertx.core.http.HttpClosedException: Connection was closed", e.getCause().toString());
     }
   }
 }

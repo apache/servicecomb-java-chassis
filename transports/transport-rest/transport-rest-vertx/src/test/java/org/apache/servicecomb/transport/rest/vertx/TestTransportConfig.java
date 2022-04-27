@@ -215,7 +215,7 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.maxFrameSize", 65535);
     Assert.assertEquals(65535, TransportConfig.getMaxFrameSize());
 
-    Assert.assertEquals(Integer.MAX_VALUE, TransportConfig.getMaxHeaderListSize());
+    Assert.assertEquals(8192, TransportConfig.getMaxHeaderListSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.maxHeaderListSize", 65535);
     Assert.assertEquals(65535, TransportConfig.getMaxHeaderListSize());
   }

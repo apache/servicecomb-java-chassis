@@ -176,9 +176,6 @@ public class TestVertxMetersInitializer {
           + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
       expect +=
           "      1            0               0             1           1        %-7s 4         21           http://127.0.0.1:%-"
-              + portSize + "s\n"
-              +
-              "      1            0               0             1           0        0       0         0            tcp://127.0.0.1:%-"
               + portSize + "s\n";
     }
     expect += ""
@@ -188,7 +185,7 @@ public class TestVertxMetersInitializer {
 
     if (printDetail) {
       expect = String
-          .format(expect, clientLatency, port, port, serverLatency);
+          .format(expect, clientLatency, port, serverLatency);
     } else {
       expect = String.format(expect, serverLatency);
     }
