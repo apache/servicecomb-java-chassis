@@ -67,16 +67,16 @@ public abstract class AbstractCondition implements Condition {
   public static int compareNum(Object num, String anotherNum) {
     try {
       if (num instanceof Integer) {
-        return ((Integer) num).compareTo(Integer.valueOf(anotherNum));
+        return Integer.compare((Integer) num, Integer.parseInt(anotherNum));
       }
       if (num instanceof Long) {
-        return ((Long) num).compareTo(Long.valueOf(anotherNum));
+        return Long.compare((Long) num, Long.parseLong(anotherNum));
       }
       if (num instanceof Double) {
-        return ((Double) num).compareTo(Double.valueOf(anotherNum));
+        return Double.compare((Double) num, Double.parseDouble(anotherNum));
       }
       if (num instanceof Float) {
-        return ((Float) num).compareTo(Float.valueOf(anotherNum));
+        return Float.compare((Float) num, Float.parseFloat(anotherNum));
       }
     } catch (NumberFormatException e) {
       return 1;
