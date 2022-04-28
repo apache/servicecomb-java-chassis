@@ -30,6 +30,7 @@ public class ServiceCombCanaryDistributer extends
             .getService(server.getInstance().getServiceId()),
         Microservice::getVersion,
         Microservice::getServiceName,
+        Microservice::getAlias,
         Microservice::getProperties);
   }
 }

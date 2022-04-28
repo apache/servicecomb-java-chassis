@@ -23,6 +23,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExampleDistributor extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
   public ExampleDistributor() {
-    init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
+    init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, null, ServiceIns::getTags);
   }
 }

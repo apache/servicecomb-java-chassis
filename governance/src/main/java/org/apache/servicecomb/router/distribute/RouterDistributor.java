@@ -29,6 +29,7 @@ public interface RouterDistributor<T, E> {
 
   void init(Function<T, E> getIns, Function<E, String> getVersion,
       Function<E, String> getServerName,
+      Function<E, String> getAlias,
       Function<E, Map<String, String>> getProperties);
 
   List<T> distribute(String targetServiceName, List<T> list, PolicyRuleItem invokeRule);

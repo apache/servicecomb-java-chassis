@@ -43,6 +43,8 @@ public abstract class AbstractRouterDistributor<T, E> implements
   private Function<E, String> getVersion;
 
   private Function<E, String> getServerName;
+  
+  private Function<E, String> getAlias;
 
   private Function<E, Map<String, String>> getProperties;
 
@@ -83,10 +85,12 @@ public abstract class AbstractRouterDistributor<T, E> implements
   public void init(Function<T, E> getIns,
       Function<E, String> getVersion,
       Function<E, String> getServerName,
+      Function<E, String> getAlias,
       Function<E, Map<String, String>> getProperties) {
     this.getIns = getIns;
     this.getVersion = getVersion;
     this.getServerName = getServerName;
+    this.getAlias = getAlias;
     this.getProperties = getProperties;
   }
 
@@ -110,7 +114,7 @@ public abstract class AbstractRouterDistributor<T, E> implements
     for (T server : list) {
       //get server
       E ms = getIns.apply(server);
-      if (getServerName.apply(ms).equals(serviceName)) {
+      if (getServerName.apply(ms).equals(serviceName) || getAlias.apply(ms).equals(serviceName)) {
         //most matching
         TagItem tagItem = new TagItem(getVersion.apply(ms), getProperties.apply(ms));
         TagItem targetTag = null;
@@ -146,7 +150,7 @@ public abstract class AbstractRouterDistributor<T, E> implements
     String latestVersion = null;
     for (T server : list) {
       E ms = getIns.apply(server);
-      if (getServerName.apply(ms).equals(serviceName)) {
+      if (getServerName.apply(ms).equals(serviceName) || getAlias.apply(ms).equals(serviceName)) {
         if (latestVersion == null || VersionCompareUtil
             .compareVersion(latestVersion, getVersion.apply(ms)) == -1) {
           latestVersion = getVersion.apply(ms);

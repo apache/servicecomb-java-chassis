@@ -153,6 +153,11 @@ public class MicroserviceInstance {
   }
 
   @JsonIgnore
+  public String getAlias() {
+    return this.microservice.getAlias();
+  }
+
+  @JsonIgnore
   public String getApplicationName() {
     return this.microservice.getAppId();
   }
