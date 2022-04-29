@@ -151,9 +151,9 @@ public class RouterDistributorTest {
 
   private List<ServiceIns> getMockList() {
     List<ServiceIns> serverList = new ArrayList<>();
-    ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
+    ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME, "");
     ins1.setVersion("2.0");
-    ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME);
+    ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME, "");
     ins2.addTags("app", "a");
     serverList.add(ins1);
     serverList.add(ins2);

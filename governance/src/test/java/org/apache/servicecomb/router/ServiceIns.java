@@ -25,13 +25,16 @@ public class ServiceIns {
 
   String serverName;
 
+  String Alias;
+
   Map<String, String> tags = new HashMap<>();
 
   private final String id;
 
-  public ServiceIns(String id, String serverName) {
+  public ServiceIns(String id, String serverName, String alias) {
     this.id = id;
     this.serverName = serverName;
+    this.Alias = alias;
   }
 
   public String getId() {
@@ -56,5 +59,9 @@ public class ServiceIns {
 
   public void addTags(String key, String v) {
     tags.put(key, v);
+  }
+
+  public String getAlias() {
+    return Alias;
   }
 }
