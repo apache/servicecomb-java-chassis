@@ -72,10 +72,6 @@
     </Match>
 
     <Match>
-        <Bug pattern="EQ_UNUSUAL"/>
-    </Match>
-
-    <Match>
         <Bug pattern="ICAST_IDIV_CAST_TO_DOUBLE"/>
     </Match>
 
