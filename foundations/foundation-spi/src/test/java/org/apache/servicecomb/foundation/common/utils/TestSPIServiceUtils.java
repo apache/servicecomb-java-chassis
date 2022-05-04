@@ -24,13 +24,15 @@ import java.util.ServiceLoader;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
+import org.mockito.Mockito;
 import org.springframework.core.Ordered;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Mocked;
 
 /**
  * Test SPIServiceUtils
@@ -41,30 +43,33 @@ public class TestSPIServiceUtils {
   @Test
   public void testGetTargetServiceNull() {
     SPIServiceDef0 service = SPIServiceUtils.getTargetService(SPIServiceDef0.class);
-    Assert.assertNull(service);
+    Assertions.assertNull(service);
   }
 
   @Test
   public void testGetTargetServiceNotNull() {
     SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class);
-    Assert.assertTrue(SPIServiceDef.class.isInstance(service));
+    Assertions.assertNotNull(service);
 
-    Assert.assertSame(service, SPIServiceUtils.getTargetService(SPIServiceDef.class));
+    Assertions.assertSame(service, SPIServiceUtils.getTargetService(SPIServiceDef.class));
   }
 
   @Test
   public void testGetTargetService_special_null() {
-    Assert.assertNull(SPIServiceUtils.getTargetService(SPIServiceDef0.class, SPIServiceDef0Impl.class));
+    Assertions.assertNull(SPIServiceUtils.getTargetService(SPIServiceDef0.class, SPIServiceDef0Impl.class));
   }
 
   @Test
   public void testGetTargetService_special_notNull() {
     SPIServiceDef service = SPIServiceUtils.getTargetService(SPIServiceDef.class, SPIServiceDefImpl.class);
-    Assert.assertTrue(SPIServiceDefImpl.class.isInstance(service));
+    Assertions.assertNotNull(service);
   }
 
   @Test
-  public void testSort(@Mocked Ordered o1, @Mocked Ordered o2) {
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
+  public void testSort() {
+    Ordered o1 = Mockito.mock(Ordered.class);
+    Ordered o2 = Mockito.mock(Ordered.class);
     Map<String, Ordered> map = new LinkedHashMap<>();
     map.put("a", o1);
     map.put("b", o2);
@@ -92,7 +97,7 @@ public class TestSPIServiceUtils {
 
   @Test
   public void getPriorityHighestService_null() {
-    Assert.assertNull(SPIServiceUtils.getPriorityHighestService(SPIServiceDef0.class));
+    Assertions.assertNull(SPIServiceUtils.getPriorityHighestService(SPIServiceDef0.class));
   }
 
   interface PriorityIntf {
@@ -131,6 +136,7 @@ public class TestSPIServiceUtils {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void getPriorityHighestServices() {
     Map<String, PriorityIntf> instances = new LinkedHashMap<>();
     instances.putIfAbsent("1", new PriorityImpl("n1", 0));

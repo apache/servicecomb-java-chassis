@@ -35,13 +35,16 @@ import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
+@EnabledOnJre(JRE.JAVA_8)
 public class TestLambdaMetafactoryUtils {
   public static class Model {
     public int f1;
@@ -80,7 +83,7 @@ public class TestLambdaMetafactoryUtils {
 
     setter.accept(1);
     int f1 = (int) getter.get();
-    Assert.assertEquals(1, f1);
+    Assertions.assertEquals(1, f1);
     MatcherAssert.assertThat((List<Integer>) echo.apply(Arrays.asList(2)), Matchers.contains(2));
   }
 
@@ -96,12 +99,12 @@ public class TestLambdaMetafactoryUtils {
 
     setter.set(model, 1);
     int f1 = getter.get(model);
-    Assert.assertEquals(1, f1);
+    Assertions.assertEquals(1, f1);
     MatcherAssert.assertThat((List<Integer>) echo.apply(model, Arrays.asList(2)), Matchers.contains(2));
 
     fluentSetter.set(model, 2);
     int ff1 = getter.get(model);
-    Assert.assertEquals(2, ff1);
+    Assertions.assertEquals(2, ff1);
   }
 
   @Test

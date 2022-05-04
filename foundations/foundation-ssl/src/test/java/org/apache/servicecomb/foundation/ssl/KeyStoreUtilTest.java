@@ -26,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -63,11 +64,9 @@ public class KeyStoreUtilTest {
     }
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void testCreateKeyManagersException() {
     KeyStore keystore;
-    char[] keyvalue;
 
     String storename = strFilePath + "/ssl/server.p12";
     String storetype = "PKCS12";
@@ -79,8 +78,14 @@ public class KeyStoreUtilTest {
     try {
       KeyStoreUtil.createKeyManagers(keystore, storeKeyValue);
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Bad key store.Get Key failed: null",
-          e.getMessage());
+      if (SystemUtils.JAVA_SPECIFICATION_VERSION.startsWith("17")) {
+        Assert.assertEquals("Bad key store.Get Key failed:"
+                        + " Cannot read the array length because \"password\" is null",
+                e.getMessage());
+      } else {
+        Assert.assertEquals("Bad key store.Get Key failed: null",
+                e.getMessage());
+      }
     }
   }
 
