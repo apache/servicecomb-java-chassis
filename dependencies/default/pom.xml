@@ -31,6 +31,7 @@
 
   <properties>
     <!-- Dependency versions -->
+    <activation.version>1.2.1</activation.version>
     <archaius.version>0.7.7</archaius.version>
     <asciidoctorj.version>1.6.2</asciidoctorj.version>
     <aspectj.version>1.9.3</aspectj.version>
@@ -61,6 +62,7 @@
     <httpcomponents.version>4.5.13</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
     <jackson.version>2.13.2.20220328</jackson.version>
+    <java-websocket.version>1.5.1</java-websocket.version>
     <javakaffee.version>0.26</javakaffee.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
@@ -83,18 +85,20 @@
     <netty.version>4.1.72.Final</netty.version>
     <okhttp3.version>3.14.2</okhttp3.version>
     <powermock.version>1.6.2</powermock.version>
+    <maven-model.version>3.8.5</maven-model.version>
     <micrometer.version>1.8.5</micrometer.version>
+    <nacos-client.version>1.1.4</nacos-client.version>
     <prometheus.version>0.12.0</prometheus.version>
     <protobuf.version>3.7.1</protobuf.version>
     <protostuff.version>1.5.9</protostuff.version>
     <protostuff-parser.version>2.2.25</protostuff-parser.version>
+    <resilience4j.versioin>1.7.0</resilience4j.versioin>
     <ribbon.version>2.3.0</ribbon.version>
     <rxjava.version>1.1.6</rxjava.version>
     <rxnetty.version>0.4.9</rxnetty.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.12.25</servo.version>
     <servlet-api.version>4.0.3</servlet-api.version>
-    <activation.version>1.2.1</activation.version>
     <slf4j.version>1.7.32</slf4j.version>
     <snakeyaml.version>1.27</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
@@ -111,9 +115,6 @@
     <zipkin.version>2.19.1</zipkin.version>
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
     <zookeeper.version>3.4.14</zookeeper.version>
-    <nacos-client.version>1.1.4</nacos-client.version>
-    <resilience4j.versioin>1.7.0</resilience4j.versioin>
-    <java-websocket.version>1.5.1</java-websocket.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -444,6 +445,12 @@
             <artifactId>netty-transport-native-epoll</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven-model.version}</version>
       </dependency>
 
       <dependency>
