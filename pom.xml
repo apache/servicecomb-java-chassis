@@ -45,12 +45,11 @@
     <test.additional.args/>
     <!-- plugin version start -->
     <!-- sort by alpha -->
-    <checkstyle-maven-plugin.version>2.17</checkstyle-maven-plugin.version>
+    <checkstyle-maven-plugin.version>3.1.2</checkstyle-maven-plugin.version>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
     <dependency-check-maven-plugin.version>7.0.4</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.33.0</docker-maven-plugin.version>
     <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
-    <findbugs-maven-plugin.version>3.0.1</findbugs-maven-plugin.version>
     <gmaven-plugin.version>1.5</gmaven-plugin.version>
     <gpg-maven-plugin.version>1.6</gpg-maven-plugin.version>
     <lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
@@ -291,17 +290,6 @@
           <forkCount>1</forkCount>
           <reuseForks>true</reuseForks>
           <runOrder>alphabetical</runOrder>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${findbugs-maven-plugin.version}</version>
-        <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <xmlOutput>true</xmlOutput>
-          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
         </configuration>
       </plugin>
       <plugin>

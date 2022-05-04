@@ -17,33 +17,21 @@
 # under the License.
 #
 
-name: Java CI with Maven
-
+name: checkstyle
 on:
-  push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
 
 jobs:
-  build:
-
+  publish:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up jdk
-      uses: actions/setup-java@v2
-      with:
-        java-version: '8'
-        distribution: 'temurin'
-    - uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-    - name: Compilation and Installation
-      run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage
-    - name: publish coverage report
-      run: bash <(curl -s https://codecov.io/bash)
+      - uses: actions/checkout@v2
+      - name: Set up jdk
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: spotbugs
+        run: mvn -B -Pit install -DskipTests -Dspotbugs.skip=true checkstyle:checkstyle
