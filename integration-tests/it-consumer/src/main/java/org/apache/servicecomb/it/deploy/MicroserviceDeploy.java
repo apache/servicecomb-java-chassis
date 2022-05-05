@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class MicroserviceDeploy extends NormalDeploy {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceDeploy.class);
 
-  private MicroserviceDeployDefinition microserviceDeployDefinition;
+  private final MicroserviceDeployDefinition microserviceDeployDefinition;
 
   public MicroserviceDeploy(DeployDefinition deployDefinition) {
     super(deployDefinition);

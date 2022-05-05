@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.slf4j.Logger;
@@ -36,6 +37,8 @@ public class Deploys {
   private static final Logger LOGGER = LoggerFactory.getLogger(Deploys.class);
 
   private static final String DEFAULT_MICROSERVICE_VERSION = "1.0.0";
+
+  private static final String JVM_MODULE_OPENS = "--add-opens java.base/java.lang=ALL-UNNAMED";
 
   private String pomVersion;
 
@@ -213,11 +216,10 @@ public class Deploys {
     URL urlServer = Thread.currentThread().getContextClassLoader().getResource("certificates/server.p12");
     URL urlTrust = Thread.currentThread().getContextClassLoader().getResource("certificates/trust.jks");
     if (urlServer != null && urlTrust != null) {
-      definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
-          itInstanceMaxHeapSizeOption,
-          "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
-          "-Dserver.p12=" + urlServer.getPath(),
-          "-Dtrust.jks=" + urlTrust.getPath()
+      definition.appendArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
+              "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
+              "-Dserver.p12=" + urlServer.getPath(),
+              "-Dtrust.jks=" + urlTrust.getPath()
       });
     }
     definition.setAppId("integration-test");
@@ -277,6 +279,9 @@ public class Deploys {
     definition.setDeployName("edge");
     definition.setCmd("it-edge");
     definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(JVM_MODULE_OPENS);
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-edge");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);

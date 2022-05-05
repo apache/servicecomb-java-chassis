@@ -93,6 +93,20 @@ public class DeployDefinition {
     this.args = args;
   }
 
+  public void appendArgs(String arg) {
+    String[] result = new String[args.length + 1];
+    System.arraycopy(args, 0, result, 0, args.length);
+    result[args.length] = arg;
+    this.args = result;
+  }
+
+  public void appendArgs(String[] newArgs) {
+    String[] result = new String[args.length + newArgs.length];
+    System.arraycopy(args, 0, result, 0, args.length);
+    System.arraycopy(newArgs, 0, result, args.length, newArgs.length);
+    this.args = result;
+  }
+
   public void init() {
     if (displayName == null) {
       displayName = deployName;
