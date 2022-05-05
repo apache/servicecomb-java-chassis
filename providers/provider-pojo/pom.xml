@@ -32,6 +32,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
       <scope>test</scope>
     </dependency>
@@ -46,8 +51,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-test-scaffolding</artifactId>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

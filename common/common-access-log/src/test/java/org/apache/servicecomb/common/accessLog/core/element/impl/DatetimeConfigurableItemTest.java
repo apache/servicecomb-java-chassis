@@ -28,8 +28,11 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.mockito.Mockito;
 
 public class DatetimeConfigurableItemTest {
@@ -46,7 +49,7 @@ public class DatetimeConfigurableItemTest {
 
   private InvocationStageTrace invocationStageTrace;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
@@ -64,101 +67,105 @@ public class DatetimeConfigurableItemTest {
   }
 
   @Test
+  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
   public void serverFormattedElement() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
+            "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
+    Assertions.assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
   }
 
   @Test
+  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
   public void clientFormattedElement() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
+            "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
+    Assertions.assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
   }
 
   @Test
+  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
   public void serverFormattedElementOnNoPattern() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "|GMT+08|zh-CN");
+            "|GMT+08|zh-CN");
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("星期二, 25 十一月 2014 05:10:50 GMT+08:00", strBuilder.toString());
+    Assertions.assertEquals("星期二, 25 十一月 2014 05:10:50 GMT+08:00", strBuilder.toString());
   }
 
   @Test
+  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
   public void clientFormattedElementOnNoPattern() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "|GMT+08|zh-CN");
+            "|GMT+08|zh-CN");
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("星期二, 25 十一月 2014 05:10:50 GMT+08:00", strBuilder.toString());
+    Assertions.assertEquals("星期二, 25 十一月 2014 05:10:50 GMT+08:00", strBuilder.toString());
   }
 
   @Test
   public void getFormattedElementOnNoTimezone() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "yyyy/MM/dd zzz||zh-CN");
+            "yyyy/MM/dd zzz||zh-CN");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnNoTimezone() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "yyyy/MM/dd zzz||zh-CN");
+            "yyyy/MM/dd zzz||zh-CN");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnNoLocale() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
+            "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("Tue, 25 Nov 2014 05:10:50 GMT+08:00", strBuilder.toString());
+    Assertions.assertEquals("Tue, 25 Nov 2014 05:10:50 GMT+08:00", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnNoLocale() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
+            "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("Tue, 25 Nov 2014 05:10:50 GMT+08:00", strBuilder.toString());
+    Assertions.assertEquals("Tue, 25 Nov 2014 05:10:50 GMT+08:00", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnNoConfig() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "||");
+            "||");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
-        Locale.US);
+            Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnNoConfig() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-        "||");
+            "||");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
-        Locale.US);
+            Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
@@ -168,10 +175,10 @@ public class DatetimeConfigurableItemTest {
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("EEE, dd MMM yyyy HH:mm:ss zzz", element.getPattern());
-    assertEquals(Locale.US, element.getLocale());
-    assertEquals(TimeZone.getDefault(), element.getTimezone());
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals("EEE, dd MMM yyyy HH:mm:ss zzz", element.getPattern());
+    Assertions.assertEquals(Locale.US, element.getLocale());
+    Assertions.assertEquals(TimeZone.getDefault(), element.getTimezone());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
@@ -181,10 +188,10 @@ public class DatetimeConfigurableItemTest {
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("EEE, dd MMM yyyy HH:mm:ss zzz", element.getPattern());
-    assertEquals(Locale.US, element.getLocale());
-    assertEquals(TimeZone.getDefault(), element.getTimezone());
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals("EEE, dd MMM yyyy HH:mm:ss zzz", element.getPattern());
+    Assertions.assertEquals(Locale.US, element.getLocale());
+    Assertions.assertEquals(TimeZone.getDefault(), element.getTimezone());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
@@ -194,10 +201,10 @@ public class DatetimeConfigurableItemTest {
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("yyyy/MM/dd HH:mm:ss zzz", element.getPattern());
-    assertEquals(Locale.US, element.getLocale());
-    assertEquals(TimeZone.getDefault(), element.getTimezone());
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals("yyyy/MM/dd HH:mm:ss zzz", element.getPattern());
+    Assertions.assertEquals(Locale.US, element.getLocale());
+    Assertions.assertEquals(TimeZone.getDefault(), element.getTimezone());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 
   @Test
@@ -207,9 +214,9 @@ public class DatetimeConfigurableItemTest {
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("yyyy/MM/dd HH:mm:ss zzz", element.getPattern());
-    assertEquals(Locale.US, element.getLocale());
-    assertEquals(TimeZone.getDefault(), element.getTimezone());
-    assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
+    Assertions.assertEquals("yyyy/MM/dd HH:mm:ss zzz", element.getPattern());
+    Assertions.assertEquals(Locale.US, element.getLocale());
+    Assertions.assertEquals(TimeZone.getDefault(), element.getTimezone());
+    Assertions.assertEquals(simpleDateFormat.format(START_MILLISECOND), strBuilder.toString());
   }
 }

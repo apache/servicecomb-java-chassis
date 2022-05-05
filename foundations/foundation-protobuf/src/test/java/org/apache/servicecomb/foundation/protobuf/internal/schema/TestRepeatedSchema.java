@@ -213,7 +213,7 @@ public class TestRepeatedSchema extends TestSchemaBase {
     check();
 
     RootWithArray rootWithArray = new RootWithArray();
-    rootWithArray.bytess = (byte[][]) sList.toArray();
+    rootWithArray.bytess = sList.toArray(new byte[0][]);
     Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
   }
 
@@ -224,7 +224,7 @@ public class TestRepeatedSchema extends TestSchemaBase {
     check();
 
     RootWithArray rootWithArray = new RootWithArray();
-    rootWithArray.strings = (String[]) sList.toArray();
+    rootWithArray.strings = sList.toArray(new String[0]);
     Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
   }
 
