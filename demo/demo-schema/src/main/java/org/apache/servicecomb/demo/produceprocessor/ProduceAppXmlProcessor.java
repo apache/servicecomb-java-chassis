@@ -18,6 +18,7 @@ package org.apache.servicecomb.demo.produceprocessor;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.core.MediaType;
 
@@ -40,7 +41,7 @@ public class ProduceAppXmlProcessor implements ProduceProcessor {
 
   @Override
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    output.write(JAXBUtils.convertToXml(result).getBytes());
+    output.write(JAXBUtils.convertToXml(result).getBytes(StandardCharsets.UTF_8));
   }
 
   @Override
