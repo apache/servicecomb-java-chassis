@@ -17,13 +17,16 @@
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
-import org.junit.Assert;
-import org.junit.Test;
 
 import mockit.Expectations;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 public class TestNoPackageMain {
   @Test
+  @EnabledOnJre(JRE.JAVA_8)
   public void prepareServiceCombScanPackage_mainNoPackage() {
     System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
     new Expectations(JvmUtils.class) {
@@ -37,6 +40,6 @@ public class TestNoPackageMain {
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 }
