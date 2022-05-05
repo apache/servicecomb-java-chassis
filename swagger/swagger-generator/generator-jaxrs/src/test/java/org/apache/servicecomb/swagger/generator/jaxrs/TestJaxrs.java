@@ -19,7 +19,9 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 public class TestJaxrs {
   @Test
@@ -49,6 +51,7 @@ public class TestJaxrs {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testEcho() {
     UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", Echo.class, "echo");
   }
@@ -64,6 +67,7 @@ public class TestJaxrs {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testQueryComplex() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex.",
@@ -112,23 +116,27 @@ public class TestJaxrs {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void aggregatedParam() {
     UnitTestSwaggerUtils.testSwagger("schemas/aggregatedParam.yaml", Echo.class, "aggregatedParam");
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void beanParamDefaultBody() {
     UnitTestSwaggerUtils
         .testSwagger("schemas/beanParamDefaultBody.yaml", Echo.class, "beanParamDefaultBody");
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void beanParamWithJsonIgnoredTagged() {
     UnitTestSwaggerUtils
         .testSwagger("schemas/beanParamWithJsonIgnoredTagged.yaml", Echo.class, "beanParamWithJsonIgnoredTagged");
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void beanParamWithPart() {
     UnitTestSwaggerUtils.testSwagger("schemas/beanParamWithPart.yaml", Echo.class, "beanParamWithPart");
   }
@@ -144,16 +152,19 @@ public class TestJaxrs {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void should_support_dynamic_enum() {
     UnitTestSwaggerUtils.testSwagger("schemas/dynamicStatusEnum.yaml", Echo.class, "dynamicStatusEnum");
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void should_support_jdk_enum() {
     UnitTestSwaggerUtils.testSwagger("schemas/jdkStatusEnum.yaml", Echo.class, "jdkStatusEnum");
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void beanParamComplexField() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexField.",
@@ -164,6 +175,7 @@ public class TestJaxrs {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void beanParamComplexSetter() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexSetter.",
@@ -174,6 +186,7 @@ public class TestJaxrs {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void beanParamInvalidDefaultBody() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamInvalidDefaultBody.",

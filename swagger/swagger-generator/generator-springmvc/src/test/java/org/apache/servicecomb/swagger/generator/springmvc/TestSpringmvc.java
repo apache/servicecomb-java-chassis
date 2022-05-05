@@ -22,7 +22,9 @@ import org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameter
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget;
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget_ValueOverWritePath;
 import org.apache.servicecomb.swagger.generator.springmvc.model.TestProducer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 public class TestSpringmvc {
   @Test
@@ -33,6 +35,7 @@ public class TestSpringmvc {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testResponseEntity() {
     UnitTestSwaggerUtils.testSwagger("schemas/responseEntity.yaml", MethodResponseEntity.class);
   }
@@ -44,6 +47,7 @@ public class TestSpringmvc {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testMixupAnnotations() {
     UnitTestSwaggerUtils.testSwagger("schemas/mixupAnnotations.yaml", MethodMixupAnnotations.class);
   }
@@ -172,11 +176,13 @@ public class TestSpringmvc {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testObjectParam() {
     UnitTestSwaggerUtils.testSwagger("schemas/testObjectParam.yaml", DefaultParameterSchema.class, "testObjectParam");
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testMultiObjParamsWithSameFiledName() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema:testMultiObjParamsWithSameFiledName.",
@@ -186,6 +192,7 @@ public class TestSpringmvc {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testUnsupportedParamType() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema:testUnsupportedParamType.",

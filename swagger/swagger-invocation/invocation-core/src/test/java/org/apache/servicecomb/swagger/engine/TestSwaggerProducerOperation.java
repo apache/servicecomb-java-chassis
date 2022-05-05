@@ -18,8 +18,10 @@
 package org.apache.servicecomb.swagger.engine;
 
 import org.apache.servicecomb.swagger.invocation.models.PojoImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 public class TestSwaggerProducerOperation {
   private static final SwaggerEnvironment env = new SwaggerEnvironment();
@@ -27,17 +29,18 @@ public class TestSwaggerProducerOperation {
   private static SwaggerProducer producer;
 
   @Test
-  public void testgetParameterType() {
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
+  public void testGetParameterType() {
     PojoImpl pojo = new PojoImpl();
     producer = env.createProducer(pojo, null);
 
     SwaggerProducerOperation swaggerProducerOperation = producer.findOperation("testBytes");
-    Assert.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
-    Assert.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType("bytes"));
+    Assertions.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
+    Assertions.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType("bytes"));
 
     swaggerProducerOperation = producer.findOperation("testSimple");
-    Assert.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
-    Assert.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType(
+    Assertions.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
+    Assertions.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType(
         swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().get(0).getName()));
   }
 }

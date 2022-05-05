@@ -28,10 +28,10 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerOneArg;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoOneArg;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("unchecked")
 public class TestPojoOneArg {
@@ -49,10 +49,10 @@ public class TestPojoOneArg {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("name");
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals("name", result.get("name"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals("name", result.get("name"));
   }
 
   @Test
@@ -69,8 +69,8 @@ public class TestPojoOneArg {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
-    Assert.assertSame(arguments.get("user"), result.get("user"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertSame(arguments.get("user"), result.get("user"));
   }
 
   @Test
@@ -87,9 +87,9 @@ public class TestPojoOneArg {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("color");
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(Color.BLUE, result.get("color"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals(Color.BLUE, result.get("color"));
   }
 }
