@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -646,7 +647,17 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public @Nullable Cookie removeCookie(String s, boolean b) {
+  public @Nullable Cookie removeCookie(String name, boolean invalidate) {
+    return null;
+  }
+
+  @Override
+  public Set<Cookie> removeCookies(String name, boolean invalidate) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Cookie removeCookie(String name, String domain, String path, boolean invalidate) {
     return null;
   }
 }

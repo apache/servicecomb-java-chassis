@@ -20,8 +20,10 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
+import io.vertx.core.http.HttpServerRequest;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
@@ -52,6 +54,8 @@ public class CookieItemTest {
 
   private RoutingContext mockContext;
 
+  private HttpServerRequest httpServerRequest;
+
   private Invocation invocation;
 
   private RestClientRequestImpl restClientRequest;
@@ -59,6 +63,7 @@ public class CookieItemTest {
   @Before
   public void initStrBuilder() {
     mockContext = Mockito.mock(RoutingContext.class);
+    httpServerRequest = Mockito.mock(HttpServerRequest.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
     restClientRequest = Mockito.mock(RestClientRequestImpl.class);
@@ -69,12 +74,12 @@ public class CookieItemTest {
 
   @Test
   public void serverFormattedElement() {
-    HashMap<String, Cookie> cookieSet = new HashMap<>();
+    HashSet<Cookie> cookieSet = new HashSet<>();
     CookieImpl cookie = new CookieImpl(COOKIE_NAME, COOKIE_VALUE);
 
-    cookieSet.put(cookie.getName(), cookie);
-    when(mockContext.cookieCount()).thenReturn(1);
-    when(mockContext.cookieMap()).thenReturn(cookieSet);
+    cookieSet.add(cookie);
+    Mockito.when(mockContext.request()).thenReturn(httpServerRequest);
+    Mockito.when(httpServerRequest.cookies()).thenReturn(cookieSet);
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
@@ -99,9 +104,9 @@ public class CookieItemTest {
 
   @Test
   public void serverFormattedElementOnCookieCountIsZero() {
-    HashMap<String, Cookie> cookieSet = new HashMap<>();
-    Mockito.when(mockContext.cookieCount()).thenReturn(0);
-    Mockito.when(mockContext.cookieMap()).thenReturn(cookieSet);
+    HashSet<Cookie> cookieSet = new HashSet<>();
+    Mockito.when(mockContext.request()).thenReturn(httpServerRequest);
+    Mockito.when(httpServerRequest.cookies()).thenReturn(cookieSet);
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
@@ -125,8 +130,8 @@ public class CookieItemTest {
 
   @Test
   public void serverFormattedElementOnCookieSetIsNull() {
-    Mockito.when(mockContext.cookieCount()).thenReturn(1);
-    Mockito.when(mockContext.cookieMap()).thenReturn(null);
+    Mockito.when(mockContext.request()).thenReturn(httpServerRequest);
+    Mockito.when(httpServerRequest.cookies()).thenReturn(null);
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
@@ -149,11 +154,11 @@ public class CookieItemTest {
 
   @Test
   public void serverFormattedElementOnNotFound() {
-    HashMap<String, Cookie> cookieSet = new HashMap<>();
+    HashSet<Cookie> cookieSet = new HashSet<>();
     CookieImpl cookie = new CookieImpl("anotherCookieName", COOKIE_VALUE);
-    cookieSet.put(cookie.getName(), cookie);
-    Mockito.when(mockContext.cookieCount()).thenReturn(1);
-    Mockito.when(mockContext.cookieMap()).thenReturn(cookieSet);
+    cookieSet.add(cookie);
+    Mockito.when(mockContext.request()).thenReturn(httpServerRequest);
+    Mockito.when(httpServerRequest.cookies()).thenReturn(cookieSet);
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);

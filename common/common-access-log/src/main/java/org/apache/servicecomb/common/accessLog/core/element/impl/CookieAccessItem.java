@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -41,12 +42,12 @@ public class CookieAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    Map<String, Cookie> cookieMap = accessLogEvent.getRoutingContext().cookieMap();
-    if (null == cookieMap) {
+    Set<Cookie> cookies = accessLogEvent.getRoutingContext().request().cookies();
+    if (null == cookies) {
       builder.append(RESULT_NOT_FOUND);
       return;
     }
-    for (Cookie cookie : cookieMap.values()) {
+    for (Cookie cookie : cookies) {
       if (varName.equals(cookie.getName())) {
         builder.append(cookie.getValue());
         return;

@@ -20,8 +20,10 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
@@ -118,23 +120,29 @@ public class TestVertxServerRequestToHttpServletRequest {
 
   @Test
   public void testGetCookies() {
-    Map<String, io.vertx.core.http.Cookie>  vertxCookies = new LinkedHashMap<>();
-    vertxCookies.put("c1", io.vertx.core.http.Cookie.cookie("c1", "c1v"));
-    vertxCookies.put("c2", io.vertx.core.http.Cookie.cookie("c2", "c2v"));
+    Set<io.vertx.core.http.Cookie> vertxCookies = new HashSet<>();
+    vertxCookies.add(io.vertx.core.http.Cookie.cookie("c1", "c1v"));
+    vertxCookies.add(io.vertx.core.http.Cookie.cookie("c2", "c2v"));
     new Expectations() {
       {
-        context.cookieMap();
+        context.request().cookies();
         result = vertxCookies;
       }
     };
 
     Cookie[] cookies = request.getCookies();
-    Assert.assertEquals("c1", cookies[0].getName());
-    Assert.assertEquals("c1v", cookies[0].getValue());
-    Assert.assertEquals("c2", cookies[1].getName());
-    Assert.assertEquals("c2v", cookies[1].getValue());
-
-    Assert.assertSame(cookies, request.getCookies());
+    // we can't ensure the sequence when set to list
+    if (cookies[0].getName().equals("c1")) {
+      Assert.assertEquals("c1", cookies[0].getName());
+      Assert.assertEquals("c1v", cookies[0].getValue());
+      Assert.assertEquals("c2", cookies[1].getName());
+      Assert.assertEquals("c2v", cookies[1].getValue());
+    } else {
+      Assert.assertEquals("c2", cookies[0].getName());
+      Assert.assertEquals("c2v", cookies[0].getValue());
+      Assert.assertEquals("c1", cookies[1].getName());
+      Assert.assertEquals("c1v", cookies[1].getValue());
+    }
   }
 
   @Test
