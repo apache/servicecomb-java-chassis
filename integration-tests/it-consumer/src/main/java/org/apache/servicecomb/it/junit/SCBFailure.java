@@ -24,7 +24,7 @@ import org.junit.runner.notification.Failure;
 public class SCBFailure extends Failure {
   private static final long serialVersionUID = 6467681668616080232L;
 
-  private List<String> parents;
+  private final List<String> parents;
 
   public SCBFailure(Description description, Throwable thrownException) {
     super(description, thrownException);

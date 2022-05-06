@@ -40,15 +40,15 @@ import org.junit.runner.notification.RunListener;
 import com.google.common.reflect.ClassPath;
 
 public final class ITJUnitUtils {
-  private static ClassLoader classLoader = JvmUtils.findClassLoader();
+  private static final ClassLoader classLoader = JvmUtils.findClassLoader();
 
-  private static JUnitCore jUnitCore = new JUnitCore();
+  private static final JUnitCore jUnitCore = new JUnitCore();
 
-  private static Stack<String> parents = new Stack<>();
+  private static final Stack<String> parents = new Stack<>();
 
-  private static List<SCBFailure> failures = new ArrayList<>();
+  private static final List<SCBFailure> failures = new ArrayList<>();
 
-  private static AtomicInteger runCount = new AtomicInteger();
+  private static final AtomicInteger runCount = new AtomicInteger();
 
   private static String transport;
 
@@ -68,7 +68,7 @@ public final class ITJUnitUtils {
       public void testFailure(Failure failure) {
         SCBFailure scbFailure = new SCBFailure(failure.getDescription(), failure.getException());
         failures.add(scbFailure);
-        System.out.println(scbFailure.toString());
+        System.out.println(scbFailure);
       }
     });
   }

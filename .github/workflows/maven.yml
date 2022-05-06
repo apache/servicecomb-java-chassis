@@ -45,17 +45,5 @@ jobs:
           ${{ runner.os }}-maven-
     - name: Compilation and Installation
       run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage
-    - name: Upload Test log
-      uses: actions/upload-artifact@v3
-      if: failure()
-      continue-on-error: true
-      with:
-        name: jdk8-test-log
-        path: |
-          integration-tests/it-consumer/servicecomb-integration-consumer.log
-          integration-tests/it-consumer/servicecomb-integration-edge.log
-          integration-tests/it-consumer/servicecomb-integration-provider.log
-          integration-tests/it-consumer/servicecomb-integration-servlet.log
-          integration-tests/it-consumer/servicecomb-integration-standalone.log
     - name: publish coverage report
       run: bash <(curl -s https://codecov.io/bash)

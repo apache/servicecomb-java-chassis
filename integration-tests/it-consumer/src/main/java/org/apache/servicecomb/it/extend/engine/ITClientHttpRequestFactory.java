@@ -24,7 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 public class ITClientHttpRequestFactory extends CseClientHttpRequestFactory {
-  private String transport;
+  private final String transport;
 
   public ITClientHttpRequestFactory() {
     this.transport = ITJUnitUtils.getTransport();

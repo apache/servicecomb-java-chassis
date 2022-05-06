@@ -24,7 +24,7 @@ import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncClientH
 import org.springframework.http.HttpMethod;
 
 public class ITAsyncClientHttpRequest extends CseAsyncClientHttpRequest {
-  private String transport;
+  private final String transport;
 
   public ITAsyncClientHttpRequest(URI uri, HttpMethod method, String transport) {
     super(uri, method);

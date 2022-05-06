@@ -64,9 +64,9 @@ import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
 import org.apache.servicecomb.transport.highway.HighwayTransportContext;
 
 public class ConsumerMain {
-  private static ResultPrinter resultPrinter = new ResultPrinter();
+  private static final ResultPrinter resultPrinter = new ResultPrinter();
 
-  private static Deploys deploys = new Deploys();
+  private static final Deploys deploys = new Deploys();
 
   public static boolean autoExit = true;
 

@@ -38,8 +38,6 @@ public class Deploys {
 
   private static final String DEFAULT_MICROSERVICE_VERSION = "1.0.0";
 
-  private static final String JVM_MODULE_OPENS = "--add-opens java.base/java.lang=ALL-UNNAMED";
-
   private String pomVersion;
 
   private ServiceCenterDeploy serviceCenter;
@@ -199,6 +197,9 @@ public class Deploys {
     definition.setDeployName("baseProducer");
     definition.setCmd("it-producer");
     definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -213,6 +214,9 @@ public class Deploys {
     definition.setDeployName("baseHttp2Producer");
     definition.setCmd("it-producer");
     definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     URL urlServer = Thread.currentThread().getContextClassLoader().getResource("certificates/server.p12");
     URL urlTrust = Thread.currentThread().getContextClassLoader().getResource("certificates/trust.jks");
     if (urlServer != null && urlTrust != null) {
@@ -237,6 +241,9 @@ public class Deploys {
     definition.setCmd("it-producer");
     definition
         .setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2", itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer-h2c");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -251,6 +258,9 @@ public class Deploys {
     definition.setDeployName("springBoot2ServletProducer");
     definition.setCmd("it-producer-deploy-springboot2-servlet");
     definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer-deploy-springboot2-servlet");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -265,6 +275,9 @@ public class Deploys {
     definition.setDeployName("springBoot2StandaloneProducer");
     definition.setCmd("it-producer-deploy-springboot2-standalone");
     definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer-deploy-springboot2-standalone");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -280,7 +293,7 @@ public class Deploys {
     definition.setCmd("it-edge");
     definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
     if (!SystemUtils.IS_JAVA_1_8) {
-      definition.appendArgs(JVM_MODULE_OPENS);
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
     }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-edge");
