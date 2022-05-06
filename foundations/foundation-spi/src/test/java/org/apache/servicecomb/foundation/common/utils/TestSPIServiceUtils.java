@@ -26,7 +26,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
 import org.springframework.core.Ordered;
@@ -66,7 +66,7 @@ public class TestSPIServiceUtils {
   }
 
   @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
+  @EnabledOnJre(JRE.JAVA_8)
   public void testSort() {
     Ordered o1 = Mockito.mock(Ordered.class);
     Ordered o2 = Mockito.mock(Ordered.class);
@@ -136,7 +136,7 @@ public class TestSPIServiceUtils {
   }
 
   @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
+  @EnabledOnJre(JRE.JAVA_8)
   public void getPriorityHighestServices() {
     Map<String, PriorityIntf> instances = new LinkedHashMap<>();
     instances.putIfAbsent("1", new PriorityImpl("n1", 0));
