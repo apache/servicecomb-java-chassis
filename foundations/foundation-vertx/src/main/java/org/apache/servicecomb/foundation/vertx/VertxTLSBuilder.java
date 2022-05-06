@@ -110,8 +110,6 @@ public final class VertxTLSBuilder {
     tcpClientOptions.setSsl(true);
 
     if (sslOption.getEngine().equalsIgnoreCase("openssl")) {
-      OpenSSLEngineOptions options = new OpenSSLEngineOptions();
-      options.setSessionCacheEnabled(true);
       tcpClientOptions.setOpenSslEngineOptions(new OpenSSLEngineOptions());
     }
     String fullKeyStore = sslCustom.getFullPath(sslOption.getKeyStore());
