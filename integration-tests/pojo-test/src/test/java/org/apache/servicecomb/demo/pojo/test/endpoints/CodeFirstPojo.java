@@ -99,10 +99,10 @@ public class CodeFirstPojo implements CodeFirstPojoIntf {
   }
 
   public String addString(List<String> s) {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (String x : s) {
-      result += x;
+      result.append(x);
     }
-    return result;
+    return result.toString();
   }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
@@ -31,7 +30,9 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
 import org.mockito.Mockito;
 
@@ -68,6 +69,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   @EnabledOnOs({OS.LINUX, OS.WINDOWS})
+  @EnabledOnJre(JRE.JAVA_8)
   public void serverFormattedElement() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
             "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
@@ -77,6 +79,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   @EnabledOnOs({OS.LINUX, OS.WINDOWS})
+  @EnabledOnJre(JRE.JAVA_8)
   public void clientFormattedElement() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
             "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
@@ -86,6 +89,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   @EnabledOnOs({OS.LINUX, OS.WINDOWS})
+  @EnabledOnJre(JRE.JAVA_8)
   public void serverFormattedElementOnNoPattern() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
             "|GMT+08|zh-CN");
@@ -96,6 +100,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   @EnabledOnOs({OS.LINUX, OS.WINDOWS})
+  @EnabledOnJre(JRE.JAVA_8)
   public void clientFormattedElementOnNoPattern() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
             "|GMT+08|zh-CN");

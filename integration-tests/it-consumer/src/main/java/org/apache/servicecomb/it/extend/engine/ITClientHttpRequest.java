@@ -23,7 +23,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RequestMeta;
 import org.springframework.http.HttpMethod;
 
 public class ITClientHttpRequest extends CseClientHttpRequest {
-  private String transport;
+  private final String transport;
 
   public ITClientHttpRequest(URI uri, HttpMethod method, String transport) {
     super(uri, method);

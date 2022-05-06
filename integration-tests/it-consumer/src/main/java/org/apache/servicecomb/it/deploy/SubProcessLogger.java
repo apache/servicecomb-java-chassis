@@ -35,11 +35,11 @@ public class SubProcessLogger implements Closeable {
 
   private final String displayName;
 
-  private BufferedReader reader;
+  private final BufferedReader reader;
 
-  private Thread thread;
+  private final String startCompleteLog;
 
-  private String startCompleteLog;
+  private final Thread thread;
 
   private volatile boolean startCompleted;
 
@@ -116,5 +116,6 @@ public class SubProcessLogger implements Closeable {
   @Override
   public void close() throws IOException {
     reader.close();
+    thread.interrupt();
   }
 }
