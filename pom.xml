@@ -666,6 +666,20 @@
       </reporting>
     </profile>
     <profile>
+      <id>jdk11</id>
+      <activation>
+        <jdk>[11,)</jdk>
+      </activation>
+      <properties>
+        <werror.properties/>
+        <test.additional.args>
+          -Djdk.attach.allowAttachSelf
+          --add-opens java.base/java.lang=ALL-UNNAMED
+          --add-reads java.base=java.desktop
+        </test.additional.args>
+      </properties>
+    </profile>
+    <profile>
       <id>jdk17</id>
       <activation>
         <jdk>[17,)</jdk>
