@@ -32,8 +32,8 @@ import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
 import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceInstanceResponse;
 import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceResponse;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -93,10 +93,10 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     MicroserviceInstancesResponse serviceCenterInstances = serviceCenterClient.getServiceCenterInstances();
 
-    Assert.assertNotNull(serviceCenterInstances);
-    Assert.assertEquals(1, serviceCenterInstances.getInstances().size());
-    Assert.assertEquals("111111", serviceCenterInstances.getInstances().get(0).getInstanceId());
-    Assert.assertEquals("222222", serviceCenterInstances.getInstances().get(0).getServiceId());
+    Assertions.assertNotNull(serviceCenterInstances);
+    Assertions.assertEquals(1, serviceCenterInstances.getInstances().size());
+    Assertions.assertEquals("111111", serviceCenterInstances.getInstances().get(0).getInstanceId());
+    Assertions.assertEquals("222222", serviceCenterInstances.getInstances().get(0).getServiceId());
   }
 
   @Test
@@ -121,8 +121,8 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     RegisteredMicroserviceResponse actualResponse = serviceCenterClient.registerMicroservice(microservice);
 
-    Assert.assertNotNull(actualResponse);
-    Assert.assertEquals("111111", actualResponse.getServiceId());
+    Assertions.assertNotNull(actualResponse);
+    Assertions.assertEquals("111111", actualResponse.getServiceId());
   }
 
   @Test
@@ -179,8 +179,8 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     Microservice microservices = serviceCenterClient.getMicroserviceByServiceId("111111");
 
-    Assert.assertNotNull(microservices);
-    Assert.assertEquals("111111", microservices.getServiceId());
+    Assertions.assertNotNull(microservices);
+    Assertions.assertEquals("111111", microservices.getServiceId());
   }
 
   @Test
@@ -207,9 +207,9 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     MicroservicesResponse actualMicroservicesResponse = serviceCenterClient.getMicroserviceList();
 
-    Assert.assertNotNull(actualMicroservicesResponse);
-    Assert.assertEquals(3, actualMicroservicesResponse.getServices().size());
-    Assert.assertEquals("Test1", actualMicroservicesResponse.getServices().get(0).getServiceName());
+    Assertions.assertNotNull(actualMicroservicesResponse);
+    Assertions.assertEquals(3, actualMicroservicesResponse.getServices().size());
+    Assertions.assertEquals("Test1", actualMicroservicesResponse.getServices().get(0).getServiceName());
   }
 
   @Test
@@ -229,8 +229,8 @@ public class ServiceCenterClientTest {
     Microservice microservice = new Microservice("Test111");
     RegisteredMicroserviceResponse actualServiceId = serviceCenterClient.queryServiceId(microservice);
 
-    Assert.assertNotNull(actualServiceId);
-    Assert.assertEquals("111111", actualServiceId.getServiceId());
+    Assertions.assertNotNull(actualServiceId);
+    Assertions.assertEquals("111111", actualServiceId.getServiceId());
   }
 
   @Test
@@ -256,8 +256,8 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     RegisteredMicroserviceInstanceResponse actualResponse = serviceCenterClient.registerMicroserviceInstance(instance);
 
-    Assert.assertNotNull(actualResponse);
-    Assert.assertEquals("111111", actualResponse.getInstanceId());
+    Assertions.assertNotNull(actualResponse);
+    Assertions.assertEquals("111111", actualResponse.getInstanceId());
   }
 
   @Test
@@ -310,10 +310,10 @@ public class ServiceCenterClientTest {
     MicroserviceInstancesResponse serviceCenterInstances = serviceCenterClient
         .getMicroserviceInstanceList("222222");
 
-    Assert.assertNotNull(serviceCenterInstances);
-    Assert.assertEquals(1, serviceCenterInstances.getInstances().size());
-    Assert.assertEquals("111111", serviceCenterInstances.getInstances().get(0).getInstanceId());
-    Assert.assertEquals("222222", serviceCenterInstances.getInstances().get(0).getServiceId());
+    Assertions.assertNotNull(serviceCenterInstances);
+    Assertions.assertEquals(1, serviceCenterInstances.getInstances().size());
+    Assertions.assertEquals("111111", serviceCenterInstances.getInstances().get(0).getInstanceId());
+    Assertions.assertEquals("222222", serviceCenterInstances.getInstances().get(0).getServiceId());
   }
 
   @Test
@@ -364,9 +364,9 @@ public class ServiceCenterClientTest {
     MicroserviceInstance responseInstance = serviceCenterClient
         .getMicroserviceInstance("111", "222");
 
-    Assert.assertNotNull(responseInstance);
-    Assert.assertEquals("111", responseInstance.getInstanceId());
-    Assert.assertEquals("Test", responseInstance.getHostName());
+    Assertions.assertNotNull(responseInstance);
+    Assertions.assertEquals("111", responseInstance.getInstanceId());
+    Assertions.assertEquals("Test", responseInstance.getHostName());
   }
 
   @Test
@@ -409,8 +409,8 @@ public class ServiceCenterClientTest {
     Boolean result = serviceCenterClient
         .updateMicroserviceInstanceStatus("111", "222", MicroserviceInstanceStatus.UP);
 
-    Assert.assertNotNull(result);
-    Assert.assertEquals(true, result);
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(true, result);
   }
 
   @Test
@@ -442,9 +442,9 @@ public class ServiceCenterClientTest {
     ObjectMapper mapper = new ObjectMapper();
     JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(schemaResponse));
 
-    Assert.assertNotNull(jsonNode);
-    Assert.assertEquals("111111", jsonNode.get(0).get("schemaId").textValue());
-    Assert.assertEquals("test", jsonNode.get(0).get("schema").textValue());
+    Assertions.assertNotNull(jsonNode);
+    Assertions.assertEquals("111111", jsonNode.get(0).get("schemaId").textValue());
+    Assertions.assertEquals("test", jsonNode.get(0).get("schema").textValue());
   }
 
   @Test
@@ -467,8 +467,8 @@ public class ServiceCenterClientTest {
     String schemaContext = serviceCenterClient
         .getServiceSchemaContext("111", "222");
 
-    Assert.assertNotNull(schemaContext);
-    Assert.assertEquals("test context", schemaContext);
+    Assertions.assertNotNull(schemaContext);
+    Assertions.assertEquals("test context", schemaContext);
   }
 
   @Test
@@ -487,7 +487,7 @@ public class ServiceCenterClientTest {
     boolean result = serviceCenterClient
         .updateServiceSchemaContext("111", new SchemaInfo());
 
-    Assert.assertNotNull(result);
-    Assert.assertEquals(true, result);
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(true, result);
   }
 }

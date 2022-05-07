@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.config.common;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class TestConfigurationChangedEvent {
   @Test
@@ -38,10 +38,10 @@ public class TestConfigurationChangedEvent {
     after.put("notChanged", null);
 
     ConfigurationChangedEvent event = ConfigurationChangedEvent.createIncremental(after, before);
-    Assert.assertEquals(2, event.getAdded().size());
-    Assert.assertEquals(1, event.getDeleted().size());
-    Assert.assertEquals(1, event.getUpdated().size());
-    Assert.assertEquals(4, event.getComplete().size());
-    Assert.assertEquals(true, event.isChanged());
+    Assertions.assertEquals(2, event.getAdded().size());
+    Assertions.assertEquals(1, event.getDeleted().size());
+    Assertions.assertEquals(1, event.getUpdated().size());
+    Assertions.assertEquals(4, event.getComplete().size());
+    Assertions.assertTrue(event.isChanged());
   }
 }

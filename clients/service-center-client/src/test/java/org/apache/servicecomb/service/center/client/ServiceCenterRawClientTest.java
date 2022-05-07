@@ -22,8 +22,8 @@ import java.util.Arrays;
 
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
@@ -63,13 +63,13 @@ public class ServiceCenterRawClientTest {
     HttpResponse actualPutResponse = client.putHttpRequest(null, null, null);
     HttpResponse actualDeleteResponse = client.putHttpRequest(null, null, null);
 
-    Assert.assertNotNull(actualGetResponse);
-    Assert.assertEquals("ok", actualGetResponse.getContent());
-    Assert.assertNotNull(actualPostResponse);
-    Assert.assertEquals("ok", actualPostResponse.getContent());
-    Assert.assertNotNull(actualPutResponse);
-    Assert.assertEquals("ok", actualPutResponse.getContent());
-    Assert.assertNotNull(actualDeleteResponse);
-    Assert.assertEquals("ok", actualDeleteResponse.getContent());
+    Assertions.assertNotNull(actualGetResponse);
+    Assertions.assertEquals("ok", actualGetResponse.getContent());
+    Assertions.assertNotNull(actualPostResponse);
+    Assertions.assertEquals("ok", actualPostResponse.getContent());
+    Assertions.assertNotNull(actualPutResponse);
+    Assertions.assertEquals("ok", actualPutResponse.getContent());
+    Assertions.assertNotNull(actualDeleteResponse);
+    Assertions.assertEquals("ok", actualDeleteResponse.getContent());
   }
 }
