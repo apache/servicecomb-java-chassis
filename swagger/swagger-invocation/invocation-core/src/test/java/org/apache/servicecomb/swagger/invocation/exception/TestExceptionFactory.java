@@ -19,8 +19,8 @@ package org.apache.servicecomb.swagger.invocation.exception;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestExceptionFactory {
   @Test

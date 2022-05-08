@@ -18,8 +18,8 @@ package org.apache.servicecomb.swagger.invocation.context;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestContextUtils {
   @Test
@@ -27,7 +27,7 @@ public class TestContextUtils {
     Assertions.assertNull(ContextUtils.getFromCompletableFuture(new CompletableFuture<>()));
 
     InvocationContext context = new InvocationContext();
-    Assert
-        .assertSame(context, ContextUtils.getFromCompletableFuture(new InvocationContextCompletableFuture<>(context)));
+    Assertions
+            .assertSame(context, ContextUtils.getFromCompletableFuture(new InvocationContextCompletableFuture<>(context)));
   }
 }

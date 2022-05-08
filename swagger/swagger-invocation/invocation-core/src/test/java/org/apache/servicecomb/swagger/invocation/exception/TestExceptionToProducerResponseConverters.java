@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestExceptionToProducerResponseConverters {
   @Test

@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestSpringmvcV1V2 {
@@ -55,7 +56,7 @@ public class TestSpringmvcV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test

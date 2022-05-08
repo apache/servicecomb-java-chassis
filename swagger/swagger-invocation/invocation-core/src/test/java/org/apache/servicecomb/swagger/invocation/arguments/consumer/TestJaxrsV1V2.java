@@ -17,7 +17,6 @@
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
@@ -31,10 +30,10 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBeanParamV2;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestJaxrsV1V2 {
@@ -56,7 +55,7 @@ public class TestJaxrsV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test
@@ -77,7 +76,7 @@ public class TestJaxrsV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null,result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test
@@ -100,7 +99,7 @@ public class TestJaxrsV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test

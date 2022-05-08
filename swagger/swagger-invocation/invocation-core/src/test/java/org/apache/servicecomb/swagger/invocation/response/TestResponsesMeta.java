@@ -17,7 +17,6 @@
 package org.apache.servicecomb.swagger.invocation.response;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -27,6 +26,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestResponsesMeta {
   class ResponseMetaImpl {

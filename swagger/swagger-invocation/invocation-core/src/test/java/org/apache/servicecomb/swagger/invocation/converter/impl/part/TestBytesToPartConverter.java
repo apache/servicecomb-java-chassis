@@ -20,8 +20,8 @@ import javax.servlet.http.Part;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestBytesToPartConverter {
   BytesToPartConverter converter = new BytesToPartConverter();

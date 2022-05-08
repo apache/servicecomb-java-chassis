@@ -19,8 +19,8 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class PartToPartConverterTest {
   PartToPartConverter converter = new PartToPartConverter();

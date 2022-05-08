@@ -27,8 +27,8 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddBeanParamV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestJaxrs {
   @Test

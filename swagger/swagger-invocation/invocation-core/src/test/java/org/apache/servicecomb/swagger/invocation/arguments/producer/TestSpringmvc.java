@@ -25,10 +25,9 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV1;
-import org.apache.servicecomb.swagger.invocation.schemas.models.AddBeanParamV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSpringmvc {
   @Test

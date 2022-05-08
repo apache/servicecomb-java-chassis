@@ -31,10 +31,10 @@ import org.apache.servicecomb.swagger.invocation.schemas.ConsumerAddWithContext;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestPojoV1V1 {

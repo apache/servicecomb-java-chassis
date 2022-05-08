@@ -30,10 +30,10 @@ import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("unchecked")
 public class TestSpringmvcV2V2 {

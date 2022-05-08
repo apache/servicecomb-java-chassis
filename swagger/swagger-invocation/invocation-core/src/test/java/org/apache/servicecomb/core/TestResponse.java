@@ -27,6 +27,7 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestResponse {
   Response response;
@@ -41,8 +42,8 @@ public class TestResponse {
   @Test
   public void testAr() {
     ar.success(Status.ACCEPTED, 1);
-    Assertions.assertEquals(true, response.isSucceed());
-    Assertions.assertEquals(false, response.isFailed());
+    Assertions.assertTrue(response.isSucceed());
+    Assertions.assertFalse(response.isFailed());
     Assertions.assertEquals(1, (int) response.getResult());
     Assertions.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatusCode());
     Assertions.assertEquals(Status.ACCEPTED.getReasonPhrase(), response.getReasonPhrase());

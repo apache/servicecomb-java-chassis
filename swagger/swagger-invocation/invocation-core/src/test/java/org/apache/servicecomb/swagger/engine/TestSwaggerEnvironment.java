@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSwaggerEnvironment {
   private static final SwaggerEnvironment env = new SwaggerEnvironment();

@@ -22,8 +22,8 @@ import java.util.List;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PartListToPartListConverterTest {
   PartListToPartListConverter converter = new PartListToPartListConverter();
