@@ -25,27 +25,27 @@ import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.Base
 import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.Hello2Endpoint;
 import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.HelloEndpoint;
 import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.ServiceInterface;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestMethodUtils {
   @Test
   public void testGetClassMethods() throws Exception {
     List<Method> methods = MethodUtils.findSwaggerMethods(Hello2Endpoint.class);
-    Assert.assertEquals(3, methods.size());
-    Assert.assertEquals(Hello2Endpoint.class, methods.get(0).getDeclaringClass());
-    Assert.assertEquals(Hello2Endpoint.class, methods.get(1).getDeclaringClass());
-    Assert.assertEquals(Hello2Endpoint.class, methods.get(2).getDeclaringClass());
+    Assertions.assertEquals(3, methods.size());
+    Assertions.assertEquals(Hello2Endpoint.class, methods.get(0).getDeclaringClass());
+    Assertions.assertEquals(Hello2Endpoint.class, methods.get(1).getDeclaringClass());
+    Assertions.assertEquals(Hello2Endpoint.class, methods.get(2).getDeclaringClass());
 
     methods = MethodUtils.findSwaggerMethods(HelloEndpoint.class);
-    Assert.assertEquals(2, methods.size());
-    Assert.assertEquals(HelloEndpoint.class, methods.get(0).getDeclaringClass()); // get
-    Assert.assertEquals(AbstractBaseClass.class, methods.get(1).getDeclaringClass()); // getBase
+    Assertions.assertEquals(2, methods.size());
+    Assertions.assertEquals(HelloEndpoint.class, methods.get(0).getDeclaringClass()); // get
+    Assertions.assertEquals(AbstractBaseClass.class, methods.get(1).getDeclaringClass()); // getBase
 
     methods = MethodUtils.findSwaggerMethods(ServiceInterface.class);
-    Assert.assertEquals(3, methods.size());
-    Assert.assertEquals(BaseInterface.class, methods.get(0).getDeclaringClass()); // get
-    Assert.assertEquals(BaseInterface.class, methods.get(1).getDeclaringClass()); // getArray
-    Assert.assertEquals(ServiceInterface.class, methods.get(2).getDeclaringClass()); // getBase
+    Assertions.assertEquals(3, methods.size());
+    Assertions.assertEquals(BaseInterface.class, methods.get(0).getDeclaringClass()); // get
+    Assertions.assertEquals(BaseInterface.class, methods.get(1).getDeclaringClass()); // getArray
+    Assertions.assertEquals(ServiceInterface.class, methods.get(2).getDeclaringClass()); // getBase
   }
 }

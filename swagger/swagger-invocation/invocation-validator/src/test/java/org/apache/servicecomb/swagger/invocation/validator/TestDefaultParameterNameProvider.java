@@ -101,7 +101,7 @@ public class TestDefaultParameterNameProvider {
     method = validatorForTest.getMethod("setTest", String.class);
     MatcherAssert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("grade"));
     method = validatorForTest.getMethod("getNumber");
-    Assert.assertTrue(parameterNameProvider.getParameterNames(method).isEmpty());
+    Assertions.assertTrue(parameterNameProvider.getParameterNames(method).isEmpty());
     method = validatorForTest.getMethod("setNumber", int.class);
     MatcherAssert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("number"));
   }
@@ -111,7 +111,7 @@ public class TestDefaultParameterNameProvider {
     Constructor<ValidatorForTest> constructor = validatorForTest.getConstructor(String.class, int.class);
     MatcherAssert.assertThat(parameterNameProvider.getParameterNames(constructor), Matchers.contains("grade", "number"));
     constructor = validatorForTest.getConstructor();
-    Assert.assertTrue(parameterNameProvider.getParameterNames(constructor).isEmpty());
+    Assertions.assertTrue(parameterNameProvider.getParameterNames(constructor).isEmpty());
 
   }
 }

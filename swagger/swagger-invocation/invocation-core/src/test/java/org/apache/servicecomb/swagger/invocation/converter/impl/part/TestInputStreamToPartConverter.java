@@ -32,12 +32,12 @@ public class TestInputStreamToPartConverter {
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(InputStream.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(InputStream.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test

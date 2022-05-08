@@ -290,27 +290,27 @@ public class TestSwaggerUtils {
     when(param.getVendorExtensions()).thenReturn(extensions);
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-    Assert.assertTrue(SwaggerUtils.isRawJsonType(param));
+    Assertions.assertTrue(SwaggerUtils.isRawJsonType(param));
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
-    Assert.assertFalse(SwaggerUtils.isRawJsonType(param));
+    Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
   }
 
   @Test
   public void isComplexProperty() {
     Property property = new RefProperty("ref");
-    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new ObjectProperty();
-    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new MapProperty();
-    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new ArrayProperty(new ObjectProperty());
-    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
 
     property = new ArrayProperty(new StringProperty());
-    Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
+    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
     property = new StringProperty();
-    Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
+    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
   }
 
   private static class AllTypeTest1 {

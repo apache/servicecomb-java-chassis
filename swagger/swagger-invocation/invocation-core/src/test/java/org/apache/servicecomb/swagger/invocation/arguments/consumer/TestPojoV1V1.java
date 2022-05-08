@@ -62,11 +62,11 @@ public class TestPojoV1V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("addBody");
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -84,11 +84,11 @@ public class TestPojoV1V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("addBody");
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -105,7 +105,7 @@ public class TestPojoV1V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertSame(arguments.get("addBody"), result.get("addBody"));
+    Assertions.assertSame(arguments.get("addBody"), result.get("addBody"));
   }
 
   @Test
@@ -121,12 +121,12 @@ public class TestPojoV1V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     AddWrapperV1 wrapperV1 = (AddWrapperV1) result.get("addBody");
-    Assert.assertEquals(1, wrapperV1.getX());
-    Assert.assertEquals(2, wrapperV1.y);
+    Assertions.assertEquals(1, wrapperV1.getX());
+    Assertions.assertEquals(2, wrapperV1.y);
 
-    Assert.assertSame(arguments.get("addBody"), result.get("addBody"));
+    Assertions.assertSame(arguments.get("addBody"), result.get("addBody"));
   }
 
   @Test
@@ -151,18 +151,18 @@ public class TestPojoV1V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("addBody");
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, result.get("x"));
-    Assert.assertEquals(2, result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, result.get("x"));
+    Assertions.assertEquals(2, result.get("y"));
 
-    Assert.assertEquals(2, invocation.getContext().size());
-    Assert.assertEquals("v1", invocation.getContext().get("k1"));
-    Assert.assertEquals("v2", invocation.getContext().get("k2"));
+    Assertions.assertEquals(2, invocation.getContext().size());
+    Assertions.assertEquals("v1", invocation.getContext().get("k1"));
+    Assertions.assertEquals("v2", invocation.getContext().get("k2"));
 
-    Assert.assertEquals(2, invocation.getLocalContext().size());
-    Assert.assertEquals("v3", invocation.getLocalContext().get("k3"));
-    Assert.assertEquals("v4", invocation.getLocalContext().get("k4"));
+    Assertions.assertEquals(2, invocation.getLocalContext().size());
+    Assertions.assertEquals("v3", invocation.getLocalContext().get("k3"));
+    Assertions.assertEquals("v4", invocation.getLocalContext().get("k4"));
   }
 }

@@ -18,8 +18,6 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.core.MediaType;
 
@@ -45,6 +43,7 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.SwaggerDefinition.Scheme;
 import io.swagger.annotations.Tag;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class SwaggerDefinitionProcessorTest {
   @Api(consumes = MediaType.APPLICATION_XML, produces = MediaType.APPLICATION_XML)
@@ -113,20 +112,20 @@ public class SwaggerDefinitionProcessorTest {
   public void testProcess() {
     Swagger swagger = SwaggerGenerator.generate(SwaggerTestTarget.class);
 
-    assertEquals(1, swagger.getTags().size());
+    Assertions.assertEquals(1, swagger.getTags().size());
     io.swagger.models.Tag tag = swagger.getTags().get(0);
-    assertEquals("testTag", tag.getName());
-    assertEquals("desc", tag.getDescription());
-    assertEquals("testValue", tag.getExternalDocs().getDescription());
-    assertEquals("testUrl", tag.getExternalDocs().getUrl());
-    assertEquals("127.0.0.1", swagger.getHost());
+    Assertions.assertEquals("testTag", tag.getName());
+    Assertions.assertEquals("desc", tag.getDescription());
+    Assertions.assertEquals("testValue", tag.getExternalDocs().getDescription());
+    Assertions.assertEquals("testUrl", tag.getExternalDocs().getUrl());
+    Assertions.assertEquals("127.0.0.1", swagger.getHost());
     MatcherAssert.assertThat(swagger.getSchemes(), contains(io.swagger.models.Scheme.HTTP, io.swagger.models.Scheme.HTTPS));
     io.swagger.models.Info info = swagger.getInfo();
-    assertEquals("title", info.getTitle());
-    assertEquals("version", info.getVersion());
-    assertEquals("desc", info.getDescription());
-    assertEquals("contactName", info.getContact().getName());
-    assertEquals("licenseName", info.getLicense().getName());
+    Assertions.assertEquals("title", info.getTitle());
+    Assertions.assertEquals("version", info.getVersion());
+    Assertions.assertEquals("desc", info.getDescription());
+    Assertions.assertEquals("contactName", info.getContact().getName());
+    Assertions.assertEquals("licenseName", info.getLicense().getName());
     MatcherAssert.assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
     MatcherAssert.assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
   }

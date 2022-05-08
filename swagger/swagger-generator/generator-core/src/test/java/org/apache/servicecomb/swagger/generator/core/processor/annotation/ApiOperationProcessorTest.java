@@ -18,9 +18,6 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -33,9 +30,11 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
@@ -126,7 +125,7 @@ public class ApiOperationProcessorTest {
   @Test
   public void testConvertTagsOnMethodWithNoTag() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("functionWithNoTag");
-    assertNull(swaggerOperation.getOperation().getTags());
+    Assertions.assertNull(swaggerOperation.getOperation().getTags());
   }
 
   @Test
@@ -142,8 +141,8 @@ public class ApiOperationProcessorTest {
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
 
     swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
-    assertNull(swaggerOperation.getOperation().getConsumes());
-    assertNull(swaggerOperation.getOperation().getProduces());
+    Assertions.assertNull(swaggerOperation.getOperation().getConsumes());
+    Assertions.assertNull(swaggerOperation.getOperation().getProduces());
 
     swaggerOperation.getOperation().addConsumes(MediaType.TEXT_HTML);
     swaggerOperation.getOperation().addProduces(MediaType.TEXT_HTML);
@@ -156,9 +155,9 @@ public class ApiOperationProcessorTest {
   public void testBodyParam() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
     Map<String, Property> properties = swaggerOperation.getSwagger().getDefinitions().get("TestBodyBean").getProperties();
-    assertTrue("Support NotBlank annotation", properties.get("age").getRequired());
-    assertTrue("Support NotEmpty annotation", properties.get("sexes").getRequired());
-    assertTrue("Original support NotNull annotation", properties.get("name").getRequired());
+    Assertions.assertTrue(properties.get("age").getRequired(), "Support NotBlank annotation");
+    Assertions.assertTrue(properties.get("sexes").getRequired(), "Support NotEmpty annotation");
+    Assertions.assertTrue(properties.get("name").getRequired(), "Original support NotNull annotation");
   }
 
 }

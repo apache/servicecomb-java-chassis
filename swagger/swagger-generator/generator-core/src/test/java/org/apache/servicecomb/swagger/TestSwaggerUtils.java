@@ -44,7 +44,7 @@ public class TestSwaggerUtils {
     String content = SwaggerUtils.swaggerToString(swagger);
 
     Swagger newSwagger = SwaggerUtils.parseSwagger(content);
-    Assert.assertEquals(swagger, newSwagger);
+    Assertions.assertEquals(swagger, newSwagger);
   }
 
   @Test
@@ -72,7 +72,7 @@ public class TestSwaggerUtils {
 
     Swagger swagger = Yaml.mapper().readValue(content, Swagger.class);
     Swagger result = SwaggerUtils.parseSwagger(url);
-    Assert.assertEquals(swagger, result);
+    Assertions.assertEquals(swagger, result);
   }
 
   @Test
@@ -104,7 +104,7 @@ public class TestSwaggerUtils {
     operation.addResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertEquals("response of 200", response.getDescription());
+    Assertions.assertEquals("response of 200", response.getDescription());
   }
 
   @Test
@@ -116,7 +116,7 @@ public class TestSwaggerUtils {
     operation.addResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertEquals("description", response.getDescription());
+    Assertions.assertEquals("description", response.getDescription());
   }
 
   @Test
@@ -127,7 +127,7 @@ public class TestSwaggerUtils {
     operation.addResponse("default", response);
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertSame(response, operation.getResponses().get("200"));
+    Assertions.assertSame(response, operation.getResponses().get("200"));
   }
 
   @Test
@@ -140,7 +140,7 @@ public class TestSwaggerUtils {
     operation.addResponse("301", new Response());
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertSame(response, operation.getResponses().get("200"));
+    Assertions.assertSame(response, operation.getResponses().get("200"));
   }
 
   @Test
@@ -166,7 +166,7 @@ public class TestSwaggerUtils {
 
     SwaggerUtils.correctResponses(swagger);
 
-    Assert.assertEquals("response of 200", response.getDescription());
+    Assertions.assertEquals("response of 200", response.getDescription());
   }
 
   @Test(expected = ServiceCombException.class)

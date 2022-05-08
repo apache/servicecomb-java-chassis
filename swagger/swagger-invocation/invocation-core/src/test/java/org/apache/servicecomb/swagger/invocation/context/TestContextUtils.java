@@ -24,7 +24,7 @@ import org.junit.Test;
 public class TestContextUtils {
   @Test
   public void getFromCompletableFuture() {
-    Assert.assertNull(ContextUtils.getFromCompletableFuture(new CompletableFuture<>()));
+    Assertions.assertNull(ContextUtils.getFromCompletableFuture(new CompletableFuture<>()));
 
     InvocationContext context = new InvocationContext();
     Assert

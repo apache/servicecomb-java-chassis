@@ -43,9 +43,9 @@ public class TestJaxrs {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -60,10 +60,10 @@ public class TestJaxrs {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     AddBeanParamV1 paramV1 = (AddBeanParamV1) result.get("wrapper");
-    Assert.assertEquals(1, paramV1.getX());
-    Assert.assertEquals(2, paramV1.y);
+    Assertions.assertEquals(1, paramV1.getX());
+    Assertions.assertEquals(2, paramV1.y);
   }
 
   @Test
@@ -78,7 +78,7 @@ public class TestJaxrs {
     SwaggerInvocation invocation = new SwaggerInvocation();
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
-    Assert.assertSame(addBody, result.get("addBody"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertSame(addBody, result.get("addBody"));
   }
 }

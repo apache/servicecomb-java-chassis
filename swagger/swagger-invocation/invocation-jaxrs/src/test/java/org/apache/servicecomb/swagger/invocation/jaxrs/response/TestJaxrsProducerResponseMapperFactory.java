@@ -28,12 +28,12 @@ public class TestJaxrsProducerResponseMapperFactory {
 
   @Test
   public void isMatch_true() {
-    Assert.assertTrue(factory.isMatch(Response.class));
+    Assertions.assertTrue(factory.isMatch(Response.class));
   }
 
   @Test
   public void isMatch_false() {
-    Assert.assertFalse(factory.isMatch(String.class));
+    Assertions.assertFalse(factory.isMatch(String.class));
   }
 
   @Test

@@ -28,7 +28,7 @@ public class TestExceptionFactory {
     Error error = new Error("test");
     Response response = ExceptionFactory.convertExceptionToResponse(null, error);
 
-    Assert.assertSame(Status.OK, response.getStatus());
-    Assert.assertEquals("response from error: test", response.getResult());
+    Assertions.assertSame(Status.OK, response.getStatus());
+    Assertions.assertEquals("response from error: test", response.getResult());
   }
 }

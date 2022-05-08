@@ -29,36 +29,37 @@ import org.junit.Test;
 
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.parameters.PathParameter;
+import org.junit.jupiter.api.Assertions;
 
 @SwaggerDefinition
 public class TestClassUtils {
   @Test
   public void testHasAnnotation() {
-    Assert.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
-    Assert.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, Test.class));
+    Assertions.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
+    Assertions.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, Test.class));
 
-    Assert.assertFalse(SwaggerUtils.hasAnnotation(TestClassUtils.class, Path.class));
+    Assertions.assertFalse(SwaggerUtils.hasAnnotation(TestClassUtils.class, Path.class));
   }
 
   @Test
   public void isRawJsonType() {
     PathParameter param = new PathParameter();
 
-    Assert.assertFalse(SwaggerUtils.isRawJsonType(param));
+    Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
 
     param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.FALSE);
-    Assert.assertFalse(SwaggerUtils.isRawJsonType(param));
+    Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
 
     param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.TRUE);
-    Assert.assertTrue(SwaggerUtils.isRawJsonType(param));
+    Assertions.assertTrue(SwaggerUtils.isRawJsonType(param));
   }
 
   @Test
   public void getClassName_noName() {
-    Assert.assertNull(SwaggerUtils.getClassName(null));
+    Assertions.assertNull(SwaggerUtils.getClassName(null));
 
     Map<String, Object> vendorExtensions = new HashMap<>();
-    Assert.assertNull(SwaggerUtils.getClassName(vendorExtensions));
+    Assertions.assertNull(SwaggerUtils.getClassName(vendorExtensions));
   }
 
   @Test
@@ -66,14 +67,14 @@ public class TestClassUtils {
     Map<String, Object> vendorExtensions = new HashMap<>();
     vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, String.class.getName());
 
-    Assert.assertSame(String.class.getName(), SwaggerUtils.getClassName(vendorExtensions));
+    Assertions.assertSame(String.class.getName(), SwaggerUtils.getClassName(vendorExtensions));
   }
 
   @Test
   public void getInterfaceName_noName() {
     Map<String, Object> vendorExtensions = new HashMap<>();
 
-    Assert.assertNull(SwaggerUtils.getInterfaceName(vendorExtensions));
+    Assertions.assertNull(SwaggerUtils.getInterfaceName(vendorExtensions));
   }
 
   @Test
@@ -81,6 +82,6 @@ public class TestClassUtils {
     Map<String, Object> vendorExtensions = new HashMap<>();
     vendorExtensions.put(SwaggerConst.EXT_JAVA_INTF, String.class.getName());
 
-    Assert.assertSame(String.class.getName(), SwaggerUtils.getInterfaceName(vendorExtensions));
+    Assertions.assertSame(String.class.getName(), SwaggerUtils.getInterfaceName(vendorExtensions));
   }
 }

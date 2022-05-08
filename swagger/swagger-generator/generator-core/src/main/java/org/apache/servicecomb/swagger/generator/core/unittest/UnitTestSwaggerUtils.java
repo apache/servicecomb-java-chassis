@@ -24,13 +24,13 @@ import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
+import org.junit.jupiter.api.Assertions;
 
 public final class UnitTestSwaggerUtils {
   private static final ObjectWriter writer = Yaml.pretty();
@@ -83,7 +83,7 @@ public final class UnitTestSwaggerUtils {
     }
 
     if (!Objects.equals(expectSchema, schema)) {
-      Assert.assertEquals(expectSchema, schema);
+      Assertions.assertEquals(expectSchema, schema);
     }
 
     return generator;
@@ -100,26 +100,26 @@ public final class UnitTestSwaggerUtils {
     }
 
     // 不允许成功
-    Assert.assertEquals("not allowed run to here", "run to here");
+    Assertions.assertEquals("not allowed run to here", "run to here");
     return null;
   }
 
   public static void testException(String expectMsgLevel1, String expectMsgLevel2, String expectMsgLevel3, Class<?> cls,
       String... methods) {
     Throwable exception = getException(cls, methods);
-    Assert.assertEquals(expectMsgLevel1, exception.getMessage());
-    Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
-    Assert.assertEquals(expectMsgLevel3, exception.getCause().getCause().getMessage());
+    Assertions.assertEquals(expectMsgLevel1, exception.getMessage());
+    Assertions.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
+    Assertions.assertEquals(expectMsgLevel3, exception.getCause().getCause().getMessage());
   }
 
   public static void testException(String expectMsgLevel1, String expectMsgLevel2, Class<?> cls, String... methods) {
     Throwable exception = getException(cls, methods);
-    Assert.assertEquals(expectMsgLevel1, exception.getMessage());
-    Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
+    Assertions.assertEquals(expectMsgLevel1, exception.getMessage());
+    Assertions.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
   }
 
   public static void testException(String expectMsg, Class<?> cls, String... methods) {
     Throwable exception = getException(cls, methods);
-    Assert.assertEquals(expectMsg, exception.getMessage());
+    Assertions.assertEquals(expectMsg, exception.getMessage());
   }
 }

@@ -18,8 +18,6 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -28,6 +26,8 @@ import io.swagger.models.Path;
 import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestApiImplicitParams {
   interface ApiImplicitParamsAnnotation {
@@ -46,7 +46,7 @@ public class TestApiImplicitParams {
     Operation operation = path.getOperations().get(0);
     BodyParameter parameter = (BodyParameter) operation.getParameters().get(0);
 
-    Assert.assertEquals("body", parameter.getName());
-    Assert.assertEquals("User", ((RefModel) parameter.getSchema()).getSimpleRef());
+    Assertions.assertEquals("body", parameter.getName());
+    Assertions.assertEquals("User", ((RefModel) parameter.getSchema()).getSimpleRef());
   }
 }

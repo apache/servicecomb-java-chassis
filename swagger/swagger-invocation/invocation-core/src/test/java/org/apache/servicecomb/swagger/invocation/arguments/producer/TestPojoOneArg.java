@@ -33,7 +33,7 @@ public class TestPojoOneArg {
   public void should_mapper_swagger_wrapped_body_field_to_producer_enum() {
     SwaggerProducer swaggerProducer = new SwaggerEnvironment().createProducer(new PojoOneArg(), null);
     SwaggerProducerOperation swaggerProducerOperation = swaggerProducer.findOperation("enumBody");
-    Assert.assertEquals("color",
+    Assertions.assertEquals("color",
         swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().get(0).getName());
 
     ProducerArgumentsMapper mapper = swaggerProducerOperation.getArgumentsMapper();
@@ -46,7 +46,7 @@ public class TestPojoOneArg {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, swaggerArguments);
 
-    Assert.assertEquals(1, result.size());
-    Assert.assertSame(Color.BLUE, result.get("color"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertSame(Color.BLUE, result.get("color"));
   }
 }

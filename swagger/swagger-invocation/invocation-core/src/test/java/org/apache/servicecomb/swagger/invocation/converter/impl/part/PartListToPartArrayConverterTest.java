@@ -31,12 +31,12 @@ public class PartListToPartArrayConverterTest {
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part[].class.getCanonicalName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part[].class.getCanonicalName(), converter.getTargetType().getTypeName());
   }
 
   @Test
@@ -47,6 +47,6 @@ public class PartListToPartArrayConverterTest {
 
   @Test
   public void should_got_null_when_convert_null() {
-    Assert.assertNull(converter.convert(null));
+    Assertions.assertNull(converter.convert(null));
   }
 }

@@ -65,7 +65,7 @@ public class TestSwaggerEnvironment {
     Swagger swagger = SwaggerGenerator.generate(ContractIntf.class);
     SwaggerConsumer swaggerConsumer = env.createConsumer(ConsumerIntf.class, swagger);
 
-    Assert.assertNotNull(swaggerConsumer.findOperation("exist"));
-    Assert.assertNull(swaggerConsumer.findOperation("notExist"));
+    Assertions.assertNotNull(swaggerConsumer.findOperation("exist"));
+    Assertions.assertNull(swaggerConsumer.findOperation("notExist"));
   }
 }

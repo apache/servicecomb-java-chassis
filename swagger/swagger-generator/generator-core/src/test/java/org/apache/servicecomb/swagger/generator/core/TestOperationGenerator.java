@@ -18,8 +18,6 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -37,6 +35,7 @@ import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.Response;
+import org.junit.jupiter.api.Assertions;
 
 public class TestOperationGenerator {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
@@ -81,7 +80,7 @@ public class TestOperationGenerator {
     SwaggerOperation operation = swaggerOperations.findOperation("apiOperationNoTag");
     List<String> tags = operation.getOperation().getTags();
     MatcherAssert.assertThat(tags, contains("default0", "default1"));
-    assertEquals("value2", operation.getOperation().getSummary());
+    Assertions.assertEquals("value2", operation.getOperation().getSummary());
   }
 
   @Test
@@ -89,7 +88,7 @@ public class TestOperationGenerator {
     SwaggerOperation operation = swaggerOperations.findOperation("noApiOperation");
     List<String> tags = operation.getOperation().getTags();
     MatcherAssert.assertThat(tags, contains("default0", "default1"));
-    assertNull(operation.getOperation().getSummary());
+    Assertions.assertNull(operation.getOperation().getSummary());
   }
 
   @Test
@@ -99,10 +98,10 @@ public class TestOperationGenerator {
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
-    assertEquals("200 is ok............", response.getDescription());
-    Assert.assertNotNull(response.getHeaders().get("x-user-domain"));
-    Assert.assertNull(response.getHeaders().get("x-user-name"));
-    Assert.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
+    Assertions.assertEquals("200 is ok............", response.getDescription());
+    Assertions.assertNotNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertNull(response.getHeaders().get("x-user-name"));
+    Assertions.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
   }
 
   @Test
@@ -112,9 +111,9 @@ public class TestOperationGenerator {
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
-    assertEquals("200 is ok............", response.getDescription());
-    Assert.assertNull(response.getHeaders().get("x-user-domain"));
-    Assert.assertNotNull(response.getHeaders().get("x-user-name"));
-    Assert.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
+    Assertions.assertEquals("200 is ok............", response.getDescription());
+    Assertions.assertNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
+    Assertions.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
   }
 }

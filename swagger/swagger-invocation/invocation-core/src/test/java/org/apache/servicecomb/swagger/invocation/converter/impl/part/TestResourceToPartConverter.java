@@ -33,12 +33,12 @@ public class TestResourceToPartConverter {
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(Resource.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(Resource.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test

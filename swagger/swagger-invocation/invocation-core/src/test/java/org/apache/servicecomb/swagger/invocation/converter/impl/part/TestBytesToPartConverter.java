@@ -28,12 +28,12 @@ public class TestBytesToPartConverter {
 
   @Test
   public void getSrcType() {
-    Assert.assertSame(byte[].class, converter.getSrcType());
+    Assertions.assertSame(byte[].class, converter.getSrcType());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test

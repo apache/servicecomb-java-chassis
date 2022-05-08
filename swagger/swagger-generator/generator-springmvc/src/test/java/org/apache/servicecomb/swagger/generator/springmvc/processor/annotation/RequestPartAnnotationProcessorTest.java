@@ -51,7 +51,7 @@ public class RequestPartAnnotationProcessorTest {
 
   @Test
   public void getProcessType() {
-    Assert.assertEquals(requestPartAnnotationProcessor.getProcessType(),
+    Assertions.assertEquals(requestPartAnnotationProcessor.getProcessType(),
         RequestPart.class);
   }
 

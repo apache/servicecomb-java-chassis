@@ -43,6 +43,7 @@ import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestApiOperation {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiOperationAnnotation.class);
@@ -112,62 +113,62 @@ public class TestApiOperation {
   private void testSet(Path path) {
     Operation operation = path.getPost();
     Model result200 = operation.getResponses().get("200").getResponseSchema();
-    Assert.assertEquals(ArrayModel.class, result200.getClass());
-    Assert.assertEquals(true, ((ArrayModel) result200).getUniqueItems());
+    Assertions.assertEquals(ArrayModel.class, result200.getClass());
+    Assertions.assertEquals(true, ((ArrayModel) result200).getUniqueItems());
   }
 
   private void testList(Path path) {
     Operation operation = path.getPost();
     Model result200 = operation.getResponses().get("200").getResponseSchema();
-    Assert.assertEquals(ArrayModel.class, result200.getClass());
-    Assert.assertEquals(null, ((ArrayModel) result200).getUniqueItems());
+    Assertions.assertEquals(ArrayModel.class, result200.getClass());
+    Assertions.assertEquals(null, ((ArrayModel) result200).getUniqueItems());
   }
 
   private void testMap(Path path) {
     Operation operation = path.getPost();
     Model result200 = operation.getResponses().get("200").getResponseSchema();
-    Assert.assertEquals(ModelImpl.class, result200.getClass());
-    Assert.assertTrue(((ModelImpl) result200).getAdditionalProperties() != null);
+    Assertions.assertEquals(ModelImpl.class, result200.getClass());
+    Assertions.assertTrue(((ModelImpl) result200).getAdditionalProperties() != null);
   }
 
   private void testPrimitive(Path path) {
     Operation operation = path.getPost();
 
-    Assert.assertEquals(2, operation.getResponses().size());
+    Assertions.assertEquals(2, operation.getResponses().size());
 
     ModelImpl result200 = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
-    Assert.assertEquals("integer", result200.getType());
-    Assert.assertEquals("int32", result200.getFormat());
+    Assertions.assertEquals("integer", result200.getType());
+    Assertions.assertEquals("int32", result200.getFormat());
 
     ModelImpl result202 = (ModelImpl) operation.getResponses().get("202").getResponseSchema();
-    Assert.assertEquals("string", result202.getType());
-    Assert.assertEquals(null, result202.getFormat());
+    Assertions.assertEquals("string", result202.getType());
+    Assertions.assertEquals(null, result202.getFormat());
   }
 
   private void testBase(Path path) {
-    Assert.assertEquals(1, path.getOperations().size());
+    Assertions.assertEquals(1, path.getOperations().size());
 
     Operation operation = path.getGet();
 
-    Assert.assertEquals("summary", operation.getSummary());
-    Assert.assertEquals("notes", operation.getDescription());
-    Assert.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
-    Assert.assertEquals(Arrays.asList("application/json"), operation.getProduces());
-    Assert.assertEquals(Arrays.asList("application/json"), operation.getConsumes());
-    Assert.assertEquals(Arrays.asList(Scheme.HTTP, Scheme.HTTPS), operation.getSchemes());
+    Assertions.assertEquals("summary", operation.getSummary());
+    Assertions.assertEquals("notes", operation.getDescription());
+    Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
+    Assertions.assertEquals(Arrays.asList("application/json"), operation.getProduces());
+    Assertions.assertEquals(Arrays.asList("application/json"), operation.getConsumes());
+    Assertions.assertEquals(Arrays.asList(Scheme.HTTP, Scheme.HTTPS), operation.getSchemes());
 
     Map<String, Response> responseMap = operation.getResponses();
-    Assert.assertEquals(2, responseMap.size());
+    Assertions.assertEquals(2, responseMap.size());
 
     Response response = responseMap.get(SwaggerConst.SUCCESS_KEY);
-    Assert.assertNotNull(response);
-    Assert.assertEquals(null, response.getResponseSchema());
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(null, response.getResponseSchema());
 
     response = responseMap.get("202");
-    Assert.assertNotNull(response);
-    Assert.assertEquals(null, response.getResponseSchema());
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(null, response.getResponseSchema());
 
-    Assert.assertEquals(1, response.getHeaders().size());
-    Assert.assertEquals("integer", response.getHeaders().get("h1").getType());
+    Assertions.assertEquals(1, response.getHeaders().size());
+    Assertions.assertEquals("integer", response.getHeaders().get("h1").getType());
   }
 }

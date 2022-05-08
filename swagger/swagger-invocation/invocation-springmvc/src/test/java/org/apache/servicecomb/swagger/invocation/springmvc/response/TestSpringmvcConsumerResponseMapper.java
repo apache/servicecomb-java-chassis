@@ -60,8 +60,8 @@ public class TestSpringmvcConsumerResponseMapper {
     @SuppressWarnings("unchecked")
     ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
         .mapResponse(response);
-    Assert.assertEquals(result, responseEntity.getBody());
-    Assert.assertTrue(responseEntity.getHeaders().isEmpty());
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertTrue(responseEntity.getHeaders().isEmpty());
   }
 
   @Test
@@ -72,8 +72,8 @@ public class TestSpringmvcConsumerResponseMapper {
     @SuppressWarnings("unchecked")
     ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
         .mapResponse(response);
-    Assert.assertEquals(result, responseEntity.getBody());
-    Assert.assertEquals(1, responseEntity.getHeaders().size());
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertEquals(1, responseEntity.getHeaders().size());
     MatcherAssert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v"));
   }
 
@@ -84,8 +84,8 @@ public class TestSpringmvcConsumerResponseMapper {
     @SuppressWarnings("unchecked")
     ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
         .mapResponse(response);
-    Assert.assertEquals(result, responseEntity.getBody());
-    Assert.assertTrue(responseEntity.getHeaders().isEmpty());
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertTrue(responseEntity.getHeaders().isEmpty());
   }
 
   @Test
@@ -97,8 +97,8 @@ public class TestSpringmvcConsumerResponseMapper {
     @SuppressWarnings("unchecked")
     ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
         .mapResponse(response);
-    Assert.assertEquals(result, responseEntity.getBody());
-    Assert.assertEquals(1, responseEntity.getHeaders().size());
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertEquals(1, responseEntity.getHeaders().size());
     MatcherAssert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v1", "v2"));
   }
 }

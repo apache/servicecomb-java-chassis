@@ -27,17 +27,17 @@ public class PartToPartConverterTest {
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(Part.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test
   public void convert() {
     Part part = new FilePart("name", "file");
-    Assert.assertSame(part, converter.convert(part));
+    Assertions.assertSame(part, converter.convert(part));
   }
 }

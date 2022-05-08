@@ -31,12 +31,12 @@ public class TestFileToPartConverter {
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(File.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(File.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test

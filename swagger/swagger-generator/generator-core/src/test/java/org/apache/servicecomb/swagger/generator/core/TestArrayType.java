@@ -26,6 +26,7 @@ import org.junit.Test;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.properties.ByteArrayProperty;
+import org.junit.jupiter.api.Assertions;
 
 public class TestArrayType {
   @Test
@@ -35,11 +36,11 @@ public class TestArrayType {
     BodyParameter bodyParameter = (BodyParameter) swaggerOperation.getOperation().getParameters().get(0);
     ModelImpl model = SwaggerUtils.getModelImpl(swaggerOperations.getSwagger(), bodyParameter);
 
-    Assert.assertEquals(ModelImpl.OBJECT, model.getType());
-    Assert.assertEquals(1, model.getProperties().size());
+    Assertions.assertEquals(ModelImpl.OBJECT, model.getType());
+    Assertions.assertEquals(1, model.getProperties().size());
 
     ByteArrayProperty byteArrayProperty = (ByteArrayProperty) model.getProperties().get("value");
-    Assert.assertEquals("string", byteArrayProperty.getType());
-    Assert.assertEquals("byte", byteArrayProperty.getFormat());
+    Assertions.assertEquals("string", byteArrayProperty.getType());
+    Assertions.assertEquals("byte", byteArrayProperty.getFormat());
   }
 }

@@ -24,7 +24,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.fail;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 
 import brave.Span;
@@ -48,6 +48,7 @@ import brave.Tracer.SpanInScope;
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
+import org.junit.jupiter.api.Assertions;
 
 public class ZipkinTracingAdviserTest {
   private static final int nThreads = 10;
@@ -123,7 +124,7 @@ public class ZipkinTracingAdviserTest {
         try (SpanInScope spanInScope = tracing.tracer().withSpanInScope(currentSpan)) {
           MatcherAssert.assertThat(tracingAdviser.invoke(spanName, path, supplier), is(expected));
         } catch (Throwable throwable) {
-          fail(throwable.getMessage());
+          Assertions.fail(throwable.getMessage());
         } finally {
           currentSpan.finish();
         }

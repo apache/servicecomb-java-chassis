@@ -55,7 +55,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(name, multipartFile.getName());
+    Assertions.assertEquals(name, multipartFile.getName());
   }
 
   @Test
@@ -68,7 +68,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(submittedFileName, multipartFile.getOriginalFilename());
+    Assertions.assertEquals(submittedFileName, multipartFile.getOriginalFilename());
   }
 
   @Test
@@ -81,7 +81,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(contentType, multipartFile.getContentType());
+    Assertions.assertEquals(contentType, multipartFile.getContentType());
   }
 
   @Test
@@ -93,7 +93,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertTrue(multipartFile.isEmpty());
+    Assertions.assertTrue(multipartFile.isEmpty());
   }
 
   @Test
@@ -105,7 +105,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertFalse(multipartFile.isEmpty());
+    Assertions.assertFalse(multipartFile.isEmpty());
   }
 
   @Test
@@ -118,7 +118,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(size, multipartFile.getSize());
+    Assertions.assertEquals(size, multipartFile.getSize());
   }
 
   class ByteArrayInputStreamForTest extends ByteArrayInputStream {
@@ -145,8 +145,8 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertArrayEquals(bytes, multipartFile.getBytes());
-    Assert.assertTrue(is.closed);
+    Assertions.assertArrayEquals(bytes, multipartFile.getBytes());
+    Assertions.assertTrue(is.closed);
   }
 
   @Test
@@ -175,6 +175,6 @@ public class TestPartToMultipartFile {
     };
 
     multipartFile.transferTo(dest);
-    Assert.assertEquals(dest.getPath(), destName.value);
+    Assertions.assertEquals(dest.getPath(), destName.value);
   }
 }

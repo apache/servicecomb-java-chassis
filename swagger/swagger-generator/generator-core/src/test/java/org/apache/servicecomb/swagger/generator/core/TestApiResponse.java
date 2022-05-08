@@ -29,6 +29,7 @@ import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Response;
 import io.swagger.models.properties.Property;
+import org.junit.jupiter.api.Assertions;
 
 public class TestApiResponse {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
@@ -63,61 +64,61 @@ public class TestApiResponse {
   @Test
   public void checkResponseHeader() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testResponseHeader");
-    Assert.assertEquals("/testResponseHeader", swaggerOperation.getPath());
+    Assertions.assertEquals("/testResponseHeader", swaggerOperation.getPath());
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
     Property property = response.getHeaders().get("k1");
-    Assert.assertEquals("integer", property.getType());
-    Assert.assertEquals("int32", property.getFormat());
+    Assertions.assertEquals("integer", property.getType());
+    Assertions.assertEquals("int32", property.getFormat());
   }
 
   @Test
   public void checkResponseDesc() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMulti");
-    Assert.assertEquals("/testMulti", swaggerOperation.getPath());
+    Assertions.assertEquals("/testMulti", swaggerOperation.getPath());
 
     Response response1 = swaggerOperation.getOperation().getResponses().get("200");
     Response response2 = swaggerOperation.getOperation().getResponses().get("301");
-    Assert.assertEquals("msg1", response1.getDescription());
-    Assert.assertEquals("msg2", response2.getDescription());
+    Assertions.assertEquals("msg1", response1.getDescription());
+    Assertions.assertEquals("msg2", response2.getDescription());
   }
 
   @Test
   public void checkApiResponseHeader() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testApiResponseHeader");
-    Assert.assertEquals("/testApiResponseHeader", swaggerOperation.getPath());
+    Assertions.assertEquals("/testApiResponseHeader", swaggerOperation.getPath());
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
     Property property = response.getHeaders().get("k1");
-    Assert.assertEquals("integer", property.getType());
-    Assert.assertEquals("int32", property.getFormat());
+    Assertions.assertEquals("integer", property.getType());
+    Assertions.assertEquals("int32", property.getFormat());
 
     property = response.getHeaders().get("k2");
-    Assert.assertEquals("string", property.getType());
-    Assert.assertNull(property.getFormat());
+    Assertions.assertEquals("string", property.getType());
+    Assertions.assertNull(property.getFormat());
   }
 
   @Test
   public void checkSingle() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingle");
-    Assert.assertEquals("/testSingle", swaggerOperation.getPath());
+    Assertions.assertEquals("/testSingle", swaggerOperation.getPath());
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
-    Assert.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
-    Assert.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
+    Assertions.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
+    Assertions.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
   }
 
   @Test
   public void checkMulti() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMulti");
-    Assert.assertEquals("/testMulti", swaggerOperation.getPath());
+    Assertions.assertEquals("/testMulti", swaggerOperation.getPath());
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
-    Assert.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
-    Assert.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
+    Assertions.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
+    Assertions.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
 
     response = swaggerOperation.getOperation().getResponses().get("301");
-    Assert.assertEquals("string", ((ModelImpl) response.getResponseSchema()).getType());
-    Assert.assertNull(((ModelImpl) response.getResponseSchema()).getFormat());
+    Assertions.assertEquals("string", ((ModelImpl) response.getResponseSchema()).getType());
+    Assertions.assertNull(((ModelImpl) response.getResponseSchema()).getFormat());
   }
 }
