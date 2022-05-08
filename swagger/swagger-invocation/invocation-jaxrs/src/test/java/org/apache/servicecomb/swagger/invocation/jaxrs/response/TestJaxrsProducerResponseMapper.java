@@ -23,11 +23,11 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestJaxrsProducerResponseMapper {
   JaxrsProducerResponseMapper mapper = new JaxrsProducerResponseMapper();
