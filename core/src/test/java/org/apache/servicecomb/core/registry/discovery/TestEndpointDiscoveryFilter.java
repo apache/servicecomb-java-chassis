@@ -28,12 +28,12 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestEndpointDiscoveryFilter {
   EndpointDiscoveryFilter filter = new EndpointDiscoveryFilter();
@@ -61,7 +61,7 @@ public class TestEndpointDiscoveryFilter {
 
   @Test
   public void getOrder() {
-    Assert.assertEquals(Short.MAX_VALUE, filter.getOrder());
+    Assertions.assertEquals(Short.MAX_VALUE, filter.getOrder());
   }
 
   @Test
@@ -73,12 +73,12 @@ public class TestEndpointDiscoveryFilter {
       }
     };
 
-    Assert.assertEquals(Const.RESTFUL, filter.findTransportName(context, null));
+    Assertions.assertEquals(Const.RESTFUL, filter.findTransportName(context, null));
   }
 
   @Test
   public void createEndpointNullTransport() {
-    Assert.assertNull(filter.createEndpoint(null, Const.RESTFUL, "", null));
+    Assertions.assertNull(filter.createEndpoint(null, Const.RESTFUL, "", null));
   }
 
   @Test
@@ -96,9 +96,9 @@ public class TestEndpointDiscoveryFilter {
     };
 
     Endpoint ep = (Endpoint) filter.createEndpoint(null, Const.RESTFUL, endpoint, instance);
-    Assert.assertSame(transport, ep.getTransport());
-    Assert.assertSame(address, ep.getAddress());
-    Assert.assertSame(instance, ep.getMicroserviceInstance());
-    Assert.assertEquals(endpoint, ep.getEndpoint());
+    Assertions.assertSame(transport, ep.getTransport());
+    Assertions.assertSame(address, ep.getAddress());
+    Assertions.assertSame(instance, ep.getMicroserviceInstance());
+    Assertions.assertEquals(endpoint, ep.getEndpoint());
   }
 }

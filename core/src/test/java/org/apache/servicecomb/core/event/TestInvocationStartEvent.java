@@ -17,10 +17,10 @@
 package org.apache.servicecomb.core.event;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationStartEvent {
   InvocationStartEvent event;
@@ -29,6 +29,6 @@ public class TestInvocationStartEvent {
   public void construct(@Mocked Invocation invocation) {
     event = new InvocationStartEvent(invocation);
 
-    Assert.assertSame(invocation, event.getInvocation());
+    Assertions.assertSame(invocation, event.getInvocation());
   }
 }

@@ -30,13 +30,13 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestProducerBootListener {
   ProducerBootListener producerBootListener = new ProducerBootListener();
@@ -85,7 +85,7 @@ public class TestProducerBootListener {
 
     producerBootListener.onBootEvent(event);
 
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   @Test
@@ -110,7 +110,7 @@ public class TestProducerBootListener {
 
       producerBootListener.onBootEvent(event);
 
-      Assert.assertEquals(
+      Assertions.assertEquals(
           "Executor org.apache.servicecomb.core.provider.producer.TestProducerBootListener$UnCloseableExecutor "
               + "do not support close or shutdown, it may block service shutdown.",
           logCollector.getLastEvents().getMessage());

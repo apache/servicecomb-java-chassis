@@ -18,8 +18,8 @@
 package org.apache.servicecomb.core.consumer;
 
 import org.apache.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestReactiveResponseExecutor {
@@ -33,6 +33,6 @@ public class TestReactiveResponseExecutor {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 }

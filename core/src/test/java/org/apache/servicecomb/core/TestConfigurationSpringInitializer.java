@@ -16,10 +16,6 @@
  */
 package org.apache.servicecomb.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 
 import java.util.HashMap;
@@ -31,12 +27,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -78,13 +73,13 @@ public class TestConfigurationSpringInitializer {
     Object o = ConfigUtil.getProperty("zq");
     @SuppressWarnings("unchecked")
     List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
-    Assert.assertEquals(3, listO.size());
-    Assert.assertNull(ConfigUtil.getProperty("notExist"));
+    Assertions.assertEquals(3, listO.size());
+    Assertions.assertNull(ConfigUtil.getProperty("notExist"));
 
     Configuration instance = ConfigurationManager.getConfigInstance();
     ConfigUtil.installDynamicConfig();
     // must not reinstall
-    Assert.assertEquals(instance, ConfigurationManager.getConfigInstance());
+    Assertions.assertEquals(instance, ConfigurationManager.getConfigInstance());
   }
 
   @Test
@@ -151,7 +146,7 @@ public class TestConfigurationSpringInitializer {
 
       String value = propertyMap.get(propertyName);
       if (null == value) {
-        fail("get unexpected property name: " + propertyName);
+        Assertions.fail("get unexpected property name: " + propertyName);
       }
       return value;
     }).when(environment).getProperty(anyString(), Matchers.eq(Object.class));
@@ -159,13 +154,13 @@ public class TestConfigurationSpringInitializer {
     new ConfigurationSpringInitializer().setEnvironment(environment);
 
     Map<String, Map<String, Object>> extraLocalConfig = getExtraConfigMapFromConfigUtil();
-    assertFalse(extraLocalConfig.isEmpty());
+    Assertions.assertFalse(extraLocalConfig.isEmpty());
     Map<String, Object> extraProperties = extraLocalConfig
         .get(ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + environment.getClass().getName() + "@"
             + environment.hashCode());
-    assertNotNull(extraLocalConfig);
+    Assertions.assertNotNull(extraLocalConfig);
     for (Entry<String, String> entry : propertyMap.entrySet()) {
-      assertEquals(entry.getValue(), extraProperties.get(entry.getKey()));
+      Assertions.assertEquals(entry.getValue(), extraProperties.get(entry.getKey()));
     }
   }
 
@@ -207,22 +202,22 @@ public class TestConfigurationSpringInitializer {
     configurationSpringInitializer.setEnvironment(environment2);
 
     Map<String, Map<String, Object>> extraConfig = getExtraConfigMapFromConfigUtil();
-    assertEquals(3, extraConfig.size());
+    Assertions.assertEquals(3, extraConfig.size());
 
     Map<String, Object> extraProperties = extraConfig
         .get(ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + "application");
-    assertEquals(1, extraProperties.size());
-    assertEquals("application", extraProperties.get("spring.config.name"));
+    Assertions.assertEquals(1, extraProperties.size());
+    Assertions.assertEquals("application", extraProperties.get("spring.config.name"));
 
     extraProperties = extraConfig.get(ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + "bootstrap");
-    assertEquals(1, extraProperties.size());
-    assertEquals("bootstrap", extraProperties.get("spring.application.name"));
+    Assertions.assertEquals(1, extraProperties.size());
+    Assertions.assertEquals("bootstrap", extraProperties.get("spring.application.name"));
 
     extraProperties = extraConfig.get(
         ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + environment2.getClass().getName() + "@"
             + environment2.hashCode());
-    assertEquals(1, extraProperties.size());
-    assertEquals("value2", extraProperties.get("key2"));
+    Assertions.assertEquals(1, extraProperties.size());
+    Assertions.assertEquals("value2", extraProperties.get("key2"));
   }
 
   @Test(expected = RuntimeException.class)

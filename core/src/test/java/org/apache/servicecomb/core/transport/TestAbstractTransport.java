@@ -29,8 +29,8 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.util.ReflectionUtils;
 
 import com.netflix.config.DynamicProperty;
@@ -79,7 +79,7 @@ public class TestAbstractTransport {
 
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
-    Assert.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
+    Assertions.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
         transport.getEndpoint().getEndpoint());
   }
 
@@ -87,7 +87,7 @@ public class TestAbstractTransport {
   public void testSetListenAddressWithoutSchemaNormalNotEncode() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "chinese"));
-    Assert.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
+    Assertions.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
   }
 
   @Test
@@ -95,21 +95,21 @@ public class TestAbstractTransport {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090?a=aValue",
         Collections.singletonMap("country", "chinese"));
-    Assert.assertEquals("my://127.0.0.1:9090?a=aValue&country=chinese", transport.getEndpoint().getEndpoint());
+    Assertions.assertEquals("my://127.0.0.1:9090?a=aValue&country=chinese", transport.getEndpoint().getEndpoint());
   }
 
   @Test
   public void testMyAbstractTransport() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090");
-    Assert.assertEquals("my", transport.getName());
-    Assert.assertEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
-    Assert.assertEquals("127.0.0.1", ((IpPort) transport.parseAddress("my://127.0.0.1:9090")).getHostOrIp());
+    Assertions.assertEquals("my", transport.getName());
+    Assertions.assertEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
+    Assertions.assertEquals("127.0.0.1", ((IpPort) transport.parseAddress("my://127.0.0.1:9090")).getHostOrIp());
     transport.setListenAddressWithoutSchema("0.0.0.0:9090");
-    Assert.assertNotEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
+    Assertions.assertNotEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
     transport.setListenAddressWithoutSchema(null);
-    Assert.assertNull(transport.getEndpoint().getEndpoint());
-    Assert.assertNull(transport.parseAddress(null));
+    Assertions.assertNull(transport.getEndpoint().getEndpoint());
+    Assertions.assertNull(transport.parseAddress(null));
   }
 
   @Test(expected = IllegalArgumentException.class)
