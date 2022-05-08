@@ -17,7 +17,7 @@
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import io.protostuff.compiler.model.Proto;
@@ -78,6 +78,6 @@ public class TestProtoToStringGenerator {
     Proto proto = protoParser.parseFromContent(content);
     String newContent = new ProtoToStringGenerator(proto).protoToString();
 
-    Assert.assertEquals(content, newContent);
+    Assertions.assertEquals(content, newContent);
   }
 }

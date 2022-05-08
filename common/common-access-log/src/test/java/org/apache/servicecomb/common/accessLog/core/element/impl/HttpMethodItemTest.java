@@ -29,7 +29,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -87,7 +87,7 @@ public class HttpMethodItemTest {
     Mockito.when(request.method()).thenReturn(HttpMethod.DELETE);
     accessLogEvent.setRoutingContext(routingContext);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("DELETE", strBuilder.toString());
+    Assertions.assertEquals("DELETE", strBuilder.toString());
   }
 
   @Test
@@ -95,7 +95,7 @@ public class HttpMethodItemTest {
     when(restClientRequest.getRequest()).thenReturn(clientRequest);
     when(clientRequest.getMethod()).thenReturn(HttpMethod.DELETE);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("DELETE", strBuilder.toString());
+    Assertions.assertEquals("DELETE", strBuilder.toString());
   }
 
   @Test
@@ -103,14 +103,14 @@ public class HttpMethodItemTest {
     accessLogEvent.setRoutingContext(routingContext);
     Mockito.when(routingContext.request()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnRequestIsNull() {
     when(restClientRequest.getRequest()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
 
@@ -122,13 +122,13 @@ public class HttpMethodItemTest {
     Mockito.when(routingContext.request()).thenReturn(request);
     Mockito.when(request.method()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnMethodIsNull() {
     when(clientRequest.getMethod()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

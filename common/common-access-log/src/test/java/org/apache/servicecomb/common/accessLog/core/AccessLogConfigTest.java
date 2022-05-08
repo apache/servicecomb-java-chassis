@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.common.accessLog.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class AccessLogConfigTest {
 
@@ -29,16 +27,16 @@ public class AccessLogConfigTest {
   public void getAccessLogEnabled() {
     boolean serverEnabled = AccessLogConfig.INSTANCE.isServerLogEnabled();
     boolean clientEnabled = AccessLogConfig.INSTANCE.isClientLogEnabled();
-    assertFalse(serverEnabled);
-    assertFalse(clientEnabled);
+    Assertions.assertFalse(serverEnabled);
+    Assertions.assertFalse(clientEnabled);
   }
 
   @Test
-  public void getAccesslogPattern() {
+  public void getAccessLogPattern() {
     String clientLogPattern = AccessLogConfig.INSTANCE.getClientLogPattern();
     String serverLogPattern = AccessLogConfig.INSTANCE.getServerLogPattern();
 
-    assertEquals("%h - - %t %r %s %B %D", serverLogPattern);
-    assertEquals("%h %SCB-transport - - %t %r %s %D", clientLogPattern);
+    Assertions.assertEquals("%h - - %t %r %s %B %D", serverLogPattern);
+    Assertions.assertEquals("%h %SCB-transport - - %t %r %s %D", clientLogPattern);
   }
 }

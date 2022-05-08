@@ -44,7 +44,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -157,8 +157,8 @@ public class TestSchemaMetaCodecRestTemplate {
 
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
-    Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
+    Assertions.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
+    Assertions.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
 
     // response message
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
@@ -166,16 +166,16 @@ public class TestSchemaMetaCodecRestTemplate {
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     User decodedUser = (User) responseDeserializer
         .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
-    Assert.assertEquals(user.name, decodedUser.name);
-    Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
+    Assertions.assertEquals(user.name, decodedUser.name);
+    Assertions.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(user);
     decodedUser = (User) responseDeserializer
         .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
-    Assert.assertEquals(user.name, decodedUser.name);
+    Assertions.assertEquals(user.name, decodedUser.name);
     // proto buffer encode and decode empty list to be null
-    Assert.assertEquals(null, decodedUser.friends);
+    Assertions.assertEquals(null, decodedUser.friends);
   }
 
   @Test
@@ -218,17 +218,17 @@ public class TestSchemaMetaCodecRestTemplate {
     values = requestSerializer.serialize(args);
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(boolValue, decodedArgs.get("boolValue"));
-    Assert.assertEquals(iValue, decodedArgs.get("iValue"));
-    Assert.assertEquals(lValue, decodedArgs.get("lValue"));
-    Assert.assertEquals(fValue, decodedArgs.get("fValue"));
-    Assert.assertEquals(dValue, decodedArgs.get("dValue"));
-    Assert.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
-    Assert.assertEquals(color, decodedArgs.get("color"));
-    Assert.assertEquals(date, decodedArgs.get("date"));
-    Assert.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
-    Assert.assertEquals(localDate, decodedArgs.get("localDate"));
-    Assert.assertTrue(decodedArgs.get("empty") instanceof Empty);
+    Assertions.assertEquals(boolValue, decodedArgs.get("boolValue"));
+    Assertions.assertEquals(iValue, decodedArgs.get("iValue"));
+    Assertions.assertEquals(lValue, decodedArgs.get("lValue"));
+    Assertions.assertEquals(fValue, decodedArgs.get("fValue"));
+    Assertions.assertEquals(dValue, decodedArgs.get("dValue"));
+    Assertions.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
+    Assertions.assertEquals(color, decodedArgs.get("color"));
+    Assertions.assertEquals(date, decodedArgs.get("date"));
+    Assertions.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
+    Assertions.assertEquals(localDate, decodedArgs.get("localDate"));
+    Assertions.assertTrue(decodedArgs.get("empty") instanceof Empty);
 
     // default value testing
     args.put("boolValue", false);
@@ -244,16 +244,16 @@ public class TestSchemaMetaCodecRestTemplate {
     args.put("empty", null);
     values = requestSerializer.serialize(args);
     decodedArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(null, decodedArgs.get("boolValue"));
-    Assert.assertEquals(null, decodedArgs.get("iValue"));
-    Assert.assertEquals(null, decodedArgs.get("lValue"));
-    Assert.assertEquals(null, decodedArgs.get("fValue"));
-    Assert.assertEquals(null, decodedArgs.get("dValue"));
-    Assert.assertEquals(null, decodedArgs.get("iArray"));
-    Assert.assertEquals(null, decodedArgs.get("color"));
-    Assert.assertEquals(null, decodedArgs.get("localDate"));
-    Assert.assertEquals(null, decodedArgs.get("date"));
-    Assert.assertEquals(null, decodedArgs.get("empty"));
+    Assertions.assertEquals(null, decodedArgs.get("boolValue"));
+    Assertions.assertEquals(null, decodedArgs.get("iValue"));
+    Assertions.assertEquals(null, decodedArgs.get("lValue"));
+    Assertions.assertEquals(null, decodedArgs.get("fValue"));
+    Assertions.assertEquals(null, decodedArgs.get("dValue"));
+    Assertions.assertEquals(null, decodedArgs.get("iArray"));
+    Assertions.assertEquals(null, decodedArgs.get("color"));
+    Assertions.assertEquals(null, decodedArgs.get("localDate"));
+    Assertions.assertEquals(null, decodedArgs.get("date"));
+    Assertions.assertEquals(null, decodedArgs.get("empty"));
 
     // response message
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
@@ -261,6 +261,6 @@ public class TestSchemaMetaCodecRestTemplate {
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     Object decodedValue = responseDeserializer
         .deserialize(values, TypeFactory.defaultInstance().constructType(int.class));
-    Assert.assertEquals(30, (int) decodedValue);
+    Assertions.assertEquals(30, (int) decodedValue);
   }
 }

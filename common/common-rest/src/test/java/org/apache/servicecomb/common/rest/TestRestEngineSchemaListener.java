@@ -26,7 +26,7 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -81,12 +81,12 @@ public class TestRestEngineSchemaListener {
 
   @Test
   public void testLocateStaticFound() {
-    Assert.assertNotNull(spm.producerLocateOperation("/staticEx", "GET"));
+    Assertions.assertNotNull(spm.producerLocateOperation("/staticEx", "GET"));
   }
 
   @Test
   public void testLocateDynamicFound() {
     OperationLocator locator = spm.producerLocateOperation("/dynamic/1", "GET");
-    Assert.assertEquals("1", locator.getPathVarMap().get("id"));
+    Assertions.assertEquals("1", locator.getPathVarMap().get("id"));
   }
 }

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -40,16 +40,16 @@ public class TestQueryProcessorCreator {
 
     ParamValueProcessor processor = creator.create(parameter, String.class);
 
-    Assert.assertEquals(QueryProcessor.class, processor.getClass());
+    Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 
     String result = (String) processor.convertValue("Hello", TypeFactory.defaultInstance().constructType(String.class));
-    Assert.assertEquals("Hello", result);
+    Assertions.assertEquals("Hello", result);
 
     result = (String) processor.convertValue("", TypeFactory.defaultInstance().constructType(String.class));
-    Assert.assertEquals("", result);
+    Assertions.assertEquals("", result);
 
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
-    Assert.assertEquals(null, result);
+    Assertions.assertEquals(null, result);
   }
 
   @SuppressWarnings("UnusedAssignment")
@@ -64,19 +64,19 @@ public class TestQueryProcessorCreator {
 
     ParamValueProcessor processor = creator.create(parameter, String.class);
 
-    Assert.assertEquals(QueryProcessor.class, processor.getClass());
+    Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 
     Mockito.when(request.getParameter("query")).thenReturn("Hello");
     String result = (String) processor.getValue(request);
-    Assert.assertEquals("Hello", result);
+    Assertions.assertEquals("Hello", result);
 
     Mockito.when(request.getParameter("query")).thenReturn("");
     result = (String) processor.getValue(request);
-    Assert.assertEquals(null, result);
+    Assertions.assertEquals(null, result);
 
     Mockito.when(request.getParameter("query")).thenReturn(null);
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
     result = (String) processor.getValue(request);
-    Assert.assertEquals(null, result);
+    Assertions.assertEquals(null, result);
   }
 }

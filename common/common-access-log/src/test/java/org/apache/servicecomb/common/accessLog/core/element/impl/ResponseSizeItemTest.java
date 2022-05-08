@@ -17,13 +17,13 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpServerResponse;
@@ -60,20 +60,20 @@ public class ResponseSizeItemTest {
     when(serverResponse.bytesWritten()).thenReturn(bytesWritten);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(String.valueOf(bytesWritten), strBuilder.toString());
+    Assertions.assertEquals(String.valueOf(bytesWritten), strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElement() {
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("0", strBuilder.toString());
+    Assertions.assertEquals("0", strBuilder.toString());
   }
 
   @Test
   public void getFormattedElementOnResponseIsNull() {
     when(routingContext.response()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("0", strBuilder.toString());
+    Assertions.assertEquals("0", strBuilder.toString());
   }
 
   @Test
@@ -82,6 +82,6 @@ public class ResponseSizeItemTest {
     when(routingContext.response()).thenReturn(serverResponse);
     when(serverResponse.bytesWritten()).thenReturn(bytesWritten);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("0", strBuilder.toString());
+    Assertions.assertEquals("0", strBuilder.toString());
   }
 }

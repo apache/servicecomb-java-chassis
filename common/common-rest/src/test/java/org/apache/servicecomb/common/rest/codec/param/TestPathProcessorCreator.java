@@ -18,7 +18,7 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.PathProcessorCreator.PathProcessor;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import io.swagger.models.parameters.Parameter;
@@ -34,6 +34,6 @@ public class TestPathProcessorCreator {
 
     ParamValueProcessor processor = creator.create(parameter, String.class);
 
-    Assert.assertEquals(PathProcessor.class, processor.getClass());
+    Assertions.assertEquals(PathProcessor.class, processor.getClass());
   }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpClientRequest;
@@ -75,7 +75,7 @@ public class QueryStringItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.query()).thenReturn(query);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(query, strBuilder.toString());
+    Assertions.assertEquals(query, strBuilder.toString());
   }
 
   @Test
@@ -89,14 +89,14 @@ public class QueryStringItemTest {
     when(clientRequest.query()).thenReturn(query);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(query, strBuilder.toString());
+    Assertions.assertEquals(query, strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnRequestIsNull() {
     when(routingContext.request()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -108,7 +108,7 @@ public class QueryStringItemTest {
     when(restClientRequest.getRequest()).thenReturn(null);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -116,7 +116,7 @@ public class QueryStringItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.query()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -129,7 +129,7 @@ public class QueryStringItemTest {
     when(clientRequest.query()).thenReturn(null);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -138,7 +138,7 @@ public class QueryStringItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.query()).thenReturn(query);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -152,6 +152,6 @@ public class QueryStringItemTest {
     when(clientRequest.query()).thenReturn(query);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

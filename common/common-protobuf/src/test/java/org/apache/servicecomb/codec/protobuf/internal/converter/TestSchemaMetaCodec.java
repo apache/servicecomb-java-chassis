@@ -51,7 +51,7 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -178,8 +178,8 @@ public class TestSchemaMetaCodec {
 
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
-    Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
+    Assertions.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
+    Assertions.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
 
     // write request map (pojo)
     args = new HashMap<>();
@@ -194,8 +194,8 @@ public class TestSchemaMetaCodec {
     values = requestSerializer.serialize(args);
 
     decodedUserArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
-    Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
+    Assertions.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
+    Assertions.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
 
     // response message
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
@@ -203,16 +203,16 @@ public class TestSchemaMetaCodec {
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     User decodedUser = (User) responseDeserializer
         .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
-    Assert.assertEquals(user.name, decodedUser.name);
-    Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
+    Assertions.assertEquals(user.name, decodedUser.name);
+    Assertions.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(user);
     decodedUser = (User) responseDeserializer
         .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
-    Assert.assertEquals(user.name, decodedUser.name);
+    Assertions.assertEquals(user.name, decodedUser.name);
     // proto buffer encode and decode empty list to be null
-    Assert.assertEquals(null, decodedUser.friends);
+    Assertions.assertEquals(null, decodedUser.friends);
   }
 
   @Test
@@ -262,14 +262,14 @@ public class TestSchemaMetaCodec {
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
     if (isPojo) {
       decodedUserArgs = (Map<String, Object>) decodedUserArgs.get("users");
-      Assert.assertEquals(user.name,
+      Assertions.assertEquals(user.name,
           ((Map<String, Map<String, Object>>) decodedUserArgs.get("users")).get("test").get("name"));
-      Assert.assertEquals(user.friends.get(0).name,
+      Assertions.assertEquals(user.friends.get(0).name,
           ((List<Map<String, Object>>) ((Map<String, Map<String, Object>>) decodedUserArgs.get("users")).get("test")
               .get("friends")).get(0).get("name"));
     } else {
-      Assert.assertEquals(user.name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").name);
-      Assert.assertEquals(user.friends.get(0).name,
+      Assertions.assertEquals(user.name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").name);
+      Assertions.assertEquals(user.friends.get(0).name,
           ((Map<String, User>) decodedUserArgs.get("users")).get("test").friends.get(0).name);
     }
     // response message
@@ -277,15 +277,15 @@ public class TestSchemaMetaCodec {
     values = responseSerializer.serialize(userMap);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
-    Assert.assertEquals(user.name, decodedUser.get("test").name);
-    Assert.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
+    Assertions.assertEquals(user.name, decodedUser.get("test").name);
+    Assertions.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(userMap);
     decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
-    Assert.assertEquals(user.name, decodedUser.get("test").name);
+    Assertions.assertEquals(user.name, decodedUser.get("test").name);
     // proto buffer encode and decode empty list to be null
-    Assert.assertEquals(null, decodedUser.get("test").friends);
+    Assertions.assertEquals(null, decodedUser.get("test").friends);
   }
 
   @Test
@@ -346,31 +346,31 @@ public class TestSchemaMetaCodec {
     Map<String, Object> decodedSwaggerArgs = requestDeserializer.deserialize(values);
     Map<String, Object> decodedArgs;
     if (isPojo) {
-      Assert.assertEquals(1, decodedSwaggerArgs.size());
+      Assertions.assertEquals(1, decodedSwaggerArgs.size());
       decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("baseBody");
     } else {
       decodedArgs = decodedSwaggerArgs;
     }
-    Assert.assertEquals(boolValue, decodedArgs.get("boolValue"));
-    Assert.assertEquals(iValue, decodedArgs.get("iValue"));
-    Assert.assertEquals(lValue, decodedArgs.get("lValue"));
-    Assert.assertEquals(fValue, decodedArgs.get("fValue"));
-    Assert.assertEquals(dValue, decodedArgs.get("dValue"));
+    Assertions.assertEquals(boolValue, decodedArgs.get("boolValue"));
+    Assertions.assertEquals(iValue, decodedArgs.get("iValue"));
+    Assertions.assertEquals(lValue, decodedArgs.get("lValue"));
+    Assertions.assertEquals(fValue, decodedArgs.get("fValue"));
+    Assertions.assertEquals(dValue, decodedArgs.get("dValue"));
     if (isPojo) {
-      Assert.assertEquals(2, ((List<Integer>) decodedArgs.get("iArray")).size());
-      Assert.assertEquals(60, (((List<Integer>) decodedArgs.get("iArray")).get(0).intValue()));
-      Assert.assertEquals(70, (((List<Integer>) decodedArgs.get("iArray")).get(1).intValue()));
-      Assert.assertEquals(color.ordinal(), decodedArgs.get("color"));
-      Assert.assertEquals(date.getTime(), decodedArgs.get("date"));
-      Assert.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate"));
-      Assert.assertEquals(true, ((Map) decodedArgs.get("empty")).isEmpty());
+      Assertions.assertEquals(2, ((List<Integer>) decodedArgs.get("iArray")).size());
+      Assertions.assertEquals(60, (((List<Integer>) decodedArgs.get("iArray")).get(0).intValue()));
+      Assertions.assertEquals(70, (((List<Integer>) decodedArgs.get("iArray")).get(1).intValue()));
+      Assertions.assertEquals(color.ordinal(), decodedArgs.get("color"));
+      Assertions.assertEquals(date.getTime(), decodedArgs.get("date"));
+      Assertions.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate"));
+      Assertions.assertEquals(true, ((Map) decodedArgs.get("empty")).isEmpty());
     } else {
-      Assert.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
-      Assert.assertEquals(color, decodedArgs.get("color"));
-      Assert.assertEquals(date, decodedArgs.get("date"));
-      Assert.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
-      Assert.assertEquals(localDate, decodedArgs.get("localDate"));
-      Assert.assertTrue(decodedArgs.get("empty") instanceof Empty);
+      Assertions.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
+      Assertions.assertEquals(color, decodedArgs.get("color"));
+      Assertions.assertEquals(date, decodedArgs.get("date"));
+      Assertions.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
+      Assertions.assertEquals(localDate, decodedArgs.get("localDate"));
+      Assertions.assertTrue(decodedArgs.get("empty") instanceof Empty);
     }
 
     // default value testing
@@ -387,16 +387,16 @@ public class TestSchemaMetaCodec {
     args.put("empty", null);
     values = requestSerializer.serialize(args);
     decodedArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(null, decodedArgs.get("boolValue"));
-    Assert.assertEquals(null, decodedArgs.get("iValue"));
-    Assert.assertEquals(null, decodedArgs.get("lValue"));
-    Assert.assertEquals(null, decodedArgs.get("fValue"));
-    Assert.assertEquals(null, decodedArgs.get("dValue"));
-    Assert.assertEquals(null, decodedArgs.get("iArray"));
-    Assert.assertEquals(null, decodedArgs.get("color"));
-    Assert.assertEquals(null, decodedArgs.get("localDate"));
-    Assert.assertEquals(null, decodedArgs.get("date"));
-    Assert.assertEquals(null, decodedArgs.get("empty"));
+    Assertions.assertEquals(null, decodedArgs.get("boolValue"));
+    Assertions.assertEquals(null, decodedArgs.get("iValue"));
+    Assertions.assertEquals(null, decodedArgs.get("lValue"));
+    Assertions.assertEquals(null, decodedArgs.get("fValue"));
+    Assertions.assertEquals(null, decodedArgs.get("dValue"));
+    Assertions.assertEquals(null, decodedArgs.get("iArray"));
+    Assertions.assertEquals(null, decodedArgs.get("color"));
+    Assertions.assertEquals(null, decodedArgs.get("localDate"));
+    Assertions.assertEquals(null, decodedArgs.get("date"));
+    Assertions.assertEquals(null, decodedArgs.get("empty"));
 
     // response message
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
@@ -404,7 +404,7 @@ public class TestSchemaMetaCodec {
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     Object decodedValue = responseDeserializer
         .deserialize(values, TypeFactory.defaultInstance().constructType(int.class));
-    Assert.assertEquals(30, (int) decodedValue);
+    Assertions.assertEquals(30, (int) decodedValue);
   }
 
   @Test
@@ -456,27 +456,27 @@ public class TestSchemaMetaCodec {
     Map<String, Object> decodedSwaggerArgs = requestDeserializer.deserialize(values);
     Map<String, Object> decodedArgs;
     if (isPojo) {
-      Assert.assertEquals(1, decodedSwaggerArgs.size());
+      Assertions.assertEquals(1, decodedSwaggerArgs.size());
       decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("value");
     } else {
       decodedArgs = decodedSwaggerArgs;
     }
     List<List<?>> listOfUsersRaw = (List<List<?>>) decodedArgs.get("value");
-    Assert.assertEquals(1, listOfUsersRaw.size());
+    Assertions.assertEquals(1, listOfUsersRaw.size());
     List<?> mapUsersRaw = (List<?>) listOfUsersRaw.get(0);
-    Assert.assertEquals(1, mapUsersRaw.size());
+    Assertions.assertEquals(1, mapUsersRaw.size());
     if (isPojo) {
       Map<String, Object> userMap = (Map<String, Object>) mapUsersRaw.get(0);
-      Assert.assertEquals("user", userMap.get("name"));
+      Assertions.assertEquals("user", userMap.get("name"));
       // proto buffer encode and decode empty list to be null
       friends = (List<User>) userMap.get("friends");
       Map<String, Object> friendMap = (Map<String, Object>) friends.get(0);
-      Assert.assertEquals("friend", friendMap.get("name"));
+      Assertions.assertEquals("friend", friendMap.get("name"));
     } else {
       user = (User) mapUsersRaw.get(0);
-      Assert.assertEquals("user", user.name);
+      Assertions.assertEquals("user", user.name);
       // proto buffer encode and decode empty list to be null
-      Assert.assertEquals("friend", user.friends.get(0).name);
+      Assertions.assertEquals("friend", user.friends.get(0).name);
     }
   }
 
@@ -511,7 +511,7 @@ public class TestSchemaMetaCodec {
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedArgs = requestDeserializer.deserialize(values);
     int result = (int) decodedArgs.get("value");
-    Assert.assertEquals(2, result);
+    Assertions.assertEquals(2, result);
 
     User user = new User();
     user.name = "user";
@@ -524,11 +524,11 @@ public class TestSchemaMetaCodec {
     values = requestSerializer.serialize(args);
     decodedArgs = requestDeserializer.deserialize(values);
     Map<String, Object> userMap = (Map<String, Object>) decodedArgs.get("value");
-    Assert.assertEquals("user", userMap.get("name"));
+    Assertions.assertEquals("user", userMap.get("name"));
     // proto buffer encode and decode empty list to be null
     friends = (List<User>) userMap.get("friends");
     Map<String, Object> friendMap = (Map<String, Object>) friends.get(0);
-    Assert.assertEquals("friend", friendMap.get("name"));
+    Assertions.assertEquals("friend", friendMap.get("name"));
 
     args.clear();
     People people = new People();
@@ -542,8 +542,8 @@ public class TestSchemaMetaCodec {
     values = requestSerializer.serialize(args);
     decodedArgs = requestDeserializer.deserialize(values);
     people = (People) decodedArgs.get("value");
-    Assert.assertEquals("user", people.name);
+    Assertions.assertEquals("user", people.name);
     // proto buffer encode and decode empty list to be null
-    Assert.assertEquals("friend", people.friends.get(0).name);
+    Assertions.assertEquals("friend", people.friends.get(0).name);
   }
 }

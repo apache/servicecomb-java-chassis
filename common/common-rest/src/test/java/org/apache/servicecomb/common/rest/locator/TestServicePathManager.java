@@ -24,7 +24,7 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class TestServicePathManager {
         .run();
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
 
-    Assert.assertSame(spm.producerPaths, spm.swaggerPaths);
+    Assertions.assertSame(spm.producerPaths, spm.swaggerPaths);
 
     scbEngine.destroy();
   }

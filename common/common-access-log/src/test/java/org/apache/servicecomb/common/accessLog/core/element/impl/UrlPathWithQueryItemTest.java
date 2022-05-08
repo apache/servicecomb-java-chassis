@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.common.rest.RestConst;
@@ -26,6 +25,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpServerRequest;
@@ -65,7 +65,7 @@ public class UrlPathWithQueryItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.uri()).thenReturn(uri);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(uri, strBuilder.toString());
+    Assertions.assertEquals(uri, strBuilder.toString());
   }
 
   @Test
@@ -74,21 +74,21 @@ public class UrlPathWithQueryItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getLocalContext(RestConst.REST_CLIENT_REQUEST_PATH)).thenReturn(uri);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(uri, strBuilder.toString());
+    Assertions.assertEquals(uri, strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnRequestIsNull() {
     when(routingContext.request()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnRequestIsNull() {
     when(finishEvent.getInvocation()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -96,7 +96,7 @@ public class UrlPathWithQueryItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.uri()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -104,7 +104,7 @@ public class UrlPathWithQueryItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getLocalContext(RestConst.REST_CLIENT_REQUEST_PATH)).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -112,7 +112,7 @@ public class UrlPathWithQueryItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.uri()).thenReturn("");
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -120,6 +120,6 @@ public class UrlPathWithQueryItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getLocalContext(RestConst.REST_CLIENT_REQUEST_PATH)).thenReturn("");
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

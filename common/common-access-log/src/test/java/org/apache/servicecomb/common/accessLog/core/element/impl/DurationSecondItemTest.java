@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.Invocation;
@@ -26,6 +25,7 @@ import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class DurationSecondItemTest {
@@ -61,41 +61,41 @@ public class DurationSecondItemTest {
   public void serverFormattedElementOn999ms() {
     accessLogEvent.setMilliEndTime(1000L);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("0", strBuilder.toString());
+    Assertions.assertEquals("0", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOn999ms() {
     when(invocationStageTrace.getFinish()).thenReturn(1000_000_000L);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("0", strBuilder.toString());
+    Assertions.assertEquals("0", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOn1000ms() {
     accessLogEvent.setMilliEndTime(1001L);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOn1000ms() {
     when(invocationStageTrace.getFinish()).thenReturn(1001_000_000L);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOn1001ms() {
     accessLogEvent.setMilliEndTime(1002L);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOn1001ms() {
     when(invocationStageTrace.getFinish()).thenReturn(1002_000_000L);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
   }
 }

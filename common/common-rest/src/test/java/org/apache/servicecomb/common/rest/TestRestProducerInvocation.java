@@ -41,7 +41,7 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -124,7 +124,7 @@ public class TestRestProducerInvocation {
 
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
-    Assert.assertSame(expected, throwableOfSendFailResponse);
+    Assertions.assertSame(expected, throwableOfSendFailResponse);
   }
 
   @Test
@@ -145,8 +145,8 @@ public class TestRestProducerInvocation {
     };
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
-    Assert.assertTrue(scheduleInvocation);
-    Assert.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
+    Assertions.assertTrue(scheduleInvocation);
+    Assertions.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
   }
 
   @Test
@@ -205,7 +205,7 @@ public class TestRestProducerInvocation {
     initRestProducerInvocation();
 
     restProducerInvocation.findRestOperation();
-    Assert.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
-    Assert.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+    Assertions.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
+    Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
   }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.MultiMap;
@@ -85,8 +85,8 @@ public class RequestHeaderItemTest {
     when(serverRequest.headers()).thenReturn(headers);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(testValue, strBuilder.toString());
-    assertEquals(ELEMENT.getVarName(), VAR_NAME);
+    Assertions.assertEquals(testValue, strBuilder.toString());
+    Assertions.assertEquals(ELEMENT.getVarName(), VAR_NAME);
   }
 
   @Test
@@ -102,7 +102,7 @@ public class RequestHeaderItemTest {
     when(headers.get(VAR_NAME)).thenReturn(testValue);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(testValue, strBuilder.toString());
+    Assertions.assertEquals(testValue, strBuilder.toString());
   }
 
   @Test
@@ -111,7 +111,7 @@ public class RequestHeaderItemTest {
     when(serverRequest.headers()).thenReturn(null);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -124,7 +124,7 @@ public class RequestHeaderItemTest {
     when(clientRequest.headers()).thenReturn(null);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -136,6 +136,6 @@ public class RequestHeaderItemTest {
     when(serverRequest.headers()).thenReturn(headers);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

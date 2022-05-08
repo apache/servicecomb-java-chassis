@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpClientRequest;
@@ -94,7 +94,7 @@ public class FirstLineOfRequestItemTest {
     when(request.version()).thenReturn(HttpVersion.HTTP_1_1);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("\"DELETE " + uri + " HTTP/1.1\"", strBuilder.toString());
+    Assertions.assertEquals("\"DELETE " + uri + " HTTP/1.1\"", strBuilder.toString());
   }
 
   @Test
@@ -105,6 +105,6 @@ public class FirstLineOfRequestItemTest {
     when(urlEndpoint.isHttp2Enabled()).thenReturn(true);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("\"DELETE " + uri + " HTTP/2.0\"", strBuilder.toString());
+    Assertions.assertEquals("\"DELETE " + uri + " HTTP/2.0\"", strBuilder.toString());
   }
 }

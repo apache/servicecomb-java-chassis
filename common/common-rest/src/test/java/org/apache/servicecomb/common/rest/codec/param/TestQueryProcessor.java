@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -68,7 +68,7 @@ public class TestQueryProcessor {
 
     ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     Object value = processor.getValue(request);
-    Assert.assertEquals("value", value);
+    Assertions.assertEquals("value", value);
   }
 
   @Test
@@ -102,7 +102,7 @@ public class TestQueryProcessor {
   @Test
   public void testGetProcessorType() {
     ParamValueProcessor processor = createProcessor("name", String.class, "multi");
-    Assert.assertEquals("query", processor.getProcessorType());
+    Assertions.assertEquals("query", processor.getProcessorType());
   }
 
   @Test
@@ -117,9 +117,9 @@ public class TestQueryProcessor {
     ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     try {
       processor.getValue(request);
-      Assert.assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 
@@ -134,6 +134,6 @@ public class TestQueryProcessor {
 
     ParamValueProcessor processor = createProcessor("name", String.class, "test", false, "multi");
     Object result = processor.getValue(request);
-    Assert.assertEquals("test", result);
+    Assertions.assertEquals("test", result);
   }
 }

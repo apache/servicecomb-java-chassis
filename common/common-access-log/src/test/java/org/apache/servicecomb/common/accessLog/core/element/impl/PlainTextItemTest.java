@@ -17,12 +17,11 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class PlainTextItemTest {
@@ -43,13 +42,13 @@ public class PlainTextItemTest {
   public void serverFormattedElement() {
     PlainTextAccessItem element = new PlainTextAccessItem("contentTest");
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("contentTest", strBuilder.toString());
+    Assertions.assertEquals("contentTest", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElement() {
     PlainTextAccessItem element = new PlainTextAccessItem("contentTest");
     element.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("contentTest", strBuilder.toString());
+    Assertions.assertEquals("contentTest", strBuilder.toString());
   }
 }

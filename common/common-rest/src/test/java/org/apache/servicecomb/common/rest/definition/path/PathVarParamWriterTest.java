@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import mockit.Mock;
@@ -38,7 +38,7 @@ public class PathVarParamWriterTest {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put("test", "abc");
     pathVarParamWriter.write(pathBuilder, parameters);
-    Assert.assertEquals("abc", pathBuilder.build());
+    Assertions.assertEquals("abc", pathBuilder.build());
   }
 
   @Test
@@ -49,7 +49,7 @@ public class PathVarParamWriterTest {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put("test", "a 20bc");
     pathVarParamWriter.write(pathBuilder, parameters);
-    Assert.assertEquals("a%2020bc", pathBuilder.build());
+    Assertions.assertEquals("a%2020bc", pathBuilder.build());
   }
 
   @Test
@@ -60,7 +60,7 @@ public class PathVarParamWriterTest {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put("test", "a%%bc");
     pathVarParamWriter.write(pathBuilder, parameters);
-    Assert.assertEquals("/api/a%25%25bc", pathBuilder.build());
+    Assertions.assertEquals("/api/a%25%25bc", pathBuilder.build());
   }
 
   @Test
@@ -71,7 +71,7 @@ public class PathVarParamWriterTest {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put("test", "a/bc");
     pathVarParamWriter.write(pathBuilder, parameters);
-    Assert.assertEquals("/api/a%2Fbc", pathBuilder.build());
+    Assertions.assertEquals("/api/a%2Fbc", pathBuilder.build());
   }
 
   @Test
@@ -81,7 +81,7 @@ public class PathVarParamWriterTest {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put("test", 12);
     pathVarParamWriter.write(pathBuilder, parameters);
-    Assert.assertEquals("12", pathBuilder.build());
+    Assertions.assertEquals("12", pathBuilder.build());
   }
 
   private PathVarParamWriter createPathVarParamWriter() {
