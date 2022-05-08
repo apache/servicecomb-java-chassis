@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultParameterNameProvider {
   static class ValidatorForTest {
