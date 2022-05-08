@@ -18,8 +18,8 @@
 package org.apache.servicecomb.common.accessLog.core;
 
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AccessLogConfigTest {
 
