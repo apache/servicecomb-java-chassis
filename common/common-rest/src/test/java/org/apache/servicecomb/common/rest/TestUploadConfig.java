@@ -19,18 +19,18 @@ package org.apache.servicecomb.common.rest;
 import javax.servlet.MultipartConfigElement;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestUploadConfig {
-  @Before
+  @BeforeEach
   public void setUp() {
     ArchaiusUtils.resetConfig();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     ArchaiusUtils.resetConfig();
   }
@@ -42,15 +42,15 @@ public class TestUploadConfig {
     UploadConfig uploadConfig = new UploadConfig();
     MultipartConfigElement multipartConfigElement = uploadConfig.toMultipartConfigElement();
 
-    Assert.assertEquals("upload", uploadConfig.getLocation());
-    Assert.assertEquals(-1L, uploadConfig.getMaxFileSize());
-    Assert.assertEquals(-1L, uploadConfig.getMaxSize());
-    Assert.assertEquals(0, uploadConfig.getFileSizeThreshold());
+    Assertions.assertEquals("upload", uploadConfig.getLocation());
+    Assertions.assertEquals(-1L, uploadConfig.getMaxFileSize());
+    Assertions.assertEquals(-1L, uploadConfig.getMaxSize());
+    Assertions.assertEquals(0, uploadConfig.getFileSizeThreshold());
 
-    Assert.assertEquals("upload", multipartConfigElement.getLocation());
-    Assert.assertEquals(-1L, multipartConfigElement.getMaxFileSize());
-    Assert.assertEquals(-1L, multipartConfigElement.getMaxRequestSize());
-    Assert.assertEquals(0, multipartConfigElement.getFileSizeThreshold());
+    Assertions.assertEquals("upload", multipartConfigElement.getLocation());
+    Assertions.assertEquals(-1L, multipartConfigElement.getMaxFileSize());
+    Assertions.assertEquals(-1L, multipartConfigElement.getMaxRequestSize());
+    Assertions.assertEquals(0, multipartConfigElement.getFileSizeThreshold());
   }
 
   @Test
@@ -63,14 +63,14 @@ public class TestUploadConfig {
     UploadConfig uploadConfig = new UploadConfig();
     MultipartConfigElement multipartConfigElement = uploadConfig.toMultipartConfigElement();
 
-    Assert.assertEquals("upload", uploadConfig.getLocation());
-    Assert.assertEquals(1, uploadConfig.getMaxFileSize());
-    Assert.assertEquals(2, uploadConfig.getMaxSize());
-    Assert.assertEquals(3, uploadConfig.getFileSizeThreshold());
+    Assertions.assertEquals("upload", uploadConfig.getLocation());
+    Assertions.assertEquals(1, uploadConfig.getMaxFileSize());
+    Assertions.assertEquals(2, uploadConfig.getMaxSize());
+    Assertions.assertEquals(3, uploadConfig.getFileSizeThreshold());
 
-    Assert.assertEquals("upload", multipartConfigElement.getLocation());
-    Assert.assertEquals(1, multipartConfigElement.getMaxFileSize());
-    Assert.assertEquals(2, multipartConfigElement.getMaxRequestSize());
-    Assert.assertEquals(3, multipartConfigElement.getFileSizeThreshold());
+    Assertions.assertEquals("upload", multipartConfigElement.getLocation());
+    Assertions.assertEquals(1, multipartConfigElement.getMaxFileSize());
+    Assertions.assertEquals(2, multipartConfigElement.getMaxRequestSize());
+    Assertions.assertEquals(3, multipartConfigElement.getFileSizeThreshold());
   }
 }

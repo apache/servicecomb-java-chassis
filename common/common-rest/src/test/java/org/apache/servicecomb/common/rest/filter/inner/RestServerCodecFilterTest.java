@@ -43,10 +43,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -55,6 +51,10 @@ import io.vertx.core.json.Json;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RestServerCodecFilterTest {
   RestServerCodecFilter codecFilter = new RestServerCodecFilter();
@@ -86,7 +86,7 @@ public class RestServerCodecFilterTest {
 
   static SCBEngine engine;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     ArchaiusUtils.resetConfig();
     ConfigUtil.installDynamicConfig();
@@ -95,13 +95,13 @@ public class RestServerCodecFilterTest {
     engine.setStatus(SCBStatus.UP);
   }
 
-  @AfterClass
+  @AfterAll
   public static void afterClass() {
     engine.destroy();
     ArchaiusUtils.resetConfig();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     invocation = InvocationFactory.forProvider(endpoint, operationMeta, null);
   }

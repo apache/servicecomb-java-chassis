@@ -29,9 +29,9 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.models.Swagger;
@@ -64,7 +64,7 @@ public class UrlPathItemTest {
 
   private HttpClientRequest clientRequest;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     accessLogEvent = new ServerAccessLogEvent();
     routingContext = Mockito.mock(RoutingContext.class);
@@ -92,7 +92,7 @@ public class UrlPathItemTest {
     when(operationMeta.getOperationPath()).thenReturn("/test");
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals(uri, strBuilder.toString());
+    Assertions.assertEquals(uri, strBuilder.toString());
 
     strBuilder = new StringBuilder();
     Map<String, Object> handlerContext = new HashMap<>();
@@ -104,7 +104,7 @@ public class UrlPathItemTest {
     when(restClientRequest.getRequest()).thenReturn(clientRequest);
     when(clientRequest.path()).thenReturn(uri);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals(uri, strBuilder.toString());
+    Assertions.assertEquals(uri, strBuilder.toString());
   }
 
   @Test
@@ -113,14 +113,14 @@ public class UrlPathItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.path()).thenReturn(uri);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals(uri, strBuilder.toString());
+    Assertions.assertEquals(uri, strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnRequestIsNull() {
     when(routingContext.request()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -131,7 +131,7 @@ public class UrlPathItemTest {
     when(invocation.getHandlerContext()).thenReturn(handlerContext);
     when(restClientRequest.getRequest()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -139,7 +139,7 @@ public class UrlPathItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.path()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -151,6 +151,6 @@ public class UrlPathItemTest {
     when(restClientRequest.getRequest()).thenReturn(clientRequest);
     when(clientRequest.path()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

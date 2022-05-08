@@ -40,16 +40,15 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestRestProducerInvocation {
   @Mocked
@@ -77,7 +76,7 @@ public class TestRestProducerInvocation {
 
   static MicroserviceMeta microserviceMeta;
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
@@ -88,7 +87,7 @@ public class TestRestProducerInvocation {
     microserviceMeta = operationMeta.getMicroserviceMeta();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
     ArchaiusUtils.resetConfig();
@@ -124,7 +123,7 @@ public class TestRestProducerInvocation {
 
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
-    Assert.assertSame(expected, throwableOfSendFailResponse);
+    Assertions.assertSame(expected, throwableOfSendFailResponse);
   }
 
   @Test
@@ -145,8 +144,8 @@ public class TestRestProducerInvocation {
     };
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
-    Assert.assertTrue(scheduleInvocation);
-    Assert.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
+    Assertions.assertTrue(scheduleInvocation);
+    Assertions.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
   }
 
   @Test
@@ -205,7 +204,7 @@ public class TestRestProducerInvocation {
     initRestProducerInvocation();
 
     restProducerInvocation.findRestOperation();
-    Assert.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
-    Assert.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+    Assertions.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
+    Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
   }
 }

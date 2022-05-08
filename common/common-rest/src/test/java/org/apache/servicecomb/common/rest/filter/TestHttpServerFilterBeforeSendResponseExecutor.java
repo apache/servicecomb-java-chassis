@@ -24,12 +24,11 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import mockit.Mocked;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestHttpServerFilterBeforeSendResponseExecutor {
   @Mocked
@@ -43,7 +42,7 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   HttpServerFilterBeforeSendResponseExecutor executor =
       new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
 
-  @Before
+  @BeforeAll
   public void setup() {
     httpServerFilters.add(new HttpServerFilterBaseForTest());
   }
@@ -52,7 +51,7 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   public void runSucc() throws InterruptedException, ExecutionException {
     CompletableFuture<Void> result = executor.run();
 
-    Assert.assertNull(result.get());
+    Assertions.assertNull(result.get());
   }
 
   @Test

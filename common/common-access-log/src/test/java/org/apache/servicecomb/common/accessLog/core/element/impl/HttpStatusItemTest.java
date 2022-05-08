@@ -17,14 +17,14 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpServerResponse;
@@ -46,7 +46,7 @@ public class HttpStatusItemTest {
 
   private HttpServerResponse serverResponse;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = Mockito.mock(RoutingContext.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
@@ -65,7 +65,7 @@ public class HttpStatusItemTest {
     when(serverResponse.getStatusCode()).thenReturn(statusCode);
 
     STATUS_ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("200", strBuilder.toString());
+    Assertions.assertEquals("200", strBuilder.toString());
   }
 
   @Test
@@ -75,14 +75,14 @@ public class HttpStatusItemTest {
     when(response.getStatusCode()).thenReturn(statusCode);
 
     STATUS_ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("200", strBuilder.toString());
+    Assertions.assertEquals("200", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnResponseIsNull() {
     Mockito.when(routingContext.response()).thenReturn(null);
     STATUS_ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
 
     Mockito.when(routingContext.response()).thenReturn(serverResponse);
     Mockito.when(serverResponse.closed()).thenReturn(true);
@@ -90,13 +90,13 @@ public class HttpStatusItemTest {
 
     strBuilder = new StringBuilder();
     STATUS_ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnResponseIsNull() {
     when(finishEvent.getResponse()).thenReturn(null);
     STATUS_ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

@@ -17,10 +17,9 @@
 
 package org.apache.servicecomb.common.rest.definition.path;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class URLPathStringBuilderTest {
   @Test
@@ -28,27 +27,27 @@ public class URLPathStringBuilderTest {
     URLPathStringBuilder builder = new URLPathStringBuilder();
     builder.appendPath("/path");
     builder.appendQuery("q", "abc");
-    assertEquals("/path?q=abc", builder.build());
+    Assertions.assertEquals("/path?q=abc", builder.build());
   }
 
   @Test
   public void appendPath() {
     URLPathStringBuilder builder = new URLPathStringBuilder();
     builder.appendPath("/abc");
-    assertEquals("/abc", builder.build());
+    Assertions.assertEquals("/abc", builder.build());
     builder.appendPath("/de fg");
-    assertEquals("/abc/de fg", builder.build());
+    Assertions.assertEquals("/abc/de fg", builder.build());
   }
 
   @Test
   public void appendQuery() {
     URLPathStringBuilder builder = new URLPathStringBuilder();
-    assertEquals("", builder.build());
+    Assertions.assertEquals("", builder.build());
     builder.appendQuery("ab", "cd");
-    assertEquals("?ab=cd", builder.build());
+    Assertions.assertEquals("?ab=cd", builder.build());
     builder.appendQuery("ef", "");
-    assertEquals("?ab=cd&ef=", builder.build());
+    Assertions.assertEquals("?ab=cd&ef=", builder.build());
     builder.appendQuery("gh", "jk");
-    assertEquals("?ab=cd&ef=&gh=jk", builder.build());
+    Assertions.assertEquals("?ab=cd&ef=&gh=jk", builder.build());
   }
 }

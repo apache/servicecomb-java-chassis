@@ -17,13 +17,13 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestProduceProcessorManager {
   @Test
   public void testDefault() {
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         ProduceProcessorManager.INSTANCE.findDefaultProcessor());
   }
 }

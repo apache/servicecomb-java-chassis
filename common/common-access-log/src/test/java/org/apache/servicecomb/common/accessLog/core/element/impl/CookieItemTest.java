@@ -29,9 +29,9 @@ import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.Cookie;
@@ -60,7 +60,7 @@ public class CookieItemTest {
 
   private RestClientRequestImpl restClientRequest;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     mockContext = Mockito.mock(RoutingContext.class);
     httpServerRequest = Mockito.mock(HttpServerRequest.class);
@@ -83,7 +83,7 @@ public class CookieItemTest {
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals(COOKIE_VALUE, strBuilder.toString());
+    Assertions.assertEquals(COOKIE_VALUE, strBuilder.toString());
   }
 
   @Test
@@ -99,7 +99,7 @@ public class CookieItemTest {
     when(restClientRequest.getCookieMap()).thenReturn(cookieMap);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals(COOKIE_VALUE, strBuilder.toString());
+    Assertions.assertEquals(COOKIE_VALUE, strBuilder.toString());
   }
 
   @Test
@@ -110,7 +110,7 @@ public class CookieItemTest {
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -124,7 +124,7 @@ public class CookieItemTest {
     when(restClientRequest.getCookieMap()).thenReturn(cookieMap);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
 
@@ -135,7 +135,7 @@ public class CookieItemTest {
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -148,7 +148,7 @@ public class CookieItemTest {
     when(restClientRequest.getCookieMap()).thenReturn(null);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
 
@@ -162,7 +162,7 @@ public class CookieItemTest {
     accessLogEvent.setRoutingContext(mockContext);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -177,6 +177,6 @@ public class CookieItemTest {
     when(restClientRequest.getCookieMap()).thenReturn(cookieMap);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

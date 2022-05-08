@@ -23,9 +23,9 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TransportItemTest {
@@ -41,7 +41,7 @@ public class TransportItemTest {
 
   private Endpoint endpoint;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
@@ -55,20 +55,20 @@ public class TransportItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getConfigTransportName()).thenReturn("rest");
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("rest", strBuilder.toString());
+    Assertions.assertEquals("rest", strBuilder.toString());
 
     strBuilder = new StringBuilder();
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getEndpoint()).thenReturn("rest:xxx:30100");
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("rest", strBuilder.toString());
+    Assertions.assertEquals("rest", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElement() {
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals("rest", strBuilder.toString());
+    Assertions.assertEquals("rest", strBuilder.toString());
   }
 
   @Test
@@ -81,7 +81,7 @@ public class TransportItemTest {
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getEndpoint()).thenReturn("rest:xxx:30100");
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("rest", strBuilder.toString());
+    Assertions.assertEquals("rest", strBuilder.toString());
   }
 
   @Test
@@ -93,7 +93,7 @@ public class TransportItemTest {
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getEndpoint()).thenReturn("rest:xxx:30100");
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("rest", strBuilder.toString());
+    Assertions.assertEquals("rest", strBuilder.toString());
   }
 
   @Test
@@ -104,6 +104,6 @@ public class TransportItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getEndpoint()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

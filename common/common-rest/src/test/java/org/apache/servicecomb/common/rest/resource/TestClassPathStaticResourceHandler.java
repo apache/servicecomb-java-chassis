@@ -30,16 +30,16 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import mockit.Expectations;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestClassPathStaticResourceHandler {
   static ClassPathStaticResourceHandler handler = new ClassPathStaticResourceHandler();
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     handler.setWebRoot("web-root/");
   }
@@ -50,11 +50,11 @@ public class TestClassPathStaticResourceHandler {
     Part part = response.getResult();
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("<html></html>"));
+      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("<html></html>"));
     }
-    Assert.assertEquals("text/html", part.getContentType());
-    Assert.assertEquals("text/html", response.getHeader(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertEquals("text/html", part.getContentType());
+    Assertions.assertEquals("text/html", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
   }
 
   @Test
@@ -62,11 +62,11 @@ public class TestClassPathStaticResourceHandler {
     Response response = handler.handle("notExist.html");
 
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
-    Assert.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
+    Assertions.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
+    Assertions.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
-    Assert.assertEquals(404, response.getStatusCode());
-    Assert.assertEquals("Not Found", response.getReasonPhrase());
+    Assertions.assertEquals(404, response.getStatusCode());
+    Assertions.assertEquals("Not Found", response.getReasonPhrase());
   }
 
   @Test
@@ -74,11 +74,11 @@ public class TestClassPathStaticResourceHandler {
     Response response = handler.handle("../microservice.yaml");
 
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
-    Assert.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
+    Assertions.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
+    Assertions.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
-    Assert.assertEquals(404, response.getStatusCode());
-    Assert.assertEquals("Not Found", response.getReasonPhrase());
+    Assertions.assertEquals(404, response.getStatusCode());
+    Assertions.assertEquals("Not Found", response.getReasonPhrase());
   }
 
   @Test
@@ -93,15 +93,15 @@ public class TestClassPathStaticResourceHandler {
     try (LogCollector logCollector = new LogCollector()) {
       Response response = handler.handle("index.html");
 
-      Assert.assertEquals("failed to process static resource, path=web-root/index.html",
+      Assertions.assertEquals("failed to process static resource, path=web-root/index.html",
           logCollector.getLastEvents().getMessage());
 
       InvocationException invocationException = response.getResult();
-      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());
-      Assert.assertEquals("failed to process static resource.",
+      Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());
+      Assertions.assertEquals("failed to process static resource.",
           ((CommonExceptionData) invocationException.getErrorData()).getMessage());
-      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatusCode());
-      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
+      Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatusCode());
+      Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
     }
   }
 }

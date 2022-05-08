@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.CookieProcessorCreator.CookieProcessor;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
@@ -36,6 +34,8 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCookieProcessor {
   @Mocked
@@ -73,7 +73,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c1", String.class, null, false);
     Object value = processor.getValue(request);
-    Assert.assertNull(value);
+    Assertions.assertNull(value);
   }
 
   @Test
@@ -88,9 +88,9 @@ public class TestCookieProcessor {
     CookieProcessor processor = createProcessor("c1", String.class, null, true);
     try {
       processor.getValue(request);
-      Assert.assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 
@@ -106,7 +106,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c2", String.class, null, false);
     Object value = processor.getValue(request);
-    Assert.assertNull(value);
+    Assertions.assertNull(value);
   }
 
   @Test
@@ -121,7 +121,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c1", String.class);
     Object value = processor.getValue(request);
-    Assert.assertEquals("c1v", value);
+    Assertions.assertEquals("c1v", value);
   }
 
   @Test
@@ -137,9 +137,9 @@ public class TestCookieProcessor {
     CookieProcessor processor = createProcessor("c1", String.class, null, true);
     try {
       processor.getValue(request);
-      Assert.assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 
@@ -155,7 +155,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c1", String.class, "test", false);
     Object result = processor.getValue(request);
-    Assert.assertEquals("test", result);
+    Assertions.assertEquals("test", result);
   }
 
   @SuppressWarnings("deprecation")
@@ -173,7 +173,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c1", Date.class);
     Object value = processor.getValue(request);
-    Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
+    Assertions.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
 
   @Test
@@ -182,7 +182,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("c1", String.class);
     processor.setValue(clientRequest, "c1v");
-    Assert.assertEquals("c1v", cookies.get("c1"));
+    Assertions.assertEquals("c1v", cookies.get("c1"));
   }
 
   @Test
@@ -194,7 +194,7 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
-    Assert.assertEquals(strDate, cookies.get("h1"));
+    Assertions.assertEquals(strDate, cookies.get("h1"));
   }
 
   @Test
@@ -207,12 +207,12 @@ public class TestCookieProcessor {
 
     CookieProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
-    Assert.assertEquals(strDate, cookies.get("h1"));
+    Assertions.assertEquals(strDate, cookies.get("h1"));
   }
 
   @Test
   public void testGetProcessorType() {
     CookieProcessor processor = createProcessor("c1", String.class);
-    Assert.assertEquals("cookie", processor.getProcessorType());
+    Assertions.assertEquals("cookie", processor.getProcessorType());
   }
 }

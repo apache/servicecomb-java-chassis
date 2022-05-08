@@ -18,21 +18,21 @@
 package org.apache.servicecomb.common.rest;
 
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestDefPath {
 
   @Test
   public void testPathRegExp() throws Exception {
     PathRegExp oPathRegExp = new PathRegExp("//{test}//");
-    Assert.assertEquals(1, oPathRegExp.getGroupCount());
-    Assert.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
+    Assertions.assertEquals(1, oPathRegExp.getGroupCount());
+    Assertions.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
     PathRegExp oSecondPathRegExp = new PathRegExp("{[^/:]+?}");
-    Assert.assertEquals(1, oSecondPathRegExp.getGroupCount());
-    Assert.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
-    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
-    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
-    Assert.assertEquals(null, oSecondPathRegExp.match("{test/test}", null));
+    Assertions.assertEquals(1, oSecondPathRegExp.getGroupCount());
+    Assertions.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
+    Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
+    Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
+    Assertions.assertNull(oSecondPathRegExp.match("{test/test}", null));
   }
 }

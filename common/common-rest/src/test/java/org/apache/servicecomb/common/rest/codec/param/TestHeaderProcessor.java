@@ -32,8 +32,6 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -45,6 +43,8 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestHeaderProcessor {
   @Mocked
@@ -92,7 +92,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", String.class);
     Object value = processor.getValue(request);
-    Assert.assertEquals("h1v", value);
+    Assertions.assertEquals("h1v", value);
   }
 
   @SuppressWarnings("deprecation")
@@ -109,7 +109,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", Date.class);
     Object value = processor.getValue(request);
-    Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
+    Assertions.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
 
   @Test
@@ -123,7 +123,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", String[].class, null, false);
     String[] value = (String[]) processor.getValue(request);
-    Assert.assertNull(value);
+    Assertions.assertNull(value);
   }
 
   @Test
@@ -138,9 +138,9 @@ public class TestHeaderProcessor {
     HeaderProcessor processor = createProcessor("h1", String.class);
     try {
       processor.getValue(request);
-      Assert.assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 
@@ -155,7 +155,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", String.class, "test", false);
     Object value = processor.getValue(request);
-    Assert.assertEquals("test", value);
+    Assertions.assertEquals("test", value);
   }
 
   @Test
@@ -212,7 +212,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", String.class);
     processor.setValue(clientRequest, "h1v");
-    Assert.assertEquals("h1v", headers.get("h1"));
+    Assertions.assertEquals("h1v", headers.get("h1"));
   }
 
   @Test
@@ -220,7 +220,7 @@ public class TestHeaderProcessor {
     createClientRequest();
     HeaderProcessor processor = createProcessor("h1", String.class);
     processor.setValue(clientRequest, null);
-    Assert.assertEquals(0, headers.size());
+    Assertions.assertEquals(0, headers.size());
   }
 
   @Test
@@ -232,7 +232,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
-    Assert.assertEquals(strDate, headers.get("h1"));
+    Assertions.assertEquals(strDate, headers.get("h1"));
   }
 
   @Test
@@ -243,12 +243,12 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
-    Assert.assertEquals(strDate, headers.get("h1"));
+    Assertions.assertEquals(strDate, headers.get("h1"));
   }
 
   @Test
   public void testGetProcessorType() {
     HeaderProcessor processor = createProcessor("h1", String.class);
-    Assert.assertEquals("header", processor.getProcessorType());
+    Assertions.assertEquals("header", processor.getProcessorType());
   }
 }

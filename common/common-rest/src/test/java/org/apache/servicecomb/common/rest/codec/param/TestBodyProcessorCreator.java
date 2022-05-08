@@ -20,10 +20,10 @@ package org.apache.servicecomb.common.rest.codec.param;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.swagger.models.parameters.BodyParameter;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBodyProcessorCreator {
   @Test
@@ -34,7 +34,7 @@ public class TestBodyProcessorCreator {
 
     ParamValueProcessor processor = creator.create(param, String.class);
 
-    Assert.assertEquals(BodyProcessor.class, processor.getClass());
+    Assertions.assertEquals(BodyProcessor.class, processor.getClass());
   }
 
   @Test
@@ -46,6 +46,6 @@ public class TestBodyProcessorCreator {
 
     ParamValueProcessor processor = creator.create(param, String.class);
 
-    Assert.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
+    Assertions.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
   }
 }

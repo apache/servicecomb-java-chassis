@@ -29,8 +29,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -38,6 +36,8 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestServerRestArgsFilter {
   @Mocked
@@ -60,7 +60,7 @@ public class TestServerRestArgsFilter {
   ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
-  public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) {
+  public void asyncBeforeSendResponsePart(@Mocked RestOperationMeta restOperationMeta) {
     ResponsesMeta responsesMeta = new ResponsesMeta();
     responsesMeta.getResponseMap().put(202, RestObjectMapperFactory.getRestObjectMapper().constructType(Part.class));
     new Expectations(RestMetaUtils.class) {
@@ -83,7 +83,7 @@ public class TestServerRestArgsFilter {
       }
     };
 
-    Assert.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
-    Assert.assertTrue(invokedSendPart);
+    Assertions.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
+    Assertions.assertTrue(invokedSendPart);
   }
 }

@@ -17,14 +17,14 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.MultiMap;
@@ -50,7 +50,7 @@ public class ResponseHeaderItemTest {
 
   private Response response;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = Mockito.mock(RoutingContext.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
@@ -71,8 +71,8 @@ public class ResponseHeaderItemTest {
     when(serverResponse.headers()).thenReturn(headers);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(headerValue, strBuilder.toString());
-    assertEquals(ELEMENT.getVarName(), VAR_NAME);
+    Assertions.assertEquals(headerValue, strBuilder.toString());
+    Assertions.assertEquals(ELEMENT.getVarName(), VAR_NAME);
   }
 
   @Test
@@ -84,8 +84,8 @@ public class ResponseHeaderItemTest {
     when(finishEvent.getResponse()).thenReturn(response);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(headerValue, strBuilder.toString());
-    assertEquals(ELEMENT.getVarName(), VAR_NAME);
+    Assertions.assertEquals(headerValue, strBuilder.toString());
+    Assertions.assertEquals(ELEMENT.getVarName(), VAR_NAME);
   }
 
   @Test
@@ -94,7 +94,7 @@ public class ResponseHeaderItemTest {
     when(serverResponse.headers()).thenReturn(null);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -103,21 +103,21 @@ public class ResponseHeaderItemTest {
     when(response.getHeaders()).thenReturn(null);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnResponseIsNull() {
     when(routingContext.response()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnResponseIsNull() {
     when(finishEvent.getResponse()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -129,7 +129,7 @@ public class ResponseHeaderItemTest {
     when(serverResponse.headers()).thenReturn(headers);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -141,6 +141,6 @@ public class ResponseHeaderItemTest {
     when(response.getHeaders()).thenReturn(headers);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

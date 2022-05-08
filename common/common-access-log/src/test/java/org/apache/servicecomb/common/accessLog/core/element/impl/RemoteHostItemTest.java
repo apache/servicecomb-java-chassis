@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,12 +25,13 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.junit.Before;
-import org.junit.Test;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RemoteHostItemTest {
   public static final RemoteHostAccessItem ELEMENT = new RemoteHostAccessItem();
@@ -54,7 +54,7 @@ public class RemoteHostItemTest {
 
   private SocketAddress socketAddress;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = mock(RoutingContext.class);
     finishEvent = mock(InvocationFinishEvent.class);
@@ -76,7 +76,7 @@ public class RemoteHostItemTest {
     when(socketAddress.host()).thenReturn(remoteHost);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals(remoteHost, strBuilder.toString());
+    Assertions.assertEquals(remoteHost, strBuilder.toString());
   }
 
   @Test
@@ -87,14 +87,14 @@ public class RemoteHostItemTest {
     when(endpoint.getAddress()).thenReturn(uriEndpointObject);
     when(uriEndpointObject.getHostOrIp()).thenReturn(remoteHost);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals(remoteHost, strBuilder.toString());
+    Assertions.assertEquals(remoteHost, strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnRequestIsNull() {
     when(routingContext.request()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -102,7 +102,7 @@ public class RemoteHostItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getEndpoint()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -110,7 +110,7 @@ public class RemoteHostItemTest {
     when(routingContext.request()).thenReturn(serverRequest);
     when(serverRequest.remoteAddress()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -119,7 +119,7 @@ public class RemoteHostItemTest {
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getAddress()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -128,7 +128,7 @@ public class RemoteHostItemTest {
     when(serverRequest.remoteAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -138,7 +138,7 @@ public class RemoteHostItemTest {
     when(endpoint.getAddress()).thenReturn(uriEndpointObject);
     when(uriEndpointObject.getHostOrIp()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -147,7 +147,7 @@ public class RemoteHostItemTest {
     when(serverRequest.remoteAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn("");
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -157,6 +157,6 @@ public class RemoteHostItemTest {
     when(endpoint.getAddress()).thenReturn(uriEndpointObject);
     when(uriEndpointObject.getHostOrIp()).thenReturn("");
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

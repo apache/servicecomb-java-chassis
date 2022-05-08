@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class DurationMillisecondItemTest {
@@ -42,7 +42,7 @@ public class DurationMillisecondItemTest {
 
   private InvocationStageTrace invocationStageTrace;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
@@ -62,10 +62,10 @@ public class DurationMillisecondItemTest {
   @Test
   public void testAppendFormattedElement() {
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
 
     strBuilder = new StringBuilder();
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
   }
 }

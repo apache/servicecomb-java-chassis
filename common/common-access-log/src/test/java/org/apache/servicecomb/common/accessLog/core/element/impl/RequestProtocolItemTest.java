@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.Endpoint;
@@ -25,8 +24,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpServerRequest;
@@ -52,7 +52,7 @@ public class RequestProtocolItemTest {
 
   private URIEndpointObject urlEndpoint;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = Mockito.mock(RoutingContext.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
@@ -72,17 +72,17 @@ public class RequestProtocolItemTest {
     when(serverRequest.version()).thenReturn(HttpVersion.HTTP_1_1);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("HTTP/1.1", strBuilder.toString());
+    Assertions.assertEquals("HTTP/1.1", strBuilder.toString());
 
     strBuilder = new StringBuilder();
     when(serverRequest.version()).thenReturn(HttpVersion.HTTP_1_0);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("HTTP/1.0", strBuilder.toString());
+    Assertions.assertEquals("HTTP/1.0", strBuilder.toString());
 
     strBuilder = new StringBuilder();
     when(serverRequest.version()).thenReturn(HttpVersion.HTTP_2);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("HTTP/2.0", strBuilder.toString());
+    Assertions.assertEquals("HTTP/2.0", strBuilder.toString());
   }
 
   @Test
@@ -92,7 +92,7 @@ public class RequestProtocolItemTest {
     when(endpoint.getAddress()).thenReturn(urlEndpoint);
     when(urlEndpoint.isHttp2Enabled()).thenReturn(true);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("HTTP/2.0", strBuilder.toString());
+    Assertions.assertEquals("HTTP/2.0", strBuilder.toString());
 
     strBuilder = new StringBuilder();
     when(finishEvent.getInvocation()).thenReturn(invocation);
@@ -100,7 +100,7 @@ public class RequestProtocolItemTest {
     when(endpoint.getAddress()).thenReturn(urlEndpoint);
     when(urlEndpoint.isHttp2Enabled()).thenReturn(false);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("HTTP/1.1", strBuilder.toString());
+    Assertions.assertEquals("HTTP/1.1", strBuilder.toString());
   }
 
   @Test
@@ -109,7 +109,7 @@ public class RequestProtocolItemTest {
     when(serverRequest.version()).thenReturn(null);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -119,6 +119,6 @@ public class RequestProtocolItemTest {
     when(endpoint.getAddress()).thenReturn(null);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("HTTP/1.1", strBuilder.toString());
+    Assertions.assertEquals("HTTP/1.1", strBuilder.toString());
   }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -28,8 +27,9 @@ import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpClientRequest;
@@ -61,7 +61,7 @@ public class LocalPortItemTest {
 
   private HttpConnection connection;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     accessLogEvent = new ServerAccessLogEvent();
     routingContext = Mockito.mock(RoutingContext.class);
@@ -87,7 +87,7 @@ public class LocalPortItemTest {
     Mockito.when(socketAddress.port()).thenReturn(8080);
 
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("8080", strBuilder.toString());
+    Assertions.assertEquals("8080", strBuilder.toString());
   }
 
   @Test
@@ -97,21 +97,21 @@ public class LocalPortItemTest {
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.port()).thenReturn(8080);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("8080", strBuilder.toString());
+    Assertions.assertEquals("8080", strBuilder.toString());
   }
 
   @Test
   public void serverFormattedElementOnRequestIsNull() {
     Mockito.when(routingContext.request()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElementOnRequestIsNull() {
     when(restClientRequest.getRequest()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -119,7 +119,7 @@ public class LocalPortItemTest {
     Mockito.when(routingContext.request()).thenReturn(serverRequest);
     Mockito.when(serverRequest.localAddress()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -128,6 +128,6 @@ public class LocalPortItemTest {
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }

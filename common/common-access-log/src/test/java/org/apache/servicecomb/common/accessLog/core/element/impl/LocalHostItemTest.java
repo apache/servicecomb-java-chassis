@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -28,9 +27,9 @@ import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpClientRequest;
@@ -62,7 +61,7 @@ public class LocalHostItemTest {
 
   private HttpConnection connection;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     accessLogEvent = new ServerAccessLogEvent();
     routingContext = Mockito.mock(RoutingContext.class);
@@ -89,7 +88,7 @@ public class LocalHostItemTest {
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn(localAddress);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals(localAddress, strBuilder.toString());
+    Assertions.assertEquals(localAddress, strBuilder.toString());
   }
 
   @Test
@@ -97,7 +96,7 @@ public class LocalHostItemTest {
     String localAddress = "192.168.0.1";
     accessLogEvent.setLocalAddress(localAddress);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertEquals(localAddress, strBuilder.toString());
+    Assertions.assertEquals(localAddress, strBuilder.toString());
   }
 
   @Test
@@ -108,21 +107,21 @@ public class LocalHostItemTest {
     Mockito.when(socketAddress.host()).thenReturn(localHost);
 
     String result = LocalHostAccessItem.getLocalAddress(routingContext);
-    assertEquals(localHost, result);
+    Assertions.assertEquals(localHost, result);
   }
 
   @Test
   public void serverLocalAddressOnRequestIsNull() {
     Mockito.when(routingContext.request()).thenReturn(null);
     String result = LocalHostAccessItem.getLocalAddress(routingContext);
-    assertEquals("-", result);
+    Assertions.assertEquals("-", result);
   }
 
   @Test
   public void clientLocalAddressOnRequestIsNull() {
     when(restClientRequest.getRequest()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -130,7 +129,7 @@ public class LocalHostItemTest {
     Mockito.when(routingContext.request()).thenReturn(serverRequest);
     Mockito.when(serverRequest.localAddress()).thenReturn(null);
     String result = LocalHostAccessItem.getLocalAddress(routingContext);
-    assertEquals("-", result);
+    Assertions.assertEquals("-", result);
   }
 
   @Test
@@ -139,7 +138,7 @@ public class LocalHostItemTest {
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -149,7 +148,7 @@ public class LocalHostItemTest {
     Mockito.when(socketAddress.host()).thenReturn(null);
 
     String result = LocalHostAccessItem.getLocalAddress(routingContext);
-    assertEquals("-", result);
+    Assertions.assertEquals("-", result);
   }
 
   @Test
@@ -159,7 +158,7 @@ public class LocalHostItemTest {
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 
   @Test
@@ -170,7 +169,7 @@ public class LocalHostItemTest {
     Mockito.when(socketAddress.host()).thenReturn(localHost);
 
     String result = LocalHostAccessItem.getLocalAddress(routingContext);
-    assertEquals("-", result);
+    Assertions.assertEquals("-", result);
   }
 
   @Test
@@ -180,6 +179,6 @@ public class LocalHostItemTest {
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn("");
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertEquals("-", strBuilder.toString());
+    Assertions.assertEquals("-", strBuilder.toString());
   }
 }
