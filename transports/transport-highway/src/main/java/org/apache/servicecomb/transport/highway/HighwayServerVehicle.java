@@ -31,8 +31,8 @@ import io.vertx.core.Context;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
-public class HighwayServerVerticle extends AbstractVerticle {
-  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerVerticle.class);
+public class HighwayServerVehicle extends AbstractVerticle {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerVehicle.class);
 
   public static final String SSL_KEY = "highway.provider";
 

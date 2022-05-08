@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTransportConfigUtils {
   @Before
@@ -47,7 +48,7 @@ public class TestTransportConfigUtils {
   public void readVerticleCount_new_exist() {
     ArchaiusUtils.setProperty(key, 10);
 
-    Assert.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
+    Assertions.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
   }
 
   @Test
@@ -55,8 +56,8 @@ public class TestTransportConfigUtils {
     ArchaiusUtils.setProperty(deprecatedKey, 10);
 
     LogCollector collector = new LogCollector();
-    Assert.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
-    Assert.assertEquals("thread-count is ambiguous, and deprecated, recommended to use verticle-count.",
+    Assertions.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
+    Assertions.assertEquals("thread-count is ambiguous, and deprecated, recommended to use verticle-count.",
         collector.getEvents().get(0).getMessage());
     collector.teardown();
   }
@@ -71,8 +72,8 @@ public class TestTransportConfigUtils {
     };
 
     LogCollector collector = new LogCollector();
-    Assert.assertEquals(7, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
-    Assert.assertEquals("verticle-count not defined, set to 7.",
+    Assertions.assertEquals(7, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
+    Assertions.assertEquals("verticle-count not defined, set to 7.",
         collector.getLastEvents().getMessage());
     collector.teardown();
   }
@@ -88,14 +89,14 @@ public class TestTransportConfigUtils {
     };
 
     LogCollector collector = new LogCollector();
-    Assert.assertEquals(8, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
-    Assert.assertEquals("verticle-count not defined, set to 8.",
+    Assertions.assertEquals(8, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
+    Assertions.assertEquals("verticle-count not defined, set to 8.",
         collector.getLastEvents().getMessage());
 
     count.set(9);
     collector.clear();
-    Assert.assertEquals(8, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
-    Assert.assertEquals("verticle-count not defined, set to 8.",
+    Assertions.assertEquals(8, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
+    Assertions.assertEquals("verticle-count not defined, set to 8.",
         collector.getLastEvents().getMessage());
 
     collector.teardown();

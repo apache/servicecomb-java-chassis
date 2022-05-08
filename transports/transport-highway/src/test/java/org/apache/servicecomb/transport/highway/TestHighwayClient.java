@@ -38,9 +38,9 @@ import org.apache.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.AbstractVerticle;
@@ -90,7 +90,7 @@ public class TestHighwayClient {
   @Test
   public void testLoginTimeout(@Mocked Vertx vertx) {
     TcpClientConfig tcpClientConfig = Deencapsulation.invoke(client, "createTcpClientConfig");
-    Assert.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
+    Assertions.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
   }
 
   @Test
@@ -107,7 +107,7 @@ public class TestHighwayClient {
     client.init(vertx);
 
     ClientPoolManager<HighwayClientConnectionPool> clientMgr = Deencapsulation.getField(client, "clientMgr");
-    Assert.assertSame(vertx, Deencapsulation.getField(clientMgr, "vertx"));
+    Assertions.assertSame(vertx, Deencapsulation.getField(clientMgr, "vertx"));
   }
 
   private Object doTestSend(Vertx vertx, HighwayClientConnectionPool pool, HighwayClientConnection tcpClient,
@@ -194,13 +194,13 @@ public class TestHighwayClient {
     };
     Object result = doTestSend(vertx, pool, tcpClient, Response.ok("ok"));
 
-    Assert.assertEquals("ok", result);
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals("ok", result);
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
 
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishGetConnection());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishWriteToBuffer());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishReceiveResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishGetConnection());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishWriteToBuffer());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishReceiveResponse());
   }
 
   @Test
@@ -215,9 +215,9 @@ public class TestHighwayClient {
 
     Object result = doTestSend(vertx, pool, tcpClient, new InvocationException(Status.BAD_REQUEST, (Object) "failed"));
 
-    Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test
@@ -235,8 +235,8 @@ public class TestHighwayClient {
         tcpClient,
         null);
 
-    Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 }

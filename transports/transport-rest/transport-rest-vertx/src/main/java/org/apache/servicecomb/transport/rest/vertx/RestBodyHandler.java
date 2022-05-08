@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.slf4j.Logger;
@@ -88,6 +89,11 @@ public class RestBodyHandler implements BodyHandler {
   private RestBodyHandler(boolean handleFileUploads, String uploadDirectory) {
     this.handleFileUploads = handleFileUploads;
     setUploadsDirectory(uploadDirectory);
+  }
+
+  @VisibleForTesting
+  public boolean isDeleteUploadedFilesOnEnd() {
+    return deleteUploadedFilesOnEnd;
   }
 
   @Override

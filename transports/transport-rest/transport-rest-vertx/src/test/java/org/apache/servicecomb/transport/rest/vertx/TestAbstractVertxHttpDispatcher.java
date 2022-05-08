@@ -26,10 +26,10 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -76,7 +76,7 @@ public class TestAbstractVertxHttpDispatcher {
     };
 
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
-    Assert.assertSame(filters, dispatcher.httpServerFilters);
+    Assertions.assertSame(filters, dispatcher.httpServerFilters);
   }
 
   @Test
@@ -84,8 +84,8 @@ public class TestAbstractVertxHttpDispatcher {
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();
 
-    Assert.assertTrue(Deencapsulation.getField(bodyHandler, "deleteUploadedFilesOnEnd"));
-    Assert.assertEquals(RestConst.UPLOAD_DEFAULT_DIR, Deencapsulation.getField(bodyHandler, "uploadsDir"));
+    Assertions.assertTrue(bodyHandler.isDeleteUploadedFilesOnEnd());
+    Assertions.assertEquals(RestConst.UPLOAD_DEFAULT_DIR, Deencapsulation.getField(bodyHandler, "uploadsDir"));
   }
 
   @Test
@@ -95,7 +95,7 @@ public class TestAbstractVertxHttpDispatcher {
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();
 
-    Assert.assertTrue(Deencapsulation.getField(bodyHandler, "deleteUploadedFilesOnEnd"));
-    Assert.assertEquals("/path", Deencapsulation.getField(bodyHandler, "uploadsDir"));
+    Assertions.assertTrue(bodyHandler.isDeleteUploadedFilesOnEnd());
+    Assertions.assertEquals("/path", Deencapsulation.getField(bodyHandler, "uploadsDir"));
   }
 }

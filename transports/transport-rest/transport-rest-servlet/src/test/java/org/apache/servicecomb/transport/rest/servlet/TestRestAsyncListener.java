@@ -32,13 +32,13 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestAsyncListener {
   HttpServletRequest request = new AbstractHttpServletRequest() {
@@ -114,8 +114,8 @@ public class TestRestAsyncListener {
     committed = true;
     listener.onTimeout(event);
 
-    Assert.assertNull(request.getAttribute(RestConst.REST_REQUEST));
-    Assert.assertFalse(flushed);
+    Assertions.assertNull(request.getAttribute(RestConst.REST_REQUEST));
+    Assertions.assertFalse(flushed);
   }
 
   @Test
@@ -123,10 +123,10 @@ public class TestRestAsyncListener {
     committed = false;
     listener.onTimeout(event);
 
-    Assert.assertNull(request.getAttribute(RestConst.REST_REQUEST));
-    Assert.assertEquals(MediaType.APPLICATION_JSON, contentType);
-    Assert.assertEquals(500, statusCode);
-    Assert.assertTrue(flushed);
-    Assert.assertEquals("{\"message\":\"Timeout when processing the request.\"}", writer.toString());
+    Assertions.assertNull(request.getAttribute(RestConst.REST_REQUEST));
+    Assertions.assertEquals(MediaType.APPLICATION_JSON, contentType);
+    Assertions.assertEquals(500, statusCode);
+    Assertions.assertTrue(flushed);
+    Assertions.assertEquals("{\"message\":\"Timeout when processing the request.\"}", writer.toString());
   }
 }

@@ -20,35 +20,35 @@ package org.apache.servicecomb.transport.rest.vertx;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTransportConfig {
 
-  @Before
+  @BeforeEach
   public void before() {
     ArchaiusUtils.resetConfig();
   }
 
-  @After
+  @AfterEach
   public void after() {
     ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testGetAddressNull() {
-    Assert.assertNull(TransportConfig.getAddress());
+    Assertions.assertNull(TransportConfig.getAddress());
   }
 
   @Test
   public void testGetAddressNormal() {
     ArchaiusUtils.setProperty("servicecomb.rest.address", "1.1.1.1");
-    Assert.assertEquals("1.1.1.1", TransportConfig.getAddress());
+    Assertions.assertEquals("1.1.1.1", TransportConfig.getAddress());
   }
 
   @Test
@@ -59,95 +59,95 @@ public class TestTransportConfig {
         return 1;
       }
     };
-    Assert.assertEquals(1, TransportConfig.getThreadCount());
+    Assertions.assertEquals(1, TransportConfig.getThreadCount());
   }
 
   @Test
   public void testGetThreadCountNormal() {
     ArchaiusUtils.setProperty("servicecomb.rest.server.thread-count", 10);
-    Assert.assertEquals(10, TransportConfig.getThreadCount());
+    Assertions.assertEquals(10, TransportConfig.getThreadCount());
   }
 
   @Test
   public void testGetCompressedAndHeaderSize() {
     ArchaiusUtils.setProperty("servicecomb.rest.server.compression", true);
-    Assert.assertTrue(TransportConfig.getCompressed());
+    Assertions.assertTrue(TransportConfig.getCompressed());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxHeaderSize", 2048);
-    Assert.assertEquals(2048, TransportConfig.getMaxHeaderSize());
+    Assertions.assertEquals(2048, TransportConfig.getMaxHeaderSize());
   }
 
   @Test
   public void testGetDecompressed() {
-    Assert.assertFalse(TransportConfig.getDecompressionSupported());
+    Assertions.assertFalse(TransportConfig.getDecompressionSupported());
     ArchaiusUtils.setProperty("servicecomb.rest.server.decompressionSupported", true);
-    Assert.assertTrue(TransportConfig.getDecompressionSupported());
+    Assertions.assertTrue(TransportConfig.getDecompressionSupported());
   }
 
   @Test
   public void testGetDecoderInitialBufferSize() {
-    Assert.assertEquals(128, TransportConfig.getDecoderInitialBufferSize());
+    Assertions.assertEquals(128, TransportConfig.getDecoderInitialBufferSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.decoderInitialBufferSize", 256);
-    Assert.assertEquals(256, TransportConfig.getDecoderInitialBufferSize());
+    Assertions.assertEquals(256, TransportConfig.getDecoderInitialBufferSize());
   }
 
   @Test
   public void testGetHttp2ConnectionWindowSize() {
-    Assert.assertEquals(-1, TransportConfig.getHttp2ConnectionWindowSize());
+    Assertions.assertEquals(-1, TransportConfig.getHttp2ConnectionWindowSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2ConnectionWindowSize", 1);
-    Assert.assertEquals(1, TransportConfig.getHttp2ConnectionWindowSize());
+    Assertions.assertEquals(1, TransportConfig.getHttp2ConnectionWindowSize());
   }
 
   @Test
   public void testGetMaxFormAttributeSize() {
-    Assert.assertEquals(8192, TransportConfig.getMaxFormAttributeSize());
+    Assertions.assertEquals(8192, TransportConfig.getMaxFormAttributeSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxFormAttributeSize", 3072);
-    Assert.assertEquals(3072, TransportConfig.getMaxFormAttributeSize());
+    Assertions.assertEquals(3072, TransportConfig.getMaxFormAttributeSize());
   }
 
   @Test
   public void testGeCompressionLevel() {
-    Assert.assertEquals(6, TransportConfig.getCompressionLevel());
+    Assertions.assertEquals(6, TransportConfig.getCompressionLevel());
     ArchaiusUtils.setProperty("servicecomb.rest.server.compressionLevel", 8);
-    Assert.assertEquals(8, TransportConfig.getCompressionLevel());
+    Assertions.assertEquals(8, TransportConfig.getCompressionLevel());
   }
 
   @Test
   public void testGetMaxChunkSize() {
-    Assert.assertEquals(8192, TransportConfig.getMaxChunkSize());
+    Assertions.assertEquals(8192, TransportConfig.getMaxChunkSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxChunkSize", 65536);
-    Assert.assertEquals(65536, TransportConfig.getMaxChunkSize());
+    Assertions.assertEquals(65536, TransportConfig.getMaxChunkSize());
   }
 
   @Test
   public void testIsCorsEnabled() {
-    Assert.assertFalse(TransportConfig.isCorsEnabled());
+    Assertions.assertFalse(TransportConfig.isCorsEnabled());
     ArchaiusUtils.setProperty("servicecomb.cors.enabled", true);
-    Assert.assertTrue(TransportConfig.isCorsEnabled());
+    Assertions.assertTrue(TransportConfig.isCorsEnabled());
     ArchaiusUtils.setProperty("servicecomb.cors.enabled", false);
-    Assert.assertFalse(TransportConfig.isCorsEnabled());
+    Assertions.assertFalse(TransportConfig.isCorsEnabled());
   }
 
   @Test
   public void testGetCorsAllowedOrigin() {
-    Assert.assertEquals("*", TransportConfig.getCorsAllowedOrigin());
+    Assertions.assertEquals("*", TransportConfig.getCorsAllowedOrigin());
     String origin = "http://localhost:8080";
     ArchaiusUtils.setProperty("servicecomb.cors.origin", origin);
-    Assert.assertEquals(origin, TransportConfig.getCorsAllowedOrigin());
+    Assertions.assertEquals(origin, TransportConfig.getCorsAllowedOrigin());
   }
 
   @Test
   public void testIsCorsAllowCredentials() {
-    Assert.assertFalse(TransportConfig.isCorsAllowCredentials());
+    Assertions.assertFalse(TransportConfig.isCorsAllowCredentials());
     ArchaiusUtils.setProperty("servicecomb.cors.allowCredentials", true);
-    Assert.assertTrue(TransportConfig.isCorsAllowCredentials());
+    Assertions.assertTrue(TransportConfig.isCorsAllowCredentials());
     ArchaiusUtils.setProperty("servicecomb.cors.allowCredentials", false);
-    Assert.assertFalse(TransportConfig.isCorsAllowCredentials());
+    Assertions.assertFalse(TransportConfig.isCorsAllowCredentials());
   }
 
   @Test
   public void testGetCorsAllowedHeaders() {
     String configKey = "servicecomb.cors.allowedHeader";
-    Assert.assertTrue(TransportConfig.getCorsAllowedHeaders().isEmpty());
+    Assertions.assertTrue(TransportConfig.getCorsAllowedHeaders().isEmpty());
     ArchaiusUtils.setProperty(configKey, "abc");
     MatcherAssert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc"));
     ArchaiusUtils.setProperty(configKey, "abc, def");
@@ -155,13 +155,13 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty(configKey, "abc ,, def");
     MatcherAssert.assertThat(TransportConfig.getCorsAllowedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
     ArchaiusUtils.setProperty(configKey, "");
-    Assert.assertTrue(TransportConfig.getCorsAllowedHeaders().isEmpty());
+    Assertions.assertTrue(TransportConfig.getCorsAllowedHeaders().isEmpty());
   }
 
   @Test
   public void testGetCorsAllowedMethods() {
     String configKey = "servicecomb.cors.allowedMethod";
-    Assert.assertTrue(TransportConfig.getCorsAllowedMethods().isEmpty());
+    Assertions.assertTrue(TransportConfig.getCorsAllowedMethods().isEmpty());
     ArchaiusUtils.setProperty(configKey, "GET");
     MatcherAssert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET"));
     ArchaiusUtils.setProperty(configKey, "GET, POST");
@@ -169,13 +169,13 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty(configKey, "GET,,POST");
     MatcherAssert.assertThat(TransportConfig.getCorsAllowedMethods(), Matchers.containsInAnyOrder("GET", "POST"));
     ArchaiusUtils.setProperty(configKey, "");
-    Assert.assertTrue(TransportConfig.getCorsAllowedMethods().isEmpty());
+    Assertions.assertTrue(TransportConfig.getCorsAllowedMethods().isEmpty());
   }
 
   @Test
   public void testGetCorsExposedHeaders() {
     String configKey = "servicecomb.cors.exposedHeader";
-    Assert.assertTrue(TransportConfig.getCorsExposedHeaders().isEmpty());
+    Assertions.assertTrue(TransportConfig.getCorsExposedHeaders().isEmpty());
     ArchaiusUtils.setProperty(configKey, "abc");
     MatcherAssert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc"));
     ArchaiusUtils.setProperty(configKey, "abc, def");
@@ -183,55 +183,55 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty(configKey, "abc ,, def");
     MatcherAssert.assertThat(TransportConfig.getCorsExposedHeaders(), Matchers.containsInAnyOrder("abc", "def"));
     ArchaiusUtils.setProperty(configKey, "");
-    Assert.assertTrue(TransportConfig.getCorsExposedHeaders().isEmpty());
+    Assertions.assertTrue(TransportConfig.getCorsExposedHeaders().isEmpty());
   }
 
   @Test
   public void testGetCorsMaxAge() {
-    Assert.assertEquals(-1, TransportConfig.getCorsMaxAge());
+    Assertions.assertEquals(-1, TransportConfig.getCorsMaxAge());
     ArchaiusUtils.setProperty("servicecomb.cors.maxAge", 3600);
-    Assert.assertEquals(3600, TransportConfig.getCorsMaxAge());
+    Assertions.assertEquals(3600, TransportConfig.getCorsMaxAge());
   }
 
   @Test
   public void testHttp2Setting() {
-    Assert.assertEquals(100L, TransportConfig.getMaxConcurrentStreams());
+    Assertions.assertEquals(100L, TransportConfig.getMaxConcurrentStreams());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.concurrentStreams", 200L);
-    Assert.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
+    Assertions.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
 
-    Assert.assertEquals(4096L, TransportConfig.getHttp2HeaderTableSize());
+    Assertions.assertEquals(4096L, TransportConfig.getHttp2HeaderTableSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.HeaderTableSize", 8192L);
-    Assert.assertEquals(8192L, TransportConfig.getHttp2HeaderTableSize());
+    Assertions.assertEquals(8192L, TransportConfig.getHttp2HeaderTableSize());
 
-    Assert.assertTrue(TransportConfig.getPushEnabled());
+    Assertions.assertTrue(TransportConfig.getPushEnabled());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.pushEnabled", false);
-    Assert.assertFalse(TransportConfig.getPushEnabled());
+    Assertions.assertFalse(TransportConfig.getPushEnabled());
 
-    Assert.assertEquals(65535, TransportConfig.getInitialWindowSize());
+    Assertions.assertEquals(65535, TransportConfig.getInitialWindowSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.initialWindowSize", 2 * 65535);
-    Assert.assertEquals(2 * 65535, TransportConfig.getInitialWindowSize());
+    Assertions.assertEquals(2 * 65535, TransportConfig.getInitialWindowSize());
 
-    Assert.assertEquals(16384, TransportConfig.getMaxFrameSize());
+    Assertions.assertEquals(16384, TransportConfig.getMaxFrameSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.maxFrameSize", 65535);
-    Assert.assertEquals(65535, TransportConfig.getMaxFrameSize());
+    Assertions.assertEquals(65535, TransportConfig.getMaxFrameSize());
 
-    Assert.assertEquals(8192, TransportConfig.getMaxHeaderListSize());
+    Assertions.assertEquals(8192, TransportConfig.getMaxHeaderListSize());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.maxHeaderListSize", 65535);
-    Assert.assertEquals(65535, TransportConfig.getMaxHeaderListSize());
+    Assertions.assertEquals(65535, TransportConfig.getMaxHeaderListSize());
   }
 
 
   @Test
   public void testUseAlpn() {
-    Assert.assertTrue(TransportConfig.getUseAlpn());
+    Assertions.assertTrue(TransportConfig.getUseAlpn());
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.useAlpnEnabled", false);
-    Assert.assertFalse(TransportConfig.getUseAlpn());
+    Assertions.assertFalse(TransportConfig.getUseAlpn());
   }
 
   @Test
   public void testGetMaxInitialLineLength() {
-    Assert.assertEquals(4096, TransportConfig.getMaxInitialLineLength());
+    Assertions.assertEquals(4096, TransportConfig.getMaxInitialLineLength());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxInitialLineLength", 8000);
-    Assert.assertEquals(8000, TransportConfig.getMaxInitialLineLength());
+    Assertions.assertEquals(8000, TransportConfig.getMaxInitialLineLength());
   }
 }

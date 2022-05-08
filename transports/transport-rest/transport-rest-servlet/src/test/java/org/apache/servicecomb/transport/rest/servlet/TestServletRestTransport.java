@@ -25,13 +25,13 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServletRestTransport {
   ServletRestTransport transport = new ServletRestTransport();
@@ -56,8 +56,8 @@ public class TestServletRestTransport {
         result = null;
       }
     };
-    Assert.assertTrue(transport.init());
-    Assert.assertNull(transport.getPublishEndpoint());
+    Assertions.assertTrue(transport.init());
+    Assertions.assertNull(transport.getPublishEndpoint());
   }
 
   @Test
@@ -75,8 +75,8 @@ public class TestServletRestTransport {
         result = "1.1.1.1:1234";
       }
     };
-    Assert.assertTrue(transport.init());
-    Assert.assertEquals("rest://1.1.1.1:1234", transport.getPublishEndpoint().getEndpoint());
+    Assertions.assertTrue(transport.init());
+    Assertions.assertEquals("rest://1.1.1.1:1234", transport.getPublishEndpoint().getEndpoint());
   }
 
   @Test
@@ -97,14 +97,14 @@ public class TestServletRestTransport {
     };
     ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root");
 
-    Assert.assertTrue(transport.init());
-    Assert.assertEquals("rest://1.1.1.1:1234?urlPrefix=%2Froot", transport.getPublishEndpoint().getEndpoint());
+    Assertions.assertTrue(transport.init());
+    Assertions.assertEquals("rest://1.1.1.1:1234?urlPrefix=%2Froot", transport.getPublishEndpoint().getEndpoint());
   }
 
   @Test
   public void testGetOrder() {
     ServletRestTransport transport = new ServletRestTransport();
-    Assert.assertEquals(0, transport.getOrder());
+    Assertions.assertEquals(0, transport.getOrder());
   }
 
   @Test
@@ -117,7 +117,7 @@ public class TestServletRestTransport {
     };
 
     ServletRestTransport transport = new ServletRestTransport();
-    Assert.assertTrue(transport.canInit());
+    Assertions.assertTrue(transport.canInit());
   }
 
   @Test
@@ -133,7 +133,7 @@ public class TestServletRestTransport {
     };
 
     ServletRestTransport transport = new ServletRestTransport();
-    Assert.assertTrue(transport.canInit());
+    Assertions.assertTrue(transport.canInit());
 
     ss.close();
   }
@@ -152,6 +152,6 @@ public class TestServletRestTransport {
     };
 
     ServletRestTransport transport = new ServletRestTransport();
-    Assert.assertFalse(transport.canInit());
+    Assertions.assertFalse(transport.canInit());
   }
 }

@@ -19,9 +19,9 @@ package org.apache.servicecomb.transport.rest.client;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTransportClientConfig {
 
@@ -38,60 +38,60 @@ public class TestTransportClientConfig {
   @Test
   public void getThreadCount() {
     ArchaiusUtils.setProperty("servicecomb.rest.client.verticle-count", 1);
-    Assert.assertEquals(1, TransportClientConfig.getThreadCount());
+    Assertions.assertEquals(1, TransportClientConfig.getThreadCount());
   }
 
   @Test
   public void getConnectionMaxPoolSize() {
-    Assert.assertEquals(5, TransportClientConfig.getConnectionMaxPoolSize());
+    Assertions.assertEquals(5, TransportClientConfig.getConnectionMaxPoolSize());
   }
 
   @Test
   public void getConnectionIdleTimeoutInSeconds() {
-    Assert.assertEquals(30, TransportClientConfig.getConnectionIdleTimeoutInSeconds());
+    Assertions.assertEquals(30, TransportClientConfig.getConnectionIdleTimeoutInSeconds());
   }
 
   @Test
   public void getHttp2MultiplexingLimit() {
-    Assert.assertEquals(-1, TransportClientConfig.getHttp2MultiplexingLimit());
+    Assertions.assertEquals(-1, TransportClientConfig.getHttp2MultiplexingLimit());
   }
 
   @Test
   public void getHttp2ConnectionMaxPoolSize() {
-    Assert.assertEquals(1, TransportClientConfig.getHttp2ConnectionMaxPoolSize());
+    Assertions.assertEquals(1, TransportClientConfig.getHttp2ConnectionMaxPoolSize());
   }
 
   @Test
   public void getHttp2ConnectionIdleTimeoutInSeconds() {
-    Assert.assertEquals(0, TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds());
+    Assertions.assertEquals(0, TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds());
   }
 
   @Test
   public void getUseAlpnEnabled() {
-    Assert.assertTrue(TransportClientConfig.getUseAlpn());
+    Assertions.assertTrue(TransportClientConfig.getUseAlpn());
   }
 
   @Test
   public void getConnectionKeepAlive() {
-    Assert.assertTrue(TransportClientConfig.getConnectionKeepAlive());
+    Assertions.assertTrue(TransportClientConfig.getConnectionKeepAlive());
   }
 
   @Test
   public void getConnectionCompression() {
-    Assert.assertFalse(TransportClientConfig.getConnectionCompression());
+    Assertions.assertFalse(TransportClientConfig.getConnectionCompression());
   }
 
   @Test
   public void getMaxHeaderSize() {
-    Assert.assertEquals(8192, TransportClientConfig.getMaxHeaderSize());
+    Assertions.assertEquals(8192, TransportClientConfig.getMaxHeaderSize());
     ArchaiusUtils.setProperty("servicecomb.rest.client.maxHeaderSize", 1024);
-    Assert.assertEquals(1024, TransportClientConfig.getMaxHeaderSize());
+    Assertions.assertEquals(1024, TransportClientConfig.getMaxHeaderSize());
   }
 
   @Test
   public void getMaxWaitQueueSize() {
-    Assert.assertEquals(-1, TransportClientConfig.getMaxWaitQueueSize());
+    Assertions.assertEquals(-1, TransportClientConfig.getMaxWaitQueueSize());
     ArchaiusUtils.setProperty("servicecomb.rest.client.maxWaitQueueSize", 1024);
-    Assert.assertEquals(1024, TransportClientConfig.getMaxWaitQueueSize());
+    Assertions.assertEquals(1024, TransportClientConfig.getMaxWaitQueueSize());
   }
 }

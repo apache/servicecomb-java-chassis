@@ -34,10 +34,10 @@ import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
@@ -124,17 +124,17 @@ public class TestHighwayCodec {
     Invocation invocation = new Invocation(endpoint, operationMeta, null);
 
     invocation.addContext("X-B3-traceId", "test1");
-    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+    Assertions.assertEquals("test1", invocation.getContext("X-B3-traceId"));
 
     RequestHeader headers = new RequestHeader();
     Map<String, String> context = new HashMap<>();
     headers.setContext(context);
     HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
-    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+    Assertions.assertEquals("test1", invocation.getContext("X-B3-traceId"));
 
     context.put("X-B3-traceId", "test2");
     HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
-    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+    Assertions.assertEquals("test1", invocation.getContext("X-B3-traceId"));
   }
 
   @Test
@@ -150,7 +150,7 @@ public class TestHighwayCodec {
       e.printStackTrace();
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -162,13 +162,13 @@ public class TestHighwayCodec {
       Mockito.when(invocation.getInvocationArguments()).thenReturn(args);
       Mockito.when(requestSerializer.serialize(args)).thenReturn(new byte[0]);
       TcpOutputStream os = HighwayCodec.encodeRequest(0, invocation, operationProtobuf);
-      Assert.assertNotNull(os);
-      Assert.assertArrayEquals(TcpParser.TCP_MAGIC, os.getBuffer().getBytes(0, 7));
+      Assertions.assertNotNull(os);
+      Assertions.assertArrayEquals(TcpParser.TCP_MAGIC, os.getBuffer().getBytes(0, 7));
     } catch (Exception e) {
       e.printStackTrace();
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   private void commonMock() {

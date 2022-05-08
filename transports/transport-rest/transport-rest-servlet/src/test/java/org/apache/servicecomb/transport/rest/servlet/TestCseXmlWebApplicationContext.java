@@ -27,6 +27,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import mockit.Expectations;
@@ -126,6 +127,6 @@ public class TestCseXmlWebApplicationContext {
 
     context.invokeBeanFactoryPostProcessors(beanFactory);
 
-    Assert.assertTrue(holder.value);
+    Assertions.assertTrue(holder.value);
   }
 }

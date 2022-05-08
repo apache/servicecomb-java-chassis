@@ -50,13 +50,14 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultHttpClientFilter {
   private final DefaultHttpClientFilter filter = new DefaultHttpClientFilter();
 
   @Test
   public void testOrder() {
-    Assert.assertEquals(10000, filter.getOrder());
+    Assertions.assertEquals(10000, filter.getOrder());
   }
 
   @Test
@@ -69,7 +70,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertNull(filter.findProduceProcessor(restOperation, responseEx));
+    Assertions.assertNull(filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
@@ -84,7 +85,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
+    Assertions.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
@@ -99,7 +100,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
+    Assertions.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
@@ -117,8 +118,8 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertSame(part, response.getResult());
-    Assert.assertEquals(Status.OK, response.getStatus());
+    Assertions.assertSame(part, response.getResult());
+    Assertions.assertEquals(Status.OK, response.getStatus());
   }
 
   @Test
@@ -151,19 +152,19 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertEquals(400, response.getStatusCode());
-    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    Assertions.assertEquals(400, response.getStatusCode());
+    Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
             + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 4]",
         invocationException.getCause().getMessage());
-    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    Assertions.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported",
         commonExceptionData.getMessage());
   }
@@ -198,19 +199,19 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertEquals(400, response.getStatusCode());
-    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    Assertions.assertEquals(400, response.getStatusCode());
+    Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
             + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 4]",
         invocationException.getCause().getMessage());
-    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    Assertions.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported",
         commonExceptionData.getMessage());
   }
@@ -239,14 +240,14 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    Assert.assertEquals(403, response.getStatusCode());
-    Assert.assertEquals("Forbidden", response.getReasonPhrase());
-    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    Assertions.assertEquals(403, response.getStatusCode());
+    Assertions.assertEquals("Forbidden", response.getReasonPhrase());
+    Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         403,
         invocationException.getStatusCode());
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "CommonExceptionData [message=abcd]",
         invocationException.getErrorData().toString());
   }
@@ -286,8 +287,8 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    Assert.assertSame(decodedResult, response.getResult());
-    Assert.assertEquals(1, response.getHeaders().size());
-    Assert.assertEquals(response.getHeaders("b"), Arrays.asList("bValue"));
+    Assertions.assertSame(decodedResult, response.getResult());
+    Assertions.assertEquals(1, response.getHeaders().size());
+    Assertions.assertEquals(response.getHeaders("b"), Arrays.asList("bValue"));
   }
 }

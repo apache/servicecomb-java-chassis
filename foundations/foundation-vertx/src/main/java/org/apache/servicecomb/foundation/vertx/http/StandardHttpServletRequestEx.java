@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
@@ -64,6 +65,11 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
 
   public void setCacheRequest(boolean cacheRequest) {
     this.cacheRequest = cacheRequest;
+  }
+
+  @VisibleForTesting
+  public boolean isCacheRequest() {
+    return cacheRequest;
   }
 
   @Override

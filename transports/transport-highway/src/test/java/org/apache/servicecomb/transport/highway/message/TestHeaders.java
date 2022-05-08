@@ -23,15 +23,15 @@ import java.util.Map;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestHeaders {
   @Test
   public void test1() {
     Headers headers = new Headers();
-    Assert.assertNull(headers.getFirst("h1"));
-    Assert.assertNull(headers.getHeader("h1"));
+    Assertions.assertNull(headers.getFirst("h1"));
+    Assertions.assertNull(headers.getHeader("h1"));
 
     Map<String, List<Object>> headerMap = new HashMap<>();
     List<Object> h1Value = Arrays.asList("h1v1", "h1v2");
@@ -40,11 +40,11 @@ public class TestHeaders {
     headerMap.put("h3", Arrays.asList());
     headers.setHeaderMap(headerMap);
 
-    Assert.assertEquals(headerMap, headers.getHeaderMap());
-    Assert.assertEquals("h1v1", headers.getFirst("h1"));
-    Assert.assertNull(headers.getFirst("h2"));
-    Assert.assertNull(headers.getFirst("h3"));
-    Assert.assertEquals(h1Value, headers.getHeader("h1"));
+    Assertions.assertEquals(headerMap, headers.getHeaderMap());
+    Assertions.assertEquals("h1v1", headers.getFirst("h1"));
+    Assertions.assertNull(headers.getFirst("h2"));
+    Assertions.assertNull(headers.getFirst("h3"));
+    Assertions.assertEquals(h1Value, headers.getHeader("h1"));
   }
 
   @Test
@@ -53,7 +53,7 @@ public class TestHeaders {
     headers.addHeader("h1", "h1v1");
     headers.addHeader("h1", "h1v2");
 
-    Assert.assertEquals("h1v1", headers.getFirst("h1"));
+    Assertions.assertEquals("h1v1", headers.getFirst("h1"));
   }
 
   @Test

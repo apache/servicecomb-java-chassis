@@ -26,9 +26,7 @@ import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
@@ -36,6 +34,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestServletProducerInvocation {
   @Mocked
@@ -48,7 +47,7 @@ public class TestRestServletProducerInvocation {
 
   @Test
   public void findRestOperationCacheTrue(@Mocked HttpServletRequest request, @Mocked HttpServerFilter f1) {
-    HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
+    StandardHttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     Deencapsulation.setField(restInvocation, "requestEx", requestEx);
 
     new MockUp<RestProducerInvocation>() {
@@ -69,7 +68,7 @@ public class TestRestServletProducerInvocation {
     restInvocation.setHttpServerFilters(httpServerFilters);
 
     restInvocation.findRestOperation();
-    Assert.assertTrue(Deencapsulation.getField(requestEx, "cacheRequest"));
+    Assertions.assertTrue(requestEx.isCacheRequest());
   }
 
   @Test
@@ -83,7 +82,7 @@ public class TestRestServletProducerInvocation {
     };
 
     restInvocation.setHttpServerFilters(httpServerFilters);
-    Assert.assertTrue(restInvocation.collectCacheRequest(operationMeta));
+    Assertions.assertTrue(restInvocation.collectCacheRequest(operationMeta));
   }
 
   @Test
@@ -97,6 +96,6 @@ public class TestRestServletProducerInvocation {
     };
 
     restInvocation.setHttpServerFilters(httpServerFilters);
-    Assert.assertFalse(restInvocation.collectCacheRequest(operationMeta));
+    Assertions.assertFalse(restInvocation.collectCacheRequest(operationMeta));
   }
 }
