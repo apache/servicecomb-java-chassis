@@ -38,6 +38,7 @@ import org.junit.Assert;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class MockMicroserviceVersions extends MicroserviceVersions {
   // key is serviceId
@@ -112,7 +113,7 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
   }
 
   public void check(MicroserviceVersionRule microserviceVersionRule, String latestVersion, String... instanceVersions) {
-    Assert.assertSame(findMicroserviceVersion(latestVersion), microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertSame(findMicroserviceVersion(latestVersion), microserviceVersionRule.getLatestMicroserviceVersion());
     MatcherAssert.assertThat(microserviceVersionRule.getInstances().values(),
         Matchers.containsInAnyOrder(findInstances(instanceVersions).toArray()));
   }

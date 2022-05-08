@@ -33,16 +33,16 @@ public class TestMicroserviceFactory {
   @Test
   public void testAllowCrossApp() {
     Microservice microservice = new Microservice();
-    Assert.assertFalse(microservice.allowCrossApp());
+    Assertions.assertFalse(microservice.allowCrossApp());
 
     microservice.getProperties().put(CONFIG_ALLOW_CROSS_APP_KEY, "true");
-    Assert.assertTrue(microservice.allowCrossApp());
+    Assertions.assertTrue(microservice.allowCrossApp());
 
     microservice.getProperties().put(CONFIG_ALLOW_CROSS_APP_KEY, "false");
-    Assert.assertFalse(microservice.allowCrossApp());
+    Assertions.assertFalse(microservice.allowCrossApp());
 
     microservice.getProperties().put(CONFIG_ALLOW_CROSS_APP_KEY, "asfas");
-    Assert.assertFalse(microservice.allowCrossApp());
+    Assertions.assertFalse(microservice.allowCrossApp());
   }
 
   @Test
@@ -52,7 +52,7 @@ public class TestMicroserviceFactory {
 
     String microserviceName = "default";
 
-    Assert.assertEquals(microserviceName, microservice.getServiceName());
+    Assertions.assertEquals(microserviceName, microservice.getServiceName());
   }
 
   @Test
@@ -61,7 +61,7 @@ public class TestMicroserviceFactory {
     Configuration configuration = ConfigUtil.createLocalConfig();
     configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION, new String[] {"test1", "test2"});
     Microservice microservice = factory.create(configuration);
-    Assert.assertEquals("test1,test2", microservice.getDescription());
+    Assertions.assertEquals("test1,test2", microservice.getDescription());
   }
 
   @Test
@@ -71,12 +71,12 @@ public class TestMicroserviceFactory {
 
     MicroserviceFactory factory = new MicroserviceFactory();
     Microservice microservice = factory.create(configuration);
-    Assert.assertNull(microservice.getDescription());
+    Assertions.assertNull(microservice.getDescription());
 
     configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION, new String[] {});
     microservice = factory.create(configuration);
 
-    Assert.assertNull(microservice.getDescription());
+    Assertions.assertNull(microservice.getDescription());
   }
 
   @Test
@@ -88,7 +88,7 @@ public class TestMicroserviceFactory {
 
     Microservice microservice = factory.create(configuration);
 
-    Assert.assertEquals(",", microservice.getDescription());
+    Assertions.assertEquals(",", microservice.getDescription());
   }
 
   @Test
@@ -100,7 +100,7 @@ public class TestMicroserviceFactory {
 
     Microservice microservice = factory.create(configuration);
 
-    Assert.assertEquals(" , ", microservice.getDescription());
+    Assertions.assertEquals(" , ", microservice.getDescription());
   }
 
   @Test

@@ -32,12 +32,12 @@ import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestConsumers extends TestRegistryBase {
   @Before
@@ -53,13 +53,13 @@ public class TestConsumers extends TestRegistryBase {
   public void getOrCreateMicroserviceVersionRule() {
     MicroserviceVersionRule microserviceVersionRule = appManager
         .getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
-    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
+    Assertions.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertEquals(1, microserviceManager.getVersionsByName().size());
 
     MicroserviceVersion microserviceVersion = microserviceVersionRule.getLatestMicroserviceVersion();
-    Assert.assertEquals(serviceName, microserviceVersion.getMicroserviceName());
-    Assert.assertEquals(serviceId, microserviceVersion.getMicroserviceId());
-    Assert.assertEquals(version, microserviceVersion.getVersion().getVersion());
+    Assertions.assertEquals(serviceName, microserviceVersion.getMicroserviceName());
+    Assertions.assertEquals(serviceId, microserviceVersion.getMicroserviceId());
+    Assertions.assertEquals(version, microserviceVersion.getVersion().getVersion());
   }
 
   @Test
@@ -68,17 +68,17 @@ public class TestConsumers extends TestRegistryBase {
     MicroserviceVersions microserviceVersions = microserviceManager.getOrCreateMicroserviceVersions(serviceName);
     MicroserviceVersionRule microserviceVersionRule = microserviceVersions
         .getOrCreateMicroserviceVersionRule(versionRule);
-    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
-    Assert.assertEquals(0, microserviceManager.getVersionsByName().size());
+    Assertions.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertEquals(0, microserviceManager.getVersionsByName().size());
   }
 
   @Test
   public void watchDeleteEvent() {
     MicroserviceVersionRule microserviceVersionRule = appManager
         .getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
-    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
+    Assertions.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertEquals(1, microserviceManager.getVersionsByName().size());
 
     mockNotExist();
 
@@ -89,7 +89,7 @@ public class TestConsumers extends TestRegistryBase {
     key.setAppId(appId);
     key.setServiceName(serviceName);
     eventBus.post(event);
-    Assert.assertEquals(0, microserviceManager.getVersionsByName().size());
+    Assertions.assertEquals(0, microserviceManager.getVersionsByName().size());
   }
 
   @Test
@@ -103,7 +103,7 @@ public class TestConsumers extends TestRegistryBase {
 
     try (LogCollector collector = new LogCollector()) {
       appManager.getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
-      Assert.assertEquals(0, microserviceManager.getVersionsByName().size());
+      Assertions.assertEquals(0, microserviceManager.getVersionsByName().size());
 
       MatcherAssert.assertThat(collector.getEvents().stream()
               .filter(e -> e.getThrowableInformation() != null)
@@ -117,13 +117,13 @@ public class TestConsumers extends TestRegistryBase {
   public void delete_disconnect_cache() {
     MicroserviceVersionRule microserviceVersionRule = appManager
         .getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
-    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
+    Assertions.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertEquals(1, microserviceManager.getVersionsByName().size());
 
     mockDisconnect();
     appManager.pullInstances();
 
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
+    Assertions.assertEquals(1, microserviceManager.getVersionsByName().size());
   }
 
   @Test
@@ -145,7 +145,7 @@ public class TestConsumers extends TestRegistryBase {
         Hello.class);
 
     MicroserviceVersionRule microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId, "3rd", "0+");
-    Assert.assertEquals(2, microserviceVersionRule.getInstances().size());
+    Assertions.assertEquals(2, microserviceVersionRule.getInstances().size());
     MatcherAssert.assertThat(microserviceVersionRule.getInstances().values().stream()
             .flatMap(inst -> inst.getEndpoints().stream())
             .toArray(),

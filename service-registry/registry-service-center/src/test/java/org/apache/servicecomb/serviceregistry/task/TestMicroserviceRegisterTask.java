@@ -39,6 +39,7 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceRegisterTask {
   private EventBus eventBus;
@@ -88,10 +89,10 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(false, registerTask.isRegistered());
-    Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals(null, microservice.getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertFalse(registerTask.isRegistered());
+    Assertions.assertFalse(registerTask.isSchemaIdSetMatch());
+    Assertions.assertNull(microservice.getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -112,14 +113,14 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals("serviceId", microservice.getInstance().getServiceId());
+    Assertions.assertEquals(1, taskList.size());
 
     registerTask.run();
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   /**
@@ -155,11 +156,11 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(false, registerTask.isRegistered());
-    Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertEquals(false, registerTask.isRegistered());
+    Assertions.assertEquals(false, registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals("serviceId", microservice.getInstance().getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   /**
@@ -191,11 +192,11 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals("serviceId", microservice.getInstance().getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -216,12 +217,12 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals("serviceId", microservice.getInstance().getServiceId());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   @Test(expected = IllegalStateException.class)
@@ -272,10 +273,10 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(false, registerTask.isRegistered());
-    Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertFalse(registerTask.isRegistered());
+    Assertions.assertFalse(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -313,10 +314,10 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   /**
@@ -356,10 +357,10 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   /**
@@ -479,10 +480,10 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isSchemaIdSetMatch());
+    Assertions.assertEquals("serviceId", microservice.getServiceId());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   /**
@@ -596,17 +597,17 @@ public class TestMicroserviceRegisterTask {
     microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
 
-    Boolean isIlleagalException = false;
+    boolean isIllegalException = false;
 
     try {
       registerTask.run();
     } catch (IllegalStateException exception) {
-      isIlleagalException = true;
+      isIllegalException = true;
       List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
         return MicroserviceRegisterTask.class.getName().equals(e.getLoggerName());
       }).collect(Collectors.toList());
 
-      Assert.assertEquals("service center schema and local schema both are different:\n" +
+      Assertions.assertEquals("service center schema and local schema both are different:\n" +
           " service center schema:\n" +
           "[swagger: \"2.0\"\n" +
           "info:\n" +
@@ -686,7 +687,7 @@ public class TestMicroserviceRegisterTask {
           "        maximum: 20\n" +
           "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(4).getMessage());
 
-      Assert.assertEquals("The difference in local schema:\n" +
+      Assertions.assertEquals("The difference in local schema:\n" +
           "[type: \"string\"\n" +
           "definitions:\n" +
           "  Student:\n" +
@@ -703,7 +704,7 @@ public class TestMicroserviceRegisterTask {
           "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
     }
 
-    Assert.assertEquals(true, isIlleagalException);
+    Assertions.assertTrue(isIllegalException);
   }
 
   @Test
@@ -817,15 +818,15 @@ public class TestMicroserviceRegisterTask {
     microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
 
-    Boolean isIlleagalException = false;
+    boolean isIllegalException = false;
 
     try {
       registerTask.run();
     } catch (IllegalStateException exception) {
-      isIlleagalException = true;
+      isIllegalException = true;
     }
 
-    Assert.assertEquals(false, isIlleagalException);
+    Assertions.assertFalse(isIllegalException);
   }
 
   @Test
@@ -935,13 +936,13 @@ public class TestMicroserviceRegisterTask {
             "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"");
     microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
-    Boolean isIlleagalException = false;
+    boolean isIllegalException = false;
 
     try {
       registerTask.run();
     } catch (IllegalStateException exception) {
-      isIlleagalException = true;
+      isIllegalException = true;
     }
-    Assert.assertEquals(false, isIlleagalException);
+    Assertions.assertFalse(isIllegalException);
   }
 }

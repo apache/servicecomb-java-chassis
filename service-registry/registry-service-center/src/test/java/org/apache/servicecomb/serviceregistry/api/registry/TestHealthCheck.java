@@ -20,9 +20,9 @@ package org.apache.servicecomb.serviceregistry.api.registry;
 import org.apache.servicecomb.registry.api.registry.HealthCheck;
 import org.apache.servicecomb.registry.api.registry.HealthCheckMode;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHealthCheck {
 
@@ -40,33 +40,33 @@ public class TestHealthCheck {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertEquals(0, oHealthCheck.getInterval());
-    Assert.assertEquals(0, oHealthCheck.getPort());
-    Assert.assertEquals(0, oHealthCheck.getTimes());
-    Assert.assertNull(oHealthCheck.getMode());
-    Assert.assertEquals(0, oHealthCheck.getTTL());
+    Assertions.assertEquals(0, oHealthCheck.getInterval());
+    Assertions.assertEquals(0, oHealthCheck.getPort());
+    Assertions.assertEquals(0, oHealthCheck.getTimes());
+    Assertions.assertNull(oHealthCheck.getMode());
+    Assertions.assertEquals(0, oHealthCheck.getTTL());
   }
 
   @Test
   public void testInitializedValues() {
     initHealthCheck(); //Initialize the Values
-    Assert.assertEquals(10, oHealthCheck.getInterval());
-    Assert.assertEquals(8080, oHealthCheck.getPort());
-    Assert.assertEquals(2, oHealthCheck.getTimes());
-    Assert.assertEquals(HealthCheckMode.PLATFORM, oHealthCheck.getMode());
-    Assert.assertEquals(0, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
-    Assert.assertEquals("pull", oHealthCheck.getMode().getName());
+    Assertions.assertEquals(10, oHealthCheck.getInterval());
+    Assertions.assertEquals(8080, oHealthCheck.getPort());
+    Assertions.assertEquals(2, oHealthCheck.getTimes());
+    Assertions.assertEquals(HealthCheckMode.PLATFORM, oHealthCheck.getMode());
+    Assertions.assertEquals(0, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
+    Assertions.assertEquals("pull", oHealthCheck.getMode().getName());
 
     //Testing Different modes of the HealthCheckMode
     oHealthCheck.setMode(HealthCheckMode.HEARTBEAT);
-    Assert.assertEquals(HealthCheckMode.HEARTBEAT, oHealthCheck.getMode());
-    Assert.assertEquals(30, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
-    Assert.assertEquals("push", oHealthCheck.getMode().getName());
+    Assertions.assertEquals(HealthCheckMode.HEARTBEAT, oHealthCheck.getMode());
+    Assertions.assertEquals(30, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
+    Assertions.assertEquals("push", oHealthCheck.getMode().getName());
 
     oHealthCheck.setMode(HealthCheckMode.UNKNOWN);
-    Assert.assertEquals(HealthCheckMode.UNKNOWN, oHealthCheck.getMode());
-    Assert.assertEquals(0, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
-    Assert.assertEquals("unknown", oHealthCheck.getMode().getName());
+    Assertions.assertEquals(HealthCheckMode.UNKNOWN, oHealthCheck.getMode());
+    Assertions.assertEquals(0, oHealthCheck.getTTL()); //TTL Values will changes based on the Mode
+    Assertions.assertEquals("unknown", oHealthCheck.getMode().getName());
   }
 
   private void initHealthCheck() {

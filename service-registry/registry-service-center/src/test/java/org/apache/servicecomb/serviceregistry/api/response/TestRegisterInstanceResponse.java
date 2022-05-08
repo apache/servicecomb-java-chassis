@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRegisterInstanceResponse {
 
@@ -38,13 +39,13 @@ public class TestRegisterInstanceResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oRegisterInstanceResponse.getInstanceId());
+    Assertions.assertNull(oRegisterInstanceResponse.getInstanceId());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals("testInstanceID", oRegisterInstanceResponse.getInstanceId());
+    Assertions.assertEquals("testInstanceID", oRegisterInstanceResponse.getInstanceId());
   }
 
   private void initFields() {

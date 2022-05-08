@@ -18,7 +18,6 @@
 package org.apache.servicecomb.serviceregistry.client.http;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,9 +51,9 @@ import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientI
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.google.common.cache.CacheBuilder;
@@ -114,10 +113,10 @@ public class TestServiceRegistryClientImpl {
     try {
       oClient.init();
       HttpClientOptions httpClientOptions = Deencapsulation.invoke(oClient, "createHttpClientOptions");
-      Assert.assertNotNull(httpClientOptions);
-      Assert.assertEquals(80, httpClientOptions.getDefaultPort());
+      Assertions.assertNotNull(httpClientOptions);
+      Assertions.assertEquals(80, httpClientOptions.getDefaultPort());
     } catch (Exception e) {
-      Assert.assertNotNull(e);
+      Assertions.assertNotNull(e);
     }
     ArchaiusUtils.resetConfig();
   }
@@ -128,23 +127,23 @@ public class TestServiceRegistryClientImpl {
     ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "ms");
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create();
-    Assert.assertNull(oClient.registerMicroservice(microservice));
-    Assert.assertNull(oClient.registerMicroserviceInstance(microservice.getInstance()));
+    Assertions.assertNull(oClient.registerMicroservice(microservice));
+    Assertions.assertNull(oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
-    Assert.assertNull(oClient.getMicroserviceId(microservice.getAppId(),
+    Assertions.assertNull(oClient.getMicroserviceId(microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion(),
         microservice.getEnvironment()));
     MatcherAssert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
-    Assert.assertNull(oClient.registerMicroservice(microservice));
-    Assert.assertNull(oClient.getMicroservice("microserviceId"));
-    Assert.assertNull(oClient.getMicroserviceInstance("consumerId", "providerId"));
-    Assert.assertFalse(oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
-    Assert.assertNull(oClient.heartbeat("microserviceId", "microserviceInstanceId"));
-    Assert.assertNull(oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
-    Assert.assertNull(oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
+    Assertions.assertNull(oClient.registerMicroservice(microservice));
+    Assertions.assertNull(oClient.getMicroservice("microserviceId"));
+    Assertions.assertNull(oClient.getMicroserviceInstance("consumerId", "providerId"));
+    Assertions.assertFalse(oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
+    Assertions.assertNull(oClient.heartbeat("microserviceId", "microserviceInstanceId"));
+    Assertions.assertNull(oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
+    Assertions.assertNull(oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
 
-    Assert.assertEquals("a", new ClientException("a").getMessage());
+    Assertions.assertEquals("a", new ClientException("a").getMessage());
 
     ArchaiusUtils.resetConfig();
   }
@@ -187,7 +186,7 @@ public class TestServiceRegistryClientImpl {
     new RegisterSchemaTester() {
       void doRun(java.util.List<LoggingEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
-        Assert.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage());
+        Assertions.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage());
       }
     }.run();
   }
@@ -213,10 +212,10 @@ public class TestServiceRegistryClientImpl {
     new RegisterSchemaTester() {
       void doRun(java.util.List<LoggingEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
-        Assert.assertEquals(
+        Assertions.assertEquals(
             "register schema msid/schemaId fail.",
             events.get(0).getMessage());
-        Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+        Assertions.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
       }
     }.run();
   }
@@ -251,7 +250,7 @@ public class TestServiceRegistryClientImpl {
     new RegisterSchemaTester() {
       void doRun(java.util.List<LoggingEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
-        Assert.assertEquals(
+        Assertions.assertEquals(
             "Register schema msid/schemaId failed, statusCode: 400, statusMessage: client error, description: too big.",
             events.get(0).getMessage());
       }
@@ -283,7 +282,7 @@ public class TestServiceRegistryClientImpl {
     new RegisterSchemaTester() {
       void doRun(java.util.List<LoggingEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
-        Assert.assertEquals(
+        Assertions.assertEquals(
             "register schema msid/schemaId success.",
             events.get(0).getMessage());
       }
@@ -321,7 +320,7 @@ public class TestServiceRegistryClientImpl {
     Buffer bodyBuffer = Buffer.buffer("{}");
     bodyHandlerHolder.value.handle(bodyBuffer);
 
-    Assert.assertNull(holder.value);
+    Assertions.assertNull(holder.value);
   }
 
   @Test
@@ -336,7 +335,7 @@ public class TestServiceRegistryClientImpl {
         holder.value = new GetExistenceResponse();
       }
     };
-    Assert.assertFalse(oClient.isSchemaExist(microserviceId, schemaId));
+    Assertions.assertFalse(oClient.isSchemaExist(microserviceId, schemaId));
   }
 
   @Test
@@ -354,12 +353,12 @@ public class TestServiceRegistryClientImpl {
                     + "\"paths\":[],\"status\":\"UP\",\"properties\":{},\"intance\":null}}",
                 GetServiceResponse.class);
         RequestParam requestParam = requestContext.getParams();
-        Assert.assertEquals("global=true", requestParam.getQueryParams());
+        Assertions.assertEquals("global=true", requestParam.getQueryParams());
       }
     };
     Microservice aggregatedMicroservice = oClient.getAggregatedMicroservice(microserviceId);
-    Assert.assertEquals("serviceId", aggregatedMicroservice.getServiceId());
-    Assert.assertEquals("appId", aggregatedMicroservice.getAppId());
+    Assertions.assertEquals("serviceId", aggregatedMicroservice.getServiceId());
+    Assertions.assertEquals("appId", aggregatedMicroservice.getAppId());
   }
 
   @Test
@@ -377,7 +376,7 @@ public class TestServiceRegistryClientImpl {
                 "{ \"schema\": \"schema\", \"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"}",
                 GetSchemaResponse.class);
         RequestParam requestParam = requestContext.getParams();
-        Assert.assertEquals("global=true", requestParam.getQueryParams());
+        Assertions.assertEquals("global=true", requestParam.getQueryParams());
       }
     };
 
@@ -392,7 +391,7 @@ public class TestServiceRegistryClientImpl {
     Deencapsulation.setField(oClient, "schemaCache", newCache);
 
     String str = oClient.getAggregatedSchema(microserviceId, schemaId);
-    Assert.assertEquals("schema", str);
+    Assertions.assertEquals("schema", str);
 
     Deencapsulation.setField(oClient, "schemaCache", oldCache);
   }
@@ -415,9 +414,9 @@ public class TestServiceRegistryClientImpl {
     };
     Holder<List<GetSchemaResponse>> schemasHolder = oClient.getSchemas(microserviceId);
     List<GetSchemaResponse> schemaResponses = schemasHolder.getValue();
-    Assert.assertEquals(200, schemasHolder.getStatusCode());
-    Assert.assertEquals(3, schemaResponses.size());
-    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", schemaResponses.get(1).getSummary());
+    Assertions.assertEquals(200, schemasHolder.getStatusCode());
+    Assertions.assertEquals(3, schemaResponses.size());
+    Assertions.assertEquals("bfa81d625cfbd3a57f38745323e16824", schemaResponses.get(1).getSummary());
   }
 
   @Test
@@ -438,9 +437,9 @@ public class TestServiceRegistryClientImpl {
     };
     Holder<List<GetSchemaResponse>> schemasHolder = oClient.getSchemas(microserviceId);
     List<GetSchemaResponse> schemas = schemasHolder.getValue();
-    Assert.assertEquals(200, schemasHolder.getStatusCode());
-    Assert.assertEquals(3, schemas.size());
-    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", schemas.get(1).getSummary());
+    Assertions.assertEquals(200, schemasHolder.getStatusCode());
+    Assertions.assertEquals(3, schemas.size());
+    Assertions.assertEquals("bfa81d625cfbd3a57f38745323e16824", schemas.get(1).getSummary());
   }
 
   @Test
@@ -456,8 +455,8 @@ public class TestServiceRegistryClientImpl {
     };
     Holder<List<GetSchemaResponse>> schemasHolder = oClient.getSchemas(microserviceId);
     List<GetSchemaResponse> schemaResponses = schemasHolder.getValue();
-    Assert.assertEquals(404, schemasHolder.getStatusCode());
-    Assert.assertNull(schemaResponses);
+    Assertions.assertEquals(404, schemasHolder.getStatusCode());
+    Assertions.assertNull(schemaResponses);
   }
 
   @Test
@@ -466,10 +465,10 @@ public class TestServiceRegistryClientImpl {
       @Mock
       void get(IpPort ipPort, String uri, RequestParam requestParam,
           Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("global=true", requestParam.getQueryParams());
+        Assertions.assertEquals("global=true", requestParam.getQueryParams());
       }
     };
-    Assert.assertNull(oClient.findServiceInstance("aaa", "bbb"));
+    Assertions.assertNull(oClient.findServiceInstance("aaa", "bbb"));
   }
 
   @Test
@@ -478,11 +477,11 @@ public class TestServiceRegistryClientImpl {
       @Mock
       void get(IpPort ipPort, String uri, RequestParam requestParam,
           Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=1.0.0%2B",
+        Assertions.assertEquals("appId=appId&global=true&serviceName=serviceName&version=1.0.0%2B",
             requestParam.getQueryParams());
       }
     };
-    Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));
+    Assertions.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));
   }
 
   @Test
@@ -504,7 +503,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=0.0.0.0%2B",
+        Assertions.assertEquals("appId=appId&global=true&serviceName=serviceName&version=0.0.0.0%2B",
             requestContext.getParams().getQueryParams());
         restResponse.setRequestContext(requestContext);
         responseHandler.handle(restResponse);
@@ -513,8 +512,8 @@ public class TestServiceRegistryClientImpl {
     MicroserviceInstances microserviceInstances = oClient
         .findServiceInstances("consumerId", "appId", "serviceName", DefinitionConst.VERSION_RULE_ALL, null);
 
-    Assert.assertTrue(microserviceInstances.isMicroserviceNotExist());
-    Assert.assertFalse(microserviceInstances.isNeedRefresh());
+    Assertions.assertTrue(microserviceInstances.isMicroserviceNotExist());
+    Assertions.assertFalse(microserviceInstances.isNeedRefresh());
   }
 
   @Test
@@ -534,10 +533,10 @@ public class TestServiceRegistryClientImpl {
       }
     };
     ServiceCenterInfo info = oClient.getServiceCenterInfo();
-    Assert.assertEquals("x.x.x", info.getVersion());
-    Assert.assertEquals("xxx", info.getBuildTag());
-    Assert.assertEquals("dev", info.getRunMode());
-    Assert.assertNotNull(info.getConfig());
+    Assertions.assertEquals("x.x.x", info.getVersion());
+    Assertions.assertEquals("xxx", info.getBuildTag());
+    Assertions.assertEquals("dev", info.getRunMode());
+    Assertions.assertNotNull(info.getConfig());
   }
 
   @Test
@@ -553,10 +552,10 @@ public class TestServiceRegistryClientImpl {
     new RegisterSchemaTester() {
       void doRun(java.util.List<LoggingEvent> events) {
         oClient.getServiceCenterInfo();
-        Assert.assertEquals(
+        Assertions.assertEquals(
             "query servicecenter version info failed.",
             events.get(0).getMessage());
-        Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+        Assertions.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
       }
     }.run();
   }
@@ -579,7 +578,7 @@ public class TestServiceRegistryClientImpl {
     };
 
     boolean result = oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", "UP");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
   }
 
   @SuppressWarnings("deprecation")
@@ -600,7 +599,7 @@ public class TestServiceRegistryClientImpl {
     };
 
     boolean result = oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", "UP");
-    Assert.assertFalse(result);
+    Assertions.assertFalse(result);
   }
 
   @SuppressWarnings("deprecation")
@@ -610,18 +609,18 @@ public class TestServiceRegistryClientImpl {
       oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", null);
       shouldThrowException();
     } catch (NullPointerException e) {
-      Assert.assertEquals("Name is null", e.getMessage());
+      Assertions.assertEquals("Name is null", e.getMessage());
     }
     try {
       oClient
           .undateMicroserviceInstanceStatus("svcId", "instanceId", "IllegalStatus");
       shouldThrowException();
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid status: IllegalStatus", e.getMessage());
+      Assertions.assertEquals("Invalid status: IllegalStatus", e.getMessage());
     }
   }
 
   private void shouldThrowException() {
-    fail("an exception is expected");
+    Assertions.fail("an exception is expected");
   }
 }

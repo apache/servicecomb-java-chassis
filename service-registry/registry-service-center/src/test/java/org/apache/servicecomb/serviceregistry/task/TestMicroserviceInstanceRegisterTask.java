@@ -39,6 +39,7 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceInstanceRegisterTask {
   private EventBus eventBus;
@@ -91,8 +92,8 @@ public class TestMicroserviceInstanceRegisterTask {
         new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, null, microservice);
     registerTask.run();
 
-    Assert.assertEquals(false, registerTask.isRegistered());
-    Assert.assertEquals(0, taskList.size());
+    Assertions.assertFalse(registerTask.isRegistered());
+    Assertions.assertEquals(0, taskList.size());
   }
 
   @Test
@@ -121,12 +122,12 @@ public class TestMicroserviceInstanceRegisterTask {
     registerTask.taskStatus = TaskStatus.READY;
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals("127.0.0.1", instance.getHostName());
-    Assert.assertEquals("instanceId", instance.getInstanceId());
-    Assert.assertEquals(10, instance.getHealthCheck().getInterval());
-    Assert.assertEquals(20, instance.getHealthCheck().getTimes());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertEquals("127.0.0.1", instance.getHostName());
+    Assertions.assertEquals("instanceId", instance.getInstanceId());
+    Assertions.assertEquals(10, instance.getHealthCheck().getInterval());
+    Assertions.assertEquals(20, instance.getHealthCheck().getTimes());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -155,12 +156,12 @@ public class TestMicroserviceInstanceRegisterTask {
     registerTask.taskStatus = TaskStatus.READY;
     registerTask.run();
 
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals("hostName", instance.getHostName());
-    Assert.assertEquals("instanceId", instance.getInstanceId());
-    Assert.assertEquals(10, instance.getHealthCheck().getInterval());
-    Assert.assertEquals(20, instance.getHealthCheck().getTimes());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertEquals("hostName", instance.getHostName());
+    Assertions.assertEquals("instanceId", instance.getInstanceId());
+    Assertions.assertEquals(10, instance.getHealthCheck().getInterval());
+    Assertions.assertEquals(20, instance.getHealthCheck().getTimes());
+    Assertions.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -189,10 +190,10 @@ public class TestMicroserviceInstanceRegisterTask {
     registerTask.taskStatus = TaskStatus.READY;
     registerTask.run();
 
-    Assert.assertEquals(false, registerTask.isRegistered());
-    Assert.assertEquals("127.0.0.1", instance.getHostName());
-    Assert.assertEquals(10, instance.getHealthCheck().getInterval());
-    Assert.assertEquals(20, instance.getHealthCheck().getTimes());
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertFalse(registerTask.isRegistered());
+    Assertions.assertEquals("127.0.0.1", instance.getHostName());
+    Assertions.assertEquals(10, instance.getHealthCheck().getInterval());
+    Assertions.assertEquals(20, instance.getHealthCheck().getTimes());
+    Assertions.assertEquals(1, taskList.size());
   }
 }

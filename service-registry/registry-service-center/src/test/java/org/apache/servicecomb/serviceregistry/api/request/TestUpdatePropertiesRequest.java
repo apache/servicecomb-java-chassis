@@ -19,19 +19,19 @@ package org.apache.servicecomb.serviceregistry.api.request;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestUpdatePropertiesRequest {
   @Test
   public void testProperties() {
     UpdatePropertiesRequest request = new UpdatePropertiesRequest();
 
-    Assert.assertEquals(null, request.getProperties());
+    Assertions.assertNull(request.getProperties());
 
     Map<String, String> properties = new HashMap<>();
     properties.put("k", "v");
     request.setProperties(properties);
-    Assert.assertEquals(properties, request.getProperties());
+    Assertions.assertEquals(properties, request.getProperties());
   }
 }

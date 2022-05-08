@@ -17,11 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry.registry.cache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +26,7 @@ import org.apache.servicecomb.serviceregistry.registry.cache.AggregateMicroservi
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class AggregateServiceRegistryCacheTest {
 
@@ -78,30 +74,30 @@ public class AggregateServiceRegistryCacheTest {
         MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build()
     );
 
-    assertTrue(serviceCache instanceof AggregateMicroserviceCache);
+    Assertions.assertTrue(serviceCache instanceof AggregateMicroserviceCache);
     AggregateMicroserviceCache aggregateMicroserviceCache = (AggregateMicroserviceCache) serviceCache;
-    assertEquals(2, aggregateMicroserviceCache.caches.size());
-    assertSame(mockServiceRegistry0.findMicroserviceCache(microserviceCacheKey),
+    Assertions.assertEquals(2, aggregateMicroserviceCache.caches.size());
+    Assertions.assertSame(mockServiceRegistry0.findMicroserviceCache(microserviceCacheKey),
         aggregateMicroserviceCache.caches.get(mockServiceRegistry0.getName()));
-    assertSame(mockServiceRegistry1.findMicroserviceCache(microserviceCacheKey),
+    Assertions.assertSame(mockServiceRegistry1.findMicroserviceCache(microserviceCacheKey),
         aggregateMicroserviceCache.caches.get(mockServiceRegistry1.getName()));
     // aggregateMicroserviceCache holds the cache of svc
-    assertEquals(1, aggregateServiceRegistryCache.microserviceCache.size());
-    assertNotNull(aggregateServiceRegistryCache.microserviceCache.get(microserviceCacheKey));
+    Assertions.assertEquals(1, aggregateServiceRegistryCache.microserviceCache.size());
+    Assertions.assertNotNull(aggregateServiceRegistryCache.microserviceCache.get(microserviceCacheKey));
 
     MicroserviceCache serviceCache2 = aggregateServiceRegistryCache.findServiceCache(
         MicroserviceCacheKey.builder().serviceName("svc2").appId("app").env("env").build()
     );
 
-    assertTrue(serviceCache2 instanceof AggregateMicroserviceCache);
+    Assertions.assertTrue(serviceCache2 instanceof AggregateMicroserviceCache);
     AggregateMicroserviceCache aggregateMicroserviceCache2 = (AggregateMicroserviceCache) serviceCache2;
-    assertEquals(1, aggregateMicroserviceCache2.caches.size());
-    assertSame(
+    Assertions.assertEquals(1, aggregateMicroserviceCache2.caches.size());
+    Assertions.assertSame(
         mockServiceRegistry1.findMicroserviceCache(
             MicroserviceCacheKey.builder().serviceName("svc2").appId("app").env("env").build()),
         aggregateMicroserviceCache2.caches.get(mockServiceRegistry1.getName()));
-    assertEquals(2, aggregateServiceRegistryCache.microserviceCache.size());
-    assertNotNull(aggregateServiceRegistryCache.microserviceCache.get(
+    Assertions.assertEquals(2, aggregateServiceRegistryCache.microserviceCache.size());
+    Assertions.assertNotNull(aggregateServiceRegistryCache.microserviceCache.get(
         MicroserviceCacheKey.builder().serviceName("svc2").appId("app").env("env").build()
     ));
   }
@@ -112,13 +108,13 @@ public class AggregateServiceRegistryCacheTest {
         MicroserviceCacheKey.builder().serviceName("svc-not-exist").appId("app").env("env").build()
     );
 
-    assertTrue(serviceCache instanceof AggregateMicroserviceCache);
-    assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, serviceCache.getStatus());
+    Assertions.assertTrue(serviceCache instanceof AggregateMicroserviceCache);
+    Assertions.assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, serviceCache.getStatus());
     AggregateMicroserviceCache aggregateMicroserviceCache = (AggregateMicroserviceCache) serviceCache;
-    assertEquals(0, aggregateMicroserviceCache.caches.size());
-    assertEquals(3, aggregateMicroserviceCache.serviceRegistries.size());
+    Assertions.assertEquals(0, aggregateMicroserviceCache.caches.size());
+    Assertions.assertEquals(3, aggregateMicroserviceCache.serviceRegistries.size());
     // should remove the cache of not existing microservice
-    assertEquals(0, aggregateServiceRegistryCache.microserviceCache.size());
+    Assertions.assertEquals(0, aggregateServiceRegistryCache.microserviceCache.size());
   }
 
   @Test
@@ -136,13 +132,13 @@ public class AggregateServiceRegistryCacheTest {
         )
     ));
 
-    assertTrue(aggregateServiceRegistryCache.microserviceCache.isEmpty());
+    Assertions.assertTrue(aggregateServiceRegistryCache.microserviceCache.isEmpty());
 
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(microserviceCacheKey);
     MicroserviceCache serviceCache2 = aggregateServiceRegistryCache.findServiceCache(microserviceCacheKey2);
 
-    assertEquals("1", serviceCache.getRevisionId());
-    assertEquals("1", serviceCache2.getRevisionId());
+    Assertions.assertEquals("1", serviceCache.getRevisionId());
+    Assertions.assertEquals("1", serviceCache2.getRevisionId());
 
     aggregateServiceRegistryCache.onMicroserviceCacheRefreshed(new MicroserviceCacheRefreshedEvent(
         Collections.singletonList(
@@ -153,8 +149,8 @@ public class AggregateServiceRegistryCacheTest {
         )
     ));
 
-    assertEquals("2", serviceCache.getRevisionId());
-    assertEquals("1", serviceCache2.getRevisionId());
+    Assertions.assertEquals("2", serviceCache.getRevisionId());
+    Assertions.assertEquals("1", serviceCache2.getRevisionId());
 
     // test watcher
     ArrayList<Object> refreshedCaches = new ArrayList<>();
@@ -173,11 +169,11 @@ public class AggregateServiceRegistryCacheTest {
         )
     ));
 
-    assertEquals("3", serviceCache.getRevisionId());
-    assertEquals("2", serviceCache2.getRevisionId());
-    assertEquals(2, refreshedCaches.size());
-    assertSame(serviceCache, refreshedCaches.get(0));
-    assertSame(serviceCache2, refreshedCaches.get(1));
+    Assertions.assertEquals("3", serviceCache.getRevisionId());
+    Assertions.assertEquals("2", serviceCache2.getRevisionId());
+    Assertions.assertEquals(2, refreshedCaches.size());
+    Assertions.assertSame(serviceCache, refreshedCaches.get(0));
+    Assertions.assertSame(serviceCache2, refreshedCaches.get(1));
 
     refreshedCaches.clear();
 
@@ -199,14 +195,14 @@ public class AggregateServiceRegistryCacheTest {
         )
     ));
 
-    assertEquals("4", serviceCache.getRevisionId());
-    assertEquals("3", serviceCache2.getRevisionId());
-    assertEquals(2, refreshedCaches.size());
-    assertSame(serviceCache, refreshedCaches.get(0));
-    assertSame(serviceCache2, refreshedCaches.get(1));
-    assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, serviceCache.getStatus());
+    Assertions.assertEquals("4", serviceCache.getRevisionId());
+    Assertions.assertEquals("3", serviceCache2.getRevisionId());
+    Assertions.assertEquals(2, refreshedCaches.size());
+    Assertions.assertSame(serviceCache, refreshedCaches.get(0));
+    Assertions.assertSame(serviceCache2, refreshedCaches.get(1));
+    Assertions.assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, serviceCache.getStatus());
     // not existing service cache removed, only serviceCache2 is left
-    assertEquals(1, aggregateServiceRegistryCache.microserviceCache.size());
-    assertSame(serviceCache2, aggregateServiceRegistryCache.microserviceCache.get(microserviceCacheKey2));
+    Assertions.assertEquals(1, aggregateServiceRegistryCache.microserviceCache.size());
+    Assertions.assertSame(serviceCache2, aggregateServiceRegistryCache.microserviceCache.get(microserviceCacheKey2));
   }
 }

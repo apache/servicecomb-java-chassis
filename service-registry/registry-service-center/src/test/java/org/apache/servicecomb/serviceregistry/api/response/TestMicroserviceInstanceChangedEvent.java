@@ -22,9 +22,9 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.WatchAction;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestMicroserviceInstanceChangedEvent {
@@ -51,25 +51,25 @@ public class TestMicroserviceInstanceChangedEvent {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oMicroserviceInstanceChangedEvent.getAction());
-    Assert.assertNull(oMicroserviceInstanceChangedEvent.getInstance());
-    Assert.assertNull(oMicroserviceInstanceChangedEvent.getKey());
+    Assertions.assertNull(oMicroserviceInstanceChangedEvent.getAction());
+    Assertions.assertNull(oMicroserviceInstanceChangedEvent.getInstance());
+    Assertions.assertNull(oMicroserviceInstanceChangedEvent.getKey());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals(WatchAction.CREATE, oMicroserviceInstanceChangedEvent.getAction());
-    Assert.assertEquals("CREATE", oMicroserviceInstanceChangedEvent.getAction().getName());
-    Assert.assertEquals(oMockMicroserviceInstance, oMicroserviceInstanceChangedEvent.getInstance());
-    Assert.assertEquals(oMockMicroserviceKey, oMicroserviceInstanceChangedEvent.getKey());
+    Assertions.assertEquals(WatchAction.CREATE, oMicroserviceInstanceChangedEvent.getAction());
+    Assertions.assertEquals("CREATE", oMicroserviceInstanceChangedEvent.getAction().getName());
+    Assertions.assertEquals(oMockMicroserviceInstance, oMicroserviceInstanceChangedEvent.getInstance());
+    Assertions.assertEquals(oMockMicroserviceKey, oMicroserviceInstanceChangedEvent.getKey());
 
     //Test Different Actions
     oMicroserviceInstanceChangedEvent.setAction(WatchAction.UPDATE);
-    Assert.assertEquals("UPDATE", oMicroserviceInstanceChangedEvent.getAction().getName());
+    Assertions.assertEquals("UPDATE", oMicroserviceInstanceChangedEvent.getAction().getName());
 
     oMicroserviceInstanceChangedEvent.setAction(WatchAction.DELETE);
-    Assert.assertEquals("DELETE", oMicroserviceInstanceChangedEvent.getAction().getName());
+    Assertions.assertEquals("DELETE", oMicroserviceInstanceChangedEvent.getAction().getName());
   }
 
   private void initFields() {

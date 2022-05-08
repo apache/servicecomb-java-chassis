@@ -34,9 +34,9 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,10 +127,10 @@ public class TestInstanceCacheCheckerMock {
       expectedSummary.getProducers().add(instanceCacheResult);
       expectedSummary.setStatus(Status.UNKNOWN);
 
-      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+      Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
     } catch (Exception e) {
       LOGGER.error("", e);
-      Assert.fail();
+      Assertions.fail();
     }
   }
 
@@ -164,10 +164,10 @@ public class TestInstanceCacheCheckerMock {
       expectedSummary.getProducers().add(instanceCacheResult);
       expectedSummary.setStatus(Status.UNKNOWN);
 
-      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+      Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
     } catch (Exception e) {
       LOGGER.error("", e);
-      Assert.fail();
+      Assertions.fail();
     }
   }
 
@@ -201,7 +201,7 @@ public class TestInstanceCacheCheckerMock {
     expectedSummary.getProducers().add(instanceCacheResult);
     expectedSummary.setStatus(Status.UNKNOWN);
 
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
   }
 
   @Test
@@ -238,7 +238,7 @@ public class TestInstanceCacheCheckerMock {
     expectedSummary.getProducers().add(instanceCacheResult);
     expectedSummary.setStatus(Status.ABNORMAL);
 
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
-    Assert.assertNull(microserviceVersions.getRevision());
+    Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    Assertions.assertNull(microserviceVersions.getRevision());
   }
 }

@@ -24,9 +24,9 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestMicroserviceInstances {
@@ -54,18 +54,18 @@ public class TestMicroserviceInstances {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(microserviceInstances.getInstancesResponse());
-    Assert.assertTrue(microserviceInstances.isNeedRefresh());
-    Assert.assertNull(microserviceInstances.getRevision());
-    Assert.assertNull(findInstancesResponse.getInstances());
+    Assertions.assertNull(microserviceInstances.getInstancesResponse());
+    Assertions.assertTrue(microserviceInstances.isNeedRefresh());
+    Assertions.assertNull(microserviceInstances.getRevision());
+    Assertions.assertNull(findInstancesResponse.getInstances());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals(1, microserviceInstances.getInstancesResponse().getInstances().size());
-    Assert.assertFalse(microserviceInstances.isNeedRefresh());
-    Assert.assertEquals("1", microserviceInstances.getRevision());
+    Assertions.assertEquals(1, microserviceInstances.getInstancesResponse().getInstances().size());
+    Assertions.assertFalse(microserviceInstances.isNeedRefresh());
+    Assertions.assertEquals("1", microserviceInstances.getRevision());
   }
 
   private void initFields() {

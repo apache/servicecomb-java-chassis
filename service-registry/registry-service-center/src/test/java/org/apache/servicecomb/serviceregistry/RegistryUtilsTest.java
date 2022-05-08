@@ -23,8 +23,8 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.apache.servicecomb.serviceregistry.registry.cache.MockedMicroserviceCache;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RegistryUtilsTest {
   @Test
@@ -33,25 +33,25 @@ public class RegistryUtilsTest {
     microserviceCache.setStatus(MicroserviceCacheStatus.CLIENT_ERROR);
     MicroserviceInstances microserviceInstances = RegistryUtils
         .convertCacheToMicroserviceInstances(microserviceCache);
-    Assert.assertNull(microserviceInstances);
+    Assertions.assertNull(microserviceInstances);
 
     microserviceCache = new MockedMicroserviceCache();
     microserviceCache.setStatus(MicroserviceCacheStatus.SETTING_CACHE_ERROR);
     microserviceInstances = RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
-    Assert.assertNull(microserviceInstances);
+    Assertions.assertNull(microserviceInstances);
 
     microserviceCache = new MockedMicroserviceCache();
     microserviceCache.setStatus(MicroserviceCacheStatus.INIT);
     microserviceInstances = RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
-    Assert.assertNull(microserviceInstances);
+    Assertions.assertNull(microserviceInstances);
 
     microserviceCache = new MockedMicroserviceCache();
     microserviceCache.setStatus(MicroserviceCacheStatus.SERVICE_NOT_FOUND);
     microserviceInstances = RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
-    Assert.assertTrue(microserviceInstances.isMicroserviceNotExist());
-    Assert.assertFalse(microserviceInstances.isNeedRefresh());
-    Assert.assertEquals("", microserviceInstances.getRevision());
-    Assert.assertNull(microserviceInstances.getInstancesResponse());
+    Assertions.assertTrue(microserviceInstances.isMicroserviceNotExist());
+    Assertions.assertFalse(microserviceInstances.isNeedRefresh());
+    Assertions.assertEquals("", microserviceInstances.getRevision());
+    Assertions.assertNull(microserviceInstances.getInstancesResponse());
 
     microserviceCache = new MockedMicroserviceCache();
     microserviceCache.setStatus(MicroserviceCacheStatus.REFRESHED);
@@ -59,19 +59,19 @@ public class RegistryUtilsTest {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     microserviceCache.setInstances(Collections.singletonList(microserviceInstance));
     microserviceInstances = RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
-    Assert.assertFalse(microserviceInstances.isMicroserviceNotExist());
-    Assert.assertTrue(microserviceInstances.isNeedRefresh());
-    Assert.assertEquals("0166f3c18702617d5e55cf911e4e412cc8760dab", microserviceInstances.getRevision());
-    Assert.assertEquals(1, microserviceInstances.getInstancesResponse().getInstances().size());
-    Assert.assertSame(microserviceInstance, microserviceInstances.getInstancesResponse().getInstances().get(0));
+    Assertions.assertFalse(microserviceInstances.isMicroserviceNotExist());
+    Assertions.assertTrue(microserviceInstances.isNeedRefresh());
+    Assertions.assertEquals("0166f3c18702617d5e55cf911e4e412cc8760dab", microserviceInstances.getRevision());
+    Assertions.assertEquals(1, microserviceInstances.getInstancesResponse().getInstances().size());
+    Assertions.assertSame(microserviceInstance, microserviceInstances.getInstancesResponse().getInstances().get(0));
 
     microserviceCache = new MockedMicroserviceCache();
     microserviceCache.setStatus(MicroserviceCacheStatus.NO_CHANGE);
     microserviceCache.setRevisionId("0166f3c18702617d5e55cf911e4e412cc8760dab");
     microserviceInstances = RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
-    Assert.assertFalse(microserviceInstances.isMicroserviceNotExist());
-    Assert.assertFalse(microserviceInstances.isNeedRefresh());
-    Assert.assertEquals("0166f3c18702617d5e55cf911e4e412cc8760dab", microserviceInstances.getRevision());
-    Assert.assertNull(microserviceInstances.getInstancesResponse());
+    Assertions.assertFalse(microserviceInstances.isMicroserviceNotExist());
+    Assertions.assertFalse(microserviceInstances.isNeedRefresh());
+    Assertions.assertEquals("0166f3c18702617d5e55cf911e4e412cc8760dab", microserviceInstances.getRevision());
+    Assertions.assertNull(microserviceInstances.getInstancesResponse());
   }
 }

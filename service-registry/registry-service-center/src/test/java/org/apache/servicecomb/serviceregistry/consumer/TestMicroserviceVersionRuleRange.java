@@ -21,9 +21,9 @@ import java.util.Collections;
 
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceVersionRuleRange {
   MockMicroserviceVersions mockMicroserviceVersions;
@@ -39,19 +39,19 @@ public class TestMicroserviceVersionRuleRange {
 
   @Test
   public void getVersionRule() {
-    Assert.assertEquals("2.0.0.0-4.0.0.0", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertEquals("2.0.0.0-4.0.0.0", microserviceVersionRule.getVersionRule().getVersionRule());
   }
 
   @Test
   public void update_empty() {
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test
   public void update_v1() {
     mockMicroserviceVersions.update_v1();
 
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test

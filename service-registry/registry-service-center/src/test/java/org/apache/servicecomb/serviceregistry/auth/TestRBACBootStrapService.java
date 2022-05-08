@@ -18,8 +18,8 @@
 package org.apache.servicecomb.serviceregistry.auth;
 
 import org.apache.servicecomb.foundation.auth.Cipher;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRBACBootStrapService {
   RBACBootStrapService rbacBootStrapService = new RBACBootStrapService();
@@ -27,10 +27,10 @@ public class TestRBACBootStrapService {
   @Test
   public void testGetCipher() {
     Cipher cipher = rbacBootStrapService.getCipher("testCipher");
-    Assert.assertSame(cipher.name(), "testCipher");
+    Assertions.assertSame(cipher.name(), "testCipher");
 
     char[] encrypted = "testtest".toCharArray();
     String result = String.valueOf(cipher.decrypt(encrypted));
-    Assert.assertEquals(result, "test");
+    Assertions.assertEquals(result, "test");
   }
 }

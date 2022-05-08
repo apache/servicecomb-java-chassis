@@ -24,7 +24,6 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +32,7 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceInstanceHeartbeatTask {
   private EventBus eventBus;
@@ -76,9 +76,9 @@ public class TestMicroserviceInstanceHeartbeatTask {
     eventBus.post(registerTask);
 
     task.run();
-    Assert.assertNull(task.getHeartbeatResult());
-    Assert.assertEquals(false, task.isNeedRegisterInstance());
-    Assert.assertEquals(0, heartbeatTaskList.size());
+    Assertions.assertNull(task.getHeartbeatResult());
+    Assertions.assertFalse(task.isNeedRegisterInstance());
+    Assertions.assertEquals(0, heartbeatTaskList.size());
   }
 
   @Test
@@ -101,9 +101,9 @@ public class TestMicroserviceInstanceHeartbeatTask {
     eventBus.post(watchTask);
 
     heartbeatTask.run();
-    Assert.assertNull(heartbeatTask.getHeartbeatResult());
-    Assert.assertEquals(false, heartbeatTask.isNeedRegisterInstance());
-    Assert.assertEquals(0, heartbeatTaskList.size());
+    Assertions.assertNull(heartbeatTask.getHeartbeatResult());
+    Assertions.assertFalse(heartbeatTask.isNeedRegisterInstance());
+    Assertions.assertEquals(0, heartbeatTaskList.size());
   }
 
   @Test
@@ -125,9 +125,9 @@ public class TestMicroserviceInstanceHeartbeatTask {
     eventBus.post(watchTask);
 
     heartbeatTask.run();
-    Assert.assertEquals(HeartbeatResult.DISCONNECTED, heartbeatTask.getHeartbeatResult());
-    Assert.assertEquals(false, heartbeatTask.isNeedRegisterInstance());
-    Assert.assertEquals(1, heartbeatTaskList.size());
+    Assertions.assertEquals(HeartbeatResult.DISCONNECTED, heartbeatTask.getHeartbeatResult());
+    Assertions.assertFalse(heartbeatTask.isNeedRegisterInstance());
+    Assertions.assertEquals(1, heartbeatTaskList.size());
   }
 
   @Test
@@ -153,9 +153,9 @@ public class TestMicroserviceInstanceHeartbeatTask {
     eventBus.post(watchTask);
 
     heartbeatTask.run();
-    Assert.assertEquals(HeartbeatResult.INSTANCE_NOT_REGISTERED, heartbeatTask.getHeartbeatResult());
-    Assert.assertEquals(true, heartbeatTask.isNeedRegisterInstance());
-    Assert.assertEquals(1, heartbeatTaskList.size());
+    Assertions.assertEquals(HeartbeatResult.INSTANCE_NOT_REGISTERED, heartbeatTask.getHeartbeatResult());
+    Assertions.assertTrue(heartbeatTask.isNeedRegisterInstance());
+    Assertions.assertEquals(1, heartbeatTaskList.size());
   }
 
   @Test
@@ -181,8 +181,8 @@ public class TestMicroserviceInstanceHeartbeatTask {
     eventBus.post(watchTask);
 
     heartbeatTask.run();
-    Assert.assertEquals(HeartbeatResult.SUCCESS, heartbeatTask.getHeartbeatResult());
-    Assert.assertEquals(false, heartbeatTask.isNeedRegisterInstance());
-    Assert.assertEquals(1, heartbeatTaskList.size());
+    Assertions.assertEquals(HeartbeatResult.SUCCESS, heartbeatTask.getHeartbeatResult());
+    Assertions.assertFalse(heartbeatTask.isNeedRegisterInstance());
+    Assertions.assertEquals(1, heartbeatTaskList.size());
   }
 }

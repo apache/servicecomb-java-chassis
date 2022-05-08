@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class RefreshableMicroserviceCacheTest {
 
@@ -88,11 +89,11 @@ public class RefreshableMicroserviceCacheTest {
     ArrayList<MicroserviceInstance> instances = new ArrayList<>();
     instances.add(microserviceInstance);
     findServiceInstancesOprHolder.value = params -> {
-      Assert.assertEquals("consumerId", params[0]);
-      Assert.assertEquals("app", params[1]);
-      Assert.assertEquals("svc", params[2]);
-      Assert.assertEquals("0.0.0.0+", params[3]);
-      Assert.assertNull(params[4]);
+      Assertions.assertEquals("consumerId", params[0]);
+      Assertions.assertEquals("app", params[1]);
+      Assertions.assertEquals("svc", params[2]);
+      Assertions.assertEquals("0.0.0.0+", params[3]);
+      Assertions.assertNull(params[4]);
       MicroserviceInstances microserviceInstances = new MicroserviceInstances();
       microserviceInstances.setNeedRefresh(true);
       microserviceInstances.setRevision("rev2");
@@ -108,23 +109,23 @@ public class RefreshableMicroserviceCacheTest {
     microserviceCache.revisionId = "rev";
     microserviceCache.forceRefresh();
 
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
     List<MicroserviceInstance> cachedInstances = microserviceCache.getInstances();
-    Assert.assertEquals(1, cachedInstances.size());
+    Assertions.assertEquals(1, cachedInstances.size());
     MicroserviceInstance instance = cachedInstances.iterator().next();
-    Assert.assertEquals("instanceId00", instance.getInstanceId());
-    Assert.assertEquals("rev2", microserviceCache.getRevisionId());
+    Assertions.assertEquals("instanceId00", instance.getInstanceId());
+    Assertions.assertEquals("rev2", microserviceCache.getRevisionId());
   }
 
   @Test
   public void refresh() {
     ArrayList<MicroserviceInstance> instances = new ArrayList<>();
     findServiceInstancesOprHolder.value = params -> {
-      Assert.assertEquals("consumerId", params[0]);
-      Assert.assertEquals("app", params[1]);
-      Assert.assertEquals("svc", params[2]);
-      Assert.assertEquals("0.0.0.0+", params[3]);
-      Assert.assertNull(params[4]);
+      Assertions.assertEquals("consumerId", params[0]);
+      Assertions.assertEquals("app", params[1]);
+      Assertions.assertEquals("svc", params[2]);
+      Assertions.assertEquals("0.0.0.0+", params[3]);
+      Assertions.assertNull(params[4]);
       MicroserviceInstances microserviceInstances = new MicroserviceInstances();
       microserviceInstances.setNeedRefresh(true);
       microserviceInstances.setRevision("rev0");
@@ -139,8 +140,8 @@ public class RefreshableMicroserviceCacheTest {
 
     // at the beginning, no instances in cache
     List<MicroserviceInstance> cachedInstances = microserviceCache.getInstances();
-    Assert.assertEquals(0, cachedInstances.size());
-    Assert.assertNull(microserviceCache.getRevisionId());
+    Assertions.assertEquals(0, cachedInstances.size());
+    Assertions.assertNull(microserviceCache.getRevisionId());
 
     // find 1 instance from sc
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
@@ -148,13 +149,13 @@ public class RefreshableMicroserviceCacheTest {
     microserviceInstance.setInstanceId("instanceId00");
 
     microserviceCache.refresh();
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
 
     cachedInstances = microserviceCache.getInstances();
-    Assert.assertEquals(1, cachedInstances.size());
+    Assertions.assertEquals(1, cachedInstances.size());
     MicroserviceInstance instance = cachedInstances.iterator().next();
-    Assert.assertEquals("instanceId00", instance.getInstanceId());
-    Assert.assertEquals("rev0", microserviceCache.getRevisionId());
+    Assertions.assertEquals("instanceId00", instance.getInstanceId());
+    Assertions.assertEquals("rev0", microserviceCache.getRevisionId());
 
     // 2nd time, find 2 instances, one of them is the old instance
     MicroserviceInstance microserviceInstance1 = new MicroserviceInstance();
@@ -162,11 +163,11 @@ public class RefreshableMicroserviceCacheTest {
     microserviceInstance1.setInstanceId("instanceId01");
 
     findServiceInstancesOprHolder.value = params -> {
-      Assert.assertEquals("consumerId", params[0]);
-      Assert.assertEquals("app", params[1]);
-      Assert.assertEquals("svc", params[2]);
-      Assert.assertEquals("0.0.0.0+", params[3]);
-      Assert.assertEquals("rev0", params[4]);
+      Assertions.assertEquals("consumerId", params[0]);
+      Assertions.assertEquals("app", params[1]);
+      Assertions.assertEquals("svc", params[2]);
+      Assertions.assertEquals("0.0.0.0+", params[3]);
+      Assertions.assertEquals("rev0", params[4]);
       MicroserviceInstances microserviceInstances = new MicroserviceInstances();
       microserviceInstances.setNeedRefresh(true);
       microserviceInstances.setRevision("rev1");
@@ -180,11 +181,11 @@ public class RefreshableMicroserviceCacheTest {
     };
 
     microserviceCache.refresh();
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
     cachedInstances = microserviceCache.getInstances();
-    Assert.assertEquals(2, cachedInstances.size());
-    Assert.assertEquals("instanceId00", cachedInstances.get(0).getInstanceId());
-    Assert.assertEquals("instanceId01", cachedInstances.get(1).getInstanceId());
+    Assertions.assertEquals(2, cachedInstances.size());
+    Assertions.assertEquals("instanceId00", cachedInstances.get(0).getInstanceId());
+    Assertions.assertEquals("instanceId01", cachedInstances.get(1).getInstanceId());
   }
 
   @Test
@@ -194,8 +195,8 @@ public class RefreshableMicroserviceCacheTest {
     List<MicroserviceInstance> oldInstanceList = microserviceCache.getInstances();
 
     microserviceCache.refresh();
-    Assert.assertEquals(MicroserviceCacheStatus.CLIENT_ERROR, microserviceCache.getStatus());
-    Assert.assertSame(oldInstanceList, microserviceCache.getInstances());
+    Assertions.assertEquals(MicroserviceCacheStatus.CLIENT_ERROR, microserviceCache.getStatus());
+    Assertions.assertSame(oldInstanceList, microserviceCache.getInstances());
   }
 
   @Test
@@ -209,8 +210,8 @@ public class RefreshableMicroserviceCacheTest {
     List<MicroserviceInstance> oldInstanceList = microserviceCache.getInstances();
 
     microserviceCache.refresh();
-    Assert.assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, microserviceCache.getStatus());
-    Assert.assertSame(oldInstanceList, microserviceCache.getInstances());
+    Assertions.assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, microserviceCache.getStatus());
+    Assertions.assertSame(oldInstanceList, microserviceCache.getInstances());
   }
 
   @Test
@@ -225,8 +226,8 @@ public class RefreshableMicroserviceCacheTest {
     List<MicroserviceInstance> oldInstanceList = microserviceCache.getInstances();
 
     microserviceCache.refresh();
-    Assert.assertEquals(MicroserviceCacheStatus.NO_CHANGE, microserviceCache.getStatus());
-    Assert.assertSame(oldInstanceList, microserviceCache.getInstances());
+    Assertions.assertEquals(MicroserviceCacheStatus.NO_CHANGE, microserviceCache.getStatus());
+    Assertions.assertSame(oldInstanceList, microserviceCache.getInstances());
   }
 
   @Test
@@ -243,14 +244,14 @@ public class RefreshableMicroserviceCacheTest {
     };
 
     List<MicroserviceInstance> oldInstanceList = microserviceCache.getInstances();
-    Assert.assertEquals(MicroserviceCacheStatus.INIT, microserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.INIT, microserviceCache.getStatus());
 
     microserviceCache.refresh();
 
-    Assert.assertEquals(MicroserviceCacheStatus.SETTING_CACHE_ERROR, microserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.SETTING_CACHE_ERROR, microserviceCache.getStatus());
     List<MicroserviceInstance> newInstanceList = microserviceCache.getInstances();
-    Assert.assertEquals(0, newInstanceList.size());
-    Assert.assertSame(oldInstanceList, newInstanceList);
+    Assertions.assertEquals(0, newInstanceList.size());
+    Assertions.assertSame(oldInstanceList, newInstanceList);
   }
 
   @Test
@@ -263,8 +264,8 @@ public class RefreshableMicroserviceCacheTest {
     pulledInstances = new ArrayList<>();
     microserviceCache.refresh();
 
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
-    Assert.assertEquals(0, microserviceCache.getInstances().size());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
+    Assertions.assertEquals(0, microserviceCache.getInstances().size());
   }
 
   @Test
@@ -289,9 +290,9 @@ public class RefreshableMicroserviceCacheTest {
     pulledInstances = new ArrayList<>();
     microserviceCache.refresh();
 
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
-    Assert.assertEquals(1, microserviceCache.getInstances().size());
-    Assert.assertEquals("instanceId0", microserviceCache.getInstances().get(0).getInstanceId());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
+    Assertions.assertEquals(1, microserviceCache.getInstances().size());
+    Assertions.assertEquals("instanceId0", microserviceCache.getInstances().get(0).getInstanceId());
   }
 
   @Test
@@ -299,7 +300,7 @@ public class RefreshableMicroserviceCacheTest {
     Holder<Integer> assertCounter = new Holder<>(0);
     Function<Object[], MicroserviceInstances> preservedLogic = findServiceInstancesOprHolder.value;
     findServiceInstancesOprHolder.value = params -> {
-      Assert.assertEquals("consumerId", params[0]);
+      Assertions.assertEquals("consumerId", params[0]);
       assertCounter.value++;
       return preservedLogic.apply(params);
     };
@@ -308,11 +309,11 @@ public class RefreshableMicroserviceCacheTest {
     consumerService.setServiceId("consumerId2");
 
     findServiceInstancesOprHolder.value = params -> {
-      Assert.assertEquals("consumerId2", params[0]);
+      Assertions.assertEquals("consumerId2", params[0]);
       assertCounter.value++;
       return preservedLogic.apply(params);
     };
     microserviceCache.refresh();
-    Assert.assertEquals(Integer.valueOf(2), assertCounter.value);
+    Assertions.assertEquals(Integer.valueOf(2), assertCounter.value);
   }
 }

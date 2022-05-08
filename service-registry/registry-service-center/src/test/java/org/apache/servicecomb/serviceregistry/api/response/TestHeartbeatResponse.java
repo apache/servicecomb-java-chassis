@@ -18,9 +18,9 @@
 package org.apache.servicecomb.serviceregistry.api.response;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHeartbeatResponse {
 
@@ -38,15 +38,15 @@ public class TestHeartbeatResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oHeartbeatResponse.getMessage());
-    Assert.assertEquals(false, oHeartbeatResponse.isOk());
+    Assertions.assertNull(oHeartbeatResponse.getMessage());
+    Assertions.assertFalse(oHeartbeatResponse.isOk());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals("testMessage", oHeartbeatResponse.getMessage());
-    Assert.assertEquals(true, oHeartbeatResponse.isOk());
+    Assertions.assertEquals("testMessage", oHeartbeatResponse.getMessage());
+    Assertions.assertTrue(oHeartbeatResponse.isOk());
   }
 
   private void initFields() {

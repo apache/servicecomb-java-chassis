@@ -36,10 +36,10 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -87,38 +87,38 @@ public class TestRegistry {
     serviceRegistry.run();
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
-    Assert.assertEquals(serviceRegistry, RegistryUtils.getServiceRegistry());
+    Assertions.assertEquals(serviceRegistry, RegistryUtils.getServiceRegistry());
 
-    Assert.assertEquals(serviceRegistry.getServiceRegistryClient(), RegistryUtils.getServiceRegistryClient());
+    Assertions.assertEquals(serviceRegistry.getServiceRegistryClient(), RegistryUtils.getServiceRegistryClient());
 
     Microservice microservice = RegistryUtils.getMicroservice();
-    Assert.assertEquals(serviceRegistry.getMicroservice(), microservice);
-    Assert.assertEquals(serviceRegistry.getMicroserviceInstance(), RegistryUtils.getMicroserviceInstance());
+    Assertions.assertEquals(serviceRegistry.getMicroservice(), microservice);
+    Assertions.assertEquals(serviceRegistry.getMicroserviceInstance(), RegistryUtils.getMicroserviceInstance());
 
     List<MicroserviceInstance> instanceList = RegistryUtils.findServiceInstance("default", "default", "0.0.1");
-    Assert.assertEquals(1, instanceList.size());
-    Assert.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceList.get(0).getServiceId());
+    Assertions.assertEquals(1, instanceList.size());
+    Assertions.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceList.get(0).getServiceId());
 
     instanceList = RegistryUtils.findServiceInstance("default", "notExists", "0.0.1");
-    Assert.assertNull(instanceList);
+    Assertions.assertNull(instanceList);
 
     MicroserviceInstances microserviceInstances =
         RegistryUtils.findServiceInstances("default", "default", "0.0.1");
     List<MicroserviceInstance> instanceLists = microserviceInstances.getInstancesResponse().getInstances();
-    Assert.assertEquals(1, instanceLists.size());
-    Assert.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceLists.get(0).getServiceId());
+    Assertions.assertEquals(1, instanceLists.size());
+    Assertions.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceLists.get(0).getServiceId());
 
     Map<String, String> properties = new HashMap<>();
     properties.put("k", "v");
     RegistryUtils.updateInstanceProperties(properties);
-    Assert.assertEquals(properties, RegistryUtils.getMicroserviceInstance().getProperties());
+    Assertions.assertEquals(properties, RegistryUtils.getMicroserviceInstance().getProperties());
 
-    Assert.assertEquals(microservice, RegistryUtils.getMicroservice(microservice.getServiceId()));
+    Assertions.assertEquals(microservice, RegistryUtils.getMicroservice(microservice.getServiceId()));
     
     RegistryUtils.updateMicroserviceProperties(properties);
-    Assert.assertEquals(properties, RegistryUtils.getMicroservice().getProperties());
+    Assertions.assertEquals(properties, RegistryUtils.getMicroservice().getProperties());
 
-    Assert.assertEquals("default", RegistryUtils.getAppId());
+    Assertions.assertEquals("default", RegistryUtils.getAppId());
   }
 
   @Test
@@ -130,7 +130,7 @@ public class TestRegistry {
       }
     };
     String address = RegistrationManager.getPublishAddress();
-    Assert.assertEquals("1.1.1.1", address);
+    Assertions.assertEquals("1.1.1.1", address);
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
@@ -142,7 +142,7 @@ public class TestRegistry {
         };
       }
     };
-    Assert.assertEquals("127.0.0.1", RegistrationManager.getPublishAddress());
+    Assertions.assertEquals("127.0.0.1", RegistrationManager.getPublishAddress());
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
@@ -158,7 +158,7 @@ public class TestRegistry {
         };
       }
     };
-    Assert.assertEquals("1.1.1.1", RegistrationManager.getPublishAddress());
+    Assertions.assertEquals("1.1.1.1", RegistrationManager.getPublishAddress());
   }
 
   @Test
@@ -170,10 +170,10 @@ public class TestRegistry {
       }
     };
     String host = RegistrationManager.getPublishHostName();
-    Assert.assertEquals("testHostName", host);
+    Assertions.assertEquals("testHostName", host);
 
     inMemoryConfig.addProperty(RegistrationManager.PUBLISH_ADDRESS, "127.0.0.1");
-    Assert.assertEquals("127.0.0.1", RegistrationManager.getPublishHostName());
+    Assertions.assertEquals("127.0.0.1", RegistrationManager.getPublishHostName());
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
@@ -184,7 +184,7 @@ public class TestRegistry {
       }
     };
     inMemoryConfig.addProperty(RegistrationManager.PUBLISH_ADDRESS, "{eth100}");
-    Assert.assertEquals("testHostName", RegistrationManager.getPublishHostName());
+    Assertions.assertEquals("testHostName", RegistrationManager.getPublishHostName());
   }
 
   @Test
@@ -196,11 +196,11 @@ public class TestRegistry {
       }
     };
 
-    Assert.assertEquals("rest://172.0.0.0:8080", RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080"));
-    Assert.assertNull(RegistrationManager.getPublishAddress("rest", null));
+    Assertions.assertEquals("rest://172.0.0.0:8080", RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080"));
+    Assertions.assertNull(RegistrationManager.getPublishAddress("rest", null));
 
     URI uri = new URI(RegistrationManager.getPublishAddress("rest", "0.0.0.0:8080"));
-    Assert.assertEquals("1.1.1.1:8080", uri.getAuthority());
+    Assertions.assertEquals("1.1.1.1:8080", uri.getAuthority());
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
@@ -212,7 +212,7 @@ public class TestRegistry {
         };
       }
     };
-    Assert.assertEquals("rest://1.1.1.1:8080", RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080"));
+    Assertions.assertEquals("rest://1.1.1.1:8080", RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080"));
 
     InetAddress ethAddress = Mockito.mock(InetAddress.class);
     Mockito.when(ethAddress.getHostAddress()).thenReturn("1.1.1.1");
@@ -230,7 +230,7 @@ public class TestRegistry {
     };
     String query = URLEncodedUtils.format(Collections.singletonList(new BasicNameValuePair("country", "中 国")),
         StandardCharsets.UTF_8.name());
-    Assert.assertEquals("rest://1.1.1.1:8080?" + query,
+    Assertions.assertEquals("rest://1.1.1.1:8080?" + query,
         RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080?" + query));
   }
 }

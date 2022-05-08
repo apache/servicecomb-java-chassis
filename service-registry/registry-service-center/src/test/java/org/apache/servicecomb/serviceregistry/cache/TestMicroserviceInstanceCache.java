@@ -27,7 +27,6 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceInstanceCache {
   @Before
@@ -64,11 +64,11 @@ public class TestMicroserviceInstanceCache {
     };
 
     Microservice cachedService = MicroserviceInstanceCache.getOrCreate("forkedid");
-    Assert.assertNotNull(cachedService);
+    Assertions.assertNotNull(cachedService);
     cachedService = MicroserviceInstanceCache.getOrCreate("forkedid");
-    Assert.assertNotNull(cachedService);
+    Assertions.assertNotNull(cachedService);
     cachedService = MicroserviceInstanceCache.getOrCreate("forkedidNull");
-    Assert.assertNull(cachedService);
+    Assertions.assertNull(cachedService);
   }
 
   @Test
@@ -92,10 +92,10 @@ public class TestMicroserviceInstanceCache {
       }
     };
     MicroserviceInstance cachedInstance = MicroserviceInstanceCache.getOrCreate("forkedserviceid", "forkedinstanceid");
-    Assert.assertNotNull(cachedInstance);
+    Assertions.assertNotNull(cachedInstance);
     cachedInstance = MicroserviceInstanceCache.getOrCreate("forkedserviceid", "forkedinstanceid");
-    Assert.assertNotNull(cachedInstance);
+    Assertions.assertNotNull(cachedInstance);
     cachedInstance = MicroserviceInstanceCache.getOrCreate("forkedserviceidNull", "forkedinstanceidNull");
-    Assert.assertNull(cachedInstance);
+    Assertions.assertNull(cachedInstance);
   }
 }

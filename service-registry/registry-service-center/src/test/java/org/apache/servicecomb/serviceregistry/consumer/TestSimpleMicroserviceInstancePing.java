@@ -24,25 +24,25 @@ import java.util.List;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.SimpleMicroserviceInstancePing;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSimpleMicroserviceInstancePing {
   @Test
   public void testPing() throws IOException {
     SimpleMicroserviceInstancePing ping = new SimpleMicroserviceInstancePing();
-    Assert.assertEquals(ping.getOrder(), 100);
+    Assertions.assertEquals(ping.getOrder(), 100);
     MicroserviceInstance instance = new MicroserviceInstance();
     List<String> endpoints = new ArrayList<>();
     ServerSocket ss = new ServerSocket(35677);
 
     endpoints.add("http://localhost:35677");
     instance.setEndpoints(endpoints);
-    Assert.assertTrue(ping.ping(instance));
+    Assertions.assertTrue(ping.ping(instance));
     MicroserviceInstance instance2 = new MicroserviceInstance();
-    Assert.assertFalse(ping.ping(instance2));
+    Assertions.assertFalse(ping.ping(instance2));
     ss.close();
-    Assert.assertFalse(ping.ping(instance));
+    Assertions.assertFalse(ping.ping(instance));
   }
   
   @Test
@@ -54,9 +54,9 @@ public class TestSimpleMicroserviceInstancePing {
     endpoints.add("http://localhost:35676");
     endpoints.add("http://localhost:35677");
     instance.setEndpoints(endpoints);
-    Assert.assertTrue(ping.ping(instance));
+    Assertions.assertTrue(ping.ping(instance));
     ss.close();
-    Assert.assertFalse(ping.ping(instance));
+    Assertions.assertFalse(ping.ping(instance));
   }
     
 }

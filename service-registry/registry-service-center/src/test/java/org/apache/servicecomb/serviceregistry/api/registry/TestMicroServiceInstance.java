@@ -30,9 +30,9 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -78,40 +78,40 @@ public class TestMicroServiceInstance {
   @SuppressWarnings("deprecation")
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oMicroserviceInstance.getHostName());
-    Assert.assertNull(oMicroserviceInstance.getInstanceId());
-    Assert.assertNull(oMicroserviceInstance.getServiceId());
-    Assert.assertEquals(0, oMicroserviceInstance.getProperties().size());
-    Assert.assertEquals(0, oMicroserviceInstance.getEndpoints().size());
-    Assert.assertNull(oMicroserviceInstance.getHealthCheck());
-    Assert.assertNull(oMicroserviceInstance.getStage());
-    Assert.assertEquals(MicroserviceInstanceStatus.UP, oMicroserviceInstance.getStatus());
-    Assert.assertEquals("instanceId=null;serviceId=null;status=UP;endpoints=[]", oMicroserviceInstance.toString());
+    Assertions.assertNull(oMicroserviceInstance.getHostName());
+    Assertions.assertNull(oMicroserviceInstance.getInstanceId());
+    Assertions.assertNull(oMicroserviceInstance.getServiceId());
+    Assertions.assertEquals(0, oMicroserviceInstance.getProperties().size());
+    Assertions.assertEquals(0, oMicroserviceInstance.getEndpoints().size());
+    Assertions.assertNull(oMicroserviceInstance.getHealthCheck());
+    Assertions.assertNull(oMicroserviceInstance.getStage());
+    Assertions.assertEquals(MicroserviceInstanceStatus.UP, oMicroserviceInstance.getStatus());
+    Assertions.assertEquals("instanceId=null;serviceId=null;status=UP;endpoints=[]", oMicroserviceInstance.toString());
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testInitializedValues() {
     initMicroserviceInstance(); //Initialize the Object
-    Assert.assertEquals("testHostName", oMicroserviceInstance.getHostName());
-    Assert.assertEquals("testInstanceID", oMicroserviceInstance.getInstanceId());
-    Assert.assertEquals(1, oMicroserviceInstance.getEndpoints().size());
-    Assert.assertEquals("testServiceID", oMicroserviceInstance.getServiceId());
-    Assert.assertEquals(oMockHealthCheck, oMicroserviceInstance.getHealthCheck());
-    Assert.assertEquals(MicroserviceInstanceStatus.DOWN, oMicroserviceInstance.getStatus());
-    Assert.assertEquals("Test", oMicroserviceInstance.getStage());
-    Assert.assertEquals("china", oMicroserviceInstance.getProperties().get("region"));
+    Assertions.assertEquals("testHostName", oMicroserviceInstance.getHostName());
+    Assertions.assertEquals("testInstanceID", oMicroserviceInstance.getInstanceId());
+    Assertions.assertEquals(1, oMicroserviceInstance.getEndpoints().size());
+    Assertions.assertEquals("testServiceID", oMicroserviceInstance.getServiceId());
+    Assertions.assertEquals(oMockHealthCheck, oMicroserviceInstance.getHealthCheck());
+    Assertions.assertEquals(MicroserviceInstanceStatus.DOWN, oMicroserviceInstance.getStatus());
+    Assertions.assertEquals("Test", oMicroserviceInstance.getStage());
+    Assertions.assertEquals("china", oMicroserviceInstance.getProperties().get("region"));
 
-    Assert.assertEquals(oMicroserviceInstance, oMicroserviceInstance);
+    Assertions.assertEquals(oMicroserviceInstance, oMicroserviceInstance);
     MicroserviceInstance other = new MicroserviceInstance();
     other.setInstanceId("testInstanceIDOther");
     MicroserviceInstance same = new MicroserviceInstance();
     same.setInstanceId("testInstanceID");
-    Assert.assertNotEquals(oMicroserviceInstance, other);
-    Assert.assertNotEquals(oMicroserviceInstance.hashCode(), other.hashCode());
-    Assert.assertEquals(oMicroserviceInstance, same);
-    Assert.assertEquals(oMicroserviceInstance.hashCode(), same.hashCode());
-    Assert.assertEquals("instanceId=testInstanceID;serviceId=testServiceID;status=DOWN;endpoints=[testEndpoints]",
+    Assertions.assertNotEquals(oMicroserviceInstance, other);
+    Assertions.assertNotEquals(oMicroserviceInstance.hashCode(), other.hashCode());
+    Assertions.assertEquals(oMicroserviceInstance, same);
+    Assertions.assertEquals(oMicroserviceInstance.hashCode(), same.hashCode());
+    Assertions.assertEquals("instanceId=testInstanceID;serviceId=testServiceID;status=DOWN;endpoints=[testEndpoints]",
         oMicroserviceInstance.toString());
   }
 
@@ -136,8 +136,8 @@ public class TestMicroServiceInstance {
     configuration.addConfiguration(config);
     ConfigurationManager.install(configuration);
     MicroserviceInstance instance = MicroserviceInstance.createFromDefinition(config);
-    Assert.assertEquals(instance.getDataCenterInfo().getName(), "myDC");
-    Assert.assertEquals(instance.getDataCenterInfo().getRegion(), "my-Region");
-    Assert.assertEquals(instance.getDataCenterInfo().getAvailableZone(), "my-Zone");
+    Assertions.assertEquals(instance.getDataCenterInfo().getName(), "myDC");
+    Assertions.assertEquals(instance.getDataCenterInfo().getRegion(), "my-Region");
+    Assertions.assertEquals(instance.getDataCenterInfo().getAvailableZone(), "my-Zone");
   }
 }

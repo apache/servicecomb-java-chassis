@@ -25,9 +25,9 @@ import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceVersionRuleLatest {
   MockMicroserviceVersions mockMicroserviceVersions;
@@ -49,12 +49,12 @@ public class TestMicroserviceVersionRuleLatest {
 
   @Test
   public void getVersionRule() {
-    Assert.assertEquals(DefinitionConst.VERSION_RULE_LATEST, microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertEquals(DefinitionConst.VERSION_RULE_LATEST, microserviceVersionRule.getVersionRule().getVersionRule());
   }
 
   @Test
   public void update_empty() {
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test

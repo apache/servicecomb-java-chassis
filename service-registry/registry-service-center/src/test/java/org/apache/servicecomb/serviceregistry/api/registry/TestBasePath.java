@@ -21,9 +21,9 @@ import java.util.HashMap;
 
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Created by   on 2017/3/29.
@@ -43,15 +43,15 @@ public class TestBasePath {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oBasePath.getPath());
-    Assert.assertNull(oBasePath.getProperty());
+    Assertions.assertNull(oBasePath.getPath());
+    Assertions.assertNull(oBasePath.getProperty());
   }
 
   @Test
   public void testInitializedValues() {
     initBasePath(); //Initialize the Values
-    Assert.assertEquals("a", oBasePath.getPath());
-    Assert.assertNotNull(oBasePath.getProperty());
+    Assertions.assertEquals("a", oBasePath.getPath());
+    Assertions.assertNotNull(oBasePath.getProperty());
   }
 
   private void initBasePath() {

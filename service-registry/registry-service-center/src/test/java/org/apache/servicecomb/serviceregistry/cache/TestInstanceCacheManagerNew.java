@@ -25,9 +25,9 @@ import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInstanceCacheManagerNew {
   MockMicroserviceVersions mockMicroserviceVersions;
@@ -59,7 +59,7 @@ public class TestInstanceCacheManagerNew {
     microserviceManager.getVersionsByName()
         .put(mockMicroserviceVersions.getMicroserviceName(), mockMicroserviceVersions);
 
-    Assert.assertEquals(8,
+    Assertions.assertEquals(8,
         mgr
             .getOrCreate(mockMicroserviceVersions.getAppId(),
                 mockMicroserviceVersions.getMicroserviceName(),
@@ -73,7 +73,7 @@ public class TestInstanceCacheManagerNew {
     microserviceManager.getVersionsByName()
         .put(mockMicroserviceVersions.getMicroserviceName(), mockMicroserviceVersions);
 
-    Assert.assertEquals(8,
+    Assertions.assertEquals(8,
         mgr
             .getOrCreateVersionedCache(mockMicroserviceVersions.getAppId(),
                 mockMicroserviceVersions.getMicroserviceName(),

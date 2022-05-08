@@ -60,7 +60,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Assert.assertSame(swagger, RegistrationManager.INSTANCE
+    Assertions.assertSame(swagger, RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId));
   }
 
@@ -80,8 +80,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
         .getVersions().values().iterator().next().getMicroservice();
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
-    Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertEquals(swagger, loadedSwagger);
+    Assertions.assertNotSame(swagger, loadedSwagger);
+    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -95,8 +95,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
         .getVersions().values().iterator().next().getMicroservice();
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
-    Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertEquals(swagger, loadedSwagger);
+    Assertions.assertNotSame(swagger, loadedSwagger);
+    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -110,8 +110,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
         .getVersions().values().iterator().next().getMicroservice();
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
-    Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertEquals(swagger, loadedSwagger);
+    Assertions.assertNotSame(swagger, loadedSwagger);
+    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -122,7 +122,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
         .getVersions().values().iterator().next().getMicroservice();
 
-    Assert.assertNull(RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, null, schemaId));
+    Assertions.assertNull(RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, null, schemaId));
   }
 
   @Test
@@ -134,8 +134,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
         .getVersions().values().iterator().next().getMicroservice();
     Swagger loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
-    Assert.assertNotSame(swagger, loadedSwagger);
-    Assert.assertEquals(swagger, loadedSwagger);
+    Assertions.assertNotSame(swagger, loadedSwagger);
+    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   private void mockLocalResource(Swagger swagger, String path) {
