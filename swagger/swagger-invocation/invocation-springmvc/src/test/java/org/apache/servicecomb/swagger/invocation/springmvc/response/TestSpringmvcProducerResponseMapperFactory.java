@@ -26,8 +26,8 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

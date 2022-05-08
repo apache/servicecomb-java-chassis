@@ -22,6 +22,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestJaxrsProducerResponseMapperFactory {
   JaxrsProducerResponseMapperFactory factory = new JaxrsProducerResponseMapperFactory();
