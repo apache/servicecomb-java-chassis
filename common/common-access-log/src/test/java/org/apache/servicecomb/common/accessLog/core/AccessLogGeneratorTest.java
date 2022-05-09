@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +33,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -53,10 +52,10 @@ public class AccessLogGeneratorTest {
   @Test
   public void testConstructor() {
     AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(LOG_GENERATOR, "accessLogItems");
-    assertEquals(3, elements.length);
-    assertEquals(HttpMethodAccessItem.class, elements[0].getClass());
-    assertEquals(PlainTextAccessItem.class, elements[1].getClass());
-    assertEquals(ConfigurableDatetimeAccessItem.class, elements[2].getClass());
+    Assertions.assertEquals(3, elements.length);
+    Assertions.assertEquals(HttpMethodAccessItem.class, elements[0].getClass());
+    Assertions.assertEquals(PlainTextAccessItem.class, elements[1].getClass());
+    Assertions.assertEquals(ConfigurableDatetimeAccessItem.class, elements[2].getClass());
   }
 
   @Test
@@ -74,7 +73,7 @@ public class AccessLogGeneratorTest {
     when(request.method()).thenReturn(HttpMethod.DELETE);
 
     String log = LOG_GENERATOR.generateServerLog(serverAccessLogEvent);
-    Assert.assertEquals("DELETE" + " - " + simpleDateFormat.format(startMillisecond), log);
+    Assertions.assertEquals("DELETE" + " - " + simpleDateFormat.format(startMillisecond), log);
   }
 
   @Test
@@ -96,15 +95,15 @@ public class AccessLogGeneratorTest {
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
     when(operationMeta.getHttpMethod()).thenReturn(HttpMethod.DELETE.toString());
     String log = LOG_GENERATOR.generateClientLog(finishEvent);
-    Assert.assertEquals("DELETE" + " - " + simpleDateFormat.format(startMillisecond), log);
+    Assertions.assertEquals("DELETE" + " - " + simpleDateFormat.format(startMillisecond), log);
   }
 
   @Test
   public void testUserDefinedLogGenerator() {
     AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(USER_DEFINED_LOG_GENERATOR, "accessLogItems");
-    assertEquals(3, elements.length);
-    assertEquals(RemoteHostAccessItem.class, elements[0].getClass());
-    assertEquals(PlainTextAccessItem.class, elements[1].getClass());
-    assertEquals(UserDefinedAccessLogItem.class, elements[2].getClass());
+    Assertions.assertEquals(3, elements.length);
+    Assertions.assertEquals(RemoteHostAccessItem.class, elements[0].getClass());
+    Assertions.assertEquals(PlainTextAccessItem.class, elements[1].getClass());
+    Assertions.assertEquals(UserDefinedAccessLogItem.class, elements[2].getClass());
   }
 }

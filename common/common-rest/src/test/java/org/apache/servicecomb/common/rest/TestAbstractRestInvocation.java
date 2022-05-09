@@ -20,7 +20,6 @@ package org.apache.servicecomb.common.rest;
 import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
 import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,7 +74,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -181,7 +180,7 @@ public class TestAbstractRestInvocation {
   public void setHttpServerFilters(@Mocked List<HttpServerFilter> httpServerFilters) {
     restInvocation.setHttpServerFilters(httpServerFilters);
 
-    Assert.assertSame(httpServerFilters, restInvocation.httpServerFilters);
+    Assertions.assertSame(httpServerFilters, restInvocation.httpServerFilters);
   }
 
   @Test
@@ -227,7 +226,7 @@ public class TestAbstractRestInvocation {
 
     Map<String, String> context = invocation.getContext();
     restInvocation.setContext();
-    Assert.assertSame(context, invocation.getContext());
+    Assertions.assertSame(context, invocation.getContext());
   }
 
   @Test
@@ -241,7 +240,7 @@ public class TestAbstractRestInvocation {
 
     Map<String, String> context = invocation.getContext();
     restInvocation.setContext();
-    Assert.assertSame(context, invocation.getContext());
+    Assertions.assertSame(context, invocation.getContext());
   }
 
   @Test
@@ -291,12 +290,12 @@ public class TestAbstractRestInvocation {
   @Test
   public void getContext() {
     invocation.addContext("key", "test");
-    assertEquals("test", restInvocation.getContext("key"));
+    Assertions.assertEquals("test", restInvocation.getContext("key"));
   }
 
   @Test
   public void getContextNull() {
-    Assert.assertNull(restInvocation.getContext("key"));
+    Assertions.assertNull(restInvocation.getContext("key"));
   }
 
   @Test
@@ -328,7 +327,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.invoke();
 
-    Assert.assertSame(response, result.value);
+    Assertions.assertSame(response, result.value);
   }
 
   @Test
@@ -354,7 +353,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.invoke();
 
-    Assert.assertTrue(result.value);
+    Assertions.assertTrue(result.value);
   }
 
   @Test
@@ -378,7 +377,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.invoke();
 
-    Assert.assertTrue(result.value);
+    Assertions.assertTrue(result.value);
   }
 
   @Test
@@ -410,7 +409,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.invoke();
 
-    Assert.assertSame(error, result.value);
+    Assertions.assertSame(error, result.value);
   }
 
   @Test
@@ -431,7 +430,7 @@ public class TestAbstractRestInvocation {
 
       @Override
       public void sendFailResponse(Throwable throwable) {
-        Assert.fail("must not fail");
+        Assertions.fail("must not fail");
       }
     };
     initRestInvocation();
@@ -439,7 +438,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.invoke();
 
-    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
   }
 
   @Test
@@ -449,7 +448,7 @@ public class TestAbstractRestInvocation {
     restInvocation.produceProcessor = null;
     restInvocation.sendFailResponse(new RuntimeExceptionWithoutStackTrace());
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         restInvocation.produceProcessor);
   }
 
@@ -471,8 +470,8 @@ public class TestAbstractRestInvocation {
 
     Throwable e = new InvocationException(Status.BAD_GATEWAY, "");
     restInvocation.sendFailResponse(e);
-    Assert.assertSame(e, result.value.getResult());
-    Assert.assertSame(
+    Assertions.assertSame(e, result.value.getResult());
+    Assertions.assertSame(
         ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(), restInvocation.produceProcessor);
   }
 
@@ -514,8 +513,8 @@ public class TestAbstractRestInvocation {
 
     EventManager.unregister(subscriber);
 
-    Assert.assertSame(invocation, eventHolder.value.getInvocation());
-    Assert.assertSame(response, result.value);
+    Assertions.assertSame(invocation, eventHolder.value.getInvocation());
+    Assertions.assertSame(response, result.value);
   }
 
   @Test
@@ -572,7 +571,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.executeHttpServerFilters(response);
 
-    Assert.assertTrue(flag.value);
+    Assertions.assertTrue(flag.value);
   }
 
   @Test
@@ -623,7 +622,7 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
 
     restInvocation.sendResponse(response);
-    assertEquals(expected, result);
+    Assertions.assertEquals(expected, result);
   }
 
   @Test
@@ -711,9 +710,9 @@ public class TestAbstractRestInvocation {
 
     try {
       restInvocation.sendResponse(response);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (Error e) {
-      assertEquals(headers.toString(), resultHeaders.toString());
+      Assertions.assertEquals(headers.toString(), resultHeaders.toString());
     }
   }
 
@@ -750,8 +749,8 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
 
     restInvocation.sendResponse(response);
-    assertEquals("\"ok\"", buffer.toString());
-    assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
+    Assertions.assertEquals("\"ok\"", buffer.toString());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
   }
 
   @Test
@@ -805,7 +804,7 @@ public class TestAbstractRestInvocation {
     restInvocation.setHttpServerFilters(httpServerFilters);
 
     restInvocation.sendResponse(response);
-    assertEquals("\"ok\"-filter", buffer.toString());
+    Assertions.assertEquals("\"ok\"-filter", buffer.toString());
   }
 
   @Test
@@ -849,8 +848,8 @@ public class TestAbstractRestInvocation {
     };
 
     restInvocation.findRestOperation(microserviceMeta);
-    Assert.assertSame(restOperation, restInvocation.restOperationMeta);
-    Assert.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+    Assertions.assertSame(restOperation, restInvocation.restOperationMeta);
+    Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
   }
 
   @Test
@@ -887,7 +886,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.scheduleInvocation();
 
-    Assert.assertSame(error, result.value);
+    Assertions.assertSame(error, result.value);
   }
 
   @Test
@@ -953,7 +952,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.scheduleInvocation();
 
-    Assert.assertSame(rejectedExecutionException, holder.value);
+    Assertions.assertSame(rejectedExecutionException, holder.value);
   }
 
   public static class ScheduleInvocationEventHandler {
@@ -1004,11 +1003,11 @@ public class TestAbstractRestInvocation {
     restInvocation.scheduleInvocation();
     EventManager.unregister(subscriber);
 
-    Assert.assertTrue(result.value);
-    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
-    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
-    Assert.assertSame(invocation, eventHolder.value.getInvocation());
-    assertEquals("tid", invocation.getTraceId());
+    Assertions.assertTrue(result.value);
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
+    Assertions.assertSame(invocation, eventHolder.value.getInvocation());
+    Assertions.assertEquals("tid", invocation.getTraceId());
   }
 
   @Test
@@ -1034,9 +1033,9 @@ public class TestAbstractRestInvocation {
 
     restInvocation.runOnExecutor();
 
-    Assert.assertTrue(result.value);
-    Assert.assertSame(invocation, restInvocation.invocation);
-    assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
+    Assertions.assertTrue(result.value);
+    Assertions.assertSame(invocation, restInvocation.invocation);
+    Assertions.assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test
@@ -1058,9 +1057,9 @@ public class TestAbstractRestInvocation {
 
     restInvocation.doInvoke();
 
-    Assert.assertSame(response, result.value);
-    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
-    assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assertions.assertSame(response, result.value);
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 
   @Test
@@ -1094,7 +1093,7 @@ public class TestAbstractRestInvocation {
 
       @Override
       public void setContentType(String type) {
-        assertEquals("application/json; charset=utf-8", type);
+        Assertions.assertEquals("application/json; charset=utf-8", type);
       }
     };
     restInvocation.requestEx = requestEx;
@@ -1102,9 +1101,9 @@ public class TestAbstractRestInvocation {
 
     restInvocation.scheduleInvocation();
 
-    assertEquals(Integer.valueOf(590), status.value);
-    assertEquals("Unexpected producer error, please check logs for details", reasonPhrase.value);
-    assertEquals(Integer.valueOf(1), endCount.value);
+    Assertions.assertEquals(Integer.valueOf(590), status.value);
+    Assertions.assertEquals("Unexpected producer error, please check logs for details", reasonPhrase.value);
+    Assertions.assertEquals(Integer.valueOf(1), endCount.value);
   }
 
   @SuppressWarnings("deprecation")
@@ -1137,7 +1136,7 @@ public class TestAbstractRestInvocation {
 
       @Override
       public void setContentType(String type) {
-        assertEquals("application/json; charset=utf-8", type);
+        Assertions.assertEquals("application/json; charset=utf-8", type);
       }
 
       @Override
@@ -1148,9 +1147,9 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
     restInvocation.scheduleInvocation();
 
-    assertEquals(Integer.valueOf(429), status.value);
-    assertEquals("Too Many Requests", reasonPhrase.value);
-    assertEquals("{\"message\":\"rejected by qps flowcontrol\"}", responseBody.value);
-    assertEquals(Integer.valueOf(1), endCount.value);
+    Assertions.assertEquals(Integer.valueOf(429), status.value);
+    Assertions.assertEquals("Too Many Requests", reasonPhrase.value);
+    Assertions.assertEquals("{\"message\":\"rejected by qps flowcontrol\"}", responseBody.value);
+    Assertions.assertEquals(Integer.valueOf(1), endCount.value);
   }
 }

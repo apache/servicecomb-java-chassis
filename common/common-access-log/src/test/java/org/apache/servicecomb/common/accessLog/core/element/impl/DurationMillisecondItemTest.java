@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.apache.servicecomb.core.Invocation;
@@ -26,6 +25,7 @@ import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class DurationMillisecondItemTest {
@@ -62,10 +62,10 @@ public class DurationMillisecondItemTest {
   @Test
   public void testAppendFormattedElement() {
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
 
     strBuilder = new StringBuilder();
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
-    assertEquals("1", strBuilder.toString());
+    Assertions.assertEquals("1", strBuilder.toString());
   }
 }

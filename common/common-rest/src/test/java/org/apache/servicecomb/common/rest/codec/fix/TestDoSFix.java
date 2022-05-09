@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.exc.InputCoercionException;
@@ -80,18 +80,18 @@ public class TestDoSFix {
     long start = System.currentTimeMillis();
     try {
       Object ret = callable.call();
-      Assert.fail("expect failed, but succes to be " + ret);
+      Assertions.fail("expect failed, but succes to be " + ret);
     } catch (AssertionError e) {
       throw e;
     } catch (Throwable e) {
       if (eCls != e.getClass()) {
         e.printStackTrace();
       }
-      Assert.assertEquals(eCls, e.getClass());
+      Assertions.assertEquals(eCls, e.getClass());
     }
 
     long time = System.currentTimeMillis() - start;
-    Assert.assertTrue("did not fix DoS problem, time:" + time, time < 1000);
+    Assertions.assertTrue(time < 1000, "did not fix DoS problem, time:" + time);
   }
 
   void fastFail(String input, Class<?> cls, Class<?> eCls) {
@@ -177,7 +177,7 @@ public class TestDoSFix {
     long start = System.currentTimeMillis();
     try {
       Object ret = callable.call();
-      Assert.assertTrue(System.currentTimeMillis() - start < 1000);
+      Assertions.assertTrue(System.currentTimeMillis() - start < 1000);
       return ret;
     } catch (Throwable e) {
       throw new IllegalStateException(e);
@@ -196,24 +196,24 @@ public class TestDoSFix {
   }
 
   void batFastSucc(Class<?> cls, Object expected) {
-    Assert.assertEquals(expected, fastSucc(invalidNum, cls));
-    Assert.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidNum.getBytes()), cls));
+    Assertions.assertEquals(expected, fastSucc(invalidNum, cls));
+    Assertions.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidNum.getBytes()), cls));
 
-    Assert.assertEquals(expected, fastSucc(invalidStr, cls));
-    Assert.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidStr.getBytes()), cls));
+    Assertions.assertEquals(expected, fastSucc(invalidStr, cls));
+    Assertions.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidStr.getBytes()), cls));
 
-    Assert.assertEquals(expected, fastSucc(invalidArrNum, cls));
-    Assert.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidArrNum.getBytes()), cls));
+    Assertions.assertEquals(expected, fastSucc(invalidArrNum, cls));
+    Assertions.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidArrNum.getBytes()), cls));
 
-    Assert.assertEquals(expected, fastSucc(invalidArrStr, cls));
-    Assert.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidArrStr.getBytes()), cls));
+    Assertions.assertEquals(expected, fastSucc(invalidArrStr, cls));
+    Assertions.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidArrStr.getBytes()), cls));
   }
 
   void checkField(Model model, String fieldName, Object expected) {
     try {
       Field field = Model.class.getField(fieldName);
       Object value = field.get(model);
-      Assert.assertEquals(expected, value);
+      Assertions.assertEquals(expected, value);
     } catch (Throwable e) {
       throw new IllegalStateException(e);
     }

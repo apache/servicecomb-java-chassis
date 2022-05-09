@@ -34,7 +34,7 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -87,10 +87,10 @@ public class TestRestCodec {
       Map<String, Object> args = new HashMap<>();
       args.put("header", "abc");
       RestCodec.argsToRest(args, restOperation, clientRequest);
-      Assert.assertEquals("abc", header.get("header"));
+      Assertions.assertEquals("abc", header.get("header"));
     } catch (Exception e) {
       e.printStackTrace();
-      Assert.assertTrue(false);
+      Assertions.assertTrue(false);
     }
   }
 
@@ -116,7 +116,7 @@ public class TestRestCodec {
     };
 
     Map<String, Object> xx = RestCodec.restToArgs(request, restOperation);
-    Assert.assertEquals(xx.get("test"), s);
+    Assertions.assertEquals(xx.get("test"), s);
   }
 
   @Test
@@ -142,10 +142,10 @@ public class TestRestCodec {
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {
-      Assert.assertEquals(400, e.getStatusCode());
-      Assert.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
     }
-    Assert.assertEquals(success, false);
+    Assertions.assertEquals(success, false);
   }
 
   @Test
@@ -172,8 +172,8 @@ public class TestRestCodec {
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {
-      Assert.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
+      Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
     }
-    Assert.assertEquals(success, false);
+    Assertions.assertEquals(success, false);
   }
 }

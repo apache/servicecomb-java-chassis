@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -34,7 +32,7 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -124,7 +122,7 @@ public class TestBodyProcessor {
     };
 
     Object result = processor.getValue(request);
-    Assert.assertEquals("10", result);
+    Assertions.assertEquals("10", result);
   }
 
   @Test
@@ -138,7 +136,7 @@ public class TestBodyProcessor {
     };
 
     Object result = processor.getValue(request);
-    Assert.assertNull(result);
+    Assertions.assertNull(result);
   }
 
   @Test
@@ -153,7 +151,7 @@ public class TestBodyProcessor {
       }
     };
 
-    Assert.assertEquals("abc", processor.getValue(request));
+    Assertions.assertEquals("abc", processor.getValue(request));
   }
 
   @Test
@@ -168,7 +166,7 @@ public class TestBodyProcessor {
       }
     };
 
-    Assert.assertEquals(1, processor.getValue(request));
+    Assertions.assertEquals(1, processor.getValue(request));
   }
 
   @Test
@@ -176,7 +174,7 @@ public class TestBodyProcessor {
     setupGetValue(Integer.class);
     inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
 
-    Assert.assertEquals(1, processor.getValue(request));
+    Assertions.assertEquals(1, processor.getValue(request));
   }
 
   @Test
@@ -185,8 +183,8 @@ public class TestBodyProcessor {
     createProcessor(String.class);
 
     processor.setValue(clientRequest, "value");
-    Assert.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("\"value\"", outputBodyBuffer.toString());
+    Assertions.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("\"value\"", outputBodyBuffer.toString());
   }
 
   @Test
@@ -196,8 +194,8 @@ public class TestBodyProcessor {
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
 
     processor.setValue(clientRequest, "value");
-    Assert.assertEquals(MediaType.TEXT_PLAIN, headers.get(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("value", outputBodyBuffer.toString());
+    Assertions.assertEquals(MediaType.TEXT_PLAIN, headers.get(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("value", outputBodyBuffer.toString());
   }
 
   @Test
@@ -208,23 +206,23 @@ public class TestBodyProcessor {
 
     try {
       processor.setValue(clientRequest, new Date());
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(IllegalArgumentException.class, e.getClass());
-      Assert.assertEquals("Content-Type is text/plain while arg type is not String", e.getMessage());
+      Assertions.assertEquals(IllegalArgumentException.class, e.getClass());
+      Assertions.assertEquals("Content-Type is text/plain while arg type is not String", e.getMessage());
     }
   }
 
   @Test
   public void testGetParameterPath() {
     createProcessor(String.class);
-    Assert.assertEquals("", processor.getParameterPath());
+    Assertions.assertEquals("", processor.getParameterPath());
   }
 
   @Test
   public void testGetProcessorType() {
     createProcessor(String.class);
-    Assert.assertEquals("body", processor.getProcessorType());
+    Assertions.assertEquals("body", processor.getProcessorType());
   }
 
   @Test
@@ -233,7 +231,7 @@ public class TestBodyProcessor {
     initInputStream();
     inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
 
-    Assert.assertEquals("\"1\"", processor.getValue(request));
+    Assertions.assertEquals("\"1\"", processor.getValue(request));
   }
 
   @Test
@@ -248,7 +246,7 @@ public class TestBodyProcessor {
     };
 
     Object result = processor.getValue(request);
-    Assert.assertEquals("10", result);
+    Assertions.assertEquals("10", result);
   }
 
   @Test
@@ -262,7 +260,7 @@ public class TestBodyProcessor {
     };
 
     Object result = processor.getValue(request);
-    Assert.assertNull(result);
+    Assertions.assertNull(result);
   }
 
   @Test
@@ -271,8 +269,8 @@ public class TestBodyProcessor {
     createRawJsonProcessor();
 
     processor.setValue(clientRequest, "value");
-    Assert.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("value", outputBodyBuffer.toString());
+    Assertions.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("value", outputBodyBuffer.toString());
   }
 
   static class BodyModel {
@@ -297,8 +295,8 @@ public class TestBodyProcessor {
     };
 
     BodyModel bm = (BodyModel) processor.getValue(request);
-    Assert.assertEquals("n", bm.name);
-    Assert.assertEquals(10, bm.age);
+    Assertions.assertEquals("n", bm.name);
+    Assertions.assertEquals(10, bm.age);
   }
 
   @Test
@@ -317,7 +315,7 @@ public class TestBodyProcessor {
     };
 
     BodyModel bm = (BodyModel) processor.getValue(request);
-    Assert.assertEquals("n", bm.name);
-    Assert.assertEquals(10, bm.age);
+    Assertions.assertEquals("n", bm.name);
+    Assertions.assertEquals(10, bm.age);
   }
 }

@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -59,10 +59,10 @@ public class TestMicroservicePaths {
   @Test
   public void staticGroup() {
     RestOperationMeta meta = paths.getStaticPathOperationMap().get("/static/").findValue("POST");
-    Assert.assertSame("postStatic", meta.getOperationMeta().getOperationId());
+    Assertions.assertSame("postStatic", meta.getOperationMeta().getOperationId());
 
     meta = paths.getStaticPathOperationMap().get("/static/").findValue("GET");
-    Assert.assertSame("getStatic", meta.getOperationMeta().getOperationId());
+    Assertions.assertSame("getStatic", meta.getOperationMeta().getOperationId());
   }
 
   @Test
@@ -85,8 +85,8 @@ public class TestMicroservicePaths {
 
   @Test
   public void dynamicPath() {
-    Assert.assertEquals("dynamicExId", paths.getDynamicPathOperationList().get(0).getOperationMeta().getOperationId());
-    Assert.assertEquals("dynamicId", paths.getDynamicPathOperationList().get(1).getOperationMeta().getOperationId());
+    Assertions.assertEquals("dynamicExId", paths.getDynamicPathOperationList().get(0).getOperationMeta().getOperationId());
+    Assertions.assertEquals("dynamicId", paths.getDynamicPathOperationList().get(1).getOperationMeta().getOperationId());
   }
 
   @Test
@@ -97,7 +97,7 @@ public class TestMicroservicePaths {
       StringBuilder sb = new StringBuilder();
       collector.getEvents().stream()
           .forEach(e -> sb.append(e.getMessage()).append("\n"));
-      Assert.assertEquals(
+      Assertions.assertEquals(
           "Swagger mapped \"{[/static/], method=[POST], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.postStatic()\n"
               + "Swagger mapped \"{[/static/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStatic()\n"
               + "Swagger mapped \"{[/staticEx/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStaticEx()\n"

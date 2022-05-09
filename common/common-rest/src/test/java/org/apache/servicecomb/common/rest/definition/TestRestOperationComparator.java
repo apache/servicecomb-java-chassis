@@ -18,7 +18,7 @@
 package org.apache.servicecomb.common.rest.definition;
 
 import org.apache.servicecomb.common.rest.locator.MicroservicePaths;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 public class TestRestOperationComparator {
@@ -35,8 +35,8 @@ public class TestRestOperationComparator {
     paths.addResource(more);
     paths.sortPath();
 
-    Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
-    Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
+    Assertions.assertSame(more, paths.getDynamicPathOperationList().get(0));
+    Assertions.assertSame(less, paths.getDynamicPathOperationList().get(1));
   }
 
   @Test
@@ -52,8 +52,8 @@ public class TestRestOperationComparator {
     paths.addResource(more);
     paths.sortPath();
 
-    Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
-    Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
+    Assertions.assertSame(more, paths.getDynamicPathOperationList().get(0));
+    Assertions.assertSame(less, paths.getDynamicPathOperationList().get(1));
   }
 
   @Test
@@ -69,7 +69,7 @@ public class TestRestOperationComparator {
     paths.addResource(more);
     paths.sortPath();
 
-    Assert.assertSame(more, paths.getDynamicPathOperationList().get(0));
-    Assert.assertSame(less, paths.getDynamicPathOperationList().get(1));
+    Assertions.assertSame(more, paths.getDynamicPathOperationList().get(0));
+    Assertions.assertSame(less, paths.getDynamicPathOperationList().get(1));
   }
 }

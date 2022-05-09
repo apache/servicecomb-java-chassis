@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -33,7 +33,7 @@ public class TestHttpServerFilter {
     HttpServerFilter filter = new HttpServerFilterBaseForTest();
 
     CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
-    Assert.assertNull(future.get());
+    Assertions.assertNull(future.get());
   }
 
   @Test

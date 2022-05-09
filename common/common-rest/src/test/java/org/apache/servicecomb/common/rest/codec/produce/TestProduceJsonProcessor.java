@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -40,25 +40,25 @@ public class TestProduceJsonProcessor {
   @Test
   public void testEncodeResponseNull() throws Exception {
     Buffer buffer = pp.encodeResponse(null);
-    Assert.assertNull(buffer);
+    Assertions.assertNull(buffer);
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     pp.encodeResponse(os, null);
-    Assert.assertEquals(0, os.size());
+    Assertions.assertEquals(0, os.size());
   }
 
   @Test
   public void testdecodeResponseNull() throws Exception {
     JavaType resultType = TypeFactory.unknownType();
     Object result = pp.decodeResponse(Buffer.buffer(), resultType);
-    Assert.assertNull(result);
+    Assertions.assertNull(result);
 
     ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {});
     try {
       pp.decodeResponse(is, resultType);
-      Assert.fail();
+      Assertions.fail();
     } catch (Exception e) {
-      Assert.assertTrue(e instanceof MismatchedInputException);
+      Assertions.assertTrue(e instanceof MismatchedInputException);
     }
   }
 
@@ -66,10 +66,10 @@ public class TestProduceJsonProcessor {
   public void testBufferNormal() throws Exception {
     String value = "abc";
     Buffer buffer = pp.encodeResponse(value);
-    Assert.assertEquals("\"abc\"", buffer.toString(StandardCharsets.UTF_8));
+    Assertions.assertEquals("\"abc\"", buffer.toString(StandardCharsets.UTF_8));
 
     Object result = pp.decodeResponse(buffer, stringType);
-    Assert.assertEquals(value, result);
+    Assertions.assertEquals(value, result);
   }
 
   @Test
@@ -78,11 +78,11 @@ public class TestProduceJsonProcessor {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     pp.encodeResponse(os, value);
-    Assert.assertEquals("\"abc\"", os.toString(StandardCharsets.UTF_8.name()));
+    Assertions.assertEquals("\"abc\"", os.toString(StandardCharsets.UTF_8.name()));
 
     ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
     Object result = pp.decodeResponse(is, stringType);
-    Assert.assertEquals(value, result);
+    Assertions.assertEquals(value, result);
 
     os.close();
     is.close();
@@ -90,12 +90,12 @@ public class TestProduceJsonProcessor {
 
   @Test
   public void testSetSerializationView() {
-    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+    Assertions.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
 
     pp.setSerializationView(null);
-    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+    Assertions.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
 
     pp.setSerializationView(Object.class);
-    Assert.assertEquals(Object.class.getCanonicalName(), pp.getSerializationView());
+    Assertions.assertEquals(Object.class.getCanonicalName(), pp.getSerializationView());
   }
 }

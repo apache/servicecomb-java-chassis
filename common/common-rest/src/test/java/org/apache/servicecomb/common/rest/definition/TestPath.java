@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +26,7 @@ import org.apache.servicecomb.common.rest.definition.path.QueryVarParamWriter;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,48 +49,48 @@ public class TestPath {
   @Test
   public void testPathRegExp() throws Exception {
     PathRegExp oPathRegExp = new PathRegExp("//{test}//");
-    Assert.assertEquals(1, oPathRegExp.getGroupCount());
-    Assert.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
+    Assertions.assertEquals(1, oPathRegExp.getGroupCount());
+    Assertions.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
     PathRegExp oSecondPathRegExp = new PathRegExp("{[^/:]+?}");
-    Assert.assertEquals(1, oSecondPathRegExp.getGroupCount());
-    Assert.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
-    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
-    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
-    Assert.assertEquals(null, oSecondPathRegExp.match("{test/test}", null));
-    Assert.assertEquals("(]+?)/(.*)", (oSecondPathRegExp.toString()));
-    Assert.assertEquals(false, oSecondPathRegExp.isStaticPath());
-    Assert.assertEquals(0, oSecondPathRegExp.getStaticCharCount());
-    Assert.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<>())));
+    Assertions.assertEquals(1, oSecondPathRegExp.getGroupCount());
+    Assertions.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
+    Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
+    Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
+    Assertions.assertNull(oSecondPathRegExp.match("{test/test}", null));
+    Assertions.assertEquals("(]+?)/(.*)", (oSecondPathRegExp.toString()));
+    Assertions.assertFalse(oSecondPathRegExp.isStaticPath());
+    Assertions.assertEquals(0, oSecondPathRegExp.getStaticCharCount());
+    Assertions.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<>())));
     // Error Scenarios
     new PathRegExp("//{test \t}//");
     // Error Scenarios for double {{
     try {
       new PathRegExp("//{test{");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("A variable must not contain an extra"));
+      Assertions.assertTrue(e.getMessage().contains("A variable must not contain an extra"));
     }
     // Error Scenarios for illegal }}
     try {
       new PathRegExp("//}");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("is only allowed as"));
+      Assertions.assertTrue(e.getMessage().contains("is only allowed as"));
     }
     // Error Scenarios for illegal ;
     try {
       new PathRegExp("//;");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("matrix parameters are not allowed in"));
+      Assertions.assertTrue(e.getMessage().contains("matrix parameters are not allowed in"));
     }
 
     // Error Scenarios for NO } ;
     try {
       new PathRegExp("//{test");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("No '}' found after"));
+      Assertions.assertTrue(e.getMessage().contains("No '}' found after"));
     }
   }
 
@@ -114,8 +112,8 @@ public class TestPath {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put("id", 100);
     parameters.put("q", "query");
-    Assert.assertEquals("/root/100?q=query", oURLPathBuilder.createRequestPath(parameters));
-    Assert.assertEquals("/root/100", oURLPathBuilder.createPathString(parameters));
+    Assertions.assertEquals("/root/100?q=query", oURLPathBuilder.createRequestPath(parameters));
+    Assertions.assertEquals("/root/100", oURLPathBuilder.createPathString(parameters));
   }
 
   @Test
@@ -157,12 +155,12 @@ public class TestPath {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   private void verify(QueryVarParamWriter writer, Map<String, Object> args, String expect) throws Exception {
     URLPathStringBuilder sb = new URLPathStringBuilder();
     writer.write(sb, args);
-    Assert.assertEquals(expect, sb.build());
+    Assertions.assertEquals(expect, sb.build());
   }
 }

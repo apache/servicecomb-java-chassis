@@ -29,7 +29,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -83,7 +83,7 @@ public class TestServerRestArgsFilter {
       }
     };
 
-    Assert.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
-    Assert.assertTrue(invokedSendPart);
+    Assertions.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
+    Assertions.assertTrue(invokedSendPart);
   }
 }
