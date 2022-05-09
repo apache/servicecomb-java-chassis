@@ -23,10 +23,10 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 // test cases copied from delete class, this test case tests ExceptionToProducerResponseConverter
 public class TestProducerOperationHandler {
@@ -37,8 +37,8 @@ public class TestProducerOperationHandler {
     Error error = new Error("abc");
 
     Response response = handler.processException(invocation, error);
-    Assert.assertSame(Status.OK, response.getStatus());
-    Assert.assertEquals("response from error: abc", response.getResult());
+    Assertions.assertSame(Status.OK, response.getStatus());
+    Assertions.assertEquals("response from error: abc", response.getResult());
   }
 
   @Test
@@ -47,7 +47,7 @@ public class TestProducerOperationHandler {
     InvocationTargetException targetException = new InvocationTargetException(error);
 
     Response response = handler.processException(invocation, error);
-    Assert.assertSame(Status.OK, response.getStatus());
-    Assert.assertEquals("response from error: abc", response.getResult());
+    Assertions.assertSame(Status.OK, response.getStatus());
+    Assertions.assertEquals("response from error: abc", response.getResult());
   }
 }

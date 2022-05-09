@@ -17,12 +17,11 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTransport {
   @BeforeClass
@@ -68,9 +67,9 @@ public class TestTransport {
       }
     }, "rest://127.0.0.1:8080");
     oEndpoint.getTransport().init();
-    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
-    Assert.assertEquals("127.0.0.1", oEndpoint.getAddress());
-    Assert.assertEquals("test", oEndpoint.getTransport().getName());
-    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
+    Assertions.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
+    Assertions.assertEquals("127.0.0.1", oEndpoint.getAddress());
+    Assertions.assertEquals("test", oEndpoint.getTransport().getName());
+    Assertions.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
   }
 }

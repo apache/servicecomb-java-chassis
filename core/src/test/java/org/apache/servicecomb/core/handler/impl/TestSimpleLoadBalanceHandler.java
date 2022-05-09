@@ -35,13 +35,13 @@ import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSimpleLoadBalanceHandler {
   SimpleLoadBalanceHandler handler;
@@ -96,10 +96,10 @@ public class TestSimpleLoadBalanceHandler {
     handler.handle(invocation, ar);
 
     Throwable result = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
         result.getMessage());
-    Assert.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
+    Assertions.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
         result.getCause().getMessage());
   }
 
@@ -122,9 +122,9 @@ public class TestSimpleLoadBalanceHandler {
 
     handler.handle(invocation, ar);
     AtomicInteger idx = indexMap.values().iterator().next();
-    Assert.assertEquals(1, idx.get());
+    Assertions.assertEquals(1, idx.get());
 
     handler.handle(invocation, ar);
-    Assert.assertEquals(2, idx.get());
+    Assertions.assertEquals(2, idx.get());
   }
 }

@@ -26,12 +26,12 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTransportManager {
   @Test
@@ -53,7 +53,7 @@ public class TestTransportManager {
     manager.addTransportsBeforeInit(transports);
 
     manager.init(scbEngine);
-    Assert.assertEquals(manager.findTransport("test"), transport);
+    Assertions.assertEquals(manager.findTransport("test"), transport);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class TestTransportManager {
     manager.addTransportsBeforeInit(transports);
 
     manager.init(scbEngine);
-    Assert.assertEquals(manager.findTransport("test"), transport);
+    Assertions.assertEquals(manager.findTransport("test"), transport);
   }
 
   @Test
@@ -98,12 +98,12 @@ public class TestTransportManager {
     manager.addTransportsBeforeInit(Arrays.asList(t1, t2_1, t2_2));
 
     Map<String, List<Transport>> groups = manager.groupByName();
-    Assert.assertEquals(2, groups.size());
-    Assert.assertEquals(1, groups.get("t1").size());
-    Assert.assertEquals(t1, groups.get("t1").get(0));
-    Assert.assertEquals(2, groups.get("t2").size());
-    Assert.assertEquals(t2_1, groups.get("t2").get(0));
-    Assert.assertEquals(t2_2, groups.get("t2").get(1));
+    Assertions.assertEquals(2, groups.size());
+    Assertions.assertEquals(1, groups.get("t1").size());
+    Assertions.assertEquals(t1, groups.get("t1").get(0));
+    Assertions.assertEquals(2, groups.get("t2").size());
+    Assertions.assertEquals(t2_1, groups.get("t2").get(0));
+    Assertions.assertEquals(t2_2, groups.get("t2").get(1));
   }
 
   @Test
@@ -123,9 +123,9 @@ public class TestTransportManager {
 
     try {
       manager.checkTransportGroup(group);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           "org.apache.servicecomb.core.$Impl_Transport and org.apache.servicecomb.core.$Impl_Transport have the same order 1",
           e.getMessage());
     }
@@ -149,7 +149,7 @@ public class TestTransportManager {
     try {
       manager.checkTransportGroup(group);
     } catch (ServiceCombException e) {
-      Assert.fail("must not throw exception: " + e.getMessage());
+      Assertions.fail("must not throw exception: " + e.getMessage());
     }
   }
 
@@ -170,7 +170,7 @@ public class TestTransportManager {
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
 
-    Assert.assertEquals(t1, manager.chooseOneTransport(group));
+    Assertions.assertEquals(t1, manager.chooseOneTransport(group));
   }
 
   @Test
@@ -192,7 +192,7 @@ public class TestTransportManager {
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
 
-    Assert.assertEquals(t1, manager.chooseOneTransport(group));
+    Assertions.assertEquals(t1, manager.chooseOneTransport(group));
   }
 
   @Test
@@ -218,9 +218,9 @@ public class TestTransportManager {
 
     try {
       manager.chooseOneTransport(group);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals("all transport named t refused to init.", e.getMessage());
+      Assertions.assertEquals("all transport named t refused to init.", e.getMessage());
     }
   }
 }

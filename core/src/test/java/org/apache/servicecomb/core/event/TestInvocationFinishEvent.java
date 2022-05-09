@@ -19,13 +19,13 @@ package org.apache.servicecomb.core.event;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationFinishEvent {
   InvocationFinishEvent event;
@@ -50,8 +50,8 @@ public class TestInvocationFinishEvent {
 
     event = new InvocationFinishEvent(invocation, response);
 
-    Assert.assertEquals(time, event.getNanoCurrent());
-    Assert.assertSame(invocation, event.getInvocation());
-    Assert.assertSame(response, event.getResponse());
+    Assertions.assertEquals(time, event.getNanoCurrent());
+    Assertions.assertSame(invocation, event.getInvocation());
+    Assertions.assertSame(response, event.getResponse());
   }
 }

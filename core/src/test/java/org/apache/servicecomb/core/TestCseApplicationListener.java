@@ -21,9 +21,9 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.context.event.ContextClosedEvent;
 
 import mockit.Mocked;
@@ -48,7 +48,7 @@ public class TestCseApplicationListener {
     CseApplicationListener listener = new CseApplicationListener();
     listener.onApplicationEvent(contextClosedEvent);
 
-    Assert.assertEquals(SCBStatus.DOWN, scbEngine.getStatus());
+    Assertions.assertEquals(SCBStatus.DOWN, scbEngine.getStatus());
 
     scbEngine.destroy();
   }

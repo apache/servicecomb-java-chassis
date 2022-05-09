@@ -21,9 +21,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestServiceProviderHandler {
@@ -56,13 +56,13 @@ public class TestServiceProviderHandler {
   public void testHandle() {
     boolean status = false;
     try {
-      Assert.assertNotNull(serviceProviderHandler);
+      Assertions.assertNotNull(serviceProviderHandler);
       Mockito.when(invocation.getOperationMeta()).thenReturn(OperationMeta);
       serviceProviderHandler.handle(invocation, asyncResp);
     } catch (Exception e) {
       e.printStackTrace();
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 }

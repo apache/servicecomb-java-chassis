@@ -19,14 +19,14 @@ package org.apache.servicecomb.core.provider.consumer;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvokerUtils {
   @Test
   public void testRetryInvocation503() {
     InvocationException root = new InvocationException(503, "Service Unavailable", "Error");
     boolean canRetry = InvokerUtils.canRetryForStatusCode(Response.failResp(root));
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
   }
 }

@@ -24,8 +24,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,49 +64,49 @@ public class TestThreadPoolExecutorEx {
   @Test
   public void schedule() throws ExecutionException, InterruptedException {
     // init
-    Assert.assertEquals(0, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(0, executorEx.getNotFinished());
-    Assert.assertEquals(0, executorEx.getQueue().size());
+    Assertions.assertEquals(0, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(0, executorEx.getNotFinished());
+    Assertions.assertEquals(0, executorEx.getQueue().size());
 
     // use core threads
     TestTask t1 = submitTask();
-    Assert.assertEquals(1, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(1, executorEx.getNotFinished());
-    Assert.assertEquals(0, executorEx.getQueue().size());
+    Assertions.assertEquals(1, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(1, executorEx.getNotFinished());
+    Assertions.assertEquals(0, executorEx.getQueue().size());
 
     TestTask t2 = submitTask();
-    Assert.assertEquals(2, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(2, executorEx.getNotFinished());
-    Assert.assertEquals(0, executorEx.getQueue().size());
+    Assertions.assertEquals(2, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(2, executorEx.getNotFinished());
+    Assertions.assertEquals(0, executorEx.getQueue().size());
 
     // extend threads
     TestTask t3 = submitTask();
-    Assert.assertEquals(3, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(3, executorEx.getNotFinished());
-    Assert.assertEquals(0, executorEx.getQueue().size());
+    Assertions.assertEquals(3, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(3, executorEx.getNotFinished());
+    Assertions.assertEquals(0, executorEx.getQueue().size());
 
     TestTask t4 = submitTask();
-    Assert.assertEquals(4, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(4, executorEx.getNotFinished());
-    Assert.assertEquals(0, executorEx.getQueue().size());
+    Assertions.assertEquals(4, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(4, executorEx.getNotFinished());
+    Assertions.assertEquals(0, executorEx.getQueue().size());
 
     // queue the tasks
     TestTask t5 = submitTask();
-    Assert.assertEquals(4, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(5, executorEx.getNotFinished());
-    Assert.assertEquals(1, executorEx.getQueue().size());
+    Assertions.assertEquals(4, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(5, executorEx.getNotFinished());
+    Assertions.assertEquals(1, executorEx.getQueue().size());
 
     TestTask t6 = submitTask();
-    Assert.assertEquals(4, executorEx.getPoolSize());
-    Assert.assertEquals(0, executorEx.getRejectedCount());
-    Assert.assertEquals(6, executorEx.getNotFinished());
-    Assert.assertEquals(2, executorEx.getQueue().size());
+    Assertions.assertEquals(4, executorEx.getPoolSize());
+    Assertions.assertEquals(0, executorEx.getRejectedCount());
+    Assertions.assertEquals(6, executorEx.getNotFinished());
+    Assertions.assertEquals(2, executorEx.getQueue().size());
 
     // reject the task
     try {
@@ -114,24 +114,24 @@ public class TestThreadPoolExecutorEx {
     } catch (RejectedExecutionException e) {
 
     }
-    Assert.assertEquals(4, executorEx.getPoolSize());
-    Assert.assertEquals(1, executorEx.getRejectedCount());
-    Assert.assertEquals(6, executorEx.getNotFinished());
-    Assert.assertEquals(2, executorEx.getQueue().size());
+    Assertions.assertEquals(4, executorEx.getPoolSize());
+    Assertions.assertEquals(1, executorEx.getRejectedCount());
+    Assertions.assertEquals(6, executorEx.getNotFinished());
+    Assertions.assertEquals(2, executorEx.getQueue().size());
 
     // t1/t2/t3 finish
     t1.quit();
     t2.quit();
     t3.quit();
-    Assert.assertEquals(4, executorEx.getPoolSize());
-    Assert.assertEquals(1, executorEx.getRejectedCount());
+    Assertions.assertEquals(4, executorEx.getPoolSize());
+    Assertions.assertEquals(1, executorEx.getRejectedCount());
     waitForResult(3, executorEx::getNotFinished);
     waitForResult(0, executorEx.getQueue()::size);
 
     // reuse thread
     t3 = submitTask();
-    Assert.assertEquals(4, executorEx.getPoolSize());
-    Assert.assertEquals(1, executorEx.getRejectedCount());
+    Assertions.assertEquals(4, executorEx.getPoolSize());
+    Assertions.assertEquals(1, executorEx.getRejectedCount());
     waitForResult(4, executorEx::getNotFinished);
     waitForResult(0, executorEx.getQueue()::size);
 

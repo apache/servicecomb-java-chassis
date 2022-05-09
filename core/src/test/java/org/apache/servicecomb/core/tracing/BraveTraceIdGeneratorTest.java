@@ -17,23 +17,21 @@
 
 package org.apache.servicecomb.core.tracing;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class BraveTraceIdGeneratorTest {
 
   @Test
   public void generateStringId() {
     TraceIdGenerator traceIdGenerator = new BraveTraceIdGenerator();
-    assertNotEquals(traceIdGenerator.generate(), traceIdGenerator.generate());
+    Assertions.assertNotEquals(traceIdGenerator.generate(), traceIdGenerator.generate());
 
     String traceId = traceIdGenerator.generate();
     try {
       Long.parseLong(traceId, 16);
     } catch (NumberFormatException e) {
-      fail("wrong traceId format: " + traceId);
+      Assertions.fail("wrong traceId format: " + traceId);
     }
   }
 }

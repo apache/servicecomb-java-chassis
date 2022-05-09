@@ -20,8 +20,8 @@ package org.apache.servicecomb.core.consumer;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestSyncResponseExecutor {
@@ -36,9 +36,9 @@ public class TestSyncResponseExecutor {
 
     try {
       Response responseValue = executor.waitResponse(invocation);
-      Assert.assertNotNull(responseValue);
+      Assertions.assertNotNull(responseValue);
     } catch (Exception e) {
-      Assert.assertNotNull(e);
+      Assertions.assertNotNull(e);
     }
   }
 }
