@@ -16,13 +16,10 @@
  */
 package org.apache.servicecomb.serviceregistry.adapter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestEnvAdapterManager {
 
@@ -30,15 +27,15 @@ public class TestEnvAdapterManager {
 
   @Test
   public void testLoadAdapter() {
-    assertEquals(3, manager.values().size());
-    assertNull(manager.findValue("cas-env-three"));
-    assertNotNull(manager.findValue("default-env-adapter"));
-    assertNotNull(manager.findValue("cas_env_one"));
-    assertNotNull(manager.findValue("cas_env_two"));
+    Assertions.assertEquals(3, manager.values().size());
+    Assertions.assertNull(manager.findValue("cas-env-three"));
+    Assertions.assertNotNull(manager.findValue("default-env-adapter"));
+    Assertions.assertNotNull(manager.findValue("cas_env_one"));
+    Assertions.assertNotNull(manager.findValue("cas_env_two"));
 
-    assertEquals(0, manager.findValue("cas_env_one").getOrder());
-    assertEquals(0, manager.findValue("cas_env_two").getOrder());
-    assertEquals(0, manager.findValue("default-env-adapter").getOrder());
+    Assertions.assertEquals(0, manager.findValue("cas_env_one").getOrder());
+    Assertions.assertEquals(0, manager.findValue("cas_env_two").getOrder());
+    Assertions.assertEquals(0, manager.findValue("default-env-adapter").getOrder());
   }
 
   @Test
@@ -46,9 +43,9 @@ public class TestEnvAdapterManager {
     Microservice microservice = new Microservice();
     manager.processMicroserviceWithAdapters(microservice);
 
-    assertEquals("order=0", microservice.getProperties().get("cas_env_one"));
-    assertEquals("order=0", microservice.getProperties().get("cas_env_two"));
-    assertNull(microservice.getProperties().get("default-env-adapter"));
+    Assertions.assertEquals("order=0", microservice.getProperties().get("cas_env_one"));
+    Assertions.assertEquals("order=0", microservice.getProperties().get("cas_env_two"));
+    Assertions.assertNull(microservice.getProperties().get("default-env-adapter"));
   }
 
   @Test
@@ -56,8 +53,8 @@ public class TestEnvAdapterManager {
     MicroserviceInstance instance = new MicroserviceInstance();
     manager.processInstanceWithAdapters(instance);
 
-    assertEquals("order=0", instance.getProperties().get("cas_env_one"));
-    assertEquals("order=0", instance.getProperties().get("cas_env_two"));
-    assertNull(instance.getProperties().get("default-env-adapter"));
+    Assertions.assertEquals("order=0", instance.getProperties().get("cas_env_one"));
+    Assertions.assertEquals("order=0", instance.getProperties().get("cas_env_two"));
+    Assertions.assertNull(instance.getProperties().get("default-env-adapter"));
   }
 }

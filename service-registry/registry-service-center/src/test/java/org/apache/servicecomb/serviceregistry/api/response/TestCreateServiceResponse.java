@@ -18,9 +18,9 @@
 package org.apache.servicecomb.serviceregistry.api.response;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestCreateServiceResponse {
 
@@ -38,13 +38,13 @@ public class TestCreateServiceResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oCreateServiceResponse.getServiceId());
+    Assertions.assertNull(oCreateServiceResponse.getServiceId());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals("testServiceId", oCreateServiceResponse.getServiceId());
+    Assertions.assertEquals("testServiceId", oCreateServiceResponse.getServiceId());
   }
 
   private void initFields() {

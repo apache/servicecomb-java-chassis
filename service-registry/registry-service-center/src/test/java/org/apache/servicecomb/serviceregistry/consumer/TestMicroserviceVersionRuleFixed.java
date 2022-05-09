@@ -24,9 +24,9 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceVersionRuleFixed {
   MockMicroserviceVersions mockMicroserviceVersions;
@@ -48,19 +48,19 @@ public class TestMicroserviceVersionRuleFixed {
 
   @Test
   public void getVersionRule() {
-    Assert.assertEquals("2.0.0.0", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assertions.assertEquals("2.0.0.0", microserviceVersionRule.getVersionRule().getVersionRule());
   }
 
   @Test
   public void update_empty() {
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test
   public void update_v1() {
     mockMicroserviceVersions.update_v1();
 
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    Assertions.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test

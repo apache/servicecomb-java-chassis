@@ -18,14 +18,14 @@
 package org.apache.servicecomb.serviceregistry.api.registry;
 
 import org.apache.servicecomb.registry.api.registry.FrameworkVersions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestFrameworkVersions {
-  @Test
-  public void testFrameworkVersions() {
-    // this.getClass().getPackage().getImplementationVersion()
-    // is not stable, may get null or 2.0.1-SNAPSHOT
-    Assert.assertTrue(FrameworkVersions.allVersions().contains("ServiceComb"));
-  }
+    @Test
+    public void testFrameworkVersions() {
+        // this.getClass().getPackage().getImplementationVersion()
+        // is not stable, may get null or 2.0.1-SNAPSHOT
+        Assertions.assertTrue(FrameworkVersions.allVersions().contains("ServiceComb"));
+    }
 }

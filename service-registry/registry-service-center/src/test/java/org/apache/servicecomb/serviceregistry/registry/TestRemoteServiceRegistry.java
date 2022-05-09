@@ -29,7 +29,6 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -38,6 +37,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRemoteServiceRegistry {
   class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
@@ -86,13 +86,13 @@ public class TestRemoteServiceRegistry {
     // should not block
     latch.await();
 
-    Assert.assertTrue(2 <= remote.getTaskPool().getTaskCount()); // includes complete tasks
+    Assertions.assertTrue(2 <= remote.getTaskPool().getTaskCount()); // includes complete tasks
 
     bus.post(new ShutdownEvent());
 
     remote.getTaskPool().schedule(() -> {
     }, 0, TimeUnit.SECONDS);
-    Assert.assertTrue(remote.getTaskPool().isShutdown());
+    Assertions.assertTrue(remote.getTaskPool().isShutdown());
     RegistryUtils.setServiceRegistry(oldRegistry);
   }
 }

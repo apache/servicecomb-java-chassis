@@ -18,9 +18,9 @@
 package org.apache.servicecomb.serviceregistry.api.response;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestGetExistenceResponse {
 
@@ -38,15 +38,15 @@ public class TestGetExistenceResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oGetExistenceResponse.getSchemaId());
-    Assert.assertNull(oGetExistenceResponse.getServiceId());
+    Assertions.assertNull(oGetExistenceResponse.getSchemaId());
+    Assertions.assertNull(oGetExistenceResponse.getServiceId());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals("testSchemaId", oGetExistenceResponse.getSchemaId());
-    Assert.assertEquals("testServiceId", oGetExistenceResponse.getServiceId());
+    Assertions.assertEquals("testSchemaId", oGetExistenceResponse.getSchemaId());
+    Assertions.assertEquals("testServiceId", oGetExistenceResponse.getServiceId());
   }
 
   private void initFields() {

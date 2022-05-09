@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInstanceCacheCheckTask {
 
@@ -86,7 +86,7 @@ public class TestInstanceCacheCheckTask {
     ArchaiusUtils.setProperty(InstanceCacheCheckTask.MANUAL, UUID.randomUUID().toString());
     latch.await();
 
-    Assert.assertEquals("{\"status\":null,\"producers\":[],\"timestamp\":0}", Json.encode(result));
+    Assertions.assertEquals("{\"status\":null,\"producers\":[],\"timestamp\":0}", Json.encode(result));
   }
 
   @Test
@@ -104,8 +104,8 @@ public class TestInstanceCacheCheckTask {
     task.init();
 
     latch.await();
-    Assert.assertNotNull(Deencapsulation.getField(task, "scheduledFuture"));
-    Assert.assertEquals("{\"status\":null,\"producers\":[],\"timestamp\":0}", Json.encode(result));
+    Assertions.assertNotNull(Deencapsulation.getField(task, "scheduledFuture"));
+    Assertions.assertEquals("{\"status\":null,\"producers\":[],\"timestamp\":0}", Json.encode(result));
   }
 
   @Test
@@ -123,8 +123,8 @@ public class TestInstanceCacheCheckTask {
     Deencapsulation.setField(task, "scheduledFuture", scheduledFuture);
     task.init();
 
-    Assert.assertNull(Deencapsulation.getField(task, "scheduledFuture"));
-    Assert.assertTrue(cancelResult.value);
+    Assertions.assertNull(Deencapsulation.getField(task, "scheduledFuture"));
+    Assertions.assertTrue(cancelResult.value);
   }
 
   @Test
@@ -132,7 +132,7 @@ public class TestInstanceCacheCheckTask {
     ArchaiusUtils.setProperty(InstanceCacheCheckTask.AUTO_INTERVAL, 0);
     task.init();
 
-    Assert.assertNull(Deencapsulation.getField(task, "scheduledFuture"));
+    Assertions.assertNull(Deencapsulation.getField(task, "scheduledFuture"));
   }
 
   @Test
@@ -140,6 +140,6 @@ public class TestInstanceCacheCheckTask {
     ArchaiusUtils.setProperty(InstanceCacheCheckTask.AUTO_INTERVAL, -1);
     task.init();
 
-    Assert.assertNull(Deencapsulation.getField(task, "scheduledFuture"));
+    Assertions.assertNull(Deencapsulation.getField(task, "scheduledFuture"));
   }
 }

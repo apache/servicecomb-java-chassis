@@ -27,7 +27,6 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.event.ExceptionEvent;
 import org.apache.servicecomb.serviceregistry.event.RecoveryEvent;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -37,6 +36,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceWatchTask {
   EventBus eventBus = new EventBus();
@@ -78,9 +78,9 @@ public class TestMicroserviceWatchTask {
         openHolder.value = true;
       }
     });
-    Assert.assertNull(openHolder.value);
+    Assertions.assertNull(openHolder.value);
     microserviceWatchTask.run();
-    Assert.assertTrue(openHolder.value);
+    Assertions.assertTrue(openHolder.value);
   }
 
   @Test
@@ -104,9 +104,9 @@ public class TestMicroserviceWatchTask {
         holder.value = event.getThrowable();
       }
     });
-    Assert.assertNull(holder.value);
+    Assertions.assertNull(holder.value);
     microserviceWatchTask.run();
-    Assert.assertEquals("test failed", holder.value.getMessage());
+    Assertions.assertEquals("test failed", holder.value.getMessage());
   }
 
   @Test
@@ -141,15 +141,15 @@ public class TestMicroserviceWatchTask {
 
     changedEvent.setAction(WatchAction.CREATE);
     microserviceWatchTask.run();
-    Assert.assertEquals(WatchAction.CREATE, holder.value.getAction());
+    Assertions.assertEquals(WatchAction.CREATE, holder.value.getAction());
 
     changedEvent.setAction(WatchAction.DELETE);
     microserviceWatchTask.run();
-    Assert.assertEquals(WatchAction.DELETE, holder.value.getAction());
+    Assertions.assertEquals(WatchAction.DELETE, holder.value.getAction());
 
     changedEvent.setAction(WatchAction.UPDATE);
     microserviceWatchTask.run();
-    Assert.assertEquals(WatchAction.UPDATE, holder.value.getAction());
+    Assertions.assertEquals(WatchAction.UPDATE, holder.value.getAction());
   }
 
   @Test
@@ -180,7 +180,7 @@ public class TestMicroserviceWatchTask {
     try {
       microserviceWatchTask.run();
     } catch (Throwable e) {
-      Assert.fail("must do not watch");
+      Assertions.fail("must do not watch");
     }
 
     new Expectations() {
@@ -194,7 +194,7 @@ public class TestMicroserviceWatchTask {
       microserviceWatchTask.run();
     } catch (Throwable e) {
       // ready state, service id can not be null , will always watch
-      Assert.assertEquals("called watch", e.getMessage());
+      Assertions.assertEquals("called watch", e.getMessage());
     }
 
     new Expectations() {
@@ -208,7 +208,7 @@ public class TestMicroserviceWatchTask {
       microserviceWatchTask.run();
     } catch (Throwable e) {
       // ready state, service id can not be null , will always watch
-      Assert.assertEquals("called watch", e.getMessage());
+      Assertions.assertEquals("called watch", e.getMessage());
     }
 
     new Expectations() {
@@ -222,9 +222,9 @@ public class TestMicroserviceWatchTask {
     // watch
     try {
       microserviceWatchTask.run();
-      Assert.fail("must watch");
+      Assertions.fail("must watch");
     } catch (Throwable e) {
-      Assert.assertEquals("called watch", e.getMessage());
+      Assertions.assertEquals("called watch", e.getMessage());
     }
   }
 }

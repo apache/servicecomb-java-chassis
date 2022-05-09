@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCompositeTask {
   private int count;
@@ -33,7 +33,7 @@ public class TestCompositeTask {
 
     task.run();
 
-    Assert.assertEquals(3, count);
-    Assert.assertEquals(3, task.getTaskCount());
+    Assertions.assertEquals(3, count);
+    Assertions.assertEquals(3, task.getTaskCount());
   }
 }

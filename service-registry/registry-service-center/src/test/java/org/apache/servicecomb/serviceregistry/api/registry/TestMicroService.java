@@ -27,9 +27,9 @@ import org.apache.servicecomb.registry.api.registry.Framework;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroService {
 
@@ -55,37 +55,37 @@ public class TestMicroService {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oMicroservice.getAppId());
-    Assert.assertNull(oMicroservice.getDescription());
-    Assert.assertNull(oMicroservice.getLevel());
-    Assert.assertEquals(0, oMicroservice.getProperties().size());
-    Assert.assertEquals(0, oMicroservice.getSchemas().size());
-    Assert.assertNull(oMicroservice.getServiceId());
-    Assert.assertNull(oMicroservice.getServiceName());
-    Assert.assertEquals(MicroserviceInstanceStatus.UP.toString(), oMicroservice.getStatus());
-    Assert.assertNull(oMicroservice.getVersion());
-    Assert.assertEquals(0, oMicroservice.getPaths().size());
-    Assert.assertNull(oMicroservice.getFramework());
-    Assert.assertNull(oMicroservice.getEnvironment());
+    Assertions.assertNull(oMicroservice.getAppId());
+    Assertions.assertNull(oMicroservice.getDescription());
+    Assertions.assertNull(oMicroservice.getLevel());
+    Assertions.assertEquals(0, oMicroservice.getProperties().size());
+    Assertions.assertEquals(0, oMicroservice.getSchemas().size());
+    Assertions.assertNull(oMicroservice.getServiceId());
+    Assertions.assertNull(oMicroservice.getServiceName());
+    Assertions.assertEquals(MicroserviceInstanceStatus.UP.toString(), oMicroservice.getStatus());
+    Assertions.assertNull(oMicroservice.getVersion());
+    Assertions.assertEquals(0, oMicroservice.getPaths().size());
+    Assertions.assertNull(oMicroservice.getFramework());
+    Assertions.assertNull(oMicroservice.getEnvironment());
   }
 
   @Test
   public void testInitializedValues() {
     initMicroservice(); //Initialize the Object
-    Assert.assertEquals("testAppID", oMicroservice.getAppId());
-    Assert.assertEquals("This is the test", oMicroservice.getDescription());
-    Assert.assertEquals("INFO", oMicroservice.getLevel());
-    Assert.assertEquals("testServiceID", oMicroservice.getServiceId());
-    Assert.assertEquals("testServiceName", oMicroservice.getServiceName());
-    Assert.assertEquals(MicroserviceInstanceStatus.DOWN.toString(), oMicroservice.getStatus());
-    Assert.assertEquals("1.0.0", oMicroservice.getVersion());
-    Assert.assertEquals("fakeProxy", oMicroservice.getProperties().get("proxy"));
-    Assert.assertEquals(1, oMicroservice.getSchemas().size());
-    Assert.assertEquals(1, oMicroservice.getPaths().size());
-    Assert.assertEquals("JAVA-CHASSIS", oMicroservice.getFramework().getName());
-    Assert.assertEquals("x.x.x", oMicroservice.getFramework().getVersion());
-    Assert.assertEquals("SDK", oMicroservice.getRegisterBy());
-    Assert.assertEquals("development", oMicroservice.getEnvironment());
+    Assertions.assertEquals("testAppID", oMicroservice.getAppId());
+    Assertions.assertEquals("This is the test", oMicroservice.getDescription());
+    Assertions.assertEquals("INFO", oMicroservice.getLevel());
+    Assertions.assertEquals("testServiceID", oMicroservice.getServiceId());
+    Assertions.assertEquals("testServiceName", oMicroservice.getServiceName());
+    Assertions.assertEquals(MicroserviceInstanceStatus.DOWN.toString(), oMicroservice.getStatus());
+    Assertions.assertEquals("1.0.0", oMicroservice.getVersion());
+    Assertions.assertEquals("fakeProxy", oMicroservice.getProperties().get("proxy"));
+    Assertions.assertEquals(1, oMicroservice.getSchemas().size());
+    Assertions.assertEquals(1, oMicroservice.getPaths().size());
+    Assertions.assertEquals("JAVA-CHASSIS", oMicroservice.getFramework().getName());
+    Assertions.assertEquals("x.x.x", oMicroservice.getFramework().getVersion());
+    Assertions.assertEquals("SDK", oMicroservice.getRegisterBy());
+    Assertions.assertEquals("development", oMicroservice.getEnvironment());
   }
 
   private void initMicroservice() {

@@ -18,15 +18,15 @@
 package org.apache.servicecomb.serviceregistry.api.registry;
 
 import org.apache.servicecomb.registry.api.registry.Framework;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestFramework {
   @Test
   public void testDefaultValues() {
     Framework framework = new Framework();
-    Assert.assertNull(framework.getName());
-    Assert.assertNull(framework.getVersion());
+    Assertions.assertNull(framework.getName());
+    Assertions.assertNull(framework.getVersion());
   }
 
   @Test
@@ -34,7 +34,7 @@ public class TestFramework {
     Framework framework = new Framework();
     framework.setName("JAVA-CHASSIS");
     framework.setVersion("x.x.x");
-    Assert.assertEquals("JAVA-CHASSIS", framework.getName());
-    Assert.assertEquals("x.x.x", framework.getVersion());
+    Assertions.assertEquals("JAVA-CHASSIS", framework.getName());
+    Assertions.assertEquals("x.x.x", framework.getVersion());
   }
 }

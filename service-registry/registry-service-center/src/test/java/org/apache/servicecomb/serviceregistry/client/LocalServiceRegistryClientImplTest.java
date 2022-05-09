@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
-import static org.junit.Assert.fail;
-
 import java.io.InputStream;
 import java.util.List;
 
@@ -55,16 +53,16 @@ public class LocalServiceRegistryClientImplTest {
 
   @Test
   public void testLoadRegistryFile() {
-    Assert.assertNotNull(registryClient);
+    Assertions.assertNotNull(registryClient);
     MatcherAssert.assertThat(registryClient.getAllMicroservices().size(), Is.is(2));
     List<MicroserviceInstance> m =
         registryClient.findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
-    Assert.assertEquals(1, m.size());
+    Assertions.assertEquals(1, m.size());
 
     MicroserviceInstances microserviceInstances =
         registryClient.findServiceInstances("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL, null);
     List<MicroserviceInstance> mi = microserviceInstances.getInstancesResponse().getInstances();
-    Assert.assertEquals(1, mi.size());
+    Assertions.assertEquals(1, mi.size());
   }
 
   private Microservice mockRegisterMicroservice(String appId, String name, String version) {
@@ -82,20 +80,20 @@ public class LocalServiceRegistryClientImplTest {
   public void getMicroserviceId_appNotMatch() {
     mockRegisterMicroservice("otherApp", microserviceName, "1.0.0");
 
-    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", ""));
+    Assertions.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", ""));
   }
 
   @Test
   public void getMicroserviceId_nameNotMatch() {
     mockRegisterMicroservice(appId, "otherName", "1.0.0");
 
-    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", ""));
+    Assertions.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", ""));
   }
 
   @Test
   public void getMicroserviceId_versionNotMatch() {
     mockRegisterMicroservice(appId, microserviceName, "1.0.0");
-    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "2.0.0", ""));
+    Assertions.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "2.0.0", ""));
   }
 
   @Test
@@ -105,7 +103,7 @@ public class LocalServiceRegistryClientImplTest {
 
     String serviceId =
         registryClient.getMicroserviceId(appId, microserviceName, DefinitionConst.VERSION_RULE_LATEST, "");
-    Assert.assertEquals(v2.getServiceId(), serviceId);
+    Assertions.assertEquals(v2.getServiceId(), serviceId);
   }
 
   @Test
@@ -114,7 +112,7 @@ public class LocalServiceRegistryClientImplTest {
     mockRegisterMicroservice(appId, microserviceName, "2.0.0");
 
     String serviceId = registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "");
-    Assert.assertEquals(v1.getServiceId(), serviceId);
+    Assertions.assertEquals(v1.getServiceId(), serviceId);
   }
 
   @Test
@@ -166,7 +164,7 @@ public class LocalServiceRegistryClientImplTest {
   public void registerSchema_normal() {
     Microservice v1 = mockRegisterMicroservice(appId, microserviceName, "1.0.0");
 
-    Assert.assertTrue(registryClient.registerSchema(v1.getServiceId(), "sid", "content"));
+    Assertions.assertTrue(registryClient.registerSchema(v1.getServiceId(), "sid", "content"));
   }
 
   @Test
@@ -175,27 +173,27 @@ public class LocalServiceRegistryClientImplTest {
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setServiceId(microservice.getServiceId());
     String instanceId = registryClient.registerMicroserviceInstance(instance);
-    Assert.assertNotNull(registryClient.findServiceInstance(microservice.getServiceId(), instanceId));
+    Assertions.assertNotNull(registryClient.findServiceInstance(microservice.getServiceId(), instanceId));
   }
 
   @Test
   public void testGetServiceCenterInfo() {
     ServiceCenterInfo serviceCenterInfo = registryClient.getServiceCenterInfo();
-    Assert.assertEquals("1.0.0", serviceCenterInfo.getVersion());
+    Assertions.assertEquals("1.0.0", serviceCenterInfo.getVersion());
   }
 
   @Test
   public void testGetSchemas() {
     Holder<List<GetSchemaResponse>> schemasHolder = registryClient.getSchemas("002");
-    Assert.assertEquals(200, schemasHolder.getStatusCode());
-    Assert.assertTrue(schemasHolder.getValue().isEmpty());
+    Assertions.assertEquals(200, schemasHolder.getStatusCode());
+    Assertions.assertTrue(schemasHolder.getValue().isEmpty());
   }
 
   @Test
   public void testLoadSchemaIdsFromRegistryFile() {
     Microservice microservice = registryClient.getMicroservice("002");
     MatcherAssert.assertThat(microservice.getSchemas().size(), Is.is(1));
-    Assert.assertTrue(microservice.getSchemas().contains("hello"));
+    Assertions.assertTrue(microservice.getSchemas().contains("hello"));
   }
 
   @SuppressWarnings("deprecation")
@@ -204,16 +202,16 @@ public class LocalServiceRegistryClientImplTest {
     List<MicroserviceInstance> m = registryClient
         .findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
     MicroserviceInstance instance = m.get(0);
-    Assert.assertEquals(MicroserviceInstanceStatus.UP, instance.getStatus());
+    Assertions.assertEquals(MicroserviceInstanceStatus.UP, instance.getStatus());
 
     boolean updateOperationResult = registryClient
         .undateMicroserviceInstanceStatus(instance.getServiceId(), instance.getInstanceId(), "TESTING");
-    Assert.assertTrue(updateOperationResult);
+    Assertions.assertTrue(updateOperationResult);
 
     m = registryClient
         .findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
     instance = m.get(0);
-    Assert.assertEquals(MicroserviceInstanceStatus.TESTING, instance.getStatus());
+    Assertions.assertEquals(MicroserviceInstanceStatus.TESTING, instance.getStatus());
   }
 
   @SuppressWarnings("deprecation")
@@ -223,14 +221,14 @@ public class LocalServiceRegistryClientImplTest {
       registryClient.undateMicroserviceInstanceStatus("msIdNotExist", "", "UP");
       shouldThrowException();
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid serviceId, serviceId=msIdNotExist", e.getMessage());
+      Assertions.assertEquals("Invalid serviceId, serviceId=msIdNotExist", e.getMessage());
     }
 
     try {
       registryClient.undateMicroserviceInstanceStatus("002", "instanceIdNotExist", "UP");
       shouldThrowException();
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid argument. microserviceId=002, instanceId=instanceIdNotExist.",
+      Assertions.assertEquals("Invalid argument. microserviceId=002, instanceId=instanceIdNotExist.",
           e.getMessage());
     }
   }
@@ -246,19 +244,19 @@ public class LocalServiceRegistryClientImplTest {
       registryClient.undateMicroserviceInstanceStatus(instance.getServiceId(), instance.getInstanceId(), null);
       shouldThrowException();
     } catch (NullPointerException e) {
-      Assert.assertEquals("Name is null", e.getMessage());
+      Assertions.assertEquals("Name is null", e.getMessage());
     }
     try {
       registryClient
           .undateMicroserviceInstanceStatus(instance.getServiceId(), instance.getInstanceId(), "IllegalStatus");
       shouldThrowException();
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid status: IllegalStatus", e.getMessage());
+      Assertions.assertEquals("Invalid status: IllegalStatus", e.getMessage());
     }
   }
 
   private void shouldThrowException() {
-    fail("an exception is expected");
+    Assertions.fail("an exception is expected");
   }
 }
 

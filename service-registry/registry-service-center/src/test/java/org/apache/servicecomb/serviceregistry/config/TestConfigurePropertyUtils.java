@@ -27,8 +27,8 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestConfigurePropertyUtils {
   @Test
@@ -40,18 +40,18 @@ public class TestConfigurePropertyUtils {
     Map<String, String> expectedMap = new HashMap<>();
     expectedMap.put("key1", "value1");
     expectedMap.put("key2", "value2");
-    Assert.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, prefix));
+    Assertions.assertEquals(expectedMap, ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, prefix));
 
     List<BasePath> paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
-    Assert.assertEquals(2, paths.size());
-    Assert.assertEquals(paths.get(0).getPath(), "/test1/testpath");
-    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), "false");
+    Assertions.assertEquals(2, paths.size());
+    Assertions.assertEquals(paths.get(0).getPath(), "/test1/testpath");
+    Assertions.assertEquals(paths.get(0).getProperty().get("checksession"), "false");
 
     ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/webroot");
     paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
-    Assert.assertEquals(2, paths.size());
-    Assert.assertEquals(paths.get(0).getPath(), "/webroot/test1/testpath");
-    Assert.assertEquals(paths.get(0).getProperty().get("checksession"), "false");
+    Assertions.assertEquals(2, paths.size());
+    Assertions.assertEquals(paths.get(0).getPath(), "/webroot/test1/testpath");
+    Assertions.assertEquals(paths.get(0).getProperty().get("checksession"), "false");
     ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 }

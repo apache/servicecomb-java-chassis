@@ -17,20 +17,20 @@
 package org.apache.servicecomb.serviceregistry.api;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestConst {
-  @Before
+  @BeforeEach
   public void setUp() {
     System.setProperty("servicecomb.service.registry.api.version", "v4");
     System.setProperty("servicecomb.config.client.domainName", "testtenane");
     ConfigUtil.createLocalConfig();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     System.getProperties().remove("servicecomb.service.registry.api.version");
     System.getProperties().remove("servicecomb.config.client.domainName");
@@ -41,40 +41,40 @@ public class TestConst {
 
     // this test case depends on class loading and java property may initialized after class loading, so we make to run in all cases.
     if (Const.REGISTRY_API.CURRENT_VERSION.equals(Const.REGISTRY_API.VERSION_V3)) {
-      Assert.assertEquals("/registry/v3/microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
-      Assert.assertEquals("/registry/v3/microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
-      Assert.assertEquals("/registry/v3/microservices/%s/instances",
+      Assertions.assertEquals("/registry/v3/microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
+      Assertions.assertEquals("/registry/v3/microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
+      Assertions.assertEquals("/registry/v3/microservices/%s/instances",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ALL);
-      Assert.assertEquals("/registry/v3/microservices/%s/instances/%s",
+      Assertions.assertEquals("/registry/v3/microservices/%s/instances/%s",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE);
-      Assert.assertEquals("/registry/v3/existence", Const.REGISTRY_API.MICROSERVICE_EXISTENCE);
-      Assert.assertEquals("/registry/v3/microservices/%s/schemas/%s", Const.REGISTRY_API.MICROSERVICE_SCHEMA);
-      Assert.assertEquals("/registry/v3/microservices/%s/instances/%s/heartbeat",
+      Assertions.assertEquals("/registry/v3/existence", Const.REGISTRY_API.MICROSERVICE_EXISTENCE);
+      Assertions.assertEquals("/registry/v3/microservices/%s/schemas/%s", Const.REGISTRY_API.MICROSERVICE_SCHEMA);
+      Assertions.assertEquals("/registry/v3/microservices/%s/instances/%s/heartbeat",
           Const.REGISTRY_API.MICROSERVICE_HEARTBEAT);
-      Assert.assertEquals("/registry/v3/microservices/%s/watcher", Const.REGISTRY_API.MICROSERVICE_WATCH);
-      Assert.assertEquals("/registry/v3/instances", Const.REGISTRY_API.MICROSERVICE_INSTANCES);
-      Assert.assertEquals("/registry/v3/microservices/%s/properties",
+      Assertions.assertEquals("/registry/v3/microservices/%s/watcher", Const.REGISTRY_API.MICROSERVICE_WATCH);
+      Assertions.assertEquals("/registry/v3/instances", Const.REGISTRY_API.MICROSERVICE_INSTANCES);
+      Assertions.assertEquals("/registry/v3/microservices/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_PROPERTIES);
-      Assert.assertEquals("/registry/v3/microservices/%s/instances/%s/properties",
+      Assertions.assertEquals("/registry/v3/microservices/%s/instances/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_PROPERTIES);
     } else {
       String prefix = "/v4/" + Const.REGISTRY_API.DOMAIN_NAME + "/registry/";
-      Assert.assertEquals(prefix + "microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
-      Assert.assertEquals(prefix + "microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
-      Assert.assertEquals(prefix + "microservices/%s/instances",
+      Assertions.assertEquals(prefix + "microservices", Const.REGISTRY_API.MICROSERVICE_OPERATION_ALL);
+      Assertions.assertEquals(prefix + "microservices/%s", Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE);
+      Assertions.assertEquals(prefix + "microservices/%s/instances",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ALL);
-      Assert.assertEquals(prefix + "microservices/%s/instances/%s",
+      Assertions.assertEquals(prefix + "microservices/%s/instances/%s",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE);
-      Assert.assertEquals(prefix + "existence", Const.REGISTRY_API.MICROSERVICE_EXISTENCE);
-      Assert.assertEquals(prefix + "microservices/%s/schemas/%s",
+      Assertions.assertEquals(prefix + "existence", Const.REGISTRY_API.MICROSERVICE_EXISTENCE);
+      Assertions.assertEquals(prefix + "microservices/%s/schemas/%s",
           Const.REGISTRY_API.MICROSERVICE_SCHEMA);
-      Assert.assertEquals(prefix + "microservices/%s/instances/%s/heartbeat",
+      Assertions.assertEquals(prefix + "microservices/%s/instances/%s/heartbeat",
           Const.REGISTRY_API.MICROSERVICE_HEARTBEAT);
-      Assert.assertEquals(prefix + "microservices/%s/watcher", Const.REGISTRY_API.MICROSERVICE_WATCH);
-      Assert.assertEquals(prefix + "instances", Const.REGISTRY_API.MICROSERVICE_INSTANCES);
-      Assert.assertEquals(prefix + "microservices/%s/properties",
+      Assertions.assertEquals(prefix + "microservices/%s/watcher", Const.REGISTRY_API.MICROSERVICE_WATCH);
+      Assertions.assertEquals(prefix + "instances", Const.REGISTRY_API.MICROSERVICE_INSTANCES);
+      Assertions.assertEquals(prefix + "microservices/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_PROPERTIES);
-      Assert.assertEquals(prefix + "microservices/%s/instances/%s/properties",
+      Assertions.assertEquals(prefix + "microservices/%s/instances/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_INSTANCE_PROPERTIES);
     }
   }

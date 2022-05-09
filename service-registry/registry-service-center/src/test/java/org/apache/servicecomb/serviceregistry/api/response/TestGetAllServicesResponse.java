@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestGetAllServicesResponse {
@@ -46,14 +46,14 @@ public class TestGetAllServicesResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oGetAllServicesResponse.getServices());
+    Assertions.assertNull(oGetAllServicesResponse.getServices());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
     List<Microservice> list = oGetAllServicesResponse.getServices();
-    Assert.assertEquals(oMockMicroservice, list.get(0));
+    Assertions.assertEquals(oMockMicroservice, list.get(0));
   }
 
   private void initFields() {

@@ -17,52 +17,50 @@
 
 package org.apache.servicecomb.serviceregistry;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.regex.Matcher;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ServiceRegistryTest {
   @Test
   public void testNameFormat() {
     Matcher matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("abc");
-    assertTrue(matcher.matches());
+    Assertions.assertTrue(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("abc00");
-    assertTrue(matcher.matches());
+    Assertions.assertTrue(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ABC");
-    assertTrue(matcher.matches());
+    Assertions.assertTrue(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("A2BC");
-    assertTrue(matcher.matches());
+    Assertions.assertTrue(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("abc-ABC");
-    assertTrue(matcher.matches());
+    Assertions.assertTrue(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("abc_ABC");
-    assertTrue(matcher.matches());
+    Assertions.assertTrue(matcher.matches());
 
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("-abc");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("abc-");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("_abc");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("abc_");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("0abc");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ab.c");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ab?c");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ab#c");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ab&c");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ab*c");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
     matcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher("ab@c");
-    assertFalse(matcher.matches());
+    Assertions.assertFalse(matcher.matches());
   }
 }

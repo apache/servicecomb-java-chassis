@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.serviceregistry.api.registry;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestServiceCenterInfo {
   ServiceCenterInfo info = new ServiceCenterInfo();
@@ -27,21 +27,21 @@ public class TestServiceCenterInfo {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(info.getVersion());
-    Assert.assertNull(info.getBuildTag());
-    Assert.assertNull(info.getRunMode());
-    Assert.assertNull(info.getApiVersion());
-    Assert.assertNull(info.getConfig());
+    Assertions.assertNull(info.getVersion());
+    Assertions.assertNull(info.getBuildTag());
+    Assertions.assertNull(info.getRunMode());
+    Assertions.assertNull(info.getApiVersion());
+    Assertions.assertNull(info.getConfig());
   }
 
   @Test
   public void testInitializedValues() {
     initMicroservice(); //Initialize the Object
-    Assert.assertEquals("x.x.x", info.getVersion());
-    Assert.assertEquals("xxx", info.getBuildTag());
-    Assert.assertEquals("dev", info.getRunMode());
-    Assert.assertEquals("x.x.x", info.getApiVersion());
-    Assert.assertNotNull(info.getConfig());
+    Assertions.assertEquals("x.x.x", info.getVersion());
+    Assertions.assertEquals("xxx", info.getBuildTag());
+    Assertions.assertEquals("dev", info.getRunMode());
+    Assertions.assertEquals("x.x.x", info.getApiVersion());
+    Assertions.assertNotNull(info.getConfig());
   }
 
   private void initMicroservice() {

@@ -22,9 +22,9 @@ import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServiceCenterDefaultDeploymentProvider {
 
@@ -42,8 +42,8 @@ public class TestServiceCenterDefaultDeploymentProvider {
   public void testConfiguration() {
     ServiceCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(ServiceCenterDefaultDeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "http://127.0.0.1:30100");
-    Assert.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
+    Assertions.assertEquals(info.getAccessURL().get(0), "http://127.0.0.1:30100");
+    Assertions.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
   }
 
   @Test
@@ -51,7 +51,7 @@ public class TestServiceCenterDefaultDeploymentProvider {
     System.setProperty("servicecomb.service.registry.address", "https://localhost:30100");
     ServiceCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(ServiceCenterDefaultDeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "https://localhost:30100");
+    Assertions.assertEquals(info.getAccessURL().get(0), "https://localhost:30100");
     System.getProperties().remove("servicecomb.service.registry.address");
   }
 
@@ -61,9 +61,9 @@ public class TestServiceCenterDefaultDeploymentProvider {
     ServiceCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
 
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(ServiceCenterDefaultDeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().size(), 2);
-    Assert.assertEquals(info.getAccessURL().get(0), "http://127.0.0.1:30100");
-    Assert.assertEquals(info.getAccessURL().get(1), "http://127.0.0.2:30100");
+    Assertions.assertEquals(info.getAccessURL().size(), 2);
+    Assertions.assertEquals(info.getAccessURL().get(0), "http://127.0.0.1:30100");
+    Assertions.assertEquals(info.getAccessURL().get(1), "http://127.0.0.2:30100");
 
     System.getProperties().remove("servicecomb.service.registry.address");
   }

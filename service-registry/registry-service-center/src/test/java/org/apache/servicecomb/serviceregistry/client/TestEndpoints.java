@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestEndpoints {
   @Test
@@ -35,9 +35,9 @@ public class TestEndpoints {
     ep.setInstances(instances);
     ep.setVersion("v1");
 
-    Assert.assertEquals("appId", ep.getAppId());
-    Assert.assertEquals("sn", ep.getServiceName());
-    Assert.assertEquals(instances, ep.getInstances());
-    Assert.assertEquals("v1", ep.getVersion());
+    Assertions.assertEquals("appId", ep.getAppId());
+    Assertions.assertEquals("sn", ep.getServiceName());
+    Assertions.assertEquals(instances, ep.getInstances());
+    Assertions.assertEquals("v1", ep.getVersion());
   }
 }

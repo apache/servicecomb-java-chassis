@@ -28,6 +28,7 @@ import com.google.common.eventbus.EventBus;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServiceCenterTask {
   private final EventBus eventBus = new EventBus();
@@ -67,10 +68,10 @@ public class TestServiceCenterTask {
     };
     serviceCenterTask.init();
     eventBus.post(instanceEvent);
-    Assert.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
+    Assertions.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
 
     eventBus.post(heartBeatEvent);
-    Assert.assertFalse(serviceCenterTask.isRegisterInstanceSuccess());
+    Assertions.assertFalse(serviceCenterTask.isRegisterInstanceSuccess());
   }
 
   @Test
@@ -86,9 +87,9 @@ public class TestServiceCenterTask {
     };
     serviceCenterTask.init();
     eventBus.post(instanceEvent);
-    Assert.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
+    Assertions.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
 
     eventBus.post(heartBeatEvent);
-    Assert.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
+    Assertions.assertTrue(serviceCenterTask.isRegisterInstanceSuccess());
   }
 }

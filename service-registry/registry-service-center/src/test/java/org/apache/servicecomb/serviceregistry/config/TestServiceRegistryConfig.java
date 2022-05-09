@@ -24,9 +24,9 @@ import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.collect.ServiceCenterDefaultDeploymentProvider;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServiceRegistryConfig {
   @BeforeClass
@@ -44,28 +44,26 @@ public class TestServiceRegistryConfig {
   @Test
   public void testServiceRegistryConfig() {
     ServiceRegistryConfig oConfig = new ServiceRegistryConfigBuilder().build();
-    Assert.assertNull(oConfig.getAccessKey());
-    Assert.assertEquals(1000, oConfig.getConnectionTimeout());
-    Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
-    Assert.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
-    Assert.assertEquals("rest", oConfig.getTransport());
-    Assert.assertEquals(1, oConfig.getInstances());
-    Assert.assertTrue(oConfig.isSsl());
-    Assert.assertEquals(30000, oConfig.getRequestTimeout());
-    Assert.assertEquals(3000, oConfig.getHeartBeatRequestTimeout());
-    Assert.assertNotEquals(null, oConfig.getResendHeartBeatTimes());
-    Assert.assertFalse(oConfig.isPreferIpAddress());
-    Assert.assertTrue(oConfig.isWatch());
-    Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
-    Assert.assertNull(oConfig.getSecretKey());
+    Assertions.assertNull(oConfig.getAccessKey());
+    Assertions.assertEquals(1000, oConfig.getConnectionTimeout());
+    Assertions.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
+    Assertions.assertEquals("rest", oConfig.getTransport());
+    Assertions.assertEquals(1, oConfig.getInstances());
+    Assertions.assertTrue(oConfig.isSsl());
+    Assertions.assertEquals(30000, oConfig.getRequestTimeout());
+    Assertions.assertEquals(3000, oConfig.getHeartBeatRequestTimeout());
+    Assertions.assertFalse(oConfig.isPreferIpAddress());
+    Assertions.assertTrue(oConfig.isWatch());
+    Assertions.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
+    Assertions.assertNull(oConfig.getSecretKey());
     List<IpPort> ipPorts = oConfig.getIpPort();
-    Assert.assertEquals("127.0.0.1:80", ipPorts.get(0).toString());
-    Assert.assertEquals("127.0.0.1:443", ipPorts.get(1).toString());
-    Assert.assertFalse(oConfig.isProxyEnable());
-    Assert.assertEquals("127.0.0.1", oConfig.getProxyHost());
-    Assert.assertEquals(8080, oConfig.getProxyPort());
-    Assert.assertNull(oConfig.getProxyUsername());
-    Assert.assertNull(oConfig.getProxyPasswd());
-    Assert.assertEquals(60,  oConfig.getIdleWatchConnectionTimeout());
+    Assertions.assertEquals("127.0.0.1:80", ipPorts.get(0).toString());
+    Assertions.assertEquals("127.0.0.1:443", ipPorts.get(1).toString());
+    Assertions.assertFalse(oConfig.isProxyEnable());
+    Assertions.assertEquals("127.0.0.1", oConfig.getProxyHost());
+    Assertions.assertEquals(8080, oConfig.getProxyPort());
+    Assertions.assertNull(oConfig.getProxyUsername());
+    Assertions.assertNull(oConfig.getProxyPasswd());
+    Assertions.assertEquals(60,  oConfig.getIdleWatchConnectionTimeout());
   }
 }

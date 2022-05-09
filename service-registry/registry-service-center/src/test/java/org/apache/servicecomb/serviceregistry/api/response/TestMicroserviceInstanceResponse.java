@@ -18,8 +18,8 @@
 package org.apache.servicecomb.serviceregistry.api.response;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceInstanceResponse {
   @Test
@@ -27,6 +27,6 @@ public class TestMicroserviceInstanceResponse {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     MicroserviceInstanceResponse microserviceInstanceResponse = new MicroserviceInstanceResponse();
     microserviceInstanceResponse.setInstance(microserviceInstance);
-    Assert.assertNotNull(microserviceInstanceResponse.getInstance());
+    Assertions.assertNotNull(microserviceInstanceResponse.getInstance());
   }
 }

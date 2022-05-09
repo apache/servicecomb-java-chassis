@@ -19,9 +19,9 @@ package org.apache.servicecomb.serviceregistry.api.response;
 
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestGetServiceResponse {
@@ -43,13 +43,13 @@ public class TestGetServiceResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oGetServiceResponse.getService());
+    Assertions.assertNull(oGetServiceResponse.getService());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals(oMockMicroservice, oGetServiceResponse.getService());
+    Assertions.assertEquals(oMockMicroservice, oGetServiceResponse.getService());
   }
 
   private void initFields() {

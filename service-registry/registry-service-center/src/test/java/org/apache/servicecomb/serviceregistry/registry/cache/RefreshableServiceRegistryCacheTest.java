@@ -30,6 +30,7 @@ import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.M
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class RefreshableServiceRegistryCacheTest {
 
@@ -72,12 +73,12 @@ public class RefreshableServiceRegistryCacheTest {
     MicroserviceCache microserviceCache = serviceRegistryCache
         .findServiceCache(MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build());
 
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
-    Assert.assertEquals(0, microserviceCache.getInstances().size());
-    Assert.assertEquals(1, serviceRegistryCache.microserviceCache.size());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, microserviceCache.getStatus());
+    Assertions.assertEquals(0, microserviceCache.getInstances().size());
+    Assertions.assertEquals(1, serviceRegistryCache.microserviceCache.size());
     Entry<MicroserviceCacheKey, RefreshableMicroserviceCache> cacheEntry =
         serviceRegistryCache.microserviceCache.entrySet().iterator().next();
-    Assert.assertEquals(MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build(),
+    Assertions.assertEquals(MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build(),
         cacheEntry.getKey());
   }
 
@@ -115,12 +116,12 @@ public class RefreshableServiceRegistryCacheTest {
 
     serviceRegistryCache.refreshCache();
 
-    Assert.assertEquals(2, refreshedCaches.size());
-    Assert.assertSame(microserviceCache.getKey(), refreshedCaches.get(0).getKey());
-    Assert.assertSame(microserviceCache3.getKey(), refreshedCaches.get(1).getKey());
-    Assert.assertEquals(2, serviceRegistryCache.microserviceCache.size());
-    Assert.assertSame(microserviceCache, serviceRegistryCache.microserviceCache.get(microserviceCache.getKey()));
-    Assert.assertSame(microserviceCache2, serviceRegistryCache.microserviceCache.get(microserviceCache2.getKey()));
+    Assertions.assertEquals(2, refreshedCaches.size());
+    Assertions.assertSame(microserviceCache.getKey(), refreshedCaches.get(0).getKey());
+    Assertions.assertSame(microserviceCache3.getKey(), refreshedCaches.get(1).getKey());
+    Assertions.assertEquals(2, serviceRegistryCache.microserviceCache.size());
+    Assertions.assertSame(microserviceCache, serviceRegistryCache.microserviceCache.get(microserviceCache.getKey()));
+    Assertions.assertSame(microserviceCache2, serviceRegistryCache.microserviceCache.get(microserviceCache2.getKey()));
   }
 
   @Test
@@ -130,10 +131,10 @@ public class RefreshableServiceRegistryCacheTest {
     MicroserviceCacheKey cacheKey = MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build();
     MicroserviceCache serviceCache = serviceRegistryCache.findServiceCache(cacheKey);
 
-    Assert.assertSame(cacheKey, serviceCache.getKey());
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, serviceCache.getStatus());
-    Assert.assertEquals(1, serviceRegistryCache.microserviceCache.size());
-    Assert.assertSame(serviceCache, serviceRegistryCache.microserviceCache.get(cacheKey));
+    Assertions.assertSame(cacheKey, serviceCache.getKey());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, serviceCache.getStatus());
+    Assertions.assertEquals(1, serviceRegistryCache.microserviceCache.size());
+    Assertions.assertSame(serviceCache, serviceRegistryCache.microserviceCache.get(cacheKey));
   }
 
   @Test
@@ -143,10 +144,10 @@ public class RefreshableServiceRegistryCacheTest {
     MicroserviceCacheKey cacheKey = MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build();
     MicroserviceCache serviceCache = serviceRegistryCache.findServiceCache(cacheKey);
 
-    Assert.assertSame(cacheKey, serviceCache.getKey());
-    Assert.assertEquals(MicroserviceCacheStatus.CLIENT_ERROR, serviceCache.getStatus());
-    Assert.assertEquals(1, serviceRegistryCache.microserviceCache.size());
-    Assert.assertSame(serviceCache, serviceRegistryCache.microserviceCache.get(cacheKey));
+    Assertions.assertSame(cacheKey, serviceCache.getKey());
+    Assertions.assertEquals(MicroserviceCacheStatus.CLIENT_ERROR, serviceCache.getStatus());
+    Assertions.assertEquals(1, serviceRegistryCache.microserviceCache.size());
+    Assertions.assertSame(serviceCache, serviceRegistryCache.microserviceCache.get(cacheKey));
   }
 
   @Test
@@ -156,9 +157,9 @@ public class RefreshableServiceRegistryCacheTest {
     MicroserviceCacheKey cacheKey = MicroserviceCacheKey.builder().serviceName("svc").appId("app").env("env").build();
     MicroserviceCache serviceCache = serviceRegistryCache.findServiceCache(cacheKey);
 
-    Assert.assertSame(cacheKey, serviceCache.getKey());
-    Assert.assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, serviceCache.getStatus());
-    Assert.assertTrue(serviceRegistryCache.microserviceCache.isEmpty());
+    Assertions.assertSame(cacheKey, serviceCache.getKey());
+    Assertions.assertEquals(MicroserviceCacheStatus.SERVICE_NOT_FOUND, serviceCache.getStatus());
+    Assertions.assertTrue(serviceRegistryCache.microserviceCache.isEmpty());
   }
 
   private Holder<MicroserviceCacheStatus> mockServiceRegistryHolder() {

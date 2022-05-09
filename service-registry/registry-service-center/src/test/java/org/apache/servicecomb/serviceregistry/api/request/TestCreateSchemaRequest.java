@@ -16,17 +16,17 @@
  */
 package org.apache.servicecomb.serviceregistry.api.request;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCreateSchemaRequest {
-  @Test
-  public void testProperties() {
-    CreateSchemaRequest request = new CreateSchemaRequest();
+    @Test
+    public void testProperties() {
+        CreateSchemaRequest request = new CreateSchemaRequest();
 
-    Assert.assertEquals(null, request.getSchema());
+        Assertions.assertNull(request.getSchema());
 
-    request.setSchema("schema");
-    Assert.assertEquals("schema", request.getSchema());
-  }
+        request.setSchema("schema");
+        Assertions.assertEquals("schema", request.getSchema());
+    }
 }

@@ -27,8 +27,8 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestPropertiesLoader {
   private static final MicroserviceFactory microserviceFactory = new MicroserviceFactory();
@@ -41,7 +41,7 @@ public class TestPropertiesLoader {
     configuration.clearProperty(BootStrapProperties.OLD_CONFIG_SERVICE_PROPERTIES);
     Microservice microservice = microserviceFactory.create(configuration);
     // microservice.yaml has 3 properties
-    Assert.assertEquals(3, microservice.getProperties().size());
+    Assertions.assertEquals(3, microservice.getProperties().size());
   }
 
   @Test
@@ -52,10 +52,10 @@ public class TestPropertiesLoader {
 
     try {
       microserviceFactory.create(configuration);
-      Assert.fail("Must throw exception");
+      Assertions.fail("Must throw exception");
     } catch (Error e) {
-      Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
-      Assert.assertEquals("invalidClass", e.getCause().getMessage());
+      Assertions.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
+      Assertions.assertEquals("invalidClass", e.getCause().getMessage());
     }
   }
 
@@ -67,9 +67,9 @@ public class TestPropertiesLoader {
 
     try {
       microserviceFactory.create(configuration);
-      Assert.fail("Must throw exception");
+      Assertions.fail("Must throw exception");
     } catch (Error e) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           "Define propertyExtendedClass java.lang.String in yaml, but not implement the interface PropertyExtended.",
           e.getMessage());
     }
@@ -82,7 +82,7 @@ public class TestPropertiesLoader {
     expectedMap.put("key1", "value1");
     expectedMap.put("key2", "value2");
     expectedMap.put("ek0", "ev0");
-    Assert.assertEquals(expectedMap, microservice.getProperties());
+    Assertions.assertEquals(expectedMap, microservice.getProperties());
   }
 
   @Test
@@ -92,6 +92,6 @@ public class TestPropertiesLoader {
     Map<String, String> expectedMap = new HashMap<>();
     expectedMap.put("key0", "value0");
     expectedMap.put("ek0", "ev0");
-    Assert.assertEquals(expectedMap, instance.getProperties());
+    Assertions.assertEquals(expectedMap, instance.getProperties());
   }
 }

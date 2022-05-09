@@ -27,9 +27,9 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.cache.InstanceCache;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInstanceCache {
   private static InstanceCache instanceCache = null;
@@ -51,29 +51,29 @@ public class TestInstanceCache {
 
   @Test
   public void testGetMethod() {
-    Assert.assertEquals("testAppID", instanceCache.getAppId());
-    Assert.assertEquals("testMicroServiceName", instanceCache.getMicroserviceName());
-    Assert.assertEquals("1.0", instanceCache.getMicroserviceVersionRule());
-    Assert.assertNotNull(instanceCache.getInstanceMap());
+    Assertions.assertEquals("testAppID", instanceCache.getAppId());
+    Assertions.assertEquals("testMicroServiceName", instanceCache.getMicroserviceName());
+    Assertions.assertEquals("1.0", instanceCache.getMicroserviceVersionRule());
+    Assertions.assertNotNull(instanceCache.getInstanceMap());
   }
 
   @Test
   public void testGetOrCreateTransportMap() {
     Map<String, List<CacheEndpoint>> transportMap = instanceCache.getOrCreateTransportMap();
-    Assert.assertEquals(1, transportMap.size());
+    Assertions.assertEquals(1, transportMap.size());
   }
 
   @Test
   public void testCacheChanged() {
     InstanceCache newCache =
         new InstanceCache("testAppID", "testMicroServiceName", "1.0", instanceCache.getInstanceMap());
-    Assert.assertTrue(instanceCache.cacheChanged(newCache));
+    Assertions.assertTrue(instanceCache.cacheChanged(newCache));
   }
 
   @Test
   public void getVersionedCache() {
     VersionedCache versionedCache = instanceCache.getVersionedCache();
-    Assert.assertEquals("1.0", versionedCache.name());
-    Assert.assertSame(instMap, versionedCache.data());
+    Assertions.assertEquals("1.0", versionedCache.name());
+    Assertions.assertSame(instMap, versionedCache.data());
   }
 }

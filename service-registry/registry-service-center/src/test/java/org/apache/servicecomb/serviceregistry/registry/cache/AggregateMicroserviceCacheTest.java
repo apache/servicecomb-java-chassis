@@ -28,8 +28,8 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.registry.EmptyMockServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AggregateMicroserviceCacheTest {
 
@@ -70,41 +70,41 @@ public class AggregateMicroserviceCacheTest {
 
     // Test initialization
     // key
-    Assert.assertSame(microserviceCacheKey, compositeMicroserviceCache.getKey());
+    Assertions.assertSame(microserviceCacheKey, compositeMicroserviceCache.getKey());
     // status
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, compositeMicroserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, compositeMicroserviceCache.getStatus());
     // revision
-    Assert.assertEquals("1", compositeMicroserviceCache.getRevisionId());
-    Assert.assertEquals(1L, compositeMicroserviceCache.revisionCounter.get());
+    Assertions.assertEquals("1", compositeMicroserviceCache.getRevisionId());
+    Assertions.assertEquals(1L, compositeMicroserviceCache.revisionCounter.get());
     // MicroserviceCache map
-    Assert.assertEquals(2, compositeMicroserviceCache.caches.size());
-    Assert.assertSame(mockMicroserviceCache0, compositeMicroserviceCache.caches.get("s0"));
-    Assert.assertSame(mockMicroserviceCache2, compositeMicroserviceCache.caches.get("s2"));
+    Assertions.assertEquals(2, compositeMicroserviceCache.caches.size());
+    Assertions.assertSame(mockMicroserviceCache0, compositeMicroserviceCache.caches.get("s0"));
+    Assertions.assertSame(mockMicroserviceCache2, compositeMicroserviceCache.caches.get("s2"));
     // ServiceRegistry collection
-    Assert.assertEquals(serviceRegistries.size(), compositeMicroserviceCache.serviceRegistries.size());
+    Assertions.assertEquals(serviceRegistries.size(), compositeMicroserviceCache.serviceRegistries.size());
     Iterator<ServiceRegistry> serviceRegistryIterator = compositeMicroserviceCache.serviceRegistries.iterator();
-    Assert.assertSame(serviceRegistries.get(0), serviceRegistryIterator.next());
-    Assert.assertSame(serviceRegistries.get(1), serviceRegistryIterator.next());
-    Assert.assertSame(serviceRegistries.get(2), serviceRegistryIterator.next());
-    Assert.assertSame(serviceRegistries.get(3), serviceRegistryIterator.next());
+    Assertions.assertSame(serviceRegistries.get(0), serviceRegistryIterator.next());
+    Assertions.assertSame(serviceRegistries.get(1), serviceRegistryIterator.next());
+    Assertions.assertSame(serviceRegistries.get(2), serviceRegistryIterator.next());
+    Assertions.assertSame(serviceRegistries.get(3), serviceRegistryIterator.next());
     // cached instances
-    Assert.assertEquals(2, compositeMicroserviceCache.getInstances().size());
-    Assert.assertSame(mockMicroserviceCache2.instances.get(0), compositeMicroserviceCache.getInstances().get(0));
-    Assert.assertSame(mockMicroserviceCache2.instances.get(1), compositeMicroserviceCache.getInstances().get(1));
+    Assertions.assertEquals(2, compositeMicroserviceCache.getInstances().size());
+    Assertions.assertSame(mockMicroserviceCache2.instances.get(0), compositeMicroserviceCache.getInstances().get(0));
+    Assertions.assertSame(mockMicroserviceCache2.instances.get(1), compositeMicroserviceCache.getInstances().get(1));
 
     // Test refresh()
     mockMicroserviceCache0.instances = Collections.singletonList(new MicroserviceInstance());
     mockMicroserviceCache2.instances = Collections.singletonList(new MicroserviceInstance());
     compositeMicroserviceCache.refresh();
     // status
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, compositeMicroserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, compositeMicroserviceCache.getStatus());
     // revision
-    Assert.assertEquals("2", compositeMicroserviceCache.getRevisionId());
-    Assert.assertEquals(2L, compositeMicroserviceCache.revisionCounter.get());
+    Assertions.assertEquals("2", compositeMicroserviceCache.getRevisionId());
+    Assertions.assertEquals(2L, compositeMicroserviceCache.revisionCounter.get());
     // cached instances
-    Assert.assertEquals(2, compositeMicroserviceCache.getInstances().size());
-    Assert.assertSame(mockMicroserviceCache0.instances.get(0), compositeMicroserviceCache.getInstances().get(0));
-    Assert.assertSame(mockMicroserviceCache2.instances.get(0), compositeMicroserviceCache.getInstances().get(1));
+    Assertions.assertEquals(2, compositeMicroserviceCache.getInstances().size());
+    Assertions.assertSame(mockMicroserviceCache0.instances.get(0), compositeMicroserviceCache.getInstances().get(0));
+    Assertions.assertSame(mockMicroserviceCache2.instances.get(0), compositeMicroserviceCache.getInstances().get(1));
 
     // Test refresh()
     // microservice deleted and registered
@@ -112,16 +112,16 @@ public class AggregateMicroserviceCacheTest {
     mockMicroserviceCache3.status = MicroserviceCacheStatus.REFRESHED;
     compositeMicroserviceCache.refresh();
     // status
-    Assert.assertEquals(MicroserviceCacheStatus.REFRESHED, compositeMicroserviceCache.getStatus());
+    Assertions.assertEquals(MicroserviceCacheStatus.REFRESHED, compositeMicroserviceCache.getStatus());
     // revision
-    Assert.assertEquals("3", compositeMicroserviceCache.getRevisionId());
-    Assert.assertEquals(3L, compositeMicroserviceCache.revisionCounter.get());
+    Assertions.assertEquals("3", compositeMicroserviceCache.getRevisionId());
+    Assertions.assertEquals(3L, compositeMicroserviceCache.revisionCounter.get());
     // ServiceRegistries
-    Assert.assertNotNull(compositeMicroserviceCache.caches.get("s2"));
-    Assert.assertNotNull(compositeMicroserviceCache.caches.get("s3"));
+    Assertions.assertNotNull(compositeMicroserviceCache.caches.get("s2"));
+    Assertions.assertNotNull(compositeMicroserviceCache.caches.get("s3"));
     // cached instances
-    Assert.assertEquals(1, compositeMicroserviceCache.getInstances().size());
-    Assert.assertSame(mockMicroserviceCache2.instances.get(0), compositeMicroserviceCache.getInstances().get(0));
+    Assertions.assertEquals(1, compositeMicroserviceCache.getInstances().size());
+    Assertions.assertSame(mockMicroserviceCache2.instances.get(0), compositeMicroserviceCache.getInstances().get(0));
   }
 
   public static class MockServiceRegistry extends EmptyMockServiceRegistry {

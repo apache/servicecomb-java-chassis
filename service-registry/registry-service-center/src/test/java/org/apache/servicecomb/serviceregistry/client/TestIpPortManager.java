@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
@@ -35,7 +34,6 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +42,7 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestIpPortManager {
   @Mocked
@@ -84,22 +83,22 @@ public class TestIpPortManager {
     IpPort address1 = manager.getAvailableAddress();
 
     // test initial
-    Assert.assertEquals("127.0.0.1", address1.getHostOrIp());
-    Assert.assertTrue(address1.getPort() == 9980 || address1.getPort() == 9981);
+    Assertions.assertEquals("127.0.0.1", address1.getHostOrIp());
+    Assertions.assertTrue(address1.getPort() == 9980 || address1.getPort() == 9981);
 
     // test getAvailableAddress()
     IpPort address2 = manager.getAvailableAddress();
-    Assert.assertEquals("127.0.0.1", address2.getHostOrIp());
+    Assertions.assertEquals("127.0.0.1", address2.getHostOrIp());
     if (address1.getPort() == 9980) {
-      Assert.assertEquals(9981, address2.getPort());
+      Assertions.assertEquals(9981, address2.getPort());
     } else {
-      Assert.assertEquals(9980, address2.getPort());
+      Assertions.assertEquals(9980, address2.getPort());
     }
 
     // test getAvailableAddress() when reaching the end
     IpPort address3 = manager.getAvailableAddress();
-    Assert.assertEquals("127.0.0.1", address3.getHostOrIp());
-    Assert.assertEquals(address1.getPort(), address3.getPort());
+    Assertions.assertEquals("127.0.0.1", address3.getHostOrIp());
+    Assertions.assertEquals(address1.getPort(), address3.getPort());
 
     // mock endpoint list
     Map<String, List<CacheEndpoint>> addresses = new HashMap<>();
@@ -121,15 +120,15 @@ public class TestIpPortManager {
 
     // test getAvailableAddress() when auto discovery is disabled
     IpPort address4 = manager.getAvailableAddress();
-    Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
+    Assertions.assertEquals("127.0.0.1", address4.getHostOrIp());
     if (address1.getPort() == 9980) {
       address4 = manager.getAvailableAddress();
     }
-    Assert.assertEquals(9980, address4.getPort());
+    Assertions.assertEquals(9980, address4.getPort());
 
     IpPort address5 = manager.getAvailableAddress();
-    Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
-    Assert.assertEquals(9981, address5.getPort());
+    Assertions.assertEquals("127.0.0.1", address5.getHostOrIp());
+    Assertions.assertEquals(9981, address5.getPort());
 
     //mock RegistrationManager.INSTANCE
     String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
@@ -147,8 +146,8 @@ public class TestIpPortManager {
     manager.initAutoDiscovery();
     manager.setAutoDiscoveryInited(true);
     IpPort address6 = manager.getAvailableAddress();
-    Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
-    Assert.assertEquals(9982, address6.getPort());
+    Assertions.assertEquals("127.0.0.1", address6.getHostOrIp());
+    Assertions.assertEquals(9982, address6.getPort());
   }
 
   @Test

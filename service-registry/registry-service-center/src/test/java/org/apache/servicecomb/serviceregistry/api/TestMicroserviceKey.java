@@ -19,9 +19,9 @@ package org.apache.servicecomb.serviceregistry.api;
 
 import org.apache.servicecomb.registry.api.MicroserviceKey;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceKey {
 
@@ -39,21 +39,21 @@ public class TestMicroserviceKey {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oMicroserviceKey.getAppId());
-    Assert.assertNull(oMicroserviceKey.getTenant());
-    Assert.assertNull(oMicroserviceKey.getServiceName());
-    Assert.assertNull(oMicroserviceKey.getStage());
-    Assert.assertNull(oMicroserviceKey.getVersion());
+    Assertions.assertNull(oMicroserviceKey.getAppId());
+    Assertions.assertNull(oMicroserviceKey.getTenant());
+    Assertions.assertNull(oMicroserviceKey.getServiceName());
+    Assertions.assertNull(oMicroserviceKey.getStage());
+    Assertions.assertNull(oMicroserviceKey.getVersion());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals("1", oMicroserviceKey.getVersion());
-    Assert.assertEquals("testServiceName", oMicroserviceKey.getServiceName());
-    Assert.assertEquals("Test", oMicroserviceKey.getStage());
-    Assert.assertEquals("testTenantName", oMicroserviceKey.getTenant());
-    Assert.assertEquals(Const.REGISTRY_APP_ID, oMicroserviceKey.getAppId());
+    Assertions.assertEquals("1", oMicroserviceKey.getVersion());
+    Assertions.assertEquals("testServiceName", oMicroserviceKey.getServiceName());
+    Assertions.assertEquals("Test", oMicroserviceKey.getStage());
+    Assertions.assertEquals("testTenantName", oMicroserviceKey.getTenant());
+    Assertions.assertEquals(Const.REGISTRY_APP_ID, oMicroserviceKey.getAppId());
   }
 
   private void initFields() {

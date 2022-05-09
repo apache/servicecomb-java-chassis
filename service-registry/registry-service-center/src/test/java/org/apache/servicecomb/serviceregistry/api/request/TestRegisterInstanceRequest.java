@@ -19,9 +19,9 @@ package org.apache.servicecomb.serviceregistry.api.request;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestRegisterInstanceRequest {
@@ -44,13 +44,13 @@ public class TestRegisterInstanceRequest {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oRegisterInstanceRequest.getInstance());
+    Assertions.assertNull(oRegisterInstanceRequest.getInstance());
   }
 
   @Test
   public void testInitializedValues() {
     initRegisterInstanceRequest(); //Initialize the Object
-    Assert.assertEquals(oMockMicroserviceInstance, oRegisterInstanceRequest.getInstance());
+    Assertions.assertEquals(oMockMicroserviceInstance, oRegisterInstanceRequest.getInstance());
   }
 
   private void initRegisterInstanceRequest() {

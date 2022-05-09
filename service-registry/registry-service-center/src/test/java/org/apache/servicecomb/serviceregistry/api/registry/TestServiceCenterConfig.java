@@ -17,55 +17,55 @@
 
 package org.apache.servicecomb.serviceregistry.api.registry;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestServiceCenterConfig {
   ServiceCenterConfig config = new ServiceCenterConfig();
 
   @Test
   public void testDefaultValues() {
-    Assert.assertEquals(0, config.getMaxHeaderBytes());
-    Assert.assertEquals(0, config.getMaxBodyBytes());
-    Assert.assertNull(config.getReadHeaderTimeout());
-    Assert.assertNull(config.getReadTimeout());
-    Assert.assertNull(config.getIdleTimeout());
-    Assert.assertNull(config.getWriteTimeout());
-    Assert.assertNull(config.getLimitTTLUnit());
-    Assert.assertEquals(0, config.getLimitConnections());
-    Assert.assertNull(config.getLimitIPLookup());
-    Assert.assertNull(config.getSslEnabled());
-    Assert.assertNull(config.getSslMinVersion());
-    Assert.assertNull(config.getSslVerifyPeer());
-    Assert.assertNull(config.getSslCiphers());
-    Assert.assertNull(config.getAutoSyncInterval());
-    Assert.assertEquals(0, config.getCompactIndexDelta());
-    Assert.assertNull(config.getCompactInterval());
-    Assert.assertEquals(0, config.getLogRotateSize());
-    Assert.assertEquals(0, config.getLogBackupCount());
+    Assertions.assertEquals(0, config.getMaxHeaderBytes());
+    Assertions.assertEquals(0, config.getMaxBodyBytes());
+    Assertions.assertNull(config.getReadHeaderTimeout());
+    Assertions.assertNull(config.getReadTimeout());
+    Assertions.assertNull(config.getIdleTimeout());
+    Assertions.assertNull(config.getWriteTimeout());
+    Assertions.assertNull(config.getLimitTTLUnit());
+    Assertions.assertEquals(0, config.getLimitConnections());
+    Assertions.assertNull(config.getLimitIPLookup());
+    Assertions.assertNull(config.getSslEnabled());
+    Assertions.assertNull(config.getSslMinVersion());
+    Assertions.assertNull(config.getSslVerifyPeer());
+    Assertions.assertNull(config.getSslCiphers());
+    Assertions.assertNull(config.getAutoSyncInterval());
+    Assertions.assertEquals(0, config.getCompactIndexDelta());
+    Assertions.assertNull(config.getCompactInterval());
+    Assertions.assertEquals(0, config.getLogRotateSize());
+    Assertions.assertEquals(0, config.getLogBackupCount());
   }
 
   @Test
   public void testInitializedValues() {
     initMicroservice(); //Initialize the Object
-    Assert.assertEquals(10, config.getMaxHeaderBytes());
-    Assert.assertEquals(10, config.getMaxBodyBytes());
-    Assert.assertEquals("60s", config.getReadHeaderTimeout());
-    Assert.assertEquals("60s", config.getReadTimeout());
-    Assert.assertEquals("60s", config.getIdleTimeout());
-    Assert.assertEquals("60s", config.getWriteTimeout());
-    Assert.assertEquals("s", config.getLimitTTLUnit());
-    Assert.assertEquals(0, config.getLimitConnections());
-    Assert.assertEquals("xxx", config.getLimitIPLookup());
-    Assert.assertEquals("false", config.getSslEnabled());
-    Assert.assertEquals("xxx", config.getSslMinVersion());
-    Assert.assertEquals("true", config.getSslVerifyPeer());
-    Assert.assertEquals("xxx", config.getSslCiphers());
-    Assert.assertEquals("30s", config.getAutoSyncInterval());
-    Assert.assertEquals(100, config.getCompactIndexDelta());
-    Assert.assertEquals("100", config.getCompactInterval());
-    Assert.assertEquals(20, config.getLogRotateSize());
-    Assert.assertEquals(50, config.getLogBackupCount());
+    Assertions.assertEquals(10, config.getMaxHeaderBytes());
+    Assertions.assertEquals(10, config.getMaxBodyBytes());
+    Assertions.assertEquals("60s", config.getReadHeaderTimeout());
+    Assertions.assertEquals("60s", config.getReadTimeout());
+    Assertions.assertEquals("60s", config.getIdleTimeout());
+    Assertions.assertEquals("60s", config.getWriteTimeout());
+    Assertions.assertEquals("s", config.getLimitTTLUnit());
+    Assertions.assertEquals(0, config.getLimitConnections());
+    Assertions.assertEquals("xxx", config.getLimitIPLookup());
+    Assertions.assertEquals("false", config.getSslEnabled());
+    Assertions.assertEquals("xxx", config.getSslMinVersion());
+    Assertions.assertEquals("true", config.getSslVerifyPeer());
+    Assertions.assertEquals("xxx", config.getSslCiphers());
+    Assertions.assertEquals("30s", config.getAutoSyncInterval());
+    Assertions.assertEquals(100, config.getCompactIndexDelta());
+    Assertions.assertEquals("100", config.getCompactInterval());
+    Assertions.assertEquals(20, config.getLogRotateSize());
+    Assertions.assertEquals(50, config.getLogBackupCount());
   }
 
   private void initMicroservice() {

@@ -27,6 +27,7 @@ import org.junit.Test;
 import com.google.common.eventbus.EventBus;
 
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAbstractRegisterTask {
   private EventBus eventBus;
@@ -53,10 +54,10 @@ public class TestAbstractRegisterTask {
         new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
     ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.SUCCESS);
 
-    Assert.assertEquals(true, registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isRegistered());
     eventBus.post(heartbeatTask);
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(eventBus, registerTask.getEventBus());
+    Assertions.assertTrue(registerTask.isRegistered());
+    Assertions.assertEquals(eventBus, registerTask.getEventBus());
   }
 
   @Test
@@ -68,9 +69,9 @@ public class TestAbstractRegisterTask {
         new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
     ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
 
-    Assert.assertEquals(true, registerTask.isRegistered());
+    Assertions.assertEquals(true, registerTask.isRegistered());
     eventBus.post(heartbeatTask);
-    Assert.assertEquals(false, registerTask.isRegistered());
+    Assertions.assertEquals(false, registerTask.isRegistered());
   }
 
   @Test
@@ -86,8 +87,8 @@ public class TestAbstractRegisterTask {
         new MicroserviceInstanceHeartbeatTask(eventBus, srClient, otherMicroservice);
     ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
 
-    Assert.assertEquals(true, registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isRegistered());
     eventBus.post(heartbeatTask);
-    Assert.assertEquals(true, registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isRegistered());
   }
 }

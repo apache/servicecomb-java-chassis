@@ -18,16 +18,14 @@
 package org.apache.servicecomb.serviceregistry.registry;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
 
@@ -47,17 +45,17 @@ public class TestServiceRegistryFactory {
         ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, configuration);
     serviceRegistry.init();
     ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
-    Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
+    Assertions.assertTrue(client instanceof ServiceRegistryClientImpl);
 
     serviceRegistry = ServiceRegistryFactory.create(eventBus,
         serviceRegistryConfig, configuration);
-    Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
+    Assertions.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
 
     serviceRegistry = LocalServiceRegistryFactory.createLocal(eventBus, serviceRegistryConfig, configuration);
     serviceRegistry.init();
     client = serviceRegistry.getServiceRegistryClient();
-    Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
-    Assert.assertTrue(LocalServiceRegistryFactory.createLocal(eventBus,
+    Assertions.assertTrue(client instanceof LocalServiceRegistryClientImpl);
+    Assertions.assertTrue(LocalServiceRegistryFactory.createLocal(eventBus,
         serviceRegistryConfig, configuration) instanceof LocalServiceRegistry);
   }
 }

@@ -33,6 +33,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class TestInstanceCacheCheckerWithoutMock {
   public void check_appManager_empty() {
     InstanceCacheSummary instanceCacheSummary = checker.check();
 
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
   }
 
   @Test
@@ -84,10 +85,10 @@ public class TestInstanceCacheCheckerWithoutMock {
       appId = "notExist";
       DiscoveryManager.INSTANCE.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
       InstanceCacheSummary instanceCacheSummary = checker.check();
-      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+      Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
     } catch (Exception e) {
       LOGGER.error("", e);
-      Assert.fail();
+      Assertions.fail();
     }
   }
 
@@ -101,13 +102,13 @@ public class TestInstanceCacheCheckerWithoutMock {
 
     MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
-    Assert.assertEquals(microserviceName, microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
+    Assertions.assertEquals(microserviceName, microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
 
     InstanceCacheSummary instanceCacheSummary = checker.check();
 
     expectedSummary.setStatus(Status.NORMAL);
 
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    Assertions.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
   }
 
   private interface ThirdPartyServiceForUT {

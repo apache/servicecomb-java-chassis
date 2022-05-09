@@ -36,6 +36,7 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
 
 public class TestLocalServiceRegistry {
   private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
@@ -69,12 +70,12 @@ public class TestLocalServiceRegistry {
     serviceRegistry.init();
     RegistryUtils.init();
 
-    Assert.assertNull(serviceRegistry.getMicroserviceInstance().getInstanceId());
+    Assertions.assertNull(serviceRegistry.getMicroserviceInstance().getInstanceId());
     serviceRegistry.run();
-    Assert.assertNotNull(serviceRegistry.getMicroserviceInstance().getInstanceId());
+    Assertions.assertNotNull(serviceRegistry.getMicroserviceInstance().getInstanceId());
 
     serviceRegistry.destroy();
-    Assert.assertTrue(serviceRegistry.getServiceRegistryClient()
+    Assertions.assertTrue(serviceRegistry.getServiceRegistryClient()
         .getMicroserviceInstance("", serviceRegistry.getMicroservice().getServiceId())
         .isEmpty());
   }
@@ -93,23 +94,23 @@ public class TestLocalServiceRegistry {
       serviceRegistry.getServiceRegistryClient().updateInstanceProperties(microservice.getServiceId(),
           "notExist",
           properties);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid argument. microserviceId=" + microservice.getServiceId()
+      Assertions.assertEquals("Invalid argument. microserviceId=" + microservice.getServiceId()
               + ", microserviceInstanceId=notExist.",
           e.getMessage());
     }
 
     serviceRegistry.updateMicroserviceProperties(properties);
-    Assert.assertEquals(properties, microservice.getProperties());
+    Assertions.assertEquals(properties, microservice.getProperties());
     serviceRegistry.updateInstanceProperties(properties);
-    Assert.assertEquals(properties, microservice.getInstance().getProperties());
+    Assertions.assertEquals(properties, microservice.getInstance().getProperties());
 
     properties.put("k1", "v1");
     serviceRegistry.updateMicroserviceProperties(properties);
-    Assert.assertEquals(properties, microservice.getProperties());
+    Assertions.assertEquals(properties, microservice.getProperties());
     serviceRegistry.updateInstanceProperties(properties);
-    Assert.assertEquals(properties, microservice.getInstance().getProperties());
+    Assertions.assertEquals(properties, microservice.getInstance().getProperties());
   }
 
   @Test
@@ -122,21 +123,20 @@ public class TestLocalServiceRegistry {
 
     try {
       serviceRegistry.getServiceRegistryClient().isSchemaExist("notExist", "s1");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid serviceId, serviceId=notExist", e.getMessage());
+      Assertions.assertEquals("Invalid serviceId, serviceId=notExist", e.getMessage());
     }
     try {
       serviceRegistry.getServiceRegistryClient().getSchema("notExist", "s1");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Invalid serviceId, serviceId=notExist", e.getMessage());
+      Assertions.assertEquals("Invalid serviceId, serviceId=notExist", e.getMessage());
     }
 
-    Assert.assertEquals(true,
-        serviceRegistry.getServiceRegistryClient().isSchemaExist(microservice.getServiceId(), "s1"));
+    Assertions.assertTrue(serviceRegistry.getServiceRegistryClient().isSchemaExist(microservice.getServiceId(), "s1"));
     String content = serviceRegistry.getServiceRegistryClient().getSchema(microservice.getServiceId(), "s1");
-    Assert.assertEquals("s1-content", content);
+    Assertions.assertEquals("s1-content", content);
   }
 
   @Test
@@ -152,6 +152,6 @@ public class TestLocalServiceRegistry {
     String serviceId = serviceRegistry.getServiceRegistryClient().registerMicroservice(microservice);
     Microservice remoteMicroservice = serviceRegistry.getRemoteMicroservice(serviceId);
 
-    Assert.assertEquals(serviceId, remoteMicroservice.getServiceId());
+    Assertions.assertEquals(serviceId, remoteMicroservice.getServiceId());
   }
 }

@@ -23,9 +23,9 @@ import java.util.List;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestFindInstancesResponse {
@@ -49,13 +49,13 @@ public class TestFindInstancesResponse {
 
   @Test
   public void testDefaultValues() {
-    Assert.assertNull(oFindInstancesResponse.getInstances());
+    Assertions.assertNull(oFindInstancesResponse.getInstances());
   }
 
   @Test
   public void testInitializedValues() {
     initFields(); //Initialize the Object
-    Assert.assertEquals(1, oFindInstancesResponse.getInstances().size());
+    Assertions.assertEquals(1, oFindInstancesResponse.getInstances().size());
   }
 
   private void initFields() {

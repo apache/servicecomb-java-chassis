@@ -19,8 +19,8 @@ package org.apache.servicecomb.serviceregistry.auth;
 
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TokenCacheManagerTest {
   RBACBootStrapService rbacBootStrapService = new RBACBootStrapService();
@@ -28,13 +28,13 @@ public class TokenCacheManagerTest {
   @Test
   public void testCreateHeaders() {
     Cipher cipher = rbacBootStrapService.getCipher("testCipher");
-    Assert.assertSame(cipher.name(), "testCipher");
+    Assertions.assertSame(cipher.name(), "testCipher");
 
     RbacTokenRequest request = new RbacTokenRequest();
     request.setName("root");
-    Assert.assertEquals(request.getName(), "root");
+    Assertions.assertEquals(request.getName(), "root");
 
     request.setPassword(new String(cipher.decrypt("testtest".toCharArray())));
-    Assert.assertEquals(request.getPassword(), "test");
+    Assertions.assertEquals(request.getPassword(), "test");
   }
 }
