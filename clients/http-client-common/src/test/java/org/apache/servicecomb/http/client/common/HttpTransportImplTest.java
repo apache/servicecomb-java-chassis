@@ -30,8 +30,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class HttpTransportImplTest {
@@ -59,9 +59,9 @@ public class HttpTransportImplTest {
     HttpRequest httpRequest = new HttpRequest("111", null, null, HttpRequest.GET);
     HttpResponse actualResponse = httpTransport.get(httpRequest);
 
-    Assert.assertNotNull(actualResponse);
-    Assert.assertEquals(200, actualResponse.getStatusCode());
-    Assert.assertEquals("OK", actualResponse.getMessage());
-    Assert.assertEquals("Test", actualResponse.getContent());
+    Assertions.assertNotNull(actualResponse);
+    Assertions.assertEquals(200, actualResponse.getStatusCode());
+    Assertions.assertEquals("OK", actualResponse.getMessage());
+    Assertions.assertEquals("Test", actualResponse.getContent());
   }
 }

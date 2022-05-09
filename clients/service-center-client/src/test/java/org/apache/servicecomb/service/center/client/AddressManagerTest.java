@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 
 import com.google.common.eventbus.EventBus;
 
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class AddressManagerTest {
 
@@ -44,28 +44,28 @@ class AddressManagerTest {
     addresses.add("http://127.0.0.1:30103");
     addressManager1 = new AddressManager("project", addresses, new EventBus());
 
-    Assert.assertNotNull(addressManager1);
+    Assertions.assertNotNull(addressManager1);
 
     List<String> addresses = Deencapsulation.getField(addressManager1, "addresses");
-    Assert.assertEquals(1, addresses.size());
-    Assert.assertEquals("http://127.0.0.1:30103", addresses.get(0));
-    Assert.assertEquals("http://127.0.0.1:30103", addressManager1.address());
-    Assert.assertEquals("http://127.0.0.1:30103/v4/", addressManager1.getUrlPrefix("http://127.0.0.1:30103"));
+    Assertions.assertEquals(1, addresses.size());
+    Assertions.assertEquals("http://127.0.0.1:30103", addresses.get(0));
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103/v4/", addressManager1.getUrlPrefix("http://127.0.0.1:30103"));
   }
 
   @Test
   public void formatUrlTest() {
     addresses.add("http://127.0.0.1:30103");
     addressManager1 = new AddressManager("project", addresses, new EventBus());
-    Assert.assertNotNull(addressManager1);
+    Assertions.assertNotNull(addressManager1);
 
     String address = addressManager1.address();
-    Assert.assertEquals("http://127.0.0.1:30103", address);
+    Assertions.assertEquals("http://127.0.0.1:30103", address);
     String url = addressManager1.formatUrl("/test/", false, address);
-    Assert.assertEquals("http://127.0.0.1:30103/v4/project/test/", url);
+    Assertions.assertEquals("http://127.0.0.1:30103/v4/project/test/", url);
 
     url = addressManager1.formatUrl("/test/", true, address);
-    Assert.assertEquals("http://127.0.0.1:30103/test/", url);
+    Assertions.assertEquals("http://127.0.0.1:30103/test/", url);
   }
 
   @Test
@@ -82,9 +82,9 @@ class AddressManagerTest {
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 
     List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
-    Assert.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
+    Assertions.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
 
     List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
-    Assert.assertEquals("http://127.0.0.4:30100", availableRegion.get(0));
+    Assertions.assertEquals("http://127.0.0.4:30100", availableRegion.get(0));
   }
 }

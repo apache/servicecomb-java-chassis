@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.config.kie.client.model;
 
-import java.util.Map;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 class ConfigurationsRequestTest {
 
@@ -28,6 +28,6 @@ class ConfigurationsRequestTest {
   void getLastRawData() {
     ConfigurationsRequest configurationsRequest = new ConfigurationsRequest();
     Map<String, Object> lastRawData = configurationsRequest.getLastRawData();
-    Assert.assertEquals(lastRawData.size(), 0);
+    Assertions.assertEquals(lastRawData.size(), 0);
   }
 }
