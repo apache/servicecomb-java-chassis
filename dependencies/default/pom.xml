@@ -110,7 +110,6 @@
     <tec-zkclient.version>0.10</tec-zkclient.version>
     <tomakehurst.version>2.6.0</tomakehurst.version>
     <vertx.version>4.2.7</vertx.version>
-    <xstream.version>1.4.11.1</xstream.version>
     <zipkin.version>2.19.1</zipkin.version>
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
     <!-- Base dir of main -->
@@ -346,12 +345,6 @@
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
         <version>${okhttp3.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.thoughtworks.xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>${xstream.version}</version>
       </dependency>
 
       <dependency>
