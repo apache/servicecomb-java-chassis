@@ -18,8 +18,6 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.core.MediaType;
 
@@ -28,11 +26,13 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class ApiProcessorTest {
   @Api(tags = {"tag1", "tag2", "", "tag1"})
@@ -81,7 +81,7 @@ public class ApiProcessorTest {
     SwaggerOperations swaggerOperations = SwaggerOperations.generate(SwaggerTestTargetWithNoTag.class);
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("op");
 
-    assertNull(swaggerOperation.getOperation().getTags());
+    Assertions.assertNull(swaggerOperation.getOperation().getTags());
     MatcherAssert.assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
     MatcherAssert.assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
   }

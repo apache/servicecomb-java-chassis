@@ -33,9 +33,9 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
@@ -161,7 +161,7 @@ public class TestRestServerVerticle {
     } catch (Exception e) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -172,7 +172,7 @@ public class TestRestServerVerticle {
     } catch (Exception ex) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -185,7 +185,7 @@ public class TestRestServerVerticle {
     } catch (Exception ex) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -204,7 +204,7 @@ public class TestRestServerVerticle {
     CorsHandler corsHandler = new MockUp<CorsHandler>() {
       @Mock
       CorsHandler allowCredentials(boolean allow) {
-        Assert.assertFalse(allow);
+        Assertions.assertFalse(allow);
         counter.incrementAndGet();
         return null;
       }
@@ -225,7 +225,7 @@ public class TestRestServerVerticle {
 
       @Mock
       CorsHandler allowedMethod(HttpMethod method) {
-        Assert.assertTrue(methodSet.contains(method));
+        Assertions.assertTrue(methodSet.contains(method));
         counter.incrementAndGet();
         methodSet.remove(method);
         return null;
@@ -233,7 +233,7 @@ public class TestRestServerVerticle {
 
       @Mock
       CorsHandler maxAgeSeconds(int maxAgeSeconds) {
-        Assert.assertEquals(1, maxAgeSeconds);
+        Assertions.assertEquals(1, maxAgeSeconds);
         counter.incrementAndGet();
         return null;
       }
@@ -242,7 +242,7 @@ public class TestRestServerVerticle {
     new MockUp<RestServerVerticle>() {
       @Mock
       CorsHandler getCorsHandler(String corsAllowedOrigin) {
-        Assert.assertEquals("*", corsAllowedOrigin);
+        Assertions.assertEquals("*", corsAllowedOrigin);
         return corsHandler;
       }
     };
@@ -252,7 +252,7 @@ public class TestRestServerVerticle {
     RestServerVerticle server = new RestServerVerticle();
 
     Deencapsulation.invoke(server, "mountCorsHandler", router);
-    Assert.assertEquals(7, counter.get());
+    Assertions.assertEquals(7, counter.get());
   }
 
   @Test
@@ -279,7 +279,7 @@ public class TestRestServerVerticle {
     RestServerVerticle restServerVerticle = new RestServerVerticle();
 
     Deencapsulation.invoke(restServerVerticle, "mountGlobalRestFailureHandler", mainRouter);
-    Assert.assertNotNull(handlerHolder.value);
+    Assertions.assertNotNull(handlerHolder.value);
 
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse response = Mockito.mock(HttpServerResponse.class);

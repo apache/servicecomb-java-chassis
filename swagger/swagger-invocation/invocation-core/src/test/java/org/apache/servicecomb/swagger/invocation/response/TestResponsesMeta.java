@@ -17,7 +17,6 @@
 package org.apache.servicecomb.swagger.invocation.response;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -27,6 +26,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestResponsesMeta {
   class ResponseMetaImpl {
@@ -51,19 +51,19 @@ public class TestResponsesMeta {
     meta.init(swagger, operation);
 
     JavaType resp = meta.findResponseType(200);
-    Assert.assertEquals(Integer.class, resp.getRawClass());
+    Assertions.assertEquals(Integer.class, resp.getRawClass());
 
     resp = meta.findResponseType(201);
-    Assert.assertEquals(Integer.class, resp.getRawClass());
+    Assertions.assertEquals(Integer.class, resp.getRawClass());
 
     resp = meta.findResponseType(400);
-    Assert.assertEquals(String.class, resp.getRawClass());
+    Assertions.assertEquals(String.class, resp.getRawClass());
 
     resp = meta.findResponseType(401);
-    Assert.assertEquals(Long.class, resp.getRawClass());
+    Assertions.assertEquals(Long.class, resp.getRawClass());
 
     resp = meta.findResponseType(500);
     // changed to Object for new version to keep user defined error data not lose and can be parsed.
-    Assert.assertEquals(Object.class, resp.getRawClass());
+    Assertions.assertEquals(Object.class, resp.getRawClass());
   }
 }

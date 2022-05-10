@@ -35,6 +35,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestSpringmvcV2V1 {
@@ -54,9 +55,9 @@ public class TestSpringmvcV2V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -75,9 +76,9 @@ public class TestSpringmvcV2V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -96,11 +97,11 @@ public class TestSpringmvcV2V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("addBody");
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -117,9 +118,9 @@ public class TestSpringmvcV2V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -136,9 +137,9 @@ public class TestSpringmvcV2V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -155,6 +156,6 @@ public class TestSpringmvcV2V1 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertSame(result.get("addBody"), arguments.get("addBody"));
+    Assertions.assertSame(result.get("addBody"), arguments.get("addBody"));
   }
 }

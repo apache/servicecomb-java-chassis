@@ -26,12 +26,12 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestConsumerResponseMapperFactorys {
   interface ConsumerResponseForTest {
@@ -66,14 +66,14 @@ public class TestConsumerResponseMapperFactorys {
   public void should_mapper_to_normal_string() {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("normal");
     assertThat(operation.getResponseMapper()).isInstanceOf(DefaultConsumerResponseMapper.class);
-    Assert.assertEquals(result, operation.getResponseMapper().mapResponse(response));
+    Assertions.assertEquals(result, operation.getResponseMapper().mapResponse(response));
   }
 
   @Test
   public void should_mapper_to_completableFuture_element_string() {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("async");
     assertThat(operation.getResponseMapper()).isInstanceOf(DefaultConsumerResponseMapper.class);
-    Assert.assertEquals(result, operation.getResponseMapper().mapResponse(response));
+    Assertions.assertEquals(result, operation.getResponseMapper().mapResponse(response));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class TestConsumerResponseMapperFactorys {
     assertThat(operation.getResponseMapper().getClass().getName())
         .startsWith(CseResponseConsumerResponseMapperFactory.class.getName());
     Response scbResponse = (Response) operation.getResponseMapper().mapResponse(response);
-    Assert.assertEquals(result, scbResponse.getResult());
+    Assertions.assertEquals(result, scbResponse.getResult());
   }
 
   @Test
@@ -91,6 +91,6 @@ public class TestConsumerResponseMapperFactorys {
     assertThat(operation.getResponseMapper()).isInstanceOf(OptionalConsumerResponseMapper.class);
     @SuppressWarnings("unchecked")
     Optional<String> optional = (Optional<String>) operation.getResponseMapper().mapResponse(response);
-    Assert.assertEquals(result, optional.get());
+    Assertions.assertEquals(result, optional.get());
   }
 }

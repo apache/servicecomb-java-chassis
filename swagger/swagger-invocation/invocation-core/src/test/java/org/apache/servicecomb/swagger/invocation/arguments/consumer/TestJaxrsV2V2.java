@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestJaxrsV2V2 {
@@ -53,10 +54,10 @@ public class TestJaxrsV2V2 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
-    Assert.assertEquals(3, (int) result.get("x-z"));
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(3, (int) result.get("x-z"));
   }
 
   @Test
@@ -75,10 +76,10 @@ public class TestJaxrsV2V2 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
-    Assert.assertEquals(3, (int) result.get("x-z"));
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(3, (int) result.get("x-z"));
   }
 
   @Test
@@ -97,12 +98,12 @@ public class TestJaxrsV2V2 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     result = (Map<String, Object>) result.get("addBody");
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
-    Assert.assertEquals(3, (int) result.get("x-z"));
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(3, (int) result.get("x-z"));
   }
 
   @Test
@@ -119,10 +120,10 @@ public class TestJaxrsV2V2 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
-    Assert.assertEquals(3, (int) result.get("x-z"));
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(3, (int) result.get("x-z"));
   }
 
   @Test
@@ -139,10 +140,10 @@ public class TestJaxrsV2V2 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
-    Assert.assertEquals(3, (int) result.get("x-z"));
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(3, (int) result.get("x-z"));
   }
 
   @Test
@@ -158,6 +159,6 @@ public class TestJaxrsV2V2 {
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
-    Assert.assertSame(result.get("addBody"), arguments.get("addBody"));
+    Assertions.assertSame(result.get("addBody"), arguments.get("addBody"));
   }
 }

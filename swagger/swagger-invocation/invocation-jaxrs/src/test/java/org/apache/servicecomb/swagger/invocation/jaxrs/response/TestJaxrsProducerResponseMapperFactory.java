@@ -22,18 +22,19 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestJaxrsProducerResponseMapperFactory {
   JaxrsProducerResponseMapperFactory factory = new JaxrsProducerResponseMapperFactory();
 
   @Test
   public void isMatch_true() {
-    Assert.assertTrue(factory.isMatch(Response.class));
+    Assertions.assertTrue(factory.isMatch(Response.class));
   }
 
   @Test
   public void isMatch_false() {
-    Assert.assertFalse(factory.isMatch(String.class));
+    Assertions.assertFalse(factory.isMatch(String.class));
   }
 
   @Test

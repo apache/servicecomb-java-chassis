@@ -19,9 +19,9 @@ package org.apache.servicecomb.transport.highway;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHighwayConfig {
   @BeforeClass
@@ -37,17 +37,17 @@ public class TestHighwayConfig {
   @Test
   public void getServerThreadCount() {
     ArchaiusUtils.setProperty("servicecomb.highway.server.verticle-count", 1);
-    Assert.assertEquals(HighwayConfig.getServerThreadCount(), 1);
+    Assertions.assertEquals(HighwayConfig.getServerThreadCount(), 1);
   }
 
   @Test
   public void getClientThreadCount() {
     ArchaiusUtils.setProperty("servicecomb.highway.client.verticle-count", 1);
-    Assert.assertEquals(HighwayConfig.getClientThreadCount(), 1);
+    Assertions.assertEquals(HighwayConfig.getClientThreadCount(), 1);
   }
 
   @Test
   public void getAddress() {
-    Assert.assertEquals(HighwayConfig.getAddress(), null);
+    Assertions.assertEquals(HighwayConfig.getAddress(), null);
   }
 }

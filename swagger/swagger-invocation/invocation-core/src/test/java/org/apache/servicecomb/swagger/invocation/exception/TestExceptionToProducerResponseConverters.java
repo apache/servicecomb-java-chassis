@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestExceptionToProducerResponseConverters {
   @Test
@@ -60,11 +61,11 @@ public class TestExceptionToProducerResponseConverters {
 
     ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
-    Assert.assertSame(r1,
+    Assertions.assertSame(r1,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new Throwable()));
-    Assert.assertSame(r2,
+    Assertions.assertSame(r2,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new Exception()));
-    Assert.assertSame(r2,
+    Assertions.assertSame(r2,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null,
             new IllegalStateException()));
   }
@@ -105,12 +106,12 @@ public class TestExceptionToProducerResponseConverters {
 
     ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
-    Assert.assertSame(r2,
+    Assertions.assertSame(r2,
         exceptionToProducerResponseConverters
             .convertExceptionToResponse(null, new InvocationException(Status.UNAUTHORIZED, "")));
-    Assert.assertSame(r1,
+    Assertions.assertSame(r1,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
-    Assert.assertSame(rDef,
+    Assertions.assertSame(rDef,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null,
             new IOException()));
   }
@@ -162,16 +163,16 @@ public class TestExceptionToProducerResponseConverters {
 
     ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
-    Assert.assertSame(rR0,
+    Assertions.assertSame(rR0,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException0_0()));
-    Assert.assertSame(rR0,
+    Assertions.assertSame(rR0,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException0()));
-    Assert.assertSame(rR1,
+    Assertions.assertSame(rR1,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException1()));
-    Assert.assertSame(rR,
+    Assertions.assertSame(rR,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
     // Actually, a Throwable exception converter will act like a default converter, as our implementation expects.
-    Assert.assertSame(rT,
+    Assertions.assertSame(rT,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new IOException()));
   }
 

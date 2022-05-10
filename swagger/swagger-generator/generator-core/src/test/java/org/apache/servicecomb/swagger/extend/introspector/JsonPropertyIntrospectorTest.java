@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.swagger.extend.introspector;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class JsonPropertyIntrospectorTest {
 
@@ -29,10 +27,10 @@ public class JsonPropertyIntrospectorTest {
   public void findEnumValue() {
     JsonPropertyIntrospector introspector = new JsonPropertyIntrospector();
 
-    assertEquals("AB", introspector.findEnumValue(TestEnum.AB));
-    assertEquals("C-D", introspector.findEnumValue(TestEnum.C_D));
-    assertEquals("E.F", introspector.findEnumValue(TestEnum.E_F));
-    assertEquals("HI", introspector.findEnumValue(TestEnum.HI));
+    Assertions.assertEquals("AB", introspector.findEnumValue(TestEnum.AB));
+    Assertions.assertEquals("C-D", introspector.findEnumValue(TestEnum.C_D));
+    Assertions.assertEquals("E.F", introspector.findEnumValue(TestEnum.E_F));
+    Assertions.assertEquals("HI", introspector.findEnumValue(TestEnum.HI));
   }
 
   public enum TestEnum {

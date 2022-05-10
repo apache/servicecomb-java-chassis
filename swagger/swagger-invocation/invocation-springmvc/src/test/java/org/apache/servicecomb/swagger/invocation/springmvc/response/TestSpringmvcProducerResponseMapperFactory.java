@@ -26,8 +26,8 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -48,18 +48,18 @@ public class TestSpringmvcProducerResponseMapperFactory {
   @Test
   public void isMatch_true() {
     Method method = ReflectUtils.findMethod(this.getClass(), "responseEntity");
-    Assert.assertTrue(factory.isMatch(method.getGenericReturnType()));
+    Assertions.assertTrue(factory.isMatch(method.getGenericReturnType()));
   }
 
   @Test
   public void isMatch_Parameterized_false() {
     Method method = ReflectUtils.findMethod(this.getClass(), "list");
-    Assert.assertFalse(factory.isMatch(method.getGenericReturnType()));
+    Assertions.assertFalse(factory.isMatch(method.getGenericReturnType()));
   }
 
   @Test
   public void isMatch_false() {
-    Assert.assertFalse(factory.isMatch(String.class));
+    Assertions.assertFalse(factory.isMatch(String.class));
   }
 
   @Test

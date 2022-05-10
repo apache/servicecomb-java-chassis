@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import static org.junit.Assert.assertTrue;
-
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.transport.common.MockUtil;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
@@ -36,14 +34,14 @@ import mockit.Mocked;
 
 public class TestHighwayVerticle {
   @Test
-  public void testHighwayVerticle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
-      @Mocked JsonObject json) {
-    HighwayServerVerticle highwayVerticle = new HighwayServerVerticle();
-    URIEndpointObject endpiontObject = new URIEndpointObject("highway://127.0.0.1:9090");
+  public void testHighwayVehicle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
+                                 @Mocked JsonObject json) {
+    HighwayServerVerticle highwayVehicle = new HighwayServerVerticle();
+    URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:9090");
     new Expectations() {
       {
         transport.parseAddress(anyString);
-        result = endpiontObject;
+        result = endpointObject;
       }
     };
 
@@ -58,16 +56,16 @@ public class TestHighwayVerticle {
       }
     };
 
-    highwayVerticle.init(vertx, context);
+    highwayVehicle.init(vertx, context);
     @SuppressWarnings("unchecked")
     Promise<Void> startPromise = Mockito.mock(Promise.class);
-    highwayVerticle.startListen(startPromise);
+    highwayVehicle.startListen(startPromise);
     MockUtil.getInstance().mockHighwayConfig();
     try {
-      highwayVerticle.startListen(startPromise);
-      assertTrue(true);
+      highwayVehicle.startListen(startPromise);
+      Assertions.assertTrue(true);
     } catch (Exception e) {
-      Assert.fail();
+      Assertions.fail();
     }
   }
 }

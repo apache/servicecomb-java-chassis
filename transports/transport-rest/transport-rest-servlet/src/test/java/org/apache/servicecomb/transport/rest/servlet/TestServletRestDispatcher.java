@@ -31,13 +31,13 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServletRestDispatcher {
   ServletRestDispatcher dispatcher = new ServletRestDispatcher();
@@ -75,6 +75,6 @@ public class TestServletRestDispatcher {
 
     dispatcher.service(request, response);
 
-    Assert.assertTrue(handled.value);
+    Assertions.assertTrue(handled.value);
   }
 }

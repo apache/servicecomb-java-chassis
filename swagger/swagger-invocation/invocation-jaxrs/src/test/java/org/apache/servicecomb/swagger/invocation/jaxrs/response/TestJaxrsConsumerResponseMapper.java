@@ -26,12 +26,12 @@ import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestJaxrsConsumerResponseMapper {
   @Path("/")
@@ -63,8 +63,8 @@ public class TestJaxrsConsumerResponseMapper {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("jaxrsResponse");
 
     Response jaxrsResponse = (Response) operation.getResponseMapper().mapResponse(response);
-    Assert.assertEquals(result, jaxrsResponse.getEntity());
-    Assert.assertTrue(jaxrsResponse.getHeaders().isEmpty());
+    Assertions.assertEquals(result, jaxrsResponse.getEntity());
+    Assertions.assertTrue(jaxrsResponse.getHeaders().isEmpty());
   }
 
   @Test
@@ -74,8 +74,8 @@ public class TestJaxrsConsumerResponseMapper {
     response.addHeader("h1", null);
 
     Response jaxrsResponse = (Response) operation.getResponseMapper().mapResponse(response);
-    Assert.assertEquals(result, jaxrsResponse.getEntity());
-    Assert.assertEquals(1, jaxrsResponse.getHeaders().size());
+    Assertions.assertEquals(result, jaxrsResponse.getEntity());
+    Assertions.assertEquals(1, jaxrsResponse.getHeaders().size());
     MatcherAssert.assertThat(jaxrsResponse.getHeaders().get("h"), Matchers.contains("v1", "v2"));
   }
 }

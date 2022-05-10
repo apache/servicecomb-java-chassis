@@ -42,7 +42,6 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,6 +67,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxRestDispatcher {
   @Mocked
@@ -112,7 +112,7 @@ public class TestVertxRestDispatcher {
 
   @Test
   public void getOrder() {
-    Assert.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
+    Assertions.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
   }
 
   @Test
@@ -134,8 +134,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertSame(e, this.throwable);
-    Assert.assertTrue(response.responseClosed);
+    Assertions.assertSame(e, this.throwable);
+    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -157,8 +157,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertSame(e, this.throwable);
-    Assert.assertTrue(response.responseClosed);
+    Assertions.assertSame(e, this.throwable);
+    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -181,8 +181,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertSame(edde, this.throwable);
-    Assert.assertTrue(response.responseClosed);
+    Assertions.assertSame(edde, this.throwable);
+    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -208,7 +208,7 @@ public class TestVertxRestDispatcher {
     MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
     MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\"}"));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -233,7 +233,7 @@ public class TestVertxRestDispatcher {
     MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
     MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + exceptionMessage + "\"}"));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -256,7 +256,7 @@ public class TestVertxRestDispatcher {
 
     MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
     MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -282,7 +282,7 @@ public class TestVertxRestDispatcher {
     MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\"}"));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -311,8 +311,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 
-    Assert.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
-    Assert.assertTrue(invoked);
+    Assertions.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
+    Assertions.assertTrue(invoked);
   }
 
   @Test
@@ -320,33 +320,33 @@ public class TestVertxRestDispatcher {
     VertxRestDispatcher vertxRestDispatcher = new VertxRestDispatcher();
     String message = "abcd";
     String bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"abcd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"abcd\"}", bodyString);
 
     message = "\"abcd\"";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"\\\"abcd\\\"\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"\\\"abcd\\\"\"}", bodyString);
 
     message = ".01ab\"!@#$%^&*()'\\cd";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\".01ab\\\"!@#$%^&*()'\\\\cd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\".01ab\\\"!@#$%^&*()'\\\\cd\"}", bodyString);
 
     message = new JsonObject().put("key", new JsonObject().put("k2", "value")).toString();
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"key\":{\"k2\":\"value\"}}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"key\":{\"k2\":\"value\"}}", bodyString);
 
     message = "ab\"23\n@!#cd";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"ab\\\"23\\n@!#cd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"ab\\\"23\\n@!#cd\"}", bodyString);
 
     message = "ab\"23\r\n@!#cd";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"ab\\\"23\\r\\n@!#cd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"ab\\\"23\\r\\n@!#cd\"}", bodyString);
   }
 }
 

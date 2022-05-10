@@ -27,9 +27,9 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
@@ -68,7 +68,7 @@ public class TestSpringmvcProducerResponseMapper {
         new ResponseEntity<>(arrResult, org.springframework.http.HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
     MatcherAssert.assertThat((List<String>) response.getResult(), Matchers.contains("a", "b"));
-    Assert.assertEquals(Status.OK, response.getStatus());
+    Assertions.assertEquals(Status.OK, response.getStatus());
   }
 
   @Test
@@ -76,8 +76,8 @@ public class TestSpringmvcProducerResponseMapper {
     ResponseEntity<String[]> responseEntity =
         new ResponseEntity<>(arrResult, org.springframework.http.HttpStatus.BAD_REQUEST);
     Response response = mapper.mapResponse(null, responseEntity);
-    Assert.assertSame(arrResult, response.getResult());
-    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus().getStatusCode());
+    Assertions.assertSame(arrResult, response.getResult());
+    Assertions.assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus().getStatusCode());
   }
 
   @Test

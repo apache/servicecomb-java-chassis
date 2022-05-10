@@ -20,8 +20,8 @@ package org.apache.servicecomb.transport.rest.servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestRestServletContextListener {
@@ -36,7 +36,7 @@ public class TestRestServletContextListener {
     } catch (Exception | Error e) {
       status = false;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -52,6 +52,6 @@ public class TestRestServletContextListener {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 }

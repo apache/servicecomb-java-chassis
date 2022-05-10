@@ -22,25 +22,25 @@ import java.util.List;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PartListToPartListConverterTest {
   PartListToPartListConverter converter = new PartListToPartListConverter();
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getTargetType().getTypeName());
+    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getTargetType().getTypeName());
   }
 
   @Test
   public void convert() {
     List<Part> parts = Arrays.asList(new FilePart("name", "file"));
-    Assert.assertSame(parts, converter.convert(parts));
+    Assertions.assertSame(parts, converter.convert(parts));
   }
 }

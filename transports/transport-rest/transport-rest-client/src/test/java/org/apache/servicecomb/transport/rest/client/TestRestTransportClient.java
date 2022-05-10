@@ -22,9 +22,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestRestTransportClient {
@@ -50,7 +50,7 @@ public class TestRestTransportClient {
 
   @Test
   public void testGetInstance() {
-    Assert.assertNotNull(instance);
+    Assertions.assertNotNull(instance);
   }
 
 
@@ -64,6 +64,6 @@ public class TestRestTransportClient {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 }

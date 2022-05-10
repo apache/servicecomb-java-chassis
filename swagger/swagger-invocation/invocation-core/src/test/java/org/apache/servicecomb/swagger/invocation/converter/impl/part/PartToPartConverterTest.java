@@ -19,25 +19,25 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class PartToPartConverterTest {
   PartToPartConverter converter = new PartToPartConverter();
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(Part.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test
   public void convert() {
     Part part = new FilePart("name", "file");
-    Assert.assertSame(part, converter.convert(part));
+    Assertions.assertSame(part, converter.convert(part));
   }
 }

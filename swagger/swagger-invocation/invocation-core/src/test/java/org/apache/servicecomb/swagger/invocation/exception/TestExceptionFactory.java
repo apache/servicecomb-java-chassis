@@ -19,8 +19,8 @@ package org.apache.servicecomb.swagger.invocation.exception;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestExceptionFactory {
   @Test
@@ -28,7 +28,7 @@ public class TestExceptionFactory {
     Error error = new Error("test");
     Response response = ExceptionFactory.convertExceptionToResponse(null, error);
 
-    Assert.assertSame(Status.OK, response.getStatus());
-    Assert.assertEquals("response from error: test", response.getResult());
+    Assertions.assertSame(Status.OK, response.getStatus());
+    Assertions.assertEquals("response from error: test", response.getResult());
   }
 }

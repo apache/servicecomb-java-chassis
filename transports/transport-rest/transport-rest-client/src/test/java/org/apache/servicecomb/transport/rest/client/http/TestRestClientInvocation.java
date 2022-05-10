@@ -51,10 +51,10 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -171,13 +171,13 @@ public class TestRestClientInvocation {
     when(request.send()).thenReturn(Future.succeededFuture(mock(HttpClientResponse.class)));
     restClientInvocation.invoke(invocation, asyncResp);
 
-    Assert.assertSame(resp, response);
+    Assertions.assertSame(resp, response);
     MatcherAssert.assertThat(headers.names(),
         Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
             org.apache.servicecomb.core.Const.CSE_CONTEXT));
-    Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
-    Assert.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assertions.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
+    Assertions.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
   }
 
   @Test
@@ -191,9 +191,9 @@ public class TestRestClientInvocation {
 
     restClientInvocation.invoke(invocation, asyncResp);
 
-    Assert.assertSame(resp, response);
+    Assertions.assertSame(resp, response);
     MatcherAssert.assertThat(headers.names(), Matchers.empty());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
   }
 
   @Test
@@ -208,13 +208,13 @@ public class TestRestClientInvocation {
 
     restClientInvocation.invoke(invocation, asyncResp);
 
-    Assert.assertSame(resp, response);
+    Assertions.assertSame(resp, response);
     MatcherAssert.assertThat(headers.names(),
         Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
             org.apache.servicecomb.core.Const.CSE_CONTEXT));
-    Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
-    Assert.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assertions.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
+    Assertions.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
     operationConfig.setClientRequestHeaderFilterEnabled(true);
   }
 
@@ -225,8 +225,8 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     MatcherAssert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
 
   @Test
@@ -240,8 +240,8 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     MatcherAssert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(t));
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
 
   @Test
@@ -251,7 +251,7 @@ public class TestRestClientInvocation {
 
     restClientInvocation.setCseContext();
 
-    Assert.assertEquals("x-cse-context={\"k\":\"v\"}\n", headers.toString());
+    Assertions.assertEquals("x-cse-context={\"k\":\"v\"}\n", headers.toString());
   }
 
   @Test
@@ -268,7 +268,7 @@ public class TestRestClientInvocation {
 
     restClientInvocation.setCseContext();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "Failed to encode and set cseContext, message=cause:RuntimeExceptionWithoutStackTrace,message:null.",
         logCollector.getEvents().get(0).getMessage());
     logCollector.teardown();
@@ -294,7 +294,7 @@ public class TestRestClientInvocation {
     restClientInvocation.handleResponse(httpClientResponse);
     bodyHandler.handle(buf);
 
-    Assert.assertSame(buf, response.getResult());
+    Assertions.assertSame(buf, response.getResult());
   }
 
   @Test
@@ -321,10 +321,10 @@ public class TestRestClientInvocation {
 
     restClientInvocation.processResponseBody(null);
 
-    Assert.assertSame(resp, response);
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
+    Assertions.assertSame(resp, response);
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
   }
 
   @SuppressWarnings("unchecked")
@@ -344,10 +344,10 @@ public class TestRestClientInvocation {
     restClientInvocation.processResponseBody(null);
 
     MatcherAssert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 
   @Test
@@ -357,7 +357,7 @@ public class TestRestClientInvocation {
     when(urlPathBuilder.createRequestPath(any())).thenReturn("/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
-    Assert.assertEquals("/path", path);
+    Assertions.assertEquals("/path", path);
   }
 
   @Test
@@ -366,7 +366,7 @@ public class TestRestClientInvocation {
     when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn(null);
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
-    Assert.assertEquals("/client/path", path);
+    Assertions.assertEquals("/client/path", path);
   }
 
   @Test
@@ -376,7 +376,7 @@ public class TestRestClientInvocation {
     when(urlPathBuilder.createRequestPath(any())).thenReturn("/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
-    Assert.assertEquals("/prefix/path", path);
+    Assertions.assertEquals("/prefix/path", path);
   }
 
   @Test
@@ -385,7 +385,7 @@ public class TestRestClientInvocation {
     handlerContext.put(RestConst.REST_CLIENT_REQUEST_PATH, "/client/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
-    Assert.assertEquals("/prefix/client/path", path);
+    Assertions.assertEquals("/prefix/client/path", path);
   }
 
   @Test
@@ -394,6 +394,6 @@ public class TestRestClientInvocation {
     handlerContext.put(RestConst.REST_CLIENT_REQUEST_PATH, "/prefix/client/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
-    Assert.assertEquals("/prefix/client/path", path);
+    Assertions.assertEquals("/prefix/client/path", path);
   }
 }

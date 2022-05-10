@@ -27,6 +27,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddWithContextV1;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestPojo {
   static Map<String, Object> addBody = new HashMap<>();
@@ -47,9 +48,9 @@ public class TestPojo {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -63,8 +64,8 @@ public class TestPojo {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
-    Assert.assertSame(addBody, result.get("addBody"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertSame(addBody, result.get("addBody"));
   }
 
   @Test
@@ -78,9 +79,9 @@ public class TestPojo {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(3, result.size());
-    Assert.assertSame(invocation, result.get("context"));
-    Assert.assertEquals(1, result.get("x"));
-    Assert.assertEquals(2, result.get("y"));
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertSame(invocation, result.get("context"));
+    Assertions.assertEquals(1, result.get("x"));
+    Assertions.assertEquals(2, result.get("y"));
   }
 }

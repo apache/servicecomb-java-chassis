@@ -24,20 +24,20 @@ import javax.servlet.http.Part;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestInputStreamToPartConverter {
   InputStreamToPartConverter converter = new InputStreamToPartConverter();
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(InputStream.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(InputStream.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test

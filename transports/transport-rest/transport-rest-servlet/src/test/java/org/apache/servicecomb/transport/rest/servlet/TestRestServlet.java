@@ -27,13 +27,13 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestServlet {
   private RestServlet restservlet = null;
@@ -57,7 +57,7 @@ public class TestRestServlet {
   @Test
   public void testInit() throws ServletException {
     restservlet.init();
-    Assert.assertTrue(true);
+    Assertions.assertTrue(true);
   }
 
   // useless, but for coverage
@@ -73,6 +73,6 @@ public class TestRestServlet {
 
     Deencapsulation.setField(restservlet, "servletRestServer", servletRestServer);
     restservlet.service(null, null);
-    Assert.assertTrue(holder.value);
+    Assertions.assertTrue(holder.value);
   }
 }

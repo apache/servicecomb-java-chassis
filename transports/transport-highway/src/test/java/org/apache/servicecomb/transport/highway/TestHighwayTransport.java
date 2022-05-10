@@ -27,9 +27,9 @@ import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class TestHighwayTransport {
 
   @Test
   public void testGetInstance() {
-    Assert.assertNotNull(transport);
+    Assertions.assertNotNull(transport);
   }
 
   @Test
@@ -68,7 +68,7 @@ public class TestHighwayTransport {
       status = false;
     }
 
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -85,14 +85,14 @@ public class TestHighwayTransport {
       }
     };
     transport.send(invocation, asyncResp);
-    Assert.assertTrue(sended.value);
+    Assertions.assertTrue(sended.value);
   }
 
   @Test
   public void testHighway() {
     Invocation invocation = Mockito.mock(Invocation.class);
     commonHighwayMock(invocation);
-    Assert.assertEquals("highway", transport.getName());
+    Assertions.assertEquals("highway", transport.getName());
   }
 
   private void commonHighwayMock(Invocation invocation) {

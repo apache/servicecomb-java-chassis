@@ -27,6 +27,7 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestResponse {
   Response response;
@@ -41,89 +42,89 @@ public class TestResponse {
   @Test
   public void testAr() {
     ar.success(Status.ACCEPTED, 1);
-    Assert.assertEquals(true, response.isSucceed());
-    Assert.assertEquals(false, response.isFailed());
-    Assert.assertEquals(1, (int) response.getResult());
-    Assert.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatusCode());
-    Assert.assertEquals(Status.ACCEPTED.getReasonPhrase(), response.getReasonPhrase());
-    Assert.assertEquals(Status.ACCEPTED, response.getStatus());
+    Assertions.assertTrue(response.isSucceed());
+    Assertions.assertFalse(response.isFailed());
+    Assertions.assertEquals(1, (int) response.getResult());
+    Assertions.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatusCode());
+    Assertions.assertEquals(Status.ACCEPTED.getReasonPhrase(), response.getReasonPhrase());
+    Assertions.assertEquals(Status.ACCEPTED, response.getStatus());
 
     ar.success(2);
-    Assert.assertEquals(2, (int) response.getResult());
-    Assert.assertEquals(Status.OK.getStatusCode(), response.getStatusCode());
+    Assertions.assertEquals(2, (int) response.getResult());
+    Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatusCode());
 
     Response r = Response.succResp(3);
     ar.complete(r);
-    Assert.assertEquals(r, response);
+    Assertions.assertEquals(r, response);
 
     ar.consumerFail(new RuntimeExceptionWithoutStackTrace("abc"));
     CommonExceptionData data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Unexpected consumer error, please check logs for details", data.getMessage());
-    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
+    Assertions.assertEquals("Unexpected consumer error, please check logs for details", data.getMessage());
+    Assertions.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
 
     ar.fail(InvocationType.CONSUMER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Unexpected consumer error, please check logs for details", data.getMessage());
-    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
+    Assertions.assertEquals("Unexpected consumer error, please check logs for details", data.getMessage());
+    Assertions.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
 
     InvocationException consumerException = new InvocationException(300, "abc", "def");
     ar.consumerFail(consumerException);
-    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-    Assert.assertEquals(300, response.getStatusCode());
+    Assertions.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assertions.assertEquals(300, response.getStatusCode());
 
     ar.fail(InvocationType.CONSUMER, consumerException);
-    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-    Assert.assertEquals(300, response.getStatusCode());
+    Assertions.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assertions.assertEquals(300, response.getStatusCode());
 
     ar.producerFail(new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
-    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
+    Assertions.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
+    Assertions.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
 
     ar.fail(InvocationType.PRODUCER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
-    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
+    Assertions.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
+    Assertions.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
 
     InvocationException producerException = new InvocationException(500, "abc", "def");
     ar.producerFail(producerException);
-    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-    Assert.assertEquals(500, response.getStatusCode());
+    Assertions.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assertions.assertEquals(500, response.getStatusCode());
 
     ar.fail(InvocationType.PRODUCER, producerException);
-    Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
-    Assert.assertEquals(500, response.getStatusCode());
+    Assertions.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
+    Assertions.assertEquals(500, response.getStatusCode());
   }
 
   @Test
   public void test() {
     Response r = Response.create(200, "200", 2);
-    Assert.assertEquals(200, r.getStatusCode());
-    Assert.assertEquals(2, (int) r.getResult());
+    Assertions.assertEquals(200, r.getStatusCode());
+    Assertions.assertEquals(2, (int) r.getResult());
     Response r1 = r.build();
-    Assert.assertEquals(r, r1);
+    Assertions.assertEquals(r, r1);
 
     r = Response.create(300, "300", 3);
-    Assert.assertEquals(300, r.getStatusCode());
-    Assert.assertEquals("300", r.getReasonPhrase());
-    Assert.assertEquals(3, ((InvocationException) r.getResult()).getErrorData());
+    Assertions.assertEquals(300, r.getStatusCode());
+    Assertions.assertEquals("300", r.getReasonPhrase());
+    Assertions.assertEquals(3, ((InvocationException) r.getResult()).getErrorData());
 
     r = Response.createSuccess(Status.OK, 2);
-    Assert.assertEquals(200, r.getStatusCode());
-    Assert.assertEquals(2, (int) r.getResult());
+    Assertions.assertEquals(200, r.getStatusCode());
+    Assertions.assertEquals(2, (int) r.getResult());
 
     r = Response.success(2, Status.OK);
-    Assert.assertEquals(200, r.getStatusCode());
-    Assert.assertEquals(2, (int) r.getResult());
+    Assertions.assertEquals(200, r.getStatusCode());
+    Assertions.assertEquals(2, (int) r.getResult());
 
     r = Response.createFail(InvocationType.CONSUMER, "abc");
-    Assert.assertEquals("CommonExceptionData [message=abc]",
+    Assertions.assertEquals("CommonExceptionData [message=abc]",
         ((InvocationException) r.getResult()).getErrorData().toString());
-    Assert.assertEquals(490, r.getStatusCode());
+    Assertions.assertEquals(490, r.getStatusCode());
 
     r = Response.createFail(InvocationType.PRODUCER, "def");
-    Assert.assertEquals("CommonExceptionData [message=def]",
+    Assertions.assertEquals("CommonExceptionData [message=def]",
         ((InvocationException) r.getResult()).getErrorData().toString());
-    Assert.assertEquals(590, r.getStatusCode());
+    Assertions.assertEquals(590, r.getStatusCode());
   }
 }

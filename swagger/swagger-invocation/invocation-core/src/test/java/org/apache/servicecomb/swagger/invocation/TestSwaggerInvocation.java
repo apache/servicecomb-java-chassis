@@ -18,8 +18,8 @@ package org.apache.servicecomb.swagger.invocation;
 
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSwaggerInvocation {
   @Test
@@ -31,9 +31,9 @@ public class TestSwaggerInvocation {
 
     try {
       SwaggerInvocation invocation = new SwaggerInvocation();
-      Assert.assertSame(parentContext, invocation.getParentContext());
-      Assert.assertEquals("v", invocation.getContext("k"));
-      Assert.assertEquals(1, (int) invocation.getLocalContext("k"));
+      Assertions.assertSame(parentContext, invocation.getParentContext());
+      Assertions.assertEquals("v", invocation.getContext("k"));
+      Assertions.assertEquals(1, (int) invocation.getLocalContext("k"));
     } finally {
       ContextUtils.removeInvocationContext();
     }
@@ -42,6 +42,6 @@ public class TestSwaggerInvocation {
   @Test
   public void construct_noContext() {
     SwaggerInvocation invocation = new SwaggerInvocation();
-    Assert.assertNull(invocation.getParentContext());
+    Assertions.assertNull(invocation.getParentContext());
   }
 }

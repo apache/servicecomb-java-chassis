@@ -23,20 +23,20 @@ import javax.servlet.http.Part;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class PartListToPartArrayConverterTest {
   PartListToPartArrayConverter converter = new PartListToPartArrayConverter();
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part[].class.getCanonicalName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part[].class.getCanonicalName(), converter.getTargetType().getTypeName());
   }
 
   @Test
@@ -47,6 +47,6 @@ public class PartListToPartArrayConverterTest {
 
   @Test
   public void should_got_null_when_convert_null() {
-    Assert.assertNull(converter.convert(null));
+    Assertions.assertNull(converter.convert(null));
   }
 }

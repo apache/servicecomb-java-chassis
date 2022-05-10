@@ -25,10 +25,9 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV1;
-import org.apache.servicecomb.swagger.invocation.schemas.models.AddBeanParamV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSpringmvc {
   @Test
@@ -43,9 +42,9 @@ public class TestSpringmvc {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(1, (int) result.get("x"));
-    Assert.assertEquals(2, (int) result.get("y"));
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(1, (int) result.get("x"));
+    Assertions.assertEquals(2, (int) result.get("y"));
   }
 
   @Test
@@ -60,10 +59,10 @@ public class TestSpringmvc {
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
+    Assertions.assertEquals(1, result.size());
     AddWrapperV1 paramV1 = (AddWrapperV1) result.get("wrapper");
-    Assert.assertEquals(1, paramV1.getX());
-    Assert.assertEquals(2, paramV1.y);
+    Assertions.assertEquals(1, paramV1.getX());
+    Assertions.assertEquals(2, paramV1.y);
   }
 
   @Test
@@ -78,7 +77,7 @@ public class TestSpringmvc {
     SwaggerInvocation invocation = new SwaggerInvocation();
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, arguments);
 
-    Assert.assertEquals(1, result.size());
-    Assert.assertSame(addBody, result.get("addBody"));
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertSame(addBody, result.get("addBody"));
   }
 }

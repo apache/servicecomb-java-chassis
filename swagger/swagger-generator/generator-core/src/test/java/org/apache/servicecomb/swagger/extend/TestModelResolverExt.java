@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestModelResolverExt {
   static ModelResolverExt resolver = new ModelResolverExt();
@@ -37,6 +37,6 @@ public class TestModelResolverExt {
     JavaType type = TypeFactory.defaultInstance().constructCollectionType(List.class, String.class);
     resolver.setType(type, vendorExtensions);
 
-    Assert.assertEquals("java.util.List<java.lang.String>", vendorExtensions.get(SwaggerConst.EXT_JAVA_CLASS));
+    Assertions.assertEquals("java.util.List<java.lang.String>", vendorExtensions.get(SwaggerConst.EXT_JAVA_CLASS));
   }
 }

@@ -24,9 +24,9 @@ import java.util.List;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,7 +51,7 @@ public class RequestPartAnnotationProcessorTest {
 
   @Test
   public void getProcessType() {
-    Assert.assertEquals(requestPartAnnotationProcessor.getProcessType(),
+    Assertions.assertEquals(requestPartAnnotationProcessor.getProcessType(),
         RequestPart.class);
   }
 
