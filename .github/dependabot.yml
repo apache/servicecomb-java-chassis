@@ -19,6 +19,10 @@
 version: 2
 updates:
   - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
     directory: "/dependencies/default"
     schedule:
       interval: "daily"
