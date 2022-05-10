@@ -92,7 +92,7 @@ public class RestBodyHandler implements BodyHandler {
   }
 
   @VisibleForTesting
-  public boolean isDeleteUploadedFilesOnEnd() {
+  boolean isDeleteUploadedFilesOnEnd() {
     return deleteUploadedFilesOnEnd;
   }
 

@@ -47,7 +47,7 @@ public class HighwayTransport extends AbstractTransport {
     json.put(ENDPOINT_KEY, getEndpoint());
     deployOptions.setConfig(json);
     deployOptions.setWorkerPoolName("pool-worker-transport-highway");
-    return VertxUtils.blockDeploy(transportVertx, HighwayServerVehicle.class, deployOptions);
+    return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
   }
 
   @Override

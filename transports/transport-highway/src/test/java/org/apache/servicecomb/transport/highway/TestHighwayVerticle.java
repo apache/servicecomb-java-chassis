@@ -32,11 +32,11 @@ import io.vertx.core.json.JsonObject;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestHighwayVehicle {
+public class TestHighwayVerticle {
   @Test
   public void testHighwayVehicle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
                                  @Mocked JsonObject json) {
-    HighwayServerVehicle highwayVehicle = new HighwayServerVehicle();
+    HighwayServerVerticle highwayVehicle = new HighwayServerVerticle();
     URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:9090");
     new Expectations() {
       {
