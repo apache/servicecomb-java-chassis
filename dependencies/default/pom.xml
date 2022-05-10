@@ -92,7 +92,7 @@
     <protostuff.version>1.5.9</protostuff.version>
     <protostuff-parser.version>2.2.25</protostuff-parser.version>
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
-    <ribbon.version>2.3.0</ribbon.version>
+    <ribbon.version>2.7.18</ribbon.version>
     <rxjava.version>1.1.6</rxjava.version>
     <rxnetty.version>0.4.9</rxnetty.version>
     <seanyinx.version>1.0.0</seanyinx.version>
@@ -291,6 +291,11 @@
       <dependency>
         <groupId>com.netflix.ribbon</groupId>
         <artifactId>ribbon</artifactId>
+        <version>${ribbon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.ribbon</groupId>
+        <artifactId>ribbon-archaius</artifactId>
         <version>${ribbon.version}</version>
       </dependency>
       <dependency>
