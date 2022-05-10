@@ -45,7 +45,7 @@
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <commons-logging.version>1.2</commons-logging.version>
-    <dyuproject-protostuff.version>1.0.7.fixed.3500</dyuproject-protostuff.version>
+    <dyuproject-protostuff.version>1.2.2</dyuproject-protostuff.version>
     <esotericsoftware.version>4.0.2</esotericsoftware.version>
     <findbugs-annotations.version>2.0.0</findbugs-annotations.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
