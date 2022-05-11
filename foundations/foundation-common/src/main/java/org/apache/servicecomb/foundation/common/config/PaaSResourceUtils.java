@@ -70,34 +70,31 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
    * 此时，还分多个，是不合适的
    */
   public static void sortResources(List<Resource> resList, String suffix) {
-    resList.sort(new Comparator<Resource>() {
-      @Override
-      public int compare(Resource o1, Resource o2) {
-        try {
-          // jar的优先级比较低
-          if (isJarURL(o1.getURL()) && isFileURL(o2.getURL())) {
-            return -1;
-          }
-
-          // 干掉后缀，再排序
-          String name1 = o1.getFilename();
-          String name2 = o2.getFilename();
-
-          //Resource.getFilename接口会返回null，当路径的文件名不存在时
-          //配置文件一定存在，并且Resource有合法的文件名，name1和name2不可能为空，
-          //这里做判断是为了处理CodeDEX报的null引用
-          if (StringUtils.isEmpty(name1) || StringUtils.isEmpty(name2)) {
-            throw new IOException(
-                String.format("Resource %s or %s is not a file", o1.getURI(), o2.getURI()));
-          }
-
-          name1 = name1.substring(0, name1.length() - suffix.length());
-          name2 = name2.substring(0, name2.length() - suffix.length());
-
-          return name1.compareTo(name2);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
+    resList.sort((o1, o2) -> {
+      try {
+        // jar的优先级比较低
+        if (isJarURL(o1.getURL()) && isFileURL(o2.getURL())) {
+          return -1;
         }
+
+        // 干掉后缀，再排序
+        String name1 = o1.getFilename();
+        String name2 = o2.getFilename();
+
+        //Resource.getFilename接口会返回null，当路径的文件名不存在时
+        //配置文件一定存在，并且Resource有合法的文件名，name1和name2不可能为空，
+        //这里做判断是为了处理CodeDEX报的null引用
+        if (StringUtils.isEmpty(name1) || StringUtils.isEmpty(name2)) {
+          throw new IOException(
+              String.format("Resource %s or %s is not a file", o1.getURI(), o2.getURI()));
+        }
+
+        name1 = name1.substring(0, name1.length() - suffix.length());
+        name2 = name2.substring(0, name2.length() - suffix.length());
+
+        return name1.compareTo(name2);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     });
   }

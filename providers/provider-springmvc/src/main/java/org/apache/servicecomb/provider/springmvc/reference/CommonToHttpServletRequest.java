@@ -163,9 +163,7 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
 
   @Override
   public void addHeader(String name, String value) {
-    List<String> list = httpHeaders.computeIfAbsent(name, key -> {
-      return new ArrayList<>();
-    });
+    List<String> list = httpHeaders.computeIfAbsent(name, key -> new ArrayList<>());
     list.add(value);
   }
 

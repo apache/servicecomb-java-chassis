@@ -36,29 +36,22 @@ public class MimeTypesUtils {
 
   private static final Pattern EQUAL_SPLITTER = Pattern.compile(" *= *");
 
-  private static final Comparator<String> ACCEPT_X_COMPARATOR = new Comparator<String>() {
-    float getQuality(String s) {
-      if (s == null) {
-        return 0;
-      }
+  private static final Comparator<String> ACCEPT_X_COMPARATOR = (o1, o2) -> Float.compare(getQuality(o2), getQuality(o1));
 
-      String[] params = SEMICOLON_SPLITTER.split(s);
-      for (int i = 1; i < params.length; i++) {
-        String[] q = EQUAL_SPLITTER.split(params[1]);
-        if ("q".equals(q[0])) {
-          return Float.parseFloat(q[1]);
-        }
-      }
-      return 1;
+  private static float getQuality(String s) {
+    if (s == null) {
+      return 0;
     }
 
-    @Override
-    public int compare(String o1, String o2) {
-      float f1 = getQuality(o1);
-      float f2 = getQuality(o2);
-      return Float.compare(f2, f1);
+    String[] params = SEMICOLON_SPLITTER.split(s);
+    for (int i = 1; i < params.length; i++) {
+      String[] q = EQUAL_SPLITTER.split(params[1]);
+      if ("q".equals(q[0])) {
+        return Float.parseFloat(q[1]);
+      }
     }
-  };
+    return 1;
+  }
 
   public static List<String> getSortedAcceptableMimeTypes(String acceptHeader) {
     // accept anything when accept is not present       

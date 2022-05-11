@@ -65,9 +65,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
     Map<String, MicroserviceInstance> instancesAZMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instancesNoMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instances = parent.data();
-    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
-      String id = stringMicroserviceInstanceEntry.getKey();
-      MicroserviceInstance target = stringMicroserviceInstanceEntry.getValue();
+    instances.forEach((id, target) -> {
       if (regionAndAZMatch(myself, target)) {
         instancesRegionAndAZMatch.put(id, target);
       } else if (regionMatch(myself, target)) {

@@ -162,9 +162,7 @@ public class ServiceCombLoadBalancerStats {
       public void run() {
         try {
           Map<ServiceCombServer, ServiceCombServerStats> allServers = pingView;
-          allServers.entrySet().forEach(serviceCombServerServiceCombServerStatsEntry -> {
-            ServiceCombServer server = serviceCombServerServiceCombServerStatsEntry.getKey();
-            ServiceCombServerStats stats = serviceCombServerServiceCombServerStatsEntry.getValue();
+          allServers.forEach((server, stats) -> {
             if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
                 .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());

@@ -77,6 +77,6 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
 
   @Subscribe
   public void onDynamicConfigurationListener(GovernanceConfigurationChangedEvent event) {
-    event.getChangedConfigurations().forEach(v -> onConfigurationChanged(v));
+    event.getChangedConfigurations().forEach(this::onConfigurationChanged);
   }
 }

@@ -125,7 +125,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
         HttpParameterType.BODY,
         bodyParameter));
     parameterGenerators.stream().filter(p -> p.getHttpParameterType() != null)
-        .forEach(p -> newParameterGenerators.add(p));
+        .forEach(newParameterGenerators::add);
     parameterGenerators = newParameterGenerators;
   }
 

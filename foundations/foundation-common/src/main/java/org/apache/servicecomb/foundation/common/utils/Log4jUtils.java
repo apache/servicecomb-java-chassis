@@ -115,12 +115,7 @@ public final class Log4jUtils {
   private static String genFileContext(List<Resource> resList, Properties properties) throws IOException {
     List<Entry<Object, Object>> entryList = properties.entrySet()
         .stream()
-        .sorted(new Comparator<Entry<Object, Object>>() {
-          @Override
-          public int compare(Entry<Object, Object> o1, Entry<Object, Object> o2) {
-            return o1.getKey().toString().compareTo(o2.getKey().toString());
-          }
-        })
+        .sorted(Comparator.comparing(o -> o.getKey().toString()))
         .collect(Collectors.toList());
 
     StringBuilder sb = new StringBuilder();

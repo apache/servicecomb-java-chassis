@@ -36,6 +36,7 @@ import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
@@ -126,19 +127,19 @@ public class RegistrationManager {
   }
 
   public void destroy() {
-    registrationList.forEach(registration -> registration.destroy());
+    registrationList.forEach(LifeCycle::destroy);
   }
 
   public void run() {
     EventManager.getEventBus().register(new AfterServiceInstanceRegistryHandler(registrationList.size()));
-    registrationList.forEach(registration -> registration.run());
+    registrationList.forEach(LifeCycle::run);
   }
 
   public void init() {
     BeanUtils.addBeans(Registration.class, registrationList);
 
     initPrimary();
-    registrationList.forEach(registration -> registration.init());
+    registrationList.forEach(LifeCycle::init);
   }
 
   private void initPrimary() {
