@@ -27,7 +27,7 @@ public class LabelDocResponse {
   @JsonAlias("label_id")
   private String labelId;
 
-  private Map<String, String> labels = new HashMap<String, String>();
+  private Map<String, String> labels = new HashMap<>();
 
   public String getLabelId() {
     return labelId;

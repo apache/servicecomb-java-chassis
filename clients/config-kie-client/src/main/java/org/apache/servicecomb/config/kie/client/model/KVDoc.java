@@ -35,7 +35,7 @@ public class KVDoc {
   @JsonAlias("label_id")
   private String labelId;
 
-  private Map<String, String> labels = new HashMap<String, String>();
+  private Map<String, String> labels = new HashMap<>();
 
   private String value;
 
