@@ -38,7 +38,7 @@
     <awaitility.version>3.0.0</awaitility.version>
     <assertj.version>3.11.1</assertj.version>
     <brave.version>5.6.0</brave.version>
-    <classmate.version>1.5.0</classmate.version>
+    <classmate.version>1.5.1</classmate.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.8.0</commons-io.version>
