@@ -109,7 +109,7 @@
     <tomakehurst.version>2.6.0</tomakehurst.version>
     <vertx.version>4.2.7</vertx.version>
     <zipkin.version>2.23.16</zipkin.version>
-    <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
+    <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
