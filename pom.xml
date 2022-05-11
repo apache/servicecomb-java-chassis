@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>18</version>
+    <version>21</version>
   </parent>
 
 
@@ -57,6 +57,8 @@
     <javadoc-maven-plugin.version>2.9.1</javadoc-maven-plugin.version>
     <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M6</maven-failsafe-plugin.version>
+    <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
     <maven-project-info-reports-plugin.version>2.4</maven-project-info-reports-plugin.version>
     <maven-remote-resources-plugin.version>1.5</maven-remote-resources-plugin.version>
     <puppycrawl-checkstyle.version>8.29</puppycrawl-checkstyle.version>
@@ -294,7 +296,13 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
         <configuration>
           <archive>
             <manifest>
