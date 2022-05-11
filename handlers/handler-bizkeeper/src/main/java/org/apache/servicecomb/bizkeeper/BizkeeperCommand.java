@@ -62,7 +62,7 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
   @Override
   protected Observable<Response> resumeWithFallback() {
     Throwable cause = getFailedExecutionException();
-    Observable<Response> observable = Observable.create(f -> {
+    Observable<Response> observable = Observable.unsafeCreate(f -> {
       try {
         f.onNext(FallbackPolicyManager.getFallbackResponse(type, cause, invocation));
         f.onCompleted();
@@ -81,7 +81,7 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
 
   @Override
   protected Observable<Response> construct() {
-    return Observable.create(f -> {
+    return Observable.unsafeCreate(f -> {
       try {
         invocation.next(resp -> {
           if (isFailedResponse(resp)) {
