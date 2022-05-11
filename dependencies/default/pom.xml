@@ -100,7 +100,7 @@
     <slf4j.version>1.7.32</slf4j.version>
     <snakeyaml.version>1.27</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
-    <spring.version>5.3.19</spring.version>
+    <spring.version>5.3.20</spring.version>
     <spring-boot.version>2.6.7</spring-boot.version>
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.6.2</swagger.version>
