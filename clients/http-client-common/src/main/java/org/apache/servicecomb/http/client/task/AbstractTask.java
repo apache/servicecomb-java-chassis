@@ -65,12 +65,7 @@ public class AbstractTask {
 
   protected AbstractTask(String taskName) {
     initTaskPool(taskName);
-    Runtime.getRuntime().addShutdownHook(new Thread(taskName + "-shutdown-hook") {
-      @Override
-      public void run() {
-        AbstractTask.this.stop();
-      }
-    });
+    Runtime.getRuntime().addShutdownHook(new Thread(AbstractTask.this::stop, taskName + "-shutdown-hook"));
   }
 
   protected void initTaskPool(String taskName) {

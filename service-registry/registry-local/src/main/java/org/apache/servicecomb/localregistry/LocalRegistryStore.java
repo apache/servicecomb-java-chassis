@@ -222,7 +222,7 @@ public class LocalRegistryStore {
               Microservice service = microserviceMap.get(aInstance.getServiceId());
               return service.getAppId().equals(appId) && service.getServiceName().equals(serviceName);
             }
-        ).forEach(item -> instances.add(item)));
+        ).forEach(instances::add));
     if (instances.isEmpty()) {
       microserviceInstances.setMicroserviceNotExist(true);
     } else {

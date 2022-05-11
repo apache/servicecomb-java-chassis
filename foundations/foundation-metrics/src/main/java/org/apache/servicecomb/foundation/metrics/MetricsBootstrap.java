@@ -61,7 +61,7 @@ public class MetricsBootstrap {
 
     List<MetricsInitializer> initializers = new ArrayList<>(SPIServiceUtils.getSortedService(MetricsInitializer.class));
     Collections.reverse(initializers);
-    initializers.forEach(initializer -> initializer.destroy());
+    initializers.forEach(MetricsInitializer::destroy);
   }
 
   protected void loadMetricsInitializers() {

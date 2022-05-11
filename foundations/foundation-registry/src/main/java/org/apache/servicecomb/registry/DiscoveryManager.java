@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.Discovery;
+import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
@@ -51,7 +53,7 @@ public class DiscoveryManager {
     instanceCacheManager = new InstanceCacheManagerNew(appManager);
     SPIServiceUtils.getOrLoadSortedService(Discovery.class)
         .stream()
-        .filter((discovery -> discovery.enabled()))
+        .filter((SPIEnabled::enabled))
         .forEach(discoveryList::add);
   }
 
@@ -139,16 +141,16 @@ public class DiscoveryManager {
   }
 
   public void destroy() {
-    discoveryList.forEach(discovery -> discovery.destroy());
+    discoveryList.forEach(LifeCycle::destroy);
   }
 
   public void run() {
-    discoveryList.forEach(discovery -> discovery.run());
+    discoveryList.forEach(LifeCycle::run);
   }
 
   public void init() {
     BeanUtils.addBeans(Discovery.class, discoveryList);
 
-    discoveryList.forEach(discovery -> discovery.init());
+    discoveryList.forEach(LifeCycle::init);
   }
 }

@@ -39,9 +39,7 @@ public class HttpClientWithContext {
   }
 
   public void runOnContext(RunHandler handler) {
-    context.runOnContext((v) -> {
-      handler.run(httpClient);
-    });
+    context.runOnContext((v) -> handler.run(httpClient));
   }
 
   public Context context() {

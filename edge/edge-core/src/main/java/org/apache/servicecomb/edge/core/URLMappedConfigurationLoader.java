@@ -74,10 +74,7 @@ public class URLMappedConfigurationLoader {
   }
 
   private static void logConfigurations(Map<String, URLMappedConfigurationItem> configurations) {
-    configurations.entrySet().forEach(stringConfigurationItemEntry -> {
-      URLMappedConfigurationItem item = stringConfigurationItemEntry.getValue();
-      LOG.info("config item: key=" + stringConfigurationItemEntry.getKey() + ";pattern=" + item.getStringPattern()
-          + ";service=" + item.getMicroserviceName() + ";versionRule=" + item.getVersionRule());
-    });
+    configurations.forEach((key, item) -> LOG.info("config item: key=" + key + ";pattern=" + item.getStringPattern()
+        + ";service=" + item.getMicroserviceName() + ";versionRule=" + item.getVersionRule()));
   }
 }

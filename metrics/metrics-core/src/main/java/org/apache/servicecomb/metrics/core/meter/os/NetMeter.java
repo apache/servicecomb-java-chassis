@@ -59,17 +59,13 @@ public class NetMeter {
     this.id = id;
     // init lastRxBytes, lastRxPackets, lastTxBytes, lastTxPackets
     refreshNet(1);
-    interfaceUsageMap.values().forEach(interfaceUsage -> {
-      interfaceUsage.getNetStats().forEach(NetStat::clearRate);
-    });
+    interfaceUsageMap.values().forEach(interfaceUsage -> interfaceUsage.getNetStats().forEach(NetStat::clearRate));
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     refreshNet(secondInterval);
 
-    interfaceUsageMap.values().forEach(interfaceUsage -> {
-      interfaceUsage.calcMeasurements(measurements, msNow);
-    });
+    interfaceUsageMap.values().forEach(interfaceUsage -> interfaceUsage.calcMeasurements(measurements, msNow));
   }
 
 

@@ -486,9 +486,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   public void correctOperation() {
     if (swaggerOperation.getConsumes() == null) {
       if (swaggerOperation.getParameters().stream()
-          .filter(SwaggerUtils::isFileParameter)
-          .findAny()
-          .isPresent()) {
+          .anyMatch(SwaggerUtils::isFileParameter)) {
         swaggerOperation.addConsumes(MediaType.MULTIPART_FORM_DATA);
       }
     }

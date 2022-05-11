@@ -117,9 +117,7 @@ public class NacosClient {
         updateHandler.handle(DELETE, before);
         return;
       }
-      after.entrySet().forEach(stringObjectEntry -> {
-        String itemKey = stringObjectEntry.getKey();
-        Object itemValue = stringObjectEntry.getValue();
+      after.forEach((itemKey, itemValue) -> {
         if (!before.containsKey(itemKey)) {
           itemsCreated.put(itemKey, itemValue);
         } else if (!itemValue.equals(before.get(itemKey))) {
