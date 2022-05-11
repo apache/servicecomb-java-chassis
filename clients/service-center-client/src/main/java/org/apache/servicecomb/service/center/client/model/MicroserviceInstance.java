@@ -36,13 +36,13 @@ public class MicroserviceInstance {
 
   private String version;
 
-  private List<String> endpoints = new ArrayList<String>();
+  private List<String> endpoints = new ArrayList<>();
 
   private String hostName;
 
   private MicroserviceInstanceStatus status;
 
-  private Map<String, String> properties = new HashMap<String, String>(); // reserved key list: region|az|stage|group
+  private Map<String, String> properties = new HashMap<>(); // reserved key list: region|az|stage|group
 
   private HealthCheck healthCheck;
 

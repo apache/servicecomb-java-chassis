@@ -24,7 +24,7 @@ public class HeartbeatsRequest {
   private List<InstancesRequest> Instances;
 
   public HeartbeatsRequest(String serviceId, String instanceId) {
-    List<InstancesRequest> instances = new ArrayList<InstancesRequest>();
+    List<InstancesRequest> instances = new ArrayList<>();
     instances.add(new InstancesRequest(serviceId, instanceId));
     this.Instances = instances;
   }
@@ -41,7 +41,7 @@ public class HeartbeatsRequest {
     if (this.Instances != null) {
       this.Instances.add(instancesRequest);
     } else {
-      this.Instances = new ArrayList<InstancesRequest>();
+      this.Instances = new ArrayList<>();
       this.Instances.add(instancesRequest);
     }
   }
