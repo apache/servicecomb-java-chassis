@@ -70,7 +70,6 @@
     <jersey.version>2.27</jersey.version>
     <jettison.version>1.4.0</jettison.version>
     <jmockit.version>1.30</jmockit.version>
-    <json-lib.version>2.4</json-lib.version>
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.8.2</junit5.version>
     <log4j.version>1.2.17</log4j.version>
@@ -596,13 +595,6 @@
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>net.sf.json-lib</groupId>
-        <artifactId>json-lib</artifactId>
-        <version>${json-lib.version}</version>
-        <classifier>jdk15</classifier>
       </dependency>
 
       <dependency>
