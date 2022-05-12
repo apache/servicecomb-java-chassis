@@ -30,11 +30,6 @@
   <name>Java Chassis::Integration Tests::Common</name>
 
   <dependencies>
-    <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-standalone</artifactId>
-      <scope>test</scope>
-    </dependency>
     <!-- zipkin dependencies -->
     <dependency>
       <groupId>io.zipkin.zipkin2</groupId>
