@@ -18,9 +18,6 @@ package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.netflix.spectator.api.Id;
 
 /*
@@ -37,7 +34,6 @@ import com.netflix.spectator.api.Id;
  *
  */
 public class ProcessCpuUsage extends AbstractCpuUsage {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCpuUsage.class);
 
   private final Period busy = new Period();
 

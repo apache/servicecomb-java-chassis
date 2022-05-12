@@ -26,11 +26,8 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SwaggerProducerOperation {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerProducerOperation.class);
 
   // 因为存在aop场景，所以，producerClass不一定等于producerInstance.getClass()
   private Class<?> producerClass;

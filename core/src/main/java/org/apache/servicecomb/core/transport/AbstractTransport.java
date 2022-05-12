@@ -29,13 +29,10 @@ import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
 
   /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
