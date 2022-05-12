@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -36,8 +34,6 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
  */
 public final class YAMLUtil {
   private static final Yaml SAFE_PARSER = new Yaml(new SafeConstructor());
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(YAMLUtil.class);
 
   private YAMLUtil() {
   }

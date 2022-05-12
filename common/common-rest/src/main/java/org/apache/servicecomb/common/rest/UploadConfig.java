@@ -18,13 +18,9 @@ package org.apache.servicecomb.common.rest;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.netflix.config.DynamicPropertyFactory;
 
 public class UploadConfig {
-  private static final Logger LOGGER = LoggerFactory.getLogger(UploadConfig.class);
 
   /**
    * null means not support upload
