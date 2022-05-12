@@ -668,7 +668,7 @@
     <profile>
       <id>jdk11</id>
       <activation>
-        <jdk>[11,)</jdk>
+        <jdk>[11,17)</jdk>
       </activation>
       <properties>
         <werror.properties/>
