@@ -32,6 +32,7 @@ public class SyncContext extends EventLoopContext {
     super(vertx, null, null, null, null, null, null, false);
   }
 
+  @Override
   public VertxInternal owner() {
     return owner;
   }

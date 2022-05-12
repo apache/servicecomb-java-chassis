@@ -91,11 +91,13 @@ public class ServiceCombServer extends Server {
     return instance;
   }
 
+  @Override
   public String toString() {
     return endpoint.getEndpoint();
   }
 
   // used in LoadBalancerContext
+  @Override
   public String getHost() {
     return endpoint.getEndpoint();
   }

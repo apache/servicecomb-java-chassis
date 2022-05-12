@@ -53,6 +53,7 @@ public abstract class AbstractBaseIntegerProperty<T> extends BaseIntegerProperty
     return this;
   }
 
+  @Override
   public AbstractBaseIntegerProperty<T> readOnly() {
     this.setReadOnly(Boolean.TRUE);
     return this;
@@ -85,6 +86,7 @@ public abstract class AbstractBaseIntegerProperty<T> extends BaseIntegerProperty
     return defaultValue;
   }
 
+  @Override
   public void setDefault(String defaultValue) {
     this.assignDefault(defaultValue);
   }
