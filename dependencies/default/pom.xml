@@ -84,7 +84,7 @@
     <maven-model.version>3.8.5</maven-model.version>
     <micrometer.version>1.8.5</micrometer.version>
     <nacos-client.version>1.1.4</nacos-client.version>
-    <prometheus.version>0.12.0</prometheus.version>
+    <prometheus.version>0.15.0</prometheus.version>
     <protobuf.version>3.7.1</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
     <protostuff-parser.version>2.2.25</protostuff-parser.version>
