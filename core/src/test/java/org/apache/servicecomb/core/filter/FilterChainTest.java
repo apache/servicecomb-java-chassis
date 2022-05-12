@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CompletableFuture;
@@ -146,12 +147,11 @@ public class FilterChainTest {
 
     CompletableFuture<Response> future = buildChain(retryFilter, recordThreadFilter, exceptionFilter)
         .onFilter(invocation);
-
-    assertThat(msg).containsExactly("main", "main", "main");
     assertThat(future)
-        .hasFailedWithThrowableThat()
-        .isExactlyInstanceOf(IOException.class)
-        .hasMessage("net error");
+            .failsWithin(Duration.ofSeconds(1))
+            .withThrowableOfType(ExecutionException.class)
+            .withCauseExactlyInstanceOf(IOException.class)
+            .withMessage("java.io.IOException: net error");
   }
 
   @Test
