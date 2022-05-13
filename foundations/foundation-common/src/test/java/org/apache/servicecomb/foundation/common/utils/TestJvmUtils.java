@@ -97,7 +97,7 @@ public class TestJvmUtils {
 
     String content = String.format("Manifest-Version: 1.0\nMain-Class: %s\n", TestJvmUtils.class.getName());
     InputStream inputStream = new ByteArrayInputStream(content.getBytes());
-    PowerMockito.when(url.openStream()).thenReturn(inputStream);
+    PowerMockito.when(url.openStream()).thenAnswer(invocation -> inputStream);
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
 
@@ -115,8 +115,8 @@ public class TestJvmUtils {
     String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
 
     PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
-        .withArguments(manifestUri).thenReturn(url);
-    PowerMockito.when(url.openStream()).thenReturn(inputStream);
+            .withArguments(manifestUri).thenAnswer(invocation -> url);
+    PowerMockito.when(url.openStream()).thenAnswer(invocation -> inputStream);
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
 

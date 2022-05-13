@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.client.http;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,6 +54,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -148,18 +148,18 @@ public class TestRestClientInvocation {
     when(endpoint.getAddress()).thenReturn(address);
     when(invocation.getHandlerContext()).then(answer -> handlerContext);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
-    when(httpClient.request(Mockito.any()))
+    when(httpClient.request(ArgumentMatchers.any()))
         .thenReturn(Future.succeededFuture(request));
     when(request.headers()).thenReturn(headers);
     when(request.response()).thenReturn(Future.succeededFuture(httpClientResponse));
     doAnswer(a -> {
-      headers.add(a.getArgumentAt(0, String.class), a.getArgumentAt(1, String.class));
+      headers.add(a.getArgument(0, String.class), a.getArgument(1, String.class));
       return request;
-    }).when(request).putHeader(any(), (String) any());
+    }).when(request).putHeader(ArgumentMatchers.any(), ArgumentMatchers.anyString());
     doAnswer(a -> {
       ((Handler<Void>) a.getArguments()[0]).handle(null);
       return null;
-    }).when(context).runOnContext(any());
+    }).when(context).runOnContext(ArgumentMatchers.any());
   }
 
   @Test
@@ -281,7 +281,7 @@ public class TestRestClientInvocation {
     doAnswer(a -> {
       bodyHandler = (Handler<Buffer>) a.getArguments()[0];
       return httpClientResponse;
-    }).when(httpClientResponse).bodyHandler(any());
+    }).when(httpClientResponse).bodyHandler(ArgumentMatchers.any());
 
     Buffer buf = Buffer.buffer();
     new MockUp<RestClientInvocation>(restClientInvocation) {
@@ -306,13 +306,13 @@ public class TestRestClientInvocation {
 
     {
       HttpClientFilter filter = mock(HttpClientFilter.class);
-      when(filter.afterReceiveResponse(any(), any())).thenReturn(null);
+      when(filter.afterReceiveResponse(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(null);
       when(filter.enabled()).thenReturn(true);
       httpClientFilters.add(filter);
     }
     {
       HttpClientFilter filter = mock(HttpClientFilter.class);
-      when(filter.afterReceiveResponse(any(), any())).thenReturn(resp);
+      when(filter.afterReceiveResponse(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resp);
       when(filter.enabled()).thenReturn(true);
       httpClientFilters.add(filter);
     }
@@ -335,7 +335,7 @@ public class TestRestClientInvocation {
 
     {
       HttpClientFilter filter = mock(HttpClientFilter.class);
-      when(filter.afterReceiveResponse(any(), any())).thenThrow(Error.class);
+      when(filter.afterReceiveResponse(ArgumentMatchers.any(), ArgumentMatchers.any())).thenThrow(Error.class);
       when(filter.enabled()).thenReturn(true);
       httpClientFilters.add(filter);
     }
@@ -354,7 +354,7 @@ public class TestRestClientInvocation {
   public void createRequestPath_NoUrlPrefixNoPath() throws Exception {
     when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn(null);
 
-    when(urlPathBuilder.createRequestPath(any())).thenReturn("/path");
+    when(urlPathBuilder.createRequestPath(ArgumentMatchers.any())).thenReturn("/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
     Assertions.assertEquals("/path", path);
@@ -373,7 +373,7 @@ public class TestRestClientInvocation {
   public void createRequestPath_haveUrlPrefixNoPath() throws Exception {
     when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn("/prefix");
 
-    when(urlPathBuilder.createRequestPath(any())).thenReturn("/path");
+    when(urlPathBuilder.createRequestPath(ArgumentMatchers.any())).thenReturn("/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
     Assertions.assertEquals("/prefix/path", path);
