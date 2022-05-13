@@ -55,6 +55,13 @@ public final class SPIServiceUtils {
   }
 
   /**
+   * used for testing
+   */
+  static void clearCache() {
+    cache.clear();
+  }
+
+  /**
    * no cache, return new instances every time.
    */
   public static <T> List<T> loadSortedService(Class<T> serviceType) {

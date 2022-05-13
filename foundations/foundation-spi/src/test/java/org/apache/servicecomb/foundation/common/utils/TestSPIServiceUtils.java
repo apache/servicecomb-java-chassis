@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -31,8 +31,8 @@ import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
 import org.springframework.core.Ordered;
 
-import mockit.Deencapsulation;
 import mockit.Expectations;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Test SPIServiceUtils
@@ -74,8 +74,9 @@ public class TestSPIServiceUtils {
     map.put("a", o1);
     map.put("b", o2);
 
-    ServiceLoader<Ordered> serviceLoader = ServiceLoader.load(Ordered.class);
-    Deencapsulation.setField(serviceLoader, "providers", map);
+    ServiceLoader<PriorityIntf> serviceLoader = ServiceLoader.load(PriorityIntf.class);
+    Field field = ReflectionUtils.findField(ServiceLoader.class, "providers");
+    ReflectionUtils.setField(field, serviceLoader, map);
     new Expectations(ServiceLoader.class) {
       {
         o1.getOrder();
@@ -91,8 +92,7 @@ public class TestSPIServiceUtils {
     MatcherAssert.assertThat(SPIServiceUtils.getAllService(Ordered.class), Matchers.contains(o1, o2));
     MatcherAssert.assertThat(SPIServiceUtils.getPriorityHighestService(Ordered.class), Matchers.is(o1));
 
-    Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
-    cache.clear();
+    SPIServiceUtils.clearCache();
   }
 
   @Test
@@ -147,7 +147,8 @@ public class TestSPIServiceUtils {
     instances.putIfAbsent("6", new PriorityImpl("n2", 1));
 
     ServiceLoader<PriorityIntf> serviceLoader = ServiceLoader.load(PriorityIntf.class);
-    Deencapsulation.setField(serviceLoader, "providers", instances);
+    Field field = ReflectionUtils.findField(ServiceLoader.class, "providers");
+    ReflectionUtils.setField(field, serviceLoader, instances);
     new Expectations(ServiceLoader.class) {
       {
         ServiceLoader.load(PriorityIntf.class);
@@ -158,7 +159,6 @@ public class TestSPIServiceUtils {
     MatcherAssert.assertThat(SPIServiceUtils.getPriorityHighestServices(PriorityIntf::getName, PriorityIntf.class),
             Matchers.containsInAnyOrder(instances.get("2"), instances.get("5")));
 
-    Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
-    cache.clear();
+    SPIServiceUtils.clearCache();
   }
 }
