@@ -74,13 +74,13 @@
     <log4j.version>1.2.17</log4j.version>
     <log4j2.version>2.17.2</log4j2.version>
     <logback.version>1.2.3</logback.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>3.3.3</mockito.version>
     <mock-server.version>5.13.2</mock-server.version>
     <narayana.version>5.3.2.Final</narayana.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.74.Final</netty.version>
     <okhttp3.version>3.14.2</okhttp3.version>
-    <powermock.version>1.6.2</powermock.version>
+    <powermock.version>2.0.9</powermock.version>
     <maven-model.version>3.8.5</maven-model.version>
     <micrometer.version>1.8.5</micrometer.version>
     <nacos-client.version>1.1.4</nacos-client.version>
@@ -710,6 +710,12 @@
         <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
 
       <dependency>
         <groupId>org.mock-server</groupId>
@@ -720,7 +726,7 @@
 
       <dependency>
         <groupId>org.powermock</groupId>
-        <artifactId>powermock-api-mockito</artifactId>
+        <artifactId>powermock-api-mockito2</artifactId>
         <version>${powermock.version}</version>
         <scope>test</scope>
       </dependency>

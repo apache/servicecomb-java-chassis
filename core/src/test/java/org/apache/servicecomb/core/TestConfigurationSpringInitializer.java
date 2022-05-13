@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.core;
 
-import static org.mockito.Matchers.anyString;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.env.CompositePropertySource;
@@ -149,7 +147,7 @@ public class TestConfigurationSpringInitializer {
         Assertions.fail("get unexpected property name: " + propertyName);
       }
       return value;
-    }).when(environment).getProperty(anyString(), Matchers.eq(Object.class));
+    }).when(environment).getProperty(ArgumentMatchers.anyString(), ArgumentMatchers.eq(Object.class));
 
     new ConfigurationSpringInitializer().setEnvironment(environment);
 

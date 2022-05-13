@@ -19,7 +19,6 @@ package org.apache.servicecomb.tracing.zipkin;
 
 import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +30,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import brave.Span;
@@ -96,7 +96,7 @@ public class ZipkinTracingHandlerTest {
 
   @Test
   public void delegatesErrorOnInvocationFailure() throws Exception {
-    doThrow(exception).when(invocation).next(any(AsyncResponse.class));
+    doThrow(exception).when(invocation).next(ArgumentMatchers.any(AsyncResponse.class));
 
     try {
       tracingHandler.handle(invocation, asyncResponse);

@@ -19,7 +19,6 @@ package org.apache.servicecomb.registry.lightweight;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Matchers.any;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -31,6 +30,7 @@ import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
@@ -51,9 +51,9 @@ class StoreServiceTest extends TestBase {
 
   @BeforeEach
   void setUp() {
-    Mockito.when(discoveryClient.getInfoAsync(any(), any()))
+    Mockito.when(discoveryClient.getInfoAsync(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(CompletableFuture.completedFuture(self.getMicroserviceInfo()));
-    Mockito.when(discoveryClient.getInstanceAsync(any(), any()))
+    Mockito.when(discoveryClient.getInstanceAsync(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(CompletableFuture.completedFuture(self.getInstance()));
   }
 

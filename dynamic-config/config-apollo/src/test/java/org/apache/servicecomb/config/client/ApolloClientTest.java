@@ -27,7 +27,7 @@ import org.apache.servicecomb.config.client.ApolloClient.ConfigRefresh;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -52,10 +52,10 @@ public class ApolloClientTest {
     ResponseEntity<String> responseEntity = new ResponseEntity<>(
         "{\"apollo\":\"mocked\", \"configurations\":{\"timeout\":1000}}", HttpStatus.OK);
     Mockito.when(rest.exchange(
-        Matchers.anyString(),
-        Matchers.any(HttpMethod.class),
-        Matchers.<HttpEntity<String>>any(),
-        Matchers.<Class<String>>any())).thenReturn(responseEntity);
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(HttpMethod.class),
+            ArgumentMatchers.<HttpEntity<String>>any(),
+            ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
     ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     ApolloClient apolloClient = new ApolloClient(updateHandler);
