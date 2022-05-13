@@ -84,7 +84,7 @@ public class TestFaultInjectHandler {
     asyncResp = Mockito.mock(AsyncResponse.class);
     operationMeta = Mockito.mock(OperationMeta.class);
     transport = Mockito.mock(Transport.class);
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
   }
 
   @After
