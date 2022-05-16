@@ -81,7 +81,7 @@
     <okhttp3.version>3.14.2</okhttp3.version>
     <powermock.version>2.0.9</powermock.version>
     <maven-model.version>3.8.5</maven-model.version>
-    <micrometer.version>1.8.5</micrometer.version>
+    <micrometer.version>1.9.0</micrometer.version>
     <nacos-client.version>1.1.4</nacos-client.version>
     <prometheus.version>0.15.0</prometheus.version>
     <protobuf.version>3.7.1</protobuf.version>
