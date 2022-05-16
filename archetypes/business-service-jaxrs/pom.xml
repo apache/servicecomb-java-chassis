@@ -32,7 +32,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <maven-archetype-packaging-version>2.3</maven-archetype-packaging-version>
+    <maven-archetype-packaging-version>3.2.1</maven-archetype-packaging-version>
   </properties>
 
   <build>
