@@ -41,7 +41,7 @@
     <classmate.version>1.5.1</classmate.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
-    <commons-io.version>2.8.0</commons-io.version>
+    <commons-io.version>2.11.0</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-logging.version>1.2</commons-logging.version>
@@ -72,13 +72,13 @@
     <junit5.version>5.8.2</junit5.version>
     <log4j.version>1.2.17</log4j.version>
     <log4j2.version>2.17.2</log4j2.version>
-    <logback.version>1.2.3</logback.version>
+    <logback.version>1.2.11</logback.version>
     <mockito.version>3.3.3</mockito.version>
     <mock-server.version>5.13.2</mock-server.version>
     <narayana.version>5.3.2.Final</narayana.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.77.Final</netty.version>
-    <okhttp3.version>3.14.2</okhttp3.version>
+    <okhttp3.version>4.8.1</okhttp3.version>
     <powermock.version>2.0.9</powermock.version>
     <maven-model.version>3.8.5</maven-model.version>
     <micrometer.version>1.8.5</micrometer.version>
