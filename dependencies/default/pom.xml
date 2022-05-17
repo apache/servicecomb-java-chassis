@@ -100,7 +100,7 @@
     <spring-boot.version>2.6.7</spring-boot.version>
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.6.2</swagger.version>
-    <swagger2markup.version>1.3.3</swagger2markup.version>
+    <swagger2markup.version>1.3.4</swagger2markup.version>
     <tcnetty.version>2.0.52.Final</tcnetty.version>
     <vertx.version>4.2.7</vertx.version>
     <zipkin.version>2.23.16</zipkin.version>
