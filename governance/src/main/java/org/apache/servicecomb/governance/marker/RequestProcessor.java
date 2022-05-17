@@ -24,6 +24,9 @@ import org.apache.servicecomb.governance.marker.operator.RawOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Request Processor checks if a request matches a configuration.
+ */
 public class RequestProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
@@ -37,10 +40,26 @@ public class RequestProcessor {
   }
 
   public boolean match(GovernanceRequest request, Matcher matcher) {
-    if ((matcher.getMethod() != null && !matcher.getMethod().contains(request.getMethod())) ||
-        (matcher.getApiPath() != null && !operatorMatch(request.getUri(), matcher.getApiPath()))) {
+    if (!methodMatch(request, matcher)) {
       return false;
     }
+    if (!apiPathMatch(request, matcher)) {
+      return false;
+    }
+    if (!headersMatch(request, matcher)) {
+      return false;
+    }
+    return serviceNameMatch(request, matcher);
+  }
+
+  private boolean serviceNameMatch(GovernanceRequest request, Matcher matcher) {
+    if (matcher.getServiceName() == null) {
+      return true;
+    }
+    return matcher.getServiceName().equals(request.getServiceName());
+  }
+
+  private boolean headersMatch(GovernanceRequest request, Matcher matcher) {
     if (matcher.getHeaders() == null) {
       return true;
     }
@@ -53,6 +72,20 @@ public class RequestProcessor {
     return true;
   }
 
+  private boolean apiPathMatch(GovernanceRequest request, Matcher matcher) {
+    if (matcher.getApiPath() == null) {
+      return true;
+    }
+    return operatorMatch(request.getUri(), matcher.getApiPath());
+  }
+
+  private boolean methodMatch(GovernanceRequest request, Matcher matcher) {
+    if (matcher.getMethod() == null) {
+      return true;
+    }
+    return matcher.getMethod().contains(request.getMethod());
+  }
+
   private boolean operatorMatch(String str, RawOperator rawOperator) {
     if (rawOperator.isEmpty()) {
       return false;
@@ -61,7 +94,7 @@ public class RequestProcessor {
     for (Entry<String, String> entry : rawOperator.entrySet()) {
       MatchOperator operator = operatorMap.get(entry.getKey() + OPERATOR_SUFFIX);
       if (operator == null) {
-        LOGGER.error("unsupported operator:" + entry.getKey() + ", plz use one of :" + operatorMap.keySet().toString());
+        LOGGER.error("unsupported operator:" + entry.getKey() + ", please use one of :" + operatorMap.keySet());
         return false;
       }
       if (!operator.match(str, entry.getValue())) {

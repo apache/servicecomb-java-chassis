@@ -51,7 +51,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
     return InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
-        + "." + governanceRequest.getServiceId()
+        + "." + governanceRequest.getServiceName()
         + "." + governanceRequest.getInstanceId();
   }
 
@@ -68,13 +68,13 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   @Override
   public CircuitBreakerPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    if (StringUtils.isEmpty(governanceRequest.getServiceId()) || StringUtils.isEmpty(
+    if (StringUtils.isEmpty(governanceRequest.getServiceName()) || StringUtils.isEmpty(
         governanceRequest.getInstanceId())) {
       LOGGER.info("Isolation is not properly configured, service id or instance id is empty.");
       return null;
     }
     CircuitBreakerPolicy circuitBreakerPolicy =
-        instanceIsolationProperties.getParsedEntity().get(governanceRequest.getServiceId());
+        instanceIsolationProperties.getParsedEntity().get(governanceRequest.getServiceName());
 
     if (circuitBreakerPolicy == null) {
       return instanceIsolationProperties.getParsedEntity().get(DEFAULT_SERVICE_NAME);

@@ -21,17 +21,40 @@ import java.util.Map;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 public class GovernanceRequest {
+  /**
+   headers with this request, maybe null.
+   For provider: headers indicates the request headers to me.
+   For consumer: headers indicates the request headers to the target.
+   */
   private Map<String, String> headers;
 
+  /**
+   uri with this request, maybe null.
+   For provider: uri indicates the request uri to me.
+   For consumer: uri indicates the request uri to the target.
+   */
   private String uri;
 
+  /**
+   method with this request, maybe null.
+   For provider: method indicates the request method to me.
+   For consumer: method indicates the request method to the target.
+   */
   private String method;
 
-  // instance id with request, maybe null.
+  /**
+   instance id with this request, maybe null.
+   For provider: instanceId indicates who calls me.
+   For consumer: instanceId indicates the target instance.
+   */
   private String instanceId;
 
-  // microservice id (microservice name or application name + microservice name) with this request, maybe null.
-  private String serviceId;
+  /**
+   microservice id (microservice name or application name + microservice name) with this request, maybe null.
+   For provider: serviceName indicates who calls me.
+   For consumer: serviceName indicates the target service.
+   */
+  private String serviceName;
 
   public Map<String, String> getHeaders() {
     return headers;
@@ -68,11 +91,11 @@ public class GovernanceRequest {
     this.instanceId = instanceId;
   }
 
-  public String getServiceId() {
-    return serviceId;
+  public String getServiceName() {
+    return serviceName;
   }
 
-  public void setServiceId(String serviceId) {
-    this.serviceId = serviceId;
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
   }
 }

@@ -21,6 +21,11 @@ servicecomb:
       matches:
         - apiPath:
             exact: "/hello"
+    demo-rateLimiting-servicename: |
+      matches:
+        - apiPath:
+            exact: "/helloServiceName"
+          serviceName: "srcService"
     wrong-name-inogred: |
       wrong: some
     demo-retry: |
@@ -47,6 +52,8 @@ servicecomb:
       services: other:1.0
   rateLimiting:
     demo-rateLimiting: |
+      rate: 1
+    demo-rateLimiting-servicename: |
       rate: 1
     wrongIngored: |
       rate: 0
