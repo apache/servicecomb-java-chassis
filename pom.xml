@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>21</version>
+    <version>22</version>
   </parent>
 
 
@@ -332,6 +332,17 @@
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+          <configuration>
+            <useReleaseProfile>false</useReleaseProfile>
+            <goals>deploy</goals>
+            <arguments>-Papache-release ${arguments}</arguments>
+            <waitBeforeTagging>10</waitBeforeTagging>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>org.eluder.coveralls</groupId>
           <artifactId>coveralls-maven-plugin</artifactId>
