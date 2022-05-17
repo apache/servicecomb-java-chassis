@@ -24,9 +24,9 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.client.ApolloClient.ConfigRefresh;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.http.HttpEntity;
@@ -38,7 +38,7 @@ import org.springframework.web.client.RestTemplate;
 import mockit.Deencapsulation;
 
 public class ApolloClientTest {
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
 
     ApolloConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
@@ -64,7 +64,7 @@ public class ApolloClientTest {
     cr.run();
 
     Map<String, Object> originMap = Deencapsulation.getField(apolloClient, "originalConfigMap");
-    Assert.assertEquals(1, originMap.size());
+    Assertions.assertEquals(1, originMap.size());
   }
 
   @Test
@@ -84,32 +84,29 @@ public class ApolloClientTest {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
 
-    status = true;
     before.put("test", "testValue");
     try {
       Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
 
-    status = true;
     after.put("test", "testValue2");
     try {
       Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
 
-    status = true;
     try {
       Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 }

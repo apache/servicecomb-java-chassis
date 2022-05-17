@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.servicecomb.config.center.client.AddressManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import mockit.Deencapsulation;
@@ -39,16 +39,16 @@ class ConfigCenterConfigurationSourceImplTest {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("http://127.0.0.2:30103");
     AddressManager addressManager = new AddressManager("test", addresses, EventManager.getEventBus());
-    Assert.assertNotNull(addressManager);
+    Assertions.assertNotNull(addressManager);
 
     String address = addressManager.address();
-    Assert.assertEquals("http://127.0.0.2:30103/v3/test", address);
+    Assertions.assertEquals("http://127.0.0.2:30103/v3/test", address);
     address = addressManager.address();
-    Assert.assertEquals("http://127.0.0.1:30103/v3/test", address);
+    Assertions.assertEquals("http://127.0.0.1:30103/v3/test", address);
 
     addressManager = new AddressManager(null, addresses, EventManager.getEventBus());
     address = addressManager.address();
-    Assert.assertEquals("http://127.0.0.2:30103/v3/default", address);
+    Assertions.assertEquals("http://127.0.0.2:30103/v3/default", address);
   }
 
   @Test
@@ -65,6 +65,6 @@ class ConfigCenterConfigurationSourceImplTest {
     addressManager.onRefreshEndpointEvent(event);
 
     List<String> availableAZ = Deencapsulation.getField(addressManager, "availableZone");
-    Assert.assertEquals("https://127.0.0.1:30100/v3/test", availableAZ.get(0));
+    Assertions.assertEquals("https://127.0.0.1:30100/v3/test", availableAZ.get(0));
   }
 }

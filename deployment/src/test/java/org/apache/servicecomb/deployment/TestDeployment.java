@@ -20,8 +20,8 @@ package org.apache.servicecomb.deployment;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDeployment {
   @After
@@ -33,7 +33,7 @@ public class TestDeployment {
   public void testConfiguration() {
     CustomDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo("TestCenter");
-    Assert.assertEquals(info.getAccessURL().get(0), "http://localhost/custom");
-    Assert.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
+    Assertions.assertEquals("http://localhost/custom", info.getAccessURL().get(0));
+    Assertions.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
   }
 }

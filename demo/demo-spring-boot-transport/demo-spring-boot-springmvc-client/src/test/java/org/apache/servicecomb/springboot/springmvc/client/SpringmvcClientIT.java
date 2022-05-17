@@ -17,13 +17,10 @@
 
 package org.apache.servicecomb.springboot.springmvc.client;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
-
 import org.apache.servicecomb.demo.TestMgr;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class SpringmvcClientIT {
   @Before
@@ -36,10 +33,10 @@ public class SpringmvcClientIT {
     try {
       SpringmvcClient.main(new String[0]);
 
-      MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+      Assertions.assertTrue(TestMgr.errors().isEmpty());
     } catch (Throwable e) {
       e.printStackTrace();
-      fail("test case failed, message=" + e.getMessage());
+      Assertions.fail("test case failed, message=" + e.getMessage());
     }
   }
 }

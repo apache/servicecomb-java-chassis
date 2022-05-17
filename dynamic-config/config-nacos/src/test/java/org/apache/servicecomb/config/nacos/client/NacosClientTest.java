@@ -24,15 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl;
 import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
-import org.apache.servicecomb.config.nacos.client.NacosClient;
-import org.apache.servicecomb.config.nacos.client.NacosConfig;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class NacosClientTest {
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
   }
@@ -48,7 +46,7 @@ public class NacosClientTest {
     //nacosClient.refreshNacosConfig();
     Map<String, Object> originMap = Deencapsulation.getField(nacosClient, "originalConfigMap");
     originMap.put("nacos","12345");
-    Assert.assertEquals(1, originMap.size());
+    Assertions.assertEquals(1, originMap.size());
   }
 
   @Test
@@ -68,7 +66,7 @@ public class NacosClientTest {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
 
     status = true;
     before.put("test", "testValue");
@@ -77,7 +75,7 @@ public class NacosClientTest {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
 
     status = true;
     after.put("test", "testValue2");
@@ -86,7 +84,7 @@ public class NacosClientTest {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
 
     status = true;
     try {
@@ -94,6 +92,6 @@ public class NacosClientTest {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 }
