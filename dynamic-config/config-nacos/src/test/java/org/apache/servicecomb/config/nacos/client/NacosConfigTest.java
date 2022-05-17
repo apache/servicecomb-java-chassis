@@ -18,12 +18,12 @@
 package org.apache.servicecomb.config.nacos.client;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class NacosConfigTest {
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
   }
@@ -31,8 +31,8 @@ public class NacosConfigTest {
   @Test
   public void getServiceName() {
     NacosConfig instance = NacosConfig.INSTANCE;
-    Assert.assertEquals("DEFAULT_GROUP", instance.getGroup());
-    Assert.assertEquals("127.0.0.1:8848", instance.getServerAddr());
-    Assert.assertEquals("example", instance.getDataId());
+    Assertions.assertEquals("DEFAULT_GROUP", instance.getGroup());
+    Assertions.assertEquals("127.0.0.1:8848", instance.getServerAddr());
+    Assertions.assertEquals("example", instance.getDataId());
   }
 }

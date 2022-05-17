@@ -17,14 +17,11 @@
 
 package org.apache.servicecomb.springboot.jaxrs;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
-
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class SpringBootJaxrsIT {
 
@@ -37,11 +34,10 @@ public class SpringBootJaxrsIT {
   public void clientGetsNoError() throws Exception {
     try {
       JaxrsClient.main(new String[0]);
-
-      MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+      Assertions.assertTrue(TestMgr.errors().isEmpty());
     } catch (Throwable e) {
       e.printStackTrace();
-      fail("test case failed, message=" + e.getMessage());
+      Assertions.fail("test case failed, message=" + e.getMessage());
     }
   }
 }

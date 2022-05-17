@@ -18,12 +18,12 @@
 package org.apache.servicecomb.config.client;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class ApolloConfigTest {
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() {
     ApolloConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
   }
@@ -31,13 +31,13 @@ public class ApolloConfigTest {
   @Test
   public void getServiceName() {
     ApolloConfig instance = ApolloConfig.INSTANCE;
-    Assert.assertEquals("apollo-test", instance.getServiceName());
-    Assert.assertEquals("http://127.0.0.1:8070", instance.getServerUri());
-    Assert.assertEquals("DEV", instance.getEnv());
-    Assert.assertEquals("test-cluster", instance.getServerClusters());
-    Assert.assertEquals("application", instance.getNamespace());
-    Assert.assertEquals("xxx", instance.getToken());
-    Assert.assertEquals(30, instance.getRefreshInterval());
-    Assert.assertEquals(0, instance.getFirstRefreshInterval());
+    Assertions.assertEquals("apollo-test", instance.getServiceName());
+    Assertions.assertEquals("http://127.0.0.1:8070", instance.getServerUri());
+    Assertions.assertEquals("DEV", instance.getEnv());
+    Assertions.assertEquals("test-cluster", instance.getServerClusters());
+    Assertions.assertEquals("application", instance.getNamespace());
+    Assertions.assertEquals("xxx", instance.getToken());
+    Assertions.assertEquals(30, instance.getRefreshInterval());
+    Assertions.assertEquals(0, instance.getFirstRefreshInterval());
   }
 }

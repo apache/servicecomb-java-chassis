@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.config.WatchedUpdateListener;
@@ -38,7 +38,7 @@ public class ApolloConfigurationSourceImplTest {
   public void testCreate() throws Exception {
 
     ApolloConfigurationSourceImpl apolloConfigurationSource = new ApolloConfigurationSourceImpl();
-    apolloConfigurationSource.addUpdateListener(result -> Assert.assertTrue(!result.getAdded().isEmpty()));
+    apolloConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getAdded().isEmpty()));
     UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
     Map<String, Object> createItems = new HashMap<>();
     createItems.put("testKey", "testValue");
@@ -49,7 +49,7 @@ public class ApolloConfigurationSourceImplTest {
   public void testUpdate() throws Exception {
 
     ApolloConfigurationSourceImpl apolloConfigurationSource = new ApolloConfigurationSourceImpl();
-    apolloConfigurationSource.addUpdateListener(result -> Assert.assertTrue(!result.getChanged().isEmpty()));
+    apolloConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getChanged().isEmpty()));
     UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
     Map<String, Object> updateItems = new HashMap<>();
     updateItems.put("testKey", "testValue");
@@ -59,14 +59,14 @@ public class ApolloConfigurationSourceImplTest {
   @Test
   public void testDelete() throws Exception {
     ApolloConfigurationSourceImpl apolloConfigurationSource = new ApolloConfigurationSourceImpl();
-    apolloConfigurationSource.addUpdateListener(result -> Assert.assertTrue(!result.getDeleted().isEmpty()));
-    UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
+    apolloConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getDeleted().isEmpty()));
+    UpdateHandler updateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
     Map<String, Object> deleteItems = new HashMap<>();
     deleteItems.put("testKey", "testValue");
 
     apolloConfigurationSource.getCurrentData().put("testKey", "testValue");
-    udateHandler.handle(DELETE, deleteItems);
-    Assert.assertTrue(apolloConfigurationSource.getCurrentData().isEmpty());
+    updateHandler.handle(DELETE, deleteItems);
+    Assertions.assertTrue(apolloConfigurationSource.getCurrentData().isEmpty());
   }
 
   @Test
@@ -75,6 +75,6 @@ public class ApolloConfigurationSourceImplTest {
     WatchedUpdateListener watchedUpdateListener = Mockito.mock(WatchedUpdateListener.class);
     apolloConfigurationSource.addUpdateListener(watchedUpdateListener);
     apolloConfigurationSource.removeUpdateListener(watchedUpdateListener);
-    Assert.assertTrue(apolloConfigurationSource.getCurrentListeners().isEmpty());
+    Assertions.assertTrue(apolloConfigurationSource.getCurrentListeners().isEmpty());
   }
 }

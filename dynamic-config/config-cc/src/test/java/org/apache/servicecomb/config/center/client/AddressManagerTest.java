@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -44,16 +44,16 @@ class AddressManagerTest {
     addressManager1 = new AddressManager("project", addresses, new EventBus());
     addressManager2 = new AddressManager(null, addresses, new EventBus());
 
-    Assert.assertNotNull(addressManager1);
-    Assert.assertNotNull(addressManager2);
+    Assertions.assertNotNull(addressManager1);
+    Assertions.assertNotNull(addressManager2);
 
     List<String> addresses = Deencapsulation.getField(addressManager1, "addresses");
-    Assert.assertEquals(2, addresses.size());
-    Assert.assertEquals("http://127.0.0.1:30103/v3/project", addresses.get(0));
+    Assertions.assertEquals(2, addresses.size());
+    Assertions.assertEquals("http://127.0.0.1:30103/v3/project", addresses.get(0));
 
-    Assert.assertEquals("https://127.0.0.2:30103/v3/project", addressManager1.address());
-    Assert.assertEquals("http://127.0.0.1:30103/v3/project", addressManager1.address());
-    Assert.assertEquals("https://127.0.0.2:30103/v3/default", addressManager2.address());
+    Assertions.assertEquals("https://127.0.0.2:30103/v3/project", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103/v3/project", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103/v3/default", addressManager2.address());
   }
 
   @Test
@@ -70,11 +70,11 @@ class AddressManagerTest {
     addressManager1.refreshEndpoint(event, "CseConfigCenter");
 
     List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
-    Assert.assertEquals("http://127.0.0.3:30100/v3/project", availableZone.get(0));
+    Assertions.assertEquals("http://127.0.0.3:30100/v3/project", availableZone.get(0));
 
     List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
-    Assert.assertEquals("http://127.0.0.4:30100/v3/project", availableRegion.get(0));
+    Assertions.assertEquals("http://127.0.0.4:30100/v3/project", availableRegion.get(0));
 
-    Assert.assertEquals("http://127.0.0.3:30100/v3/project", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.3:30100/v3/project", addressManager1.address());
   }
 }
