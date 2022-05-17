@@ -30,8 +30,8 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory.UrlWithProviderPrefixClientHttpRequest;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpMethod;
 
 import mockit.Deencapsulation;
@@ -48,7 +48,7 @@ public class TestUrlWithProviderPrefixClientHttpRequestFactory {
     UrlWithProviderPrefixClientHttpRequest request =
         (UrlWithProviderPrefixClientHttpRequest) factory.createRequest(uri, HttpMethod.GET);
 
-    Assert.assertEquals("/v1/path", request.findUriPath(uri));
+    Assertions.assertEquals("/v1/path", request.findUriPath(uri));
   }
 
   @Test
@@ -78,6 +78,6 @@ public class TestUrlWithProviderPrefixClientHttpRequestFactory {
 
     Deencapsulation.invoke(request, "invoke", new HashMap<>());
 
-    Assert.assertEquals("/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
+    Assertions.assertEquals("/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
   }
 }

@@ -17,13 +17,13 @@
 
 package org.apache.servicecomb.provider.springmvc.reference.async;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CseAsyncRestTemplateTest {
 
   @Test
   public void testCseAsyncRestTemplate() {
-    Assert.assertEquals(CseAsyncRestTemplate.class, new CseAsyncRestTemplate().getClass());
+    Assertions.assertEquals(CseAsyncRestTemplate.class, new CseAsyncRestTemplate().getClass());
   }
 }

@@ -30,9 +30,9 @@ import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -87,7 +87,7 @@ public class CseAsyncClientHttpRequestTest {
     byte[] body = "abc".getBytes();
     client.setRequestBody(body);
     client.executeAsync();
-    Assert.assertArrayEquals(body, (byte[]) holder.value.getInvocationArguments().get("input"));
+    Assertions.assertArrayEquals(body, (byte[]) holder.value.getInvocationArguments().get("input"));
   }
 
   @Test
@@ -113,7 +113,7 @@ public class CseAsyncClientHttpRequestTest {
         new ListenableFutureCallback<ClientHttpResponse>() {
           @Override
           public void onFailure(Throwable ex) {
-            Assert.assertSame(error, ex);
+            Assertions.assertSame(error, ex);
           }
 
           @Override

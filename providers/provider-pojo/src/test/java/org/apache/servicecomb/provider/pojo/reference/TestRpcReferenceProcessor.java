@@ -25,9 +25,9 @@ import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.PersonReference;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
 
 import mockit.Injectable;
@@ -48,7 +48,7 @@ public class TestRpcReferenceProcessor {
   @Test
   public void postProcessAfterInitialization() {
     Object bean = new Object();
-    Assert.assertSame(bean, consumers.postProcessAfterInitialization(bean, "test"));
+    Assertions.assertSame(bean, consumers.postProcessAfterInitialization(bean, "test"));
   }
 
   @Test
@@ -57,12 +57,12 @@ public class TestRpcReferenceProcessor {
 
     PersonReference bean = new PersonReference();
 
-    Assert.assertNull(bean.person);
+    Assertions.assertNull(bean.person);
 
     consumers.setEmbeddedValueResolver((strVal) -> strVal);
-    Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
+    Assertions.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
-    Assert.assertNotNull(bean.person);
+    Assertions.assertNotNull(bean.person);
 
     scbEngine.destroy();
   }
@@ -71,11 +71,11 @@ public class TestRpcReferenceProcessor {
   public void testNoReference(@Injectable ApplicationContext applicationContext) {
     Person bean = new Person();
 
-    Assert.assertNull(bean.name);
+    Assertions.assertNull(bean.name);
 
-    Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
+    Assertions.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
-    Assert.assertNull(bean.name);
+    Assertions.assertNull(bean.name);
   }
 
   @Test

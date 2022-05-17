@@ -17,11 +17,7 @@
 
 package org.apache.servicecomb.provider.pojo;
 
-import java.io.File;
-import java.lang.reflect.Method;
-
-import javax.servlet.http.Part;
-
+import com.fasterxml.jackson.databind.JavaType;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -29,18 +25,20 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
-import com.fasterxml.jackson.databind.JavaType;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.lang.reflect.Method;
 
 public class TestInvoker {
   public interface DownloadIntf {
     ReadStreamPart download();
   }
 
-  public class DownloadSchema {
+  public static class DownloadSchema {
     public File download() {
       return null;
     }
@@ -69,7 +67,7 @@ public class TestInvoker {
 
     Method method = DownloadIntf.class.getMethod("download");
     JavaType javaType = refresher.getLatestMeta().ensureFindOperationMeta(method).getResponsesType();
-    Assert.assertSame(Part.class, javaType.getRawClass());
+    Assertions.assertSame(Part.class, javaType.getRawClass());
 
     scbEngine.destroy();
   }

@@ -18,8 +18,8 @@
 package org.apache.servicecomb.provider.rest.common;
 
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestProducers {
   @RestSchema(schemaId = "test")
@@ -31,21 +31,21 @@ public class TestRestProducers {
   @Test
   public void postProcessBeforeInitialization() {
     Object bean = new Object();
-    Assert.assertSame(bean, producer.postProcessBeforeInitialization(bean, "test"));
+    Assertions.assertSame(bean, producer.postProcessBeforeInitialization(bean, "test"));
   }
 
   @Test
   public void postProcessAfterInitializationNormal() {
     RestSchemaForTest bean = new RestSchemaForTest();
-    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, ""));
-    Assert.assertEquals(1, producer.getProducerMetaList().size());
+    Assertions.assertSame(bean, producer.postProcessAfterInitialization(bean, ""));
+    Assertions.assertEquals(1, producer.getProducerMetaList().size());
   }
 
   @Test
   public void postProcessAfterInitializationNoAnnotation() {
     Object bean = new Object();
-    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, ""));
-    Assert.assertEquals(0, producer.getProducerMetaList().size());
+    Assertions.assertSame(bean, producer.postProcessAfterInitialization(bean, ""));
+    Assertions.assertEquals(0, producer.getProducerMetaList().size());
   }
 
   @Test

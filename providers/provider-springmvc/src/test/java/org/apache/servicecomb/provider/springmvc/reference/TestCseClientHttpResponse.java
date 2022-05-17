@@ -20,8 +20,8 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.io.IOException;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 
 public class TestCseClientHttpResponse {
@@ -33,32 +33,32 @@ public class TestCseClientHttpResponse {
 
   @Test
   public void testGetResult() {
-    Assert.assertNull(cseclientrequest.getResult());
+    Assertions.assertNull(cseclientrequest.getResult());
   }
 
   @Test
   public void testGetBody() throws IOException {
-    Assert.assertNotNull(cseclientrequest.getBody());
+    Assertions.assertNotNull(cseclientrequest.getBody());
   }
 
   @Test
   public void testGetHeaders() {
-    Assert.assertNotNull(cseclientrequest.getHeaders());
+    Assertions.assertNotNull(cseclientrequest.getHeaders());
   }
 
   @Test
   public void testGetStatusCode() throws IOException {
-    Assert.assertEquals(HttpStatus.OK, cseclientrequest.getStatusCode());
+    Assertions.assertEquals(HttpStatus.OK, cseclientrequest.getStatusCode());
   }
 
   @Test
   public void testGetRawStatusCode() throws IOException {
-    Assert.assertEquals(200, cseclientrequest.getRawStatusCode());
+    Assertions.assertEquals(200, cseclientrequest.getRawStatusCode());
   }
 
   @Test
   public void testGetStatusText() throws IOException {
     cseclientrequest.close();
-    Assert.assertEquals(HttpStatus.OK.getReasonPhrase(), cseclientrequest.getStatusText());
+    Assertions.assertEquals(HttpStatus.OK.getReasonPhrase(), cseclientrequest.getStatusText());
   }
 }

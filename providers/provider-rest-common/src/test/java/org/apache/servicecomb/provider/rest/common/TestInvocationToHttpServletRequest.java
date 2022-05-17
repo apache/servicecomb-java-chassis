@@ -34,13 +34,13 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.net.SocketAddress;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationToHttpServletRequest {
   @Mocked
@@ -92,7 +92,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertNull(request.getParameter("name"));
+    Assertions.assertNull(request.getParameter("name"));
   }
 
   @Test
@@ -106,7 +106,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertNull(request.getParameter("name"));
+    Assertions.assertNull(request.getParameter("name"));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("value", request.getParameter("name"));
+    Assertions.assertEquals("value", request.getParameter("name"));
   }
 
   @Test
@@ -132,7 +132,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertNull(request.getParameterValues("name"));
+    Assertions.assertNull(request.getParameterValues("name"));
   }
 
   @Test
@@ -183,7 +183,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("value", request.getHeader("name"));
+    Assertions.assertEquals("value", request.getHeader("name"));
   }
 
   @Test
@@ -197,7 +197,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals(-1, request.getIntHeader("name"));
+    Assertions.assertEquals(-1, request.getIntHeader("name"));
   }
 
   @Test
@@ -213,9 +213,9 @@ public class TestInvocationToHttpServletRequest {
 
     try {
       request.getIntHeader("name");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (NumberFormatException e) {
-      Assert.assertEquals("For input string: \"value\"", e.getMessage());
+      Assertions.assertEquals("For input string: \"value\"", e.getMessage());
     }
   }
 
@@ -230,7 +230,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals(1, request.getIntHeader("name"));
+    Assertions.assertEquals(1, request.getIntHeader("name"));
   }
 
   @Test
@@ -242,7 +242,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("GET", request.getMethod());
+    Assertions.assertEquals("GET", request.getMethod());
   }
 
   @Test
@@ -256,7 +256,7 @@ public class TestInvocationToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("/path", request.getPathInfo());
+    Assertions.assertEquals("/path", request.getPathInfo());
   }
 
   @Test
@@ -272,10 +272,10 @@ public class TestInvocationToHttpServletRequest {
 
     try {
       request.getPathInfo();
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals("Failed to get path info.", e.getMessage());
-      Assert.assertEquals("error", e.getCause().getMessage());
+      Assertions.assertEquals("Failed to get path info.", e.getMessage());
+      Assertions.assertEquals("error", e.getCause().getMessage());
     }
   }
 
@@ -294,9 +294,9 @@ public class TestInvocationToHttpServletRequest {
     String addr = request.getRemoteAddr();
     String host = request.getRemoteHost();
     int port = request.getRemotePort();
-    Assert.assertEquals(addr, "127.0.0.2");
-    Assert.assertEquals(host, "127.0.0.2");
-    Assert.assertEquals(port, 8088);
+    Assertions.assertEquals(addr, "127.0.0.2");
+    Assertions.assertEquals(host, "127.0.0.2");
+    Assertions.assertEquals(port, 8088);
   }
 
   @Test
@@ -316,24 +316,24 @@ public class TestInvocationToHttpServletRequest {
     String addr = request.getRemoteAddr();
     String host = request.getRemoteHost();
     int port = request.getRemotePort();
-    Assert.assertEquals(addr, "");
-    Assert.assertEquals(host, "");
-    Assert.assertEquals(port, 0);
+    Assertions.assertEquals(addr, "");
+    Assertions.assertEquals(host, "");
+    Assertions.assertEquals(port, 0);
   }
 
   @Test
   public void testGetContextPath(@Mocked Invocation invocation) throws Exception {
     InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
-    Assert.assertEquals("", request.getContextPath());
+    Assertions.assertEquals("", request.getContextPath());
   }
 
   @Test
   public void getContentType() {
-    Assert.assertNull(request.getContentType());
+    Assertions.assertNull(request.getContentType());
   }
 
   @Test
   public void getCharacterEncoding() {
-    Assert.assertNull(request.getCharacterEncoding());
+    Assertions.assertNull(request.getCharacterEncoding());
   }
 }

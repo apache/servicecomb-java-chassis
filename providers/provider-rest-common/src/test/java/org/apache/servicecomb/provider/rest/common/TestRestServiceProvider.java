@@ -19,8 +19,8 @@ package org.apache.servicecomb.provider.rest.common;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
 
 import mockit.Expectations;
@@ -40,6 +40,6 @@ public class TestRestServiceProvider {
 
     RestProducerProvider restProducerProvider = new RestProducerProvider();
     restProducerProvider.init();
-    Assert.assertEquals(RestConst.REST, restProducerProvider.getName());
+    Assertions.assertEquals(RestConst.REST, restProducerProvider.getName());
   }
 }

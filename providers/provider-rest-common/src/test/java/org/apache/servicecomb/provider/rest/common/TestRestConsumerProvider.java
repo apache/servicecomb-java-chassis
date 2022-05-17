@@ -18,8 +18,8 @@
 package org.apache.servicecomb.provider.rest.common;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRestConsumerProvider {
 
@@ -27,6 +27,6 @@ public class TestRestConsumerProvider {
   public void testInit() throws Exception {
     RestConsumerProvider instance = new RestConsumerProvider();
     instance.init();
-    Assert.assertEquals(RestConst.REST, instance.getName());
+    Assertions.assertEquals(RestConst.REST, instance.getName());
   }
 }
