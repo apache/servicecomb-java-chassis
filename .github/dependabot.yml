@@ -26,3 +26,10 @@ updates:
     directory: "/dependencies/default"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "jersey-common"
+        versions:
+          - "3.x"
+      - dependency-name: "okhttp"
+        versions:
+          - "4.x"
