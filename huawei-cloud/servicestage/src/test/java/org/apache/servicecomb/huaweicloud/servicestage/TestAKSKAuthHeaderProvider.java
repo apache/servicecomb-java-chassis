@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -34,7 +34,7 @@ public class TestAKSKAuthHeaderProvider {
     Mockito.when(configuration.getString("servicecomb.credentials.akskCustomCipher", "default")).thenReturn("default");
 
     AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(configuration);
-    Assert.assertEquals("hello", provider.authHeaders().get("X-Service-Project"), "hello");
+    Assertions.assertEquals("hello", provider.authHeaders().get("X-Service-Project"));
   }
 
   @Test
@@ -47,6 +47,6 @@ public class TestAKSKAuthHeaderProvider {
     Mockito.when(configuration.getString("servicecomb.credentials.akskCustomCipher", "default")).thenReturn("default");
 
     AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(configuration);
-    Assert.assertEquals("hello", provider.authHeaders().get("X-Service-Project"), "%E6%B5%8B%E8%AF%95");
+    Assertions.assertEquals("%E6%B5%8B%E8%AF%95", provider.authHeaders().get("X-Service-Project"));
   }
 }

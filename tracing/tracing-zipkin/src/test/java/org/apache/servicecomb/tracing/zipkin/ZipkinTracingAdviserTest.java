@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
 
 import brave.Span;
@@ -105,7 +104,7 @@ public class ZipkinTracingAdviserTest {
     await().atMost(2, SECONDS).until(() -> !traces.isEmpty());
 
     zipkin2.Span span = traces.values().iterator().next().poll();
-    MatcherAssert.assertThat(span.name(), is(spanName));
+    Assertions.assertEquals(spanName, span.name());
     MatcherAssert.assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
   }
 
