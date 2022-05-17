@@ -31,7 +31,7 @@
 
   <properties>
     <!-- Dependency versions -->
-    <activation.version>1.2.2</activation.version>
+    <activation.version>2.0.1</activation.version>
     <archaius.version>0.7.7</archaius.version>
     <asciidoctorj.version>1.6.2</asciidoctorj.version>
     <aspectj.version>1.9.9.1</aspectj.version>
