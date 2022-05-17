@@ -20,8 +20,8 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.io.IOException;
 import java.net.URI;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 
 public class TestCseClientHttpRequestFactory {
@@ -31,10 +31,10 @@ public class TestCseClientHttpRequestFactory {
 
     CseClientHttpRequestFactory lCseClientHttpRequestFactory = new CseClientHttpRequestFactory();
     try {
-      Assert.assertEquals(HttpMethod.GET,
+      Assertions.assertEquals(HttpMethod.GET,
           lCseClientHttpRequestFactory.createRequest(URI.create("/test"), HttpMethod.GET).getMethod());
     } catch (IOException e) {
-      Assert.assertNotNull(e);
+      Assertions.assertNotNull(e);
     }
   }
 }

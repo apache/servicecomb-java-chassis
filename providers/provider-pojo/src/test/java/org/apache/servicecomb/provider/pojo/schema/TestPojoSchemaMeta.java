@@ -18,12 +18,12 @@
 package org.apache.servicecomb.provider.pojo.schema;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestPojoSchemaMeta {
 
@@ -47,7 +47,7 @@ public class TestPojoSchemaMeta {
     lPojoSchemaMeta.setImplementation("implementation");
     Deencapsulation.setField(lPojoSchemaMeta, "pojoProducers", producers);
     lPojoSchemaMeta.afterPropertiesSet();
-    Assert.assertEquals("implementation", lPojoSchemaMeta.getImplementation());
+    Assertions.assertEquals("implementation", lPojoSchemaMeta.getImplementation());
   }
 
   @Test
@@ -55,13 +55,13 @@ public class TestPojoSchemaMeta {
       throws Exception {
     Object lObject = new Object();
     lPojoSchemaMeta.setInstance(lObject);
-    Assert.assertEquals(lObject, lPojoSchemaMeta.getInstance());
+    Assertions.assertEquals(lObject, lPojoSchemaMeta.getInstance());
   }
 
   @Test
   public void testGetSchemaId()
       throws Exception {
     lPojoSchemaMeta.setSchemaId("schemaId");
-    Assert.assertEquals("schemaId", lPojoSchemaMeta.getSchemaId());
+    Assertions.assertEquals("schemaId", lPojoSchemaMeta.getSchemaId());
   }
 }

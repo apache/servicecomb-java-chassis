@@ -27,9 +27,9 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,7 +89,7 @@ public class TestCseClientHttpRequest {
 
     client.execute();
 
-    Assert.assertArrayEquals(body, (byte[]) holder.value.getInvocationArguments().get("input"));
-    Assert.assertEquals("123", holder.value.getInvocationArguments().get("token"));
+    Assertions.assertArrayEquals(body, (byte[]) holder.value.getInvocationArguments().get("input"));
+    Assertions.assertEquals("123", holder.value.getInvocationArguments().get("token"));
   }
 }

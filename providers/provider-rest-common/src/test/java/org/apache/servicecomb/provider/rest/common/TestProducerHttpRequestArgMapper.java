@@ -26,11 +26,11 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestProducerHttpRequestArgMapper {
   @Mocked
@@ -50,7 +50,7 @@ public class TestProducerHttpRequestArgMapper {
       }
     };
 
-    Assert.assertSame(request, mapper.createContextArg(invocation));
+    Assertions.assertSame(request, mapper.createContextArg(invocation));
   }
 
   @Test
@@ -69,6 +69,6 @@ public class TestProducerHttpRequestArgMapper {
       }
     };
 
-    Assert.assertEquals(InvocationToHttpServletRequest.class, mapper.createContextArg(invocation).getClass());
+    Assertions.assertEquals(InvocationToHttpServletRequest.class, mapper.createContextArg(invocation).getClass());
   }
 }

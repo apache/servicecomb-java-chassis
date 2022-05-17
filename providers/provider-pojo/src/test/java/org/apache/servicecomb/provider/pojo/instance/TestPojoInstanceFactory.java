@@ -18,29 +18,25 @@
 package org.apache.servicecomb.provider.pojo.instance;
 
 import org.apache.servicecomb.provider.pojo.PojoConst;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPojoInstanceFactory {
 
   @Test
-  public void testInitException()
-      throws Exception {
-
+  public void testInitException() {
     PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
     try {
       lPojoInstanceFactory.create("TestPojoInstanceFactory");
     } catch (Error e) {
-      Assert.assertEquals("Fail to create instance of class:TestPojoInstanceFactory", e.getMessage());
+      Assertions.assertEquals("Fail to create instance of class:TestPojoInstanceFactory", e.getMessage());
     }
   }
 
   @Test
-  public void testInit()
-      throws Exception {
-
+  public void testInit() {
     PojoInstanceFactory lPojoInstanceFactory = new PojoInstanceFactory();
     lPojoInstanceFactory.create("org.apache.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
-    Assert.assertEquals(PojoConst.POJO, lPojoInstanceFactory.getImplName());
+    Assertions.assertEquals(PojoConst.POJO, lPojoInstanceFactory.getImplName());
   }
 }

@@ -19,32 +19,30 @@ package org.apache.servicecomb.provider.pojo.instance;
 
 import org.apache.servicecomb.provider.common.MockUtil;
 import org.apache.servicecomb.provider.pojo.PojoConst;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSpringInstanceFactory {
 
   @Test
-  public void testInitException()
-      throws Exception {
+  public void testInitException() {
 
     SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
     MockUtil.getInstance().mockBeanUtils();
     try {
       lSpringInstanceFactory.create("TestSpringInstanceFactory");
     } catch (Error e) {
-      Assert.assertEquals("Fail to find bean:TestSpringInstanceFactory", e.getMessage());
+      Assertions.assertEquals("Fail to find bean:TestSpringInstanceFactory", e.getMessage());
     }
   }
 
   @Test
-  public void testInit()
-      throws Exception {
+  public void testInit() {
 
     SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
     MockUtil.getInstance().mockBeanUtils();
     MockUtil.getInstance().mockBeanUtilsObject();
     lSpringInstanceFactory.create("org.apache.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
-    Assert.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
+    Assertions.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
   }
 }
