@@ -23,7 +23,6 @@ import static org.apache.servicecomb.edge.core.DefaultEdgeDispatcher.VERSION;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import io.vertx.ext.web.RoutingContext;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultEdgeDispatcher {
   @Before
@@ -83,9 +83,9 @@ public class TestDefaultEdgeDispatcher {
       }
     };
     dispatcher.init(router);
-    Assert.assertEquals(dispatcher.enabled(), false);
-    Assert.assertEquals(Utils.findActualPath("/api/test", 1), "/test");
-    Assert.assertEquals(dispatcher.getOrder(), 20000);
+    Assertions.assertFalse(dispatcher.enabled());
+    Assertions.assertEquals(Utils.findActualPath("/api/test", 1), "/test");
+    Assertions.assertEquals(dispatcher.getOrder(), 20000);
 
     dispatcher.onRequest(context);
     // assert done in expectations.

@@ -19,9 +19,8 @@ package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.version.VersionRule;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCompatiblePathVersionMapper {
   CompatiblePathVersionMapper mapper = new CompatiblePathVersionMapper();
@@ -30,7 +29,7 @@ public class TestCompatiblePathVersionMapper {
   public void getOrCreate() {
     VersionRule versionRule = mapper.getOrCreate("v1");
 
-    Assert.assertEquals("1.0.0.0-2.0.0.0", versionRule.getVersionRule());
+    Assertions.assertEquals("1.0.0.0-2.0.0.0", versionRule.getVersionRule());
   }
 
   @Test
@@ -72,6 +71,6 @@ public class TestCompatiblePathVersionMapper {
   public void createVersionRule_32767() {
     VersionRule versionRule = mapper.getOrCreate("v32767");
 
-    Assert.assertEquals("32767.0.0.0+", versionRule.getVersionRule());
+    Assertions.assertEquals("32767.0.0.0+", versionRule.getVersionRule());
   }
 }
