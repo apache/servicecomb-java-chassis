@@ -159,7 +159,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_successfully_loaded() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(4, markers.size());
+    Assertions.assertEquals(5, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -177,17 +177,17 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_delete() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(4, markers.size());
+    Assertions.assertEquals(5, markers.size());
     dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(5, markers.size());
+    Assertions.assertEquals(6, markers.size());
     tearDown();
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(4, markers.size());
+    Assertions.assertEquals(5, markers.size());
   }
 
   @Test
@@ -204,7 +204,7 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(5, markers.size());
+    Assertions.assertEquals(6, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -344,7 +344,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_rate_limit_properties_successfully_loaded() {
     Map<String, RateLimitingPolicy> policies = rateLimitProperties.getParsedEntity();
-    Assertions.assertEquals(1, policies.size());
+    Assertions.assertEquals(2, policies.size());
     RateLimitingPolicy policy = policies.get("demo-rateLimiting");
     Assertions.assertEquals(1, policy.getRate());
   }

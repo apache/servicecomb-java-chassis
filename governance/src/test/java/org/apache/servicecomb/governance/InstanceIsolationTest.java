@@ -66,7 +66,7 @@ public class InstanceIsolationTest {
 
     GovernanceRequest request = new GovernanceRequest();
     request.setInstanceId("instance01");
-    request.setServiceId("service01");
+    request.setServiceName("service01");
 
     CircuitBreaker circuitBreaker = instanceIsolationHandler.getActuator(request);
     ds.withCircuitBreaker(circuitBreaker);
@@ -85,7 +85,7 @@ public class InstanceIsolationTest {
     // isolation do not influence other instances
     GovernanceRequest request2 = new GovernanceRequest();
     request2.setInstanceId("instance02");
-    request2.setServiceId("service01");
+    request2.setServiceName("service01");
 
     CircuitBreaker circuitBreaker2 = instanceIsolationHandler.getActuator(request2);
     ds2.withCircuitBreaker(circuitBreaker2);

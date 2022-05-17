@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,23 +39,9 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 public class FlowControlTest {
   private RateLimitingHandler rateLimitingHandler;
 
-  private RateLimitProperties rateLimitProperties;
-
-  private MatchersManager matchersManager;
-
   @Autowired
   public void setRateLimitingHandler(RateLimitingHandler rateLimitingHandler) {
     this.rateLimitingHandler = rateLimitingHandler;
-  }
-
-  @Autowired
-  public void setRateLimitProperties(RateLimitProperties rateLimitProperties) {
-    this.rateLimitProperties = rateLimitProperties;
-  }
-
-  @Autowired
-  public void setMatchersManager(MatchersManager matchersManager) {
-    this.matchersManager = matchersManager;
   }
 
   public FlowControlTest() {
@@ -64,9 +49,7 @@ public class FlowControlTest {
 
   @Test
   public void test_rate_limiting_work() throws Throwable {
-    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> {
-      return "test";
-    });
+    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
     request.setUri("/hello");
@@ -81,23 +64,60 @@ public class FlowControlTest {
     AtomicBoolean expected = new AtomicBoolean(false);
     AtomicBoolean notExpected = new AtomicBoolean(false);
     for (int i = 0; i < 10; i++) {
-      new Thread() {
-        public void run() {
-          try {
-            Object result = ds.get();
-            if (!"test".equals(result)) {
-              notExpected.set(true);
-            }
-          } catch (Throwable e) {
-            if (e instanceof RequestNotPermitted) {
-              expected.set(true);
-            } else {
-              notExpected.set(true);
-            }
+      new Thread(() -> {
+        try {
+          Object result = ds.get();
+          if (!"test".equals(result)) {
+            notExpected.set(true);
           }
-          cd.countDown();
+        } catch (Throwable e) {
+          if (e instanceof RequestNotPermitted) {
+            expected.set(true);
+          } else {
+            notExpected.set(true);
+          }
         }
-      }.start();
+        cd.countDown();
+      }).start();
+    }
+    cd.await(1, TimeUnit.SECONDS);
+    Assertions.assertTrue(expected.get());
+    Assertions.assertFalse(notExpected.get());
+  }
+
+  @Test
+  public void test_rate_limiting_service_name_work() throws Throwable {
+    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/helloServiceName");
+    request.setServiceName("srcService");
+
+    RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
+    ds.withRateLimiter(rateLimiter);
+
+    Assertions.assertEquals("test", ds.get());
+
+    // flow control
+    CountDownLatch cd = new CountDownLatch(10);
+    AtomicBoolean expected = new AtomicBoolean(false);
+    AtomicBoolean notExpected = new AtomicBoolean(false);
+    for (int i = 0; i < 10; i++) {
+      new Thread(() -> {
+        try {
+          Object result = ds.get();
+          if (!"test".equals(result)) {
+            notExpected.set(true);
+          }
+        } catch (Throwable e) {
+          if (e instanceof RequestNotPermitted) {
+            expected.set(true);
+          } else {
+            notExpected.set(true);
+          }
+        }
+        cd.countDown();
+      }).start();
     }
     cd.await(1, TimeUnit.SECONDS);
     Assertions.assertTrue(expected.get());

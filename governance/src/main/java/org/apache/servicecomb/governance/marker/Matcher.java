@@ -30,11 +30,22 @@ public class Matcher {
 
   private List<String> method;
 
+  private String serviceName;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public Map<String, RawOperator> getHeaders() {
     return headers;
   }
 
-  public void setHeaders(Map<String, RawOperator> headers) {
+  public void setHeaders(
+      Map<String, RawOperator> headers) {
     this.headers = headers;
   }
 
@@ -54,11 +65,11 @@ public class Matcher {
     this.method = method;
   }
 
-  public String getName() {
-    return name;
+  public String getServiceName() {
+    return serviceName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
   }
 }
