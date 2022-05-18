@@ -29,7 +29,6 @@ import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

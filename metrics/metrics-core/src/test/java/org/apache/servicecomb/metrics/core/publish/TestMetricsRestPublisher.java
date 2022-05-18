@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -28,6 +27,7 @@ import com.netflix.spectator.api.Clock;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMetricsRestPublisher {
   MetricsRestPublisher publisher = new MetricsRestPublisher();
@@ -36,7 +36,7 @@ public class TestMetricsRestPublisher {
   public void measure_globalRegistryNull() {
     Map<String, Double> result = publisher.measure();
 
-    Assert.assertEquals(0, result.size());
+    Assertions.assertEquals(0, result.size());
   }
 
   @Test
@@ -52,8 +52,8 @@ public class TestMetricsRestPublisher {
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
     Map<String, Double> result = publisher.measure();
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(0, result.get("name(statistic=count,t1=v1,t2=v2)"), 0);
-    Assert.assertEquals(0, result.get("name(statistic=totalTime,t1=v1,t2=v2)"), 0);
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(0, result.get("name(statistic=count,t1=v1,t2=v2)"), 0);
+    Assertions.assertEquals(0, result.get("name(statistic=totalTime,t1=v1,t2=v2)"), 0);
   }
 }

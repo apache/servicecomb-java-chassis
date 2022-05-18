@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -42,6 +41,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestOsMeter {
   Registry registry = new DefaultRegistry(new ManualClock());
@@ -104,12 +104,12 @@ public class TestOsMeter {
     };
     osMeter.calcMeasurements(1, 1);
     ArrayList<Measurement> measurements = Lists.newArrayList(osMeter.measure());
-    Assert.assertEquals(6, measurements.size());
-    Assert.assertEquals(0.875, measurements.get(0).value(), 0.0);
-    Assert.assertEquals(0.5, measurements.get(1).value(), 0.0);
-    Assert.assertEquals(1.0, measurements.get(2).value(), 0.0);
-    Assert.assertEquals(1.0, measurements.get(3).value(), 0.0);
-    Assert.assertEquals(1.0, measurements.get(4).value(), 0.0);
-    Assert.assertEquals(1.0, measurements.get(5).value(), 0.0);
+    Assertions.assertEquals(6, measurements.size());
+    Assertions.assertEquals(0.875, measurements.get(0).value(), 0.0);
+    Assertions.assertEquals(0.5, measurements.get(1).value(), 0.0);
+    Assertions.assertEquals(1.0, measurements.get(2).value(), 0.0);
+    Assertions.assertEquals(1.0, measurements.get(3).value(), 0.0);
+    Assertions.assertEquals(1.0, measurements.get(4).value(), 0.0);
+    Assertions.assertEquals(1.0, measurements.get(5).value(), 0.0);
   }
 }

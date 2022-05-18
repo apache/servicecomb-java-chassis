@@ -26,7 +26,6 @@ import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -41,6 +40,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
@@ -206,7 +206,7 @@ public class TestInvocationPublishModelFactory {
         + "    }\n"
         + "  }\n"
         + "}";
-    Assert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
+    Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
         Json.encodePrettily(model.getConsumer()));
 
     expect = "{\n"
@@ -323,7 +323,7 @@ public class TestInvocationPublishModelFactory {
         + "    }\n"
         + "  }\n"
         + "}";
-    Assert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
+    Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
         Json.encodePrettily(model.getProducer()));
   }
 

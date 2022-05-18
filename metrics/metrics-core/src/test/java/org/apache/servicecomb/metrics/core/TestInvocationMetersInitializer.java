@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -27,6 +25,7 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +36,7 @@ import com.netflix.spectator.api.Registry;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationMetersInitializer {
   EventBus eventBus = new EventBus();
@@ -106,7 +106,7 @@ public class TestInvocationMetersInitializer {
 
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
-    assertEquals(""
+    Assertions.assertEquals(""
             + "[Measurement(servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9), "
@@ -197,7 +197,7 @@ public class TestInvocationMetersInitializer {
 
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
-    assertEquals(
+    Assertions.assertEquals(
         "[Measurement(servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9), "
@@ -288,7 +288,7 @@ public class TestInvocationMetersInitializer {
 
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
-    assertEquals(""
+    Assertions.assertEquals(""
             + "[Measurement(servicecomb.invocation:operation=m.s.o:role=PRODUCER:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=PRODUCER:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8), "
             + "Measurement(servicecomb.invocation:operation=m.s.o:role=PRODUCER:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9), "

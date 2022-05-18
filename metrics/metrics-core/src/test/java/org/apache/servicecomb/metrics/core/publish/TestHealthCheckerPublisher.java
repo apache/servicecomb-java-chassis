@@ -22,9 +22,9 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHealthCheckerPublisher {
   private final HealthChecker good = new HealthChecker() {
@@ -62,7 +62,7 @@ public class TestHealthCheckerPublisher {
   public void checkHealthGood() {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
-    Assert.assertEquals(true, publisher.checkHealth());
+    Assertions.assertTrue(publisher.checkHealth());
   }
 
   @Test
@@ -70,7 +70,7 @@ public class TestHealthCheckerPublisher {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
-    Assert.assertEquals(false, publisher.checkHealth());
+    Assertions.assertFalse(publisher.checkHealth());
   }
 
   @Test
@@ -79,8 +79,8 @@ public class TestHealthCheckerPublisher {
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
     Map<String, HealthCheckResult> content = publisher.checkHealthDetails();
-    Assert.assertEquals(true, content.get("test").isHealthy());
-    Assert.assertEquals("info", content.get("test").getInformation());
-    Assert.assertEquals("extra data", content.get("test").getExtraData());
+    Assertions.assertTrue(content.get("test").isHealthy());
+    Assertions.assertEquals("info", content.get("test").getInformation());
+    Assertions.assertEquals("extra data", content.get("test").getExtraData());
   }
 }
