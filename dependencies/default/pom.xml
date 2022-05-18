@@ -50,7 +50,7 @@
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
     <governator-api.version>1.12.10</governator-api.version>
-    <guava.version>30.0-jre</guava.version>
+    <guava.version>31.1-jre</guava.version>
     <failureaccess.version>1.0.1</failureaccess.version>
     <guice.version>4.2.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
@@ -98,7 +98,7 @@
     <spectator.version>0.83.0</spectator.version>
     <spring.version>5.3.20</spring.version>
     <spring-boot.version>2.6.7</spring-boot.version>
-    <stax2-api.version>4.2</stax2-api.version>
+    <stax2-api.version>4.2.1</stax2-api.version>
     <swagger.version>1.6.6</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
     <tcnetty.version>2.0.52.Final</tcnetty.version>
