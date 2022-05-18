@@ -102,7 +102,7 @@
     <swagger.version>1.6.2</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
     <tcnetty.version>2.0.52.Final</tcnetty.version>
-    <vertx.version>4.2.7</vertx.version>
+    <vertx.version>4.3.0</vertx.version>
     <zipkin.version>2.23.16</zipkin.version>
     <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
     <!-- Base dir of main -->
