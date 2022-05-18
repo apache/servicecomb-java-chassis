@@ -36,3 +36,5 @@ updates:
       - dependency-name: "okhttp"
         versions:
           - "4.x"
+      - dependency-name: "swagger2markup"
+        # swagger2markup new version needs java11 now
