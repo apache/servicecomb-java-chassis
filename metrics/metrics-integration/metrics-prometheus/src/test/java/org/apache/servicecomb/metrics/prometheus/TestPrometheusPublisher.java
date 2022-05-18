@@ -30,7 +30,6 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -101,7 +100,7 @@ public class TestPrometheusPublisher {
     URL url = new URL("http://localhost:" + server.getAddress().getPort() + "/metrics");
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try (InputStream is = conn.getInputStream()) {
-      Assert.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
+      Assertions.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
               "# TYPE ServiceComb_Metrics untyped\n" +
               "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n",
           IOUtils.toString(is, StandardCharsets.UTF_8));

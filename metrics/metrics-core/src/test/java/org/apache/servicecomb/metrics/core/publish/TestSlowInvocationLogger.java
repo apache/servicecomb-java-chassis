@@ -31,12 +31,12 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSlowInvocationLogger {
   @Mocked
@@ -84,7 +84,7 @@ public class TestSlowInvocationLogger {
   public void disable() {
     logger.onInvocationFinish(event);
 
-    Assert.assertTrue(logCollector.getEvents().isEmpty());
+    Assertions.assertTrue(logCollector.getEvents().isEmpty());
   }
 
   @Test
@@ -101,7 +101,7 @@ public class TestSlowInvocationLogger {
     };
     logger.onInvocationFinish(event);
 
-    Assert.assertTrue(logCollector.getEvents().isEmpty());
+    Assertions.assertTrue(logCollector.getEvents().isEmpty());
   }
 
   @Test
@@ -128,7 +128,7 @@ public class TestSlowInvocationLogger {
     };
     logger.onInvocationFinish(event);
 
-    Assert.assertEquals(""
+    Assertions.assertEquals(""
             + "slow(0 ms) invocation, null:\n"
             + "  http method: null\n"
             + "  url        : null\n"
@@ -174,7 +174,7 @@ public class TestSlowInvocationLogger {
     };
     logger.onInvocationFinish(event);
 
-    Assert.assertEquals(""
+    Assertions.assertEquals(""
             + "slow(0 ms) invocation, null:\n"
             + "  http method: null\n"
             + "  url        : null\n"
@@ -224,7 +224,7 @@ public class TestSlowInvocationLogger {
     };
     logger.onInvocationFinish(event);
 
-    Assert.assertEquals(""
+    Assertions.assertEquals(""
             + "slow(0 ms) invocation, null:\n"
             + "  http method: null\n"
             + "  url        : null\n"

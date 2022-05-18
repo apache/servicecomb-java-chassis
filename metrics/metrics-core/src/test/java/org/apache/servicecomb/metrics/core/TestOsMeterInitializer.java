@@ -31,7 +31,6 @@ import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -44,6 +43,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestOsMeterInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
@@ -102,37 +102,37 @@ public class TestOsMeterInitializer {
     osMetersInitializer.setOsLinux(true);
     osMetersInitializer.init(globalRegistry, eventBus, null);
     OsMeter osMeter = osMetersInitializer.getOsMeter();
-    Assert.assertNotNull(osMeter);
-    Assert.assertNotNull(osMeter.getCpuMeter());
-    Assert.assertNotNull(osMeter.getNetMeter());
+    Assertions.assertNotNull(osMeter);
+    Assertions.assertNotNull(osMeter.getCpuMeter());
+    Assertions.assertNotNull(osMeter.getNetMeter());
     CpuMeter cpuMeter = osMeter.getCpuMeter();
     NetMeter netMeter = osMeter.getNetMeter();
-    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
 
-    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
 
     Map<String, InterfaceUsage> interfaceInfoMap = netMeter.getInterfaceUsageMap();
-    Assert.assertEquals(1, interfaceInfoMap.size());
+    Assertions.assertEquals(1, interfaceInfoMap.size());
     InterfaceUsage eth0 = interfaceInfoMap.get("eth0");
-    Assert.assertEquals(4, eth0.getNetStats().size());
+    Assertions.assertEquals(4, eth0.getNetStats().size());
     // recv Bps
-    Assert.assertEquals(0L, eth0.getNetStats().get(0).getLastValue());
-    Assert.assertEquals(0, eth0.getNetStats().get(0).getRate(), 0.0);
-    Assert.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(0L, eth0.getNetStats().get(0).getLastValue());
+    Assertions.assertEquals(0, eth0.getNetStats().get(0).getRate(), 0.0);
+    Assertions.assertEquals(0, eth0.getNetStats().get(0).getIndex());
     // send Bps
-    Assert.assertEquals(0L, eth0.getNetStats().get(1).getLastValue());
-    Assert.assertEquals(0, eth0.getNetStats().get(1).getRate(), 0.0);
-    Assert.assertEquals(8, eth0.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(0L, eth0.getNetStats().get(1).getLastValue());
+    Assertions.assertEquals(0, eth0.getNetStats().get(1).getRate(), 0.0);
+    Assertions.assertEquals(8, eth0.getNetStats().get(1).getIndex());
 
     // recv pps
-    Assert.assertEquals(0L, eth0.getNetStats().get(2).getLastValue());
-    Assert.assertEquals(0, eth0.getNetStats().get(2).getRate(), 0.0);
-    Assert.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(0L, eth0.getNetStats().get(2).getLastValue());
+    Assertions.assertEquals(0, eth0.getNetStats().get(2).getRate(), 0.0);
+    Assertions.assertEquals(1, eth0.getNetStats().get(2).getIndex());
 
     // send pps
-    Assert.assertEquals(0L, eth0.getNetStats().get(3).getLastValue());
-    Assert.assertEquals(0, eth0.getNetStats().get(3).getRate(), 0.0);
-    Assert.assertEquals(9, eth0.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(0L, eth0.getNetStats().get(3).getLastValue());
+    Assertions.assertEquals(0, eth0.getNetStats().get(3).getRate(), 0.0);
+    Assertions.assertEquals(9, eth0.getNetStats().get(3).getIndex());
   }
 
   @Test
@@ -140,6 +140,6 @@ public class TestOsMeterInitializer {
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
     osMetersInitializer.setOsLinux(false);
     osMetersInitializer.init(null, eventBus, null);
-    Assert.assertNull(osMetersInitializer.getOsMeter());
+    Assertions.assertNull(osMetersInitializer.getOsMeter());
   }
 }

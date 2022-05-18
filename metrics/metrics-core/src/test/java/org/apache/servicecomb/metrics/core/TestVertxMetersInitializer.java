@@ -28,7 +28,6 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +47,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxMetersInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
@@ -190,6 +190,6 @@ public class TestVertxMetersInitializer {
       expect = String.format(expect, serverLatency);
     }
 
-    Assert.assertEquals(expect, actual);
+    Assertions.assertEquals(expect, actual);
   }
 }

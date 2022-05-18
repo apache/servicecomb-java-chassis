@@ -43,10 +43,10 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
 
 import com.google.common.eventbus.EventBus;
@@ -57,7 +57,6 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestDefaultLogPublisher {
@@ -91,7 +90,7 @@ public class TestDefaultLogPublisher {
     };
 
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
-    Assert.assertFalse(registered.value);
+    Assertions.assertFalse(registered.value);
   }
 
   @Test
@@ -107,7 +106,7 @@ public class TestDefaultLogPublisher {
     ArchaiusUtils.setProperty(DefaultLogPublisher.ENABLED, true);
 
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
-    Assert.assertTrue(registered.value);
+    Assertions.assertTrue(registered.value);
   }
 
   @Test
@@ -123,7 +122,7 @@ public class TestDefaultLogPublisher {
     ArchaiusUtils.setProperty(DefaultLogPublisher.ENABLED, false);
 
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
-    Assert.assertNull(registered.value);
+    Assertions.assertNull(registered.value);
   }
 
   @Test
@@ -131,8 +130,8 @@ public class TestDefaultLogPublisher {
     publisher.onPolledEvent(null);
 
     LoggingEvent event = collector.getEvents().get(0);
-    Assert.assertEquals("Failed to print perf log.", event.getMessage());
-    Assert.assertEquals(NullPointerException.class, event.getThrowableInformation().getThrowable().getClass());
+    Assertions.assertEquals("Failed to print perf log.", event.getMessage());
+    Assertions.assertEquals(NullPointerException.class, event.getThrowableInformation().getThrowable().getClass());
   }
 
   @Test
@@ -238,7 +237,7 @@ public class TestDefaultLogPublisher {
       List<LoggingEvent> events = collector.getEvents().stream()
           .filter(e -> DefaultLogPublisher.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
       LoggingEvent event = events.get(0);
-      Assert.assertEquals("\n"
+      Assertions.assertEquals("\n"
               + "os:\n"
               + "  cpu:\n"
               + "    all usage: 100.00%    all idle: 0.00%    process: 100.00%\n"
@@ -288,7 +287,7 @@ public class TestDefaultLogPublisher {
           event.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
-      Assert.fail("unexpected error happen. " + e.getMessage());
+      Assertions.fail("unexpected error happen. " + e.getMessage());
     }
   }
 }

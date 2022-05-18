@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.io.CharSource;
@@ -37,6 +36,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestCpuMeter {
 
@@ -76,8 +76,8 @@ public class TestCpuMeter {
       }
     };
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
 
     new Expectations() {
       {
@@ -87,8 +87,8 @@ public class TestCpuMeter {
     };
     cpuMeter.update();
 
-    Assert.assertEquals(0.875, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assert.assertEquals(0.5, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.875, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.5, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
   }
 
   @Test
@@ -128,8 +128,8 @@ public class TestCpuMeter {
       }
     };
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
     new Expectations() {
       {
         charSource.readFirstLine();
@@ -138,8 +138,8 @@ public class TestCpuMeter {
     };
     cpuMeter.update();
 
-    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
   }
 
   @Test
@@ -188,12 +188,12 @@ public class TestCpuMeter {
       }
     };
     cpuMeter.calcMeasurements(measurements, 0);
-    Assert.assertEquals(2, measurements.size());
+    Assertions.assertEquals(2, measurements.size());
     Measurement measurement = measurements.get(0);
-    Assert.assertEquals(0, measurement.timestamp());
-    Assert.assertEquals(0.875, measurement.value(), 0.0);
+    Assertions.assertEquals(0, measurement.timestamp());
+    Assertions.assertEquals(0.875, measurement.value(), 0.0);
     measurement = measurements.get(1);
-    Assert.assertEquals(0, measurement.timestamp());
-    Assert.assertEquals(0.5, measurement.value(), 0.0);
+    Assertions.assertEquals(0, measurement.timestamp());
+    Assertions.assertEquals(0.5, measurement.value(), 0.0);
   }
 }
