@@ -66,7 +66,6 @@
     <javax-resource.version>1.5</javax-resource.version>
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
     <jersey.version>2.35</jersey.version>
-    <jettison.version>1.4.0</jettison.version>
     <jmockit.version>1.30</jmockit.version>
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.8.2</junit5.version>
@@ -632,13 +631,6 @@
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.codehaus.jettison</groupId>
-        <artifactId>jettison</artifactId>
-        <version>${jettison.version}</version>
-        <scope>runtime</scope>
       </dependency>
 
       <dependency>
