@@ -19,9 +19,9 @@ package org.apache.servicecomb.router;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
@@ -122,7 +122,7 @@ public class RouterDistributorTest {
   public void testHeaderIsEmpty() {
     List<ServiceIns> list = getMockList();
     List<ServiceIns> serverList = mainFilter(list, Collections.emptyMap());
-    Assert.assertEquals(2, serverList.size());
+    Assertions.assertEquals(2, serverList.size());
   }
 
   @Test
@@ -134,8 +134,8 @@ public class RouterDistributorTest {
     List<ServiceIns> list = getMockList();
     list.remove(1);
     List<ServiceIns> serverList = mainFilter(list, headerMap);
-    Assert.assertEquals(1, serverList.size());
-    Assert.assertEquals("01", serverList.get(0).getId());
+    Assertions.assertEquals(1, serverList.size());
+    Assertions.assertEquals("01", serverList.get(0).getId());
   }
 
   @Test
@@ -145,8 +145,8 @@ public class RouterDistributorTest {
     headers.put("appId", "01");
     headers.put("format", "json");
     List<ServiceIns> serverList = mainFilter(getMockList(), headers);
-    Assert.assertEquals(1, serverList.size());
-    Assert.assertEquals("02", serverList.get(0).getId());
+    Assertions.assertEquals(1, serverList.size());
+    Assertions.assertEquals("02", serverList.get(0).getId());
   }
 
   private List<ServiceIns> getMockList() {
