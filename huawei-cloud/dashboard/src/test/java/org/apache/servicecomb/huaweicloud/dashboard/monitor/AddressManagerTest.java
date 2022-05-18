@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -42,14 +42,14 @@ class AddressManagerTest {
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new AddressManager(addresses, new EventBus());
 
-    Assert.assertNotNull(addressManager1);
+    Assertions.assertNotNull(addressManager1);
 
     List<String> addresses = Deencapsulation.getField(addressManager1, "addresses");
-    Assert.assertEquals(2, addresses.size());
-    Assert.assertEquals("http://127.0.0.1:30103", addresses.get(0));
+    Assertions.assertEquals(2, addresses.size());
+    Assertions.assertEquals("http://127.0.0.1:30103", addresses.get(0));
 
-    Assert.assertEquals("https://127.0.0.2:30103", addressManager1.address());
-    Assert.assertEquals("http://127.0.0.1:30103", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
   }
 
 
@@ -67,9 +67,9 @@ class AddressManagerTest {
     addressManager1.refreshEndpoint(event, "CseMonitoring");
 
     List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
-    Assert.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
+    Assertions.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
 
     List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
-    Assert.assertEquals("http://127.0.0.4:30100", availableRegion.get(0));
+    Assertions.assertEquals("http://127.0.0.4:30100", availableRegion.get(0));
   }
 }

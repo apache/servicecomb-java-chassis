@@ -16,11 +16,10 @@
  */
 package org.apache.servicecomb.huaweicloud.servicestage;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestCasEnvConfig {
 
@@ -33,9 +32,9 @@ public class TestCasEnvConfig {
   @Test
   public void testConfig() {
     CasEnvConfig instance = CasEnvConfig.INSTANCE;
-    assertEquals(2, instance.getNonEmptyProperties().size());
-    assertEquals("application-id", instance.getNonEmptyProperties().get("CAS_APPLICATION_ID"));
-    assertEquals("env-id", instance.getNonEmptyProperties().get("CAS_ENVIRONMENT_ID"));
+    Assertions.assertEquals(2, instance.getNonEmptyProperties().size());
+    Assertions.assertEquals("application-id", instance.getNonEmptyProperties().get("CAS_APPLICATION_ID"));
+    Assertions.assertEquals("env-id", instance.getNonEmptyProperties().get("CAS_ENVIRONMENT_ID"));
   }
 
   @AfterClass
