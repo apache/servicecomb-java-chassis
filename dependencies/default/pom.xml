@@ -50,7 +50,7 @@
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
     <governator-api.version>1.12.10</governator-api.version>
-    <guava.version>30.0-jre</guava.version>
+    <guava.version>31.1-jre</guava.version>
     <failureaccess.version>1.0.1</failureaccess.version>
     <guice.version>4.2.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
@@ -65,7 +65,7 @@
     <javax-inject.version>1</javax-inject.version>
     <javax-resource.version>1.5</javax-resource.version>
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
-    <jersey.version>2.27</jersey.version>
+    <jersey.version>2.35</jersey.version>
     <jettison.version>1.4.0</jettison.version>
     <jmockit.version>1.30</jmockit.version>
     <junit.version>4.13.2</junit.version>
