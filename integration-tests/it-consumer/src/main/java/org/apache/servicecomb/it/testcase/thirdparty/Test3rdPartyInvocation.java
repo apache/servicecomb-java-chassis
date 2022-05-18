@@ -43,9 +43,9 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -91,20 +91,20 @@ public class Test3rdPartyInvocation {
 
   @Test
   public void testSyncInvoke_RPC() {
-    Assert.assertEquals(1, dataTypeJaxrsSchema.intPath(1));
-    Assert.assertEquals(2, dataTypeJaxrsSchema.intQuery(2));
-    Assert.assertEquals(3, dataTypeJaxrsSchema.intHeader(3));
-    Assert.assertEquals(4, dataTypeJaxrsSchema.intCookie(4));
-    Assert.assertEquals(5, dataTypeJaxrsSchema.intForm(5));
-    Assert.assertEquals(6, dataTypeJaxrsSchema.intBody(6));
-    Assert.assertEquals(7, dataTypeJaxrsSchema.intAdd(3, 4));
-    Assert.assertEquals("abc", dataTypeJaxrsSchema.stringPath("abc"));
-    Assert.assertEquals("def", dataTypeJaxrsSchema.stringQuery("def"));
-    Assert.assertEquals("ghi", dataTypeJaxrsSchema.stringHeader("ghi"));
-    Assert.assertEquals("jkl", dataTypeJaxrsSchema.stringCookie("jkl"));
-    Assert.assertEquals("mn", dataTypeJaxrsSchema.stringForm("mn"));
-    Assert.assertEquals("opq", dataTypeJaxrsSchema.stringBody("opq"));
-    Assert.assertEquals("uvwxyz", dataTypeJaxrsSchema.stringConcat("uvw", "xyz"));
+    Assertions.assertEquals(1, dataTypeJaxrsSchema.intPath(1));
+    Assertions.assertEquals(2, dataTypeJaxrsSchema.intQuery(2));
+    Assertions.assertEquals(3, dataTypeJaxrsSchema.intHeader(3));
+    Assertions.assertEquals(4, dataTypeJaxrsSchema.intCookie(4));
+    Assertions.assertEquals(5, dataTypeJaxrsSchema.intForm(5));
+    Assertions.assertEquals(6, dataTypeJaxrsSchema.intBody(6));
+    Assertions.assertEquals(7, dataTypeJaxrsSchema.intAdd(3, 4));
+    Assertions.assertEquals("abc", dataTypeJaxrsSchema.stringPath("abc"));
+    Assertions.assertEquals("def", dataTypeJaxrsSchema.stringQuery("def"));
+    Assertions.assertEquals("ghi", dataTypeJaxrsSchema.stringHeader("ghi"));
+    Assertions.assertEquals("jkl", dataTypeJaxrsSchema.stringCookie("jkl"));
+    Assertions.assertEquals("mn", dataTypeJaxrsSchema.stringForm("mn"));
+    Assertions.assertEquals("opq", dataTypeJaxrsSchema.stringBody("opq"));
+    Assertions.assertEquals("uvwxyz", dataTypeJaxrsSchema.stringConcat("uvw", "xyz"));
   }
 
   @Test
@@ -133,27 +133,27 @@ public class Test3rdPartyInvocation {
   public void testAsyncInvoke_RPC() throws ExecutionException, InterruptedException {
     Holder<Boolean> addChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.intAdd(5, 6).whenComplete((result, t) -> {
-      Assert.assertEquals(11, result.intValue());
-      Assert.assertNull(t);
+      Assertions.assertEquals(11, result.intValue());
+      Assertions.assertNull(t);
       addChecked.value = true;
     }).get();
-    Assert.assertTrue(addChecked.value);
+    Assertions.assertTrue(addChecked.value);
 
     Holder<Boolean> postStringChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.stringBody("abc").whenComplete((result, t) -> {
-      Assert.assertEquals("abc", result);
-      Assert.assertNull(t);
+      Assertions.assertEquals("abc", result);
+      Assertions.assertNull(t);
       postStringChecked.value = true;
     }).get();
-    Assert.assertTrue(postStringChecked.value);
+    Assertions.assertTrue(postStringChecked.value);
 
     Holder<Boolean> concatChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.stringConcat("uvw", "xyz").whenComplete((result, t) -> {
-      Assert.assertEquals("uvwxyz", result);
-      Assert.assertNull(t);
+      Assertions.assertEquals("uvwxyz", result);
+      Assertions.assertNull(t);
       concatChecked.value = true;
     }).get();
-    Assert.assertTrue(concatChecked.value);
+    Assertions.assertTrue(concatChecked.value);
   }
 
   @Test
@@ -163,15 +163,15 @@ public class Test3rdPartyInvocation {
         .getForEntity(
             "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             int.class);
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
-    Assert.assertEquals(33, responseEntity.getBody().intValue());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(33, responseEntity.getBody().intValue());
 
     ResponseEntity<String> stringBodyResponse = restTemplate
         .exchange("cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/stringBody",
             HttpMethod.POST,
             new HttpEntity<>("abc"), String.class);
-    Assert.assertEquals(200, stringBodyResponse.getStatusCodeValue());
-    Assert.assertEquals("abc", stringBodyResponse.getBody());
+    Assertions.assertEquals(200, stringBodyResponse.getStatusCodeValue());
+    Assertions.assertEquals("abc", stringBodyResponse.getBody());
   }
 
   @Test
@@ -183,16 +183,16 @@ public class Test3rdPartyInvocation {
                 + "/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             Integer.class);
     ResponseEntity<Integer> responseEntity = responseFuture.get();
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
-    Assert.assertEquals(33, responseEntity.getBody().intValue());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(33, responseEntity.getBody().intValue());
 
     ListenableFuture<ResponseEntity<String>> stringBodyFuture = cseAsyncRestTemplate
         .exchange("cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/stringBody",
             HttpMethod.POST,
             new HttpEntity<>("abc"), String.class);
     ResponseEntity<String> stringBodyResponse = stringBodyFuture.get();
-    Assert.assertEquals(200, stringBodyResponse.getStatusCodeValue());
-    Assert.assertEquals("abc", stringBodyResponse.getBody());
+    Assertions.assertEquals(200, stringBodyResponse.getStatusCodeValue());
+    Assertions.assertEquals("abc", stringBodyResponse.getBody());
   }
 
   @Path("/v1/dataTypeJaxrs")

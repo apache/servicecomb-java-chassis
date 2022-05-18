@@ -16,15 +16,13 @@
  */
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -68,11 +66,6 @@ public class TestAnnotatedAttribute {
     fromPath_rt(consumersSpringmvc);
   }
 
-//  @Test
-//  public void fromPart_springmvc_rt() {
-//    fromPart_rt(consumersSpringmvc);
-//  }
-
   @Test
   public void fromAttribute_springmvc_rt() {
     fromAttribute_rt(consumersSpringmvc);
@@ -91,7 +84,7 @@ public class TestAnnotatedAttribute {
             HttpMethod.GET,
             entity,
             String.class);
-    assertEquals("default,fromValue,fromName", response.getBody());
+    Assertions.assertEquals("default,fromValue,fromName", response.getBody());
   }
 
   protected void fromQuery_rt(Consumers<AnnotatedAttributeIntf> consumers) {
@@ -101,7 +94,7 @@ public class TestAnnotatedAttribute {
             "default",
             "fromValue",
             "fromName");
-    assertEquals("default,fromValue,fromName", result);
+    Assertions.assertEquals("default,fromValue,fromName", result);
   }
 
   protected void fromCookie_rt(Consumers<AnnotatedAttributeIntf> consumers) {
@@ -116,7 +109,7 @@ public class TestAnnotatedAttribute {
             HttpMethod.GET,
             requestEntity,
             String.class);
-    assertEquals("default,fromValue,fromName", result.getBody());
+    Assertions.assertEquals("default,fromValue,fromName", result.getBody());
   }
 
   protected void should_throw_exception_when_required_cookie_parameter_not_set_value_call_by_restTemplate(
@@ -129,10 +122,10 @@ public class TestAnnotatedAttribute {
               HttpMethod.GET,
               requestEntity,
               String.class);
-      assertEquals("required is true, throw exception", "but not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "but not throw exception");
     } catch (InvocationException e) {
-      assertEquals(400, e.getStatusCode());
-      assertTrue(
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertTrue(
           e.getMessage()
               .contains("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid"));
     }
@@ -144,10 +137,10 @@ public class TestAnnotatedAttribute {
               HttpMethod.GET,
               requestEntity,
               String.class);
-      assertEquals("required is true, throw exception", "but not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "but not throw exception");
     } catch (InvocationException e) {
-      assertEquals(400, e.getStatusCode());
-      assertTrue(
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertTrue(
           e.getMessage()
               .contains("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid"));
     }
@@ -158,7 +151,7 @@ public class TestAnnotatedAttribute {
             HttpMethod.GET,
             requestEntity,
             String.class);
-    assertEquals("joker", result.getBody());
+    Assertions.assertEquals("joker", result.getBody());
   }
 
   protected void fromCookieDefaultValue_rt(Consumers<AnnotatedAttributeIntf> consumers) {
@@ -169,7 +162,7 @@ public class TestAnnotatedAttribute {
             HttpMethod.GET,
             requestEntity,
             String.class);
-    assertEquals("default", result.getBody());
+    Assertions.assertEquals("default", result.getBody());
 
     headers.add(HttpHeaders.COOKIE, "input1=jokers");
     requestEntity = new HttpEntity<>(headers);
@@ -178,7 +171,7 @@ public class TestAnnotatedAttribute {
             HttpMethod.GET,
             requestEntity,
             String.class);
-    assertEquals("default", result.getBody());
+    Assertions.assertEquals("default", result.getBody());
 
     headers.add(HttpHeaders.COOKIE, "input=joker");
     requestEntity = new HttpEntity<>(headers);
@@ -187,7 +180,7 @@ public class TestAnnotatedAttribute {
             HttpMethod.GET,
             requestEntity,
             String.class);
-    assertEquals("joker", result.getBody());
+    Assertions.assertEquals("joker", result.getBody());
   }
 
   protected void fromPath_rt(Consumers<AnnotatedAttributeIntf> consumers) {
@@ -197,21 +190,8 @@ public class TestAnnotatedAttribute {
             "default",
             "fromValue",
             "fromName");
-    assertEquals("default,fromValue,fromName", result);
+    Assertions.assertEquals("default,fromValue,fromName", result);
   }
-
-//  protected void fromPart_rt(Consumers<AnnotatedAttributeIntf> consumers) {
-//    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-//    map.add("input", "default");
-//    map.add("input2", "fromValue");
-//    map.add("input3", "fromName");
-//
-//    String result = consumers.getSCBRestTemplate()
-//        .postForObject("/fromPart",
-//            new HttpEntity<>(map),
-//            String.class);
-//    assertEquals("default,fromValue,fromName", result);
-//  }
 
   protected void fromAttribute_rt(Consumers<AnnotatedAttributeIntf> consumers) {
     Map<String, Object> body = new HashMap<>();
@@ -223,6 +203,6 @@ public class TestAnnotatedAttribute {
             HttpMethod.POST,
             new HttpEntity<>(body),
             String.class);
-    assertEquals("default,fromValue,fromName", result.getBody());
+    Assertions.assertEquals("default,fromValue,fromName", result.getBody());
   }
 }

@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -41,24 +41,24 @@ public class TestSpringmvcBasic {
 
     // Invoke a spring mvc provider using RPC
     responseModel = consumers.getIntf().postObject(requestModel);
-    Assert.assertEquals("Hello World", responseModel.getResultMessage());
+    Assertions.assertEquals("Hello World", responseModel.getResultMessage());
     responseModelList = consumers.getIntf().postListObject(requestModel);
-    Assert.assertEquals("Hello World", responseModelList.get(0).getResultMessage());
+    Assertions.assertEquals("Hello World", responseModelList.get(0).getResultMessage());
 
     // Invoke using restTemplate
     responseModel = consumers.getSCBRestTemplate()
         .postForObject("/postObject", requestModel, SpringmvcBasicResponseModel.class);
-    Assert.assertEquals("Hello World", responseModel.getResultMessage());
+    Assertions.assertEquals("Hello World", responseModel.getResultMessage());
     // 2.x recommended usage
     HttpEntity<SpringmvcBasicRequestModel> requestEntity = new HttpEntity<>(requestModel, null);
     responseModelList = consumers.getSCBRestTemplate().exchange("/postListObject", HttpMethod.POST, requestEntity,
         new ParameterizedTypeReference<List<SpringmvcBasicResponseModel>>() {
         }).getBody();
-    Assert.assertEquals("Hello World", responseModelList.get(0).getResultMessage());
+    Assertions.assertEquals("Hello World", responseModelList.get(0).getResultMessage());
     // obj should be a map. For 1.x compatibility, if want get  List<SpringmvcBasicResponseModel>, SpringmvcBasicResponseModel should be defined in client. Other
     // test case has covered this situation.
     List<Map<String, Object>> obj = consumers.getSCBRestTemplate()
         .postForObject("/postListObject", requestModel, List.class);
-    Assert.assertEquals("Hello World", obj.get(0).get("resultMessage"));
+    Assertions.assertEquals("Hello World", obj.get(0).get("resultMessage"));
   }
 }

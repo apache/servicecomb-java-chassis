@@ -17,10 +17,9 @@
 
 package org.apache.servicecomb.it.testcase.publicHeaders;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -52,7 +51,7 @@ public class TestPublicHeadersEdge {
         HttpMethod.GET,
         entity,
         String.class);
-    assertEquals(expectHeaderTest + "_" + expectExternal1 + "_" + expectExternal2, response.getBody());
+    Assertions.assertEquals(expectHeaderTest + "_" + expectExternal1 + "_" + expectExternal2, response.getBody());
   }
 
   @Test
@@ -68,6 +67,6 @@ public class TestPublicHeadersEdge {
         HttpMethod.GET,
         entity,
         String.class);
-    assertEquals(expectHeaderTest + "_" + expectExternal1 + "_" + expectExternal2, response.getBody());
+    Assertions.assertEquals(expectHeaderTest + "_" + expectExternal1 + "_" + expectExternal2, response.getBody());
   }
 }

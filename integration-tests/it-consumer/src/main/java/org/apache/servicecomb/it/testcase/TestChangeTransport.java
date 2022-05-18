@@ -17,8 +17,8 @@
 package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestChangeTransport {
   interface ChangeTransportIntf {
@@ -33,11 +33,11 @@ public class TestChangeTransport {
       ChangeTransportIntf.class);
 
   void checkTransport_intf(Consumers<ChangeTransportIntf> consumers) {
-    Assert.assertEquals(consumers.getTransport(), consumers.getIntf().checkTransport());
+    Assertions.assertEquals(consumers.getTransport(), consumers.getIntf().checkTransport());
   }
 
   void checkTransport_rt(Consumers<ChangeTransportIntf> consumers) {
-    Assert.assertEquals(consumers.getTransport(),
+    Assertions.assertEquals(consumers.getTransport(),
         consumers.getSCBRestTemplate().getForObject("/checkTransport", String.class));
   }
 
@@ -48,7 +48,7 @@ public class TestChangeTransport {
 
   @Test
   public void checkTransport_pojo_rt() {
-    Assert.assertEquals(consumersPojo.getTransport(),
+    Assertions.assertEquals(consumersPojo.getTransport(),
         consumersPojo.getSCBRestTemplate().postForObject("/checkTransport", "", String.class));
   }
 

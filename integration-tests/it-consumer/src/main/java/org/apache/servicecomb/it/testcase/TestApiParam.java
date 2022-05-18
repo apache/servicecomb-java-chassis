@@ -21,13 +21,13 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
+import org.junit.jupiter.api.Assertions;
 
 public class TestApiParam {
   MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
@@ -42,8 +42,8 @@ public class TestApiParam {
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
     OperationMeta operationMeta = schemaMeta.findOperation(opName);
     parameter = operationMeta.getSwaggerOperation().getParameters().get(0);
-    Assert.assertEquals("desc of " + opName + " param", parameter.getDescription());
-    Assert.assertEquals(paramType, parameter.getIn());
+    Assertions.assertEquals("desc of " + opName + " param", parameter.getDescription());
+    Assertions.assertEquals(paramType, parameter.getIn());
   }
 
   @Test
@@ -57,7 +57,7 @@ public class TestApiParam {
     OperationMeta operationMeta = schemaMeta.findOperation("simple");
     parameter = operationMeta.getSwaggerOperation().getParameters().get(0);
     ModelImpl model = SwaggerUtils.getModelImpl(schemaMeta.getSwagger(), (BodyParameter) parameter);
-    Assert.assertEquals("desc of simple param", model.getProperties().get("input").getDescription());
+    Assertions.assertEquals("desc of simple param", model.getProperties().get("input").getDescription());
   }
 
   @Test
@@ -74,7 +74,7 @@ public class TestApiParam {
   public void jaxrsQueryArray() {
     check("apiParamJaxrs", "queryArr", "query");
 
-    Assert.assertEquals("multi", ((QueryParameter) parameter).getCollectionFormat());
+    Assertions.assertEquals("multi", ((QueryParameter) parameter).getCollectionFormat());
   }
 
   @Test
@@ -96,32 +96,32 @@ public class TestApiParam {
   public void springmvcBody() {
     check("apiParamSpringmvc", "body");
 
-    Assert.assertTrue(parameter.getRequired());
-    Assert.assertEquals("modelEx", parameter.getName());
-    Assert.assertEquals("v1", ((BodyParameter) parameter).getExamples().get("k1"));
-    Assert.assertEquals("v2", ((BodyParameter) parameter).getExamples().get("k2"));
+    Assertions.assertTrue(parameter.getRequired());
+    Assertions.assertEquals("modelEx", parameter.getName());
+    Assertions.assertEquals("v1", ((BodyParameter) parameter).getExamples().get("k1"));
+    Assertions.assertEquals("v2", ((BodyParameter) parameter).getExamples().get("k2"));
   }
 
   @Test
   public void springmvcQuery() {
     check("apiParamSpringmvc", "query");
 
-    Assert.assertTrue(parameter.getRequired());
-    Assert.assertTrue(parameter.isReadOnly());
-    Assert.assertEquals("inputEx", parameter.getName());
-    Assert.assertEquals(10L, ((QueryParameter) parameter).getExample());
-    Assert.assertNull(((QueryParameter) parameter).getCollectionFormat());
+    Assertions.assertTrue(parameter.getRequired());
+    Assertions.assertTrue(parameter.isReadOnly());
+    Assertions.assertEquals("inputEx", parameter.getName());
+    Assertions.assertEquals(10L, ((QueryParameter) parameter).getExample());
+    Assertions.assertNull(((QueryParameter) parameter).getCollectionFormat());
   }
 
   @Test
   public void springmvcQueryArray() {
     check("apiParamSpringmvc", "queryArr", "query");
 
-    Assert.assertTrue(parameter.getRequired());
-    Assert.assertTrue(parameter.isReadOnly());
-    Assert.assertEquals("inputEx", parameter.getName());
-    Assert.assertEquals("10", ((QueryParameter) parameter).getExample());
-    Assert.assertEquals("csv", ((QueryParameter) parameter).getCollectionFormat());
+    Assertions.assertTrue(parameter.getRequired());
+    Assertions.assertTrue(parameter.isReadOnly());
+    Assertions.assertEquals("inputEx", parameter.getName());
+    Assertions.assertEquals("10", ((QueryParameter) parameter).getExample());
+    Assertions.assertEquals("csv", ((QueryParameter) parameter).getCollectionFormat());
   }
 
   @Test

@@ -31,8 +31,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.testcase.support.DownloadSchemaIntf;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -49,7 +49,7 @@ public class TestDownload {
 
   private List<CompletableFuture<?>> futures = new ArrayList<>();
 
-  private String content = "file content";
+  private final String content = "file content";
 
   public TestDownload() {
     FileUtils.deleteQuietly(dir);
@@ -89,7 +89,7 @@ public class TestDownload {
         value = new String((byte[]) value);
       }
 
-      Assert.assertEquals(getStackTrace(error), content, value);
+      Assertions.assertEquals(content, value, getStackTrace(error));
     });
 
     return future;
@@ -134,19 +134,19 @@ public class TestDownload {
 
     {
       ReadStreamPart part = consumers.getIntf().chineseAndSpaceFile(content);
-      Assert.assertEquals("测 试.test.txt", part.getSubmittedFileName());
+      Assertions.assertEquals("测 试.test.txt", part.getSubmittedFileName());
       futures.add(checkFile(part));
 
       part = templateGet("chineseAndSpaceFile");
-      Assert.assertEquals("测 试.test.txt", part.getSubmittedFileName());
+      Assertions.assertEquals("测 试.test.txt", part.getSubmittedFileName());
       futures.add(checkFuture(part.saveAsString()));
 
       ReadStreamPart part2 = templateExchange("chineseAndSpaceFile", MediaType.TEXT_PLAIN_VALUE);
-      Assert.assertEquals("测 试.test.txt", part2.getSubmittedFileName());
+      Assertions.assertEquals("测 试.test.txt", part2.getSubmittedFileName());
       futures.add(checkFuture(part2.saveAsString()));
 
       ReadStreamPart part3 = templateExchange("chineseAndSpaceFile", MediaType.APPLICATION_JSON_VALUE);
-      Assert.assertEquals("测 试.test.txt", part3.getSubmittedFileName());
+      Assertions.assertEquals("测 试.test.txt", part3.getSubmittedFileName());
       futures.add(checkFuture(part3.saveAsString()));
     }
 
@@ -180,7 +180,7 @@ public class TestDownload {
           .allOf(Iterables.toArray((List<CompletableFuture<Object>>) (Object) futures, CompletableFuture.class))
           .get();
     } catch (InterruptedException | ExecutionException e1) {
-      Assert.fail("test download failed: " + getStackTrace(e1));
+      Assertions.fail("test download failed: " + getStackTrace(e1));
     }
   }
 }

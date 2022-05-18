@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -80,13 +79,13 @@ public class TestDefaultValue {
     float floatFormRequire(Float input);
   }
 
-  private String defaultStr = "string";
+  private final String defaultStr = "string";
 
-  private int defaultInt = 13;
+  private final int defaultInt = 13;
 
-  private double defaultDouble = 10.2;
+  private final double defaultDouble = 10.2;
 
-  private float defaultFloat = 10.2f;
+  private final float defaultFloat = 10.2f;
 
   private static Consumers<DefaultValueIntf> consumersJaxrs = new Consumers<>("defaultValueJaxrs",
       DefaultValueIntf.class);
@@ -96,128 +95,128 @@ public class TestDefaultValue {
 
   @Test
   public void intQuery_jaxrs_intf() {
-    assertEquals(defaultInt, consumersJaxrs.getIntf().intQuery(null));
+    Assertions.assertEquals(defaultInt, consumersJaxrs.getIntf().intQuery(null));
   }
 
   @Test
   public void doubleQuery_jaxrs_intf() {
-    assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleQuery(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleQuery(null), 0.0);
   }
 
   @Test
   public void stringQuery_jaxrs_intf() {
-    assertEquals(defaultStr, consumersJaxrs.getIntf().stringQuery(null));
+    Assertions.assertEquals(defaultStr, consumersJaxrs.getIntf().stringQuery(null));
   }
 
   @Test
   public void intQuery_jaxrs_rt() {
-    assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery", int.class));
+    Assertions.assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery", int.class));
   }
 
   @Test
   public void doubleQuery_jaxrs_rt() {
-    assertEquals(defaultDouble, consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery", double.class),
+    Assertions.assertEquals(defaultDouble, consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery", double.class),
         0.0);
   }
 
   @Test
   public void stringQuery_jaxrs_rt() {
-    assertEquals(defaultStr, consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery", String.class));
+    Assertions.assertEquals(defaultStr, consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery", String.class));
   }
 
   @Test
   public void intHeader_jaxrs_intf() {
-    assertEquals(defaultInt, consumersJaxrs.getIntf().intHeader(null));
+    Assertions.assertEquals(defaultInt, consumersJaxrs.getIntf().intHeader(null));
   }
 
   @Test
   public void doubleHeader_jaxrs_intf() {
-    assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleHeader(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleHeader(null), 0.0);
   }
 
   @Test
   public void stringHeader_jaxrs_intf() {
-    assertEquals(defaultStr, consumersJaxrs.getIntf().stringHeader(null));
+    Assertions.assertEquals(defaultStr, consumersJaxrs.getIntf().stringHeader(null));
   }
 
   @Test
   public void intHeader_jaxrs_rt() {
-    assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intHeader", int.class));
+    Assertions.assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intHeader", int.class));
   }
 
   @Test
   public void doubleHeader_jaxrs_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersJaxrs.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
   }
 
   @Test
   public void stringHeader_jaxrs_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersJaxrs.getSCBRestTemplate().getForObject("/stringHeader", String.class));
   }
 
   @Test
   public void intForm_jaxrs_intf() {
-    assertEquals(defaultInt, consumersJaxrs.getIntf().intForm(null));
+    Assertions.assertEquals(defaultInt, consumersJaxrs.getIntf().intForm(null));
   }
 
   @Test
   public void doubleForm_jaxrs_intf() {
-    assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleForm(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleForm(null), 0.0);
   }
 
   @Test
   public void stringForm_jaxrs_intf() {
-    assertEquals(defaultStr, consumersJaxrs.getIntf().stringForm(null));
+    Assertions.assertEquals(defaultStr, consumersJaxrs.getIntf().stringForm(null));
   }
 
   @Test
   public void intForm_jaxrs_rt() {
-    assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+    Assertions.assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().postForObject("/intForm", null, int.class));
   }
 
   @Test
   public void doubleForm_jaxrs_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersJaxrs.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
   }
 
   @Test
   public void stringForm_jaxrs_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersJaxrs.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
   }
 
   @Test
   public void intQuery_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intQuery(null));
+    Assertions.assertEquals(defaultInt, consumersSpringmvc.getIntf().intQuery(null));
   }
 
   @Test
   public void doubleQuery_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleQuery(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleQuery(null), 0.0);
   }
 
   @Test
   public void stringQuery_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQuery(null));
+    Assertions.assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQuery(null));
   }
 
   @Test
   public void intQuery_springmvc_rt() {
-    assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQuery", int.class));
+    Assertions.assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQuery", int.class));
   }
 
   @Test
   public void doubleQuery_springmvc_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQuery", double.class), 0.0);
   }
 
   @Test
   public void stringQuery_springmvc_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQuery", String.class));
   }
 
@@ -225,42 +224,42 @@ public class TestDefaultValue {
   public void stringQueryRequiredTrue_springmvc_rt() {
     try {
       consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryRequiredTrue", String.class);
-      assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (InvocationException e) {
-      assertEquals(400, e.getStatusCode());
-      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertEquals(true, e.getMessage().contains("Parameter is not valid"));
     }
   }
 
   @Test
   public void intHeader_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeader(null));
+    Assertions.assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeader(null));
   }
 
   @Test
   public void doubleHeader_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleHeader(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleHeader(null), 0.0);
   }
 
   @Test
   public void stringHeader_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeader(null));
+    Assertions.assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeader(null));
   }
 
   @Test
   public void intHeader_springmvc_rt() {
-    assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeader", int.class));
+    Assertions.assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeader", int.class));
   }
 
   @Test
   public void doubleHeader_springmvc_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
   }
 
   @Test
   public void stringHeader_springmvc_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeader", String.class));
   }
 
@@ -268,43 +267,43 @@ public class TestDefaultValue {
   public void stringHeaderRequiredTrue_springmvc_rt() {
     try {
       consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderRequiredTrue", String.class);
-      assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (InvocationException e) {
-      assertEquals(400, e.getStatusCode());
-      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertEquals(true, e.getMessage().contains("Parameter is not valid"));
     }
   }
 
   @Test
   public void intForm_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intForm(null));
+    Assertions.assertEquals(defaultInt, consumersSpringmvc.getIntf().intForm(null));
   }
 
   @Test
   public void doubleForm_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleForm(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleForm(null), 0.0);
   }
 
   @Test
   public void stringForm_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringForm(null));
+    Assertions.assertEquals(defaultStr, consumersSpringmvc.getIntf().stringForm(null));
   }
 
   @Test
   public void intForm_springmvc_rt() {
-    assertEquals(defaultInt,
+    Assertions.assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intForm", null, int.class));
   }
 
   @Test
   public void doubleForm_springmvc_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
   }
 
   @Test
   public void stringForm_springmvc_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
   }
 
@@ -312,209 +311,209 @@ public class TestDefaultValue {
   public void stringFormRequiredTrue_springmvc_rt() {
     try {
       consumersSpringmvc.getSCBRestTemplate().getForObject("/stringFormRequiredTrue", String.class);
-      assertEquals("required is true, throw exception", "not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (InvocationException e) {
-      assertEquals(400, e.getStatusCode());
-      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertEquals(true, e.getMessage().contains("Parameter is not valid"));
     }
   }
 
   @Test
   public void intQuery_require_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intQueryRequire(null));
+    Assertions.assertEquals(defaultInt, consumersSpringmvc.getIntf().intQueryRequire(null));
   }
 
   @Test
   public void doubleQuery_require_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleQueryRequire(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleQueryRequire(null), 0.0);
   }
 
   @Test
   public void stringQuery_require_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQueryRequire(null));
+    Assertions.assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQueryRequire(null));
   }
 
   @Test
   public void intQuery_require_springmvc_rt() {
-    assertEquals(defaultInt,
+    Assertions.assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQueryRequire", int.class));
   }
 
   @Test
   public void doubleQuery_require_springmvc_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQueryRequire", double.class), 0.0);
   }
 
   @Test
   public void stringQuery_require_springmvc_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryRequire", String.class));
   }
 
   @Test
   public void intHeader_require_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeaderRequire(null));
+    Assertions.assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeaderRequire(null));
   }
 
   @Test
   public void doubleHeader_require_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleHeaderRequire(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleHeaderRequire(null), 0.0);
   }
 
   @Test
   public void stringHeader_require_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeaderRequire(null));
+    Assertions.assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeaderRequire(null));
   }
 
   @Test
   public void intHeader_require_springmvc_rt() {
-    assertEquals(defaultInt,
+    Assertions.assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeaderRequire", int.class));
   }
 
   @Test
   public void doubleHeader_require_springmvc_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeaderRequire", double.class), 0.0);
   }
 
   @Test
   public void stringHeader_require_springmvc_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderRequire", String.class));
   }
 
   @Test
   public void intForm_require_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intFormRequire(null));
+    Assertions.assertEquals(defaultInt, consumersSpringmvc.getIntf().intFormRequire(null));
   }
 
   @Test
   public void doubleForm_require_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleFormRequire(null), 0.0);
+    Assertions.assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleFormRequire(null), 0.0);
   }
 
   @Test
   public void stringForm_require_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringFormRequire(null));
+    Assertions.assertEquals(defaultStr, consumersSpringmvc.getIntf().stringFormRequire(null));
   }
 
   @Test
   public void intForm_require_springmvc_rt() {
-    assertEquals(defaultInt,
+    Assertions.assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intFormRequire", null, int.class));
   }
 
   @Test
   public void doubleForm_require_springmvc_rt() {
-    assertEquals(defaultDouble,
+    Assertions.assertEquals(defaultDouble,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleFormRequire", null, double.class), 0.0);
   }
 
   @Test
   public void stringForm_require_springmvc_rt() {
-    assertEquals(defaultStr,
+    Assertions.assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
   }
 
   //float
   @Test
   public void floatQuery_jaxrs_intf() {
-    assertEquals(defaultFloat, consumersJaxrs.getIntf().floatQuery(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersJaxrs.getIntf().floatQuery(null), 0.0f);
   }
 
   @Test
   public void floatQuery_jaxrs_rt() {
-    assertEquals(defaultFloat, consumersJaxrs.getSCBRestTemplate().getForObject("/floatQuery", float.class),
+    Assertions.assertEquals(defaultFloat, consumersJaxrs.getSCBRestTemplate().getForObject("/floatQuery", float.class),
         0.0f);
   }
 
   @Test
   public void floatHeader_jaxrs_intf() {
-    assertEquals(defaultFloat, consumersJaxrs.getIntf().floatHeader(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersJaxrs.getIntf().floatHeader(null), 0.0f);
   }
 
   @Test
   public void floatHeader_jaxrs_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersJaxrs.getSCBRestTemplate().getForObject("/floatHeader", float.class), 0.0f);
   }
 
   @Test
   public void floatForm_jaxrs_intf() {
-    assertEquals(defaultFloat, consumersJaxrs.getIntf().floatForm(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersJaxrs.getIntf().floatForm(null), 0.0f);
   }
 
   @Test
   public void floatForm_jaxrs_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersJaxrs.getSCBRestTemplate().postForObject("/floatForm", null, float.class), 0.0f);
   }
 
   @Test
   public void floatQuery_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatQuery(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatQuery(null), 0.0f);
   }
 
   @Test
   public void floatQuery_springmvc_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/floatQuery", float.class), 0.0f);
   }
 
   @Test
   public void floatHeader_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeader(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeader(null), 0.0f);
   }
 
   @Test
   public void floatHeader_springmvc_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/floatHeader", float.class), 0.0f);
   }
 
   @Test
   public void floatForm_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatForm(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatForm(null), 0.0f);
   }
 
   @Test
   public void floatForm_springmvc_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/floatForm", null, float.class), 0.0f);
   }
 
   @Test
   public void floatQuery_require_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatQueryRequire(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatQueryRequire(null), 0.0f);
   }
 
   @Test
   public void floatQuery_require_springmvc_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/floatQueryRequire", float.class), 0.0f);
   }
 
   @Test
   public void floatHeader_require_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeaderRequire(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeaderRequire(null), 0.0f);
   }
 
   @Test
   public void floatHeader_require_springmvc_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/floatHeaderRequire", float.class), 0.0f);
   }
 
   @Test
   public void floatForm_require_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatFormRequire(null), 0.0f);
+    Assertions.assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatFormRequire(null), 0.0f);
   }
 
   @Test
   public void floatForm_require_springmvc_rt() {
-    assertEquals(defaultFloat,
+    Assertions.assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/floatFormRequire", null, float.class), 0.0f);
   }
 
@@ -523,7 +522,7 @@ public class TestDefaultValue {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", "setHeader");
     HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
-    assertNotEquals(defaultStr,
+    Assertions.assertNotEquals(defaultStr,
         consumersSpringmvc.getCseAsyncRestTemplate()
             .exchange("/stringHeader", HttpMethod.GET, requestEntity, String.class));
   }

@@ -20,20 +20,20 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.ReactiveHelloIntf;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestReactive {
   static Consumers<ReactiveHelloIntf> consumers = new Consumers<>("reactiveWithIntf", ReactiveHelloIntf.class);
 
   @Test
   public void reactiveWithIntf() throws ExecutionException, InterruptedException {
-    Assert.assertEquals("hello name", consumers.getIntf().hello("name").get());
+    Assertions.assertEquals("hello name", consumers.getIntf().hello("name").get());
   }
 
   @Test
   public void reactiveWithIntf_rt() {
-    Assert.assertEquals("hello name",
+    Assertions.assertEquals("hello name",
         consumers.getSCBRestTemplate().postForObject("/hello", "name", String.class));
   }
 }

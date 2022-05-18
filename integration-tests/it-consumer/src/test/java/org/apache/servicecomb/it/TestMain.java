@@ -17,8 +17,8 @@
 package org.apache.servicecomb.it;
 
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMain {
   @Test
@@ -26,10 +26,10 @@ public class TestMain {
     try {
       ConsumerMain.autoExit = false;
       ConsumerMain.main(new String[] {});
-      Assert.assertTrue(ITJUnitUtils.getFailures().isEmpty());
+      Assertions.assertTrue(ITJUnitUtils.getFailures().isEmpty());
     } catch (Throwable throwable) {
       throwable.printStackTrace();
-      Assert.fail(throwable.getMessage());
+      Assertions.fail(throwable.getMessage());
     }
   }
 }

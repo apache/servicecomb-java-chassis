@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -31,8 +28,8 @@ import javax.ws.rs.core.MediaType;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +44,10 @@ public class TestParamCodecEdge {
     String paramString = "a%2B+%20b%% %20c";
     String paramQueryStringResult = "a%2B %20b%% %20c";
     String result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
-    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+    Assertions.assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
         paramString + " +%20%% " + paramString + " true"), result);
     result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
-    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+    Assertions.assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
         paramString + " +%20%% " + paramString + " true"), result);
   }
 
@@ -64,15 +61,15 @@ public class TestParamCodecEdge {
 
   @Test
   public void enumSpecialName() {
-    assertEquals(Media.AAC,
+    Assertions.assertEquals(Media.AAC,
         restOnlyClient.postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
-    assertEquals(Media.FLAC,
+    Assertions.assertEquals(Media.FLAC,
         restOnlyClient.postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
-    assertEquals(Media.H_264,
+    Assertions.assertEquals(Media.H_264,
         restOnlyClient.postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
-    assertEquals(Media.MPEG_2,
+    Assertions.assertEquals(Media.MPEG_2,
         restOnlyClient.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
-    assertEquals(Media.WMV,
+    Assertions.assertEquals(Media.WMV,
         restOnlyClient.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
   }
 
@@ -96,7 +93,7 @@ public class TestParamCodecEdge {
       dataOutputStream.flush();
     } catch (IOException e) {
       LOGGER.error("failed to write buffer!", e);
-      fail("failed to write buffer!");
+      Assertions.fail("failed to write buffer!");
       return;
     }
 
@@ -106,9 +103,9 @@ public class TestParamCodecEdge {
         responseBody.append(scanner.nextLine());
       }
     }
-    Assert.assertEquals("{\"A\":\"aaa\",\"B\":\"ddd\",\"param0\":\"" + ITJUnitUtils.getProducerName() + "\","
+    Assertions.assertEquals("{\"A\":\"aaa\",\"B\":\"ddd\",\"param0\":\"" + ITJUnitUtils.getProducerName() + "\","
             + "\"param1\":\"v1\",\"param2\":\"paramCodec/stringUrlencodedForm\"}",
         responseBody.toString());
-    Assert.assertEquals(200, httpConnection.getResponseCode());
+    Assertions.assertEquals(200, httpConnection.getResponseCode());
   }
 }

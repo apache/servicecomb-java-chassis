@@ -19,9 +19,6 @@ package org.apache.servicecomb.demo.springmvc.tests;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -53,6 +50,7 @@ import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
@@ -160,8 +158,8 @@ public class SpringMvcIntegrationTestBase {
     MatcherAssert.assertThat(responseEntity.getStatusCode(), is(OK));
 
     Map<String, User> body = responseEntity.getBody();
-    assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
-    assertArrayEquals(body.get("user2").getNames(), new String[] {"name21", "name22"});
+    Assertions.assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
+    Assertions.assertArrayEquals(body.get("user2").getNames(), new String[] {"name21", "name22"});
 
     ListenableFuture<ResponseEntity<Map<String, User>>> listenableFuture = asyncRestTemplate
         .exchange(codeFirstUrl + "testUserMap",
@@ -171,8 +169,8 @@ public class SpringMvcIntegrationTestBase {
     ResponseEntity<Map<String, User>> futureResponse = listenableFuture.get();
     MatcherAssert.assertThat(futureResponse.getStatusCode(), is(OK));
     body = futureResponse.getBody();
-    assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
-    assertArrayEquals(body.get("user2").getNames(), new String[] {"name21", "name22"});
+    Assertions.assertArrayEquals(body.get("user1").getNames(), new String[] {"name11", "name12"});
+    Assertions.assertArrayEquals(body.get("user2").getNames(), new String[] {"name21", "name22"});
   }
 
   private User userOfNames(String... names) {
@@ -209,10 +207,10 @@ public class SpringMvcIntegrationTestBase {
 
     result = RestObjectMapperFactory.getRestObjectMapper().readValue(result, byte[].class);
 
-    assertEquals(1, result[0]);
-    assertEquals(1, result[1]);
-    assertEquals(2, result[2]);
-    assertEquals(3, result.length);
+    Assertions.assertEquals(1, result[0]);
+    Assertions.assertEquals(1, result[1]);
+    Assertions.assertEquals(2, result[2]);
+    Assertions.assertEquals(3, result.length);
 
     ListenableFuture<ResponseEntity<byte[]>> listenableFuture = asyncRestTemplate
         .postForEntity(codeFirstUrl + "bytes",
@@ -220,10 +218,10 @@ public class SpringMvcIntegrationTestBase {
             byte[].class);
     ResponseEntity<byte[]> responseEntity = listenableFuture.get();
     result = RestObjectMapperFactory.getRestObjectMapper().readValue(responseEntity.getBody(), byte[].class);
-    assertEquals(1, result[0]);
-    assertEquals(1, result[1]);
-    assertEquals(2, result[2]);
-    assertEquals(3, result.length);
+    Assertions.assertEquals(1, result[0]);
+    Assertions.assertEquals(1, result[1]);
+    Assertions.assertEquals(2, result[2]);
+    Assertions.assertEquals(3, result.length);
   }
 
   @Test
@@ -326,10 +324,10 @@ public class SpringMvcIntegrationTestBase {
     try {
       response = restTemplate
           .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
-      assertEquals("required is true, throw exception", "but not throw exception");
+      Assertions.assertEquals("required is true, throw exception", "but not throw exception");
     } catch (HttpClientErrorException e) {
-      assertEquals(400, e.getRawStatusCode());
-      assertEquals("Bad Request", e.getStatusCode().getReasonPhrase());
+      Assertions.assertEquals(400, e.getRawStatusCode());
+      Assertions.assertEquals("Bad Request", e.getStatusCode().getReasonPhrase());
     }
   }
 
@@ -633,7 +631,7 @@ public class SpringMvcIntegrationTestBase {
     try {
       restTemplate
           .getForEntity(controllerUrl + "sayhi?name=throwexception", String.class);
-      assertFalse(true);
+      Assertions.assertFalse(true);
     } catch (HttpServerErrorException e) {
       MatcherAssert.assertThat(e.getRawStatusCode(), is(500));
       MatcherAssert.assertThat(e.getResponseBodyAsString(),
