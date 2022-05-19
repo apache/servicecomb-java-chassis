@@ -23,7 +23,6 @@ import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.foundation.vertx.metrics.DefaultTcpServerMetrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.Handler;
@@ -36,6 +35,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTcpServer {
   static class TcpServerForTest extends TcpServer {
@@ -141,7 +141,7 @@ public class TestTcpServer {
     // reject
     endpointMetric.onConnect();
     connectHandler.handle(netSocket);
-    Assert.assertTrue(netSocketClosed);
-    Assert.assertEquals(1, endpointMetric.getRejectByConnectionLimitCount());
+    Assertions.assertTrue(netSocketClosed);
+    Assertions.assertEquals(1, endpointMetric.getRejectByConnectionLimitCount());
   }
 }

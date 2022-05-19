@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
-import static org.apache.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +26,8 @@ import java.util.Properties;
 
 import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.archaius.sources.ConfigSourceMaker;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -42,6 +40,7 @@ import com.netflix.config.FixedDelayPollingScheduler;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class SSLOptionTest {
   private static final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -60,11 +59,11 @@ public class SSLOptionTest {
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
-    Assert.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
+    Assertions.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
 
     String ciphers = option.getCiphers();
     option.setCiphers(ciphers);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
             +
             "A,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA",
@@ -72,62 +71,62 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertTrue(authPeer);
+    Assertions.assertTrue(authPeer);
 
     boolean checkCNHost = option.isCheckCNHost();
     option.setCheckCNHost(checkCNHost);
-    Assert.assertTrue(checkCNHost);
+    Assertions.assertTrue(checkCNHost);
 
     boolean checkCNWhite = option.isCheckCNWhite();
     option.setCheckCNWhite(checkCNWhite);
-    Assert.assertTrue(checkCNWhite);
+    Assertions.assertTrue(checkCNWhite);
 
     String checkCNWhiteFile = option.getCheckCNWhiteFile();
     option.setCheckCNWhiteFile(checkCNWhiteFile);
-    Assert.assertEquals("white.list", checkCNWhiteFile);
+    Assertions.assertEquals("white.list", checkCNWhiteFile);
 
     boolean allowRenegociate = option.isAllowRenegociate();
     option.setAllowRenegociate(allowRenegociate);
-    Assert.assertFalse(allowRenegociate);
+    Assertions.assertFalse(allowRenegociate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
-    Assert.assertEquals("internal", storePath);
+    Assertions.assertEquals("internal", storePath);
 
     String trustStore = option.getTrustStore();
     option.setTrustStore(trustStore);
-    Assert.assertEquals("trust.jks", trustStore);
+    Assertions.assertEquals("trust.jks", trustStore);
 
     String trustStoreType = option.getTrustStoreType();
     option.setTrustStoreType(trustStoreType);
-    Assert.assertEquals("JKS", trustStoreType);
+    Assertions.assertEquals("JKS", trustStoreType);
 
     String trustStoreValue = option.getTrustStoreValue();
     option.setTrustStoreValue(trustStoreValue);
-    Assert.assertEquals("Changeme_123", trustStoreValue);
+    Assertions.assertEquals("Changeme_123", trustStoreValue);
 
     String keyStore = option.getKeyStore();
     option.setKeyStore(keyStore);
-    Assert.assertEquals("server.p12", keyStore);
+    Assertions.assertEquals("server.p12", keyStore);
 
     String keyStoreType = option.getKeyStoreType();
     option.setKeyStoreType(keyStoreType);
-    Assert.assertEquals("PKCS12", keyStoreType);
+    Assertions.assertEquals("PKCS12", keyStoreType);
 
     String keyStoreValue = option.getKeyStoreValue();
     option.setKeyStoreValue(keyStoreValue);
-    Assert.assertEquals("Changeme_123", keyStoreValue);
+    Assertions.assertEquals("Changeme_123", keyStoreValue);
 
     String crl = option.getCrl();
     option.setCrl(crl);
-    Assert.assertEquals("revoke.crl", crl);
+    Assertions.assertEquals("revoke.crl", crl);
   }
 
   @Test
   public void testSSLOptionYaml() {
     // configuration from yaml files: default microservice.yaml
     DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(yamlConfigSource(), new FixedDelayPollingScheduler());
+        new DynamicConfiguration(ConfigSourceMaker.yamlConfigSource(), new FixedDelayPollingScheduler());
     // configuration from system properties
     ConcurrentMapConfiguration configFromSystemProperties =
         new ConcurrentMapConfiguration(new SystemConfiguration());
@@ -143,11 +142,11 @@ public class SSLOptionTest {
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
-    Assert.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
+    Assertions.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
 
     String ciphers = option.getCiphers();
     option.setCiphers(ciphers);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
             +
             "A,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA",
@@ -155,60 +154,60 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertTrue(authPeer);
+    Assertions.assertTrue(authPeer);
 
     boolean checkCNHost = option.isCheckCNHost();
     option.setCheckCNHost(checkCNHost);
-    Assert.assertTrue(checkCNHost);
+    Assertions.assertTrue(checkCNHost);
 
     boolean checkCNWhite = option.isCheckCNWhite();
     option.setCheckCNWhite(checkCNWhite);
-    Assert.assertTrue(checkCNWhite);
+    Assertions.assertTrue(checkCNWhite);
 
     String checkCNWhiteFile = option.getCheckCNWhiteFile();
     option.setCheckCNWhiteFile(checkCNWhiteFile);
-    Assert.assertEquals("white.list", checkCNWhiteFile);
+    Assertions.assertEquals("white.list", checkCNWhiteFile);
 
     boolean allowRenegociate = option.isAllowRenegociate();
     option.setAllowRenegociate(allowRenegociate);
-    Assert.assertFalse(allowRenegociate);
+    Assertions.assertFalse(allowRenegociate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
-    Assert.assertEquals("internal", storePath);
+    Assertions.assertEquals("internal", storePath);
 
     String trustStore = option.getTrustStore();
     option.setTrustStore(trustStore);
-    Assert.assertEquals("trust.jks", trustStore);
+    Assertions.assertEquals("trust.jks", trustStore);
 
     String trustStoreType = option.getTrustStoreType();
     option.setTrustStoreType(trustStoreType);
-    Assert.assertEquals("JKS", trustStoreType);
+    Assertions.assertEquals("JKS", trustStoreType);
 
     String trustStoreValue = option.getTrustStoreValue();
     option.setTrustStoreValue(trustStoreValue);
-    Assert.assertEquals("Changeme_123", trustStoreValue);
+    Assertions.assertEquals("Changeme_123", trustStoreValue);
 
     String keyStore = option.getKeyStore();
     option.setKeyStore(keyStore);
-    Assert.assertEquals("server.p12", keyStore);
+    Assertions.assertEquals("server.p12", keyStore);
 
     String keyStoreType = option.getKeyStoreType();
     option.setKeyStoreType(keyStoreType);
-    Assert.assertEquals("PKCS12", keyStoreType);
+    Assertions.assertEquals("PKCS12", keyStoreType);
 
     String keyStoreValue = option.getKeyStoreValue();
     option.setKeyStoreValue(keyStoreValue);
-    Assert.assertEquals("Changeme_123", keyStoreValue);
+    Assertions.assertEquals("Changeme_123", keyStoreValue);
 
     String crl = option.getCrl();
     option.setCrl(crl);
-    Assert.assertEquals("revoke.crl", crl);
+    Assertions.assertEquals("revoke.crl", crl);
 
     option.setSslCustomClass("123");
 
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
-    Assert.assertArrayEquals(custom.decode("123".toCharArray()), "123".toCharArray());
+    Assertions.assertArrayEquals(custom.decode("123".toCharArray()), "123".toCharArray());
   }
 
   @Test
@@ -220,7 +219,7 @@ public class SSLOptionTest {
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
-    Assert.assertEquals("TLSv1.2", protocols);
+    Assertions.assertEquals("TLSv1.2", protocols);
     System.clearProperty("ssl.protocols");
   }
 
@@ -233,7 +232,7 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertFalse(authPeer);
+    Assertions.assertFalse(authPeer);
     System.getProperties().remove("ssl.authPeer");
   }
 
@@ -246,7 +245,7 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertTrue(authPeer);
+    Assertions.assertTrue(authPeer);
     System.getProperties().remove("ssl.authPeer");
   }
 
@@ -258,11 +257,11 @@ public class SSLOptionTest {
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
-    Assert.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
+    Assertions.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
 
     String ciphers = option.getCiphers();
     option.setCiphers(ciphers);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
             +
             "A,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA",
@@ -270,60 +269,60 @@ public class SSLOptionTest {
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
-    Assert.assertTrue(authPeer);
+    Assertions.assertTrue(authPeer);
 
     boolean checkCNHost = option.isCheckCNHost();
     option.setCheckCNHost(checkCNHost);
-    Assert.assertTrue(checkCNHost);
+    Assertions.assertTrue(checkCNHost);
 
     boolean checkCNWhite = option.isCheckCNWhite();
     option.setCheckCNWhite(checkCNWhite);
-    Assert.assertTrue(checkCNWhite);
+    Assertions.assertTrue(checkCNWhite);
 
     String checkCNWhiteFile = option.getCheckCNWhiteFile();
     option.setCheckCNWhiteFile(checkCNWhiteFile);
-    Assert.assertEquals("white.list", checkCNWhiteFile);
+    Assertions.assertEquals("white.list", checkCNWhiteFile);
 
     boolean allowRenegociate = option.isAllowRenegociate();
     option.setAllowRenegociate(allowRenegociate);
-    Assert.assertFalse(allowRenegociate);
+    Assertions.assertFalse(allowRenegociate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
-    Assert.assertEquals("internal", storePath);
+    Assertions.assertEquals("internal", storePath);
 
     String trustStore = option.getTrustStore();
     option.setTrustStore(trustStore);
-    Assert.assertEquals("trust.jks", trustStore);
+    Assertions.assertEquals("trust.jks", trustStore);
 
     String trustStoreType = option.getTrustStoreType();
     option.setTrustStoreType(trustStoreType);
-    Assert.assertEquals("JKS", trustStoreType);
+    Assertions.assertEquals("JKS", trustStoreType);
 
     String trustStoreValue = option.getTrustStoreValue();
     option.setTrustStoreValue(trustStoreValue);
-    Assert.assertEquals("Changeme_123", trustStoreValue);
+    Assertions.assertEquals("Changeme_123", trustStoreValue);
 
     String keyStore = option.getKeyStore();
     option.setKeyStore(keyStore);
-    Assert.assertEquals("server.p12", keyStore);
+    Assertions.assertEquals("server.p12", keyStore);
 
     String keyStoreType = option.getKeyStoreType();
     option.setKeyStoreType(keyStoreType);
-    Assert.assertEquals("PKCS12", keyStoreType);
+    Assertions.assertEquals("PKCS12", keyStoreType);
 
     String keyStoreValue = option.getKeyStoreValue();
     option.setKeyStoreValue(keyStoreValue);
-    Assert.assertEquals("Changeme_123", keyStoreValue);
+    Assertions.assertEquals("Changeme_123", keyStoreValue);
 
     String crl = option.getCrl();
     option.setCrl(crl);
-    Assert.assertEquals("revoke.crl", crl);
+    Assertions.assertEquals("revoke.crl", crl);
 
     option.setSslCustomClass("123");
 
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
-    Assert.assertArrayEquals(custom.decode("123".toCharArray()), "123".toCharArray());
+    Assertions.assertArrayEquals(custom.decode("123".toCharArray()), "123".toCharArray());
   }
 
   @SuppressWarnings("unused")
@@ -332,7 +331,7 @@ public class SSLOptionTest {
     try {
       SSLOption option = SSLOption.build(DIR + "/servers.ssl.properties");
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Bad file name.", e.getMessage());
+      Assertions.assertEquals("Bad file name.", e.getMessage());
     }
   }
 
@@ -347,9 +346,9 @@ public class SSLOptionTest {
 
     try {
       SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-      Assert.assertNotNull(option);
+      Assertions.assertNotNull(option);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -364,12 +363,12 @@ public class SSLOptionTest {
     boolean validAssert = true;
     try {
       SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
-      Assert.assertEquals("revoke.crl", option.getCrl());
+      Assertions.assertEquals("revoke.crl", option.getCrl());
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   @Test
@@ -380,9 +379,9 @@ public class SSLOptionTest {
 
       InputStream inputStream = url.openStream();
       SSLOption option = SSLOption.build(inputStream);
-      Assert.assertNotNull(option);
+      Assertions.assertNotNull(option);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -393,9 +392,9 @@ public class SSLOptionTest {
     try {
       option.load("test");
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 }

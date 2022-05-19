@@ -20,9 +20,9 @@ package org.apache.servicecomb.foundation.vertx;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.MultiMap;
@@ -63,7 +63,7 @@ public class TestSimpleBodyHandler {
       }
     };
     instance.handle(context);
-    Assert.assertTrue(instance.checkContentType(context));
+    Assertions.assertTrue(instance.checkContentType(context));
   }
 
   @Test
@@ -75,6 +75,6 @@ public class TestSimpleBodyHandler {
       }
     };
     instance.handle(context);
-    Assert.assertFalse(instance.checkContentType(context));
+    Assertions.assertFalse(instance.checkContentType(context));
   }
 }

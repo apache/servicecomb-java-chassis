@@ -18,30 +18,30 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestMetricsOptionsEx {
   MetricsOptionsEx metricsOptionsEx = new MetricsOptionsEx();
 
   @Test
   public void interval() {
-    Assert.assertEquals(TimeUnit.MINUTES.toMillis(1),
+    Assertions.assertEquals(TimeUnit.MINUTES.toMillis(1),
         metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds());
 
     metricsOptionsEx.setCheckClientEndpointMetricIntervalInMinute(2);
-    Assert.assertEquals(TimeUnit.MINUTES.toMillis(2),
+    Assertions.assertEquals(TimeUnit.MINUTES.toMillis(2),
         metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds());
   }
 
   @Test
   public void expired() {
-    Assert.assertEquals(TimeUnit.MINUTES.toNanos(15), metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
+    Assertions.assertEquals(TimeUnit.MINUTES.toNanos(15), metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
 
     metricsOptionsEx.setCheckClientEndpointMetricExpiredInNano(10);
-    Assert.assertEquals(10, metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
+    Assertions.assertEquals(10, metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
 
     metricsOptionsEx.setCheckClientEndpointMetricExpiredInMinute(60);
-    Assert.assertEquals(TimeUnit.MINUTES.toNanos(60), metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
+    Assertions.assertEquals(TimeUnit.MINUTES.toNanos(60), metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
   }
 }

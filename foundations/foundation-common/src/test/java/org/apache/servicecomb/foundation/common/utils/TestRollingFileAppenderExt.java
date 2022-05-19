@@ -21,11 +21,11 @@ import java.io.File;
 
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Injectable;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRollingFileAppenderExt {
   @Test
@@ -47,15 +47,15 @@ public class TestRollingFileAppenderExt {
     ext.setLogPermission("rw-------");
     ext.setFile(temp.getAbsolutePath());
     ext.setFile(temp.getAbsolutePath(), false, false, 300000);
-    Assert.assertEquals(ext.getLogPermission(), "rw-------");
-    Assert.assertTrue(temp.exists());
+    Assertions.assertEquals(ext.getLogPermission(), "rw-------");
+    Assertions.assertTrue(temp.exists());
 
     temp.delete();
     ext.subAppend(event);
-    Assert.assertTrue(temp.exists());
+    Assertions.assertTrue(temp.exists());
 
     ext.close();
     temp.delete();
-    Assert.assertFalse(temp.exists());
+    Assertions.assertFalse(temp.exists());
   }
 }

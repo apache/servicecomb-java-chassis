@@ -29,7 +29,6 @@ import javax.servlet.http.Part;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -53,12 +52,12 @@ public class TestStandardHttpServletResponseEx {
 
   @Test
   public void setBodyBuffer() {
-    Assert.assertNull(responseEx.getBodyBuffer());
+    Assertions.assertNull(responseEx.getBodyBuffer());
 
     Buffer bodyBuffer = Buffer.buffer();
     bodyBuffer.appendString("abc");
     responseEx.setBodyBuffer(bodyBuffer);
-    Assert.assertEquals("abc", responseEx.getBodyBuffer().toString());
+    Assertions.assertEquals("abc", responseEx.getBodyBuffer().toString());
   }
 
   @Test
@@ -66,7 +65,7 @@ public class TestStandardHttpServletResponseEx {
     Buffer bodyBuffer = Buffer.buffer();
     bodyBuffer.appendString("abc");
     responseEx.setBodyBuffer(bodyBuffer);
-    Assert.assertEquals("abc", new String(responseEx.getBodyBytes(), 0, responseEx.getBodyBytesLength()));
+    Assertions.assertEquals("abc", new String(responseEx.getBodyBytes(), 0, responseEx.getBodyBytesLength()));
   }
 
   @Test
@@ -74,15 +73,15 @@ public class TestStandardHttpServletResponseEx {
     Buffer bodyBuffer = Buffer.buffer();
     bodyBuffer.appendString("abc");
     responseEx.setBodyBuffer(bodyBuffer);
-    Assert.assertEquals(3, responseEx.getBodyBytesLength());
+    Assertions.assertEquals(3, responseEx.getBodyBytesLength());
   }
 
   @Test
   public void setStatus() {
     responseEx.setStatus(200, "ok");
-    Assert.assertEquals(200, responseEx.getStatus());
-    Assert.assertEquals(200, responseEx.getStatusType().getStatusCode());
-    Assert.assertEquals("ok", responseEx.getStatusType().getReasonPhrase());
+    Assertions.assertEquals(200, responseEx.getStatus());
+    Assertions.assertEquals(200, responseEx.getStatusType().getStatusCode());
+    Assertions.assertEquals("ok", responseEx.getStatusType().getReasonPhrase());
   }
 
   @Test
@@ -114,18 +113,18 @@ public class TestStandardHttpServletResponseEx {
 
     // no body
     responseEx.flushBuffer();
-    Assert.assertEquals(0, buffer.length());
+    Assertions.assertEquals(0, buffer.length());
 
     Buffer body = Buffer.buffer().appendString("body");
     responseEx.setBodyBuffer(body);
     responseEx.flushBuffer();
-    Assert.assertEquals("body", buffer.toString());
+    Assertions.assertEquals("body", buffer.toString());
   }
 
   @Test
   public void attribute() {
     responseEx.setAttribute("k", "v");
-    Assert.assertEquals("v", responseEx.getAttribute("k"));
+    Assertions.assertEquals("v", responseEx.getAttribute("k"));
   }
 
   @Test
@@ -150,7 +149,7 @@ public class TestStandardHttpServletResponseEx {
 
     responseEx.sendPart(part).get();
 
-    Assert.assertEquals(src, buffer.toString());
+    Assertions.assertEquals(src, buffer.toString());
   }
 
   @Test

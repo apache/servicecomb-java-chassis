@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.foundation.logback;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Marker;
 
@@ -31,16 +31,16 @@ public class TestMarkerFilter {
     MarkerFilter filter = new MarkerFilter();
     filter.setMarker("hello");
     filter.start();
-    Assert.assertEquals(filter.getOnMatch(), FilterReply.ACCEPT);
-    Assert.assertEquals(filter.getOnMismatch(), FilterReply.DENY);
+    Assertions.assertEquals(filter.getOnMatch(), FilterReply.ACCEPT);
+    Assertions.assertEquals(filter.getOnMismatch(), FilterReply.DENY);
 
     ILoggingEvent event = Mockito.mock(ILoggingEvent.class);
     Marker marker = Mockito.mock(Marker.class);
     Mockito.when(event.getMarker()).thenReturn(marker);
     Mockito.when(marker.getName()).thenReturn("hello");
-    Assert.assertEquals(FilterReply.ACCEPT, filter.decide(event));
+    Assertions.assertEquals(FilterReply.ACCEPT, filter.decide(event));
 
     Mockito.when(event.getMarker()).thenReturn(null);
-    Assert.assertEquals(FilterReply.DENY, filter.decide(event));
+    Assertions.assertEquals(FilterReply.DENY, filter.decide(event));
   }
 }

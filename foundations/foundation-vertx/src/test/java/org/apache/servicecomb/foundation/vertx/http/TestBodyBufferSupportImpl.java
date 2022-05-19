@@ -17,11 +17,10 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import io.vertx.core.buffer.Buffer;
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBodyBufferSupportImpl {
   BodyBufferSupportImpl impl = new BodyBufferSupportImpl();
@@ -31,44 +30,44 @@ public class TestBodyBufferSupportImpl {
     Deencapsulation.setField(impl, "bodyBytes", new byte[] {});
     Deencapsulation.setField(impl, "bodyLength", 10);
 
-    Assert.assertNotNull(impl.getBodyBytes());
-    Assert.assertEquals(10, impl.getBodyBytesLength());
+    Assertions.assertNotNull(impl.getBodyBytes());
+    Assertions.assertEquals(10, impl.getBodyBytesLength());
 
     impl.setBodyBuffer(null);
 
-    Assert.assertNull(impl.getBodyBytes());
-    Assert.assertEquals(0, impl.getBodyBytesLength());
+    Assertions.assertNull(impl.getBodyBytes());
+    Assertions.assertEquals(0, impl.getBodyBytesLength());
   }
 
   @Test
   public void testGetBodyBuffer() {
-    Assert.assertNull(impl.getBodyBuffer());
+    Assertions.assertNull(impl.getBodyBuffer());
 
     Buffer bodyBuffer = Buffer.buffer();
     impl.setBodyBuffer(bodyBuffer);
 
-    Assert.assertSame(bodyBuffer, impl.getBodyBuffer());
+    Assertions.assertSame(bodyBuffer, impl.getBodyBuffer());
   }
 
   @Test
   public void testGetBodyBytes() {
-    Assert.assertNull(impl.getBodyBytes());
+    Assertions.assertNull(impl.getBodyBytes());
 
     byte[] bytes = new byte[] {1, 2, 3};
     Buffer bodyBuffer = Buffer.buffer(bytes);
     impl.setBodyBuffer(bodyBuffer);
 
-    Assert.assertArrayEquals(bytes, impl.getBodyBytes());
+    Assertions.assertArrayEquals(bytes, impl.getBodyBytes());
   }
 
   @Test
   public void testGetBodyBytesLength() {
-    Assert.assertEquals(0, impl.getBodyBytesLength());
+    Assertions.assertEquals(0, impl.getBodyBytesLength());
 
     byte[] bytes = new byte[] {1, 2, 3};
     Buffer bodyBuffer = Buffer.buffer(bytes);
     impl.setBodyBuffer(bodyBuffer);
 
-    Assert.assertEquals(3, impl.getBodyBytesLength());
+    Assertions.assertEquals(3, impl.getBodyBytesLength());
   }
 }

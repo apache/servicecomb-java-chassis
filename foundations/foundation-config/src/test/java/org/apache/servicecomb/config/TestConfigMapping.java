@@ -17,24 +17,22 @@
 
 package org.apache.servicecomb.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConfigMapping {
   @Test
   public void testMapping() {
     List<String> value = ConfigMapping.map("SERVICECOMB_ENV");
-    assertEquals(2, value.size());
-    assertEquals("service_description.environment", value.get(0));
-    assertEquals("service_description.environment.old", value.get(1));
+    Assertions.assertEquals(2, value.size());
+    Assertions.assertEquals("service_description.environment", value.get(0));
+    Assertions.assertEquals("service_description.environment.old", value.get(1));
 
     Map<String, Object> m = ConfigMapping.getMapping();
-    assertNotNull(m);
+    Assertions.assertNotNull(m);
   }
 
   @Test
@@ -42,7 +40,7 @@ public class TestConfigMapping {
     String value = ConfigMapping.map("CSE_ENV_MAPPING");
     Map<String, Object> m = ConfigMapping.getMapping();
     Map<String, Object> m1 = ConfigMapping.getConvertedMap(m);
-    assertEquals("servicecomb.testmapping.key", value);
-    assertNotNull(m1);
+    Assertions.assertEquals("servicecomb.testmapping.key", value);
+    Assertions.assertNotNull(m1);
   }
 }

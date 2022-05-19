@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -33,7 +32,7 @@ public class TestSSLOptionFactory {
   @Test
   public void testSSLOptionFactory() {
     SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-    Assert.assertEquals(factory, null);
+    Assertions.assertEquals(factory, null);
   }
 
   @Test
@@ -60,6 +59,6 @@ public class TestSSLOptionFactory {
       }
     };
     SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-    Assert.assertEquals(factory.createSSLOption().getProtocols(), "TLSv1.2");
+    Assertions.assertEquals(factory.createSSLOption().getProtocols(), "TLSv1.2");
   }
 }

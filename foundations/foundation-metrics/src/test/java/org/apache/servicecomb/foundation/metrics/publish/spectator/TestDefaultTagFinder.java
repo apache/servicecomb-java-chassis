@@ -19,18 +19,17 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.netflix.spectator.api.BasicTag;
 import com.netflix.spectator.api.Tag;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestDefaultTagFinder {
   TagFinder finder = new DefaultTagFinder("key");
 
   @Test
   public void getTagKey() {
-    Assert.assertEquals("key", finder.getTagKey());
+    Assertions.assertEquals("key", finder.getTagKey());
   }
 
   @Test
@@ -39,13 +38,13 @@ public class TestDefaultTagFinder {
     List<Tag> tags = Arrays.asList(new BasicTag("t1", "t1v"),
         tag);
 
-    Assert.assertSame(tag, finder.find(tags));
+    Assertions.assertSame(tag, finder.find(tags));
   }
 
   @Test
   public void readFail() {
     List<Tag> tags = Arrays.asList(new BasicTag("t1", "t1v"));
 
-    Assert.assertNull(finder.find(tags));
+    Assertions.assertNull(finder.find(tags));
   }
 }

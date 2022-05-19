@@ -19,10 +19,10 @@ package org.apache.servicecomb.registry.config;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.netflix.config.DynamicConfiguration;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractPropertiesLoader {
   @Test
@@ -33,10 +33,10 @@ public class TestAbstractPropertiesLoader {
     AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
     try {
       loader.loadProperties(configuration);
-      Assert.fail("Must throw exception");
+      Assertions.fail("Must throw exception");
     } catch (Error e) {
-      Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
-      Assert.assertEquals("invalidClass", e.getCause().getMessage());
+      Assertions.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
+      Assertions.assertEquals("invalidClass", e.getCause().getMessage());
     }
   }
 }

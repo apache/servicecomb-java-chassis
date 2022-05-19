@@ -22,8 +22,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ResourceUtilTest {
 
@@ -34,26 +34,26 @@ public class ResourceUtilTest {
   @Test
   public void loadResources_in_jar() throws IOException, URISyntaxException {
     List<URI> uris = ResourceUtil.findResources("META-INF", p -> p.toString().endsWith("spring.factories"));
-    Assert.assertEquals(1, uris.size());
-    Assert.assertTrue(uris.get(0).toString().startsWith("jar:file:"));
-    Assert.assertTrue(uris.get(0).toString().endsWith("!/META-INF/spring.factories"));
+    Assertions.assertEquals(1, uris.size());
+    Assertions.assertTrue(uris.get(0).toString().startsWith("jar:file:"));
+    Assertions.assertTrue(uris.get(0).toString().endsWith("!/META-INF/spring.factories"));
   }
 
   @Test
   public void loadResources_in_disk() throws IOException, URISyntaxException {
     List<URI> uris = ResourceUtil.findResourcesBySuffix("META-INF/spring", ".xml");
-    Assert.assertEquals(1, uris.size());
+    Assertions.assertEquals(1, uris.size());
     URI uri = uris.get(0);
-    Assert.assertTrue("unexpected uri: " + uri, uri.toString().startsWith("file:"));
-    Assert.assertTrue("unexpected uri: " + uri, uri.toString().endsWith("META-INF/spring/config.bean.xml"));
+    Assertions.assertTrue(uri.toString().startsWith("file:"), "unexpected uri: " + uri);
+    Assertions.assertTrue(uri.toString().endsWith("META-INF/spring/config.bean.xml"), "unexpected uri: " + uri);
   }
 
   @Test
   public void loadResources_exact_file_in_disk() throws IOException, URISyntaxException {
     List<URI> uris = ResourceUtil.findResources("META-INF/spring/config.bean.xml");
-    Assert.assertEquals(1, uris.size());
+    Assertions.assertEquals(1, uris.size());
     URI uri = uris.get(0);
-    Assert.assertTrue("unexpected uri: " + uri, uri.toString().startsWith("file:"));
-    Assert.assertTrue("unexpected uri: " + uri, uri.toString().endsWith("META-INF/spring/config.bean.xml"));
+    Assertions.assertTrue(uri.toString().startsWith("file:"), "unexpected uri: " + uri);
+    Assertions.assertTrue(uri.toString().endsWith("META-INF/spring/config.bean.xml"), "unexpected uri: " + uri);
   }
 }

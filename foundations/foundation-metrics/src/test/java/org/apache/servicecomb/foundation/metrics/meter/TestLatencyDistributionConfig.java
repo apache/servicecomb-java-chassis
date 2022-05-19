@@ -16,9 +16,8 @@
  */
 package org.apache.servicecomb.foundation.metrics.meter;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestLatencyDistributionConfig {
 
@@ -32,16 +31,16 @@ public class TestLatencyDistributionConfig {
     LatencyDistributionConfig config2 = new LatencyDistributionConfig(validProperty2);
     LatencyDistributionConfig config3 = new LatencyDistributionConfig(validProperty3);
 
-    Assert.assertEquals(4, config1.getScopeConfigs().size());
-    Assert.assertEquals(4, config2.getScopeConfigs().size());
-    Assert.assertEquals(4, config3.getScopeConfigs().size());
+    Assertions.assertEquals(4, config1.getScopeConfigs().size());
+    Assertions.assertEquals(4, config2.getScopeConfigs().size());
+    Assertions.assertEquals(4, config3.getScopeConfigs().size());
   }
 
   @Test
   public void testInValidProperty1() {
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
       LatencyDistributionConfig latencyDistributionConfig = new LatencyDistributionConfig("2,1,10");
-      Assert.assertEquals(0, latencyDistributionConfig.getScopeConfigs().size());
+      Assertions.assertEquals(0, latencyDistributionConfig.getScopeConfigs().size());
     });
     Assertions.assertEquals("invalid latency scope, min=2, max=1.", exception.getMessage());
   }
@@ -50,7 +49,7 @@ public class TestLatencyDistributionConfig {
   public void testInValidProperty2() {
     NumberFormatException exception = Assertions.assertThrows(NumberFormatException.class, () -> {
       LatencyDistributionConfig latencyDistributionConfig = new LatencyDistributionConfig("a,1,10");
-      Assert.assertEquals(0, latencyDistributionConfig.getScopeConfigs().size());
+      Assertions.assertEquals(0, latencyDistributionConfig.getScopeConfigs().size());
     });
     Assertions.assertEquals("For input string: \"a\"", exception.getMessage());
   }

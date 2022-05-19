@@ -23,10 +23,10 @@ import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBeanDescriptorManager {
   public static class Model {
@@ -95,13 +95,13 @@ public class TestBeanDescriptorManager {
     BeanDescriptor beanDescriptor = beanDescriptorManager
         .getOrCreateBeanDescriptor(method.getGenericParameterTypes()[0]);
 
-    Assert.assertEquals(String.class, beanDescriptor.getPropertyDescriptors().get("value").getJavaType().getRawClass());
+    Assertions.assertEquals(String.class, beanDescriptor.getPropertyDescriptors().get("value").getJavaType().getRawClass());
   }
 
   @Test
   public void getOrCreate() {
-    Assert.assertSame(beanDescriptor, beanDescriptorManager.getOrCreateBeanDescriptor(Model.class));
-    Assert.assertSame(Model.class, beanDescriptor.getJavaType().getRawClass());
+    Assertions.assertSame(beanDescriptor, beanDescriptorManager.getOrCreateBeanDescriptor(Model.class));
+    Assertions.assertSame(Model.class, beanDescriptor.getJavaType().getRawClass());
   }
 
   @SuppressWarnings("unchecked")
@@ -109,29 +109,29 @@ public class TestBeanDescriptorManager {
   public void both() {
     PropertyDescriptor propertyDescriptor = beanDescriptor.getPropertyDescriptors().get("both");
     ((IntSetter<Model>) propertyDescriptor.getSetter()).set(model, 1);
-    Assert.assertEquals(1, ((IntGetter<Model>) propertyDescriptor.getGetter()).get(model));
-    Assert.assertEquals(1, model.getBoth());
+    Assertions.assertEquals(1, ((IntGetter<Model>) propertyDescriptor.getGetter()).get(model));
+    Assertions.assertEquals(1, model.getBoth());
   }
 
   @SuppressWarnings("unchecked")
   @Test
   public void onlyGet() {
     PropertyDescriptor propertyDescriptor = beanDescriptor.getPropertyDescriptors().get("onlyGet");
-    Assert.assertNull(propertyDescriptor.getSetter());
+    Assertions.assertNull(propertyDescriptor.getSetter());
 
     model.onlyGet(1);
-    Assert.assertEquals(1, ((IntGetter<Model>) propertyDescriptor.getGetter()).get(model));
-    Assert.assertEquals(1, model.getOnlyGet());
+    Assertions.assertEquals(1, ((IntGetter<Model>) propertyDescriptor.getGetter()).get(model));
+    Assertions.assertEquals(1, model.getOnlyGet());
   }
 
   @SuppressWarnings("unchecked")
   @Test
   public void onlySet() {
     PropertyDescriptor propertyDescriptor = beanDescriptor.getPropertyDescriptors().get("onlySet");
-    Assert.assertNull(propertyDescriptor.getGetter());
+    Assertions.assertNull(propertyDescriptor.getGetter());
 
     ((IntSetter<Model>) propertyDescriptor.getSetter()).set(model, 1);
-    Assert.assertEquals(1, model.onlySet());
+    Assertions.assertEquals(1, model.onlySet());
   }
 
   @SuppressWarnings("unchecked")
@@ -139,7 +139,7 @@ public class TestBeanDescriptorManager {
   public void direct() {
     PropertyDescriptor propertyDescriptor = beanDescriptor.getPropertyDescriptors().get("direct");
     ((Setter<Model, Integer>) propertyDescriptor.getSetter()).set(model, 1);
-    Assert.assertEquals(1, (int) ((Getter<Model, Integer>) propertyDescriptor.getGetter()).get(model));
-    Assert.assertEquals(1, model.direct);
+    Assertions.assertEquals(1, (int) ((Getter<Model, Integer>) propertyDescriptor.getGetter()).get(model));
+    Assertions.assertEquals(1, model.direct);
   }
 }

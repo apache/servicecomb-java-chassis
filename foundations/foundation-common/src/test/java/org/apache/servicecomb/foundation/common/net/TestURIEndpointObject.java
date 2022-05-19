@@ -23,41 +23,40 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestURIEndpointObject {
   @Test
   public void testRestEndpointObject() {
     URIEndpointObject obj = new URIEndpointObject("http://127.0.2.0:8080");
-    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
-    Assert.assertEquals(8080, obj.getPort());
-    Assert.assertFalse(obj.isSslEnabled());
+    Assertions.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assertions.assertEquals(8080, obj.getPort());
+    Assertions.assertFalse(obj.isSslEnabled());
 
     obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true");
-    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
-    Assert.assertEquals(8080, obj.getPort());
-    Assert.assertTrue(obj.isSslEnabled());
-    Assert.assertNull(obj.getFirst("notExist"));
+    Assertions.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assertions.assertEquals(8080, obj.getPort());
+    Assertions.assertTrue(obj.isSslEnabled());
+    Assertions.assertNull(obj.getFirst("notExist"));
 
     obj = new URIEndpointObject("http://127.0.2.0:8080?sslEnabled=true&protocol=http2");
-    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
-    Assert.assertEquals(8080, obj.getPort());
-    Assert.assertTrue(obj.isSslEnabled());
-    Assert.assertTrue(obj.isHttp2Enabled());
-    Assert.assertNull(obj.getFirst("notExist"));
+    Assertions.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assertions.assertEquals(8080, obj.getPort());
+    Assertions.assertTrue(obj.isSslEnabled());
+    Assertions.assertTrue(obj.isHttp2Enabled());
+    Assertions.assertNull(obj.getFirst("notExist"));
 
     obj = new URIEndpointObject("rest://127.0.2.0:8080?urlPrefix=%2Froot");
-    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
-    Assert.assertEquals(8080, obj.getPort());
-    Assert.assertEquals("/root", obj.getQuery("urlPrefix").get(0));
+    Assertions.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assertions.assertEquals(8080, obj.getPort());
+    Assertions.assertEquals("/root", obj.getQuery("urlPrefix").get(0));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testRestEndpointObjectException() {
-    new URIEndpointObject("http://127.0.2.0");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> new URIEndpointObject("http://127.0.2.0"));
   }
 
   @Test
@@ -67,15 +66,15 @@ public class TestURIEndpointObject {
     URIEndpointObject ep = new URIEndpointObject(strUri);
 
     Map<String, List<String>> querys = Deencapsulation.getField(ep, "querys");
-    Assert.assertEquals(3, querys.size());
+    Assertions.assertEquals(3, querys.size());
 
-    Assert.assertEquals(1, ep.getQuery("a").size());
-    Assert.assertEquals("1", ep.getFirst("a"));
+    Assertions.assertEquals(1, ep.getQuery("a").size());
+    Assertions.assertEquals("1", ep.getFirst("a"));
 
-    Assert.assertEquals(1, ep.getQuery("b").size());
-    Assert.assertEquals("", ep.getFirst("b"));
+    Assertions.assertEquals(1, ep.getQuery("b").size());
+    Assertions.assertEquals("", ep.getFirst("b"));
 
-    Assert.assertEquals(1, ep.getQuery("country").size());
-    Assert.assertEquals("中 国", ep.getFirst("country"));
+    Assertions.assertEquals(1, ep.getQuery("country").size());
+    Assertions.assertEquals("中 国", ep.getFirst("country"));
   }
 }

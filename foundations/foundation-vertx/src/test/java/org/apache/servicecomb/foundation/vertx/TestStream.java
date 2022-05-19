@@ -19,11 +19,11 @@ package org.apache.servicecomb.foundation.vertx;
 
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStream {
 
@@ -35,13 +35,12 @@ public class TestStream {
     obuf.writeBytes(("testss").getBytes());
     @SuppressWarnings("resource")
     BufferInputStream oBufferInputStream = new BufferInputStream(obuf);
-    Assert.assertNotEquals(1234, oBufferInputStream.skip(0));
-    Assert.assertNotEquals(obuf.readByte(), oBufferInputStream.readByte());
-    Assert.assertEquals(obuf.readByte() + 1, oBufferInputStream.read());
-    Assert.assertEquals(obuf.readBoolean(), oBufferInputStream.readBoolean());
-    Assert.assertEquals(obuf.readerIndex(), oBufferInputStream.getIndex());
-    Assert.assertEquals(obuf.readableBytes(), oBufferInputStream.available());
-    Assert.assertNotEquals(null, oBufferInputStream.read(("test").getBytes()));
+    Assertions.assertNotEquals(1234, oBufferInputStream.skip(0));
+    Assertions.assertNotEquals(obuf.readByte(), oBufferInputStream.readByte());
+    Assertions.assertEquals(obuf.readByte() + 1, oBufferInputStream.read());
+    Assertions.assertEquals(obuf.readBoolean(), oBufferInputStream.readBoolean());
+    Assertions.assertEquals(obuf.readerIndex(), oBufferInputStream.getIndex());
+    Assertions.assertEquals(obuf.readableBytes(), oBufferInputStream.available());
   }
 
   @Test
@@ -49,9 +48,8 @@ public class TestStream {
     @SuppressWarnings({"resource"})
     BufferOutputStream oBufferOutputStream = new BufferOutputStream();
     oBufferOutputStream.writeString("test");
-    Assert.assertNotEquals(null, oBufferOutputStream.writerIndex());
     oBufferOutputStream.write(1);
     oBufferOutputStream.write(true);
-    Assert.assertEquals(true, (1 < oBufferOutputStream.length()));
+    Assertions.assertTrue((1 < oBufferOutputStream.length()));
   }
 }

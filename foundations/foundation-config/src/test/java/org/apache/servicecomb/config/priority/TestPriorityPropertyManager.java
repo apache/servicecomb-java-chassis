@@ -21,7 +21,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
 import org.apache.servicecomb.config.inject.TestConfigObjectFactory;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.netflix.config.DynamicProperty;
@@ -67,17 +67,17 @@ public class TestPriorityPropertyManager extends TestPriorityPropertyBase {
       for (int j = 0; j < 100; j++) {
         TestConfigObjectFactory.ConfigWithAnnotation configConfigObject = priorityPropertyManager.createConfigObject(
             TestConfigObjectFactory.ConfigWithAnnotation.class);
-        Assert.assertEquals("abc", configConfigObject.strDef);
+        Assertions.assertEquals("abc", configConfigObject.strDef);
         PriorityProperty<Long> configPriorityProperty = propertyFactory.getOrCreate(Long.class, -1L, -2L, keys);
-        Assert.assertEquals(-2L, (long) configPriorityProperty.getValue());
+        Assertions.assertEquals(-2L, (long) configPriorityProperty.getValue());
       }
     }
 
     waitKeyForGC(priorityPropertyManager);
 
-    Assert.assertTrue(priorityPropertyManager.getConfigObjectMap().isEmpty());
+    Assertions.assertTrue(priorityPropertyManager.getConfigObjectMap().isEmpty());
     for (DynamicProperty property : ConfigUtil.getAllDynamicProperties().values()) {
-      Assert.assertTrue(ConfigUtil.getCallbacks(property).isEmpty());
+      Assertions.assertTrue(ConfigUtil.getCallbacks(property).isEmpty());
     }
 
     System.out.println("Token : " + (System.currentTimeMillis() - timeBegin));

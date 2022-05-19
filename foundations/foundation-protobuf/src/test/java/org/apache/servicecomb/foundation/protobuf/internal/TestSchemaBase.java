@@ -28,9 +28,9 @@ import org.apache.servicecomb.foundation.protobuf.internal.model.PrimitiveArrays
 import org.apache.servicecomb.foundation.protobuf.internal.model.PrimitiveWrapperArrays;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
-import org.junit.Assert;
 
 import io.protostuff.compiler.model.Field;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSchemaBase {
   protected static ProtoMapperFactory factory = new ProtoMapperFactory();
@@ -115,19 +115,19 @@ public class TestSchemaBase {
     scbMap.clear();
     scbMap.put(primitiveFieldName, strings);
     scbMapBytes = primitiveArraysSerializer.serialize(scbMap);
-    Assert.assertArrayEquals(protobufBytes, scbMapBytes);
+    Assertions.assertArrayEquals(protobufBytes, scbMapBytes);
 
     // dynamic primitive array
     scbMap.clear();
     scbMap.put(primitiveFieldName, primitiveArray);
     scbMapBytes = primitiveArraysSerializer.serialize(scbMap);
-    Assert.assertArrayEquals(protobufBytes, scbMapBytes);
+    Assertions.assertArrayEquals(protobufBytes, scbMapBytes);
 
     // dynamic array
     scbMap.clear();
     scbMap.put(primitiveFieldName, array);
     scbMapBytes = primitiveArraysSerializer.serialize(scbMap);
-    Assert.assertArrayEquals(protobufBytes, scbMapBytes);
+    Assertions.assertArrayEquals(protobufBytes, scbMapBytes);
   }
 
   protected void check() throws IOException {
@@ -160,7 +160,7 @@ public class TestSchemaBase {
       System.out.println("protobuf     :" + Hex.encodeHexString(protobufBytes));
       System.out.println("protobuf len :" + protobufBytes.length);
     }
-    Assert.assertArrayEquals(protobufBytes, scbMapBytes);
-    Assert.assertArrayEquals(protobufBytes, scbRootBytes);
+    Assertions.assertArrayEquals(protobufBytes, scbMapBytes);
+    Assertions.assertArrayEquals(protobufBytes, scbRootBytes);
   }
 }

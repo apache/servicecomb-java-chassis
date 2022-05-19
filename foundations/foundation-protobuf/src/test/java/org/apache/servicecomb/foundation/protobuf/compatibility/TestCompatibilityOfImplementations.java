@@ -26,8 +26,8 @@ import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
 import org.apache.servicecomb.foundation.protobuf.performance.ProtubufCodecEngine;
 import org.apache.servicecomb.foundation.protobuf.performance.engine.Protobuf;
 import org.apache.servicecomb.foundation.protobuf.performance.engine.ScbWeak;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCompatibilityOfImplementations {
   static ProtubufCodecEngine scbWeak = new ScbWeak();
@@ -39,30 +39,30 @@ public class TestCompatibilityOfImplementations {
   public void testEmptyCollection() throws Exception {
     ProtobufRoot.Root.Builder builder = ProtobufRoot.Root.newBuilder();
     byte[] values = protobuf.serialize(builder);
-    Assert.assertEquals(values.length, 0);
+    Assertions.assertEquals(values.length, 0);
     ProtobufRoot.Root.Builder o = (ProtobufRoot.Root.Builder) protobuf.deserialize(values);
-    Assert.assertTrue(o.getFixed32SNotPackedList().isEmpty());
+    Assertions.assertTrue(o.getFixed32SNotPackedList().isEmpty());
 
     builder = ProtobufRoot.Root.newBuilder().addFixed32SNotPacked(30);
     values = protobuf.serialize(builder);
-    Assert.assertArrayEquals(new byte[] {(byte) -123, (byte) 6, (byte) 30, (byte) 0, (byte) 0, (byte) 0}, values);
+    Assertions.assertArrayEquals(new byte[] {(byte) -123, (byte) 6, (byte) 30, (byte) 0, (byte) 0, (byte) 0}, values);
     o = (ProtobufRoot.Root.Builder) protobuf.deserialize(values);
-    Assert.assertEquals(30, (int) o.getFixed32SNotPackedList().get(0));
+    Assertions.assertEquals(30, (int) o.getFixed32SNotPackedList().get(0));
 
     Root root = new Root();
     root.setFixed32sNotPacked(new ArrayList<>());
     values = scbWeak.serialize(root);
-    Assert.assertEquals(values.length, 0);
+    Assertions.assertEquals(values.length, 0);
     Map<String, Object> newRootMap = (Map<String, Object>) scbWeak.deserialize(values);
-    Assert.assertEquals(null,
+    Assertions.assertEquals(null,
         newRootMap.get("fixed32sNotPacked")); // This is different , because depends on default model initializer
 
     List<Integer> iValues = new ArrayList<>();
     iValues.add(30);
     root.setFixed32sNotPacked(iValues);
     values = scbWeak.serialize(root);
-    Assert.assertArrayEquals(new byte[] {(byte) -123, (byte) 6, (byte) 30, (byte) 0, (byte) 0, (byte) 0}, values);
+    Assertions.assertArrayEquals(new byte[] {(byte) -123, (byte) 6, (byte) 30, (byte) 0, (byte) 0, (byte) 0}, values);
     newRootMap = (Map<String, Object>) scbWeak.deserialize(values);
-    Assert.assertEquals(30, (int) ((List<Integer>) newRootMap.get("fixed32sNotPacked")).get(0));
+    Assertions.assertEquals(30, (int) ((List<Integer>) newRootMap.get("fixed32sNotPacked")).get(0));
   }
 }

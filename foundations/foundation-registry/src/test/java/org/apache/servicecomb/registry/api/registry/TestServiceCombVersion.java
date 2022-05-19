@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.registry.api.registry;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestServiceCombVersion {
   @Test
@@ -26,6 +26,6 @@ public class TestServiceCombVersion {
     ServiceCombVersion version = new ServiceCombVersion();
     // this.getClass().getPackage().getImplementationVersion()
     // is not stable, may get null or 2.0.1-SNAPSHOT
-    Assert.assertTrue(version.loadVersion().toString().contains("ServiceComb"));
+    Assertions.assertTrue(version.loadVersion().toString().contains("ServiceComb"));
   }
 }

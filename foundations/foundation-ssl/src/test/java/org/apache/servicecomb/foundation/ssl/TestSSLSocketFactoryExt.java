@@ -20,9 +20,9 @@ package org.apache.servicecomb.foundation.ssl;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestSSLSocketFactoryExt {
@@ -51,6 +51,6 @@ public class TestSSLSocketFactoryExt {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 }

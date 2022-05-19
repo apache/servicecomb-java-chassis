@@ -21,20 +21,20 @@ import java.util.Map;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.netflix.spectator.api.Measurement;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMeasurementNode {
   MeasurementNode node = new MeasurementNode("name", null);
 
   @Test
   public void getName() {
-    Assert.assertEquals("name", node.getName());
+    Assertions.assertEquals("name", node.getName());
   }
 
   @Test
@@ -42,12 +42,12 @@ public class TestMeasurementNode {
     Map<String, MeasurementNode> children = new HashMap<>();
     node = new MeasurementNode("name", children);
 
-    Assert.assertSame(children, node.getChildren());
+    Assertions.assertSame(children, node.getChildren());
   }
 
   @Test
   public void findChild_noChildren() {
-    Assert.assertNull(node.findChild("child"));
+    Assertions.assertNull(node.findChild("child"));
   }
 
   @Test
@@ -55,7 +55,7 @@ public class TestMeasurementNode {
     MeasurementNode c1 = node.addChild("c1", measurement);
     c1.addChild("c2", measurement);
 
-    Assert.assertNull(node.findChild("c1_notExist", "c2"));
+    Assertions.assertNull(node.findChild("c1_notExist", "c2"));
   }
 
   @Test
@@ -63,7 +63,7 @@ public class TestMeasurementNode {
     MeasurementNode c1 = node.addChild("c1", measurement);
     MeasurementNode c2 = c1.addChild("c2", measurement);
 
-    Assert.assertSame(c2, node.findChild("c1", "c2"));
+    Assertions.assertSame(c2, node.findChild("c1", "c2"));
   }
 
   @Test
@@ -71,8 +71,8 @@ public class TestMeasurementNode {
     MeasurementNode c1 = node.addChild("c1", measurement);
     MeasurementNode c2 = node.addChild("c2", measurement);
 
-    Assert.assertSame(c1, node.findChild("c1"));
-    Assert.assertSame(c2, node.findChild("c2"));
+    Assertions.assertSame(c1, node.findChild("c1"));
+    Assertions.assertSame(c2, node.findChild("c2"));
   }
 
   @Test
@@ -93,6 +93,6 @@ public class TestMeasurementNode {
     node.addMeasurement(measurement);
     node.addMeasurement(measurement);
 
-    Assert.assertEquals(20, node.summary(), 0);
+    Assertions.assertEquals(20, node.summary(), 0);
   }
 }

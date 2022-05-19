@@ -22,7 +22,6 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,6 +30,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxClientResponseToHttpServletResponse {
   @Mocked
@@ -54,7 +54,7 @@ public class TestVertxClientResponseToHttpServletResponse {
       }
     };
 
-    Assert.assertEquals(123, response.getStatus());
+    Assertions.assertEquals(123, response.getStatus());
   }
 
   @Test
@@ -69,9 +69,9 @@ public class TestVertxClientResponseToHttpServletResponse {
     };
 
     StatusType type = response.getStatusType();
-    Assert.assertSame(type, response.getStatusType());
-    Assert.assertEquals(123, type.getStatusCode());
-    Assert.assertEquals("test", type.getReasonPhrase());
+    Assertions.assertSame(type, response.getStatusType());
+    Assertions.assertEquals(123, type.getStatusCode());
+    Assertions.assertEquals("test", type.getReasonPhrase());
   }
 
   @Test
@@ -83,7 +83,7 @@ public class TestVertxClientResponseToHttpServletResponse {
       }
     };
 
-    Assert.assertEquals("json", response.getContentType());
+    Assertions.assertEquals("json", response.getContentType());
   }
 
   @Test
@@ -95,7 +95,7 @@ public class TestVertxClientResponseToHttpServletResponse {
       }
     };
 
-    Assert.assertEquals("value", response.getHeader("name"));
+    Assertions.assertEquals("value", response.getHeader("name"));
   }
 
   @Test

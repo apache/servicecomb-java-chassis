@@ -17,41 +17,40 @@
 
 package org.apache.servicecomb.foundation.common.http;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 
 public class TestHttpStatus {
   @Test
   public void testIsSuccessCode() {
-    Assert.assertTrue(HttpStatus.isSuccess(200));
-    Assert.assertFalse(HttpStatus.isSuccess(300));
+    Assertions.assertTrue(HttpStatus.isSuccess(200));
+    Assertions.assertFalse(HttpStatus.isSuccess(300));
   }
 
   @Test
   public void testIsSuccessType() {
-    Assert.assertTrue(HttpStatus.isSuccess(Status.OK));
-    Assert.assertFalse(HttpStatus.isSuccess(Status.BAD_REQUEST));
+    Assertions.assertTrue(HttpStatus.isSuccess(Status.OK));
+    Assertions.assertFalse(HttpStatus.isSuccess(Status.BAD_REQUEST));
   }
 
   @Test
   public void testGetStatusCode() {
     HttpStatus status = new HttpStatus(200, "ok");
-    Assert.assertEquals(200, status.getStatusCode());
+    Assertions.assertEquals(200, status.getStatusCode());
   }
 
   @Test
   public void testGetFamily() {
     HttpStatus status = new HttpStatus(200, "ok");
-    Assert.assertEquals(Family.familyOf(200), status.getFamily());
+    Assertions.assertEquals(Family.familyOf(200), status.getFamily());
   }
 
   @Test
   public void testGetReasonPhrase() {
     HttpStatus status = new HttpStatus(200, "ok");
-    Assert.assertEquals("ok", status.getReasonPhrase());
+    Assertions.assertEquals("ok", status.getReasonPhrase());
   }
 }

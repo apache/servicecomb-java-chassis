@@ -16,17 +16,17 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTypesUtil {
   @Test
   public void testTypesUtil() {
-    Assert.assertEquals(double.class, TypesUtil.wrapperTypeToPrimitive(Double.class));
-    Assert.assertEquals(Float.class, TypesUtil.primitiveTypeToWrapper(float.class));
-    Assert
+    Assertions.assertEquals(double.class, TypesUtil.wrapperTypeToPrimitive(Double.class));
+    Assertions.assertEquals(Float.class, TypesUtil.primitiveTypeToWrapper(float.class));
+    Assertions
         .assertEquals(TypesUtil.PRIMITIVE_CHAR, TypesUtil.wrapperJavaTypeToPrimitive(TypesUtil.PRIMITIVE_WRAPPER_CHAR));
-    Assert
+    Assertions
         .assertEquals(TypesUtil.PRIMITIVE_WRAPPER_BYTE, TypesUtil.primitiveJavaTypeToWrapper(TypesUtil.PRIMITIVE_BYTE));
   }
 }

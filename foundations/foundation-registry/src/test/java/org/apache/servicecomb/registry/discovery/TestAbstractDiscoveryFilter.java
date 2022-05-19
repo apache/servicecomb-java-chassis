@@ -17,11 +17,8 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
-import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractDiscoveryFilter {
   int initCallCount;
@@ -71,9 +68,9 @@ public class TestAbstractDiscoveryFilter {
   public void discoveryInited() {
     doDiscovery();
 
-    Assert.assertEquals(1, childrenInitedCallCount);
-    Assert.assertEquals(0, initCallCount);
-    Assert.assertSame(child, result);
+    Assertions.assertEquals(1, childrenInitedCallCount);
+    Assertions.assertEquals(0, initCallCount);
+    Assertions.assertSame(child, result);
   }
 
   @Test
@@ -81,9 +78,9 @@ public class TestAbstractDiscoveryFilter {
     inited[0] = false;
     doDiscovery();
 
-    Assert.assertEquals(2, childrenInitedCallCount);
-    Assert.assertEquals(0, initCallCount);
-    Assert.assertSame(child, result);
+    Assertions.assertEquals(2, childrenInitedCallCount);
+    Assertions.assertEquals(0, initCallCount);
+    Assertions.assertSame(child, result);
   }
 
   @Test
@@ -92,8 +89,8 @@ public class TestAbstractDiscoveryFilter {
     inited[1] = false;
     doDiscovery();
 
-    Assert.assertEquals(2, childrenInitedCallCount);
-    Assert.assertEquals(1, initCallCount);
-    Assert.assertSame(child, result);
+    Assertions.assertEquals(2, childrenInitedCallCount);
+    Assertions.assertEquals(1, initCallCount);
+    Assertions.assertSame(child, result);
   }
 }

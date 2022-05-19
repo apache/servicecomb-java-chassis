@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,18 +41,18 @@ public class TestFileNameTooLong {
     LOGGER.error(folder.getAbsolutePath()); // $ROOT\foundations\foundation-common
     File root = new File(folder.getParentFile().getParent());
     LOGGER.error(root.getAbsolutePath()); // $ROOT\foundations\foundation-common
-    Assert.assertTrue(root.exists());
-    Assert.assertTrue(root.isDirectory());
+    Assertions.assertTrue(root.exists());
+    Assertions.assertTrue(root.isDirectory());
 
     List<String> names = new LinkedList<>();
     findLongFileName(root, names, root.getAbsolutePath().length());
     Collections.sort(names);
-    names.forEach(e -> LOGGER.error(e));
+    names.forEach(LOGGER::error);
     if (!names.isEmpty()) {
       // for debug
-      Assert.assertEquals("", names.toString());
+      Assertions.assertEquals("", names.toString());
     }
-    Assert.assertTrue(names.isEmpty());
+    Assertions.assertTrue(names.isEmpty());
   }
 
   private static void findLongFileName(File folder, List<String> holder, int baseLenght) {

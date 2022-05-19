@@ -20,22 +20,22 @@ package org.apache.servicecomb.foundation.common.utils;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 
 public class TestGenericsUtils {
   @Test
   public void testIsGenerics() {
-    Assert.assertTrue(GenericsUtils.isGenericResponseType(List.class));
-    Assert.assertTrue(GenericsUtils.isGenericResponseType(Map.class));
-    Assert.assertTrue(GenericsUtils.isGenericResponseType(Person.class));
+    Assertions.assertTrue(GenericsUtils.isGenericResponseType(List.class));
+    Assertions.assertTrue(GenericsUtils.isGenericResponseType(Map.class));
+    Assertions.assertTrue(GenericsUtils.isGenericResponseType(Person.class));
 
-    Assert.assertFalse(GenericsUtils.isGenericResponseType(Man.class));
-    Assert.assertFalse(GenericsUtils.isGenericResponseType(String.class));
-    Assert.assertFalse(GenericsUtils.isGenericResponseType(GenericsUtils.class));
+    Assertions.assertFalse(GenericsUtils.isGenericResponseType(Man.class));
+    Assertions.assertFalse(GenericsUtils.isGenericResponseType(String.class));
+    Assertions.assertFalse(GenericsUtils.isGenericResponseType(GenericsUtils.class));
 
-    Assert.assertFalse(GenericsUtils.isGenericResponseType(new ParameterizedTypeReference<List<Man>>() {
+    Assertions.assertFalse(GenericsUtils.isGenericResponseType(new ParameterizedTypeReference<List<Man>>() {
     }.getType()));
   }
 }

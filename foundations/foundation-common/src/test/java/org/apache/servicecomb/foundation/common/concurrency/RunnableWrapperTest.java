@@ -17,13 +17,12 @@
 
 package org.apache.servicecomb.foundation.common.concurrency;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RunnableWrapperTest {
   /**
@@ -61,6 +60,6 @@ public class RunnableWrapperTest {
       scheduledThreadPoolExecutor.shutdownNow();
     }
 
-    assertEquals(0, countDownLatch.getCount());
+    Assertions.assertEquals(0, countDownLatch.getCount());
   }
 }

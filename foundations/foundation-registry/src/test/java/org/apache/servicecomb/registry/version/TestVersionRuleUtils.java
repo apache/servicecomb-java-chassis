@@ -22,40 +22,37 @@ import org.apache.servicecomb.registry.version.VersionRuleFixedParser.FixedVersi
 import org.apache.servicecomb.registry.version.VersionRuleLatestParser.LatestVersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleRangeParser.RangeVersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleStartFromParser.StartFromVersionRule;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionRuleUtils {
 
   @Test
   public void fixed() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate("1");
-    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(FixedVersionRule.class));
-    Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate("1"));
+    Assertions.assertTrue(versionRule instanceof FixedVersionRule);
+    Assertions.assertSame(versionRule, VersionRuleUtils.getOrCreate("1"));
   }
 
   @Test
   public void latest() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate(DefinitionConst.VERSION_RULE_LATEST);
-    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(LatestVersionRule.class));
-    Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate(DefinitionConst.VERSION_RULE_LATEST));
+    Assertions.assertTrue(versionRule instanceof LatestVersionRule);
+    Assertions.assertSame(versionRule, VersionRuleUtils.getOrCreate(DefinitionConst.VERSION_RULE_LATEST));
   }
 
   @Test
   public void range() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate("1-2");
-    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(RangeVersionRule.class));
-    Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate("1-2"));
+    Assertions.assertTrue(versionRule instanceof RangeVersionRule);
+    Assertions.assertSame(versionRule, VersionRuleUtils.getOrCreate("1-2"));
   }
 
   @Test
   public void startFrom() {
     VersionRule versionRule = VersionRuleUtils.getOrCreate("1+");
-    MatcherAssert.assertThat(versionRule, Matchers.instanceOf(StartFromVersionRule.class));
-    Assert.assertSame(versionRule, VersionRuleUtils.getOrCreate("1+"));
+    Assertions.assertTrue(versionRule instanceof StartFromVersionRule);
+    Assertions.assertSame(versionRule, VersionRuleUtils.getOrCreate("1+"));
   }
 
   @Test

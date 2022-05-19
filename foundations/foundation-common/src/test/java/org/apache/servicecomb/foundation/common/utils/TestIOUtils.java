@@ -17,29 +17,28 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestIOUtils {
 
   @Test
   public void testAnonymousPath() {
-    assertEquals(":/:/r/2/y/b/y/0/s/microservice.yaml",
+    Assertions.assertEquals(":/:/r/2/y/b/y/0/s/microservice.yaml",
         IOUtils.anonymousPath("jar:file:/D:/User/.m2/repository/servicecomb"
             + "/transport-highway/2.3.0/classes/microservice.yaml"));
 
-    assertEquals(":/:/r/microservice.yaml", IOUtils.anonymousPath("file:/D:/User/microservice.yaml"));
+    Assertions.assertEquals(":/:/r/microservice.yaml", IOUtils.anonymousPath("file:/D:/User/microservice.yaml"));
 
-    assertEquals(":\\:\\r\\microservice.yaml", IOUtils.anonymousPath("file:\\D:\\User\\microservice.yaml"));
+    Assertions.assertEquals(":\\:\\r\\microservice.yaml", IOUtils.anonymousPath("file:\\D:\\User\\microservice.yaml"));
 
-    assertEquals("r\\t\\a.txt", IOUtils.anonymousPath("user\\test\\a.txt"));
+    Assertions.assertEquals("r\\t\\a.txt", IOUtils.anonymousPath("user\\test\\a.txt"));
 
-    assertEquals(":\\:\\a.txt", IOUtils.anonymousPath("file:\\D:\\a.txt"));
+    Assertions.assertEquals(":\\:\\a.txt", IOUtils.anonymousPath("file:\\D:\\a.txt"));
 
-    assertEquals(":\\a.txt", IOUtils.anonymousPath("D:\\a.txt"));
+    Assertions.assertEquals(":\\a.txt", IOUtils.anonymousPath("D:\\a.txt"));
 
-    assertEquals("a.txt", IOUtils.anonymousPath("a.txt"));
+    Assertions.assertEquals("a.txt", IOUtils.anonymousPath("a.txt"));
   }
 
 }

@@ -24,7 +24,6 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,6 +33,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxClientRequestToHttpServletRequest {
   @Mocked
@@ -57,7 +57,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("/path", request.getRequestURI());
+    Assertions.assertEquals("/path", request.getRequestURI());
   }
 
   @Test
@@ -69,7 +69,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("a=1&b=2", request.getQueryString());
+    Assertions.assertEquals("a=1&b=2", request.getQueryString());
   }
 
   @Test
@@ -83,7 +83,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("value", request.getHeader("name"));
+    Assertions.assertEquals("value", request.getHeader("name"));
   }
 
   @Test
@@ -146,7 +146,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
   @Test
   public void testGetContextPath() {
-    Assert.assertEquals("", request.getContextPath());
+    Assertions.assertEquals("", request.getContextPath());
   }
 
   @Test
@@ -158,7 +158,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("GET", request.getMethod());
+    Assertions.assertEquals("GET", request.getMethod());
   }
 
   @Test
@@ -173,7 +173,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.addHeader(HttpHeaders.CONTENT_TYPE, "ct");
 
-    Assert.assertEquals("ct", request.getContentType());
+    Assertions.assertEquals("ct", request.getContentType());
   }
 
   @Test
@@ -193,6 +193,6 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.addHeader(HttpHeaders.CONTENT_TYPE, contentType);
 
-    Assert.assertEquals("ce", request.getCharacterEncoding());
+    Assertions.assertEquals("ce", request.getCharacterEncoding());
   }
 }

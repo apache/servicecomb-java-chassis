@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,6 +32,7 @@ import org.junit.Test;
 import io.vertx.ext.web.FileUpload;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestFileUploadPart {
   @Mocked
@@ -65,7 +65,7 @@ public class TestFileUploadPart {
       }
     };
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
+      Assertions.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
     }
   }
 
@@ -79,7 +79,7 @@ public class TestFileUploadPart {
       }
     };
 
-    Assert.assertEquals(contentType, part.getContentType());
+    Assertions.assertEquals(contentType, part.getContentType());
   }
 
   @Test
@@ -92,7 +92,7 @@ public class TestFileUploadPart {
       }
     };
 
-    Assert.assertEquals(name, part.getName());
+    Assertions.assertEquals(name, part.getName());
   }
 
   @Test
@@ -105,7 +105,7 @@ public class TestFileUploadPart {
       }
     };
 
-    Assert.assertEquals(clientName, part.getSubmittedFileName());
+    Assertions.assertEquals(clientName, part.getSubmittedFileName());
   }
 
   @Test
@@ -118,7 +118,7 @@ public class TestFileUploadPart {
       }
     };
 
-    Assert.assertEquals(fileSize, part.getSize());
+    Assertions.assertEquals(fileSize, part.getSize());
   }
 
   @Test
@@ -133,6 +133,6 @@ public class TestFileUploadPart {
     File targetFile = new File(UUID.randomUUID().toString());
     targetFile.deleteOnExit();
     part.write(targetFile.getAbsolutePath());
-    Assert.assertEquals(content, FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8));
+    Assertions.assertEquals(content, FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8));
   }
 }

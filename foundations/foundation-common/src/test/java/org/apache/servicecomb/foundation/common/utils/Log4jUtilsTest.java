@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -26,9 +24,9 @@ import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.core.io.Resource;
 
 import mockit.Deencapsulation;
@@ -66,28 +64,28 @@ public class Log4jUtilsTest {
       @Mock
       void configure(Properties properties) {
         logConfigured.value = true;
-        Assert.assertSame(properties, logProperties);
+        Assertions.assertSame(properties, logProperties);
       }
     };
     new MockUp<Log4jUtils>() {
       @Mock
       void outputFile(List<Resource> resList, Properties properties) {
         mergedFileWritten.value = true;
-        Assert.assertSame(logResList, resList);
-        Assert.assertSame(logProperties, properties);
+        Assertions.assertSame(logResList, resList);
+        Assertions.assertSame(logProperties, properties);
       }
     };
 
-    Assert.assertFalse(Deencapsulation.getField(Log4jUtils.class, "inited"));
+    Assertions.assertFalse(Log4jUtils.isInited());
     try {
       Log4jUtils.init();
     } catch (Exception e) {
-      fail(e.getMessage());
+      Assertions.fail(e.getMessage());
     }
-    Assert.assertTrue(Deencapsulation.getField(Log4jUtils.class, "inited"));
-    Assert.assertTrue(propertiesLoaded.value);
-    Assert.assertTrue(logConfigured.value);
-    Assert.assertTrue(mergedFileWritten.value);
+    Assertions.assertTrue(Log4jUtils.isInited());
+    Assertions.assertTrue(propertiesLoaded.value);
+    Assertions.assertTrue(logConfigured.value);
+    Assertions.assertTrue(mergedFileWritten.value);
   }
 
   @Test
@@ -109,27 +107,27 @@ public class Log4jUtilsTest {
       @Mock
       void configure(Properties properties) {
         logConfigured.value = true;
-        Assert.assertSame(properties, logProperties);
+        Assertions.assertSame(properties, logProperties);
       }
     };
     new MockUp<Log4jUtils>() {
       @Mock
       void outputFile(List<Resource> resList, Properties properties) {
         mergedFileWritten.value = true;
-        Assert.assertSame(logResList, resList);
-        Assert.assertSame(logProperties, properties);
+        Assertions.assertSame(logResList, resList);
+        Assertions.assertSame(logProperties, properties);
       }
     };
 
-    Assert.assertFalse(Deencapsulation.getField(Log4jUtils.class, "inited"));
+    Assertions.assertFalse(Log4jUtils.isInited());
     try {
       Log4jUtils.init();
     } catch (Exception e) {
-      fail(e.getMessage());
+      Assertions.fail(e.getMessage());
     }
-    Assert.assertTrue(Deencapsulation.getField(Log4jUtils.class, "inited"));
-    Assert.assertTrue(propertiesLoaded.value);
-    Assert.assertTrue(logConfigured.value);
-    Assert.assertFalse(mergedFileWritten.value);
+    Assertions.assertTrue(Log4jUtils.isInited());
+    Assertions.assertTrue(propertiesLoaded.value);
+    Assertions.assertTrue(logConfigured.value);
+    Assertions.assertFalse(mergedFileWritten.value);
   }
 }

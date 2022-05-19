@@ -20,7 +20,7 @@ import java.util.Collections;
 
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -38,181 +38,181 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
   @Test
   public void testLong() {
     PriorityProperty<Long> config = propertyFactory.getOrCreate(Long.class, -1L, -2L, keys);
-    Assert.assertEquals(-2L, (long) config.getValue());
+    Assertions.assertEquals(-2L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(low, 1L);
-    Assert.assertEquals(1L, (long) config.getValue());
+    Assertions.assertEquals(1L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(middle, 2L);
-    Assert.assertEquals(2L, (long) config.getValue());
+    Assertions.assertEquals(2L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(high, 3L);
-    Assert.assertEquals(3L, (long) config.getValue());
+    Assertions.assertEquals(3L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(3L, (long) config.getValue());
+    Assertions.assertEquals(3L, (long) config.getValue());
     ArchaiusUtils.setProperty(middle, 2L);
 
     ArchaiusUtils.setProperty(high, null);
-    Assert.assertEquals(2L, (long) config.getValue());
+    Assertions.assertEquals(2L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(1L, (long) config.getValue());
+    Assertions.assertEquals(1L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(low, null);
-    Assert.assertEquals(-2L, (long) config.getValue());
+    Assertions.assertEquals(-2L, (long) config.getValue());
   }
 
   @Test
   public void testInt() {
     PriorityProperty<Integer> config = propertyFactory.getOrCreate(Integer.class, -1, -2, keys);
-    Assert.assertEquals(-2L, (int) config.getValue());
+    Assertions.assertEquals(-2L, (int) config.getValue());
 
     ArchaiusUtils.setProperty(low, 1);
-    Assert.assertEquals(1, (int) config.getValue());
+    Assertions.assertEquals(1, (int) config.getValue());
 
     ArchaiusUtils.setProperty(middle, 2);
-    Assert.assertEquals(2, (int) config.getValue());
+    Assertions.assertEquals(2, (int) config.getValue());
 
     ArchaiusUtils.setProperty(high, 3);
-    Assert.assertEquals(3, (int) config.getValue());
+    Assertions.assertEquals(3, (int) config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(3, (int) config.getValue());
+    Assertions.assertEquals(3, (int) config.getValue());
     ArchaiusUtils.setProperty(middle, 2);
 
     ArchaiusUtils.setProperty(high, null);
-    Assert.assertEquals(2, (int) config.getValue());
+    Assertions.assertEquals(2, (int) config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(1, (int) config.getValue());
+    Assertions.assertEquals(1, (int) config.getValue());
 
     ArchaiusUtils.setProperty(low, null);
-    Assert.assertEquals(-2, (int) config.getValue());
+    Assertions.assertEquals(-2, (int) config.getValue());
   }
 
   @Test
   public void testString() {
     PriorityProperty<String> config = propertyFactory.getOrCreate(String.class, null, "def", keys);
-    Assert.assertEquals("def", config.getValue());
+    Assertions.assertEquals("def", config.getValue());
 
     ArchaiusUtils.setProperty(low, 1);
-    Assert.assertEquals("1", config.getValue());
+    Assertions.assertEquals("1", config.getValue());
 
     ArchaiusUtils.setProperty(middle, 2);
-    Assert.assertEquals("2", config.getValue());
+    Assertions.assertEquals("2", config.getValue());
 
     ArchaiusUtils.setProperty(high, 3);
-    Assert.assertEquals("3", config.getValue());
+    Assertions.assertEquals("3", config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals("3", config.getValue());
+    Assertions.assertEquals("3", config.getValue());
     ArchaiusUtils.setProperty(middle, 2);
 
     ArchaiusUtils.setProperty(high, null);
-    Assert.assertEquals("2", config.getValue());
+    Assertions.assertEquals("2", config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals("1", config.getValue());
+    Assertions.assertEquals("1", config.getValue());
 
     ArchaiusUtils.setProperty(low, null);
-    Assert.assertEquals("def", config.getValue());
+    Assertions.assertEquals("def", config.getValue());
   }
 
   @Test
   public void testBoolean() {
     PriorityProperty<Boolean> config = propertyFactory.getOrCreate(Boolean.class, null, false, keys);
-    Assert.assertFalse(config.getValue());
+    Assertions.assertFalse(config.getValue());
 
     ArchaiusUtils.setProperty(low, true);
-    Assert.assertTrue(config.getValue());
+    Assertions.assertTrue(config.getValue());
 
     ArchaiusUtils.setProperty(middle, false);
-    Assert.assertFalse(config.getValue());
+    Assertions.assertFalse(config.getValue());
 
     ArchaiusUtils.setProperty(high, true);
-    Assert.assertTrue(config.getValue());
+    Assertions.assertTrue(config.getValue());
 
     ArchaiusUtils.setProperty(middle, false);
-    Assert.assertTrue(config.getValue());
+    Assertions.assertTrue(config.getValue());
     ArchaiusUtils.setProperty(middle, false);
 
     ArchaiusUtils.setProperty(high, null);
-    Assert.assertFalse(config.getValue());
+    Assertions.assertFalse(config.getValue());
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertTrue(config.getValue());
+    Assertions.assertTrue(config.getValue());
 
     ArchaiusUtils.setProperty(low, null);
-    Assert.assertFalse(config.getValue());
+    Assertions.assertFalse(config.getValue());
   }
 
   @Test
   public void testDouble() {
     PriorityProperty<Double> config = propertyFactory.getOrCreate(Double.class, null, -2.0, keys);
-    Assert.assertEquals(-2, config.getValue(), 0);
+    Assertions.assertEquals(-2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, 1);
-    Assert.assertEquals(1, config.getValue(), 0);
+    Assertions.assertEquals(1, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(middle, 2);
-    Assert.assertEquals(2, config.getValue(), 0);
+    Assertions.assertEquals(2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(high, 3);
-    Assert.assertEquals(3, config.getValue(), 0);
+    Assertions.assertEquals(3, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(3, config.getValue(), 0);
+    Assertions.assertEquals(3, config.getValue(), 0);
     ArchaiusUtils.setProperty(middle, 2);
 
     ArchaiusUtils.setProperty(high, null);
-    Assert.assertEquals(2, config.getValue(), 0);
+    Assertions.assertEquals(2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(1, config.getValue(), 0);
+    Assertions.assertEquals(1, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, null);
-    Assert.assertEquals(-2, config.getValue(), 0);
+    Assertions.assertEquals(-2, config.getValue(), 0);
   }
 
   @Test
   public void testFloat() {
     PriorityProperty<Float> config = propertyFactory.getOrCreate(Float.class, null, -2.0f, keys);
-    Assert.assertEquals(-2, config.getValue(), 0);
+    Assertions.assertEquals(-2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, 1);
-    Assert.assertEquals(1, config.getValue(), 0);
+    Assertions.assertEquals(1, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(middle, 2);
-    Assert.assertEquals(2, config.getValue(), 0);
+    Assertions.assertEquals(2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(high, 3);
-    Assert.assertEquals(3, config.getValue(), 0);
+    Assertions.assertEquals(3, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(3, config.getValue(), 0);
+    Assertions.assertEquals(3, config.getValue(), 0);
     ArchaiusUtils.setProperty(middle, 2);
 
     ArchaiusUtils.setProperty(high, null);
-    Assert.assertEquals(2, config.getValue(), 0);
+    Assertions.assertEquals(2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(middle, null);
-    Assert.assertEquals(1, config.getValue(), 0);
+    Assertions.assertEquals(1, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, null);
-    Assert.assertEquals(-2, config.getValue(), 0);
+    Assertions.assertEquals(-2, config.getValue(), 0);
   }
 
   @Test
   public void globalRefresh() {
     PriorityProperty<String> property = propertyFactory.getOrCreate(String.class, null, null, keys);
 
-    Assert.assertNull(property.getValue());
+    Assertions.assertNull(property.getValue());
 
     ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
         .getBackingConfigurationSource();
     config.addConfiguration(new MapConfiguration(Collections.singletonMap(high, "high-value")));
 
-    Assert.assertEquals("high-value", property.getValue());
+    Assertions.assertEquals("high-value", property.getValue());
   }
 }
