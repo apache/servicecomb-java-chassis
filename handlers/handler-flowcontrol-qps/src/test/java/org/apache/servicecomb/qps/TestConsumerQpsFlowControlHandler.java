@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.qps;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.core.Invocation;
@@ -30,9 +28,9 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -67,10 +65,10 @@ public class TestConsumerQpsFlowControlHandler {
     AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
     qpsStrategy.setKey("abc");
     qpsStrategy.setQpsLimit(100L);
-    Assert.assertEquals(false, qpsStrategy.isLimitNewRequest());
+    Assertions.assertFalse(qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
-    Assert.assertEquals(true, qpsStrategy.isLimitNewRequest());
+    Assertions.assertTrue(qpsStrategy.isLimitNewRequest());
   }
 
   @Test
@@ -103,8 +101,8 @@ public class TestConsumerQpsFlowControlHandler {
     ArgumentCaptor<InvocationException> captor = ArgumentCaptor.forClass(InvocationException.class);
     Mockito.verify(asyncResp).consumerFail(captor.capture());
     InvocationException invocationException = captor.getValue();
-    assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
-    assertEquals("consumer request rejected by qps flowcontrol",
+    Assertions.assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
+    Assertions.assertEquals("consumer request rejected by qps flowcontrol",
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
   }
 

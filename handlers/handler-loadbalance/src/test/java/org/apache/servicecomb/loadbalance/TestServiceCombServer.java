@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 /**
@@ -46,45 +44,45 @@ public class TestServiceCombServer {
 
   @Test
   public void testCseServerObj() {
-    assertNotNull(cs);
+    Assertions.assertNotNull(cs);
   }
 
   @Test
   public void testGetEndpoint() {
     cs.getEndpoint();
-    assertNotNull(cs.getEndpoint());
+    Assertions.assertNotNull(cs.getEndpoint());
   }
 
   @Test
   public void testEqualsMethod() {
-    Assert.assertFalse(cs.equals((Object) "abcd"));
+    Assertions.assertFalse(cs.equals((Object) "abcd"));
 
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     ServiceCombServer other = new ServiceCombServer(null, transport, new CacheEndpoint("1234", instance1));
-    Assert.assertFalse(cs.equals(other));
+    Assertions.assertFalse(cs.equals(other));
 
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("123456");
     other = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance2));
-    Assert.assertTrue(cs.equals(other));
+    Assertions.assertTrue(cs.equals(other));
   }
 
   @Test
   public void testToStringMethod() {
     cs.toString();
-    assertNotNull(cs.toString());
+    Assertions.assertNotNull(cs.toString());
   }
 
   @Test
   public void testGetHost() {
     cs.getHost();
-    assertNotNull(cs.getHost());
+    Assertions.assertNotNull(cs.getHost());
   }
 
   @Test
   public void testHashCodeMethod() {
     cs.hashCode();
-    assertNotNull(cs.hashCode());
+    Assertions.assertNotNull(cs.hashCode());
   }
 }

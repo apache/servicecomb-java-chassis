@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import brave.propagation.Propagation.Getter;
@@ -41,19 +41,19 @@ public class ZipkinProviderDelegateTest {
 
     // if there is no spanId or traceId, then result is null
     String spanId = getter.get(invocation, ZipkinProviderDelegate.SPAN_ID_HEADER_NAME);
-    Assert.assertNull(spanId);
+    Assertions.assertNull(spanId);
 
     // if there is no spanId but traceId, then traceId will be returned as result
     final String testTraceId = "testTraceId";
     context.put(ZipkinProviderDelegate.TRACE_ID_HEADER_NAME, testTraceId);
     spanId = getter.get(invocation, ZipkinProviderDelegate.SPAN_ID_HEADER_NAME);
-    Assert.assertEquals(testTraceId, spanId);
+    Assertions.assertEquals(testTraceId, spanId);
 
     // if there is spanId, then spanId will be returned
     final String testSpanId = "testSpanId";
     context.put(ZipkinProviderDelegate.SPAN_ID_HEADER_NAME, testSpanId);
     spanId = getter.get(invocation, ZipkinProviderDelegate.SPAN_ID_HEADER_NAME);
-    Assert.assertEquals(testSpanId, spanId);
+    Assertions.assertEquals(testSpanId, spanId);
   }
 
   @Test
@@ -68,11 +68,11 @@ public class ZipkinProviderDelegateTest {
 
     final String key = "key";
     String value = getter.get(invocation, key);
-    Assert.assertNull(value);
+    Assertions.assertNull(value);
 
     final String expectedValue = "value";
     context.put(key, expectedValue);
     value = getter.get(invocation, key);
-    Assert.assertEquals(expectedValue, value);
+    Assertions.assertEquals(expectedValue, value);
   }
 }

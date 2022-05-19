@@ -20,7 +20,6 @@ import org.apache.servicecomb.authentication.consumer.ConsumerAuthHandler;
 import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -40,7 +39,6 @@ public class TestConsumerAuthHandler {
     ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
     consumerAuthHandler.setAuthenticationTokenManager(tokenManager);
     consumerAuthHandler.handle(invocation, asyncResp);
-    Assert.assertTrue(true);
   }
 
 

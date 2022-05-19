@@ -28,8 +28,8 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.netflix.loadbalancer.LoadBalancerStats;
@@ -62,10 +62,10 @@ public class TestSessionSticknessRule {
 
 
     Server s = rule.choose(allServers, invocation);
-    Assert.assertEquals(s, mockedServer);
+    Assertions.assertEquals(s, mockedServer);
 
     s = rule.choose(allServers, invocation);
-    Assert.assertEquals(s, mockedServer);
+    Assertions.assertEquals(s, mockedServer);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -134,7 +134,7 @@ public class TestSessionSticknessRule {
       status = false;
     }
 
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -164,7 +164,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -210,7 +210,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -230,7 +230,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -265,6 +265,6 @@ public class TestSessionSticknessRule {
       }
     };
     Server s = rule.choose(allServers, invocation);
-    Assert.assertEquals(mockedServer, s);
+    Assertions.assertEquals(mockedServer, s);
   }
 }

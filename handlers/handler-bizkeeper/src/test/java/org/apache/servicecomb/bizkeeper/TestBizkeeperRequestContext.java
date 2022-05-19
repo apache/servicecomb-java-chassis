@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.bizkeeper;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,7 +30,7 @@ public class TestBizkeeperRequestContext {
   public void testInitializeContext() {
 
     BizkeeperRequestContext bizkeeperRequestContext = BizkeeperRequestContext.initializeContext();
-    Assert.assertNotNull(bizkeeperRequestContext);
+    Assertions.assertNotNull(bizkeeperRequestContext);
   }
 
   @Test
@@ -45,6 +45,6 @@ public class TestBizkeeperRequestContext {
       validAssert = false;
     }
 
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 }

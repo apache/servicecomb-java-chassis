@@ -23,11 +23,11 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestFallbackPolicyManager {
   @Test
@@ -69,7 +69,7 @@ public class TestFallbackPolicyManager {
       }
     };
 
-    Assert.assertEquals("runtime",
+    Assertions.assertEquals("runtime",
         FallbackPolicyManager.getFallbackResponse("Consumer", new RuntimeException(), invocation)
             .getResult());
 
@@ -86,7 +86,7 @@ public class TestFallbackPolicyManager {
       }
     };
 
-    Assert.assertEquals((String) null,
+    Assertions.assertEquals((String) null,
         FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
     new Expectations() {
@@ -101,7 +101,7 @@ public class TestFallbackPolicyManager {
         result = "throwexception";
       }
     };
-    Assert.assertEquals(CseException.class,
+    Assertions.assertEquals(CseException.class,
         ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult()).getCause()
             .getClass());
 
@@ -121,7 +121,7 @@ public class TestFallbackPolicyManager {
     };
     FallbackPolicyManager.record("Consumer", invocation, Response.succResp("mockedsuccess"), true);
     FallbackPolicyManager.record("Consumer", invocation, Response.succResp("mockedfailure"), false);
-    Assert.assertEquals("mockedsuccess",
+    Assertions.assertEquals("mockedsuccess",
         FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
     new Expectations() {
@@ -136,7 +136,7 @@ public class TestFallbackPolicyManager {
         result = "unknown";
       }
     };
-    Assert.assertEquals(InvocationException.class,
+    Assertions.assertEquals(InvocationException.class,
         ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", new InvocationException(
             Status.TOO_MANY_REQUESTS, ""), invocation).getResult()).getClass());
   }

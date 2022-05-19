@@ -19,8 +19,8 @@ package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.hystrix.HystrixCommandGroupKey;
@@ -38,9 +38,9 @@ public class TestCommandKey {
 
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-    Assert.assertNotNull(invocation);
+    Assertions.assertNotNull(invocation);
     HystrixCommandGroupKey hystrixCommandGroupKey = CommandKey.toHystrixCommandGroupKey("groupname", invocation);
-    Assert.assertNotNull(hystrixCommandGroupKey);
+    Assertions.assertNotNull(hystrixCommandGroupKey);
   }
 
   @Test
@@ -50,8 +50,8 @@ public class TestCommandKey {
 
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-    Assert.assertNotNull(invocation);
+    Assertions.assertNotNull(invocation);
     HystrixCommandKey hystrixCommandGroupKey = CommandKey.toHystrixCommandKey("groupname", invocation);
-    Assert.assertNotNull(hystrixCommandGroupKey);
+    Assertions.assertNotNull(hystrixCommandGroupKey);
   }
 }

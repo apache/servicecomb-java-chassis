@@ -32,13 +32,13 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.cache.Cache;
 
 import mockit.Expectations;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRSAProviderTokenManager {
 
@@ -63,7 +63,7 @@ public class TestRSAProviderTokenManager {
     microserviceInstance.setProperties(properties);
     properties.put(DefinitionConst.INSTANCE_PUBKEY_PRO,
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxKl5TNUTec7fL2degQcCk6vKf3c0wsfNK5V6elKzjWxm0MwbRj/UeR20VSnicBmVIOWrBS9LiERPPvjmmWUOSS2vxwr5XfhBhZ07gCAUNxBOTzgMo5nE45DhhZu5Jzt5qSV6o10Kq7+fCCBlDZ1UoWxZceHkUt5AxcrhEDulFjQIDAQAB");
-    Assert.assertFalse(tokenManager.valid(tokenStr));
+    Assertions.assertFalse(tokenManager.valid(tokenStr));
   }
 
   @Test
@@ -90,14 +90,14 @@ public class TestRSAProviderTokenManager {
       }
     };
 
-    Assert.assertTrue(tokenManager.valid(tokenStr));
+    Assertions.assertTrue(tokenManager.valid(tokenStr));
 
     Cache<RSAAuthenticationToken, Boolean> cache = tokenManager
         .getValidatedToken();
-    Assert.assertTrue(cache.asMap().containsKey(token));
+    Assertions.assertTrue(cache.asMap().containsKey(token));
 
     Thread.sleep(1000);
-    Assert.assertFalse(cache.asMap().containsKey(token));
+    Assertions.assertFalse(cache.asMap().containsKey(token));
   }
 
   @Test
@@ -126,9 +126,9 @@ public class TestRSAProviderTokenManager {
     };
     //Test Consumer first create token
     String token = rsaConsumerTokenManager.getToken();
-    Assert.assertNotNull(token);
+    Assertions.assertNotNull(token);
     // use cache token
-    Assert.assertEquals(token, rsaConsumerTokenManager.getToken());
+    Assertions.assertEquals(token, rsaConsumerTokenManager.getToken());
     new Expectations(MicroserviceInstanceCache.class) {
       {
         MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
@@ -139,8 +139,8 @@ public class TestRSAProviderTokenManager {
     };
     RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
     //first validate need to verify use RSA
-    Assert.assertTrue(rsaProviderTokenManager.valid(token));
+    Assertions.assertTrue(rsaProviderTokenManager.valid(token));
     // second validate use validated pool
-    Assert.assertTrue(rsaProviderTokenManager.valid(token));
+    Assertions.assertTrue(rsaProviderTokenManager.valid(token));
   }
 }

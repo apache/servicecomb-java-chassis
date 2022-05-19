@@ -40,7 +40,6 @@ import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +51,7 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 /**
  *
@@ -143,7 +143,7 @@ public class TestLoadbalanceHandler {
       result.value = (Throwable) resp.getResult();
     }, loadBalancer);
 
-    Assert.assertEquals("InvocationException: code=500;msg=CommonExceptionData [message=No available address found.]",
+    Assertions.assertEquals("InvocationException: code=500;msg=CommonExceptionData [message=No available address found.]",
         result.value.getMessage());
   }
 
@@ -166,13 +166,13 @@ public class TestLoadbalanceHandler {
 
     Holder<Throwable> result = new Holder<>();
     Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
-      result.value = (Throwable) resp.getResult();
+      result.value = resp.getResult();
     }, loadBalancer);
 
     // InvocationException is not taken as a failure
-    Assert.assertEquals(0,
+    Assertions.assertEquals(0,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
-    Assert.assertEquals("InvocationException: code=400;msg=send failed",
+    Assertions.assertEquals("InvocationException: code=400;msg=send failed",
         result.value.getMessage());
   }
 
@@ -198,9 +198,9 @@ public class TestLoadbalanceHandler {
       result.value = (Throwable) resp.getResult();
     }, loadBalancer);
 
-    Assert.assertEquals(1,
+    Assertions.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
         result.value.getMessage());
   }
@@ -227,16 +227,16 @@ public class TestLoadbalanceHandler {
       result.value = resp.getResult();
     }, loadBalancer);
 
-    Assert.assertEquals(1,
+    Assertions.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getActiveRequestsCount());
-    Assert.assertEquals("success", result.value);
+    Assertions.assertEquals("success", result.value);
   }
 
   @Test
   public void testIsFailedResponse() {
-    Assert.assertFalse(handler.isFailedResponse(Response.create(400, "", "")));
-    Assert.assertFalse(handler.isFailedResponse(Response.create(500, "", "")));
-    Assert.assertTrue(handler.isFailedResponse(Response.create(490, "", "")));
-    Assert.assertTrue(handler.isFailedResponse(Response.consumerFailResp(new NullPointerException())));
+    Assertions.assertFalse(handler.isFailedResponse(Response.create(400, "", "")));
+    Assertions.assertFalse(handler.isFailedResponse(Response.create(500, "", "")));
+    Assertions.assertTrue(handler.isFailedResponse(Response.create(490, "", "")));
+    Assertions.assertTrue(handler.isFailedResponse(Response.consumerFailResp(new NullPointerException())));
   }
 }

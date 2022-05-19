@@ -17,16 +17,13 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.junit.jupiter.api.Assertions;
 
 /**
  *
@@ -40,28 +37,28 @@ public class TestConfiguration {
   @Test
   public void testConstants() {
 
-    assertEquals("servicecomb.loadbalance.", Configuration.ROOT);
-    assertEquals("ribbon.", Configuration.ROOT_20);
-    assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
-    assertEquals("maxSingleTestWindow", Configuration.FILTER_MAX_SINGLE_TEST_WINDOW);
+    Assertions.assertEquals("servicecomb.loadbalance.", Configuration.ROOT);
+    Assertions.assertEquals("ribbon.", Configuration.ROOT_20);
+    Assertions.assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
+    Assertions.assertEquals("maxSingleTestWindow", Configuration.FILTER_MAX_SINGLE_TEST_WINDOW);
 
-    assertNotNull(Configuration.INSTANCE);
+    Assertions.assertNotNull(Configuration.INSTANCE);
   }
 
   @Test
   public void testFullConfigurationWithArgsString() {
-    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
-    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
   }
 
   @Test
   public void testGetSuccessiveFailedTimes() {
-    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
   }
 
   @Test
   public void testGetSessionTimeoutInSeconds() {
-    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
   }
 
 
@@ -73,22 +70,22 @@ public class TestConfiguration {
   public void testGetTimerIntervalInMillis() {
     System.setProperty(Configuration.TIMER_INTERVAL_IN_MILLIS, "100");
     ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
-    assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
 
     System.clearProperty(Configuration.TIMER_INTERVAL_IN_MILLIS);
     localConfiguration = ConfigUtil.createLocalConfig();
-    assertNull(localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+    Assertions.assertNull(localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
 
     System.setProperty("servicecomb.loadbalance.stats.timerIntervalInMilis", "100");
     localConfiguration = ConfigUtil.createLocalConfig();
-    assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
   }
 
   @Test
   public void testGetMaxSingleTestWindow() {
-    assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
+    Assertions.assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
 
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow", 5000);
-    assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
+    Assertions.assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
   }
 }
