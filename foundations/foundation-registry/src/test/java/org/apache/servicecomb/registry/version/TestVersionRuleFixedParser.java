@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.registry.version;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionRuleFixedParser {
   VersionRule versionRule;
@@ -28,13 +28,13 @@ public class TestVersionRuleFixedParser {
   @Test
   public void parseNormal() {
     versionRule = parser.parse("1");
-    Assert.assertEquals("1.0.0.0", versionRule.getVersionRule());
+    Assertions.assertEquals("1.0.0.0", versionRule.getVersionRule());
   }
 
   @Test
   public void isMatch() {
     versionRule = parser.parse("1");
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v1, null));
-    Assert.assertFalse(versionRule.isMatch(VersionConst.v2, null));
+    Assertions.assertTrue(versionRule.isMatch(VersionConst.v1, null));
+    Assertions.assertFalse(versionRule.isMatch(VersionConst.v2, null));
   }
 }

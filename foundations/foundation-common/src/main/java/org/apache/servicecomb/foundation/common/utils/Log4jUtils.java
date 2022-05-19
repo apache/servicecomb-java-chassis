@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
@@ -84,6 +85,11 @@ public final class Log4jUtils {
         outputFile(loader.getFoundResList(), properties);
       }
     }
+  }
+
+  @VisibleForTesting
+  static boolean isInited() {
+    return inited;
   }
 
   private static void outputFile(List<Resource> resList,

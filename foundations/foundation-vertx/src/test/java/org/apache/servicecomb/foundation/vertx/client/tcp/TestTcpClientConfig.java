@@ -17,16 +17,16 @@
 
 package org.apache.servicecomb.foundation.vertx.client.tcp;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTcpClientConfig {
   @Test
   public void testTcpClientConfig() {
     TcpClientConfig config = new TcpClientConfig();
-    Assert.assertEquals(config.getMsLoginTimeout(), 30000);
-    Assert.assertEquals(config.isSsl(), false);
+    Assertions.assertEquals(config.getMsLoginTimeout(), 30000);
+    Assertions.assertFalse(config.isSsl());
     config.setMsLoginTimeout(500);
-    Assert.assertEquals(config.getMsLoginTimeout(), 500);
+    Assertions.assertEquals(config.getMsLoginTimeout(), 500);
   }
 }

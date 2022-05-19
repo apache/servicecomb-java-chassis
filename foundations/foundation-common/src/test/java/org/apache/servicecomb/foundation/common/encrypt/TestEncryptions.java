@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.foundation.common.encrypt;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestEncryptions {
-  class MyEncryption implements Encryption {
+  static class MyEncryption implements Encryption {
 
     @Override
     public char[] decode(char[] encrypted, String tags) {
@@ -42,24 +42,24 @@ public class TestEncryptions {
 
   @Test
   public void testEncryptions() {
-    Assert.assertEquals(Encryptions.decode((String) null, ""), null);
-    Assert.assertEquals(Encryptions.decode("abcd", ""), "abcd");
-    Assert.assertEquals(Encryptions.decode("abcd", null), "abcd");
-    Assert.assertEquals(Encryptions.encode((String) null, ""), null);
-    Assert.assertEquals(Encryptions.encode("abcd", ""), "abcd");
-    Assert.assertEquals(Encryptions.decode("abcd", null), "abcd");
+    Assertions.assertNull(Encryptions.decode((String) null, ""));
+    Assertions.assertEquals(Encryptions.decode("abcd", ""), "abcd");
+    Assertions.assertEquals(Encryptions.decode("abcd", null), "abcd");
+    Assertions.assertNull(Encryptions.encode((String) null, ""));
+    Assertions.assertEquals(Encryptions.encode("abcd", ""), "abcd");
+    Assertions.assertEquals(Encryptions.decode("abcd", null), "abcd");
   }
 
   @Test
   public void testEncryptionsMy() {
     Encryption old = Encryptions.getEncryption();
     Encryptions.setEncryption(new MyEncryption());
-    Assert.assertEquals(Encryptions.decode((String) null, ""), null);
-    Assert.assertEquals(Encryptions.decode("abcd", ""), "abcd");
-    Assert.assertEquals(Encryptions.decode("abcd", null), null);
-    Assert.assertEquals(Encryptions.encode((String) null, ""), null);
-    Assert.assertEquals(Encryptions.encode("abcd", ""), "abcd");
-    Assert.assertEquals(Encryptions.encode("abcd", null), null);
+    Assertions.assertNull(Encryptions.decode((String) null, ""));
+    Assertions.assertEquals(Encryptions.decode("abcd", ""), "abcd");
+    Assertions.assertNull(Encryptions.decode("abcd", null));
+    Assertions.assertNull(Encryptions.encode((String) null, ""));
+    Assertions.assertEquals(Encryptions.encode("abcd", ""), "abcd");
+    Assertions.assertNull(Encryptions.encode("abcd", null));
     Encryptions.setEncryption(old);
   }
 }

@@ -17,10 +17,8 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestDiscoveryContext {
   DiscoveryContext context = new DiscoveryContext();
@@ -30,7 +28,7 @@ public class TestDiscoveryContext {
     Object inputParameters = new Object();
     context.setInputParameters(inputParameters);
 
-    Assert.assertSame(inputParameters, context.getInputParameters());
+    Assertions.assertSame(inputParameters, context.getInputParameters());
   }
 
   @Test
@@ -39,19 +37,19 @@ public class TestDiscoveryContext {
     Object value = new Object();
     context.putContextParameter(name, value);
 
-    Assert.assertSame(value, context.getContextParameter(name));
-    Assert.assertNull(context.getContextParameter("notExist"));
+    Assertions.assertSame(value, context.getContextParameter(name));
+    Assertions.assertNull(context.getContextParameter("notExist"));
   }
 
   @Test
   public void rerun() {
-    Assert.assertNull(context.popRerunFilter());
+    Assertions.assertNull(context.popRerunFilter());
 
     DiscoveryTreeNode node = new DiscoveryTreeNode();
     context.setCurrentNode(node);
     context.pushRerunFilter();
 
-    Assert.assertSame(node, context.popRerunFilter());
-    Assert.assertNull(context.popRerunFilter());
+    Assertions.assertSame(node, context.popRerunFilter());
+    Assertions.assertNull(context.popRerunFilter());
   }
 }

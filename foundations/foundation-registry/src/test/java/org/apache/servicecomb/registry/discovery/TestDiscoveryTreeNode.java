@@ -21,33 +21,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
-import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestDiscoveryTreeNode {
   DiscoveryTreeNode node = new DiscoveryTreeNode();
 
   @Test
   public void childrenInited() {
-    Assert.assertFalse(node.childrenInited());
+    Assertions.assertFalse(node.childrenInited());
 
     node.childrenInited(true);
-    Assert.assertTrue(node.childrenInited());
+    Assertions.assertTrue(node.childrenInited());
   }
 
   @Test
   public void level() {
     node.level(1);
 
-    Assert.assertEquals(1, node.level());
+    Assertions.assertEquals(1, node.level());
   }
 
   @Test
   public void attribute() {
     node.attribute("k1", "v1");
 
-    Assert.assertEquals("v1", node.attribute("k1"));
+    Assertions.assertEquals("v1", node.attribute("k1"));
   }
 
   @Test
@@ -55,7 +54,7 @@ public class TestDiscoveryTreeNode {
     Map<String, DiscoveryTreeNode> children = new HashMap<>();
     node.children(children);
 
-    Assert.assertSame(children, node.children());
+    Assertions.assertSame(children, node.children());
   }
 
   @Test
@@ -63,7 +62,7 @@ public class TestDiscoveryTreeNode {
     DiscoveryTreeNode child = new DiscoveryTreeNode().name("child");
     node.child(child.name(), child);
 
-    Assert.assertSame(child, node.child(child.name()));
+    Assertions.assertSame(child, node.child(child.name()));
   }
 
   @Test
@@ -72,8 +71,8 @@ public class TestDiscoveryTreeNode {
     VersionedCache other = new VersionedCache().cacheVersion(1).name("cache").data(data);
     node.fromCache(other);
 
-    Assert.assertEquals(1, node.cacheVersion());
-    Assert.assertEquals("cache", node.name());
-    Assert.assertSame(data, node.data());
+    Assertions.assertEquals(1, node.cacheVersion());
+    Assertions.assertEquals("cache", node.name());
+    Assertions.assertSame(data, node.data());
   }
 }

@@ -27,8 +27,8 @@ import java.util.UUID;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAbstractTransportDiscoveryFilter {
   class AbstractEndpointDiscoveryFilterForTest extends AbstractEndpointDiscoveryFilter {
@@ -67,22 +67,22 @@ public class TestAbstractTransportDiscoveryFilter {
 
   @Test
   public void isGroupingFilter() {
-    Assert.assertTrue(filter.isGroupingFilter());
+    Assertions.assertTrue(filter.isGroupingFilter());
   }
 
   @Test
   public void isTransportNameMatch_expectAll() {
-    Assert.assertTrue(filter.isTransportNameMatch("any", ""));
+    Assertions.assertTrue(filter.isTransportNameMatch("any", ""));
   }
 
   @Test
   public void isTransportNameMatch_equals() {
-    Assert.assertTrue(filter.isTransportNameMatch("rest", "rest"));
+    Assertions.assertTrue(filter.isTransportNameMatch("rest", "rest"));
   }
 
   @Test
   public void isTransportNameMatch_notEquals() {
-    Assert.assertFalse(filter.isTransportNameMatch("rest", "highway"));
+    Assertions.assertFalse(filter.isTransportNameMatch("rest", "highway"));
   }
 
   @Test
@@ -91,7 +91,7 @@ public class TestAbstractTransportDiscoveryFilter {
     parent.data(Collections.emptyMap());
     result = filter.discovery(context, parent);
 
-    Assert.assertTrue(result.isEmpty());
+    Assertions.assertTrue(result.isEmpty());
   }
 
   @Test
@@ -101,7 +101,7 @@ public class TestAbstractTransportDiscoveryFilter {
     parent.child(transportName, child);
     result = filter.discovery(context, parent);
 
-    Assert.assertSame(child, result);
+    Assertions.assertSame(child, result);
   }
 
   private MicroserviceInstance createInstance(String... schemas) {
@@ -133,7 +133,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     result = filter.createDiscoveryTreeNode("a", context, parent);
 
-    Assert.assertEquals("parent/a", result.name());
+    Assertions.assertEquals("parent/a", result.name());
     MatcherAssert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().get(0)));
   }
 
@@ -146,7 +146,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     result = filter.createDiscoveryTreeNode("", context, parent);
 
-    Assert.assertEquals("parent/", result.name());
+    Assertions.assertEquals("parent/", result.name());
 
     List<String> expect = new ArrayList<>();
     expect.addAll(instance1.getEndpoints());
@@ -163,7 +163,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     result = filter.createDiscoveryTreeNode("", context, parent);
 
-    Assert.assertEquals("parent/", result.name());
+    Assertions.assertEquals("parent/", result.name());
     MatcherAssert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().toArray()));
   }
 
@@ -176,7 +176,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     result = filter.createDiscoveryTreeNode("", context, parent);
 
-    Assert.assertEquals("parent/", result.name());
+    Assertions.assertEquals("parent/", result.name());
     MatcherAssert.assertThat(result.collectionData(), Matchers.empty());
   }
 }

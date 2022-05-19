@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -36,14 +35,14 @@ public class TestAbstractHttpServletRequest {
     String key = "a1";
     String value = "abc";
     request.setAttribute(key, value);
-    Assert.assertSame(value, request.getAttribute(key));
+    Assertions.assertSame(value, request.getAttribute(key));
     MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key));
 
     request.setAttribute("a2", "v");
     MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key, "a2"));
 
     request.removeAttribute(key);
-    Assert.assertNull(request.getAttribute(key));
+    Assertions.assertNull(request.getAttribute(key));
   }
 
   private void checkError(Error error) {

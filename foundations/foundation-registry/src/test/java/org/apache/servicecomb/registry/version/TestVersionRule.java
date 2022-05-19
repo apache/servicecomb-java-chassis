@@ -18,11 +18,11 @@
 package org.apache.servicecomb.registry.version;
 
 import org.apache.servicecomb.foundation.common.Version;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionRule {
-  class VersionRuleForTest extends VersionRule {
+  static class VersionRuleForTest extends VersionRule {
     public VersionRuleForTest(String versionRule) {
       super(versionRule);
     }
@@ -37,11 +37,11 @@ public class TestVersionRule {
 
   @Test
   public void isAccept() {
-    Assert.assertTrue(versionRule.isAccept(null));
+    Assertions.assertTrue(versionRule.isAccept(null));
   }
 
   @Test
   public void getVersionRule() {
-    Assert.assertEquals("abc", versionRule.getVersionRule());
+    Assertions.assertEquals("abc", versionRule.getVersionRule());
   }
 }

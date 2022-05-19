@@ -20,28 +20,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
-import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestLatencyDistributionMeter {
 
   @Test
-  public void testMeasure(@Mocked Id id) {
+  public void testMeasure() {
+    Id id = Mockito.mock(Id.class);
     LatencyDistributionMeter latencyDistributionMeter = new LatencyDistributionMeter(id, "0,1,3,10");
     latencyDistributionMeter.record(TimeUnit.MILLISECONDS.toNanos(1L));
     latencyDistributionMeter.record(TimeUnit.MILLISECONDS.toNanos(5L));
     latencyDistributionMeter.record(TimeUnit.MILLISECONDS.toNanos(2L));
     List<Measurement> measurements = new ArrayList<>();
     latencyDistributionMeter.calcMeasurements(measurements, 0L, 0L);
-    Assert.assertEquals(4, measurements.size());
-    Assert.assertEquals(0, ((int) (measurements.get(0).value())));
-    Assert.assertEquals(2, ((int) (measurements.get(1).value())));
-    Assert.assertEquals(1, ((int) (measurements.get(2).value())));
-    Assert.assertEquals(0, ((int) (measurements.get(3).value())));
+    Assertions.assertEquals(4, measurements.size());
+    Assertions.assertEquals(0, ((int) (measurements.get(0).value())));
+    Assertions.assertEquals(2, ((int) (measurements.get(1).value())));
+    Assertions.assertEquals(1, ((int) (measurements.get(2).value())));
+    Assertions.assertEquals(0, ((int) (measurements.get(3).value())));
   }
 }

@@ -28,17 +28,17 @@ import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.google.protobuf.Any;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAnySchema extends TestSchemaBase {
   @Test
   public void empty() throws Throwable {
     scbMap = new HashMap<>();
     scbMap.put("any", null);
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
   @Test
@@ -69,7 +69,7 @@ public class TestAnySchema extends TestSchemaBase {
     map.put("name", "n1");
     Root root = new Root();
     root.setAny(map);
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(root));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(root));
   }
 
   @SuppressWarnings("unchecked")
@@ -97,6 +97,6 @@ public class TestAnySchema extends TestSchemaBase {
 
     scbRootBytes = rootSerializer.serialize(root);
     root = rootDeserializer.deserialize(scbRootBytes);
-    Assert.assertEquals("abc", root.getAny());
+    Assertions.assertEquals("abc", root.getAny());
   }
 }

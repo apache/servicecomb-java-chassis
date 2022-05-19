@@ -17,26 +17,23 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestFortifyUtils {
   @Test
   public void testFortifyUtils() throws IOException {
-    Assert.assertEquals("", FortifyUtils.getErrorMsg(null));
-    Assert.assertEquals("", FortifyUtils.getErrorStack(null));
+    Assertions.assertEquals("", FortifyUtils.getErrorMsg(null));
+    Assertions.assertEquals("", FortifyUtils.getErrorStack(null));
   }
 
   @Test
   public void testFilePerm() {
-    Assert.assertEquals(10, (FilePerm.getDefaultAclPerm().size()));
-    Assert.assertEquals(3, (FilePerm.getDefaultPosixPerm().size()));
-    Assert.assertEquals(4, (FilePerm.getPosixPerm(400).size()));
+    Assertions.assertEquals(10, (FilePerm.getDefaultAclPerm().size()));
+    Assertions.assertEquals(3, (FilePerm.getDefaultPosixPerm().size()));
+    Assertions.assertEquals(4, (FilePerm.getPosixPerm(400).size()));
   }
 
   @Test
@@ -46,7 +43,7 @@ public class TestFortifyUtils {
 
     FortifyUtils.getErrorMsg(e);
 
-    assertNull(FortifyUtils.getErrorMsg(e));
+    Assertions.assertNull(FortifyUtils.getErrorMsg(e));
   }
 
   @Test
@@ -54,10 +51,10 @@ public class TestFortifyUtils {
 
     try {
       FortifyUtils.getSecurityXmlDocumentFactory();
-      assertNotNull(FortifyUtils.getSecurityXmlDocumentFactory());
+      Assertions.assertNotNull(FortifyUtils.getSecurityXmlDocumentFactory());
     } catch (Exception e) {
       /* Do not Worry */
-      Assert.assertTrue(false);
+      Assertions.assertTrue(false);
     }
   }
 
@@ -66,7 +63,7 @@ public class TestFortifyUtils {
 
     Throwable e = new Throwable();
     FortifyUtils.getErrorStack(e);
-    Assert.assertNotEquals(true, FortifyUtils.getErrorStack(e));
+    Assertions.assertNotEquals(true, FortifyUtils.getErrorStack(e));
   }
 
   @Test
@@ -74,6 +71,5 @@ public class TestFortifyUtils {
 
     Throwable e = new Throwable();
     FortifyUtils.getErrorInfo(e, true);
-    Assert.assertNotEquals(true, FortifyUtils.getErrorInfo(e, true));
   }
 }

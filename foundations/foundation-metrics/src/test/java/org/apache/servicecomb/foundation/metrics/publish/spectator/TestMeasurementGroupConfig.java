@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestMeasurementGroupConfig {
   MeasurementGroupConfig config = new MeasurementGroupConfig();
@@ -33,7 +33,7 @@ public class TestMeasurementGroupConfig {
 
   @Test
   public void defaultConstruct() {
-    Assert.assertTrue(groups.isEmpty());
+    Assertions.assertTrue(groups.isEmpty());
   }
 
   @Test
@@ -52,12 +52,8 @@ public class TestMeasurementGroupConfig {
     config.addGroup("id2", "tag2.1", "tag2.2");
 
     MatcherAssert.assertThat(groups.keySet(), Matchers.contains("id2", "id1"));
-    MatcherAssert.assertThat(groups.get("id1").stream().map(e -> {
-      return e.getTagKey();
-    }).toArray(), Matchers.arrayContaining("tag1.1", "tag1.2"));
-    MatcherAssert.assertThat(groups.get("id2").stream().map(e -> {
-      return e.getTagKey();
-    }).toArray(), Matchers.arrayContaining("tag2.1", "tag2.2"));
+    MatcherAssert.assertThat(groups.get("id1").stream().map(TagFinder::getTagKey).toArray(), Matchers.arrayContaining("tag1.1", "tag1.2"));
+    MatcherAssert.assertThat(groups.get("id2").stream().map(TagFinder::getTagKey).toArray(), Matchers.arrayContaining("tag2.1", "tag2.2"));
   }
 
   @Test

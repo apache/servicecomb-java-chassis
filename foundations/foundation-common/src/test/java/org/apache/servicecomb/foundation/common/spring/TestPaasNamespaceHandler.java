@@ -18,9 +18,9 @@
 package org.apache.servicecomb.foundation.common.spring;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestPaasNamespaceHandler {
 
@@ -44,6 +44,6 @@ public class TestPaasNamespaceHandler {
     } catch (Exception e) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 }

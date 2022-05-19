@@ -26,10 +26,10 @@ import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.vertx.core.json.Json;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestModelWrap {
   protected static ProtoMapperFactory factory = new ProtoMapperFactory();
@@ -278,20 +278,20 @@ public class TestModelWrap {
 
     // serialize
     byte[] bytes = protoSerializer.serialize(protoModel);
-    Assert.assertArrayEquals(bytes, protoSerializer.serialize(mapFromProtoModel));
-    Assert.assertArrayEquals(bytes, pojoSerializer.serialize(pojoModel));
-    Assert.assertArrayEquals(bytes, pojoSerializer.serialize(mapFromPojoModel));
+    Assertions.assertArrayEquals(bytes, protoSerializer.serialize(mapFromProtoModel));
+    Assertions.assertArrayEquals(bytes, pojoSerializer.serialize(pojoModel));
+    Assertions.assertArrayEquals(bytes, pojoSerializer.serialize(mapFromPojoModel));
 
     // deserialize pojoModel
     PojoModel newPojoModel = pojoModelDeserializer.deserialize(bytes);
-    Assert.assertEquals(jsonPojoModel, Json.encode(newPojoModel));
+    Assertions.assertEquals(jsonPojoModel, Json.encode(newPojoModel));
     Map<String, Object> mapFromNewPojoModel = pojoMapDeserializer.deserialize(bytes);
-    Assert.assertEquals(jsonPojoModel, Json.encode(mapFromNewPojoModel));
+    Assertions.assertEquals(jsonPojoModel, Json.encode(mapFromNewPojoModel));
 
     // deserialize protoModel
     ProtoModel newProtoModel = protoModelDeserializer.deserialize(bytes);
-    Assert.assertEquals(jsonProtoModel, Json.encode(newProtoModel));
+    Assertions.assertEquals(jsonProtoModel, Json.encode(newProtoModel));
     Map<String, Object> mapFromNewProtoModel = protoMapDeserializer.deserialize(bytes);
-    Assert.assertEquals(jsonProtoModel, Json.encode(mapFromNewProtoModel));
+    Assertions.assertEquals(jsonProtoModel, Json.encode(mapFromNewProtoModel));
   }
 }

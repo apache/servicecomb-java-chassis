@@ -22,7 +22,6 @@ import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,6 +30,7 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServerOptions;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxTLSBuilder {
   @BeforeClass
@@ -49,15 +49,15 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpServerOptions serverOptions = new HttpServerOptions();
     VertxTLSBuilder.buildNetServerOptions(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
   }
 
   @Test
   public void testbuildHttpClientOptions_sslKey_noFactory() {
     HttpClientOptions clientOptions = new HttpClientOptions();
     VertxTLSBuilder.buildHttpClientOptions("notExist", clientOptions);
-    Assert.assertTrue(clientOptions.isSsl());
+    Assertions.assertTrue(clientOptions.isSsl());
   }
 
   public static class SSLOptionFactoryForTest implements SSLOptionFactory {
@@ -81,8 +81,8 @@ public class TestVertxTLSBuilder {
     ArchaiusUtils.setProperty("ssl.exist.sslOptionFactory", SSLOptionFactoryForTest.class.getName());
     HttpClientOptions clientOptions = new HttpClientOptions();
     VertxTLSBuilder.buildHttpClientOptions("exist", clientOptions);
-    Assert.assertTrue(clientOptions.isSsl());
-    Assert.assertTrue(clientOptions.isVerifyHost());
+    Assertions.assertTrue(clientOptions.isSsl());
+    Assertions.assertTrue(clientOptions.isVerifyHost());
   }
 
   @Test
@@ -91,8 +91,8 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildHttpClientOptions(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.isTrustAll(), true);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertTrue(serverOptions.isTrustAll());
   }
 
   @Test
@@ -101,8 +101,8 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.isTrustAll(), true);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertTrue(serverOptions.isTrustAll());
   }
 
   @Test
@@ -114,8 +114,8 @@ public class TestVertxTLSBuilder {
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.isTrustAll(), true);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertTrue(serverOptions.isTrustAll());
   }
 
   @Test
@@ -131,8 +131,8 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.isTrustAll(), true);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertTrue(serverOptions.isTrustAll());
   }
 
   @Test
@@ -148,8 +148,8 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.isTrustAll(), true);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertTrue(serverOptions.isTrustAll());
   }
 
   @Test
@@ -165,8 +165,8 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.isTrustAll(), true);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertTrue(serverOptions.isTrustAll());
   }
 
   @Test
@@ -183,7 +183,7 @@ public class TestVertxTLSBuilder {
       }
     };
     VertxTLSBuilder.buildNetServerOptions(option, custom, serverOptions);
-    Assert.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
-    Assert.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
+    Assertions.assertEquals(serverOptions.getEnabledSecureTransportProtocols().toArray().length, 1);
+    Assertions.assertEquals(serverOptions.getClientAuth(), ClientAuth.REQUEST);
   }
 }

@@ -21,9 +21,8 @@ import java.io.IOException;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractPart {
   AbstractPart part = new AbstractPart();
@@ -40,29 +39,29 @@ public class TestAbstractPart {
 
   @Test
   public void getContentType() throws IOException {
-    Assert.assertEquals(MediaType.APPLICATION_OCTET_STREAM, part.getContentType());
+    Assertions.assertEquals(MediaType.APPLICATION_OCTET_STREAM, part.getContentType());
 
     String contentType = "abc";
     part.contentType(contentType);
-    Assert.assertEquals(contentType, part.getContentType());
+    Assertions.assertEquals(contentType, part.getContentType());
   }
 
   @Test
   public void getName() throws IOException {
-    Assert.assertNull(part.getName());
+    Assertions.assertNull(part.getName());
 
     String name = "abc";
     part.name = name;
-    Assert.assertEquals(name, part.getName());
+    Assertions.assertEquals(name, part.getName());
   }
 
   @Test
   public void getSubmittedFileName() throws IOException {
-    Assert.assertNull(part.getSubmittedFileName());
+    Assertions.assertNull(part.getSubmittedFileName());
 
     String submittedFileName = "abc";
     part.setSubmittedFileName(submittedFileName);
-    Assert.assertEquals(submittedFileName, part.getSubmittedFileName());
+    Assertions.assertEquals(submittedFileName, part.getSubmittedFileName());
   }
 
   @Test
@@ -70,21 +69,21 @@ public class TestAbstractPart {
     part.contentType(MediaType.TEXT_PLAIN);
     part.setSubmittedFileName("a.zip");
 
-    Assert.assertEquals(MediaType.TEXT_PLAIN, part.getContentType());
+    Assertions.assertEquals(MediaType.TEXT_PLAIN, part.getContentType());
   }
 
   @Test
   public void setSubmittedFileName_setNull() {
     part.setSubmittedFileName(null);
 
-    Assert.assertEquals(MediaType.APPLICATION_OCTET_STREAM, part.getContentType());
+    Assertions.assertEquals(MediaType.APPLICATION_OCTET_STREAM, part.getContentType());
   }
 
   @Test
   public void setSubmittedFileName_setNormal() {
     part.setSubmittedFileName("a.zip");
 
-    Assert.assertEquals("application/zip", part.getContentType());
+    Assertions.assertEquals("application/zip", part.getContentType());
   }
 
   @Test

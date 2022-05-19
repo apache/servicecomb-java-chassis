@@ -17,23 +17,19 @@
 
 package org.apache.servicecomb.config.archaius.sources;
 
-import static org.apache.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.PollResult;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Created by   on 2017/1/5.
@@ -42,13 +38,16 @@ public class TestYAMLConfigurationSource {
 
   @Test
   public void testPullFromClassPath() throws Exception {
-    MicroserviceConfigurationSource configSource = yamlConfigSource();
+    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+    loader.loadAndSort();
+
+    MicroserviceConfigurationSource configSource = new MicroserviceConfigurationSource(loader.getConfigModels());
     PollResult result = configSource.poll(true, null);
     Map<String, Object> configMap = result.getComplete();
-    assertNotNull(configMap);
-    assertEquals(29, configMap.size());
-    assertNotNull(configMap.get("trace.handler.sampler.percent"));
-    assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
+    Assertions.assertNotNull(configMap);
+    Assertions.assertEquals(29, configMap.size());
+    Assertions.assertNotNull(configMap.get("trace.handler.sampler.percent"));
+    Assertions.assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
   }
 
   @Test
@@ -57,15 +56,18 @@ public class TestYAMLConfigurationSource {
     URL test1URL = loader.getResource("test1.yaml");
     URL test2URL = loader.getResource("test2.yaml");
     System.setProperty("servicecomb.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
-    MicroserviceConfigurationSource configSource = yamlConfigSource();
+    MicroserviceConfigLoader loader1 = new MicroserviceConfigLoader();
+    loader1.loadAndSort();
+
+    MicroserviceConfigurationSource configSource = new MicroserviceConfigurationSource(loader1.getConfigModels());
     PollResult result = configSource.poll(true, null);
     Map<String, Object> configMap = result.getComplete();
 
-    assertEquals(3, configSource.getConfigModels().size());
-    assertNotNull(configMap);
-    assertEquals(40, configMap.size());
-    assertNotNull(configMap.get("trace.handler.sampler.percent"));
-    assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
+    Assertions.assertEquals(3, configSource.getConfigModels().size());
+    Assertions.assertNotNull(configMap);
+    Assertions.assertEquals(40, configMap.size());
+    Assertions.assertNotNull(configMap.get("trace.handler.sampler.percent"));
+    Assertions.assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
 
     System.getProperties().remove("servicecomb.configurationSource.additionalUrls");
   }
@@ -76,18 +78,21 @@ public class TestYAMLConfigurationSource {
     ConcurrentMapConfiguration configFromSystemProperties =
         new ConcurrentMapConfiguration(new SystemConfiguration());
     // configuration from yaml file
+    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+    loader.loadAndSort();
+
     DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(yamlConfigSource(), new NeverStartPollingScheduler());
+        new DynamicConfiguration(new MicroserviceConfigurationSource(loader.getConfigModels()), new NeverStartPollingScheduler());
     // create a hierarchy of configuration that makes
     // 1) dynamic configuration source override system properties
     ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
     finalConfig.addConfiguration(configFromYamlFile, "yamlConfig");
     finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-    Assert.assertEquals(0.5, finalConfig.getDouble("trace.handler.sampler.percent"), 0.5);
+    Assertions.assertEquals(0.5, finalConfig.getDouble("trace.handler.sampler.percent"), 0.5);
 
     Object o = finalConfig.getProperty("zq");
     @SuppressWarnings("unchecked")
     List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
-    Assert.assertEquals(3, listO.size());
+    Assertions.assertEquals(3, listO.size());
   }
 }

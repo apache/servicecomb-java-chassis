@@ -19,9 +19,9 @@ package org.apache.servicecomb.foundation.metrics.health;
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHealthCheckerManager {
 
@@ -58,14 +58,14 @@ public class TestHealthCheckerManager {
   @Test
   public void checkResultCount_None() {
     Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
-    Assert.assertEquals(0, results.size());
+    Assertions.assertEquals(0, results.size());
   }
 
   @Test
   public void checkResultCount_One() {
     HealthCheckerManager.getInstance().register(good);
     Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
-    Assert.assertEquals(1, results.size());
+    Assertions.assertEquals(1, results.size());
   }
 
   @Test
@@ -73,7 +73,7 @@ public class TestHealthCheckerManager {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
-    Assert.assertEquals(2, results.size());
+    Assertions.assertEquals(2, results.size());
   }
 
   @Test
@@ -81,9 +81,9 @@ public class TestHealthCheckerManager {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckResult result = HealthCheckerManager.getInstance().check().get("testGood");
-    Assert.assertEquals(true, result.isHealthy());
-    Assert.assertEquals("good", result.getInformation());
-    Assert.assertEquals("good component", result.getExtraData());
+    Assertions.assertTrue(result.isHealthy());
+    Assertions.assertEquals("good", result.getInformation());
+    Assertions.assertEquals("good component", result.getExtraData());
   }
 
   @Test
@@ -91,8 +91,8 @@ public class TestHealthCheckerManager {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
     HealthCheckResult result = HealthCheckerManager.getInstance().check().get("testBad");
-    Assert.assertEquals(false, result.isHealthy());
-    Assert.assertEquals("bad", result.getInformation());
-    Assert.assertEquals("bad component", result.getExtraData());
+    Assertions.assertFalse(result.isHealthy());
+    Assertions.assertEquals("bad", result.getInformation());
+    Assertions.assertEquals("bad component", result.getExtraData());
   }
 }

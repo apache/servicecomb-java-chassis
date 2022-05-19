@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +29,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultTcpServerMetrics {
   @Mocked
@@ -108,11 +108,11 @@ public class TestDefaultTcpServerMetrics {
     instances.put(metrics_listen1_server2, null);
     instances.put(metrics_listen2_server1, null);
     instances.put(metrics_listen2_server2, null);
-    Assert.assertEquals(4, instances.size());
+    Assertions.assertEquals(4, instances.size());
 
-    Assert.assertSame(metrics_listen1_server1.getEndpointMetric(), metrics_listen1_server2.getEndpointMetric());
-    Assert.assertNotSame(metrics_listen1_server1.getEndpointMetric(), metrics_listen2_server1.getEndpointMetric());
-    Assert.assertSame(metrics_listen2_server1.getEndpointMetric(), metrics_listen2_server2.getEndpointMetric());
+    Assertions.assertSame(metrics_listen1_server1.getEndpointMetric(), metrics_listen1_server2.getEndpointMetric());
+    Assertions.assertNotSame(metrics_listen1_server1.getEndpointMetric(), metrics_listen2_server1.getEndpointMetric());
+    Assertions.assertSame(metrics_listen2_server1.getEndpointMetric(), metrics_listen2_server2.getEndpointMetric());
   }
 
   @Test
@@ -123,16 +123,16 @@ public class TestDefaultTcpServerMetrics {
     instances.put(socketMetric_listen2_1, null);
     instances.put(socketMetric_listen2_2, null);
     instances.put(socketMetric_listen2_3, null);
-    Assert.assertEquals(5, instances.size());
+    Assertions.assertEquals(5, instances.size());
 
-    Assert.assertTrue(socketMetric_listen1_1.isConnected());
-    Assert.assertTrue(socketMetric_listen1_2.isConnected());
-    Assert.assertTrue(socketMetric_listen2_1.isConnected());
-    Assert.assertTrue(socketMetric_listen2_2.isConnected());
-    Assert.assertTrue(socketMetric_listen2_3.isConnected());
+    Assertions.assertTrue(socketMetric_listen1_1.isConnected());
+    Assertions.assertTrue(socketMetric_listen1_2.isConnected());
+    Assertions.assertTrue(socketMetric_listen2_1.isConnected());
+    Assertions.assertTrue(socketMetric_listen2_2.isConnected());
+    Assertions.assertTrue(socketMetric_listen2_3.isConnected());
 
-    Assert.assertEquals(2, endpointMetric1.getCurrentConnectionCount());
-    Assert.assertEquals(3, endpointMetric2.getCurrentConnectionCount());
+    Assertions.assertEquals(2, endpointMetric1.getCurrentConnectionCount());
+    Assertions.assertEquals(3, endpointMetric2.getCurrentConnectionCount());
 
     // disconnect
     metrics_listen1_server1.disconnected(socketMetric_listen1_1, anyRemoteAddr);
@@ -141,14 +141,14 @@ public class TestDefaultTcpServerMetrics {
     metrics_listen2_server2.disconnected(socketMetric_listen2_2, anyRemoteAddr);
     metrics_listen2_server2.disconnected(socketMetric_listen2_3, anyRemoteAddr);
 
-    Assert.assertFalse(socketMetric_listen1_1.isConnected());
-    Assert.assertFalse(socketMetric_listen1_2.isConnected());
-    Assert.assertFalse(socketMetric_listen2_1.isConnected());
-    Assert.assertFalse(socketMetric_listen2_2.isConnected());
-    Assert.assertFalse(socketMetric_listen2_3.isConnected());
+    Assertions.assertFalse(socketMetric_listen1_1.isConnected());
+    Assertions.assertFalse(socketMetric_listen1_2.isConnected());
+    Assertions.assertFalse(socketMetric_listen2_1.isConnected());
+    Assertions.assertFalse(socketMetric_listen2_2.isConnected());
+    Assertions.assertFalse(socketMetric_listen2_3.isConnected());
 
-    Assert.assertEquals(0, endpointMetric1.getCurrentConnectionCount());
-    Assert.assertEquals(0, endpointMetric2.getCurrentConnectionCount());
+    Assertions.assertEquals(0, endpointMetric1.getCurrentConnectionCount());
+    Assertions.assertEquals(0, endpointMetric2.getCurrentConnectionCount());
   }
 
   @Test
@@ -159,8 +159,8 @@ public class TestDefaultTcpServerMetrics {
     metrics_listen2_server2.bytesRead(socketMetric_listen2_2, anyRemoteAddr, 4);
     metrics_listen2_server2.bytesRead(socketMetric_listen2_3, anyRemoteAddr, 5);
 
-    Assert.assertEquals(3, endpointMetric1.getBytesRead());
-    Assert.assertEquals(12, endpointMetric2.getBytesRead());
+    Assertions.assertEquals(3, endpointMetric1.getBytesRead());
+    Assertions.assertEquals(12, endpointMetric2.getBytesRead());
   }
 
   @Test
@@ -171,7 +171,7 @@ public class TestDefaultTcpServerMetrics {
     metrics_listen2_server2.bytesWritten(socketMetric_listen2_2, anyRemoteAddr, 4);
     metrics_listen2_server2.bytesWritten(socketMetric_listen2_3, anyRemoteAddr, 5);
 
-    Assert.assertEquals(3, endpointMetric1.getBytesWritten());
-    Assert.assertEquals(12, endpointMetric2.getBytesWritten());
+    Assertions.assertEquals(3, endpointMetric1.getBytesWritten());
+    Assertions.assertEquals(12, endpointMetric2.getBytesWritten());
   }
 }

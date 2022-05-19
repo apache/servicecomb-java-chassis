@@ -20,7 +20,6 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpo
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +34,7 @@ import io.vertx.core.spi.observability.HttpRequest;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultHttpClientMetrics {
   @Mocked
@@ -138,19 +138,19 @@ public class TestDefaultHttpClientMetrics {
 
   @Test
   public void createMetrics() {
-    Assert.assertNotSame(clientMetrics_a, clientMetrics_b);
+    Assertions.assertNotSame(clientMetrics_a, clientMetrics_b);
   }
 
   @Test
   public void createEndpoint() {
-    Assert.assertSame(endpointMetric_a_1, endpointMetric_b_1);
-    Assert.assertNotSame(endpointMetric_a_1, endpointMetric_a_2);
+    Assertions.assertSame(endpointMetric_a_1, endpointMetric_b_1);
+    Assertions.assertNotSame(endpointMetric_a_1, endpointMetric_a_2);
 
-    Assert.assertNotSame(endpointMetric_a_2, endpointMetric_b_1);
-    Assert.assertSame(endpointMetric_a_2, endpointMetric_b_2);
+    Assertions.assertNotSame(endpointMetric_a_2, endpointMetric_b_1);
+    Assertions.assertSame(endpointMetric_a_2, endpointMetric_b_2);
 
-    Assert.assertEquals(2, endpointMetric_a_1.getCurrentConnectionCount());
-    Assert.assertEquals(2, endpointMetric_a_2.getCurrentConnectionCount());
+    Assertions.assertEquals(2, endpointMetric_a_1.getCurrentConnectionCount());
+    Assertions.assertEquals(2, endpointMetric_a_2.getCurrentConnectionCount());
   }
 
   @Test
@@ -163,9 +163,9 @@ public class TestDefaultHttpClientMetrics {
 
     nanoTime = 13;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNotNull(
+    Assertions.assertNotNull(
         defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric("http://" + address1.toString()));
-    Assert.assertNotNull(
+    Assertions.assertNotNull(
         defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric("http://" + address2.toString()));
 
     clientMetrics_b.disconnected(socketMetric_b_1, null);
@@ -173,95 +173,95 @@ public class TestDefaultHttpClientMetrics {
 
     nanoTime = 23;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNotNull(
+    Assertions.assertNotNull(
         defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric("http://" + address1.toString()));
-    Assert.assertNotNull(
+    Assertions.assertNotNull(
         defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric("http://" + address2.toString()));
 
     nanoTime = 24;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert
+    Assertions
         .assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
-    Assert
+    Assertions
         .assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
   }
 
   @Test
   public void connect() {
     {
-      Assert.assertSame(endpointMetric_a_1, socketMetric_a_1.getEndpointMetric());
-      Assert.assertTrue(socketMetric_a_1.isConnected());
-      Assert.assertEquals(1, socketMetric_a_1.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_a_1.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(0, socketMetric_a_1.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(2, socketMetric_a_1.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertSame(endpointMetric_a_1, socketMetric_a_1.getEndpointMetric());
+      Assertions.assertTrue(socketMetric_a_1.isConnected());
+      Assertions.assertEquals(1, socketMetric_a_1.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_a_1.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(0, socketMetric_a_1.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(2, socketMetric_a_1.getEndpointMetric().getCurrentConnectionCount());
 
       nanoTime = 2;
       clientMetrics_a.disconnected(socketMetric_a_1, null);
 
-      Assert.assertEquals(2, ((DefaultClientEndpointMetric) endpointMetric_a_1).getLastNanoTime());
-      Assert.assertFalse(socketMetric_a_1.isConnected());
-      Assert.assertEquals(1, socketMetric_a_1.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_a_1.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(1, socketMetric_a_1.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(1, socketMetric_a_1.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertEquals(2, ((DefaultClientEndpointMetric) endpointMetric_a_1).getLastNanoTime());
+      Assertions.assertFalse(socketMetric_a_1.isConnected());
+      Assertions.assertEquals(1, socketMetric_a_1.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_a_1.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(1, socketMetric_a_1.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(1, socketMetric_a_1.getEndpointMetric().getCurrentConnectionCount());
     }
 
     {
-      Assert.assertSame(endpointMetric_a_2, socketMetric_a_2.getEndpointMetric());
-      Assert.assertTrue(socketMetric_a_2.isConnected());
-      Assert.assertEquals(1, socketMetric_a_2.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_a_2.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(0, socketMetric_a_2.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(2, socketMetric_a_2.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertSame(endpointMetric_a_2, socketMetric_a_2.getEndpointMetric());
+      Assertions.assertTrue(socketMetric_a_2.isConnected());
+      Assertions.assertEquals(1, socketMetric_a_2.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_a_2.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(0, socketMetric_a_2.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(2, socketMetric_a_2.getEndpointMetric().getCurrentConnectionCount());
 
       nanoTime = 4;
       clientMetrics_a.disconnected(socketMetric_a_2, null);
 
-      Assert.assertEquals(4, ((DefaultClientEndpointMetric) endpointMetric_a_2).getLastNanoTime());
-      Assert.assertFalse(socketMetric_a_2.isConnected());
-      Assert.assertEquals(1, socketMetric_a_2.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_a_2.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(1, socketMetric_a_2.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(1, socketMetric_a_2.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertEquals(4, ((DefaultClientEndpointMetric) endpointMetric_a_2).getLastNanoTime());
+      Assertions.assertFalse(socketMetric_a_2.isConnected());
+      Assertions.assertEquals(1, socketMetric_a_2.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_a_2.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(1, socketMetric_a_2.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(1, socketMetric_a_2.getEndpointMetric().getCurrentConnectionCount());
     }
 
     {
-      Assert.assertSame(endpointMetric_b_1, socketMetric_b_1.getEndpointMetric());
-      Assert.assertTrue(socketMetric_b_1.isConnected());
-      Assert.assertEquals(1, socketMetric_b_1.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_b_1.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(1, socketMetric_b_1.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(1, socketMetric_b_1.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertSame(endpointMetric_b_1, socketMetric_b_1.getEndpointMetric());
+      Assertions.assertTrue(socketMetric_b_1.isConnected());
+      Assertions.assertEquals(1, socketMetric_b_1.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_b_1.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(1, socketMetric_b_1.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(1, socketMetric_b_1.getEndpointMetric().getCurrentConnectionCount());
 
       nanoTime = 6;
       clientMetrics_b.disconnected(socketMetric_b_1, null);
 
-      Assert.assertEquals(6, ((DefaultClientEndpointMetric) endpointMetric_b_1).getLastNanoTime());
-      Assert.assertFalse(socketMetric_b_1.isConnected());
-      Assert.assertEquals(1, socketMetric_b_1.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_b_1.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(2, socketMetric_b_1.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(0, socketMetric_b_1.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertEquals(6, ((DefaultClientEndpointMetric) endpointMetric_b_1).getLastNanoTime());
+      Assertions.assertFalse(socketMetric_b_1.isConnected());
+      Assertions.assertEquals(1, socketMetric_b_1.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_b_1.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(2, socketMetric_b_1.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(0, socketMetric_b_1.getEndpointMetric().getCurrentConnectionCount());
     }
 
     {
-      Assert.assertSame(endpointMetric_b_2, socketMetric_b_2.getEndpointMetric());
-      Assert.assertTrue(socketMetric_b_2.isConnected());
-      Assert.assertEquals(1, socketMetric_b_2.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_b_2.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(1, socketMetric_b_2.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(1, socketMetric_b_2.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertSame(endpointMetric_b_2, socketMetric_b_2.getEndpointMetric());
+      Assertions.assertTrue(socketMetric_b_2.isConnected());
+      Assertions.assertEquals(1, socketMetric_b_2.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_b_2.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(1, socketMetric_b_2.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(1, socketMetric_b_2.getEndpointMetric().getCurrentConnectionCount());
 
       nanoTime = 7;
       clientMetrics_b.disconnected(socketMetric_b_2, null);
 
-      Assert.assertEquals(7, ((DefaultClientEndpointMetric) endpointMetric_b_2).getLastNanoTime());
-      Assert.assertFalse(socketMetric_b_2.isConnected());
-      Assert.assertEquals(1, socketMetric_b_2.getConnectedTime());
-      Assert.assertEquals(2, socketMetric_b_2.getEndpointMetric().getConnectCount());
-      Assert.assertEquals(2, socketMetric_b_2.getEndpointMetric().getDisconnectCount());
-      Assert.assertEquals(0, socketMetric_b_2.getEndpointMetric().getCurrentConnectionCount());
+      Assertions.assertEquals(7, ((DefaultClientEndpointMetric) endpointMetric_b_2).getLastNanoTime());
+      Assertions.assertFalse(socketMetric_b_2.isConnected());
+      Assertions.assertEquals(1, socketMetric_b_2.getConnectedTime());
+      Assertions.assertEquals(2, socketMetric_b_2.getEndpointMetric().getConnectCount());
+      Assertions.assertEquals(2, socketMetric_b_2.getEndpointMetric().getDisconnectCount());
+      Assertions.assertEquals(0, socketMetric_b_2.getEndpointMetric().getCurrentConnectionCount());
     }
   }
 
@@ -287,10 +287,10 @@ public class TestDefaultHttpClientMetrics {
     clientMetrics_b.bytesRead(socketMetric, address2, 1);
     clientMetrics_b.bytesWritten(socketMetric, address2, 1);
 
-    Assert.assertEquals(2, endpointMetric_a_1.getBytesRead());
-    Assert.assertEquals(2, endpointMetric_a_2.getBytesRead());
-    Assert.assertEquals(2, endpointMetric_a_1.getBytesWritten());
-    Assert.assertEquals(2, endpointMetric_a_2.getBytesWritten());
+    Assertions.assertEquals(2, endpointMetric_a_1.getBytesRead());
+    Assertions.assertEquals(2, endpointMetric_a_2.getBytesRead());
+    Assertions.assertEquals(2, endpointMetric_a_1.getBytesWritten());
+    Assertions.assertEquals(2, endpointMetric_a_2.getBytesWritten());
   }
 
   @Test
@@ -302,7 +302,7 @@ public class TestDefaultHttpClientMetrics {
     nanoTime = 3;
     clientMetrics_a_1.requestEnd(requestMetric);
 
-    Assert.assertEquals(2, requestMetric.getRequestBeginTime());
-    Assert.assertEquals(3, requestMetric.getRequestEndTime());
+    Assertions.assertEquals(2, requestMetric.getRequestBeginTime());
+    Assertions.assertEquals(3, requestMetric.getRequestEndTime());
   }
 }

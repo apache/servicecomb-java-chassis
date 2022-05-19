@@ -19,10 +19,10 @@ package org.apache.servicecomb.foundation.vertx.server;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.vertx.core.buffer.Buffer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTcpParser {
   long msgId;
@@ -54,8 +54,8 @@ public class TestTcpParser {
     parser.handle(os.getBuffer());
     os.close();
 
-    Assert.assertEquals(1, msgId);
-    Assert.assertArrayEquals(header, headerBuffer.getBytes());
-    Assert.assertArrayEquals(body, bodyBuffer.getBytes());
+    Assertions.assertEquals(1, msgId);
+    Assertions.assertArrayEquals(header, headerBuffer.getBytes());
+    Assertions.assertArrayEquals(body, bodyBuffer.getBytes());
   }
 }

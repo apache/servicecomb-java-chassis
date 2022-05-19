@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestNetClientWrapper {
   @Mocked
@@ -70,8 +70,8 @@ public class TestNetClientWrapper {
 
   @Test
   public void getClientConfig() {
-    Assert.assertSame(normalClientConfig, netClientWrapper.getClientConfig(false));
-    Assert.assertSame(sslClientConfig, netClientWrapper.getClientConfig(true));
+    Assertions.assertSame(normalClientConfig, netClientWrapper.getClientConfig(false));
+    Assertions.assertSame(sslClientConfig, netClientWrapper.getClientConfig(true));
   }
 
   @Test

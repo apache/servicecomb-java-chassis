@@ -18,8 +18,8 @@
 package org.apache.servicecomb.registry.version;
 
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionRuleLatestParser {
   VersionRuleParser parser = new VersionRuleLatestParser();
@@ -28,22 +28,22 @@ public class TestVersionRuleLatestParser {
 
   @Test
   public void parseInvalue() {
-    Assert.assertNull(parser.parse(""));
+    Assertions.assertNull(parser.parse(""));
   }
 
   @Test
   public void parseNormal() {
-    Assert.assertEquals(DefinitionConst.VERSION_RULE_LATEST, versionRule.getVersionRule());
+    Assertions.assertEquals(DefinitionConst.VERSION_RULE_LATEST, versionRule.getVersionRule());
   }
 
   @Test
   public void isAccept() {
-    Assert.assertTrue(versionRule.isAccept(null));
+    Assertions.assertTrue(versionRule.isAccept(null));
   }
 
   @Test
   public void isMatch() {
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v1, VersionConst.v1));
-    Assert.assertFalse(versionRule.isMatch(VersionConst.v2, VersionConst.v1));
+    Assertions.assertTrue(versionRule.isMatch(VersionConst.v1, VersionConst.v1));
+    Assertions.assertFalse(versionRule.isMatch(VersionConst.v2, VersionConst.v1));
   }
 }

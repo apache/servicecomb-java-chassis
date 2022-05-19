@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.vertx;
+package org.apache.servicecomb.metrics.core;
 
+import com.netflix.spectator.api.Measurement;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
-public class TestSharedVertxFactory {
-  @Test
-  public void getTransportVertx() {
-    Assertions.assertNotNull(SharedVertxFactory.getSharedVertx());
-    Assertions.assertSame(SharedVertxFactory.getSharedVertx(), SharedVertxFactory.getSharedVertx());
+import java.util.List;
 
-    SharedVertxFactory.getSharedVertx().close();
-  }
+public class AssertUtil {
+
+    public static void assertMeasure(List<Measurement> measurements, int index, String expected) {
+        Assertions.assertEquals(String.format("Measurement(%s)", expected), measurements.get(index).toString());
+    }
+
 }

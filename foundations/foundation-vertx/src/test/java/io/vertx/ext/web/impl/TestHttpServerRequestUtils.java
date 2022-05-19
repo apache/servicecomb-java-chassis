@@ -18,7 +18,6 @@
 package io.vertx.ext.web.impl;
 
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.http.impl.HttpServerRequestInternal;
@@ -26,6 +25,7 @@ import io.vertx.ext.web.AllowForwardHeaders;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 // HttpServerRequestWrapper is a package visible class, so put this test in package io.vertx.ext.web.impl
 public class TestHttpServerRequestUtils {
@@ -43,6 +43,6 @@ public class TestHttpServerRequestUtils {
     };
 
     VertxServerRequestToHttpServletRequest reqEx = new VertxServerRequestToHttpServletRequest(context, "abc");
-    Assert.assertEquals("abc", reqEx.getRequestURI());
+    Assertions.assertEquals("abc", reqEx.getRequestURI());
   }
 }

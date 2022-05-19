@@ -91,18 +91,18 @@ public class TestConfigUtil {
   @Test
   public void testArrayData() {
     Configuration configuration = ConfigUtil.createLocalConfig();
-    Assert.assertEquals("a,b,c", configuration.getString("test.commonSeparatedString"));
-    Assert.assertEquals(1, configuration.getStringArray("test.commonSeparatedString").length);
-    Assert.assertEquals("a,b,c", configuration.getStringArray("test.commonSeparatedString")[0]);
+    Assertions.assertEquals("a,b,c", configuration.getString("test.commonSeparatedString"));
+    Assertions.assertEquals(1, configuration.getStringArray("test.commonSeparatedString").length);
+    Assertions.assertEquals("a,b,c", configuration.getStringArray("test.commonSeparatedString")[0]);
 
-    Assert.assertEquals("b,c,d", configuration.getString("test.commonSeparatedStringHolder"));
-    Assert.assertEquals(1, configuration.getStringArray("test.commonSeparatedStringHolder").length);
-    Assert.assertEquals("b,c,d", configuration.getStringArray("test.commonSeparatedStringHolder")[0]);
+    Assertions.assertEquals("b,c,d", configuration.getString("test.commonSeparatedStringHolder"));
+    Assertions.assertEquals(1, configuration.getStringArray("test.commonSeparatedStringHolder").length);
+    Assertions.assertEquals("b,c,d", configuration.getStringArray("test.commonSeparatedStringHolder")[0]);
 
-    Assert.assertEquals("m", configuration.getString("test.stringArray")); // first element
-    Assert.assertEquals(2, configuration.getStringArray("test.stringArray").length);
-    Assert.assertEquals("m", configuration.getStringArray("test.stringArray")[0]);
-    Assert.assertEquals("n", configuration.getStringArray("test.stringArray")[1]);
+    Assertions.assertEquals("m", configuration.getString("test.stringArray")); // first element
+    Assertions.assertEquals(2, configuration.getStringArray("test.stringArray").length);
+    Assertions.assertEquals("m", configuration.getStringArray("test.stringArray")[0]);
+    Assertions.assertEquals("n", configuration.getStringArray("test.stringArray")[1]);
   }
 
   @Test
@@ -114,22 +114,22 @@ public class TestConfigUtil {
     ConfigUtil.addConfig("cse.test.enabled", true);
     ConfigUtil.addConfig("cse.test.num", 10);
     AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
-    Assert.assertEquals(configuration.getString("service_description.name"), "service_name_test");
-    Assert.assertTrue(configuration.getBoolean("cse.test.enabled"));
-    Assert.assertEquals(configuration.getInt("cse.test.num"), 10);
+    Assertions.assertEquals(configuration.getString("service_description.name"), "service_name_test");
+    Assertions.assertTrue(configuration.getBoolean("cse.test.enabled"));
+    Assertions.assertEquals(configuration.getInt("cse.test.num"), 10);
   }
 
   @Test
   public void testCreateDynamicConfigNoConfigCenterSPI() {
     AbstractConfiguration dynamicConfig = ConfigUtil.createLocalConfig();
-    Assert.assertNotEquals(DynamicWatchedConfiguration.class,
+    Assertions.assertNotEquals(DynamicWatchedConfiguration.class,
         ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
   }
 
   @Test
   public void testGetPropertyInvalidConfig() {
-    Assert.assertNull(ConfigUtil.getProperty(null, "any"));
-    Assert.assertNull(ConfigUtil.getProperty(new Object(), "any"));
+    Assertions.assertNull(ConfigUtil.getProperty(null, "any"));
+    Assertions.assertNull(ConfigUtil.getProperty(new Object(), "any"));
   }
 
   @Test
@@ -331,11 +331,11 @@ public class TestConfigUtil {
 
     ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
 
-    Assert.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
-    Assert.assertEquals(propertyHigherPriority, localConfiguration.getString(overriddenConfigKey));
+    Assertions.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
+    Assertions.assertEquals(propertyHigherPriority, localConfiguration.getString(overriddenConfigKey));
     // Test mapping key/value from self mappfing.xml
-    Assert.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey1));
-    Assert.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey2));
+    Assertions.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey1));
+    Assertions.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey2));
   }
 
   @SuppressWarnings("unchecked")
@@ -372,6 +372,6 @@ public class TestConfigUtil {
 
     ConfigUtil.destroyConfigCenterConfigurationSource();
 
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 }

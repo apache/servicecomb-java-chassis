@@ -16,9 +16,8 @@
  */
 package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTagFinder {
 
@@ -27,16 +26,16 @@ public class TestTagFinder {
     String name = "key";
     TagFinder finder = TagFinder.build(name);
 
-    Assert.assertEquals(name, finder.getTagKey());
-    Assert.assertEquals(DefaultTagFinder.class, finder.getClass());
+    Assertions.assertEquals(name, finder.getTagKey());
+    Assertions.assertEquals(DefaultTagFinder.class, finder.getClass());
   }
 
   @Test
   public void buildFromTagFinder() {
     TagFinder finder = new DefaultTagFinder("key");
-    Assert.assertSame(finder, TagFinder.build(finder));
+    Assertions.assertSame(finder, TagFinder.build(finder));
     DefaultTagFinder tagFinder = new DefaultTagFinder("key", true);
-    Assert.assertSame(tagFinder, TagFinder.build(tagFinder));
+    Assertions.assertSame(tagFinder, TagFinder.build(tagFinder));
   }
 
   @Test

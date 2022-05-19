@@ -25,9 +25,9 @@ import java.util.jar.JarFile;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -58,13 +58,13 @@ public class TestJvmUtils {
 
   @Test
   public void findMainClass_notExist() {
-    Assert.assertNull(JvmUtils.findMainClass());
+    Assertions.assertNull(JvmUtils.findMainClass());
   }
 
   @Test
   public void findMainClass_existButEmpty() {
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, "");
-    Assert.assertNull(JvmUtils.findMainClass());
+    Assertions.assertNull(JvmUtils.findMainClass());
   }
 
   @Test
@@ -73,8 +73,8 @@ public class TestJvmUtils {
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, "invalidCls");
 
-    Assert.assertNull(JvmUtils.findMainClass());
-    Assert.assertEquals("\"invalidCls\" is not a valid class.", logCollector.getEvents().get(0).getMessage());
+    Assertions.assertNull(JvmUtils.findMainClass());
+    Assertions.assertEquals("\"invalidCls\" is not a valid class.", logCollector.getEvents().get(0).getMessage());
     logCollector.teardown();
   }
 
@@ -82,7 +82,7 @@ public class TestJvmUtils {
   public void findMainClass_class_normal() {
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, TestJvmUtils.class.getName() + " arg");
 
-    Assert.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+    Assertions.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
   }
 
   @Test
@@ -101,7 +101,7 @@ public class TestJvmUtils {
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
 
-    Assert.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+    Assertions.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
   }
 
   @Test
@@ -120,7 +120,7 @@ public class TestJvmUtils {
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
 
-    Assert.assertNull(JvmUtils.findMainClass());
+    Assertions.assertNull(JvmUtils.findMainClass());
   }
 
   @Test
@@ -136,7 +136,7 @@ public class TestJvmUtils {
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
 
-    Assert.assertNull(JvmUtils.findMainClass());
+    Assertions.assertNull(JvmUtils.findMainClass());
   }
 
 
@@ -149,7 +149,7 @@ public class TestJvmUtils {
     });
     PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
 
-    Assert.assertEquals(String.class, JvmUtils.findMainClassByStackTrace());
+    Assertions.assertEquals(String.class, JvmUtils.findMainClassByStackTrace());
   }
 
   @Test
@@ -161,7 +161,7 @@ public class TestJvmUtils {
     });
     PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
 
-    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
   }
 
 
@@ -174,7 +174,7 @@ public class TestJvmUtils {
     });
     PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
 
-    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
   }
 
   @Test
@@ -183,7 +183,7 @@ public class TestJvmUtils {
     PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{});
     PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
 
-    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
   }
 
   @Test
@@ -192,7 +192,7 @@ public class TestJvmUtils {
     PowerMockito.when(re.getStackTrace()).thenReturn(null);
     PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
 
-    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
   }
 
 }

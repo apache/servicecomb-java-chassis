@@ -17,9 +17,8 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractHttpServletResponse {
 
@@ -268,7 +267,7 @@ public class TestAbstractHttpServletResponse {
   @Test
   public void attribute() {
     response.setAttribute("k", "v");
-    Assert.assertEquals("v", response.getAttribute("k"));
+    Assertions.assertEquals("v", response.getAttribute("k"));
   }
 
   @Test

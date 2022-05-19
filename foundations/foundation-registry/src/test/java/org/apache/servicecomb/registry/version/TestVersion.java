@@ -18,9 +18,8 @@
 package org.apache.servicecomb.registry.version;
 
 import org.apache.servicecomb.foundation.common.Version;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersion {
   Version version;
@@ -32,39 +31,39 @@ public class TestVersion {
   @Test
   public void constructFromStringNormalOnlyMajor() {
     version = new Version("1");
-    Assert.assertEquals("1.0.0.0", version.getVersion());
-    Assert.assertEquals(1, version.getMajor());
-    Assert.assertEquals(0, version.getMinor());
-    Assert.assertEquals(0, version.getPatch());
+    Assertions.assertEquals("1.0.0.0", version.getVersion());
+    Assertions.assertEquals(1, version.getMajor());
+    Assertions.assertEquals(0, version.getMinor());
+    Assertions.assertEquals(0, version.getPatch());
   }
 
   @Test
   public void constructFromStringNormalOnlyMajorMinor() {
     version = new Version("1.1");
-    Assert.assertEquals("1.1.0.0", version.getVersion());
-    Assert.assertEquals(1, version.getMajor());
-    Assert.assertEquals(1, version.getMinor());
-    Assert.assertEquals(0, version.getPatch());
+    Assertions.assertEquals("1.1.0.0", version.getVersion());
+    Assertions.assertEquals(1, version.getMajor());
+    Assertions.assertEquals(1, version.getMinor());
+    Assertions.assertEquals(0, version.getPatch());
   }
 
   @Test
   public void constructFromStringOnlyMajorMinorPatch() {
     version = new Version("1.1.1");
-    Assert.assertEquals("1.1.1.0", version.getVersion());
-    Assert.assertEquals(1, version.getMajor());
-    Assert.assertEquals(1, version.getMinor());
-    Assert.assertEquals(1, version.getPatch());
-    Assert.assertEquals(0, version.getBuild());
+    Assertions.assertEquals("1.1.1.0", version.getVersion());
+    Assertions.assertEquals(1, version.getMajor());
+    Assertions.assertEquals(1, version.getMinor());
+    Assertions.assertEquals(1, version.getPatch());
+    Assertions.assertEquals(0, version.getBuild());
   }
 
   @Test
   public void constructFromStringNormal() {
     version = new Version("1.1.1.1");
-    Assert.assertEquals("1.1.1.1", version.getVersion());
-    Assert.assertEquals(1, version.getMajor());
-    Assert.assertEquals(1, version.getMinor());
-    Assert.assertEquals(1, version.getPatch());
-    Assert.assertEquals(1, version.getBuild());
+    Assertions.assertEquals("1.1.1.1", version.getVersion());
+    Assertions.assertEquals(1, version.getMajor());
+    Assertions.assertEquals(1, version.getMinor());
+    Assertions.assertEquals(1, version.getPatch());
+    Assertions.assertEquals(1, version.getBuild());
   }
 
   @Test
@@ -153,46 +152,46 @@ public class TestVersion {
   @Test
   public void constructFromNumber() {
     version = new Version(s1, s1, s1, s1);
-    Assert.assertEquals("1.1.1.1", version.getVersion());
-    Assert.assertEquals(1, version.getMajor());
-    Assert.assertEquals(1, version.getMinor());
-    Assert.assertEquals(1, version.getPatch());
-    Assert.assertEquals(1, version.getPatch());
+    Assertions.assertEquals("1.1.1.1", version.getVersion());
+    Assertions.assertEquals(1, version.getMajor());
+    Assertions.assertEquals(1, version.getMinor());
+    Assertions.assertEquals(1, version.getPatch());
+    Assertions.assertEquals(1, version.getPatch());
   }
 
   @Test
   public void testToString() {
     version = new Version(s1, s1, s1, s1);
-    Assert.assertEquals("1.1.1.1", version.toString());
+    Assertions.assertEquals("1.1.1.1", version.toString());
   }
 
   @Test
   public void testHashCode() {
     version = new Version(s1, s1, s1, s1);
-    Assert.assertEquals(version.getVersion().hashCode(), version.hashCode());
+    Assertions.assertEquals(version.getVersion().hashCode(), version.hashCode());
   }
 
   @Test
   public void testEquals() {
     version = new Version(s1, s1, s1, s1);
 
-    Assert.assertTrue(version.equals(version));
-    Assert.assertTrue(version.equals(new Version(s1, s1, s1, s1)));
-    Assert.assertFalse(version.equals(null));
+    Assertions.assertTrue(version.equals(version));
+    Assertions.assertTrue(version.equals(new Version(s1, s1, s1, s1)));
+    Assertions.assertFalse(version.equals(null));
   }
 
   @Test
   public void compareTo() {
     version = new Version(s1, s1, s1, s1);
 
-    Assert.assertEquals(0, version.compareTo(version));
-    Assert.assertEquals(0, version.compareTo(new Version(s1, s1, s1, s1)));
+    Assertions.assertEquals(0, version.compareTo(version));
+    Assertions.assertEquals(0, version.compareTo(new Version(s1, s1, s1, s1)));
 
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s1, s2, s1)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s2, s1, s1)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s2, s1, s1, s1)));
+    Assertions.assertEquals(-1, version.compareTo(new Version(s1, s1, s2, s1)));
+    Assertions.assertEquals(-1, version.compareTo(new Version(s1, s2, s1, s1)));
+    Assertions.assertEquals(-1, version.compareTo(new Version(s2, s1, s1, s1)));
 
-    Assert.assertEquals(1, version.compareTo(new Version((short) 0,
+    Assertions.assertEquals(1, version.compareTo(new Version((short) 0,
         Short.MAX_VALUE, Short.MAX_VALUE, Short.MAX_VALUE)));
   }
 }

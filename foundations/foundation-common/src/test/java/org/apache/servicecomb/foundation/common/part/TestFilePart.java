@@ -25,9 +25,9 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestFilePart {
   static File file = new File("testFilePart.txt");
@@ -51,19 +51,19 @@ public class TestFilePart {
 
   @Test
   public void getName() {
-    Assert.assertEquals(name, part.getName());
+    Assertions.assertEquals(name, part.getName());
   }
 
   @Test
   public void getInputStream() throws IOException {
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
+      Assertions.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
     }
   }
 
   @Test
   public void getSize() {
-    Assert.assertEquals(content.length(), part.getSize());
+    Assertions.assertEquals(content.length(), part.getSize());
   }
 
   @Test
@@ -71,22 +71,22 @@ public class TestFilePart {
     File destFile = new File("testFilePartCopy.txt");
 
     part.write(destFile.getPath());
-    Assert.assertEquals(content, FileUtils.readFileToString(destFile, StandardCharsets.UTF_8));
+    Assertions.assertEquals(content, FileUtils.readFileToString(destFile, StandardCharsets.UTF_8));
 
     FilePart destPart = new FilePart(null, destFile);
     destPart.delete();
-    Assert.assertFalse(destFile.exists());
+    Assertions.assertFalse(destFile.exists());
   }
 
   @Test
   public void deleteAfterFinished() {
-    Assert.assertFalse(part.isDeleteAfterFinished());
+    Assertions.assertFalse(part.isDeleteAfterFinished());
 
-    Assert.assertTrue(part.setDeleteAfterFinished(true).isDeleteAfterFinished());
+    Assertions.assertTrue(part.setDeleteAfterFinished(true).isDeleteAfterFinished());
   }
 
   @Test
   public void getAbsolutePath() {
-    Assert.assertEquals(file.getAbsolutePath(), part.getAbsolutePath());
+    Assertions.assertEquals(file.getAbsolutePath(), part.getAbsolutePath());
   }
 }

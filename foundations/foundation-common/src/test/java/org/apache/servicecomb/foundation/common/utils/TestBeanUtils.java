@@ -20,9 +20,9 @@ import java.math.BigDecimal;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -71,8 +71,8 @@ public class TestBeanUtils {
     factory.addAspect(aspect);
     Intf proxy = factory.getProxy();
 
-    Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
-    Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
+    Assertions.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
+    Assertions.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
   }
 
   @Test
@@ -89,7 +89,7 @@ public class TestBeanUtils {
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -106,7 +106,7 @@ public class TestBeanUtils {
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -123,7 +123,7 @@ public class TestBeanUtils {
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb,java.lang,java.math", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb,java.lang,java.math", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -140,7 +140,7 @@ public class TestBeanUtils {
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("a.b,c.d,org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("a.b,c.d,org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -156,15 +156,15 @@ public class TestBeanUtils {
     };
     BeanUtils.init();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
   public void testGetImplClassFromBeanFromCglib(){
     TestBean testBeanByCGLIB = new TestBean$$TestBeanByCGLIB$$e1a36bab();
     Class<?> generatedClass = BeanUtils.getImplClassFromBean(testBeanByCGLIB);
-    Assert.assertNotNull(generatedClass);
-    Assert.assertEquals(TestBean.class, generatedClass);
+    Assertions.assertNotNull(generatedClass);
+    Assertions.assertEquals(TestBean.class, generatedClass);
   }
 
 

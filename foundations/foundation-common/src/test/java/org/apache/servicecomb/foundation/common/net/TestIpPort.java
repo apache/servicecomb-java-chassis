@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.foundation.common.net;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestIpPort {
   @Test
@@ -27,12 +27,12 @@ public class TestIpPort {
     inst1.setHostOrIp("localhost");
     inst1.setPort(3333);
     IpPort inst2 = new IpPort("localhost", 3333);
-    Assert.assertEquals(inst1.getHostOrIp(), inst2.getHostOrIp());
-    Assert.assertEquals(inst1.getPort(), inst2.getPort());
-    Assert.assertEquals(inst1.getSocketAddress().getHostName(), inst2.getSocketAddress().getHostName());
-    Assert.assertEquals(inst1, inst1);
-    Assert.assertEquals(inst1, inst2);
-    Assert.assertEquals(inst1.toString(), "localhost:3333");
-    Assert.assertNotEquals(inst1, new Object());
+    Assertions.assertEquals(inst1.getHostOrIp(), inst2.getHostOrIp());
+    Assertions.assertEquals(inst1.getPort(), inst2.getPort());
+    Assertions.assertEquals(inst1.getSocketAddress().getHostName(), inst2.getSocketAddress().getHostName());
+    Assertions.assertEquals(inst1, inst1);
+    Assertions.assertEquals(inst1, inst2);
+    Assertions.assertEquals(inst1.toString(), "localhost:3333");
+    Assertions.assertNotEquals(inst1, new Object());
   }
 }

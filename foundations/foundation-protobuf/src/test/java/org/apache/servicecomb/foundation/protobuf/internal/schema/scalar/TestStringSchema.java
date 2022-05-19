@@ -20,9 +20,8 @@ import java.util.HashMap;
 
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStringSchema extends TestSchemaBase {
   @Test
@@ -34,22 +33,22 @@ public class TestStringSchema extends TestSchemaBase {
     // string[]
     scbMap = new HashMap<>();
     scbMap.put("string", new String[] {value});
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
 
     // string
     scbMap.put("string", value);
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
   }
 
   @Test
   public void nullOrEmpty() throws Throwable {
     // null
     scbMap = new HashMap<>();
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // empty string[]
     scbMap.put("string", new String[] {});
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
   @Test

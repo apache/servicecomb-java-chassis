@@ -24,20 +24,18 @@ import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.CustomGeneric;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestMessageSchema extends TestSchemaBase {
   @Test
   public void empty() throws Throwable {
     check();
 
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(null));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(null));
   }
 
   @Test
@@ -50,7 +48,7 @@ public class TestMessageSchema extends TestSchemaBase {
 
     @SuppressWarnings("unchecked")
     CustomGeneric<User> generic = (CustomGeneric<User>) scbRoot;
-    MatcherAssert.assertThat(generic.user, Matchers.instanceOf(User.class));
+    Assertions.assertNotNull(generic.user);
   }
 
   @Test
@@ -72,6 +70,6 @@ public class TestMessageSchema extends TestSchemaBase {
 
     map.put("notExist", null);
 
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
   }
 }

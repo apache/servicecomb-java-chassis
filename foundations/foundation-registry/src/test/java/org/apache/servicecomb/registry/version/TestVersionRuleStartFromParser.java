@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.registry.version;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionRuleStartFromParser {
   VersionRuleParser parser = new VersionRuleStartFromParser();
@@ -27,21 +27,21 @@ public class TestVersionRuleStartFromParser {
 
   @Test
   public void parseInvalid() {
-    Assert.assertNull(parser.parse(""));
-    Assert.assertNull(parser.parse("+"));
-    Assert.assertNull(parser.parse("1+1"));
+    Assertions.assertNull(parser.parse(""));
+    Assertions.assertNull(parser.parse("+"));
+    Assertions.assertNull(parser.parse("1+1"));
   }
 
   @Test
   public void parseNormal() {
-    Assert.assertEquals("1.0.0.0+", versionRule.getVersionRule());
+    Assertions.assertEquals("1.0.0.0+", versionRule.getVersionRule());
   }
 
   @Test
   public void isMatch() {
-    Assert.assertFalse(versionRule.isMatch(VersionConst.v0, null));
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v1, null));
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v1Max, null));
-    Assert.assertTrue(versionRule.isMatch(VersionConst.v2, null));
+    Assertions.assertFalse(versionRule.isMatch(VersionConst.v0, null));
+    Assertions.assertTrue(versionRule.isMatch(VersionConst.v1, null));
+    Assertions.assertTrue(versionRule.isMatch(VersionConst.v1Max, null));
+    Assertions.assertTrue(versionRule.isMatch(VersionConst.v2, null));
   }
 }

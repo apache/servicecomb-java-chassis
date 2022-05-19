@@ -30,7 +30,6 @@ import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -102,36 +101,36 @@ public class TestDiscoveryTree {
 
   @Test
   public void isMatch_existingNull() {
-    Assert.assertFalse(discoveryTree.isMatch(null, null));
+    Assertions.assertFalse(discoveryTree.isMatch(null, null));
   }
 
   @Test
   public void isMatch_yes() {
     parent.cacheVersion(1);
-    Assert.assertTrue(discoveryTree.isMatch(new DiscoveryTreeNode().cacheVersion(1), parent));
+    Assertions.assertTrue(discoveryTree.isMatch(new DiscoveryTreeNode().cacheVersion(1), parent));
   }
 
   @Test
   public void isMatch_no() {
     parent.cacheVersion(0);
-    Assert.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(1), parent));
+    Assertions.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(1), parent));
   }
 
   @Test
   public void isExpired_existingNull() {
-    Assert.assertTrue(discoveryTree.isExpired(null, null));
+    Assertions.assertTrue(discoveryTree.isExpired(null, null));
   }
 
   @Test
   public void isExpired_yes() {
     parent.cacheVersion(1);
-    Assert.assertTrue(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
+    Assertions.assertTrue(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
 
   @Test
   public void isExpired_no() {
     parent.cacheVersion(0);
-    Assert.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
+    Assertions.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
 
   static class DiscoveryFilterForTest implements DiscoveryFilter {
@@ -172,7 +171,7 @@ public class TestDiscoveryTree {
 
     result = discoveryTree.discovery(context, parent);
 
-    Assert.assertEquals("1.0.0-2.0.0/g1/g2", result.name());
+    Assertions.assertEquals("1.0.0-2.0.0/g1/g2", result.name());
   }
 
   @Test
@@ -187,8 +186,8 @@ public class TestDiscoveryTree {
     };
 
     result = discoveryTree.discovery(context, null, null, null);
-    Assert.assertEquals(parent.name(), result.name());
-    Assert.assertEquals(parent.cacheVersion(), result.cacheVersion());
+    Assertions.assertEquals(parent.name(), result.name());
+    Assertions.assertEquals(parent.cacheVersion(), result.cacheVersion());
   }
 
   @Test
@@ -251,16 +250,16 @@ public class TestDiscoveryTree {
 
     result = discoveryTree.discovery(context, parent);
 
-    Assert.assertEquals("second", result.data());
+    Assertions.assertEquals("second", result.data());
   }
 
   @Test
   public void avoidConcurrentProblem() {
     Deencapsulation.setField(discoveryTree, "root", parent.cacheVersion(1));
-    Assert.assertTrue(parent.children().isEmpty());
+    Assertions.assertTrue(parent.children().isEmpty());
 
     discoveryTree.discovery(context, new VersionedCache().cacheVersion(0).name("input"));
-    Assert.assertTrue(parent.children().isEmpty());
+    Assertions.assertTrue(parent.children().isEmpty());
   }
 
   @Test
@@ -269,7 +268,7 @@ public class TestDiscoveryTree {
 
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(parent);
 
-    Assert.assertSame(parent, root);
+    Assertions.assertSame(parent, root);
   }
 
   @Test
@@ -279,8 +278,8 @@ public class TestDiscoveryTree {
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() + 1);
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
 
-    Assert.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
-    Assert.assertSame(Deencapsulation.getField(discoveryTree, "root"), root);
+    Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
+    Assertions.assertSame(Deencapsulation.getField(discoveryTree, "root"), root);
   }
 
   @Test
@@ -290,7 +289,7 @@ public class TestDiscoveryTree {
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() - 1);
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
 
-    Assert.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
-    Assert.assertNotSame(Deencapsulation.getField(discoveryTree, "root"), root);
+    Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
+    Assertions.assertNotSame(Deencapsulation.getField(discoveryTree, "root"), root);
   }
 }

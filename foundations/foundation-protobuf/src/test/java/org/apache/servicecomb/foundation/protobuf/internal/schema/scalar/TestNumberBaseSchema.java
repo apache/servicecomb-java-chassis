@@ -25,8 +25,6 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -53,19 +51,19 @@ public abstract class TestNumberBaseSchema extends TestSchemaBase {
     // null
     scbMap = new HashMap<>();
     scbMap.put(field, null);
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // empty string[]
     scbMap.put(field, new String[] {});
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // string[]
     scbMap.put(field, new String[] {String.valueOf(value)});
-    Assert.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
+    Assertions.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
 
     // string
     scbMap.put(field, String.valueOf(value));
-    Assert.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
+    Assertions.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
   }
 
   private byte[] doTestPojoNormal(String name) throws Throwable {

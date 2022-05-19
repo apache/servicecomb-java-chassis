@@ -19,16 +19,16 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestExceptionUtils {
   @Test
   public void testExceptionUtils() {
     Exception e = new Exception("Hello");
-    Assert.assertEquals("cause:Exception,message:Hello", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+    Assertions.assertEquals("cause:Exception,message:Hello", ExceptionUtils.getExceptionMessageWithoutTrace(e));
     Exception e2 = new Exception("FAIL", new IOException("IO"));
-    Assert.assertEquals("cause:Exception,message:FAIL;cause:IOException,message:IO",
+    Assertions.assertEquals("cause:Exception,message:FAIL;cause:IOException,message:IO",
         ExceptionUtils.getExceptionMessageWithoutTrace(e2));
   }
 }

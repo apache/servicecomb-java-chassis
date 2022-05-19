@@ -83,7 +83,7 @@ public final class FortifyUtils {
   }
 
   public static String getErrorInfo(Throwable e, boolean isPrintMsg) {
-    StringBuffer error = new StringBuffer(System.lineSeparator());
+    StringBuilder error = new StringBuilder(System.lineSeparator());
     error.append("Exception: ").append(e.getClass().getName()).append("; ");
 
     if (isPrintMsg) {

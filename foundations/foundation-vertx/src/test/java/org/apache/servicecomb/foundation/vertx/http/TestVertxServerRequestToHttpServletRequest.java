@@ -34,7 +34,6 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +48,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxServerRequestToHttpServletRequest {
   @Mocked
@@ -80,7 +80,7 @@ public class TestVertxServerRequestToHttpServletRequest {
   public void constructWithPath() {
     request = new VertxServerRequestToHttpServletRequest(context, "/path");
 
-    Assert.assertEquals("/path", request.getRequestURI());
+    Assertions.assertEquals("/path", request.getRequestURI());
   }
 
   @Test
@@ -102,8 +102,8 @@ public class TestVertxServerRequestToHttpServletRequest {
     Buffer bodyBuffer = Buffer.buffer();
     request.setBodyBuffer(bodyBuffer);
 
-    Assert.assertSame(bodyBuffer, bodyHolder.value);
-    Assert.assertSame(bodyBuffer, request.getBodyBuffer());
+    Assertions.assertSame(bodyBuffer, bodyHolder.value);
+    Assertions.assertSame(bodyBuffer, request.getBodyBuffer());
   }
 
   @Test
@@ -115,7 +115,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("json", request.getContentType());
+    Assertions.assertEquals("json", request.getContentType());
   }
 
   @Test
@@ -133,15 +133,15 @@ public class TestVertxServerRequestToHttpServletRequest {
     Cookie[] cookies = request.getCookies();
     // we can't ensure the sequence when set to list
     if (cookies[0].getName().equals("c1")) {
-      Assert.assertEquals("c1", cookies[0].getName());
-      Assert.assertEquals("c1v", cookies[0].getValue());
-      Assert.assertEquals("c2", cookies[1].getName());
-      Assert.assertEquals("c2v", cookies[1].getValue());
+      Assertions.assertEquals("c1", cookies[0].getName());
+      Assertions.assertEquals("c1v", cookies[0].getValue());
+      Assertions.assertEquals("c2", cookies[1].getName());
+      Assertions.assertEquals("c2v", cookies[1].getValue());
     } else {
-      Assert.assertEquals("c2", cookies[0].getName());
-      Assert.assertEquals("c2v", cookies[0].getValue());
-      Assert.assertEquals("c1", cookies[1].getName());
-      Assert.assertEquals("c1v", cookies[1].getValue());
+      Assertions.assertEquals("c2", cookies[0].getName());
+      Assertions.assertEquals("c2v", cookies[0].getValue());
+      Assertions.assertEquals("c1", cookies[1].getName());
+      Assertions.assertEquals("c1v", cookies[1].getValue());
     }
   }
 
@@ -154,12 +154,12 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("value", request.getParameter("name"));
+    Assertions.assertEquals("value", request.getParameter("name"));
   }
 
   @Test
   public void testGetParameterValuesNull() {
-    Assert.assertEquals(0, request.getParameterValues("name").length);
+    Assertions.assertEquals(0, request.getParameterValues("name").length);
   }
 
   @Test
@@ -192,7 +192,7 @@ public class TestVertxServerRequestToHttpServletRequest {
     Map<String, String[]> result = request.getParameterMap();
     MatcherAssert.assertThat(result.keySet(), Matchers.contains("name"));
     MatcherAssert.assertThat(result.get("name"), Matchers.arrayContaining("value"));
-    Assert.assertSame(result, request.getParameterMap());
+    Assertions.assertSame(result, request.getParameterMap());
   }
 
   @Test
@@ -204,7 +204,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("abc", request.getScheme());
+    Assertions.assertEquals("abc", request.getScheme());
   }
 
   @Test
@@ -216,7 +216,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("host", request.getRemoteAddr());
+    Assertions.assertEquals("host", request.getRemoteAddr());
   }
 
   @Test
@@ -227,7 +227,7 @@ public class TestVertxServerRequestToHttpServletRequest {
         result = null;
       }
     };
-    Assert.assertNull(request.getRemoteAddr());
+    Assertions.assertNull(request.getRemoteAddr());
   }
 
   @Test
@@ -239,7 +239,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("host", request.getRemoteHost());
+    Assertions.assertEquals("host", request.getRemoteHost());
   }
 
   @Test
@@ -251,7 +251,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals(1234, request.getRemotePort());
+    Assertions.assertEquals(1234, request.getRemotePort());
   }
 
   @Test
@@ -265,7 +265,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("host", request.getLocalAddr());
+    Assertions.assertEquals("host", request.getLocalAddr());
   }
 
   @Test
@@ -279,7 +279,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals(1234, request.getLocalPort());
+    Assertions.assertEquals(1234, request.getLocalPort());
   }
 
   @Test
@@ -291,7 +291,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("value", request.getHeader("key"));
+    Assertions.assertEquals("value", request.getHeader("key"));
   }
 
   @Test
@@ -324,7 +324,7 @@ public class TestVertxServerRequestToHttpServletRequest {
 
   @Test
   public void testGetIntHeaderNotExist() {
-    Assert.assertEquals(-1, request.getIntHeader("key"));
+    Assertions.assertEquals(-1, request.getIntHeader("key"));
   }
 
   @Test
@@ -338,9 +338,9 @@ public class TestVertxServerRequestToHttpServletRequest {
 
     try {
       request.getIntHeader("key");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (NumberFormatException e) {
-      Assert.assertEquals("For input string: \"value\"", e.getMessage());
+      Assertions.assertEquals("For input string: \"value\"", e.getMessage());
     }
   }
 
@@ -353,7 +353,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals(1, request.getIntHeader("key"));
+    Assertions.assertEquals(1, request.getIntHeader("key"));
   }
 
   @Test
@@ -365,7 +365,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("GET", request.getMethod());
+    Assertions.assertEquals("GET", request.getMethod());
   }
 
   @Test
@@ -377,7 +377,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("/path", request.getPathInfo());
+    Assertions.assertEquals("/path", request.getPathInfo());
   }
 
   @Test
@@ -389,7 +389,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("k1=v1&k2=v2", request.getQueryString());
+    Assertions.assertEquals("k1=v1&k2=v2", request.getQueryString());
   }
 
   @Test
@@ -401,7 +401,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("/path", request.getRequestURI());
+    Assertions.assertEquals("/path", request.getRequestURI());
   }
 
   @Test
@@ -413,12 +413,12 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("/path", request.getServletPath());
+    Assertions.assertEquals("/path", request.getServletPath());
   }
 
   @Test
   public void testGetContextPath() {
-    Assert.assertEquals("", request.getContextPath());
+    Assertions.assertEquals("", request.getContextPath());
   }
 
   @Test
@@ -434,15 +434,15 @@ public class TestVertxServerRequestToHttpServletRequest {
     };
 
     ServletInputStream is1 = request.getInputStream();
-    Assert.assertSame(is1, request.getInputStream());
+    Assertions.assertSame(is1, request.getInputStream());
     int value = is1.read();
     is1.close();
-    Assert.assertEquals(1, value);
-    Assert.assertSame(is1, request.getInputStream());
+    Assertions.assertEquals(1, value);
+    Assertions.assertSame(is1, request.getInputStream());
 
     request.setBodyBuffer(Buffer.buffer().appendByte((byte)2));
     ServletInputStream is2 = request.getInputStream();
-    Assert.assertNotSame(is1, is2);
+    Assertions.assertNotSame(is1, is2);
   }
 
   @Test
@@ -450,7 +450,7 @@ public class TestVertxServerRequestToHttpServletRequest {
     AsyncContext asyncContext =
         Deencapsulation.getField(VertxServerRequestToHttpServletRequest.class, "EMPTY_ASYNC_CONTEXT");
 
-    Assert.assertSame(asyncContext, request.getAsyncContext());
+    Assertions.assertSame(asyncContext, request.getAsyncContext());
   }
 
   @Test
@@ -464,7 +464,7 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("ce", request.getCharacterEncoding());
+    Assertions.assertEquals("ce", request.getCharacterEncoding());
   }
 
 
@@ -476,10 +476,10 @@ public class TestVertxServerRequestToHttpServletRequest {
     request.setParameter("k1", "v1");
     request.setParameter("k2", "v2");
 
-    Assert.assertEquals("v1", request.getParameter("k1"));
-    Assert.assertEquals("v2", request.getParameter("k2"));
+    Assertions.assertEquals("v1", request.getParameter("k1"));
+    Assertions.assertEquals("v2", request.getParameter("k2"));
 
-    Assert.assertSame(parameterMap, request.getParameterMap());
+    Assertions.assertSame(parameterMap, request.getParameterMap());
 
     MatcherAssert.assertThat(Collections.list(request.getParameterNames()), Matchers.contains("k1", "k2"));
   }

@@ -17,12 +17,10 @@
 
 package org.apache.servicecomb.config;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestYAMLUtil {
   public static class Person {
@@ -52,36 +50,36 @@ public class TestYAMLUtil {
   @Test
   public void testSafeParser() {
     Person person = YAMLUtil.parserObject("name: hello", Person.class);
-    Assert.assertEquals("hello", person.getName());
+    Assertions.assertEquals("hello", person.getName());
 
     person = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$Person\n"
         + "name: hello", Person.class);
-    Assert.assertEquals("hello", person.getName());
+    Assertions.assertEquals("hello", person.getName());
 
     person = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$UnsafePerson\n"
         + "name: hello", Person.class);
-    Assert.assertEquals("hello", person.getName());
+    Assertions.assertEquals("hello", person.getName());
 
     // using Object.class is not safe, do not used in product code.
     Object object = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$UnsafePerson\n"
         + "name: hello", Object.class);
-    Assert.assertEquals("hello", ((UnsafePerson) object).getName());
+    Assertions.assertEquals("hello", ((UnsafePerson) object).getName());
   }
 
   @Test
   public void testYamlConfig() {
-    RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+    RuntimeException runtimeException = Assertions.assertThrows(RuntimeException.class, () -> {
       YAMLUtil.yaml2Properties("servicecomb.service.registry.enabled: {{true}}");
     });
-    Assert.assertEquals("input cannot be convert to map", runtimeException.getMessage());
+    Assertions.assertEquals("input cannot be convert to map", runtimeException.getMessage());
   }
 
   @Test
   @SuppressWarnings("unchecked")
   public void testListValue() {
     Map<String, Object> result = YAMLUtil.yaml2Properties("hello: a,b");
-    Assert.assertEquals(result.size(), 1);
+    Assertions.assertEquals(result.size(), 1);
     String listValue = (String) result.get("hello");
-    Assert.assertEquals(listValue, "a,b");
+    Assertions.assertEquals(listValue, "a,b");
   }
 }

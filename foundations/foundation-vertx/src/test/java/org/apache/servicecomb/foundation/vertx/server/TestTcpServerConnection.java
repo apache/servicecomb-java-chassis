@@ -16,21 +16,24 @@
  */
 package org.apache.servicecomb.foundation.vertx.server;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import io.vertx.core.net.SocketAddress;
 import io.vertx.core.net.impl.NetSocketImpl;
-import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestTcpServerConnection {
   @Test
-  public void test(@Mocked NetSocketImpl netSocket) {
+  public void test() {
+    SocketAddress socketAddress = Mockito.mock(SocketAddress.class);
+    NetSocketImpl netSocket = Mockito.mock(NetSocketImpl.class);
+    Mockito.when(netSocket.remoteAddress()).thenReturn(socketAddress);
     TcpServerConnection connection = new TcpServerConnection();
     connection.setProtocol("p");
     connection.setZipName("z");
 
     connection.init(netSocket);
 
-    Assert.assertEquals(netSocket, connection.getNetSocket());
+    Assertions.assertEquals(netSocket, connection.getNetSocket());
   }
 }

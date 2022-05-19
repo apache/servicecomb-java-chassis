@@ -30,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -86,8 +85,8 @@ public class TestReadStreamPart {
 
     part = new ReadStreamPart(context, httpClientResponse);
 
-    Assert.assertEquals("name.txt", part.getSubmittedFileName());
-    Assert.assertEquals("text/plain", part.getContentType());
+    Assertions.assertEquals("name.txt", part.getSubmittedFileName());
+    Assertions.assertEquals("text/plain", part.getContentType());
   }
 
   @Test
@@ -103,8 +102,8 @@ public class TestReadStreamPart {
 
     part = new ReadStreamPart(context, httpClientResponse);
 
-    Assert.assertEquals("name.txt", part.getSubmittedFileName());
-    Assert.assertEquals("type", part.getContentType());
+    Assertions.assertEquals("name.txt", part.getSubmittedFileName());
+    Assertions.assertEquals("type", part.getContentType());
   }
 
   @Test
@@ -120,7 +119,7 @@ public class TestReadStreamPart {
 
     part.saveToWriteStream(writeStream).get();
 
-    Assert.assertEquals(src, buf.toString());
+    Assertions.assertEquals(src, buf.toString());
   }
 
   @Test
@@ -166,12 +165,12 @@ public class TestReadStreamPart {
 
   @Test
   public void saveAsBytes() throws InterruptedException, ExecutionException {
-    Assert.assertArrayEquals(src.getBytes(), part.saveAsBytes().get());
+    Assertions.assertArrayEquals(src.getBytes(), part.saveAsBytes().get());
   }
 
   @Test
   public void saveAsString() throws InterruptedException, ExecutionException {
-    Assert.assertEquals(src, part.saveAsString().get());
+    Assertions.assertEquals(src, part.saveAsString().get());
   }
 
   @Test
@@ -179,14 +178,14 @@ public class TestReadStreamPart {
     File dir = new File("target/notExist-" + UUID.randomUUID().toString());
     File file = new File(dir, "a.txt");
 
-    Assert.assertFalse(dir.exists());
+    Assertions.assertFalse(dir.exists());
 
     part.saveToFile(file.getAbsolutePath()).get();
 
-    Assert.assertEquals(src, FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+    Assertions.assertEquals(src, FileUtils.readFileToString(file, StandardCharsets.UTF_8));
 
     FileUtils.forceDelete(dir);
-    Assert.assertFalse(dir.exists());
+    Assertions.assertFalse(dir.exists());
   }
 
   @Test
@@ -194,7 +193,7 @@ public class TestReadStreamPart {
     File dir = new File("target/notExist-" + UUID.randomUUID().toString());
     File file = new File(dir, "a.txt");
 
-    Assert.assertFalse(dir.exists());
+    Assertions.assertFalse(dir.exists());
 
     ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
       OpenOptions openOptions = new OpenOptions().setCreateNew(false);
