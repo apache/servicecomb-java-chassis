@@ -97,7 +97,6 @@
     <spectator.version>0.83.0</spectator.version>
     <spring.version>5.3.20</spring.version>
     <spring-boot.version>2.6.7</spring-boot.version>
-    <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.6.6</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
     <tcnetty.version>2.0.52.Final</tcnetty.version>
@@ -631,12 +630,6 @@
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>stax2-api</artifactId>
-        <version>${stax2-api.version}</version>
       </dependency>
 
       <dependency>
