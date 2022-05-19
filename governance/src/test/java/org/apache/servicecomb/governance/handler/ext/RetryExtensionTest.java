@@ -24,8 +24,8 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
@@ -41,40 +41,40 @@ public class RetryExtensionTest {
   public void test_status_code_to_contains() {
     List<String> statusList = Arrays.asList("502", "503");
     boolean result = AbstractRetryExtension.statusCodeContains(statusList, "502");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "504");
-    Assert.assertFalse(result);
+    Assertions.assertFalse(result);
 
     statusList = Arrays.asList("5xx", "4x4", "4x", "x32", "xx6");
     result = AbstractRetryExtension.statusCodeContains(statusList, "502");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "504");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
 
     statusList = Arrays.asList("4x4", "x32", "xx6");
     result = AbstractRetryExtension.statusCodeContains(statusList, "402");
-    Assert.assertFalse(result);
+    Assertions.assertFalse(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "404");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "332");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "446");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
 
     statusList = Arrays.asList("4x", "x3x", "x5");
     result = AbstractRetryExtension.statusCodeContains(statusList, "446");
-    Assert.assertFalse(result);
+    Assertions.assertFalse(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "455");
-    Assert.assertFalse(result);
+    Assertions.assertFalse(result);
 
     result = AbstractRetryExtension.statusCodeContains(statusList, "434");
-    Assert.assertTrue(result);
+    Assertions.assertTrue(result);
   }
 
   @Test
@@ -82,7 +82,7 @@ public class RetryExtensionTest {
     Exception target = new ConnectException("connection refused");
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
   }
 
   @Test
@@ -90,7 +90,7 @@ public class RetryExtensionTest {
     Exception target = new SocketTimeoutException("Read timed out");
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
   }
 
   @Test
@@ -98,12 +98,12 @@ public class RetryExtensionTest {
     Exception target = new IOException("Connection reset by peer");
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
 
     target = new IOException("Target not exist");
     root = new Exception(target);
     canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertFalse(canRetry);
+    Assertions.assertFalse(canRetry);
   }
 
   @Test
@@ -111,12 +111,12 @@ public class RetryExtensionTest {
     Exception target = new VertxException("Connection was closed");
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
 
     target = new IOException("");
     root = new Exception(target);
     canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertFalse(canRetry);
+    Assertions.assertFalse(canRetry);
   }
 
   @Test
@@ -124,12 +124,12 @@ public class RetryExtensionTest {
     Exception target = new NoRouteToHostException("Host is unreachable");
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
 
     target = new NoRouteToHostException("No route to host");
     root = new Exception(target);
     canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
   }
 
   @Test
@@ -140,7 +140,7 @@ public class RetryExtensionTest {
     }
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertTrue(canRetry);
+    Assertions.assertTrue(canRetry);
   }
 
   @Test
@@ -151,6 +151,6 @@ public class RetryExtensionTest {
     }
     Exception root = new Exception(target);
     boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
-    Assert.assertFalse(canRetry);
+    Assertions.assertFalse(canRetry);
   }
 }
