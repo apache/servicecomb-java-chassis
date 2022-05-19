@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.fail;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +29,8 @@ import org.apache.servicecomb.it.schema.DefaultJsonValueResponse;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.concurrent.ListenableFuture;
 
@@ -52,10 +50,10 @@ public class TestAsyncInvoke {
   @Test
   public void responseEntity_string_intf() {
     BiConsumer<ResponseEntity<String>, Throwable> checkLogic = (responseEntity, ex) -> {
-      Assert.assertEquals(203, responseEntity.getStatusCodeValue());
+      Assertions.assertEquals(203, responseEntity.getStatusCodeValue());
       MatcherAssert.assertThat(responseEntity.getHeaders().get("testH"), Matchers.containsInAnyOrder("testV1", "testV2"));
-      Assert.assertEquals("TestOK", responseEntity.getBody());
-      Assert.assertNull(ex);
+      Assertions.assertEquals("TestOK", responseEntity.getBody());
+      Assertions.assertNull(ex);
     };
 
     // Async RPC
@@ -82,12 +80,12 @@ public class TestAsyncInvoke {
   @Test
   public void responseEntity_dataObject_intf() {
     BiConsumer<ResponseEntity<DefaultJsonValueResponse>, Throwable> checkLogic = (responseEntity, ex) -> {
-      Assert.assertEquals(203, responseEntity.getStatusCodeValue());
+      Assertions.assertEquals(203, responseEntity.getStatusCodeValue());
       MatcherAssert.assertThat(responseEntity.getHeaders().get("testH"), Matchers.containsInAnyOrder("testV1", "testV2"));
-      Assert.assertEquals(DefaultJsonValueResponse.class, responseEntity.getBody().getClass());
-      Assert.assertEquals("TestOK", responseEntity.getBody().getMessage());
-      Assert.assertEquals(2, responseEntity.getBody().getType());
-      Assert.assertNull(ex);
+      Assertions.assertEquals(DefaultJsonValueResponse.class, responseEntity.getBody().getClass());
+      Assertions.assertEquals("TestOK", responseEntity.getBody().getMessage());
+      Assertions.assertEquals(2, responseEntity.getBody().getType());
+      Assertions.assertNull(ex);
     };
 
     // Async RPC
@@ -129,10 +127,10 @@ public class TestAsyncInvoke {
     try {
       countDownLatch.await(3000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
-      fail("error occurs while waiting for response, " + e.getMessage());
+      Assertions.fail("error occurs while waiting for response, " + e.getMessage());
     }
 
-    Assert.assertTrue("response check unfinished!", responseChecked.value);
+    Assertions.assertTrue(responseChecked.value, "response check unfinished!");
   }
 
   /**

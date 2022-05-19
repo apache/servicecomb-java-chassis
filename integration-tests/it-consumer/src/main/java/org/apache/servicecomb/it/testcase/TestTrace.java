@@ -24,9 +24,9 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTrace {
   interface TraceSchemaIntf {
@@ -50,12 +50,12 @@ public class TestTrace {
   @Test
   public void echo_intf() throws ExecutionException, InterruptedException {
     String traceId = consumers.getIntf().echoProxy().get();
-    Assert.assertEquals("testId", traceId);
+    Assertions.assertEquals("testId", traceId);
   }
 
   @Test
   public void echo_rt() {
     String traceId = consumers.getSCBRestTemplate().getForObject("/echo-proxy", String.class);
-    Assert.assertEquals("testId", traceId);
+    Assertions.assertEquals("testId", traceId);
   }
 }

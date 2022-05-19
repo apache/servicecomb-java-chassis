@@ -37,9 +37,9 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.assertj.core.api.Condition;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -99,7 +99,7 @@ public class TestUpload {
       fileSystemResource3 = new FileSystemResource(file3);
       fileSystemResource4 = new FileSystemResource(file4);
     } catch (IOException e) {
-      Assert.fail("Failed to create temp file");
+      Assertions.fail("Failed to create temp file");
     }
   }
 
@@ -132,7 +132,7 @@ public class TestUpload {
     map.put("file1", fileSystemResource1);
     map.put("file2", fileSystemResource2);
     String result = consumersJaxrs.getSCBRestTemplate().postForObject("/upload1", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "中文 2"));
+    Assertions.assertTrue(containsAll(result, "hello1", "中文 2"));
   }
 
   @Test
@@ -143,7 +143,7 @@ public class TestUpload {
     map.put("file2", fileSystemResource3);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/uploadArray1", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
+    Assertions.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
   }
 
   @Test
@@ -156,7 +156,7 @@ public class TestUpload {
     map.put("file2", fileSystemResource3);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/uploadList1", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
+    Assertions.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
   }
 
   @Test
@@ -166,7 +166,7 @@ public class TestUpload {
     map.put("message", message);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/upload2", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", message));
+    Assertions.assertTrue(containsAll(result, "hello1", message));
   }
 
   @Test
@@ -177,7 +177,7 @@ public class TestUpload {
     map.put("message", message);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/uploadArray2", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "中文 2", message));
   }
 
   @Test
@@ -190,7 +190,7 @@ public class TestUpload {
     map.put("message", message);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/uploadList2", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "cse3", "中文 2", message));
   }
 
   @Test
@@ -205,7 +205,7 @@ public class TestUpload {
     map.put("message", message);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/uploadMix", new HttpEntity<>(map), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
   //springmvc
@@ -219,7 +219,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate().postForObject("/upload",
         new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "中文 2", message));
   }
 
   @Test
@@ -234,7 +234,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadArray", new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
   @Test
@@ -253,7 +253,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadList", new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
   @Test
@@ -266,7 +266,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate().postForObject("/uploadWithoutAnnotation",
         new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "中文 2", message));
   }
 
   @Test
@@ -281,7 +281,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadArrayWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
   @Test
@@ -300,7 +300,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadListArrayWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
   @Test
@@ -317,7 +317,7 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadMix", new HttpEntity<>(map, headers), String.class);
-    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+    Assertions.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
   @Test
@@ -336,7 +336,7 @@ public class TestUpload {
             new HttpEntity<>(map, headers), new ParameterizedTypeReference<Map<String, String>>() {
             });
     Map<String, String> responseBody = response.getBody();
-    MatcherAssert.assertThat(responseBody, Matchers.notNullValue());
+    Assertions.assertNotNull(responseBody);
     MatcherAssert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
     MatcherAssert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
     MatcherAssert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));

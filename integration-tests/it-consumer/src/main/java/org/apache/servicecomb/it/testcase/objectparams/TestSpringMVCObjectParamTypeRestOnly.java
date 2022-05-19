@@ -22,8 +22,8 @@ import java.util.LinkedHashMap;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.objectparams.ObjectParamTypeSchema;
 import org.apache.servicecomb.it.schema.objectparams.TestNullFieldAndDefaultValueParam;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 
 import io.vertx.core.json.Json;
@@ -46,7 +46,7 @@ public class TestSpringMVCObjectParamTypeRestOnly {
     TestNullFieldAndDefaultValueParam expectedResponse =
         new TestNullFieldAndDefaultValueParam("sss1", 111, null, 0, "defaultS3", 2333);
     expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
+    Assertions.assertEquals(expectedResponse, response);
 
     request.put("s2", "sss2");
     request.put("i2", 1234);
@@ -55,7 +55,7 @@ public class TestSpringMVCObjectParamTypeRestOnly {
     response = consumers.getIntf().testNullFieldAndDefaultValue(request);
     expectedResponse = new TestNullFieldAndDefaultValueParam("sss1", 111, "sss2", 1234, "sss3", 3333);
     expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
+    Assertions.assertEquals(expectedResponse, response);
   }
 
   @Test
@@ -68,7 +68,7 @@ public class TestSpringMVCObjectParamTypeRestOnly {
     TestNullFieldAndDefaultValueParam expectedResponse =
         new TestNullFieldAndDefaultValueParam("sss1", 111, null, 0, "defaultS3", 2333);
     expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
+    Assertions.assertEquals(expectedResponse, response);
 
     request.put("s2", "sss2");
     request.put("i2", 1234);
@@ -78,8 +78,8 @@ public class TestSpringMVCObjectParamTypeRestOnly {
         .postForEntity("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
     expectedResponse = new TestNullFieldAndDefaultValueParam("sss1", 111, "sss2", 1234, "sss3", 3333);
     expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(expectedResponse, responseEntity.getBody());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -92,7 +92,7 @@ public class TestSpringMVCObjectParamTypeRestOnly {
     TestNullFieldAndDefaultValueParam response = consumers.getEdgeRestTemplate()
         .postForObject("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
     expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
+    Assertions.assertEquals(expectedResponse, response);
 
     request.put("s2", "sss2");
     request.put("i2", 1234);
@@ -102,7 +102,7 @@ public class TestSpringMVCObjectParamTypeRestOnly {
         .postForEntity("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
     expectedResponse = new TestNullFieldAndDefaultValueParam("sss1", 111, "sss2", 1234, "sss3", 3333);
     expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(expectedResponse, responseEntity.getBody());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 }

@@ -21,8 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 
 import io.swagger.annotations.ApiOperation;
@@ -68,158 +68,158 @@ public class TestApiOperationOverride {
   @Test
   public void consumersPojo_sayHi_intf() {
     long index = generateIndex();
-    Assert.assertEquals("ApiOpertionPojoSchema#sayHello" + index, consumersPojo.getIntf().sayHello(index));
+    Assertions.assertEquals("ApiOpertionPojoSchema#sayHello" + index, consumersPojo.getIntf().sayHello(index));
   }
 
   @Test
   public void consumersPojo_sayHello_intf() {
     long index = generateIndex();
-    Assert.assertEquals("value" + index, consumersPojo.getIntf().sayHello("value" + index));
+    Assertions.assertEquals("value" + index, consumersPojo.getIntf().sayHello("value" + index));
   }
 
   @Test
   public void consumersPojo_sayHelloAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("value" + index, consumersPojo.getIntf().sayHelloAsync("value" + index).get());
+    Assertions.assertEquals("value" + index, consumersPojo.getIntf().sayHelloAsync("value" + index).get());
   }
 
   @Test
   public void consumersPojo_sayHiAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("ApiOpertionPojoSchema#sayHello" + index, consumersPojo.getIntf().sayHelloAsync(index).get());
+    Assertions.assertEquals("ApiOpertionPojoSchema#sayHello" + index, consumersPojo.getIntf().sayHelloAsync(index).get());
   }
 
   @Test
   public void consumersPojo_sayHiEntity_intf() {
     long index = generateIndex();
-    Assert.assertEquals("ApiOpertionPojoSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOpertionPojoSchema#sayHello" + index,
         consumersPojo.getIntf().sayHelloEntity(index).getBody());
   }
 
   @Test
   public void consumersPojo_sayHelloEntity_intf() {
     long index = generateIndex();
-    Assert.assertEquals("value" + index,
+    Assertions.assertEquals("value" + index,
         consumersPojo.getIntf().sayHelloEntity("value" + index).getBody());
   }
 
   @Test
   public void consumersPojo_sayHiEntityAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("ApiOpertionPojoSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOpertionPojoSchema#sayHello" + index,
         consumersPojo.getIntf().sayHelloEntityAsync(index).get().getBody());
   }
 
   @Test
   public void consumersPojo_sayHelloEntityAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("value" + index,
+    Assertions.assertEquals("value" + index,
         consumersPojo.getIntf().sayHelloEntityAsync("value" + index).get().getBody());
   }
 
   @Test
   public void consumersJaxrs_sayHi_intf() {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationJaxrsSchema#sayHello" + index, consumersJaxrs.getIntf().sayHello(index));
+    Assertions.assertEquals("ApiOperationJaxrsSchema#sayHello" + index, consumersJaxrs.getIntf().sayHello(index));
   }
 
   @Test
   public void consumersJaxrs_sayHello_intf() {
     long index = generateIndex();
-    Assert.assertEquals("value" + index, consumersJaxrs.getIntf().sayHello("value" + index));
+    Assertions.assertEquals("value" + index, consumersJaxrs.getIntf().sayHello("value" + index));
   }
 
   @Test
   public void consumersJaxrs_sayHelloAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("value" + index, consumersJaxrs.getIntf().sayHelloAsync("value" + index).get());
+    Assertions.assertEquals("value" + index, consumersJaxrs.getIntf().sayHelloAsync("value" + index).get());
   }
 
   @Test
   public void consumersJaxrs_sayHiAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert
-        .assertEquals("ApiOperationJaxrsSchema#sayHello" + index, consumersJaxrs.getIntf().sayHelloAsync(index).get());
+    Assertions
+            .assertEquals("ApiOperationJaxrsSchema#sayHello" + index, consumersJaxrs.getIntf().sayHelloAsync(index).get());
   }
 
   @Test
   public void consumersJaxrs_sayHiEntity_intf() {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationJaxrsSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOperationJaxrsSchema#sayHello" + index,
         consumersJaxrs.getIntf().sayHelloEntity(index).getBody());
   }
 
   @Test
   public void consumersJaxrs_sayHelloEntity_intf() {
     long index = generateIndex();
-    Assert.assertEquals("value" + index,
+    Assertions.assertEquals("value" + index,
         consumersJaxrs.getIntf().sayHelloEntity("value" + index).getBody());
   }
 
   @Test
   public void consumersJaxrs_sayHiEntityAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationJaxrsSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOperationJaxrsSchema#sayHello" + index,
         consumersJaxrs.getIntf().sayHelloEntityAsync(index).get().getBody());
   }
 
   @Test
   public void consumersJaxrs_sayHelloEntityAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("value" + index,
+    Assertions.assertEquals("value" + index,
         consumersJaxrs.getIntf().sayHelloEntityAsync("value" + index).get().getBody());
   }
 
   @Test
   public void consumersSpringmvc_sayHi_intf() {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index, consumersSpringmvc.getIntf().sayHello(index));
+    Assertions.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index, consumersSpringmvc.getIntf().sayHello(index));
   }
 
   @Test
   public void consumersSpringmvc_sayHello_intf() {
     long index = generateIndex();
-    Assert.assertEquals("value" + index, consumersSpringmvc.getIntf().sayHello("value" + index));
+    Assertions.assertEquals("value" + index, consumersSpringmvc.getIntf().sayHello("value" + index));
   }
 
   @Test
   public void consumersSpringmvc_sayHelloAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("value" + index, consumersSpringmvc.getIntf().sayHelloAsync("value" + index).get());
+    Assertions.assertEquals("value" + index, consumersSpringmvc.getIntf().sayHelloAsync("value" + index).get());
   }
 
   @Test
   public void consumersSpringmvc_sayHiAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index,
         consumersSpringmvc.getIntf().sayHelloAsync(index).get());
   }
 
   @Test
   public void consumersSpringmvc_sayHiEntity_intf() {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index,
         consumersSpringmvc.getIntf().sayHelloEntity(index).getBody());
   }
 
   @Test
   public void consumersSpringmvc_sayHelloEntity_intf() {
     long index = generateIndex();
-    Assert.assertEquals("value" + index,
+    Assertions.assertEquals("value" + index,
         consumersSpringmvc.getIntf().sayHelloEntity("value" + index).getBody());
   }
 
   @Test
   public void consumersSpringmvc_sayHiEntityAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index,
+    Assertions.assertEquals("ApiOperationSpringmvcSchema#sayHello" + index,
         consumersSpringmvc.getIntf().sayHelloEntityAsync(index).get().getBody());
   }
 
   @Test
   public void consumersSpringmvc_sayHelloEntityAsync_intf() throws ExecutionException, InterruptedException {
     long index = generateIndex();
-    Assert.assertEquals("value" + index,
+    Assertions.assertEquals("value" + index,
         consumersSpringmvc.getIntf().sayHelloEntityAsync("value" + index).get().getBody());
   }
 

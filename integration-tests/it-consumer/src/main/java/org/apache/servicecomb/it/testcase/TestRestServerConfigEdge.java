@@ -17,17 +17,14 @@
 
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
@@ -57,9 +54,9 @@ public class TestRestServerConfigEdge {
     }
     urlConnection.disconnect();
 
-    assertEquals(400, responseCode);
-    assertEquals("Bad Request", responseMessage);
-    assertEquals("Bad Request", errorBody);
+    Assertions.assertEquals(400, responseCode);
+    Assertions.assertEquals("Bad Request", responseMessage);
+    Assertions.assertEquals("Bad Request", errorBody);
   }
 
   @Test
@@ -73,11 +70,11 @@ public class TestRestServerConfigEdge {
 
     try {
       client.getForEntity(notFoundRequestUri, int.class);
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (RestClientException e) {
-      Assert.assertEquals(404, ((HttpClientErrorException) e).getRawStatusCode());
-      Assert.assertEquals("Not Found", ((HttpClientErrorException) e).getStatusText());
-      Assert.assertEquals("{\"message\":\"Not Found\"}",
+      Assertions.assertEquals(404, ((HttpClientErrorException) e).getRawStatusCode());
+      Assertions.assertEquals("Not Found", ((HttpClientErrorException) e).getStatusText());
+      Assertions.assertEquals("{\"message\":\"Not Found\"}",
           ((HttpClientErrorException) e).getResponseBodyAsString());
     }
   }
@@ -106,11 +103,11 @@ public class TestRestServerConfigEdge {
     }
     urlConnection.disconnect();
 
-    Assert.assertEquals(460, statusCode);
-    Assert.assertEquals("TestFailureHandlerInDispatcher", statusMessage);
-    Assert.assertEquals("text/plain", urlConnection.getHeaderField("Content-Type"));
-    Assert.assertEquals("test-header-value0", urlConnection.getHeaderField("test-header"));
-    Assert.assertEquals("TestFailureHandlerInDispatcher as expected", errorBody.toString());
+    Assertions.assertEquals(460, statusCode);
+    Assertions.assertEquals("TestFailureHandlerInDispatcher", statusMessage);
+    Assertions.assertEquals("text/plain", urlConnection.getHeaderField("Content-Type"));
+    Assertions.assertEquals("test-header-value0", urlConnection.getHeaderField("test-header"));
+    Assertions.assertEquals("TestFailureHandlerInDispatcher as expected", errorBody.toString());
   }
 
   @Test
@@ -137,8 +134,8 @@ public class TestRestServerConfigEdge {
     }
     urlConnection.disconnect();
 
-    Assert.assertEquals(461, statusCode);
-    Assert.assertEquals("TestFailureHandlerInSomewhereElse", statusMessage);
-    Assert.assertEquals("\"TestFailureHandlerInSomewhereElse as expected\"", errorBody.toString());
+    Assertions.assertEquals(461, statusCode);
+    Assertions.assertEquals("TestFailureHandlerInSomewhereElse", statusMessage);
+    Assertions.assertEquals("\"TestFailureHandlerInSomewhereElse as expected\"", errorBody.toString());
   }
 }

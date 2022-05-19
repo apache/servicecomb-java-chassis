@@ -17,12 +17,11 @@
 
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestParamCodec {
   interface ParamCodecSchemaIntf {
@@ -43,7 +42,7 @@ public class TestParamCodec {
     String paramString = "a%2B+%20b%% %20c";
     String paramQueryStringResult = "a%2B %20b%% %20c";
     String result = consumers.getIntf().spaceCharCodec(paramString, paramString);
-    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+    Assertions.assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
         paramString + " +%20%% " + paramString + " true"), result);
   }
 
@@ -61,7 +60,7 @@ public class TestParamCodec {
     String paramQueryStringResult = "a%2B %20b%% %20c";
     String result = consumers.getSCBRestTemplate()
         .getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
-    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+    Assertions.assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
         paramString + " +%20%% " + paramString + " true"), result);
   }
 
@@ -69,11 +68,11 @@ public class TestParamCodec {
   public void enumSpecialName_intf() {
     // HIGHWAY do not support ENUM type contains special character like '.', '-', etc.
     if ("rest".equalsIgnoreCase(ITJUnitUtils.getTransport())) {
-      assertEquals(Media.AAC, consumersRestOnly.getIntf().enumSpecialName(Media.AAC));
-      assertEquals(Media.FLAC, consumersRestOnly.getIntf().enumSpecialName(Media.FLAC));
-      assertEquals(Media.H_264, consumersRestOnly.getIntf().enumSpecialName(Media.H_264));
-      assertEquals(Media.MPEG_2, consumersRestOnly.getIntf().enumSpecialName(Media.MPEG_2));
-      assertEquals(Media.WMV, consumersRestOnly.getIntf().enumSpecialName(Media.WMV));
+      Assertions.assertEquals(Media.AAC, consumersRestOnly.getIntf().enumSpecialName(Media.AAC));
+      Assertions.assertEquals(Media.FLAC, consumersRestOnly.getIntf().enumSpecialName(Media.FLAC));
+      Assertions.assertEquals(Media.H_264, consumersRestOnly.getIntf().enumSpecialName(Media.H_264));
+      Assertions.assertEquals(Media.MPEG_2, consumersRestOnly.getIntf().enumSpecialName(Media.MPEG_2));
+      Assertions.assertEquals(Media.WMV, consumersRestOnly.getIntf().enumSpecialName(Media.WMV));
     }
   }
 
@@ -81,15 +80,15 @@ public class TestParamCodec {
   public void enumSpecialName_rt() {
     // HIGHWAY do not support ENUM type contains special character like '.', '-', etc.
     if ("rest".equalsIgnoreCase(ITJUnitUtils.getTransport())) {
-      assertEquals(Media.AAC,
+      Assertions.assertEquals(Media.AAC,
           consumersRestOnly.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
-      assertEquals(Media.FLAC,
+      Assertions.assertEquals(Media.FLAC,
           consumersRestOnly.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
-      assertEquals(Media.H_264,
+      Assertions.assertEquals(Media.H_264,
           consumersRestOnly.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
-      assertEquals(Media.MPEG_2,
+      Assertions.assertEquals(Media.MPEG_2,
           consumersRestOnly.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
-      assertEquals(Media.WMV,
+      Assertions.assertEquals(Media.WMV,
           consumersRestOnly.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
     }
   }

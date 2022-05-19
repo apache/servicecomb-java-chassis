@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
-import static org.junit.Assert.fail;
-
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.web.client.RestTemplate;
 
 public class RawSpringMvcIntegrationTest {
@@ -45,9 +43,9 @@ public class RawSpringMvcIntegrationTest {
   public void ensureServerWorksFine() {
     try {
       restTemplate.getForObject(controllerUrl + "sayhi?name=world", String.class);
-      fail("connection limit failed");
+      Assertions.fail("connection limit failed");
     } catch (Exception ex) {
-      Assert.assertEquals("java.net.SocketException: Unexpected end of file from server", ex.getCause().toString());
+      Assertions.assertEquals("java.net.SocketException: Unexpected end of file from server", ex.getCause().toString());
     }
   }
 

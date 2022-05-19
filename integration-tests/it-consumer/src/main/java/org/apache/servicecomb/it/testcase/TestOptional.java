@@ -21,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 
 public class TestOptional {
@@ -44,51 +44,51 @@ public class TestOptional {
 
   @Test
   public void optional_pojo_intf() {
-    Assert.assertEquals("value", consumersPojo.getIntf().optional("value").get());
-    Assert.assertFalse(consumersPojo.getIntf().optional(null).isPresent());
+    Assertions.assertEquals("value", consumersPojo.getIntf().optional("value").get());
+    Assertions.assertFalse(consumersPojo.getIntf().optional(null).isPresent());
   }
 
   @Test
   public void completableFutureOptional_pojo_intf() throws ExecutionException, InterruptedException {
-    Assert.assertEquals("value", consumersPojo.getIntf().completableFutureOptional("value").get().get());
-    Assert.assertFalse(consumersPojo.getIntf().completableFutureOptional(null).get().isPresent());
+    Assertions.assertEquals("value", consumersPojo.getIntf().completableFutureOptional("value").get().get());
+    Assertions.assertFalse(consumersPojo.getIntf().completableFutureOptional(null).get().isPresent());
   }
 
   @Test
   public void optional_jaxrs_intf() {
-    Assert.assertEquals("value", consumersJaxrs.getIntf().optional("value").get());
-    Assert.assertFalse(consumersJaxrs.getIntf().optional(null).isPresent());
+    Assertions.assertEquals("value", consumersJaxrs.getIntf().optional("value").get());
+    Assertions.assertFalse(consumersJaxrs.getIntf().optional(null).isPresent());
   }
 
   @Test
   public void completableFutureOptional_jaxrs_intf() throws ExecutionException, InterruptedException {
-    Assert.assertEquals("value", consumersJaxrs.getIntf().completableFutureOptional("value").get().get());
-    Assert.assertFalse(consumersJaxrs.getIntf().completableFutureOptional(null).get().isPresent());
+    Assertions.assertEquals("value", consumersJaxrs.getIntf().completableFutureOptional("value").get().get());
+    Assertions.assertFalse(consumersJaxrs.getIntf().completableFutureOptional(null).get().isPresent());
   }
 
   @Test
   public void optional_springmvc_intf() {
-    Assert.assertEquals("value", consumersSpringmvc.getIntf().optional("value").get());
-    Assert.assertFalse(consumersSpringmvc.getIntf().optional(null).isPresent());
+    Assertions.assertEquals("value", consumersSpringmvc.getIntf().optional("value").get());
+    Assertions.assertFalse(consumersSpringmvc.getIntf().optional(null).isPresent());
   }
 
   @Test
   public void completableFutureOptional_springmvc_intf() throws ExecutionException, InterruptedException {
-    Assert.assertEquals("value", consumersSpringmvc.getIntf().completableFutureOptional("value").get().get());
-    Assert.assertFalse(consumersSpringmvc.getIntf().completableFutureOptional(null).get().isPresent());
+    Assertions.assertEquals("value", consumersSpringmvc.getIntf().completableFutureOptional("value").get().get());
+    Assertions.assertFalse(consumersSpringmvc.getIntf().completableFutureOptional(null).get().isPresent());
   }
 
   @Test
   public void responseEntityOptional_springmvc_intf() {
-    Assert.assertEquals("value", consumersSpringmvc.getIntf().responseEntityOptional("value").getBody().get());
-    Assert.assertFalse(consumersSpringmvc.getIntf().responseEntityOptional(null).getBody().isPresent());
+    Assertions.assertEquals("value", consumersSpringmvc.getIntf().responseEntityOptional("value").getBody().get());
+    Assertions.assertFalse(consumersSpringmvc.getIntf().responseEntityOptional(null).getBody().isPresent());
   }
 
   @Test
   public void completableFutureResponseEntityOptional_springmvc_intf() throws ExecutionException, InterruptedException {
-    Assert.assertEquals("value",
+    Assertions.assertEquals("value",
         consumersSpringmvc.getIntf().completableFutureResponseEntityOptional("value").get().getBody().get());
-    Assert.assertFalse(
+    Assertions.assertFalse(
         consumersSpringmvc.getIntf().completableFutureResponseEntityOptional(null).get().getBody().isPresent());
   }
 }

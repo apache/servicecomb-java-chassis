@@ -19,8 +19,8 @@ package org.apache.servicecomb.it.testcase;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestIgnoreMethod {
   MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
@@ -28,18 +28,18 @@ public class TestIgnoreMethod {
   @Test
   public void ignoreMethodPojo_apiOperation() {
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta("ignoreMethodPojo");
-    Assert.assertNull(schemaMeta.findOperation("hideByApiOperation"));
+    Assertions.assertNull(schemaMeta.findOperation("hideByApiOperation"));
   }
 
   @Test
   public void ignoreMethodJaxrs_apiOperation() {
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta("ignoreMethodJaxrs");
-    Assert.assertNull(schemaMeta.findOperation("hideByApiOperation"));
+    Assertions.assertNull(schemaMeta.findOperation("hideByApiOperation"));
   }
 
   @Test
   public void ignoreMethodSpringmvc_apiOperation() {
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta("ignoreMethodSpringmvc");
-    Assert.assertNull(schemaMeta.findOperation("hideByApiOperation"));
+    Assertions.assertNull(schemaMeta.findOperation("hideByApiOperation"));
   }
 }

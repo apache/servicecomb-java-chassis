@@ -21,71 +21,71 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMyService {
-  private static Consumers<IMyService> myservice = new Consumers<>("MyEndpoint",
+  private static final Consumers<IMyService> myService = new Consumers<>("MyEndpoint",
       IMyService.class);
 
-  private static Consumers<IMyService> myserviceWithInterface = new Consumers<>("MyEndpointWithInterface",
+  private static final Consumers<IMyService> myServiceWithInterface = new Consumers<>("MyEndpointWithInterface",
       IMyService.class);
 
   @Test
   public void testServiceInoke() {
     PersonBean bean = new PersonBean();
     bean.setName("p");
-    PersonBean resultBean = myservice.getIntf().hello(bean);
-    Assert.assertEquals("p", resultBean.getName());
+    PersonBean resultBean = myService.getIntf().hello(bean);
+    Assertions.assertEquals("p", resultBean.getName());
 
-    resultBean = myservice.getIntf().hello(bean, "p");
-    Assert.assertEquals("p:p", resultBean.getName());
+    resultBean = myService.getIntf().hello(bean, "p");
+    Assertions.assertEquals("p:p", resultBean.getName());
 
-    resultBean = myservice.getIntf().actual();
-    Assert.assertEquals("p", resultBean.getName());
+    resultBean = myService.getIntf().actual();
+    Assertions.assertEquals("p", resultBean.getName());
 
-    resultBean = myservice.getIntf().objectParam("p");
-    Assert.assertEquals("p", resultBean.getName());
+    resultBean = myService.getIntf().objectParam("p");
+    Assertions.assertEquals("p", resultBean.getName());
 
-    resultBean = myservice.getIntf().objectParamTwo("p", "p");
-    Assert.assertEquals("p:p", resultBean.getName());
+    resultBean = myService.getIntf().objectParamTwo("p", "p");
+    Assertions.assertEquals("p:p", resultBean.getName());
 
     PersonBean[] beanArray = new PersonBean[] {bean};
-    PersonBean[] beanArrayResult = myservice.getIntf().helloBody(beanArray);
-    Assert.assertEquals("p", beanArrayResult[0].getName());
+    PersonBean[] beanArrayResult = myService.getIntf().helloBody(beanArray);
+    Assertions.assertEquals("p", beanArrayResult[0].getName());
 
     List<PersonBean> beanList = new ArrayList<>();
     beanList.add(bean);
-    List<PersonBean> beanListResult = myservice.getIntf().helloList(beanList);
-    Assert.assertEquals("p", beanListResult.get(0).getName());
+    List<PersonBean> beanListResult = myService.getIntf().helloList(beanList);
+    Assertions.assertEquals("p", beanListResult.get(0).getName());
   }
 
   @Test
   public void testServiceWithInterfaceInoke() {
     PersonBean bean = new PersonBean();
     bean.setName("p");
-    PersonBean resultBean = myserviceWithInterface.getIntf().hello(bean);
-    Assert.assertEquals("p", resultBean.getName());
+    PersonBean resultBean = myServiceWithInterface.getIntf().hello(bean);
+    Assertions.assertEquals("p", resultBean.getName());
 
-    resultBean = myserviceWithInterface.getIntf().hello(bean, "p");
-    Assert.assertEquals("p:p", resultBean.getName());
+    resultBean = myServiceWithInterface.getIntf().hello(bean, "p");
+    Assertions.assertEquals("p:p", resultBean.getName());
 
-    resultBean = myserviceWithInterface.getIntf().actual();
-    Assert.assertEquals("p", resultBean.getName());
+    resultBean = myServiceWithInterface.getIntf().actual();
+    Assertions.assertEquals("p", resultBean.getName());
 
-    resultBean = myserviceWithInterface.getIntf().objectParam("p");
-    Assert.assertEquals("p", resultBean.getName());
+    resultBean = myServiceWithInterface.getIntf().objectParam("p");
+    Assertions.assertEquals("p", resultBean.getName());
 
-    resultBean = myserviceWithInterface.getIntf().objectParamTwo("p", "p");
-    Assert.assertEquals("p:p", resultBean.getName());
+    resultBean = myServiceWithInterface.getIntf().objectParamTwo("p", "p");
+    Assertions.assertEquals("p:p", resultBean.getName());
 
     PersonBean[] beanArray = new PersonBean[] {bean};
-    PersonBean[] beanArrayResult = myserviceWithInterface.getIntf().helloBody(beanArray);
-    Assert.assertEquals("p", beanArrayResult[0].getName());
+    PersonBean[] beanArrayResult = myServiceWithInterface.getIntf().helloBody(beanArray);
+    Assertions.assertEquals("p", beanArrayResult[0].getName());
 
     List<PersonBean> beanList = new ArrayList<>();
     beanList.add(bean);
-    List<PersonBean> beanListResult = myserviceWithInterface.getIntf().helloList(beanList);
-    Assert.assertEquals("p", beanListResult.get(0).getName());
+    List<PersonBean> beanListResult = myServiceWithInterface.getIntf().helloList(beanList);
+    Assertions.assertEquals("p", beanListResult.get(0).getName());
   }
 }

@@ -35,8 +35,8 @@ import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam2;
 import org.apache.servicecomb.it.schema.objectparams.ObjectParamTypeSchema;
 import org.apache.servicecomb.it.schema.objectparams.RecursiveObjectParam;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -52,11 +52,11 @@ public class TestRPCObjectParamType {
   public void testFlattenObjectParam_rpc() {
     FlattenObjectRequest request = createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getIntf().testFlattenObjectParam(request);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assertions.assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     response = consumers.getIntf().testFlattenObjectParam(request);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assertions.assertEquals(Json.encode(request), Json.encode(response));
   }
 
   @Test
@@ -64,12 +64,12 @@ public class TestRPCObjectParamType {
     FlattenObjectRequest request = createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getSCBRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assertions.assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     response = consumers.getSCBRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assertions.assertEquals(Json.encode(request), Json.encode(response));
   }
 
   @Test
@@ -77,11 +77,11 @@ public class TestRPCObjectParamType {
     FluentSetterFlattenObjectRequest fluentRequest = createFluentSetterFlattenObjectRequest();
     FluentSetterFlattenObjectResponse fluentResponse = consumers.getIntf()
         .testFluentSetterFlattenObjectParam(fluentRequest);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    Assertions.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     fluentResponse = consumers.getIntf().testFluentSetterFlattenObjectParam(fluentRequest);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    Assertions.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
   }
 
   @Test
@@ -89,12 +89,12 @@ public class TestRPCObjectParamType {
     FluentSetterFlattenObjectRequest fluentRequest = createFluentSetterFlattenObjectRequest();
     FluentSetterFlattenObjectResponse fluentResponse = consumers.getSCBRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    Assertions.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     fluentResponse = consumers.getSCBRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    Assertions.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
   }
 
   @Test
@@ -102,11 +102,11 @@ public class TestRPCObjectParamType {
     MultiLayerObjectParam request = new MultiLayerObjectParam("sss-1", new Date(),
         new MultiLayerObjectParam2("sss-2", 12.12, createFlattenObjectRequest()));
     MultiLayerObjectParam response = consumers.getIntf().testMultiLayerObjectParam(request);
-    Assert.assertEquals(request, response);
+    Assertions.assertEquals(request, response);
 
     response = consumers.getIntf().testMultiLayerObjectParam(null);
     //  Highway will not give null return value
-    Assert.assertTrue(response == null || response.getString() == null);
+    Assertions.assertTrue(response == null || response.getString() == null);
   }
 
   @Test
@@ -116,22 +116,22 @@ public class TestRPCObjectParamType {
     ResponseEntity<MultiLayerObjectParam> responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.POST,
             new HttpEntity<>(request), MultiLayerObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(request, responseEntity.getBody());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.POST,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
     // Highway will not give null return value
-    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
   public void testRecursiveObjectParam_rpc() {
     RecursiveObjectParam request = createRecursiveObjectParam();
     RecursiveObjectParam response = consumers.getIntf().testRecursiveObjectParam(request);
-    Assert.assertEquals(request, response);
+    Assertions.assertEquals(request, response);
   }
 
   @Test
@@ -139,8 +139,8 @@ public class TestRPCObjectParamType {
     RecursiveObjectParam request = createRecursiveObjectParam();
     ResponseEntity<RecursiveObjectParam> responseEntity = consumers.getSCBRestTemplate()
         .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(request, responseEntity.getBody());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -155,7 +155,7 @@ public class TestRPCObjectParamType {
     );
     List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getIntf()
         .testListObjectParam(request);
-    Assert.assertEquals(request, response);
+    Assertions.assertEquals(request, response);
   }
 
   @Test
@@ -172,7 +172,7 @@ public class TestRPCObjectParamType {
     @SuppressWarnings("unchecked")
     List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getSCBRestTemplate()
         .postForObject("/testListObjectParam", request, List.class);
-    Assert.assertEquals(request.get("request"), response);
+    Assertions.assertEquals(request.get("request"), response);
   }
 
   @Test
@@ -187,14 +187,14 @@ public class TestRPCObjectParamType {
     request.put("k2", new GenericObjectParam<>("k2", 2, innerMap));
     Map<String, GenericObjectParam<Map<String, GenericObjectParam<RecursiveObjectParam>>>> response =
         consumers.getIntf().testMapObjectParam(request);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assertions.assertEquals(Json.encode(request), Json.encode(response));
 
     LinkedHashMap<Object, Object> wrappedRequest = new LinkedHashMap<>();
     wrappedRequest.put("request", request);
     @SuppressWarnings("unchecked")
     Map<String, GenericObjectParam<Map<String, GenericObjectParam<RecursiveObjectParam>>>> responseRT
         = consumers.getSCBRestTemplate().postForObject("/testMapObjectParam", wrappedRequest, Map.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseRT));
+    Assertions.assertEquals(Json.encode(request), Json.encode(responseRT));
   }
 
   private FlattenObjectRequest createFlattenObjectRequest() {

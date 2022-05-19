@@ -16,14 +16,13 @@
  */
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultMethod {
   interface DataTypePojoIntf {
@@ -39,13 +38,13 @@ public class TestDefaultMethod {
 
   @Test
   public void should_support_default_method() {
-    assertEquals(100, consumersPojo.getIntf().intBodyWithDefault());
+    Assertions.assertEquals(100, consumersPojo.getIntf().intBodyWithDefault());
   }
 
   @Test
   public void should_generate_swagger_without_default_method() {
     Swagger swagger = SwaggerGenerator.generate(DataTypePojoIntf.class);
-    assertEquals("---\n"
+    Assertions.assertEquals("---\n"
             + "swagger: \"2.0\"\n"
             + "info:\n"
             + "  version: \"1.0.0\"\n"
