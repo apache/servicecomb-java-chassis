@@ -30,6 +30,9 @@ updates:
       - dependency-name: "jakarta.activation"
         versions:
           - "2.x"
+      - dependency-name: "jakarta.servlet-api"
+        versions:
+          - "5.x"
       - dependency-name: "jakarta.ws.rs-api"
         versions:
           - "3.x"
