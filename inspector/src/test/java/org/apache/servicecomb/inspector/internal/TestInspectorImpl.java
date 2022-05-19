@@ -58,7 +58,6 @@ import org.apache.servicecomb.transport.rest.servlet.ServletRestTransport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -67,6 +66,7 @@ import com.netflix.config.DynamicProperty;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInspectorImpl {
   static Map<String, String> schemas = new LinkedHashMap<>();
@@ -150,14 +150,14 @@ public class TestInspectorImpl {
 
     Response response = inspector.downloadSchemas(format);
     Part part = response.getResult();
-    Assert.assertEquals("ms.yaml.zip", part.getSubmittedFileName());
+    Assertions.assertEquals("ms.yaml.zip", part.getSubmittedFileName());
 
     try (InputStream is = part.getInputStream()) {
       Map<String, String> unziped = unzip(is);
 
-      Assert.assertEquals(schemas.size(), unziped.size());
-      Assert.assertEquals(schemas.get("schema1"), unziped.get("schema1.yaml"));
-      Assert.assertEquals(schemas.get("schema2"), unziped.get("schema2.yaml"));
+      Assertions.assertEquals(schemas.size(), unziped.size());
+      Assertions.assertEquals(schemas.get("schema1"), unziped.get("schema1.yaml"));
+      Assertions.assertEquals(schemas.get("schema2"), unziped.get("schema2.yaml"));
     }
   }
 
@@ -173,14 +173,14 @@ public class TestInspectorImpl {
     };
     Response response = inspector.downloadSchemas(SchemaFormat.HTML);
     Part part = response.getResult();
-    Assert.assertEquals("ms.html.zip", part.getSubmittedFileName());
+    Assertions.assertEquals("ms.html.zip", part.getSubmittedFileName());
 
     try (InputStream is = part.getInputStream()) {
       Map<String, String> unziped = unzip(is);
 
-      Assert.assertEquals(schemas.size(), unziped.size());
-      Assert.assertTrue(unziped.get("schema1.html").endsWith("</html>"));
-      Assert.assertTrue(unziped.get("schema2.html").endsWith("</html>"));
+      Assertions.assertEquals(schemas.size(), unziped.size());
+      Assertions.assertTrue(unziped.get("schema1.html").endsWith("</html>"));
+      Assertions.assertTrue(unziped.get("schema2.html").endsWith("</html>"));
     }
   }
 
@@ -197,15 +197,15 @@ public class TestInspectorImpl {
     try (LogCollector logCollector = new LogCollector()) {
       Response response = inspector.downloadSchemas(format);
 
-      Assert.assertEquals("failed to create schemas zip file, format=SWAGGER.",
+      Assertions.assertEquals("failed to create schemas zip file, format=SWAGGER.",
           logCollector.getLastEvents().getMessage());
 
       InvocationException invocationException = response.getResult();
-      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());
-      Assert.assertEquals("failed to create schemas zip file, format=SWAGGER.",
+      Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());
+      Assertions.assertEquals("failed to create schemas zip file, format=SWAGGER.",
           ((CommonExceptionData) invocationException.getErrorData()).getMessage());
-      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatusCode());
-      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
+      Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatusCode());
+      Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
     }
   }
 
@@ -214,11 +214,11 @@ public class TestInspectorImpl {
     Response response = inspector.getSchemaContentById("notExist", null, false);
 
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
-    Assert.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
+    Assertions.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
+    Assertions.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
-    Assert.assertEquals(404, response.getStatusCode());
-    Assert.assertEquals("Not Found", response.getReasonPhrase());
+    Assertions.assertEquals(404, response.getStatusCode());
+    Assertions.assertEquals("Not Found", response.getReasonPhrase());
   }
 
   @Test
@@ -233,12 +233,12 @@ public class TestInspectorImpl {
     Response response = inspector.getSchemaContentById(schemaId, format, false);
 
     Part part = response.getResult();
-    Assert.assertEquals(schemaId + ".yaml", part.getSubmittedFileName());
-    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals(schemaId + ".yaml", part.getSubmittedFileName());
+    Assertions.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is, StandardCharsets.UTF_8));
+      Assertions.assertEquals(schemas.get(schemaId), IOUtils.toString(is, StandardCharsets.UTF_8));
     }
   }
 
@@ -254,12 +254,12 @@ public class TestInspectorImpl {
     Response response = inspector.getSchemaContentById(schemaId, format, true);
 
     Part part = response.getResult();
-    Assert.assertEquals(schemaId + ".yaml", part.getSubmittedFileName());
-    Assert.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals(schemaId + ".yaml", part.getSubmittedFileName());
+    Assertions.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is, StandardCharsets.UTF_8));
+      Assertions.assertEquals(schemas.get(schemaId), IOUtils.toString(is, StandardCharsets.UTF_8));
     }
   }
 
@@ -274,12 +274,12 @@ public class TestInspectorImpl {
     Response response = inspector.getSchemaContentById(schemaId, SchemaFormat.HTML, false);
 
     Part part = response.getResult();
-    Assert.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals(schemaId + ".html", part.getSubmittedFileName());
+    Assertions.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
+      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
     }
   }
 
@@ -293,12 +293,12 @@ public class TestInspectorImpl {
     Response response = inspector.getSchemaContentById(schemaId, SchemaFormat.HTML, true);
 
     Part part = response.getResult();
-    Assert.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assert.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals(schemaId + ".html", part.getSubmittedFileName());
+    Assertions.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
+      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
     }
   }
 
@@ -307,11 +307,11 @@ public class TestInspectorImpl {
     Response response = inspector.getStaticResource("notExist");
 
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
-    Assert.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
+    Assertions.assertEquals(Status.NOT_FOUND, invocationException.getStatus());
+    Assertions.assertEquals(Status.NOT_FOUND.getReasonPhrase(),
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
-    Assert.assertEquals(404, response.getStatusCode());
-    Assert.assertEquals("Not Found", response.getReasonPhrase());
+    Assertions.assertEquals(404, response.getStatusCode());
+    Assertions.assertEquals("Not Found", response.getReasonPhrase());
   }
 
   @Test
@@ -319,11 +319,11 @@ public class TestInspectorImpl {
     Response response = inspector.getStaticResource("index.html");
 
     Part part = response.getResult();
-    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
+      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
     }
   }
 
@@ -337,15 +337,15 @@ public class TestInspectorImpl {
     List<DynamicPropertyView> views = inspector.dynamicProperties();
     Map<String, DynamicPropertyView> viewMap = views.stream()
         .collect(Collectors.toMap(DynamicPropertyView::getKey, Function.identity()));
-    Assert.assertEquals(1, viewMap.get("yyy").getCallbackCount());
-    Assert.assertEquals(0, viewMap.get("zzz").getCallbackCount());
-    Assert.assertEquals(0, viewMap.get("servicecomb.inspector.enabled").getCallbackCount());
-    Assert.assertEquals(0, viewMap.get("servicecomb.inspector.swagger.html.asciidoctorCss").getCallbackCount());
+    Assertions.assertEquals(1, viewMap.get("yyy").getCallbackCount());
+    Assertions.assertEquals(0, viewMap.get("zzz").getCallbackCount());
+    Assertions.assertEquals(0, viewMap.get("servicecomb.inspector.enabled").getCallbackCount());
+    Assertions.assertEquals(0, viewMap.get("servicecomb.inspector.swagger.html.asciidoctorCss").getCallbackCount());
 
     int count = ConfigUtil.getAllDynamicProperties().size();
     ConfigUtil.getAllDynamicProperties().remove("yyy");
     ConfigUtil.getAllDynamicProperties().remove("zzz");
-    Assert.assertEquals(count - 2, ConfigUtil.getAllDynamicProperties().size());
+    Assertions.assertEquals(count - 2, ConfigUtil.getAllDynamicProperties().size());
   }
 
   @Test
@@ -356,7 +356,7 @@ public class TestInspectorImpl {
     propertyFactory.getOrCreate(int.class, 0, 0, "high", "low");
 
     List<PriorityPropertyView> views = inspector.priorityProperties();
-    Assert.assertEquals(1, views.size());
+    Assertions.assertEquals(1, views.size());
     MatcherAssert.assertThat(
         views.get(0).getDynamicProperties().stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
         Matchers.contains("high", "low"));
@@ -367,6 +367,6 @@ public class TestInspectorImpl {
     InspectorImpl inspector = initInspector("/webroot/rest");
 
     Map<String, String> schemas = Deencapsulation.getField(inspector, "schemas");
-    Assert.assertTrue(schemas.get("schema1").indexOf("/webroot/rest/metrics") > 0);
+    Assertions.assertTrue(schemas.get("schema1").indexOf("/webroot/rest/metrics") > 0);
   }
 }

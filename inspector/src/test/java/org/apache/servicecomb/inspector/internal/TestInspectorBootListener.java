@@ -25,13 +25,13 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestInspectorBootListener {
   @Test
   public void getOrder() {
-    Assert.assertEquals(Short.MAX_VALUE, new InspectorBootListener(null, null).getOrder());
+    Assertions.assertEquals(Short.MAX_VALUE, new InspectorBootListener(null, null).getOrder());
   }
 
   @Test
@@ -47,7 +47,7 @@ public class TestInspectorBootListener {
         }
       }
 
-      Assert.assertTrue(logCollector.getEvents().isEmpty());
+      Assertions.assertTrue(logCollector.getEvents().isEmpty());
     }
   }
 
@@ -61,7 +61,7 @@ public class TestInspectorBootListener {
     new InspectorBootListener(inspectorConfig, null)
         .onAfterTransport(new BootEvent(scbEngine, EventType.AFTER_TRANSPORT));
 
-    Assert.assertNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
+    Assertions.assertNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
   }
 
   @Test
@@ -85,6 +85,6 @@ public class TestInspectorBootListener {
     new InspectorBootListener(inspectorConfig, null)
         .onAfterTransport(new BootEvent(scbEngine, EventType.AFTER_TRANSPORT));
 
-    Assert.assertNotNull(holder.value);
+    Assertions.assertNotNull(holder.value);
   }
 }
