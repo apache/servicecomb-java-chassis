@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestRoundRobinRuleExt {
@@ -49,7 +49,7 @@ public class TestRoundRobinRuleExt {
         server2.incrementAndGet();
       }
     }
-    Assert.assertEquals(server1.get(), server2.get());
+    Assertions.assertEquals(server1.get(), server2.get());
   }
 
   @Test
@@ -71,6 +71,6 @@ public class TestRoundRobinRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals("actual token " + taken, taken < 10 * 5, true);  // 5 * times make slow machine happy
+    Assertions.assertTrue(taken < 10 * 5, "actual token " + taken);  // 5 * times make slow machine happy
   }
 }

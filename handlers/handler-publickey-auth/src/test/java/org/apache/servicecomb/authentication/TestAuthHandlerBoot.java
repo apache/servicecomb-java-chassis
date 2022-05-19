@@ -29,9 +29,9 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAuthHandlerBoot {
   private SCBEngine engine;
@@ -58,8 +58,8 @@ public class TestAuthHandlerBoot {
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
     authHandlerBoot.onBootEvent(bootEvent);
-    Assert.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
-    Assert.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
+    Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
+    Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
   }
 
   @Test
@@ -70,6 +70,6 @@ public class TestAuthHandlerBoot {
     authHandlerBoot.onBootEvent(bootEvent);
     String publicKey = RegistrationManager.INSTANCE.getMicroserviceInstance().
         getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
-    Assert.assertNotNull(publicKey);
+    Assertions.assertNotNull(publicKey);
   }
 }

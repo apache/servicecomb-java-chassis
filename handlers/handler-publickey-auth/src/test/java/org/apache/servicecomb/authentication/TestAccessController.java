@@ -23,8 +23,8 @@ import org.apache.servicecomb.authentication.provider.AccessController;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAccessController {
   @After
@@ -41,24 +41,24 @@ public class TestAccessController {
     Microservice service = new Microservice();
 
     service.setServiceName("trustCustomer");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     service.setServiceName("nottrustCustomer");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "*trust");
     service.setServiceName("Customer_trust");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     service.setServiceName("Customer_trust_not");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust");
     service.setServiceName("trust");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     service.setServiceName("Customer_trust");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
   }
 
   @Test
@@ -70,24 +70,24 @@ public class TestAccessController {
     Microservice service = new Microservice();
 
     service.setServiceName("trustCustomer");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
 
     service.setServiceName("nottrustCustomer");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "*trust");
     service.setServiceName("Customer_trust");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
 
     service.setServiceName("Customer_trust_not");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "trust");
     service.setServiceName("trust");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
 
     service.setServiceName("Customer_trust");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
   }
 
   @Test
@@ -103,10 +103,10 @@ public class TestAccessController {
     Microservice service = new Microservice();
 
     service.setServiceName("trustCustomer");
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     service.setServiceName("trustCustomerhacker");
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
   }
 
   @Test
@@ -120,11 +120,11 @@ public class TestAccessController {
     map.put("tag", "test");
 
     service.setProperties(map);
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
 
     map.put("tag", "testa");
     service.setProperties(map);
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
   }
 
   @Test
@@ -138,11 +138,11 @@ public class TestAccessController {
     map.put("tag", "test");
 
     service.setProperties(map);
-    Assert.assertTrue(controller.isAllowed(service));
+    Assertions.assertTrue(controller.isAllowed(service));
 
     map.put("tag", "testa");
     service.setProperties(map);
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
   }
 
   @Test
@@ -159,6 +159,6 @@ public class TestAccessController {
     service.setServiceName("trustCustomer");
     service.setVersion("0.0.1");
 
-    Assert.assertTrue(!controller.isAllowed(service));
+    Assertions.assertFalse(controller.isAllowed(service));
   }
 }

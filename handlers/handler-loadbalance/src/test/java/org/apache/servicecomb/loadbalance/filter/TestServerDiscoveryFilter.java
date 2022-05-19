@@ -29,13 +29,13 @@ import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServerDiscoveryFilter {
   static SCBEngine scbEngine;
@@ -70,7 +70,7 @@ public class TestServerDiscoveryFilter {
     };
 
     ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, Const.RESTFUL, null, null);
-    Assert.assertNull(server);
+    Assertions.assertNull(server);
   }
 
   @Test
@@ -90,8 +90,8 @@ public class TestServerDiscoveryFilter {
 
     ServiceCombServer server = (ServiceCombServer) filter
         .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
-    Assert.assertSame(instance, server.getInstance());
-    Assert.assertSame(trasport, server.getEndpoint().getTransport());
-    Assert.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
+    Assertions.assertSame(instance, server.getInstance());
+    Assertions.assertSame(trasport, server.getEndpoint().getTransport());
+    Assertions.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
   }
 }

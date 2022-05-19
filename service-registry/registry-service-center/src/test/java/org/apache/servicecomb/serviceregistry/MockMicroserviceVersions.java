@@ -34,7 +34,6 @@ import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.foundation.common.Version;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 
 import mockit.Mock;
 import mockit.MockUp;

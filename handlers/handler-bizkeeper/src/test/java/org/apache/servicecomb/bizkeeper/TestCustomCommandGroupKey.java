@@ -18,8 +18,8 @@
 package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestCustomCommandGroupKey {
@@ -28,7 +28,7 @@ public class TestCustomCommandGroupKey {
     Invocation invocation = Mockito.mock(Invocation.class);
     CustomizeCommandGroupKey customizeCommandGroupKey =
         (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("key", invocation);
-    Assert.assertEquals(invocation, customizeCommandGroupKey.getInstance());
+    Assertions.assertEquals(invocation, customizeCommandGroupKey.getInstance());
   }
 
   @Test
@@ -39,6 +39,6 @@ public class TestCustomCommandGroupKey {
         (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("key", invocation1);
     CustomizeCommandGroupKey customizeCommandGroupKey2 =
         (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("key", invocation2);
-    Assert.assertEquals(customizeCommandGroupKey1, customizeCommandGroupKey2);
+    Assertions.assertEquals(customizeCommandGroupKey1, customizeCommandGroupKey2);
   }
 }

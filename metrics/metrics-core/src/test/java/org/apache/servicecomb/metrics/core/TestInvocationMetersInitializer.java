@@ -25,7 +25,6 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

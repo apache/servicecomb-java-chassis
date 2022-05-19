@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.netflix.loadbalancer.Server;
@@ -33,6 +32,7 @@ import com.netflix.loadbalancer.Server;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
+import org.junit.jupiter.api.Assertions;
 
 public class TestLoadBalanceCreator {
   @Test
@@ -80,11 +80,11 @@ public class TestLoadBalanceCreator {
       }
     };
     Server s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
   }
 
   @Test
@@ -131,11 +131,11 @@ public class TestLoadBalanceCreator {
       }
     };
     Server s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
   }
 
   @Test
@@ -187,11 +187,11 @@ public class TestLoadBalanceCreator {
       }
     };
     Server s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
   }
 
   @Test
@@ -223,15 +223,15 @@ public class TestLoadBalanceCreator {
     };
 
     Server s = lb.chooseServer(invocation);
-    Assert.assertEquals(server, s);
+    Assertions.assertEquals(server, s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server, s);
+    Assertions.assertEquals(server, s);
 
     long time = Deencapsulation.getField(rule, "lastAccessedTime");
     Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 300);
     ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server2, s);
+    Assertions.assertEquals(server2, s);
 
     ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
@@ -240,6 +240,6 @@ public class TestLoadBalanceCreator {
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     s = lb.chooseServer(invocation);
-    Assert.assertEquals(server, s);
+    Assertions.assertEquals(server, s);
   }
 }

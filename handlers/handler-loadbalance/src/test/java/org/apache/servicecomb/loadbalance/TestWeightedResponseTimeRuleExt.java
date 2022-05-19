@@ -18,8 +18,8 @@
 package org.apache.servicecomb.loadbalance;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class TestWeightedResponseTimeRuleExt {
         server2.incrementAndGet();
       }
     }
-    Assert.assertEquals(server1.get(), server2.get());
+    Assertions.assertEquals(server1.get(), server2.get());
   }
 
   @Test
@@ -80,8 +80,8 @@ public class TestWeightedResponseTimeRuleExt {
     }
     double percent = (double) serverCounter1.get() / (serverCounter2.get() + serverCounter1.get());
     System.out.println("percent" + percent);
-    Assert.assertTrue(percent > 0.60d);
-    Assert.assertTrue(percent < 0.90d);
+    Assertions.assertTrue(percent > 0.60d);
+    Assertions.assertTrue(percent < 0.90d);
     serverCounter1.set(0);
     serverCounter2.set(0);
 
@@ -98,7 +98,7 @@ public class TestWeightedResponseTimeRuleExt {
     }
     percent = (double) serverCounter1.get() / (serverCounter2.get() + serverCounter1.get());
     System.out.println("percent" + percent);
-    Assert.assertEquals(0.50d, percent, 0.2);
+    Assertions.assertEquals(0.50d, percent, 0.2);
   }
 
   @Test
@@ -121,7 +121,7 @@ public class TestWeightedResponseTimeRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals("actually taken: " + taken, taken < 1000 * 5, true); // 5 * times make slow machine happy
+    Assertions.assertTrue(taken < 1000 * 5, "actually taken: " + taken); // 5 * times make slow machine happy
   }
 
   @Test
@@ -143,6 +143,6 @@ public class TestWeightedResponseTimeRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals("actually taken: " + taken, taken < 200 * 5, true); // 5 * times make slow machine happy
+    Assertions.assertTrue(taken < 200 * 5, "actually taken: " + taken); // 5 * times make slow machine happy
   }
 }

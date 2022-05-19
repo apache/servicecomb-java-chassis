@@ -23,12 +23,11 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class TestProviderAuthHanlder {
+public class TestProviderAuthHandler {
   Invocation invocation = null;
 
   AsyncResponse asyncResp = null;
@@ -48,6 +47,5 @@ public class TestProviderAuthHanlder {
   public void testHandle() throws Exception {
     ProviderAuthHanlder providerAuthHanlder = new ProviderAuthHanlder();
     providerAuthHanlder.handle(invocation, asyncResp);
-    Assert.assertTrue(true);
   }
 }

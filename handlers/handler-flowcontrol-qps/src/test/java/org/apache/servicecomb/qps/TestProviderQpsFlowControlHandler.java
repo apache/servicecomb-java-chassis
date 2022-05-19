@@ -17,11 +17,6 @@
 
 package org.apache.servicecomb.qps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -97,10 +92,10 @@ public class TestProviderQpsFlowControlHandler {
     AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
     qpsStrategy.setKey("abc");
     qpsStrategy.setQpsLimit(100L);
-    assertFalse(qpsStrategy.isLimitNewRequest());
+    Assertions.assertFalse(qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
-    assertTrue(qpsStrategy.isLimitNewRequest());
+    Assertions.assertTrue(qpsStrategy.isLimitNewRequest());
   }
 
   @Test
@@ -117,8 +112,8 @@ public class TestProviderQpsFlowControlHandler {
     handler.handle(invocation, asyncResp);
 
     // Invocation#getContext(String) is only invoked when the qps logic works
-    Mockito.verify(invocation, times(2)).getContext(Const.SRC_MICROSERVICE);
-    Mockito.verify(asyncResp, times(1)).producerFail(Mockito.any(Exception.class));
+    Mockito.verify(invocation, Mockito.times(2)).getContext(Const.SRC_MICROSERVICE);
+    Mockito.verify(asyncResp, Mockito.times(1)).producerFail(Mockito.any(Exception.class));
   }
 
   @Test
@@ -129,7 +124,7 @@ public class TestProviderQpsFlowControlHandler {
     handler.handle(invocation, asyncResp);
     handler.handle(invocation, asyncResp);
 
-    Mockito.verify(invocation, times(0)).getContext(Mockito.anyString());
+    Mockito.verify(invocation, Mockito.times(0)).getContext(Mockito.anyString());
   }
 
   @Test
@@ -153,11 +148,11 @@ public class TestProviderQpsFlowControlHandler {
     handler.handle(invocation, asyncResp);
 
     ArgumentCaptor<InvocationException> captor = ArgumentCaptor.forClass(InvocationException.class);
-    Mockito.verify(asyncResp, times(1)).producerFail(captor.capture());
+    Mockito.verify(asyncResp, Mockito.times(1)).producerFail(captor.capture());
 
     InvocationException invocationException = captor.getValue();
-    assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
-    assertEquals("provider request rejected by qps flowcontrol",
+    Assertions.assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
+    Assertions.assertEquals("provider request rejected by qps flowcontrol",
         ((CommonExceptionData) invocationException.getErrorData()).getMessage());
   }
 
@@ -180,7 +175,7 @@ public class TestProviderQpsFlowControlHandler {
     };
     handler.handle(invocation, asyncResp);
 
-    Mockito.verify(invocation, times(0)).next(asyncResp);
-    Mockito.verify(asyncResp, times(0)).producerFail(Mockito.any(Exception.class));
+    Mockito.verify(invocation, Mockito.times(0)).next(asyncResp);
+    Mockito.verify(asyncResp, Mockito.times(0)).producerFail(Mockito.any(Exception.class));
   }
 }

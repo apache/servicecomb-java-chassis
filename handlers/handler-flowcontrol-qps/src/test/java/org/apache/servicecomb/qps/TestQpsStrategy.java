@@ -20,8 +20,8 @@ package org.apache.servicecomb.qps;
 import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
 import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
 import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @Author GuoYl123
@@ -34,10 +34,10 @@ public class TestQpsStrategy {
     AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
     qpsStrategy.setKey("abc");
     qpsStrategy.setQpsLimit(100L);
-    Assert.assertEquals(false, qpsStrategy.isLimitNewRequest());
+    Assertions.assertFalse(qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
-    Assert.assertEquals(true, qpsStrategy.isLimitNewRequest());
+    Assertions.assertTrue(qpsStrategy.isLimitNewRequest());
   }
 
 
@@ -46,11 +46,11 @@ public class TestQpsStrategy {
     LeakyBucketStrategy qpsStrategy = new LeakyBucketStrategy();
     qpsStrategy.setKey("abc");
     qpsStrategy.setQpsLimit(100L);
-    Assert.assertEquals(false, qpsStrategy.isLimitNewRequest());
+    Assertions.assertFalse(qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
     qpsStrategy.setBucketLimit(1L);
-    Assert.assertEquals(true, qpsStrategy.isLimitNewRequest());
+    Assertions.assertTrue(qpsStrategy.isLimitNewRequest());
   }
 
 }

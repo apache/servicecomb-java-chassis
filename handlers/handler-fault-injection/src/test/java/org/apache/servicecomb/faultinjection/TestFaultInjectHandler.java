@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,9 +31,9 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -122,7 +119,7 @@ public class TestFaultInjectHandler {
     handler.handle(invocation, asyncResp);
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("highwayMicroserviceQualifiedName1");
-    assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -145,7 +142,7 @@ public class TestFaultInjectHandler {
     handler.handle(invocation, asyncResp);
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName2");
-    assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -175,8 +172,8 @@ public class TestFaultInjectHandler {
       isDelay = true;
       isAbort = true;
     });
-    Assert.assertFalse(isDelay);
-    Assert.assertFalse(isAbort);
+    Assertions.assertFalse(isDelay);
+    Assertions.assertFalse(isAbort);
 
     System.getProperties()
         .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
@@ -186,7 +183,7 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName3");
-    assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -216,8 +213,8 @@ public class TestFaultInjectHandler {
       isDelay = true;
       isAbort = true;
     });
-    Assert.assertFalse(isDelay);
-    Assert.assertFalse(isAbort);
+    Assertions.assertFalse(isDelay);
+    Assertions.assertFalse(isAbort);
 
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent");
@@ -225,7 +222,7 @@ public class TestFaultInjectHandler {
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName4");
-    assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -263,8 +260,8 @@ public class TestFaultInjectHandler {
       isDelay = true;
       isAbort = true;
     });
-    Assert.assertFalse(isDelay);
-    Assert.assertFalse(isAbort);
+    Assertions.assertFalse(isDelay);
+    Assertions.assertFalse(isAbort);
 
     System.getProperties()
         .remove(
@@ -278,7 +275,7 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName5");
-    assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -317,8 +314,8 @@ public class TestFaultInjectHandler {
       isAbort = true;
     });
 
-    Assert.assertFalse(isDelay);
-    Assert.assertFalse(isAbort);
+    Assertions.assertFalse(isDelay);
+    Assertions.assertFalse(isAbort);
 
     System.getProperties()
         .remove(
@@ -334,7 +331,7 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName6");
-    assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -373,7 +370,7 @@ public class TestFaultInjectHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", 500);
     ArchaiusUtils
@@ -382,9 +379,9 @@ public class TestFaultInjectHandler {
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
       isAsserted.value = true;
-      assertTrue(response.isFailed());
+      Assertions.assertTrue(response.isFailed());
     });
-    Assert.assertTrue(isAsserted.value);
+    Assertions.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove(
@@ -400,7 +397,7 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName7");
-    assertEquals(3, count.get());
+    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -439,7 +436,7 @@ public class TestFaultInjectHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
     ArchaiusUtils.setProperty(
         "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
         500);
@@ -448,13 +445,13 @@ public class TestFaultInjectHandler {
     handler.handle(invocation, ar -> {
       //check whether error code return
       isAsserted.value = true;
-      assertEquals(420, response.getStatusCode());
-      assertTrue(response.isFailed());
+      Assertions.assertEquals(420, response.getStatusCode());
+      Assertions.assertTrue(response.isFailed());
       long timeNow = System.currentTimeMillis();
       //if really time delay is added it should be greater than 5s.
-      Assert.assertTrue((timeNow - timeOld) >= 500);
+      Assertions.assertTrue((timeNow - timeOld) >= 500);
     });
-    Assert.assertTrue(isAsserted.value);
+    Assertions.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove(
@@ -470,7 +467,7 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName8");
-    assertEquals(3, count.get());
+    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -510,7 +507,7 @@ public class TestFaultInjectHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
     ArchaiusUtils.setProperty(
         "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
         500);
@@ -519,13 +516,13 @@ public class TestFaultInjectHandler {
     handler.handle(invocation, ar -> {
       //check whether error code return, defaut is 421.
       isAsserted.value = true;
-      assertEquals(421, response.getStatusCode());
-      assertTrue(response.isFailed());
+      Assertions.assertEquals(421, response.getStatusCode());
+      Assertions.assertTrue(response.isFailed());
       long timeNow = System.currentTimeMillis();
       //if really time delay is added it should be greater than 5s.
-      Assert.assertTrue((timeNow - timeOld) >= 500);
+      Assertions.assertTrue((timeNow - timeOld) >= 500);
     });
-    Assert.assertTrue(isAsserted.value);
+    Assertions.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove(
@@ -539,7 +536,7 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName9");
-    assertEquals(3, count.get());
+    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -577,7 +574,7 @@ public class TestFaultInjectHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
 
@@ -585,13 +582,13 @@ public class TestFaultInjectHandler {
     handler.handle(invocation, ar -> {
       //check whether error code return,
       isAsserted.value = true;
-      assertEquals(421, response.getStatusCode());
-      assertTrue(response.isFailed());
+      Assertions.assertEquals(421, response.getStatusCode());
+      Assertions.assertTrue(response.isFailed());
       long timeNow = System.currentTimeMillis();
       //if really time delay is added it should be greater than 5s.
-      Assert.assertTrue((timeNow - timeOld) >= 500);
+      Assertions.assertTrue((timeNow - timeOld) >= 500);
     });
-    Assert.assertTrue(isAsserted.value);
+    Assertions.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay");
@@ -603,7 +600,7 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName10");
-    assertEquals(3, count.get());
+    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -641,18 +638,18 @@ public class TestFaultInjectHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus", "420");
 
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
       isAsserted.value = true;
-      assertTrue(response.isFailed());
-      assertEquals(500, response.getStatusCode());
-      assertEquals(420, ar.getStatusCode());
+      Assertions.assertTrue(response.isFailed());
+      Assertions.assertEquals(500, response.getStatusCode());
+      Assertions.assertEquals(420, ar.getStatusCode());
     });
-    Assert.assertTrue(isAsserted.value);
+    Assertions.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.fixedDelay");
@@ -664,7 +661,7 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName11");
-    assertEquals(3, count.get());
+    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -697,6 +694,6 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 }

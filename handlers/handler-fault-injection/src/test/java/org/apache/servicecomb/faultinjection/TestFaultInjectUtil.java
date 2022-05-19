@@ -20,8 +20,8 @@ package org.apache.servicecomb.faultinjection;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the fault inject util functionality.
@@ -30,12 +30,12 @@ public class TestFaultInjectUtil {
   @Test
   public void testFaultInjectUtil() {
     AtomicLong count1 = FaultInjectionUtil.getOperMetTotalReq("test");
-    Assert.assertEquals(1, count1.get());
+    Assertions.assertEquals(1, count1.get());
     count1.incrementAndGet();
     AtomicLong count2 = FaultInjectionUtil.getOperMetTotalReq("test");
-    Assert.assertEquals(2, count2.get());
+    Assertions.assertEquals(2, count2.get());
     FaultInjectionUtil.setConfigCenterValue("sayHi", new AtomicInteger(123));
     int value = FaultInjectionUtil.getConfigCenterMap().get("sayHi").get();
-    Assert.assertEquals(123, value);
+    Assertions.assertEquals(123, value);
   }
 }

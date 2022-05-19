@@ -17,14 +17,9 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.junit.Assert.assertNotNull;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-/**
- *
- *
- */
 public class TestLoadbalanceClientConfig {
 
   @Test
@@ -32,6 +27,6 @@ public class TestLoadbalanceClientConfig {
 
     LoadbalanceClientConfig lbc = new LoadbalanceClientConfig("test");
 
-    assertNotNull(lbc);
+    Assertions.assertNotNull(lbc);
   }
 }

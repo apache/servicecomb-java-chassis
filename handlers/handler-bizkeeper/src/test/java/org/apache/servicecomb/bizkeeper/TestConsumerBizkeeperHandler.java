@@ -19,8 +19,8 @@ package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.hystrix.strategy.HystrixPlugins;
@@ -43,6 +43,6 @@ public class TestConsumerBizkeeperHandler {
     CommandKey.toHystrixCommandGroupKey("groupname", invocation);
     CommandKey.toHystrixCommandKey("groupname", invocation);
     BizkeeperCommand command = consumerBizkeeperHandler.createBizkeeperCommand(invocation);
-    Assert.assertNotNull(command);
+    Assertions.assertNotNull(command);
   }
 }

@@ -21,8 +21,8 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.hystrix.HystrixCommandProperties;
@@ -50,19 +50,19 @@ public class TestBizkeeperCommand {
             .andCommandPropertiesDefaults(setter));
 
     String str = bizkeeperCommand.getCacheKey();
-    Assert.assertNull(str);
+    Assertions.assertNull(str);
 
     Response resp = Mockito.mock(Response.class);
     Mockito.when(resp.isFailed()).thenReturn(false);
-    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Assertions.assertFalse(bizkeeperCommand.isFailedResponse(resp));
     Mockito.when(resp.isFailed()).thenReturn(true);
     InvocationException excp = Mockito.mock(InvocationException.class);
     Mockito.when(resp.getResult()).thenReturn(excp);
     Mockito.when(excp.getStatusCode()).thenReturn(400);
-    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Assertions.assertFalse(bizkeeperCommand.isFailedResponse(resp));
     Mockito.when(resp.getResult()).thenReturn(excp);
     Mockito.when(excp.getStatusCode()).thenReturn(590);
-    Assert.assertEquals(true, bizkeeperCommand.isFailedResponse(resp));
+    Assertions.assertTrue(bizkeeperCommand.isFailedResponse(resp));
   }
 
   @Test
@@ -82,7 +82,7 @@ public class TestBizkeeperCommand {
             .andCommandPropertiesDefaults(setter));
 
     Observable<Response> observe = bizkeeperCommand.resumeWithFallback();
-    Assert.assertNotNull(observe);
+    Assertions.assertNotNull(observe);
   }
 
   @Test
@@ -102,7 +102,7 @@ public class TestBizkeeperCommand {
             .andCommandPropertiesDefaults(setter));
 
     Observable<Response> response = bizkeeperCommand.construct();
-    Assert.assertNotNull(response);
+    Assertions.assertNotNull(response);
   }
 
   @Test
@@ -123,7 +123,7 @@ public class TestBizkeeperCommand {
 
     HystrixRequestContext.initializeContext();
     String cacheKey = bizkeeperCommand.getCacheKey();
-    Assert.assertNotNull(cacheKey);
+    Assertions.assertNotNull(cacheKey);
   }
 
   @Test
@@ -143,19 +143,19 @@ public class TestBizkeeperCommand {
             .andCommandPropertiesDefaults(setter));
 
     String str = bizkeeperCommand.getCacheKey();
-    Assert.assertNull(str);
+    Assertions.assertNull(str);
 
     Response resp = Mockito.mock(Response.class);
     Mockito.when(resp.isFailed()).thenReturn(false);
-    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Assertions.assertFalse(bizkeeperCommand.isFailedResponse(resp));
     Mockito.when(resp.isFailed()).thenReturn(true);
     InvocationException excp = Mockito.mock(InvocationException.class);
     Mockito.when(resp.getResult()).thenReturn(excp);
     Mockito.when(excp.getStatusCode()).thenReturn(400);
-    Assert.assertEquals(false, bizkeeperCommand.isFailedResponse(resp));
+    Assertions.assertFalse(bizkeeperCommand.isFailedResponse(resp));
     Mockito.when(resp.getResult()).thenReturn(excp);
     Mockito.when(excp.getStatusCode()).thenReturn(490);
-    Assert.assertEquals(true, bizkeeperCommand.isFailedResponse(resp));
+    Assertions.assertTrue(bizkeeperCommand.isFailedResponse(resp));
   }
 
   @Test
@@ -175,7 +175,7 @@ public class TestBizkeeperCommand {
             .andCommandPropertiesDefaults(setter));
 
     Observable<Response> observe = bizkeeperCommand.resumeWithFallback();
-    Assert.assertNotNull(observe);
+    Assertions.assertNotNull(observe);
   }
 
   @Test
@@ -195,7 +195,7 @@ public class TestBizkeeperCommand {
             .andCommandPropertiesDefaults(setter));
 
     Observable<Response> response = bizkeeperCommand.construct();
-    Assert.assertNotNull(response);
+    Assertions.assertNotNull(response);
   }
 
   @Test
@@ -216,6 +216,6 @@ public class TestBizkeeperCommand {
 
     HystrixRequestContext.initializeContext();
     String cacheKey = bizkeeperCommand.getCacheKey();
-    Assert.assertNotNull(cacheKey);
+    Assertions.assertNotNull(cacheKey);
   }
 }
