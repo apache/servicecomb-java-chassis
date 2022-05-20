@@ -136,13 +136,13 @@
         <plugin>
           <groupId>com.github.odavid.maven.plugins</groupId>
           <artifactId>mixin-maven-plugin</artifactId>
-          <version>0.1-alpha-39</version>
+          <version>0.1-alpha-40</version>
           <extensions>true</extensions>
         </plugin>
         <plugin>
           <groupId>org.commonjava.maven.plugins</groupId>
           <artifactId>directory-maven-plugin</artifactId>
-          <version>0.3.1</version>
+          <version>1.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
