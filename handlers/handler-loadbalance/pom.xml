@@ -71,11 +71,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
       <scope>test</scope>
