@@ -65,7 +65,7 @@
     <javax-inject.version>1</javax-inject.version>
     <javax-resource.version>1.5</javax-resource.version>
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
-    <jersey.version>2.35</jersey.version>
+    <jersey.version>3.0.4</jersey.version>
     <jmockit.version>1.30</jmockit.version>
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.8.2</junit5.version>
@@ -675,12 +675,6 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
