@@ -33,7 +33,7 @@
     <!-- Dependency versions -->
     <activation.version>1.2.2</activation.version>
     <archaius.version>0.7.7</archaius.version>
-    <asciidoctorj.version>1.6.2</asciidoctorj.version>
+    <asciidoctorj.version>2.5.3</asciidoctorj.version>
     <aspectj.version>1.9.9.1</aspectj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <assertj.version>3.22.0</assertj.version>
