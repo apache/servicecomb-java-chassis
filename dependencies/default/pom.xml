@@ -74,7 +74,7 @@
     <mock-server.version>5.13.2</mock-server.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.77.Final</netty.version>
-    <okhttp3.version>3.14.2</okhttp3.version>
+    <okhttp3.version>3.14.9</okhttp3.version>
     <powermock.version>2.0.9</powermock.version>
     <maven-model.version>3.8.5</maven-model.version>
     <micrometer.version>1.9.0</micrometer.version>
@@ -94,7 +94,7 @@
     <snakeyaml.version>1.30</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
     <spring.version>5.3.20</spring.version>
-    <spring-boot.version>2.6.7</spring-boot.version>
+    <spring-boot.version>2.7.0</spring-boot.version>
     <swagger.version>1.6.6</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
     <tcnetty.version>2.0.52.Final</tcnetty.version>
@@ -298,6 +298,12 @@
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
+        <version>${okhttp3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>mockwebserver</artifactId>
         <version>${okhttp3.version}</version>
       </dependency>
 
