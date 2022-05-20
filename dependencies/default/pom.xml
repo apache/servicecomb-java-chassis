@@ -46,7 +46,7 @@
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-logging.version>1.2</commons-logging.version>
     <esotericsoftware.version>4.0.2</esotericsoftware.version>
-    <findbugs-annotations.version>2.0.0</findbugs-annotations.version>
+    <findbugs-annotations.version>3.0.1u2</findbugs-annotations.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
     <governator-api.version>1.12.10</governator-api.version>
