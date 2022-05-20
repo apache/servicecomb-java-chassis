@@ -49,7 +49,7 @@
     <findbugs-annotations.version>2.0.0</findbugs-annotations.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
-    <governator-api.version>1.12.10</governator-api.version>
+    <governator-api.version>1.17.12</governator-api.version>
     <guava.version>31.1-jre</guava.version>
     <failureaccess.version>1.0.1</failureaccess.version>
     <guice.version>4.2.0</guice.version>
