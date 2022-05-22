@@ -205,7 +205,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.19.1</version>
             <configuration>
               <systemPropertyVariables>
                 <servicecomb.service.registry.address>http://${docker.hostname}:30100
