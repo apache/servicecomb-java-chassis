@@ -23,11 +23,11 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.junit.jupiter.api.Test;
 
 class Model {
 
@@ -38,34 +38,25 @@ public class TestResponseRootDeserializer {
   @Test
   public void testNeedConvert() {
     Assertions.assertEquals(SimpleType.constructUnsafe(Object.class), ProtoConst.OBJECT_TYPE);
-    Assertions.assertEquals(false,
-        ResponseRootDeserializer.needConvert(1, TypeFactory.defaultInstance().constructType(int.class)));
-    Assertions.assertEquals(false,
-        ResponseRootDeserializer.needConvert(1, TypeFactory.defaultInstance().constructType(Integer.class)));
-    Assertions.assertEquals(false,
-        ResponseRootDeserializer
-            .needConvert(Integer.valueOf(1), TypeFactory.defaultInstance().constructType(int.class)));
-    Assertions.assertEquals(false,
-        ResponseRootDeserializer
-            .needConvert(Integer.valueOf(1), TypeFactory.defaultInstance().constructType(Integer.class)));
-    Assertions.assertEquals(true,
-        ResponseRootDeserializer
+    Assertions.assertFalse(ResponseRootDeserializer.needConvert(1, TypeFactory.defaultInstance().constructType(int.class)));
+    Assertions.assertFalse(ResponseRootDeserializer.needConvert(1, TypeFactory.defaultInstance().constructType(Integer.class)));
+    Assertions.assertFalse(ResponseRootDeserializer
+            .needConvert(1, TypeFactory.defaultInstance().constructType(int.class)));
+    Assertions.assertFalse(ResponseRootDeserializer
+            .needConvert(1, TypeFactory.defaultInstance().constructType(Integer.class)));
+    Assertions.assertTrue(ResponseRootDeserializer
             .needConvert(new HashMap<>(), TypeFactory.defaultInstance().constructType(Model.class)));
-    Assertions.assertEquals(false,
-        ResponseRootDeserializer
+    Assertions.assertFalse(ResponseRootDeserializer
             .needConvert(new Model(), TypeFactory.defaultInstance().constructType(Model.class)));
-    Assertions.assertEquals(false,
-        ResponseRootDeserializer
+    Assertions.assertFalse(ResponseRootDeserializer
             .needConvert(new Model(), TypeFactory.defaultInstance().constructType(Object.class)));
     List<Model> modelList = new ArrayList<>();
-    List<Map> modemaplList = new ArrayList<>();
-    Assertions.assertEquals(true,
-        ResponseRootDeserializer
-            .needConvert(modemaplList, TypeFactory.defaultInstance().constructType(new TypeReference<List<Model>>() {
+    List<Map> modelMapList = new ArrayList<>();
+    Assertions.assertTrue(ResponseRootDeserializer
+            .needConvert(modelMapList, TypeFactory.defaultInstance().constructType(new TypeReference<List<Model>>() {
             })));
     // This case should be false, however it is not exists in real applications, for simpler, take it true.
-    Assertions.assertEquals(true,
-        ResponseRootDeserializer
+    Assertions.assertTrue(ResponseRootDeserializer
             .needConvert(modelList, TypeFactory.defaultInstance().constructType(new TypeReference<List<Model>>() {
             })));
   }

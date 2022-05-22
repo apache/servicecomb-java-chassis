@@ -16,18 +16,17 @@
  */
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-
+import io.protostuff.compiler.model.Proto;
+import io.swagger.models.Swagger;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import io.protostuff.compiler.model.Proto;
-import io.swagger.models.Swagger;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class TestSwaggerToProtoGenerator {
   @Test
@@ -54,8 +53,8 @@ public class TestSwaggerToProtoGenerator {
     Assertions.assertEquals("hello.my_service", SwaggerToProtoGenerator.escapePackageName("hello.my-service"));
     Assertions.assertEquals("hello.test.test", SwaggerToProtoGenerator.escapePackageName("hello.test.test"));
     Assertions.assertEquals("hello_my.test.test", SwaggerToProtoGenerator.escapePackageName("hello:my.test.test"));
-    Assertions.assertEquals(false, SwaggerToProtoGenerator.isValidEnum("hello.test.test"));
-    Assertions.assertEquals(false, SwaggerToProtoGenerator.isValidEnum("hello.my-service"));
-    Assertions.assertEquals(true, SwaggerToProtoGenerator.isValidEnum("My_ENum"));
+    Assertions.assertFalse(SwaggerToProtoGenerator.isValidEnum("hello.test.test"));
+    Assertions.assertFalse(SwaggerToProtoGenerator.isValidEnum("hello.my-service"));
+    Assertions.assertTrue(SwaggerToProtoGenerator.isValidEnum("My_ENum"));
   }
 }
