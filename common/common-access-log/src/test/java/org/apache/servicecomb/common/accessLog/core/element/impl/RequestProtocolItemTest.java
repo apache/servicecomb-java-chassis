@@ -24,9 +24,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpServerRequest;
@@ -52,7 +52,7 @@ public class RequestProtocolItemTest {
 
   private URIEndpointObject urlEndpoint;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = Mockito.mock(RoutingContext.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);

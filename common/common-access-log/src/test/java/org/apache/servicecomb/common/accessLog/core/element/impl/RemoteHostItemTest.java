@@ -25,13 +25,13 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.junit.Before;
-import org.junit.Test;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RemoteHostItemTest {
   public static final RemoteHostAccessItem ELEMENT = new RemoteHostAccessItem();
@@ -54,7 +54,7 @@ public class RemoteHostItemTest {
 
   private SocketAddress socketAddress;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = mock(RoutingContext.class);
     finishEvent = mock(InvocationFinishEvent.class);

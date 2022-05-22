@@ -48,8 +48,8 @@ import org.apache.servicecomb.common.accessLog.core.parser.CompositeVertxRestAcc
 import org.apache.servicecomb.common.accessLog.core.parser.VertxRestAccessLogItemMeta;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.ext.web.RoutingContext;
@@ -75,7 +75,7 @@ public class VertxRestAccessLogPatternParserTest {
   private RoutingContext routingContext;
 
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     routingContext = Mockito.mock(RoutingContext.class);
     accessLogEvent = new ServerAccessLogEvent();
