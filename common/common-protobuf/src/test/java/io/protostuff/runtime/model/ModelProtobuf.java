@@ -20,13 +20,8 @@
 
 package io.protostuff.runtime.model;
 
-import com.google.protobuf.CodedOutputStream;
-
-@SuppressWarnings({"cast"})
 public final class ModelProtobuf {
-  private ModelProtobuf() {
-  }
-
+  private ModelProtobuf() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
@@ -36,22 +31,22 @@ public final class ModelProtobuf {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
-
   public interface UserOrBuilder extends
       // @@protoc_insertion_point(interface_extends:io.protostuff.runtime.model.User)
       com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
-
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
-    com.google.protobuf.ByteString getNameBytes();
+    com.google.protobuf.ByteString
+        getNameBytes();
   }
-
   /**
    * Protobuf type {@code io.protostuff.runtime.model.User}
    */
@@ -59,27 +54,37 @@ public final class ModelProtobuf {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:io.protostuff.runtime.model.User)
       UserOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use User.newBuilder() to construct.
     private User(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-
     private User() {
       name_ = "";
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new User();
     }
 
-    @SuppressWarnings("unused")
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     private User(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
-      int mutable_bitField0_ = 0;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -88,68 +93,75 @@ public final class ModelProtobuf {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
-
-    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
       return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_User_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
       return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_User_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.protostuff.runtime.model.ModelProtobuf.User.class,
-              io.protostuff.runtime.model.ModelProtobuf.User.Builder.class);
+              io.protostuff.runtime.model.ModelProtobuf.User.class, io.protostuff.runtime.model.ModelProtobuf.User.Builder.class);
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
-
     private volatile java.lang.Object name_;
-
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         name_ = s;
         return s;
       }
     }
-
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
-    public com.google.protobuf.ByteString getNameBytes() {
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNameBytes() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         name_ = b;
@@ -160,60 +172,55 @@ public final class ModelProtobuf {
     }
 
     private byte memoizedIsInitialized = -1;
-
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) {
-        return true;
-      }
-      if (isInitialized == 0) {
-        return false;
-      }
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
     }
 
-    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
-      if (size != -1) {
-        return size;
-      }
+      if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
-
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-        return true;
+       return true;
       }
       if (!(obj instanceof io.protostuff.runtime.model.ModelProtobuf.User)) {
         return super.equals(obj);
       }
-      io.protostuff.runtime.model.ModelProtobuf.User other =
-          (io.protostuff.runtime.model.ModelProtobuf.User) obj;
+      io.protostuff.runtime.model.ModelProtobuf.User other = (io.protostuff.runtime.model.ModelProtobuf.User) obj;
 
-      boolean result = true;
-      result = result && getName()
-          .equals(other.getName());
-      return result;
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
-    @SuppressWarnings("unchecked")
     @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
@@ -229,94 +236,87 @@ public final class ModelProtobuf {
     }
 
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
-        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
-        com.google.protobuf.ByteString data) throws com.google.protobuf.InvalidProtocolBufferException {
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
-        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+    public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
-        java.io.InputStream input) throws java.io.IOException {
+    public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
         java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
-    public static io.protostuff.runtime.model.ModelProtobuf.User parseDelimitedFrom(
-        java.io.InputStream input) throws java.io.IOException {
+    public static io.protostuff.runtime.model.ModelProtobuf.User parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseDelimitedFrom(
         java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
-        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.User parseFrom(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public Builder newBuilderForType() {
-      return newBuilder();
-    }
-
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-
     public static Builder newBuilder(io.protostuff.runtime.model.ModelProtobuf.User prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-
+    @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -325,7 +325,6 @@ public final class ModelProtobuf {
       Builder builder = new Builder(parent);
       return builder;
     }
-
     /**
      * Protobuf type {@code io.protostuff.runtime.model.User}
      */
@@ -333,15 +332,17 @@ public final class ModelProtobuf {
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:io.protostuff.runtime.model.User)
         io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
         return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_User_descriptor;
       }
 
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
         return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_User_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.protostuff.runtime.model.ModelProtobuf.User.class,
-                io.protostuff.runtime.model.ModelProtobuf.User.Builder.class);
+                io.protostuff.runtime.model.ModelProtobuf.User.class, io.protostuff.runtime.model.ModelProtobuf.User.Builder.class);
       }
 
       // Construct using io.protostuff.runtime.model.ModelProtobuf.User.newBuilder()
@@ -354,12 +355,12 @@ public final class ModelProtobuf {
         super(parent);
         maybeForceBuilderInitialization();
       }
-
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
         }
       }
-
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -367,14 +368,18 @@ public final class ModelProtobuf {
         return this;
       }
 
-      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
         return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_User_descriptor;
       }
 
+      @java.lang.Override
       public io.protostuff.runtime.model.ModelProtobuf.User getDefaultInstanceForType() {
         return io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance();
       }
 
+      @java.lang.Override
       public io.protostuff.runtime.model.ModelProtobuf.User build() {
         io.protostuff.runtime.model.ModelProtobuf.User result = buildPartial();
         if (!result.isInitialized()) {
@@ -383,49 +388,50 @@ public final class ModelProtobuf {
         return result;
       }
 
+      @java.lang.Override
       public io.protostuff.runtime.model.ModelProtobuf.User buildPartial() {
-        io.protostuff.runtime.model.ModelProtobuf.User result =
-            new io.protostuff.runtime.model.ModelProtobuf.User(this);
+        io.protostuff.runtime.model.ModelProtobuf.User result = new io.protostuff.runtime.model.ModelProtobuf.User(this);
         result.name_ = name_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
-
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.setField(field, value);
+          java.lang.Object value) {
+        return super.setField(field, value);
       }
-
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
-
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
-
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
       }
-
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
       }
-
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.protostuff.runtime.model.ModelProtobuf.User) {
-          return mergeFrom((io.protostuff.runtime.model.ModelProtobuf.User) other);
+          return mergeFrom((io.protostuff.runtime.model.ModelProtobuf.User)other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -433,24 +439,26 @@ public final class ModelProtobuf {
       }
 
       public Builder mergeFrom(io.protostuff.runtime.model.ModelProtobuf.User other) {
-        if (other == io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance()) {
-          return this;
-        }
+        if (other == io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
           onChanged();
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
         io.protostuff.runtime.model.ModelProtobuf.User parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
@@ -466,9 +474,9 @@ public final class ModelProtobuf {
       }
 
       private java.lang.Object name_ = "";
-
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -482,14 +490,15 @@ public final class ModelProtobuf {
           return (java.lang.String) ref;
         }
       }
-
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
-      public com.google.protobuf.ByteString getNameBytes() {
+      public com.google.protobuf.ByteString
+          getNameBytes() {
         java.lang.Object ref = name_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           name_ = b;
@@ -498,62 +507,65 @@ public final class ModelProtobuf {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         name_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
-
+        
         name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
-
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
         name_ = value;
         onChanged();
         return this;
       }
-
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
+
 
       // @@protoc_insertion_point(builder_scope:io.protostuff.runtime.model.User)
     }
 
     // @@protoc_insertion_point(class_scope:io.protostuff.runtime.model.User)
     private static final io.protostuff.runtime.model.ModelProtobuf.User DEFAULT_INSTANCE;
-
     static {
       DEFAULT_INSTANCE = new io.protostuff.runtime.model.ModelProtobuf.User();
     }
@@ -562,15 +574,16 @@ public final class ModelProtobuf {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<User> PARSER =
-        new com.google.protobuf.AbstractParser<User>() {
-          public User parsePartialFrom(
-              com.google.protobuf.CodedInputStream input,
-              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-              throws com.google.protobuf.InvalidProtocolBufferException {
-            return new User(input, extensionRegistry);
-          }
-        };
+    private static final com.google.protobuf.Parser<User>
+        PARSER = new com.google.protobuf.AbstractParser<User>() {
+      @java.lang.Override
+      public User parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new User(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<User> parser() {
       return PARSER;
@@ -581,9 +594,11 @@ public final class ModelProtobuf {
       return PARSER;
     }
 
+    @java.lang.Override
     public io.protostuff.runtime.model.ModelProtobuf.User getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
+
   }
 
   public interface RequestHeaderOrBuilder extends
@@ -592,74 +607,81 @@ public final class ModelProtobuf {
 
     /**
      * <code>string destMicroservice = 1;</code>
+     * @return The destMicroservice.
      */
     java.lang.String getDestMicroservice();
-
     /**
      * <code>string destMicroservice = 1;</code>
+     * @return The bytes for destMicroservice.
      */
-    com.google.protobuf.ByteString getDestMicroserviceBytes();
+    com.google.protobuf.ByteString
+        getDestMicroserviceBytes();
 
     /**
      * <code>int32 msgType = 2;</code>
+     * @return The msgType.
      */
     int getMsgType();
 
     /**
      * <code>int32 flags = 3;</code>
+     * @return The flags.
      */
     int getFlags();
 
     /**
      * <code>string schemaId = 5;</code>
+     * @return The schemaId.
      */
     java.lang.String getSchemaId();
-
     /**
      * <code>string schemaId = 5;</code>
+     * @return The bytes for schemaId.
      */
-    com.google.protobuf.ByteString getSchemaIdBytes();
+    com.google.protobuf.ByteString
+        getSchemaIdBytes();
 
     /**
      * <code>string operationName = 6;</code>
+     * @return The operationName.
      */
     java.lang.String getOperationName();
-
     /**
      * <code>string operationName = 6;</code>
+     * @return The bytes for operationName.
      */
-    com.google.protobuf.ByteString getOperationNameBytes();
+    com.google.protobuf.ByteString
+        getOperationNameBytes();
 
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
     int getCseContextCount();
-
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
     boolean containsCseContext(
         java.lang.String key);
-
     /**
      * Use {@link #getCseContextMap()} instead.
      */
     @java.lang.Deprecated
-    java.util.Map<java.lang.String, java.lang.String> getCseContext();
-
+    java.util.Map<java.lang.String, java.lang.String>
+    getCseContext();
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
-    java.util.Map<java.lang.String, java.lang.String> getCseContextMap();
-
+    java.util.Map<java.lang.String, java.lang.String>
+    getCseContextMap();
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
 
-    java.lang.String getCseContextOrDefault(
+    /* nullable */
+java.lang.String getCseContextOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
-
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
@@ -671,32 +693,31 @@ public final class ModelProtobuf {
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
     int getUserMapCount();
-
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
     boolean containsUserMap(
         java.lang.String key);
-
     /**
      * Use {@link #getUserMapMap()} instead.
      */
     @java.lang.Deprecated
-    java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getUserMap();
-
+    java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+    getUserMap();
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
-    java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getUserMapMap();
-
+    java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+    getUserMapMap();
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
 
-    io.protostuff.runtime.model.ModelProtobuf.User getUserMapOrDefault(
+    /* nullable */
+io.protostuff.runtime.model.ModelProtobuf.User getUserMapOrDefault(
         java.lang.String key,
-        io.protostuff.runtime.model.ModelProtobuf.User defaultValue);
-
+        /* nullable */
+io.protostuff.runtime.model.ModelProtobuf.User defaultValue);
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
@@ -706,51 +727,53 @@ public final class ModelProtobuf {
 
     /**
      * <code>repeated string list = 9;</code>
+     * @return A list containing the list.
      */
-    java.util.List<java.lang.String> getListList();
-
+    java.util.List<java.lang.String>
+        getListList();
     /**
      * <code>repeated string list = 9;</code>
+     * @return The count of list.
      */
     int getListCount();
-
     /**
      * <code>repeated string list = 9;</code>
+     * @param index The index of the element to return.
+     * @return The list at the given index.
      */
     java.lang.String getList(int index);
-
     /**
      * <code>repeated string list = 9;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the list at the given index.
      */
-    com.google.protobuf.ByteString getListBytes(int index);
+    com.google.protobuf.ByteString
+        getListBytes(int index);
 
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
-    java.util.List<io.protostuff.runtime.model.ModelProtobuf.User> getUserListList();
-
+    java.util.List<io.protostuff.runtime.model.ModelProtobuf.User> 
+        getUserListList();
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
     io.protostuff.runtime.model.ModelProtobuf.User getUserList(int index);
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
     int getUserListCount();
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
-    java.util.List<? extends io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> getUserListOrBuilderList();
-
+    java.util.List<? extends io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> 
+        getUserListOrBuilderList();
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
     io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder getUserListOrBuilder(
         int index);
   }
-
   /**
    * Protobuf type {@code io.protostuff.runtime.model.RequestHeader}
    */
@@ -758,15 +781,13 @@ public final class ModelProtobuf {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:io.protostuff.runtime.model.RequestHeader)
       RequestHeaderOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use RequestHeader.newBuilder() to construct.
     private RequestHeader(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-
     private RequestHeader() {
       destMicroservice_ = "";
-      msgType_ = 0;
-      flags_ = 0;
       schemaId_ = "";
       operationName_ = "";
       list_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -774,16 +795,28 @@ public final class ModelProtobuf {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RequestHeader();
     }
 
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
     private RequestHeader(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -792,12 +825,6 @@ public final class ModelProtobuf {
             case 0:
               done = true;
               break;
-            default: {
-              if (!input.skipField(tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
@@ -827,77 +854,83 @@ public final class ModelProtobuf {
               break;
             }
             case 58: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 cseContext_ = com.google.protobuf.MapField.newMapField(
                     CseContextDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000020;
+                mutable_bitField0_ |= 0x00000001;
               }
-              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> cseContext__ =
-                  input.readMessage(
-                      CseContextDefaultEntryHolder.defaultEntry.getParserForType(),
-                      extensionRegistry);
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              cseContext__ = input.readMessage(
+                  CseContextDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
               cseContext_.getMutableMap().put(
-                  cseContext__.getKey(),
-                  cseContext__.getValue());
+                  cseContext__.getKey(), cseContext__.getValue());
               break;
             }
             case 66: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 userMap_ = com.google.protobuf.MapField.newMapField(
                     UserMapDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000040;
+                mutable_bitField0_ |= 0x00000002;
               }
-              com.google.protobuf.MapEntry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> userMap__ =
-                  input.readMessage(
-                      UserMapDefaultEntryHolder.defaultEntry.getParserForType(),
-                      extensionRegistry);
+              com.google.protobuf.MapEntry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+              userMap__ = input.readMessage(
+                  UserMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
               userMap_.getMutableMap().put(
-                  userMap__.getKey(),
-                  userMap__.getValue());
+                  userMap__.getKey(), userMap__.getValue());
               break;
             }
             case 74: {
               java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 list_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000080;
+                mutable_bitField0_ |= 0x00000004;
               }
               list_.add(s);
               break;
             }
             case 82: {
-              if (!((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
-                userList_ = new java.util.ArrayList<>();
-                mutable_bitField0_ |= 0x00000100;
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
+                userList_ = new java.util.ArrayList<io.protostuff.runtime.model.ModelProtobuf.User>();
+                mutable_bitField0_ |= 0x00000008;
               }
               userList_.add(
-                  input.readMessage(io.protostuff.runtime.model.ModelProtobuf.User.parser(),
-                      extensionRegistry));
+                  input.readMessage(io.protostuff.runtime.model.ModelProtobuf.User.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
           list_ = list_.getUnmodifiableView();
         }
-        if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           userList_ = java.util.Collections.unmodifiableList(userList_);
         }
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
-
-    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
       return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_descriptor;
     }
 
     @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
     protected com.google.protobuf.MapField internalGetMapField(
         int number) {
       switch (number) {
@@ -910,44 +943,43 @@ public final class ModelProtobuf {
               "Invalid map field number: " + number);
       }
     }
-
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
       return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.protostuff.runtime.model.ModelProtobuf.RequestHeader.class,
-              io.protostuff.runtime.model.ModelProtobuf.RequestHeader.Builder.class);
+              io.protostuff.runtime.model.ModelProtobuf.RequestHeader.class, io.protostuff.runtime.model.ModelProtobuf.RequestHeader.Builder.class);
     }
 
-    @SuppressWarnings("unused")
-    private int bitField0_;
-
     public static final int DESTMICROSERVICE_FIELD_NUMBER = 1;
-
     private volatile java.lang.Object destMicroservice_;
-
     /**
      * <code>string destMicroservice = 1;</code>
+     * @return The destMicroservice.
      */
+    @java.lang.Override
     public java.lang.String getDestMicroservice() {
       java.lang.Object ref = destMicroservice_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         destMicroservice_ = s;
         return s;
       }
     }
-
     /**
      * <code>string destMicroservice = 1;</code>
+     * @return The bytes for destMicroservice.
      */
-    public com.google.protobuf.ByteString getDestMicroserviceBytes() {
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getDestMicroserviceBytes() {
       java.lang.Object ref = destMicroservice_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         destMicroservice_ = b;
@@ -958,54 +990,56 @@ public final class ModelProtobuf {
     }
 
     public static final int MSGTYPE_FIELD_NUMBER = 2;
-
     private int msgType_;
-
     /**
      * <code>int32 msgType = 2;</code>
+     * @return The msgType.
      */
+    @java.lang.Override
     public int getMsgType() {
       return msgType_;
     }
 
     public static final int FLAGS_FIELD_NUMBER = 3;
-
     private int flags_;
-
     /**
      * <code>int32 flags = 3;</code>
+     * @return The flags.
      */
+    @java.lang.Override
     public int getFlags() {
       return flags_;
     }
 
     public static final int SCHEMAID_FIELD_NUMBER = 5;
-
     private volatile java.lang.Object schemaId_;
-
     /**
      * <code>string schemaId = 5;</code>
+     * @return The schemaId.
      */
+    @java.lang.Override
     public java.lang.String getSchemaId() {
       java.lang.Object ref = schemaId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         schemaId_ = s;
         return s;
       }
     }
-
     /**
      * <code>string schemaId = 5;</code>
+     * @return The bytes for schemaId.
      */
-    public com.google.protobuf.ByteString getSchemaIdBytes() {
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSchemaIdBytes() {
       java.lang.Object ref = schemaId_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         schemaId_ = b;
@@ -1016,32 +1050,34 @@ public final class ModelProtobuf {
     }
 
     public static final int OPERATIONNAME_FIELD_NUMBER = 6;
-
     private volatile java.lang.Object operationName_;
-
     /**
      * <code>string operationName = 6;</code>
+     * @return The operationName.
      */
+    @java.lang.Override
     public java.lang.String getOperationName() {
       java.lang.Object ref = operationName_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         operationName_ = s;
         return s;
       }
     }
-
     /**
      * <code>string operationName = 6;</code>
+     * @return The bytes for operationName.
      */
-    public com.google.protobuf.ByteString getOperationNameBytes() {
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getOperationNameBytes() {
       java.lang.Object ref = operationName_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         operationName_ = b;
@@ -1052,20 +1088,21 @@ public final class ModelProtobuf {
     }
 
     public static final int CSECONTEXT_FIELD_NUMBER = 7;
-
     private static final class CseContextDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
-          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
-              io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor,
-              com.google.protobuf.WireFormat.FieldType.STRING,
-              "",
-              com.google.protobuf.WireFormat.FieldType.STRING,
-              "");
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, java.lang.String> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, java.lang.String>newDefaultInstance(
+                  io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "");
     }
-
-    private com.google.protobuf.MapField<java.lang.String, java.lang.String> cseContext_;
-
-    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetCseContext() {
+    private com.google.protobuf.MapField<
+        java.lang.String, java.lang.String> cseContext_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+    internalGetCseContext() {
       if (cseContext_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
             CseContextDefaultEntryHolder.defaultEntry);
@@ -1076,59 +1113,53 @@ public final class ModelProtobuf {
     public int getCseContextCount() {
       return internalGetCseContext().getMap().size();
     }
-
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
 
+    @java.lang.Override
     public boolean containsCseContext(
         java.lang.String key) {
-      if (key == null) {
-        throw new java.lang.NullPointerException();
-      }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetCseContext().getMap().containsKey(key);
     }
-
     /**
      * Use {@link #getCseContextMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getCseContext() {
       return getCseContextMap();
     }
-
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, java.lang.String> getCseContextMap() {
       return internalGetCseContext().getMap();
     }
-
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getCseContextOrDefault(
         java.lang.String key,
         java.lang.String defaultValue) {
-      if (key == null) {
-        throw new java.lang.NullPointerException();
-      }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetCseContext().getMap();
-      return map.getOrDefault(key, defaultValue);
+      return map.containsKey(key) ? map.get(key) : defaultValue;
     }
-
     /**
      * <code>map&lt;string, string&gt; cseContext = 7;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getCseContextOrThrow(
         java.lang.String key) {
-      if (key == null) {
-        throw new java.lang.NullPointerException();
-      }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetCseContext().getMap();
       if (!map.containsKey(key)) {
@@ -1138,20 +1169,21 @@ public final class ModelProtobuf {
     }
 
     public static final int USERMAP_FIELD_NUMBER = 8;
-
     private static final class UserMapDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> defaultEntry =
-          com.google.protobuf.MapEntry.<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>newDefaultInstance(
-              io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor,
-              com.google.protobuf.WireFormat.FieldType.STRING,
-              "",
-              com.google.protobuf.WireFormat.FieldType.MESSAGE,
-              io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance());
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>newDefaultInstance(
+                  io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                  io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance());
     }
-
-    private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> userMap_;
-
-    private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> internalGetUserMap() {
+    private com.google.protobuf.MapField<
+        java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> userMap_;
+    private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+    internalGetUserMap() {
       if (userMap_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
             UserMapDefaultEntryHolder.defaultEntry);
@@ -1162,59 +1194,53 @@ public final class ModelProtobuf {
     public int getUserMapCount() {
       return internalGetUserMap().getMap().size();
     }
-
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
 
+    @java.lang.Override
     public boolean containsUserMap(
         java.lang.String key) {
-      if (key == null) {
-        throw new java.lang.NullPointerException();
-      }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetUserMap().getMap().containsKey(key);
     }
-
     /**
      * Use {@link #getUserMapMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getUserMap() {
       return getUserMapMap();
     }
-
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getUserMapMap() {
       return internalGetUserMap().getMap();
     }
-
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
+    @java.lang.Override
 
     public io.protostuff.runtime.model.ModelProtobuf.User getUserMapOrDefault(
         java.lang.String key,
         io.protostuff.runtime.model.ModelProtobuf.User defaultValue) {
-      if (key == null) {
-        throw new java.lang.NullPointerException();
-      }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> map =
           internalGetUserMap().getMap();
-      return map.getOrDefault(key, defaultValue);
+      return map.containsKey(key) ? map.get(key) : defaultValue;
     }
-
     /**
      * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
      */
+    @java.lang.Override
 
     public io.protostuff.runtime.model.ModelProtobuf.User getUserMapOrThrow(
         java.lang.String key) {
-      if (key == null) {
-        throw new java.lang.NullPointerException();
-      }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> map =
           internalGetUserMap().getMap();
       if (!map.containsKey(key)) {
@@ -1224,94 +1250,95 @@ public final class ModelProtobuf {
     }
 
     public static final int LIST_FIELD_NUMBER = 9;
-
     private com.google.protobuf.LazyStringList list_;
-
     /**
      * <code>repeated string list = 9;</code>
+     * @return A list containing the list.
      */
-    public com.google.protobuf.ProtocolStringList getListList() {
+    public com.google.protobuf.ProtocolStringList
+        getListList() {
       return list_;
     }
-
     /**
      * <code>repeated string list = 9;</code>
+     * @return The count of list.
      */
     public int getListCount() {
       return list_.size();
     }
-
     /**
      * <code>repeated string list = 9;</code>
+     * @param index The index of the element to return.
+     * @return The list at the given index.
      */
     public java.lang.String getList(int index) {
       return list_.get(index);
     }
-
     /**
      * <code>repeated string list = 9;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the list at the given index.
      */
-    public com.google.protobuf.ByteString getListBytes(int index) {
+    public com.google.protobuf.ByteString
+        getListBytes(int index) {
       return list_.getByteString(index);
     }
 
     public static final int USERLIST_FIELD_NUMBER = 10;
-
     private java.util.List<io.protostuff.runtime.model.ModelProtobuf.User> userList_;
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
+    @java.lang.Override
     public java.util.List<io.protostuff.runtime.model.ModelProtobuf.User> getUserListList() {
       return userList_;
     }
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
-    public java.util.List<? extends io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> getUserListOrBuilderList() {
+    @java.lang.Override
+    public java.util.List<? extends io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> 
+        getUserListOrBuilderList() {
       return userList_;
     }
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
+    @java.lang.Override
     public int getUserListCount() {
       return userList_.size();
     }
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
+    @java.lang.Override
     public io.protostuff.runtime.model.ModelProtobuf.User getUserList(int index) {
       return userList_.get(index);
     }
-
     /**
      * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
      */
+    @java.lang.Override
     public io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder getUserListOrBuilder(
         int index) {
       return userList_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
-
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) {
-        return true;
-      }
-      if (isInitialized == 0) {
-        return false;
-      }
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
     }
 
-    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-      if (!getDestMicroserviceBytes().isEmpty()) {
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(destMicroservice_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, destMicroservice_);
       }
       if (msgType_ != 0) {
@@ -1320,74 +1347,73 @@ public final class ModelProtobuf {
       if (flags_ != 0) {
         output.writeInt32(3, flags_);
       }
-      if (!getSchemaIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(schemaId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, schemaId_);
       }
-      if (!getOperationNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(operationName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, operationName_);
       }
       com.google.protobuf.GeneratedMessageV3
-          .serializeStringMapTo(
-              output,
-              internalGetCseContext(),
-              CseContextDefaultEntryHolder.defaultEntry,
-              7);
+        .serializeStringMapTo(
+          output,
+          internalGetCseContext(),
+          CseContextDefaultEntryHolder.defaultEntry,
+          7);
       com.google.protobuf.GeneratedMessageV3
-          .serializeStringMapTo(
-              output,
-              internalGetUserMap(),
-              UserMapDefaultEntryHolder.defaultEntry,
-              8);
+        .serializeStringMapTo(
+          output,
+          internalGetUserMap(),
+          UserMapDefaultEntryHolder.defaultEntry,
+          8);
       for (int i = 0; i < list_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 9, list_.getRaw(i));
       }
-      for (User anUserList_ : userList_) {
-        output.writeMessage(10, anUserList_);
+      for (int i = 0; i < userList_.size(); i++) {
+        output.writeMessage(10, userList_.get(i));
       }
+      unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
-      if (size != -1) {
-        return size;
-      }
+      if (size != -1) return size;
 
       size = 0;
-      if (!getDestMicroserviceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(destMicroservice_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, destMicroservice_);
       }
       if (msgType_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(2, msgType_);
+          .computeInt32Size(2, msgType_);
       }
       if (flags_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(3, flags_);
+          .computeInt32Size(3, flags_);
       }
-      if (!getSchemaIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(schemaId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, schemaId_);
       }
-      if (!getOperationNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(operationName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, operationName_);
       }
-      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetCseContext().getMap()
-          .entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> cseContext__ =
-            CseContextDefaultEntryHolder.defaultEntry.newBuilderForType()
-                .setKey(entry.getKey())
-                .setValue(entry.getValue())
-                .build();
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
+           : internalGetCseContext().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+        cseContext__ = CseContextDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(7, cseContext__);
       }
-      for (java.util.Map.Entry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> entry : internalGetUserMap()
-          .getMap()
-          .entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> userMap__ =
-            UserMapDefaultEntryHolder.defaultEntry.newBuilderForType()
-                .setKey(entry.getKey())
-                .setValue(entry.getValue())
-                .build();
+      for (java.util.Map.Entry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> entry
+           : internalGetUserMap().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+        userMap__ = UserMapDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(8, userMap__);
       }
@@ -1399,46 +1425,47 @@ public final class ModelProtobuf {
         size += dataSize;
         size += 1 * getListList().size();
       }
-      size += userList_.stream().mapToInt(anUserList_ -> CodedOutputStream
-          .computeMessageSize(10, anUserList_)).sum();
+      for (int i = 0; i < userList_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, userList_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
-
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-        return true;
+       return true;
       }
       if (!(obj instanceof io.protostuff.runtime.model.ModelProtobuf.RequestHeader)) {
         return super.equals(obj);
       }
-      io.protostuff.runtime.model.ModelProtobuf.RequestHeader other =
-          (io.protostuff.runtime.model.ModelProtobuf.RequestHeader) obj;
+      io.protostuff.runtime.model.ModelProtobuf.RequestHeader other = (io.protostuff.runtime.model.ModelProtobuf.RequestHeader) obj;
 
-      boolean result = true;
-      result = result && getDestMicroservice()
-          .equals(other.getDestMicroservice());
-      result = result && (getMsgType() == other.getMsgType());
-      result = result && (getFlags() == other.getFlags());
-      result = result && getSchemaId()
-          .equals(other.getSchemaId());
-      result = result && getOperationName()
-          .equals(other.getOperationName());
-      result = result && internalGetCseContext().equals(
-          other.internalGetCseContext());
-      result = result && internalGetUserMap().equals(
-          other.internalGetUserMap());
-      result = result && getListList()
-          .equals(other.getListList());
-      result = result && getUserListList()
-          .equals(other.getUserListList());
-      return result;
+      if (!getDestMicroservice()
+          .equals(other.getDestMicroservice())) return false;
+      if (getMsgType()
+          != other.getMsgType()) return false;
+      if (getFlags()
+          != other.getFlags()) return false;
+      if (!getSchemaId()
+          .equals(other.getSchemaId())) return false;
+      if (!getOperationName()
+          .equals(other.getOperationName())) return false;
+      if (!internalGetCseContext().equals(
+          other.internalGetCseContext())) return false;
+      if (!internalGetUserMap().equals(
+          other.internalGetUserMap())) return false;
+      if (!getListList()
+          .equals(other.getListList())) return false;
+      if (!getUserListList()
+          .equals(other.getUserListList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
-    @SuppressWarnings("unchecked")
     @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
@@ -1478,94 +1505,87 @@ public final class ModelProtobuf {
     }
 
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
-        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
-        com.google.protobuf.ByteString data) throws com.google.protobuf.InvalidProtocolBufferException {
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
-        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+    public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
-        java.io.InputStream input) throws java.io.IOException {
+    public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
         java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
-    public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseDelimitedFrom(
-        java.io.InputStream input) throws java.io.IOException {
+    public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseDelimitedFrom(
         java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
-        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
     public static io.protostuff.runtime.model.ModelProtobuf.RequestHeader parseFrom(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public Builder newBuilderForType() {
-      return newBuilder();
-    }
-
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-
     public static Builder newBuilder(io.protostuff.runtime.model.ModelProtobuf.RequestHeader prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-
+    @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -1574,7 +1594,6 @@ public final class ModelProtobuf {
       Builder builder = new Builder(parent);
       return builder;
     }
-
     /**
      * Protobuf type {@code io.protostuff.runtime.model.RequestHeader}
      */
@@ -1582,7 +1601,8 @@ public final class ModelProtobuf {
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:io.protostuff.runtime.model.RequestHeader)
         io.protostuff.runtime.model.ModelProtobuf.RequestHeaderOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
         return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_descriptor;
       }
 
@@ -1599,7 +1619,6 @@ public final class ModelProtobuf {
                 "Invalid map field number: " + number);
         }
       }
-
       @SuppressWarnings({"rawtypes"})
       protected com.google.protobuf.MapField internalGetMutableMapField(
           int number) {
@@ -1613,12 +1632,12 @@ public final class ModelProtobuf {
                 "Invalid map field number: " + number);
         }
       }
-
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
         return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.protostuff.runtime.model.ModelProtobuf.RequestHeader.class,
-                io.protostuff.runtime.model.ModelProtobuf.RequestHeader.Builder.class);
+                io.protostuff.runtime.model.ModelProtobuf.RequestHeader.class, io.protostuff.runtime.model.ModelProtobuf.RequestHeader.Builder.class);
       }
 
       // Construct using io.protostuff.runtime.model.ModelProtobuf.RequestHeader.newBuilder()
@@ -1631,13 +1650,13 @@ public final class ModelProtobuf {
         super(parent);
         maybeForceBuilderInitialization();
       }
-
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
           getUserListFieldBuilder();
         }
       }
-
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         destMicroservice_ = "";
@@ -1653,24 +1672,28 @@ public final class ModelProtobuf {
         internalGetMutableCseContext().clear();
         internalGetMutableUserMap().clear();
         list_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (userListBuilder_ == null) {
           userList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           userListBuilder_.clear();
         }
         return this;
       }
 
-      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
         return io.protostuff.runtime.model.ModelProtobuf.internal_static_io_protostuff_runtime_model_RequestHeader_descriptor;
       }
 
+      @java.lang.Override
       public io.protostuff.runtime.model.ModelProtobuf.RequestHeader getDefaultInstanceForType() {
         return io.protostuff.runtime.model.ModelProtobuf.RequestHeader.getDefaultInstance();
       }
 
+      @java.lang.Override
       public io.protostuff.runtime.model.ModelProtobuf.RequestHeader build() {
         io.protostuff.runtime.model.ModelProtobuf.RequestHeader result = buildPartial();
         if (!result.isInitialized()) {
@@ -1679,12 +1702,10 @@ public final class ModelProtobuf {
         return result;
       }
 
-      @SuppressWarnings("unused")
+      @java.lang.Override
       public io.protostuff.runtime.model.ModelProtobuf.RequestHeader buildPartial() {
-        io.protostuff.runtime.model.ModelProtobuf.RequestHeader result =
-            new io.protostuff.runtime.model.ModelProtobuf.RequestHeader(this);
+        io.protostuff.runtime.model.ModelProtobuf.RequestHeader result = new io.protostuff.runtime.model.ModelProtobuf.RequestHeader(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.destMicroservice_ = destMicroservice_;
         result.msgType_ = msgType_;
         result.flags_ = flags_;
@@ -1694,60 +1715,60 @@ public final class ModelProtobuf {
         result.cseContext_.makeImmutable();
         result.userMap_ = internalGetUserMap();
         result.userMap_.makeImmutable();
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (((bitField0_ & 0x00000004) != 0)) {
           list_ = list_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.list_ = list_;
         if (userListBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             userList_ = java.util.Collections.unmodifiableList(userList_);
-            bitField0_ = (bitField0_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.userList_ = userList_;
         } else {
           result.userList_ = userListBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
+      @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
-
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.setField(field, value);
+          java.lang.Object value) {
+        return super.setField(field, value);
       }
-
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
-
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
-
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
       }
-
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
       }
-
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.protostuff.runtime.model.ModelProtobuf.RequestHeader) {
-          return mergeFrom((io.protostuff.runtime.model.ModelProtobuf.RequestHeader) other);
+          return mergeFrom((io.protostuff.runtime.model.ModelProtobuf.RequestHeader)other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -1755,9 +1776,7 @@ public final class ModelProtobuf {
       }
 
       public Builder mergeFrom(io.protostuff.runtime.model.ModelProtobuf.RequestHeader other) {
-        if (other == io.protostuff.runtime.model.ModelProtobuf.RequestHeader.getDefaultInstance()) {
-          return this;
-        }
+        if (other == io.protostuff.runtime.model.ModelProtobuf.RequestHeader.getDefaultInstance()) return this;
         if (!other.getDestMicroservice().isEmpty()) {
           destMicroservice_ = other.destMicroservice_;
           onChanged();
@@ -1783,7 +1802,7 @@ public final class ModelProtobuf {
         if (!other.list_.isEmpty()) {
           if (list_.isEmpty()) {
             list_ = other.list_;
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000004);
           } else {
             ensureListIsMutable();
             list_.addAll(other.list_);
@@ -1794,7 +1813,7 @@ public final class ModelProtobuf {
           if (!other.userList_.isEmpty()) {
             if (userList_.isEmpty()) {
               userList_ = other.userList_;
-              bitField0_ = (bitField0_ & ~0x00000100);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureUserListIsMutable();
               userList_.addAll(other.userList_);
@@ -1807,33 +1826,35 @@ public final class ModelProtobuf {
               userListBuilder_.dispose();
               userListBuilder_ = null;
               userList_ = other.userList_;
-              bitField0_ = (bitField0_ & ~0x00000100);
-              userListBuilder_ =
-                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
-                      ? getUserListFieldBuilder()
-                      : null;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              userListBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getUserListFieldBuilder() : null;
             } else {
               userListBuilder_.addAllMessages(other.userList_);
             }
           }
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
         io.protostuff.runtime.model.ModelProtobuf.RequestHeader parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage =
-              (io.protostuff.runtime.model.ModelProtobuf.RequestHeader) e.getUnfinishedMessage();
+          parsedMessage = (io.protostuff.runtime.model.ModelProtobuf.RequestHeader) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1842,13 +1863,12 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       private int bitField0_;
 
       private java.lang.Object destMicroservice_ = "";
-
       /**
        * <code>string destMicroservice = 1;</code>
+       * @return The destMicroservice.
        */
       public java.lang.String getDestMicroservice() {
         java.lang.Object ref = destMicroservice_;
@@ -1862,14 +1882,15 @@ public final class ModelProtobuf {
           return (java.lang.String) ref;
         }
       }
-
       /**
        * <code>string destMicroservice = 1;</code>
+       * @return The bytes for destMicroservice.
        */
-      public com.google.protobuf.ByteString getDestMicroserviceBytes() {
+      public com.google.protobuf.ByteString
+          getDestMicroserviceBytes() {
         java.lang.Object ref = destMicroservice_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           destMicroservice_ = b;
@@ -1878,108 +1899,114 @@ public final class ModelProtobuf {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-
       /**
        * <code>string destMicroservice = 1;</code>
+       * @param value The destMicroservice to set.
+       * @return This builder for chaining.
        */
       public Builder setDestMicroservice(
           java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         destMicroservice_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>string destMicroservice = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDestMicroservice() {
-
+        
         destMicroservice_ = getDefaultInstance().getDestMicroservice();
         onChanged();
         return this;
       }
-
       /**
        * <code>string destMicroservice = 1;</code>
+       * @param value The bytes for destMicroservice to set.
+       * @return This builder for chaining.
        */
       public Builder setDestMicroserviceBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
         destMicroservice_ = value;
         onChanged();
         return this;
       }
 
-      private int msgType_;
-
+      private int msgType_ ;
       /**
        * <code>int32 msgType = 2;</code>
+       * @return The msgType.
        */
+      @java.lang.Override
       public int getMsgType() {
         return msgType_;
       }
-
       /**
        * <code>int32 msgType = 2;</code>
+       * @param value The msgType to set.
+       * @return This builder for chaining.
        */
       public Builder setMsgType(int value) {
-
+        
         msgType_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>int32 msgType = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearMsgType() {
-
+        
         msgType_ = 0;
         onChanged();
         return this;
       }
 
-      private int flags_;
-
+      private int flags_ ;
       /**
        * <code>int32 flags = 3;</code>
+       * @return The flags.
        */
+      @java.lang.Override
       public int getFlags() {
         return flags_;
       }
-
       /**
        * <code>int32 flags = 3;</code>
+       * @param value The flags to set.
+       * @return This builder for chaining.
        */
       public Builder setFlags(int value) {
-
+        
         flags_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>int32 flags = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFlags() {
-
+        
         flags_ = 0;
         onChanged();
         return this;
       }
 
       private java.lang.Object schemaId_ = "";
-
       /**
        * <code>string schemaId = 5;</code>
+       * @return The schemaId.
        */
       public java.lang.String getSchemaId() {
         java.lang.Object ref = schemaId_;
@@ -1993,14 +2020,15 @@ public final class ModelProtobuf {
           return (java.lang.String) ref;
         }
       }
-
       /**
        * <code>string schemaId = 5;</code>
+       * @return The bytes for schemaId.
        */
-      public com.google.protobuf.ByteString getSchemaIdBytes() {
+      public com.google.protobuf.ByteString
+          getSchemaIdBytes() {
         java.lang.Object ref = schemaId_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           schemaId_ = b;
@@ -2009,50 +2037,52 @@ public final class ModelProtobuf {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-
       /**
        * <code>string schemaId = 5;</code>
+       * @param value The schemaId to set.
+       * @return This builder for chaining.
        */
       public Builder setSchemaId(
           java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         schemaId_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>string schemaId = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSchemaId() {
-
+        
         schemaId_ = getDefaultInstance().getSchemaId();
         onChanged();
         return this;
       }
-
       /**
        * <code>string schemaId = 5;</code>
+       * @param value The bytes for schemaId to set.
+       * @return This builder for chaining.
        */
       public Builder setSchemaIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
         schemaId_ = value;
         onChanged();
         return this;
       }
 
       private java.lang.Object operationName_ = "";
-
       /**
        * <code>string operationName = 6;</code>
+       * @return The operationName.
        */
       public java.lang.String getOperationName() {
         java.lang.Object ref = operationName_;
@@ -2066,14 +2096,15 @@ public final class ModelProtobuf {
           return (java.lang.String) ref;
         }
       }
-
       /**
        * <code>string operationName = 6;</code>
+       * @return The bytes for operationName.
        */
-      public com.google.protobuf.ByteString getOperationNameBytes() {
+      public com.google.protobuf.ByteString
+          getOperationNameBytes() {
         java.lang.Object ref = operationName_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           operationName_ = b;
@@ -2082,58 +2113,61 @@ public final class ModelProtobuf {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-
       /**
        * <code>string operationName = 6;</code>
+       * @param value The operationName to set.
+       * @return This builder for chaining.
        */
       public Builder setOperationName(
           java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         operationName_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>string operationName = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearOperationName() {
-
+        
         operationName_ = getDefaultInstance().getOperationName();
         onChanged();
         return this;
       }
-
       /**
        * <code>string operationName = 6;</code>
+       * @param value The bytes for operationName to set.
+       * @return This builder for chaining.
        */
       public Builder setOperationNameBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
         operationName_ = value;
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.MapField<java.lang.String, java.lang.String> cseContext_;
-
-      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetCseContext() {
+      private com.google.protobuf.MapField<
+          java.lang.String, java.lang.String> cseContext_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetCseContext() {
         if (cseContext_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               CseContextDefaultEntryHolder.defaultEntry);
         }
         return cseContext_;
       }
-
-      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableCseContext() {
-        onChanged();
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetMutableCseContext() {
+        onChanged();;
         if (cseContext_ == null) {
           cseContext_ = com.google.protobuf.MapField.newMapField(
               CseContextDefaultEntryHolder.defaultEntry);
@@ -2147,59 +2181,53 @@ public final class ModelProtobuf {
       public int getCseContextCount() {
         return internalGetCseContext().getMap().size();
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
 
+      @java.lang.Override
       public boolean containsCseContext(
           java.lang.String key) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetCseContext().getMap().containsKey(key);
       }
-
       /**
        * Use {@link #getCseContextMap()} instead.
        */
+      @java.lang.Override
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String> getCseContext() {
         return getCseContextMap();
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
+      @java.lang.Override
 
       public java.util.Map<java.lang.String, java.lang.String> getCseContextMap() {
         return internalGetCseContext().getMap();
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
+      @java.lang.Override
 
       public java.lang.String getCseContextOrDefault(
           java.lang.String key,
           java.lang.String defaultValue) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetCseContext().getMap();
-        return map.getOrDefault(key, defaultValue);
+        return map.containsKey(key) ? map.get(key) : defaultValue;
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
+      @java.lang.Override
 
       public java.lang.String getCseContextOrThrow(
           java.lang.String key) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetCseContext().getMap();
         if (!map.containsKey(key)) {
@@ -2213,46 +2241,40 @@ public final class ModelProtobuf {
             .clear();
         return this;
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
 
       public Builder removeCseContext(
           java.lang.String key) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableCseContext().getMutableMap()
             .remove(key);
         return this;
       }
-
       /**
        * Use alternate mutation accessors instead.
        */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.String, java.lang.String> getMutableCseContext() {
+      public java.util.Map<java.lang.String, java.lang.String>
+      getMutableCseContext() {
         return internalGetMutableCseContext().getMutableMap();
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
       public Builder putCseContext(
           java.lang.String key,
           java.lang.String value) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         if (value == null) {
-          throw new java.lang.NullPointerException();
-        }
+  throw new NullPointerException("map value");
+}
+
         internalGetMutableCseContext().getMutableMap()
             .put(key, value);
         return this;
       }
-
       /**
        * <code>map&lt;string, string&gt; cseContext = 7;</code>
        */
@@ -2264,18 +2286,19 @@ public final class ModelProtobuf {
         return this;
       }
 
-      private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> userMap_;
-
-      private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> internalGetUserMap() {
+      private com.google.protobuf.MapField<
+          java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> userMap_;
+      private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+      internalGetUserMap() {
         if (userMap_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               UserMapDefaultEntryHolder.defaultEntry);
         }
         return userMap_;
       }
-
-      private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> internalGetMutableUserMap() {
-        onChanged();
+      private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+      internalGetMutableUserMap() {
+        onChanged();;
         if (userMap_ == null) {
           userMap_ = com.google.protobuf.MapField.newMapField(
               UserMapDefaultEntryHolder.defaultEntry);
@@ -2289,59 +2312,53 @@ public final class ModelProtobuf {
       public int getUserMapCount() {
         return internalGetUserMap().getMap().size();
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
 
+      @java.lang.Override
       public boolean containsUserMap(
           java.lang.String key) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetUserMap().getMap().containsKey(key);
       }
-
       /**
        * Use {@link #getUserMapMap()} instead.
        */
+      @java.lang.Override
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getUserMap() {
         return getUserMapMap();
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
+      @java.lang.Override
 
       public java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getUserMapMap() {
         return internalGetUserMap().getMap();
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
+      @java.lang.Override
 
       public io.protostuff.runtime.model.ModelProtobuf.User getUserMapOrDefault(
           java.lang.String key,
           io.protostuff.runtime.model.ModelProtobuf.User defaultValue) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> map =
             internalGetUserMap().getMap();
-        return map.getOrDefault(key, defaultValue);
+        return map.containsKey(key) ? map.get(key) : defaultValue;
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
+      @java.lang.Override
 
       public io.protostuff.runtime.model.ModelProtobuf.User getUserMapOrThrow(
           java.lang.String key) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> map =
             internalGetUserMap().getMap();
         if (!map.containsKey(key)) {
@@ -2355,46 +2372,40 @@ public final class ModelProtobuf {
             .clear();
         return this;
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
 
       public Builder removeUserMap(
           java.lang.String key) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableUserMap().getMutableMap()
             .remove(key);
         return this;
       }
-
       /**
        * Use alternate mutation accessors instead.
        */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User> getMutableUserMap() {
+      public java.util.Map<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
+      getMutableUserMap() {
         return internalGetMutableUserMap().getMutableMap();
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
       public Builder putUserMap(
           java.lang.String key,
           io.protostuff.runtime.model.ModelProtobuf.User value) {
-        if (key == null) {
-          throw new java.lang.NullPointerException();
-        }
+        if (key == null) { throw new NullPointerException("map key"); }
         if (value == null) {
-          throw new java.lang.NullPointerException();
-        }
+  throw new NullPointerException("map value");
+}
+
         internalGetMutableUserMap().getMutableMap()
             .put(key, value);
         return this;
       }
-
       /**
        * <code>map&lt;string, .io.protostuff.runtime.model.User&gt; userMap = 8;</code>
        */
@@ -2407,102 +2418,109 @@ public final class ModelProtobuf {
       }
 
       private com.google.protobuf.LazyStringList list_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-
       private void ensureListIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           list_ = new com.google.protobuf.LazyStringArrayList(list_);
-          bitField0_ |= 0x00000080;
-        }
+          bitField0_ |= 0x00000004;
+         }
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @return A list containing the list.
        */
-      public com.google.protobuf.ProtocolStringList getListList() {
+      public com.google.protobuf.ProtocolStringList
+          getListList() {
         return list_.getUnmodifiableView();
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @return The count of list.
        */
       public int getListCount() {
         return list_.size();
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @param index The index of the element to return.
+       * @return The list at the given index.
        */
       public java.lang.String getList(int index) {
         return list_.get(index);
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the list at the given index.
        */
-      public com.google.protobuf.ByteString getListBytes(int index) {
+      public com.google.protobuf.ByteString
+          getListBytes(int index) {
         return list_.getByteString(index);
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @param index The index to set the value at.
+       * @param value The list to set.
+       * @return This builder for chaining.
        */
       public Builder setList(
           int index, java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        ensureListIsMutable();
+    throw new NullPointerException();
+  }
+  ensureListIsMutable();
         list_.set(index, value);
         onChanged();
         return this;
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @param value The list to add.
+       * @return This builder for chaining.
        */
       public Builder addList(
           java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        ensureListIsMutable();
+    throw new NullPointerException();
+  }
+  ensureListIsMutable();
         list_.add(value);
         onChanged();
         return this;
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @param values The list to add.
+       * @return This builder for chaining.
        */
       public Builder addAllList(
           java.lang.Iterable<java.lang.String> values) {
         ensureListIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values,
-            list_);
+            values, list_);
         onChanged();
         return this;
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @return This builder for chaining.
        */
       public Builder clearList() {
         list_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
-
       /**
        * <code>repeated string list = 9;</code>
+       * @param value The bytes of the list to add.
+       * @return This builder for chaining.
        */
       public Builder addListBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
         ensureListIsMutable();
         list_.add(value);
         onChanged();
@@ -2510,16 +2528,16 @@ public final class ModelProtobuf {
       }
 
       private java.util.List<io.protostuff.runtime.model.ModelProtobuf.User> userList_ =
-          java.util.Collections.emptyList();
-
+        java.util.Collections.emptyList();
       private void ensureUserListIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
-          userList_ = new java.util.ArrayList<>(userList_);
-          bitField0_ |= 0x00000100;
-        }
+        if (!((bitField0_ & 0x00000008) != 0)) {
+          userList_ = new java.util.ArrayList<io.protostuff.runtime.model.ModelProtobuf.User>(userList_);
+          bitField0_ |= 0x00000008;
+         }
       }
 
-      private com.google.protobuf.RepeatedFieldBuilderV3<io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> userListBuilder_;
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> userListBuilder_;
 
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
@@ -2531,7 +2549,6 @@ public final class ModelProtobuf {
           return userListBuilder_.getMessageList();
         }
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2542,7 +2559,6 @@ public final class ModelProtobuf {
           return userListBuilder_.getCount();
         }
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2553,7 +2569,6 @@ public final class ModelProtobuf {
           return userListBuilder_.getMessage(index);
         }
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2571,7 +2586,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2586,7 +2600,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2603,7 +2616,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2621,7 +2633,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2636,7 +2647,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2651,7 +2661,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2660,29 +2669,26 @@ public final class ModelProtobuf {
         if (userListBuilder_ == null) {
           ensureUserListIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values,
-              userList_);
+              values, userList_);
           onChanged();
         } else {
           userListBuilder_.addAllMessages(values);
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
       public Builder clearUserList() {
         if (userListBuilder_ == null) {
           userList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           userListBuilder_.clear();
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2696,7 +2702,6 @@ public final class ModelProtobuf {
         }
         return this;
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2704,30 +2709,27 @@ public final class ModelProtobuf {
           int index) {
         return getUserListFieldBuilder().getBuilder(index);
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
       public io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder getUserListOrBuilder(
           int index) {
         if (userListBuilder_ == null) {
-          return userList_.get(index);
-        } else {
+          return userList_.get(index);  } else {
           return userListBuilder_.getMessageOrBuilder(index);
         }
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
-      public java.util.List<? extends io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> getUserListOrBuilderList() {
+      public java.util.List<? extends io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> 
+           getUserListOrBuilderList() {
         if (userListBuilder_ != null) {
           return userListBuilder_.getMessageOrBuilderList();
         } else {
           return java.util.Collections.unmodifiableList(userList_);
         }
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
@@ -2735,53 +2737,53 @@ public final class ModelProtobuf {
         return getUserListFieldBuilder().addBuilder(
             io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance());
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
       public io.protostuff.runtime.model.ModelProtobuf.User.Builder addUserListBuilder(
           int index) {
         return getUserListFieldBuilder().addBuilder(
-            index,
-            io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance());
+            index, io.protostuff.runtime.model.ModelProtobuf.User.getDefaultInstance());
       }
-
       /**
        * <code>repeated .io.protostuff.runtime.model.User userList = 10;</code>
        */
-      public java.util.List<io.protostuff.runtime.model.ModelProtobuf.User.Builder> getUserListBuilderList() {
+      public java.util.List<io.protostuff.runtime.model.ModelProtobuf.User.Builder> 
+           getUserListBuilderList() {
         return getUserListFieldBuilder().getBuilderList();
       }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> getUserListFieldBuilder() {
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder> 
+          getUserListFieldBuilder() {
         if (userListBuilder_ == null) {
-          userListBuilder_ =
-              new com.google.protobuf.RepeatedFieldBuilderV3<>(
+          userListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              io.protostuff.runtime.model.ModelProtobuf.User, io.protostuff.runtime.model.ModelProtobuf.User.Builder, io.protostuff.runtime.model.ModelProtobuf.UserOrBuilder>(
                   userList_,
-                  ((bitField0_ & 0x00000100) == 0x00000100),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           userList_ = null;
         }
         return userListBuilder_;
       }
-
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
+
 
       // @@protoc_insertion_point(builder_scope:io.protostuff.runtime.model.RequestHeader)
     }
 
     // @@protoc_insertion_point(class_scope:io.protostuff.runtime.model.RequestHeader)
     private static final io.protostuff.runtime.model.ModelProtobuf.RequestHeader DEFAULT_INSTANCE;
-
     static {
       DEFAULT_INSTANCE = new io.protostuff.runtime.model.ModelProtobuf.RequestHeader();
     }
@@ -2790,15 +2792,16 @@ public final class ModelProtobuf {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<RequestHeader> PARSER =
-        new com.google.protobuf.AbstractParser<RequestHeader>() {
-          public RequestHeader parsePartialFrom(
-              com.google.protobuf.CodedInputStream input,
-              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-              throws com.google.protobuf.InvalidProtocolBufferException {
-            return new RequestHeader(input, extensionRegistry);
-          }
-        };
+    private static final com.google.protobuf.Parser<RequestHeader>
+        PARSER = new com.google.protobuf.AbstractParser<RequestHeader>() {
+      @java.lang.Override
+      public RequestHeader parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RequestHeader(input, extensionRegistry);
+      }
+    };
 
     public static com.google.protobuf.Parser<RequestHeader> parser() {
       return PARSER;
@@ -2809,90 +2812,88 @@ public final class ModelProtobuf {
       return PARSER;
     }
 
+    @java.lang.Override
     public io.protostuff.runtime.model.ModelProtobuf.RequestHeader getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
+
   }
 
-  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_protostuff_runtime_model_User_descriptor;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_io_protostuff_runtime_model_User_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_io_protostuff_runtime_model_User_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_io_protostuff_runtime_model_RequestHeader_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_io_protostuff_runtime_model_RequestHeader_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_fieldAccessorTable;
 
-  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_protostuff_runtime_model_User_fieldAccessorTable;
-
-  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_protostuff_runtime_model_RequestHeader_descriptor;
-
-  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_protostuff_runtime_model_RequestHeader_fieldAccessorTable;
-
-  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor;
-
-  @SuppressWarnings("unused")
-  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_fieldAccessorTable;
-
-  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor;
-
-  @SuppressWarnings("unused")
-  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_fieldAccessorTable;
-
-  public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
+  public static com.google.protobuf.Descriptors.FileDescriptor
+      getDescriptor() {
     return descriptor;
   }
-
-  private static com.google.protobuf.Descriptors.FileDescriptor descriptor;
-
+  private static  com.google.protobuf.Descriptors.FileDescriptor
+      descriptor;
   static {
     java.lang.String[] descriptorData = {
-        "\n\023ModelProtobuf.proto\022\033io.protostuff.run" +
-            "time.model\"\024\n\004User\022\014\n\004name\030\001 \001(\t\"\325\003\n\rReq" +
-            "uestHeader\022\030\n\020destMicroservice\030\001 \001(\t\022\017\n\007" +
-            "msgType\030\002 \001(\005\022\r\n\005flags\030\003 \001(\005\022\020\n\010schemaId" +
-            "\030\005 \001(\t\022\025\n\roperationName\030\006 \001(\t\022N\n\ncseCont" +
-            "ext\030\007 \003(\0132:.io.protostuff.runtime.model." +
-            "RequestHeader.CseContextEntry\022H\n\007userMap" +
-            "\030\010 \003(\01327.io.protostuff.runtime.model.Req" +
-            "uestHeader.UserMapEntry\022\014\n\004list\030\t \003(\t\0223\n" +
-            "\010userList\030\n \003(\0132!.io.protostuff.runtime.",
-        "model.User\0321\n\017CseContextEntry\022\013\n\003key\030\001 \001" +
-            "(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032Q\n\014UserMapEntry\022\013\n" +
-            "\003key\030\001 \001(\t\0220\n\005value\030\002 \001(\0132!.io.protostuf" +
-            "f.runtime.model.User:\0028\001b\006proto3"
+      "\nxrepository/servicecomb-java-chassis/co" +
+      "mmon/common-protobuf/src/test/java/io/pr" +
+      "otostuff/runtime/model/ModelProtobuf.pro" +
+      "to\022\033io.protostuff.runtime.model\"\024\n\004User\022" +
+      "\014\n\004name\030\001 \001(\t\"\325\003\n\rRequestHeader\022\030\n\020destM" +
+      "icroservice\030\001 \001(\t\022\017\n\007msgType\030\002 \001(\005\022\r\n\005fl" +
+      "ags\030\003 \001(\005\022\020\n\010schemaId\030\005 \001(\t\022\025\n\roperation" +
+      "Name\030\006 \001(\t\022N\n\ncseContext\030\007 \003(\0132:.io.prot" +
+      "ostuff.runtime.model.RequestHeader.CseCo" +
+      "ntextEntry\022H\n\007userMap\030\010 \003(\01327.io.protost" +
+      "uff.runtime.model.RequestHeader.UserMapE" +
+      "ntry\022\014\n\004list\030\t \003(\t\0223\n\010userList\030\n \003(\0132!.i" +
+      "o.protostuff.runtime.model.User\0321\n\017CseCo" +
+      "ntextEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\002" +
+      "8\001\032Q\n\014UserMapEntry\022\013\n\003key\030\001 \001(\t\0220\n\005value" +
+      "\030\002 \001(\0132!.io.protostuff.runtime.model.Use" +
+      "r:\0028\001b\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
-        .internalBuildGeneratedFileFrom(descriptorData,
-            new com.google.protobuf.Descriptors.FileDescriptor[] {
-            },
-            assigner);
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+        });
     internal_static_io_protostuff_runtime_model_User_descriptor =
-        getDescriptor().getMessageTypes().get(0);
-    internal_static_io_protostuff_runtime_model_User_fieldAccessorTable =
-        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-            internal_static_io_protostuff_runtime_model_User_descriptor,
-            new java.lang.String[] {"Name",});
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_io_protostuff_runtime_model_User_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_io_protostuff_runtime_model_User_descriptor,
+        new java.lang.String[] { "Name", });
     internal_static_io_protostuff_runtime_model_RequestHeader_descriptor =
-        getDescriptor().getMessageTypes().get(1);
-    internal_static_io_protostuff_runtime_model_RequestHeader_fieldAccessorTable =
-        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-            internal_static_io_protostuff_runtime_model_RequestHeader_descriptor,
-            new java.lang.String[] {"DestMicroservice", "MsgType", "Flags", "SchemaId", "OperationName",
-                "CseContext", "UserMap", "List", "UserList",});
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_io_protostuff_runtime_model_RequestHeader_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_io_protostuff_runtime_model_RequestHeader_descriptor,
+        new java.lang.String[] { "DestMicroservice", "MsgType", "Flags", "SchemaId", "OperationName", "CseContext", "UserMap", "List", "UserList", });
     internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor =
-        internal_static_io_protostuff_runtime_model_RequestHeader_descriptor.getNestedTypes().get(0);
-    internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_fieldAccessorTable =
-        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-            internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor,
-            new java.lang.String[] {"Key", "Value",});
+      internal_static_io_protostuff_runtime_model_RequestHeader_descriptor.getNestedTypes().get(0);
+    internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_io_protostuff_runtime_model_RequestHeader_CseContextEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
     internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor =
-        internal_static_io_protostuff_runtime_model_RequestHeader_descriptor.getNestedTypes().get(1);
-    internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_fieldAccessorTable =
-        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-            internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor,
-            new java.lang.String[] {"Key", "Value",});
+      internal_static_io_protostuff_runtime_model_RequestHeader_descriptor.getNestedTypes().get(1);
+    internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_io_protostuff_runtime_model_RequestHeader_UserMapEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

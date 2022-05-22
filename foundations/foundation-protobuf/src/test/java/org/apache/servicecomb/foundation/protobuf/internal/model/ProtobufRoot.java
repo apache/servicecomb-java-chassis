@@ -3,7 +3,6 @@
 
 package org.apache.servicecomb.foundation.protobuf.internal.model;
 
-@SuppressWarnings({"all", "cast"})
 public final class ProtobufRoot {
   private ProtobufRoot() {}
   public static void registerAllExtensions(
@@ -58,6 +57,8 @@ public final class ProtobufRoot {
     }
 
     /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
      * @deprecated Use {@link #forNumber(int)} instead.
      */
     @java.lang.Deprecated
@@ -65,6 +66,10 @@ public final class ProtobufRoot {
       return forNumber(value);
     }
 
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
     public static Color forNumber(int value) {
       switch (value) {
         case 0: return RED;
@@ -88,6 +93,10 @@ public final class ProtobufRoot {
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
         getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -128,164 +137,197 @@ public final class ProtobufRoot {
 
     /**
      * <code>int32 int32 = 1;</code>
+     * @return The int32.
      */
     int getInt32();
 
     /**
      * <code>int64 int64 = 2;</code>
+     * @return The int64.
      */
     long getInt64();
 
     /**
      * <code>uint32 uint32 = 3;</code>
+     * @return The uint32.
      */
     int getUint32();
 
     /**
      * <code>uint64 uint64 = 4;</code>
+     * @return The uint64.
      */
     long getUint64();
 
     /**
      * <code>sint32 sint32 = 5;</code>
+     * @return The sint32.
      */
     int getSint32();
 
     /**
      * <code>sint64 sint64 = 6;</code>
+     * @return The sint64.
      */
     long getSint64();
 
     /**
      * <code>fixed32 fixed32 = 7;</code>
+     * @return The fixed32.
      */
     int getFixed32();
 
     /**
      * <code>fixed64 fixed64 = 8;</code>
+     * @return The fixed64.
      */
     long getFixed64();
 
     /**
      * <code>sfixed32 sfixed32 = 9;</code>
+     * @return The sfixed32.
      */
     int getSfixed32();
 
     /**
      * <code>sfixed64 sfixed64 = 10;</code>
+     * @return The sfixed64.
      */
     long getSfixed64();
 
     /**
      * <code>float floatValue = 11;</code>
+     * @return The floatValue.
      */
     float getFloatValue();
 
     /**
      * <code>double doubleValue = 12;</code>
+     * @return The doubleValue.
      */
     double getDoubleValue();
 
     /**
      * <code>bool bool = 13;</code>
+     * @return The bool.
      */
     boolean getBool();
 
     /**
      * <code>int32 objInt32 = 20;</code>
+     * @return The objInt32.
      */
     int getObjInt32();
 
     /**
      * <code>int64 objInt64 = 21;</code>
+     * @return The objInt64.
      */
     long getObjInt64();
 
     /**
      * <code>uint32 objUint32 = 22;</code>
+     * @return The objUint32.
      */
     int getObjUint32();
 
     /**
      * <code>uint64 objUint64 = 23;</code>
+     * @return The objUint64.
      */
     long getObjUint64();
 
     /**
      * <code>sint32 objSint32 = 24;</code>
+     * @return The objSint32.
      */
     int getObjSint32();
 
     /**
      * <code>sint64 objSint64 = 25;</code>
+     * @return The objSint64.
      */
     long getObjSint64();
 
     /**
      * <code>fixed32 objFixed32 = 26;</code>
+     * @return The objFixed32.
      */
     int getObjFixed32();
 
     /**
      * <code>fixed64 objFixed64 = 27;</code>
+     * @return The objFixed64.
      */
     long getObjFixed64();
 
     /**
      * <code>sfixed32 objSfixed32 = 28;</code>
+     * @return The objSfixed32.
      */
     int getObjSfixed32();
 
     /**
      * <code>sfixed64 objSfixed64 = 29;</code>
+     * @return The objSfixed64.
      */
     long getObjSfixed64();
 
     /**
      * <code>float objFloatValue = 30;</code>
+     * @return The objFloatValue.
      */
     float getObjFloatValue();
 
     /**
      * <code>double objDoubleValue = 31;</code>
+     * @return The objDoubleValue.
      */
     double getObjDoubleValue();
 
     /**
      * <code>bool objBool = 32;</code>
+     * @return The objBool.
      */
     boolean getObjBool();
 
     /**
      * <code>string string = 40;</code>
+     * @return The string.
      */
     java.lang.String getString();
     /**
      * <code>string string = 40;</code>
+     * @return The bytes for string.
      */
     com.google.protobuf.ByteString
         getStringBytes();
 
     /**
      * <code>bytes bytes = 41;</code>
+     * @return The bytes.
      */
     com.google.protobuf.ByteString getBytes();
 
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+     * @return The enum numeric value on the wire for color.
      */
     int getColorValue();
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+     * @return The color.
      */
     org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor();
 
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
+     * @return Whether the user field is set.
      */
     boolean hasUser();
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
+     * @return The user.
      */
     org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUser();
     /**
@@ -295,10 +337,12 @@ public final class ProtobufRoot {
 
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     * @return Whether the typeRecursive field is set.
      */
     boolean hasTypeRecursive();
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     * @return The typeRecursive.
      */
     org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive();
     /**
@@ -308,10 +352,12 @@ public final class ProtobufRoot {
 
     /**
      * <code>.google.protobuf.Any any = 50;</code>
+     * @return Whether the any field is set.
      */
     boolean hasAny();
     /**
      * <code>.google.protobuf.Any any = 50;</code>
+     * @return The any.
      */
     com.google.protobuf.Any getAny();
     /**
@@ -367,9 +413,11 @@ public final class ProtobufRoot {
      * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
 
-    java.lang.String getSsMapOrDefault(
+    /* nullable */
+java.lang.String getSsMapOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
@@ -435,9 +483,11 @@ public final class ProtobufRoot {
      * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
 
-    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
+    /* nullable */
+org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
         java.lang.String key,
-        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue);
+        /* nullable */
+org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue);
     /**
      * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
@@ -447,415 +497,543 @@ public final class ProtobufRoot {
 
     /**
      * <code>repeated int32 int32sPacked = 70;</code>
+     * @return A list containing the int32sPacked.
      */
     java.util.List<java.lang.Integer> getInt32SPackedList();
     /**
      * <code>repeated int32 int32sPacked = 70;</code>
+     * @return The count of int32sPacked.
      */
     int getInt32SPackedCount();
     /**
      * <code>repeated int32 int32sPacked = 70;</code>
+     * @param index The index of the element to return.
+     * @return The int32sPacked at the given index.
      */
     int getInt32SPacked(int index);
 
     /**
      * <code>repeated int64 int64sPacked = 71;</code>
+     * @return A list containing the int64sPacked.
      */
     java.util.List<java.lang.Long> getInt64SPackedList();
     /**
      * <code>repeated int64 int64sPacked = 71;</code>
+     * @return The count of int64sPacked.
      */
     int getInt64SPackedCount();
     /**
      * <code>repeated int64 int64sPacked = 71;</code>
+     * @param index The index of the element to return.
+     * @return The int64sPacked at the given index.
      */
     long getInt64SPacked(int index);
 
     /**
      * <code>repeated uint32 uint32sPacked = 72;</code>
+     * @return A list containing the uint32sPacked.
      */
     java.util.List<java.lang.Integer> getUint32SPackedList();
     /**
      * <code>repeated uint32 uint32sPacked = 72;</code>
+     * @return The count of uint32sPacked.
      */
     int getUint32SPackedCount();
     /**
      * <code>repeated uint32 uint32sPacked = 72;</code>
+     * @param index The index of the element to return.
+     * @return The uint32sPacked at the given index.
      */
     int getUint32SPacked(int index);
 
     /**
      * <code>repeated uint64 uint64sPacked = 73;</code>
+     * @return A list containing the uint64sPacked.
      */
     java.util.List<java.lang.Long> getUint64SPackedList();
     /**
      * <code>repeated uint64 uint64sPacked = 73;</code>
+     * @return The count of uint64sPacked.
      */
     int getUint64SPackedCount();
     /**
      * <code>repeated uint64 uint64sPacked = 73;</code>
+     * @param index The index of the element to return.
+     * @return The uint64sPacked at the given index.
      */
     long getUint64SPacked(int index);
 
     /**
      * <code>repeated sint32 sint32sPacked = 74;</code>
+     * @return A list containing the sint32sPacked.
      */
     java.util.List<java.lang.Integer> getSint32SPackedList();
     /**
      * <code>repeated sint32 sint32sPacked = 74;</code>
+     * @return The count of sint32sPacked.
      */
     int getSint32SPackedCount();
     /**
      * <code>repeated sint32 sint32sPacked = 74;</code>
+     * @param index The index of the element to return.
+     * @return The sint32sPacked at the given index.
      */
     int getSint32SPacked(int index);
 
     /**
      * <code>repeated sint64 sint64sPacked = 75;</code>
+     * @return A list containing the sint64sPacked.
      */
     java.util.List<java.lang.Long> getSint64SPackedList();
     /**
      * <code>repeated sint64 sint64sPacked = 75;</code>
+     * @return The count of sint64sPacked.
      */
     int getSint64SPackedCount();
     /**
      * <code>repeated sint64 sint64sPacked = 75;</code>
+     * @param index The index of the element to return.
+     * @return The sint64sPacked at the given index.
      */
     long getSint64SPacked(int index);
 
     /**
      * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     * @return A list containing the fixed32sPacked.
      */
     java.util.List<java.lang.Integer> getFixed32SPackedList();
     /**
      * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     * @return The count of fixed32sPacked.
      */
     int getFixed32SPackedCount();
     /**
      * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     * @param index The index of the element to return.
+     * @return The fixed32sPacked at the given index.
      */
     int getFixed32SPacked(int index);
 
     /**
      * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     * @return A list containing the fixed64sPacked.
      */
     java.util.List<java.lang.Long> getFixed64SPackedList();
     /**
      * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     * @return The count of fixed64sPacked.
      */
     int getFixed64SPackedCount();
     /**
      * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     * @param index The index of the element to return.
+     * @return The fixed64sPacked at the given index.
      */
     long getFixed64SPacked(int index);
 
     /**
      * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     * @return A list containing the sfixed32sPacked.
      */
     java.util.List<java.lang.Integer> getSfixed32SPackedList();
     /**
      * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     * @return The count of sfixed32sPacked.
      */
     int getSfixed32SPackedCount();
     /**
      * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     * @param index The index of the element to return.
+     * @return The sfixed32sPacked at the given index.
      */
     int getSfixed32SPacked(int index);
 
     /**
      * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     * @return A list containing the sfixed64sPacked.
      */
     java.util.List<java.lang.Long> getSfixed64SPackedList();
     /**
      * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     * @return The count of sfixed64sPacked.
      */
     int getSfixed64SPackedCount();
     /**
      * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     * @param index The index of the element to return.
+     * @return The sfixed64sPacked at the given index.
      */
     long getSfixed64SPacked(int index);
 
     /**
      * <code>repeated float floatsPacked = 80;</code>
+     * @return A list containing the floatsPacked.
      */
     java.util.List<java.lang.Float> getFloatsPackedList();
     /**
      * <code>repeated float floatsPacked = 80;</code>
+     * @return The count of floatsPacked.
      */
     int getFloatsPackedCount();
     /**
      * <code>repeated float floatsPacked = 80;</code>
+     * @param index The index of the element to return.
+     * @return The floatsPacked at the given index.
      */
     float getFloatsPacked(int index);
 
     /**
      * <code>repeated double doublesPacked = 81;</code>
+     * @return A list containing the doublesPacked.
      */
     java.util.List<java.lang.Double> getDoublesPackedList();
     /**
      * <code>repeated double doublesPacked = 81;</code>
+     * @return The count of doublesPacked.
      */
     int getDoublesPackedCount();
     /**
      * <code>repeated double doublesPacked = 81;</code>
+     * @param index The index of the element to return.
+     * @return The doublesPacked at the given index.
      */
     double getDoublesPacked(int index);
 
     /**
      * <code>repeated bool boolsPacked = 82;</code>
+     * @return A list containing the boolsPacked.
      */
     java.util.List<java.lang.Boolean> getBoolsPackedList();
     /**
      * <code>repeated bool boolsPacked = 82;</code>
+     * @return The count of boolsPacked.
      */
     int getBoolsPackedCount();
     /**
      * <code>repeated bool boolsPacked = 82;</code>
+     * @param index The index of the element to return.
+     * @return The boolsPacked at the given index.
      */
     boolean getBoolsPacked(int index);
 
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @return A list containing the colorsPacked.
      */
     java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsPackedList();
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @return The count of colorsPacked.
      */
     int getColorsPackedCount();
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @param index The index of the element to return.
+     * @return The colorsPacked at the given index.
      */
     org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsPacked(int index);
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @return A list containing the enum numeric values on the wire for colorsPacked.
      */
     java.util.List<java.lang.Integer>
     getColorsPackedValueList();
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of colorsPacked at the given index.
      */
     int getColorsPackedValue(int index);
 
     /**
      * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     * @return A list containing the int32sNotPacked.
      */
     java.util.List<java.lang.Integer> getInt32SNotPackedList();
     /**
      * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     * @return The count of int32sNotPacked.
      */
     int getInt32SNotPackedCount();
     /**
      * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The int32sNotPacked at the given index.
      */
     int getInt32SNotPacked(int index);
 
     /**
      * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     * @return A list containing the int64sNotPacked.
      */
     java.util.List<java.lang.Long> getInt64SNotPackedList();
     /**
      * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     * @return The count of int64sNotPacked.
      */
     int getInt64SNotPackedCount();
     /**
      * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The int64sNotPacked at the given index.
      */
     long getInt64SNotPacked(int index);
 
     /**
      * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     * @return A list containing the uint32sNotPacked.
      */
     java.util.List<java.lang.Integer> getUint32SNotPackedList();
     /**
      * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     * @return The count of uint32sNotPacked.
      */
     int getUint32SNotPackedCount();
     /**
      * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The uint32sNotPacked at the given index.
      */
     int getUint32SNotPacked(int index);
 
     /**
      * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     * @return A list containing the uint64sNotPacked.
      */
     java.util.List<java.lang.Long> getUint64SNotPackedList();
     /**
      * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     * @return The count of uint64sNotPacked.
      */
     int getUint64SNotPackedCount();
     /**
      * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The uint64sNotPacked at the given index.
      */
     long getUint64SNotPacked(int index);
 
     /**
      * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     * @return A list containing the sint32sNotPacked.
      */
     java.util.List<java.lang.Integer> getSint32SNotPackedList();
     /**
      * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     * @return The count of sint32sNotPacked.
      */
     int getSint32SNotPackedCount();
     /**
      * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sint32sNotPacked at the given index.
      */
     int getSint32SNotPacked(int index);
 
     /**
      * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     * @return A list containing the sint64sNotPacked.
      */
     java.util.List<java.lang.Long> getSint64SNotPackedList();
     /**
      * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     * @return The count of sint64sNotPacked.
      */
     int getSint64SNotPackedCount();
     /**
      * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sint64sNotPacked at the given index.
      */
     long getSint64SNotPacked(int index);
 
     /**
      * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     * @return A list containing the fixed32sNotPacked.
      */
     java.util.List<java.lang.Integer> getFixed32SNotPackedList();
     /**
      * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     * @return The count of fixed32sNotPacked.
      */
     int getFixed32SNotPackedCount();
     /**
      * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The fixed32sNotPacked at the given index.
      */
     int getFixed32SNotPacked(int index);
 
     /**
      * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     * @return A list containing the fixed64sNotPacked.
      */
     java.util.List<java.lang.Long> getFixed64SNotPackedList();
     /**
      * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     * @return The count of fixed64sNotPacked.
      */
     int getFixed64SNotPackedCount();
     /**
      * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The fixed64sNotPacked at the given index.
      */
     long getFixed64SNotPacked(int index);
 
     /**
      * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     * @return A list containing the sfixed32sNotPacked.
      */
     java.util.List<java.lang.Integer> getSfixed32SNotPackedList();
     /**
      * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     * @return The count of sfixed32sNotPacked.
      */
     int getSfixed32SNotPackedCount();
     /**
      * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sfixed32sNotPacked at the given index.
      */
     int getSfixed32SNotPacked(int index);
 
     /**
      * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     * @return A list containing the sfixed64sNotPacked.
      */
     java.util.List<java.lang.Long> getSfixed64SNotPackedList();
     /**
      * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     * @return The count of sfixed64sNotPacked.
      */
     int getSfixed64SNotPackedCount();
     /**
      * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sfixed64sNotPacked at the given index.
      */
     long getSfixed64SNotPacked(int index);
 
     /**
      * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     * @return A list containing the floatsNotPacked.
      */
     java.util.List<java.lang.Float> getFloatsNotPackedList();
     /**
      * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     * @return The count of floatsNotPacked.
      */
     int getFloatsNotPackedCount();
     /**
      * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The floatsNotPacked at the given index.
      */
     float getFloatsNotPacked(int index);
 
     /**
      * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     * @return A list containing the doublesNotPacked.
      */
     java.util.List<java.lang.Double> getDoublesNotPackedList();
     /**
      * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     * @return The count of doublesNotPacked.
      */
     int getDoublesNotPackedCount();
     /**
      * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The doublesNotPacked at the given index.
      */
     double getDoublesNotPacked(int index);
 
     /**
      * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     * @return A list containing the boolsNotPacked.
      */
     java.util.List<java.lang.Boolean> getBoolsNotPackedList();
     /**
      * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     * @return The count of boolsNotPacked.
      */
     int getBoolsNotPackedCount();
     /**
      * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The boolsNotPacked at the given index.
      */
     boolean getBoolsNotPacked(int index);
 
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @return A list containing the colorsNotPacked.
      */
     java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsNotPackedList();
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @return The count of colorsNotPacked.
      */
     int getColorsNotPackedCount();
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The colorsNotPacked at the given index.
      */
     org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsNotPacked(int index);
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @return A list containing the enum numeric values on the wire for colorsNotPacked.
      */
     java.util.List<java.lang.Integer>
     getColorsNotPackedValueList();
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of colorsNotPacked at the given index.
      */
     int getColorsNotPackedValue(int index);
 
     /**
      * <code>repeated string strings = 110;</code>
+     * @return A list containing the strings.
      */
     java.util.List<java.lang.String>
         getStringsList();
     /**
      * <code>repeated string strings = 110;</code>
+     * @return The count of strings.
      */
     int getStringsCount();
     /**
      * <code>repeated string strings = 110;</code>
+     * @param index The index of the element to return.
+     * @return The strings at the given index.
      */
     java.lang.String getStrings(int index);
     /**
      * <code>repeated string strings = 110;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the strings at the given index.
      */
     com.google.protobuf.ByteString
         getStringsBytes(int index);
 
     /**
      * <code>repeated bytes bytess = 111;</code>
+     * @return A list containing the bytess.
      */
     java.util.List<com.google.protobuf.ByteString> getBytessList();
     /**
      * <code>repeated bytes bytess = 111;</code>
+     * @return The count of bytess.
      */
     int getBytessCount();
     /**
      * <code>repeated bytes bytess = 111;</code>
+     * @param index The index of the element to return.
+     * @return The bytess at the given index.
      */
     com.google.protobuf.ByteString getBytess(int index);
 
@@ -886,7 +1064,7 @@ public final class ProtobufRoot {
   /**
    * Protobuf type {@code org.apache.servicecomb.foundation.protobuf.internal.model.Root}
    */
-  public  static final class Root extends
+  public static final class Root extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:org.apache.servicecomb.foundation.protobuf.internal.model.Root)
       RootOrBuilder {
@@ -896,67 +1074,48 @@ public final class ProtobufRoot {
       super(builder);
     }
     private Root() {
-      int32_ = 0;
-      int64_ = 0L;
-      uint32_ = 0;
-      uint64_ = 0L;
-      sint32_ = 0;
-      sint64_ = 0L;
-      fixed32_ = 0;
-      fixed64_ = 0L;
-      sfixed32_ = 0;
-      sfixed64_ = 0L;
-      floatValue_ = 0F;
-      doubleValue_ = 0D;
-      bool_ = false;
-      objInt32_ = 0;
-      objInt64_ = 0L;
-      objUint32_ = 0;
-      objUint64_ = 0L;
-      objSint32_ = 0;
-      objSint64_ = 0L;
-      objFixed32_ = 0;
-      objFixed64_ = 0L;
-      objSfixed32_ = 0;
-      objSfixed64_ = 0L;
-      objFloatValue_ = 0F;
-      objDoubleValue_ = 0D;
-      objBool_ = false;
       string_ = "";
       bytes_ = com.google.protobuf.ByteString.EMPTY;
       color_ = 0;
       anys_ = java.util.Collections.emptyList();
-      int32SPacked_ = java.util.Collections.emptyList();
-      int64SPacked_ = java.util.Collections.emptyList();
-      uint32SPacked_ = java.util.Collections.emptyList();
-      uint64SPacked_ = java.util.Collections.emptyList();
-      sint32SPacked_ = java.util.Collections.emptyList();
-      sint64SPacked_ = java.util.Collections.emptyList();
-      fixed32SPacked_ = java.util.Collections.emptyList();
-      fixed64SPacked_ = java.util.Collections.emptyList();
-      sfixed32SPacked_ = java.util.Collections.emptyList();
-      sfixed64SPacked_ = java.util.Collections.emptyList();
-      floatsPacked_ = java.util.Collections.emptyList();
-      doublesPacked_ = java.util.Collections.emptyList();
-      boolsPacked_ = java.util.Collections.emptyList();
+      int32SPacked_ = emptyIntList();
+      int64SPacked_ = emptyLongList();
+      uint32SPacked_ = emptyIntList();
+      uint64SPacked_ = emptyLongList();
+      sint32SPacked_ = emptyIntList();
+      sint64SPacked_ = emptyLongList();
+      fixed32SPacked_ = emptyIntList();
+      fixed64SPacked_ = emptyLongList();
+      sfixed32SPacked_ = emptyIntList();
+      sfixed64SPacked_ = emptyLongList();
+      floatsPacked_ = emptyFloatList();
+      doublesPacked_ = emptyDoubleList();
+      boolsPacked_ = emptyBooleanList();
       colorsPacked_ = java.util.Collections.emptyList();
-      int32SNotPacked_ = java.util.Collections.emptyList();
-      int64SNotPacked_ = java.util.Collections.emptyList();
-      uint32SNotPacked_ = java.util.Collections.emptyList();
-      uint64SNotPacked_ = java.util.Collections.emptyList();
-      sint32SNotPacked_ = java.util.Collections.emptyList();
-      sint64SNotPacked_ = java.util.Collections.emptyList();
-      fixed32SNotPacked_ = java.util.Collections.emptyList();
-      fixed64SNotPacked_ = java.util.Collections.emptyList();
-      sfixed32SNotPacked_ = java.util.Collections.emptyList();
-      sfixed64SNotPacked_ = java.util.Collections.emptyList();
-      floatsNotPacked_ = java.util.Collections.emptyList();
-      doublesNotPacked_ = java.util.Collections.emptyList();
-      boolsNotPacked_ = java.util.Collections.emptyList();
+      int32SNotPacked_ = emptyIntList();
+      int64SNotPacked_ = emptyLongList();
+      uint32SNotPacked_ = emptyIntList();
+      uint64SNotPacked_ = emptyLongList();
+      sint32SNotPacked_ = emptyIntList();
+      sint64SNotPacked_ = emptyLongList();
+      fixed32SNotPacked_ = emptyIntList();
+      fixed64SNotPacked_ = emptyLongList();
+      sfixed32SNotPacked_ = emptyIntList();
+      sfixed64SNotPacked_ = emptyLongList();
+      floatsNotPacked_ = emptyFloatList();
+      doublesNotPacked_ = emptyDoubleList();
+      boolsNotPacked_ = emptyBooleanList();
       colorsNotPacked_ = java.util.Collections.emptyList();
       strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bytess_ = java.util.Collections.emptyList();
       users_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Root();
     }
 
     @java.lang.Override
@@ -974,7 +1133,6 @@ public final class ProtobufRoot {
       }
       int mutable_bitField0_ = 0;
       int mutable_bitField1_ = 0;
-      int mutable_bitField2_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -1172,19 +1330,19 @@ public final class ProtobufRoot {
               break;
             }
             case 410: {
-              if (!((mutable_bitField1_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 anys_ = new java.util.ArrayList<com.google.protobuf.Any>();
-                mutable_bitField1_ |= 0x00000001;
+                mutable_bitField0_ |= 0x00000001;
               }
               anys_.add(
                   input.readMessage(com.google.protobuf.Any.parser(), extensionRegistry));
               break;
             }
             case 482: {
-              if (!((mutable_bitField1_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 ssMap_ = com.google.protobuf.MapField.newMapField(
                     SsMapDefaultEntryHolder.defaultEntry);
-                mutable_bitField1_ |= 0x00000002;
+                mutable_bitField0_ |= 0x00000002;
               }
               com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
               ssMap__ = input.readMessage(
@@ -1194,10 +1352,10 @@ public final class ProtobufRoot {
               break;
             }
             case 490: {
-              if (!((mutable_bitField1_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 sint32Map_ = com.google.protobuf.MapField.newMapField(
                     Sint32MapDefaultEntryHolder.defaultEntry);
-                mutable_bitField1_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000004;
               }
               com.google.protobuf.MapEntry<java.lang.String, java.lang.Integer>
               sint32Map__ = input.readMessage(
@@ -1207,10 +1365,10 @@ public final class ProtobufRoot {
               break;
             }
             case 498: {
-              if (!((mutable_bitField1_ & 0x00000008) == 0x00000008)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 spMap_ = com.google.protobuf.MapField.newMapField(
                     SpMapDefaultEntryHolder.defaultEntry);
-                mutable_bitField1_ |= 0x00000008;
+                mutable_bitField0_ |= 0x00000008;
               }
               com.google.protobuf.MapEntry<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
               spMap__ = input.readMessage(
@@ -1220,283 +1378,283 @@ public final class ProtobufRoot {
               break;
             }
             case 560: {
-              if (!((mutable_bitField1_ & 0x00000010) == 0x00000010)) {
-                int32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000010;
+              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
+                int32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000010;
               }
-              int32SPacked_.add(input.readInt32());
+              int32SPacked_.addInt(input.readInt32());
               break;
             }
             case 562: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000010) == 0x00000010) && input.getBytesUntilLimit() > 0) {
-                int32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000010;
+              if (!((mutable_bitField0_ & 0x00000010) != 0) && input.getBytesUntilLimit() > 0) {
+                int32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000010;
               }
               while (input.getBytesUntilLimit() > 0) {
-                int32SPacked_.add(input.readInt32());
+                int32SPacked_.addInt(input.readInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 568: {
-              if (!((mutable_bitField1_ & 0x00000020) == 0x00000020)) {
-                int64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000020;
+              if (!((mutable_bitField0_ & 0x00000020) != 0)) {
+                int64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000020;
               }
-              int64SPacked_.add(input.readInt64());
+              int64SPacked_.addLong(input.readInt64());
               break;
             }
             case 570: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000020) == 0x00000020) && input.getBytesUntilLimit() > 0) {
-                int64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000020;
+              if (!((mutable_bitField0_ & 0x00000020) != 0) && input.getBytesUntilLimit() > 0) {
+                int64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000020;
               }
               while (input.getBytesUntilLimit() > 0) {
-                int64SPacked_.add(input.readInt64());
+                int64SPacked_.addLong(input.readInt64());
               }
               input.popLimit(limit);
               break;
             }
             case 576: {
-              if (!((mutable_bitField1_ & 0x00000040) == 0x00000040)) {
-                uint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000040;
+              if (!((mutable_bitField0_ & 0x00000040) != 0)) {
+                uint32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000040;
               }
-              uint32SPacked_.add(input.readUInt32());
+              uint32SPacked_.addInt(input.readUInt32());
               break;
             }
             case 578: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000040) == 0x00000040) && input.getBytesUntilLimit() > 0) {
-                uint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000040;
+              if (!((mutable_bitField0_ & 0x00000040) != 0) && input.getBytesUntilLimit() > 0) {
+                uint32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000040;
               }
               while (input.getBytesUntilLimit() > 0) {
-                uint32SPacked_.add(input.readUInt32());
+                uint32SPacked_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 584: {
-              if (!((mutable_bitField1_ & 0x00000080) == 0x00000080)) {
-                uint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000080;
+              if (!((mutable_bitField0_ & 0x00000080) != 0)) {
+                uint64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000080;
               }
-              uint64SPacked_.add(input.readUInt64());
+              uint64SPacked_.addLong(input.readUInt64());
               break;
             }
             case 586: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
-                uint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000080;
+              if (!((mutable_bitField0_ & 0x00000080) != 0) && input.getBytesUntilLimit() > 0) {
+                uint64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000080;
               }
               while (input.getBytesUntilLimit() > 0) {
-                uint64SPacked_.add(input.readUInt64());
+                uint64SPacked_.addLong(input.readUInt64());
               }
               input.popLimit(limit);
               break;
             }
             case 592: {
-              if (!((mutable_bitField1_ & 0x00000100) == 0x00000100)) {
-                sint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000100;
+              if (!((mutable_bitField0_ & 0x00000100) != 0)) {
+                sint32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000100;
               }
-              sint32SPacked_.add(input.readSInt32());
+              sint32SPacked_.addInt(input.readSInt32());
               break;
             }
             case 594: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
-                sint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000100;
+              if (!((mutable_bitField0_ & 0x00000100) != 0) && input.getBytesUntilLimit() > 0) {
+                sint32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000100;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sint32SPacked_.add(input.readSInt32());
+                sint32SPacked_.addInt(input.readSInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 600: {
-              if (!((mutable_bitField1_ & 0x00000200) == 0x00000200)) {
-                sint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000200;
+              if (!((mutable_bitField0_ & 0x00000200) != 0)) {
+                sint64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000200;
               }
-              sint64SPacked_.add(input.readSInt64());
+              sint64SPacked_.addLong(input.readSInt64());
               break;
             }
             case 602: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000200) == 0x00000200) && input.getBytesUntilLimit() > 0) {
-                sint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000200;
+              if (!((mutable_bitField0_ & 0x00000200) != 0) && input.getBytesUntilLimit() > 0) {
+                sint64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000200;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sint64SPacked_.add(input.readSInt64());
+                sint64SPacked_.addLong(input.readSInt64());
               }
               input.popLimit(limit);
               break;
             }
             case 613: {
-              if (!((mutable_bitField1_ & 0x00000400) == 0x00000400)) {
-                fixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000400;
+              if (!((mutable_bitField0_ & 0x00000400) != 0)) {
+                fixed32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000400;
               }
-              fixed32SPacked_.add(input.readFixed32());
+              fixed32SPacked_.addInt(input.readFixed32());
               break;
             }
             case 610: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000400) == 0x00000400) && input.getBytesUntilLimit() > 0) {
-                fixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00000400;
+              if (!((mutable_bitField0_ & 0x00000400) != 0) && input.getBytesUntilLimit() > 0) {
+                fixed32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00000400;
               }
               while (input.getBytesUntilLimit() > 0) {
-                fixed32SPacked_.add(input.readFixed32());
+                fixed32SPacked_.addInt(input.readFixed32());
               }
               input.popLimit(limit);
               break;
             }
             case 617: {
-              if (!((mutable_bitField1_ & 0x00000800) == 0x00000800)) {
-                fixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000800;
+              if (!((mutable_bitField0_ & 0x00000800) != 0)) {
+                fixed64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000800;
               }
-              fixed64SPacked_.add(input.readFixed64());
+              fixed64SPacked_.addLong(input.readFixed64());
               break;
             }
             case 618: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00000800) == 0x00000800) && input.getBytesUntilLimit() > 0) {
-                fixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00000800;
+              if (!((mutable_bitField0_ & 0x00000800) != 0) && input.getBytesUntilLimit() > 0) {
+                fixed64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00000800;
               }
               while (input.getBytesUntilLimit() > 0) {
-                fixed64SPacked_.add(input.readFixed64());
+                fixed64SPacked_.addLong(input.readFixed64());
               }
               input.popLimit(limit);
               break;
             }
             case 629: {
-              if (!((mutable_bitField1_ & 0x00001000) == 0x00001000)) {
-                sfixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00001000;
+              if (!((mutable_bitField0_ & 0x00001000) != 0)) {
+                sfixed32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00001000;
               }
-              sfixed32SPacked_.add(input.readSFixed32());
+              sfixed32SPacked_.addInt(input.readSFixed32());
               break;
             }
             case 626: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00001000) == 0x00001000) && input.getBytesUntilLimit() > 0) {
-                sfixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00001000;
+              if (!((mutable_bitField0_ & 0x00001000) != 0) && input.getBytesUntilLimit() > 0) {
+                sfixed32SPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00001000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sfixed32SPacked_.add(input.readSFixed32());
+                sfixed32SPacked_.addInt(input.readSFixed32());
               }
               input.popLimit(limit);
               break;
             }
             case 633: {
-              if (!((mutable_bitField1_ & 0x00002000) == 0x00002000)) {
-                sfixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00002000;
+              if (!((mutable_bitField0_ & 0x00002000) != 0)) {
+                sfixed64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00002000;
               }
-              sfixed64SPacked_.add(input.readSFixed64());
+              sfixed64SPacked_.addLong(input.readSFixed64());
               break;
             }
             case 634: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00002000) == 0x00002000) && input.getBytesUntilLimit() > 0) {
-                sfixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00002000;
+              if (!((mutable_bitField0_ & 0x00002000) != 0) && input.getBytesUntilLimit() > 0) {
+                sfixed64SPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00002000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sfixed64SPacked_.add(input.readSFixed64());
+                sfixed64SPacked_.addLong(input.readSFixed64());
               }
               input.popLimit(limit);
               break;
             }
             case 645: {
-              if (!((mutable_bitField1_ & 0x00004000) == 0x00004000)) {
-                floatsPacked_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField1_ |= 0x00004000;
+              if (!((mutable_bitField0_ & 0x00004000) != 0)) {
+                floatsPacked_ = newFloatList();
+                mutable_bitField0_ |= 0x00004000;
               }
-              floatsPacked_.add(input.readFloat());
+              floatsPacked_.addFloat(input.readFloat());
               break;
             }
             case 642: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00004000) == 0x00004000) && input.getBytesUntilLimit() > 0) {
-                floatsPacked_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField1_ |= 0x00004000;
+              if (!((mutable_bitField0_ & 0x00004000) != 0) && input.getBytesUntilLimit() > 0) {
+                floatsPacked_ = newFloatList();
+                mutable_bitField0_ |= 0x00004000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                floatsPacked_.add(input.readFloat());
+                floatsPacked_.addFloat(input.readFloat());
               }
               input.popLimit(limit);
               break;
             }
             case 649: {
-              if (!((mutable_bitField1_ & 0x00008000) == 0x00008000)) {
-                doublesPacked_ = new java.util.ArrayList<java.lang.Double>();
-                mutable_bitField1_ |= 0x00008000;
+              if (!((mutable_bitField0_ & 0x00008000) != 0)) {
+                doublesPacked_ = newDoubleList();
+                mutable_bitField0_ |= 0x00008000;
               }
-              doublesPacked_.add(input.readDouble());
+              doublesPacked_.addDouble(input.readDouble());
               break;
             }
             case 650: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00008000) == 0x00008000) && input.getBytesUntilLimit() > 0) {
-                doublesPacked_ = new java.util.ArrayList<java.lang.Double>();
-                mutable_bitField1_ |= 0x00008000;
+              if (!((mutable_bitField0_ & 0x00008000) != 0) && input.getBytesUntilLimit() > 0) {
+                doublesPacked_ = newDoubleList();
+                mutable_bitField0_ |= 0x00008000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                doublesPacked_.add(input.readDouble());
+                doublesPacked_.addDouble(input.readDouble());
               }
               input.popLimit(limit);
               break;
             }
             case 656: {
-              if (!((mutable_bitField1_ & 0x00010000) == 0x00010000)) {
-                boolsPacked_ = new java.util.ArrayList<java.lang.Boolean>();
-                mutable_bitField1_ |= 0x00010000;
+              if (!((mutable_bitField0_ & 0x00010000) != 0)) {
+                boolsPacked_ = newBooleanList();
+                mutable_bitField0_ |= 0x00010000;
               }
-              boolsPacked_.add(input.readBool());
+              boolsPacked_.addBoolean(input.readBool());
               break;
             }
             case 658: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00010000) == 0x00010000) && input.getBytesUntilLimit() > 0) {
-                boolsPacked_ = new java.util.ArrayList<java.lang.Boolean>();
-                mutable_bitField1_ |= 0x00010000;
+              if (!((mutable_bitField0_ & 0x00010000) != 0) && input.getBytesUntilLimit() > 0) {
+                boolsPacked_ = newBooleanList();
+                mutable_bitField0_ |= 0x00010000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                boolsPacked_.add(input.readBool());
+                boolsPacked_.addBoolean(input.readBool());
               }
               input.popLimit(limit);
               break;
             }
             case 664: {
               int rawValue = input.readEnum();
-              if (!((mutable_bitField1_ & 0x00020000) == 0x00020000)) {
+              if (!((mutable_bitField0_ & 0x00020000) != 0)) {
                 colorsPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00020000;
+                mutable_bitField0_ |= 0x00020000;
               }
               colorsPacked_.add(rawValue);
               break;
@@ -1506,9 +1664,9 @@ public final class ProtobufRoot {
               int oldLimit = input.pushLimit(length);
               while(input.getBytesUntilLimit() > 0) {
                 int rawValue = input.readEnum();
-                if (!((mutable_bitField1_ & 0x00020000) == 0x00020000)) {
+                if (!((mutable_bitField0_ & 0x00020000) != 0)) {
                   colorsPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                  mutable_bitField1_ |= 0x00020000;
+                  mutable_bitField0_ |= 0x00020000;
                 }
                 colorsPacked_.add(rawValue);
               }
@@ -1516,283 +1674,283 @@ public final class ProtobufRoot {
               break;
             }
             case 720: {
-              if (!((mutable_bitField1_ & 0x00040000) == 0x00040000)) {
-                int32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00040000;
+              if (!((mutable_bitField0_ & 0x00040000) != 0)) {
+                int32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00040000;
               }
-              int32SNotPacked_.add(input.readInt32());
+              int32SNotPacked_.addInt(input.readInt32());
               break;
             }
             case 722: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00040000) == 0x00040000) && input.getBytesUntilLimit() > 0) {
-                int32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00040000;
+              if (!((mutable_bitField0_ & 0x00040000) != 0) && input.getBytesUntilLimit() > 0) {
+                int32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00040000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                int32SNotPacked_.add(input.readInt32());
+                int32SNotPacked_.addInt(input.readInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 728: {
-              if (!((mutable_bitField1_ & 0x00080000) == 0x00080000)) {
-                int64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00080000;
+              if (!((mutable_bitField0_ & 0x00080000) != 0)) {
+                int64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00080000;
               }
-              int64SNotPacked_.add(input.readInt64());
+              int64SNotPacked_.addLong(input.readInt64());
               break;
             }
             case 730: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00080000) == 0x00080000) && input.getBytesUntilLimit() > 0) {
-                int64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00080000;
+              if (!((mutable_bitField0_ & 0x00080000) != 0) && input.getBytesUntilLimit() > 0) {
+                int64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00080000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                int64SNotPacked_.add(input.readInt64());
+                int64SNotPacked_.addLong(input.readInt64());
               }
               input.popLimit(limit);
               break;
             }
             case 736: {
-              if (!((mutable_bitField1_ & 0x00100000) == 0x00100000)) {
-                uint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00100000;
+              if (!((mutable_bitField0_ & 0x00100000) != 0)) {
+                uint32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00100000;
               }
-              uint32SNotPacked_.add(input.readUInt32());
+              uint32SNotPacked_.addInt(input.readUInt32());
               break;
             }
             case 738: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00100000) == 0x00100000) && input.getBytesUntilLimit() > 0) {
-                uint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00100000;
+              if (!((mutable_bitField0_ & 0x00100000) != 0) && input.getBytesUntilLimit() > 0) {
+                uint32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00100000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                uint32SNotPacked_.add(input.readUInt32());
+                uint32SNotPacked_.addInt(input.readUInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 744: {
-              if (!((mutable_bitField1_ & 0x00200000) == 0x00200000)) {
-                uint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00200000;
+              if (!((mutable_bitField0_ & 0x00200000) != 0)) {
+                uint64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00200000;
               }
-              uint64SNotPacked_.add(input.readUInt64());
+              uint64SNotPacked_.addLong(input.readUInt64());
               break;
             }
             case 746: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00200000) == 0x00200000) && input.getBytesUntilLimit() > 0) {
-                uint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00200000;
+              if (!((mutable_bitField0_ & 0x00200000) != 0) && input.getBytesUntilLimit() > 0) {
+                uint64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00200000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                uint64SNotPacked_.add(input.readUInt64());
+                uint64SNotPacked_.addLong(input.readUInt64());
               }
               input.popLimit(limit);
               break;
             }
             case 752: {
-              if (!((mutable_bitField1_ & 0x00400000) == 0x00400000)) {
-                sint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00400000;
+              if (!((mutable_bitField0_ & 0x00400000) != 0)) {
+                sint32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00400000;
               }
-              sint32SNotPacked_.add(input.readSInt32());
+              sint32SNotPacked_.addInt(input.readSInt32());
               break;
             }
             case 754: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00400000) == 0x00400000) && input.getBytesUntilLimit() > 0) {
-                sint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x00400000;
+              if (!((mutable_bitField0_ & 0x00400000) != 0) && input.getBytesUntilLimit() > 0) {
+                sint32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x00400000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sint32SNotPacked_.add(input.readSInt32());
+                sint32SNotPacked_.addInt(input.readSInt32());
               }
               input.popLimit(limit);
               break;
             }
             case 760: {
-              if (!((mutable_bitField1_ & 0x00800000) == 0x00800000)) {
-                sint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00800000;
+              if (!((mutable_bitField0_ & 0x00800000) != 0)) {
+                sint64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00800000;
               }
-              sint64SNotPacked_.add(input.readSInt64());
+              sint64SNotPacked_.addLong(input.readSInt64());
               break;
             }
             case 762: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x00800000) == 0x00800000) && input.getBytesUntilLimit() > 0) {
-                sint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x00800000;
+              if (!((mutable_bitField0_ & 0x00800000) != 0) && input.getBytesUntilLimit() > 0) {
+                sint64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x00800000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sint64SNotPacked_.add(input.readSInt64());
+                sint64SNotPacked_.addLong(input.readSInt64());
               }
               input.popLimit(limit);
               break;
             }
             case 773: {
-              if (!((mutable_bitField1_ & 0x01000000) == 0x01000000)) {
-                fixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x01000000;
+              if (!((mutable_bitField0_ & 0x01000000) != 0)) {
+                fixed32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x01000000;
               }
-              fixed32SNotPacked_.add(input.readFixed32());
+              fixed32SNotPacked_.addInt(input.readFixed32());
               break;
             }
             case 770: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x01000000) == 0x01000000) && input.getBytesUntilLimit() > 0) {
-                fixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x01000000;
+              if (!((mutable_bitField0_ & 0x01000000) != 0) && input.getBytesUntilLimit() > 0) {
+                fixed32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x01000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                fixed32SNotPacked_.add(input.readFixed32());
+                fixed32SNotPacked_.addInt(input.readFixed32());
               }
               input.popLimit(limit);
               break;
             }
             case 777: {
-              if (!((mutable_bitField1_ & 0x02000000) == 0x02000000)) {
-                fixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x02000000;
+              if (!((mutable_bitField0_ & 0x02000000) != 0)) {
+                fixed64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x02000000;
               }
-              fixed64SNotPacked_.add(input.readFixed64());
+              fixed64SNotPacked_.addLong(input.readFixed64());
               break;
             }
             case 778: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x02000000) == 0x02000000) && input.getBytesUntilLimit() > 0) {
-                fixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x02000000;
+              if (!((mutable_bitField0_ & 0x02000000) != 0) && input.getBytesUntilLimit() > 0) {
+                fixed64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x02000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                fixed64SNotPacked_.add(input.readFixed64());
+                fixed64SNotPacked_.addLong(input.readFixed64());
               }
               input.popLimit(limit);
               break;
             }
             case 789: {
-              if (!((mutable_bitField1_ & 0x04000000) == 0x04000000)) {
-                sfixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x04000000;
+              if (!((mutable_bitField0_ & 0x04000000) != 0)) {
+                sfixed32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x04000000;
               }
-              sfixed32SNotPacked_.add(input.readSFixed32());
+              sfixed32SNotPacked_.addInt(input.readSFixed32());
               break;
             }
             case 786: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x04000000) == 0x04000000) && input.getBytesUntilLimit() > 0) {
-                sfixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x04000000;
+              if (!((mutable_bitField0_ & 0x04000000) != 0) && input.getBytesUntilLimit() > 0) {
+                sfixed32SNotPacked_ = newIntList();
+                mutable_bitField0_ |= 0x04000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sfixed32SNotPacked_.add(input.readSFixed32());
+                sfixed32SNotPacked_.addInt(input.readSFixed32());
               }
               input.popLimit(limit);
               break;
             }
             case 793: {
-              if (!((mutable_bitField1_ & 0x08000000) == 0x08000000)) {
-                sfixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x08000000;
+              if (!((mutable_bitField0_ & 0x08000000) != 0)) {
+                sfixed64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x08000000;
               }
-              sfixed64SNotPacked_.add(input.readSFixed64());
+              sfixed64SNotPacked_.addLong(input.readSFixed64());
               break;
             }
             case 794: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x08000000) == 0x08000000) && input.getBytesUntilLimit() > 0) {
-                sfixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
-                mutable_bitField1_ |= 0x08000000;
+              if (!((mutable_bitField0_ & 0x08000000) != 0) && input.getBytesUntilLimit() > 0) {
+                sfixed64SNotPacked_ = newLongList();
+                mutable_bitField0_ |= 0x08000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                sfixed64SNotPacked_.add(input.readSFixed64());
+                sfixed64SNotPacked_.addLong(input.readSFixed64());
               }
               input.popLimit(limit);
               break;
             }
             case 805: {
-              if (!((mutable_bitField1_ & 0x10000000) == 0x10000000)) {
-                floatsNotPacked_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField1_ |= 0x10000000;
+              if (!((mutable_bitField0_ & 0x10000000) != 0)) {
+                floatsNotPacked_ = newFloatList();
+                mutable_bitField0_ |= 0x10000000;
               }
-              floatsNotPacked_.add(input.readFloat());
+              floatsNotPacked_.addFloat(input.readFloat());
               break;
             }
             case 802: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x10000000) == 0x10000000) && input.getBytesUntilLimit() > 0) {
-                floatsNotPacked_ = new java.util.ArrayList<java.lang.Float>();
-                mutable_bitField1_ |= 0x10000000;
+              if (!((mutable_bitField0_ & 0x10000000) != 0) && input.getBytesUntilLimit() > 0) {
+                floatsNotPacked_ = newFloatList();
+                mutable_bitField0_ |= 0x10000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                floatsNotPacked_.add(input.readFloat());
+                floatsNotPacked_.addFloat(input.readFloat());
               }
               input.popLimit(limit);
               break;
             }
             case 809: {
-              if (!((mutable_bitField1_ & 0x20000000) == 0x20000000)) {
-                doublesNotPacked_ = new java.util.ArrayList<java.lang.Double>();
-                mutable_bitField1_ |= 0x20000000;
+              if (!((mutable_bitField0_ & 0x20000000) != 0)) {
+                doublesNotPacked_ = newDoubleList();
+                mutable_bitField0_ |= 0x20000000;
               }
-              doublesNotPacked_.add(input.readDouble());
+              doublesNotPacked_.addDouble(input.readDouble());
               break;
             }
             case 810: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x20000000) == 0x20000000) && input.getBytesUntilLimit() > 0) {
-                doublesNotPacked_ = new java.util.ArrayList<java.lang.Double>();
-                mutable_bitField1_ |= 0x20000000;
+              if (!((mutable_bitField0_ & 0x20000000) != 0) && input.getBytesUntilLimit() > 0) {
+                doublesNotPacked_ = newDoubleList();
+                mutable_bitField0_ |= 0x20000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                doublesNotPacked_.add(input.readDouble());
+                doublesNotPacked_.addDouble(input.readDouble());
               }
               input.popLimit(limit);
               break;
             }
             case 816: {
-              if (!((mutable_bitField1_ & 0x40000000) == 0x40000000)) {
-                boolsNotPacked_ = new java.util.ArrayList<java.lang.Boolean>();
-                mutable_bitField1_ |= 0x40000000;
+              if (!((mutable_bitField0_ & 0x40000000) != 0)) {
+                boolsNotPacked_ = newBooleanList();
+                mutable_bitField0_ |= 0x40000000;
               }
-              boolsNotPacked_.add(input.readBool());
+              boolsNotPacked_.addBoolean(input.readBool());
               break;
             }
             case 818: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField1_ & 0x40000000) == 0x40000000) && input.getBytesUntilLimit() > 0) {
-                boolsNotPacked_ = new java.util.ArrayList<java.lang.Boolean>();
-                mutable_bitField1_ |= 0x40000000;
+              if (!((mutable_bitField0_ & 0x40000000) != 0) && input.getBytesUntilLimit() > 0) {
+                boolsNotPacked_ = newBooleanList();
+                mutable_bitField0_ |= 0x40000000;
               }
               while (input.getBytesUntilLimit() > 0) {
-                boolsNotPacked_.add(input.readBool());
+                boolsNotPacked_.addBoolean(input.readBool());
               }
               input.popLimit(limit);
               break;
             }
             case 824: {
               int rawValue = input.readEnum();
-              if (!((mutable_bitField1_ & 0x80000000) == 0x80000000)) {
+              if (!((mutable_bitField0_ & 0x80000000) != 0)) {
                 colorsNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField1_ |= 0x80000000;
+                mutable_bitField0_ |= 0x80000000;
               }
               colorsNotPacked_.add(rawValue);
               break;
@@ -1802,9 +1960,9 @@ public final class ProtobufRoot {
               int oldLimit = input.pushLimit(length);
               while(input.getBytesUntilLimit() > 0) {
                 int rawValue = input.readEnum();
-                if (!((mutable_bitField1_ & 0x80000000) == 0x80000000)) {
+                if (!((mutable_bitField0_ & 0x80000000) != 0)) {
                   colorsNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
-                  mutable_bitField1_ |= 0x80000000;
+                  mutable_bitField0_ |= 0x80000000;
                 }
                 colorsNotPacked_.add(rawValue);
               }
@@ -1813,32 +1971,32 @@ public final class ProtobufRoot {
             }
             case 882: {
               java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField2_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField1_ & 0x00000001) != 0)) {
                 strings_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField2_ |= 0x00000001;
+                mutable_bitField1_ |= 0x00000001;
               }
               strings_.add(s);
               break;
             }
             case 890: {
-              if (!((mutable_bitField2_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField1_ & 0x00000002) != 0)) {
                 bytess_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
-                mutable_bitField2_ |= 0x00000002;
+                mutable_bitField1_ |= 0x00000002;
               }
               bytess_.add(input.readBytes());
               break;
             }
             case 898: {
-              if (!((mutable_bitField2_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField1_ & 0x00000004) != 0)) {
                 users_ = new java.util.ArrayList<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>();
-                mutable_bitField2_ |= 0x00000004;
+                mutable_bitField1_ |= 0x00000004;
               }
               users_.add(
                   input.readMessage(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.parser(), extensionRegistry));
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1848,104 +2006,106 @@ public final class ProtobufRoot {
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField1_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           anys_ = java.util.Collections.unmodifiableList(anys_);
         }
-        if (((mutable_bitField1_ & 0x00000010) == 0x00000010)) {
-          int32SPacked_ = java.util.Collections.unmodifiableList(int32SPacked_);
+        if (((mutable_bitField0_ & 0x00000010) != 0)) {
+          int32SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000020) == 0x00000020)) {
-          int64SPacked_ = java.util.Collections.unmodifiableList(int64SPacked_);
+        if (((mutable_bitField0_ & 0x00000020) != 0)) {
+          int64SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000040) == 0x00000040)) {
-          uint32SPacked_ = java.util.Collections.unmodifiableList(uint32SPacked_);
+        if (((mutable_bitField0_ & 0x00000040) != 0)) {
+          uint32SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000080) == 0x00000080)) {
-          uint64SPacked_ = java.util.Collections.unmodifiableList(uint64SPacked_);
+        if (((mutable_bitField0_ & 0x00000080) != 0)) {
+          uint64SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000100) == 0x00000100)) {
-          sint32SPacked_ = java.util.Collections.unmodifiableList(sint32SPacked_);
+        if (((mutable_bitField0_ & 0x00000100) != 0)) {
+          sint32SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000200) == 0x00000200)) {
-          sint64SPacked_ = java.util.Collections.unmodifiableList(sint64SPacked_);
+        if (((mutable_bitField0_ & 0x00000200) != 0)) {
+          sint64SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000400) == 0x00000400)) {
-          fixed32SPacked_ = java.util.Collections.unmodifiableList(fixed32SPacked_);
+        if (((mutable_bitField0_ & 0x00000400) != 0)) {
+          fixed32SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00000800) == 0x00000800)) {
-          fixed64SPacked_ = java.util.Collections.unmodifiableList(fixed64SPacked_);
+        if (((mutable_bitField0_ & 0x00000800) != 0)) {
+          fixed64SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00001000) == 0x00001000)) {
-          sfixed32SPacked_ = java.util.Collections.unmodifiableList(sfixed32SPacked_);
+        if (((mutable_bitField0_ & 0x00001000) != 0)) {
+          sfixed32SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00002000) == 0x00002000)) {
-          sfixed64SPacked_ = java.util.Collections.unmodifiableList(sfixed64SPacked_);
+        if (((mutable_bitField0_ & 0x00002000) != 0)) {
+          sfixed64SPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00004000) == 0x00004000)) {
-          floatsPacked_ = java.util.Collections.unmodifiableList(floatsPacked_);
+        if (((mutable_bitField0_ & 0x00004000) != 0)) {
+          floatsPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00008000) == 0x00008000)) {
-          doublesPacked_ = java.util.Collections.unmodifiableList(doublesPacked_);
+        if (((mutable_bitField0_ & 0x00008000) != 0)) {
+          doublesPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00010000) == 0x00010000)) {
-          boolsPacked_ = java.util.Collections.unmodifiableList(boolsPacked_);
+        if (((mutable_bitField0_ & 0x00010000) != 0)) {
+          boolsPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00020000) == 0x00020000)) {
+        if (((mutable_bitField0_ & 0x00020000) != 0)) {
           colorsPacked_ = java.util.Collections.unmodifiableList(colorsPacked_);
         }
-        if (((mutable_bitField1_ & 0x00040000) == 0x00040000)) {
-          int32SNotPacked_ = java.util.Collections.unmodifiableList(int32SNotPacked_);
+        if (((mutable_bitField0_ & 0x00040000) != 0)) {
+          int32SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00080000) == 0x00080000)) {
-          int64SNotPacked_ = java.util.Collections.unmodifiableList(int64SNotPacked_);
+        if (((mutable_bitField0_ & 0x00080000) != 0)) {
+          int64SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00100000) == 0x00100000)) {
-          uint32SNotPacked_ = java.util.Collections.unmodifiableList(uint32SNotPacked_);
+        if (((mutable_bitField0_ & 0x00100000) != 0)) {
+          uint32SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00200000) == 0x00200000)) {
-          uint64SNotPacked_ = java.util.Collections.unmodifiableList(uint64SNotPacked_);
+        if (((mutable_bitField0_ & 0x00200000) != 0)) {
+          uint64SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00400000) == 0x00400000)) {
-          sint32SNotPacked_ = java.util.Collections.unmodifiableList(sint32SNotPacked_);
+        if (((mutable_bitField0_ & 0x00400000) != 0)) {
+          sint32SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x00800000) == 0x00800000)) {
-          sint64SNotPacked_ = java.util.Collections.unmodifiableList(sint64SNotPacked_);
+        if (((mutable_bitField0_ & 0x00800000) != 0)) {
+          sint64SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x01000000) == 0x01000000)) {
-          fixed32SNotPacked_ = java.util.Collections.unmodifiableList(fixed32SNotPacked_);
+        if (((mutable_bitField0_ & 0x01000000) != 0)) {
+          fixed32SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x02000000) == 0x02000000)) {
-          fixed64SNotPacked_ = java.util.Collections.unmodifiableList(fixed64SNotPacked_);
+        if (((mutable_bitField0_ & 0x02000000) != 0)) {
+          fixed64SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x04000000) == 0x04000000)) {
-          sfixed32SNotPacked_ = java.util.Collections.unmodifiableList(sfixed32SNotPacked_);
+        if (((mutable_bitField0_ & 0x04000000) != 0)) {
+          sfixed32SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x08000000) == 0x08000000)) {
-          sfixed64SNotPacked_ = java.util.Collections.unmodifiableList(sfixed64SNotPacked_);
+        if (((mutable_bitField0_ & 0x08000000) != 0)) {
+          sfixed64SNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x10000000) == 0x10000000)) {
-          floatsNotPacked_ = java.util.Collections.unmodifiableList(floatsNotPacked_);
+        if (((mutable_bitField0_ & 0x10000000) != 0)) {
+          floatsNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x20000000) == 0x20000000)) {
-          doublesNotPacked_ = java.util.Collections.unmodifiableList(doublesNotPacked_);
+        if (((mutable_bitField0_ & 0x20000000) != 0)) {
+          doublesNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x40000000) == 0x40000000)) {
-          boolsNotPacked_ = java.util.Collections.unmodifiableList(boolsNotPacked_);
+        if (((mutable_bitField0_ & 0x40000000) != 0)) {
+          boolsNotPacked_.makeImmutable(); // C
         }
-        if (((mutable_bitField1_ & 0x80000000) == 0x80000000)) {
+        if (((mutable_bitField0_ & 0x80000000) != 0)) {
           colorsNotPacked_ = java.util.Collections.unmodifiableList(colorsNotPacked_);
         }
-        if (((mutable_bitField2_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField1_ & 0x00000001) != 0)) {
           strings_ = strings_.getUnmodifiableView();
         }
-        if (((mutable_bitField2_ & 0x00000002) == 0x00000002)) {
-          bytess_ = java.util.Collections.unmodifiableList(bytess_);
+        if (((mutable_bitField1_ & 0x00000002) != 0)) {
+          bytess_ = java.util.Collections.unmodifiableList(bytess_); // C
         }
-        if (((mutable_bitField2_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField1_ & 0x00000004) != 0)) {
           users_ = java.util.Collections.unmodifiableList(users_);
         }
         this.unknownFields = unknownFields.build();
@@ -1981,12 +2141,13 @@ public final class ProtobufRoot {
               org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.class, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder.class);
     }
 
-    private int bitField0_;
     public static final int INT32_FIELD_NUMBER = 1;
     private int int32_;
     /**
      * <code>int32 int32 = 1;</code>
+     * @return The int32.
      */
+    @java.lang.Override
     public int getInt32() {
       return int32_;
     }
@@ -1995,7 +2156,9 @@ public final class ProtobufRoot {
     private long int64_;
     /**
      * <code>int64 int64 = 2;</code>
+     * @return The int64.
      */
+    @java.lang.Override
     public long getInt64() {
       return int64_;
     }
@@ -2004,7 +2167,9 @@ public final class ProtobufRoot {
     private int uint32_;
     /**
      * <code>uint32 uint32 = 3;</code>
+     * @return The uint32.
      */
+    @java.lang.Override
     public int getUint32() {
       return uint32_;
     }
@@ -2013,7 +2178,9 @@ public final class ProtobufRoot {
     private long uint64_;
     /**
      * <code>uint64 uint64 = 4;</code>
+     * @return The uint64.
      */
+    @java.lang.Override
     public long getUint64() {
       return uint64_;
     }
@@ -2022,7 +2189,9 @@ public final class ProtobufRoot {
     private int sint32_;
     /**
      * <code>sint32 sint32 = 5;</code>
+     * @return The sint32.
      */
+    @java.lang.Override
     public int getSint32() {
       return sint32_;
     }
@@ -2031,7 +2200,9 @@ public final class ProtobufRoot {
     private long sint64_;
     /**
      * <code>sint64 sint64 = 6;</code>
+     * @return The sint64.
      */
+    @java.lang.Override
     public long getSint64() {
       return sint64_;
     }
@@ -2040,7 +2211,9 @@ public final class ProtobufRoot {
     private int fixed32_;
     /**
      * <code>fixed32 fixed32 = 7;</code>
+     * @return The fixed32.
      */
+    @java.lang.Override
     public int getFixed32() {
       return fixed32_;
     }
@@ -2049,7 +2222,9 @@ public final class ProtobufRoot {
     private long fixed64_;
     /**
      * <code>fixed64 fixed64 = 8;</code>
+     * @return The fixed64.
      */
+    @java.lang.Override
     public long getFixed64() {
       return fixed64_;
     }
@@ -2058,7 +2233,9 @@ public final class ProtobufRoot {
     private int sfixed32_;
     /**
      * <code>sfixed32 sfixed32 = 9;</code>
+     * @return The sfixed32.
      */
+    @java.lang.Override
     public int getSfixed32() {
       return sfixed32_;
     }
@@ -2067,7 +2244,9 @@ public final class ProtobufRoot {
     private long sfixed64_;
     /**
      * <code>sfixed64 sfixed64 = 10;</code>
+     * @return The sfixed64.
      */
+    @java.lang.Override
     public long getSfixed64() {
       return sfixed64_;
     }
@@ -2076,7 +2255,9 @@ public final class ProtobufRoot {
     private float floatValue_;
     /**
      * <code>float floatValue = 11;</code>
+     * @return The floatValue.
      */
+    @java.lang.Override
     public float getFloatValue() {
       return floatValue_;
     }
@@ -2085,7 +2266,9 @@ public final class ProtobufRoot {
     private double doubleValue_;
     /**
      * <code>double doubleValue = 12;</code>
+     * @return The doubleValue.
      */
+    @java.lang.Override
     public double getDoubleValue() {
       return doubleValue_;
     }
@@ -2094,7 +2277,9 @@ public final class ProtobufRoot {
     private boolean bool_;
     /**
      * <code>bool bool = 13;</code>
+     * @return The bool.
      */
+    @java.lang.Override
     public boolean getBool() {
       return bool_;
     }
@@ -2103,7 +2288,9 @@ public final class ProtobufRoot {
     private int objInt32_;
     /**
      * <code>int32 objInt32 = 20;</code>
+     * @return The objInt32.
      */
+    @java.lang.Override
     public int getObjInt32() {
       return objInt32_;
     }
@@ -2112,7 +2299,9 @@ public final class ProtobufRoot {
     private long objInt64_;
     /**
      * <code>int64 objInt64 = 21;</code>
+     * @return The objInt64.
      */
+    @java.lang.Override
     public long getObjInt64() {
       return objInt64_;
     }
@@ -2121,7 +2310,9 @@ public final class ProtobufRoot {
     private int objUint32_;
     /**
      * <code>uint32 objUint32 = 22;</code>
+     * @return The objUint32.
      */
+    @java.lang.Override
     public int getObjUint32() {
       return objUint32_;
     }
@@ -2130,7 +2321,9 @@ public final class ProtobufRoot {
     private long objUint64_;
     /**
      * <code>uint64 objUint64 = 23;</code>
+     * @return The objUint64.
      */
+    @java.lang.Override
     public long getObjUint64() {
       return objUint64_;
     }
@@ -2139,7 +2332,9 @@ public final class ProtobufRoot {
     private int objSint32_;
     /**
      * <code>sint32 objSint32 = 24;</code>
+     * @return The objSint32.
      */
+    @java.lang.Override
     public int getObjSint32() {
       return objSint32_;
     }
@@ -2148,7 +2343,9 @@ public final class ProtobufRoot {
     private long objSint64_;
     /**
      * <code>sint64 objSint64 = 25;</code>
+     * @return The objSint64.
      */
+    @java.lang.Override
     public long getObjSint64() {
       return objSint64_;
     }
@@ -2157,7 +2354,9 @@ public final class ProtobufRoot {
     private int objFixed32_;
     /**
      * <code>fixed32 objFixed32 = 26;</code>
+     * @return The objFixed32.
      */
+    @java.lang.Override
     public int getObjFixed32() {
       return objFixed32_;
     }
@@ -2166,7 +2365,9 @@ public final class ProtobufRoot {
     private long objFixed64_;
     /**
      * <code>fixed64 objFixed64 = 27;</code>
+     * @return The objFixed64.
      */
+    @java.lang.Override
     public long getObjFixed64() {
       return objFixed64_;
     }
@@ -2175,7 +2376,9 @@ public final class ProtobufRoot {
     private int objSfixed32_;
     /**
      * <code>sfixed32 objSfixed32 = 28;</code>
+     * @return The objSfixed32.
      */
+    @java.lang.Override
     public int getObjSfixed32() {
       return objSfixed32_;
     }
@@ -2184,7 +2387,9 @@ public final class ProtobufRoot {
     private long objSfixed64_;
     /**
      * <code>sfixed64 objSfixed64 = 29;</code>
+     * @return The objSfixed64.
      */
+    @java.lang.Override
     public long getObjSfixed64() {
       return objSfixed64_;
     }
@@ -2193,7 +2398,9 @@ public final class ProtobufRoot {
     private float objFloatValue_;
     /**
      * <code>float objFloatValue = 30;</code>
+     * @return The objFloatValue.
      */
+    @java.lang.Override
     public float getObjFloatValue() {
       return objFloatValue_;
     }
@@ -2202,7 +2409,9 @@ public final class ProtobufRoot {
     private double objDoubleValue_;
     /**
      * <code>double objDoubleValue = 31;</code>
+     * @return The objDoubleValue.
      */
+    @java.lang.Override
     public double getObjDoubleValue() {
       return objDoubleValue_;
     }
@@ -2211,7 +2420,9 @@ public final class ProtobufRoot {
     private boolean objBool_;
     /**
      * <code>bool objBool = 32;</code>
+     * @return The objBool.
      */
+    @java.lang.Override
     public boolean getObjBool() {
       return objBool_;
     }
@@ -2220,7 +2431,9 @@ public final class ProtobufRoot {
     private volatile java.lang.Object string_;
     /**
      * <code>string string = 40;</code>
+     * @return The string.
      */
+    @java.lang.Override
     public java.lang.String getString() {
       java.lang.Object ref = string_;
       if (ref instanceof java.lang.String) {
@@ -2235,7 +2448,9 @@ public final class ProtobufRoot {
     }
     /**
      * <code>string string = 40;</code>
+     * @return The bytes for string.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getStringBytes() {
       java.lang.Object ref = string_;
@@ -2254,7 +2469,9 @@ public final class ProtobufRoot {
     private com.google.protobuf.ByteString bytes_;
     /**
      * <code>bytes bytes = 41;</code>
+     * @return The bytes.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getBytes() {
       return bytes_;
     }
@@ -2263,14 +2480,16 @@ public final class ProtobufRoot {
     private int color_;
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+     * @return The enum numeric value on the wire for color.
      */
-    public int getColorValue() {
+    @java.lang.Override public int getColorValue() {
       return color_;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+     * @return The color.
      */
-    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor() {
+    @java.lang.Override public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor() {
       @SuppressWarnings("deprecation")
       org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color result = org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.valueOf(color_);
       return result == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.UNRECOGNIZED : result;
@@ -2280,19 +2499,24 @@ public final class ProtobufRoot {
     private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User user_;
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
+     * @return Whether the user field is set.
      */
+    @java.lang.Override
     public boolean hasUser() {
       return user_ != null;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
+     * @return The user.
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUser() {
       return user_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance() : user_;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUserOrBuilder() {
       return getUser();
     }
@@ -2301,19 +2525,24 @@ public final class ProtobufRoot {
     private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_;
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     * @return Whether the typeRecursive field is set.
      */
+    @java.lang.Override
     public boolean hasTypeRecursive() {
       return typeRecursive_ != null;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     * @return The typeRecursive.
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
       return typeRecursive_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder() {
       return getTypeRecursive();
     }
@@ -2322,19 +2551,24 @@ public final class ProtobufRoot {
     private com.google.protobuf.Any any_;
     /**
      * <code>.google.protobuf.Any any = 50;</code>
+     * @return Whether the any field is set.
      */
+    @java.lang.Override
     public boolean hasAny() {
       return any_ != null;
     }
     /**
      * <code>.google.protobuf.Any any = 50;</code>
+     * @return The any.
      */
+    @java.lang.Override
     public com.google.protobuf.Any getAny() {
       return any_ == null ? com.google.protobuf.Any.getDefaultInstance() : any_;
     }
     /**
      * <code>.google.protobuf.Any any = 50;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.AnyOrBuilder getAnyOrBuilder() {
       return getAny();
     }
@@ -2344,12 +2578,14 @@ public final class ProtobufRoot {
     /**
      * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
+    @java.lang.Override
     public java.util.List<com.google.protobuf.Any> getAnysList() {
       return anys_;
     }
     /**
      * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
         getAnysOrBuilderList() {
       return anys_;
@@ -2357,18 +2593,21 @@ public final class ProtobufRoot {
     /**
      * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
+    @java.lang.Override
     public int getAnysCount() {
       return anys_.size();
     }
     /**
      * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.Any getAnys(int index) {
       return anys_.get(index);
     }
     /**
      * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
+    @java.lang.Override
     public com.google.protobuf.AnyOrBuilder getAnysOrBuilder(
         int index) {
       return anys_.get(index);
@@ -2404,14 +2643,16 @@ public final class ProtobufRoot {
      * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
 
+    @java.lang.Override
     public boolean containsSsMap(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetSsMap().getMap().containsKey(key);
     }
     /**
      * Use {@link #getSsMapMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getSsMap() {
       return getSsMapMap();
@@ -2419,6 +2660,7 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, java.lang.String> getSsMapMap() {
       return internalGetSsMap().getMap();
@@ -2426,11 +2668,12 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getSsMapOrDefault(
         java.lang.String key,
         java.lang.String defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetSsMap().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -2438,10 +2681,11 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getSsMapOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetSsMap().getMap();
       if (!map.containsKey(key)) {
@@ -2480,14 +2724,16 @@ public final class ProtobufRoot {
      * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
      */
 
+    @java.lang.Override
     public boolean containsSint32Map(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetSint32Map().getMap().containsKey(key);
     }
     /**
      * Use {@link #getSint32MapMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.Integer> getSint32Map() {
       return getSint32MapMap();
@@ -2495,6 +2741,7 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, java.lang.Integer> getSint32MapMap() {
       return internalGetSint32Map().getMap();
@@ -2502,11 +2749,12 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
      */
+    @java.lang.Override
 
     public int getSint32MapOrDefault(
         java.lang.String key,
         int defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.Integer> map =
           internalGetSint32Map().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -2514,10 +2762,11 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
      */
+    @java.lang.Override
 
     public int getSint32MapOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.Integer> map =
           internalGetSint32Map().getMap();
       if (!map.containsKey(key)) {
@@ -2556,14 +2805,16 @@ public final class ProtobufRoot {
      * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
 
+    @java.lang.Override
     public boolean containsSpMap(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetSpMap().getMap().containsKey(key);
     }
     /**
      * Use {@link #getSpMapMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMap() {
       return getSpMapMap();
@@ -2571,6 +2822,7 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMapMap() {
       return internalGetSpMap().getMap();
@@ -2578,11 +2830,12 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
+    @java.lang.Override
 
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
         java.lang.String key,
         org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
           internalGetSpMap().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -2590,10 +2843,11 @@ public final class ProtobufRoot {
     /**
      * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
+    @java.lang.Override
 
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
           internalGetSpMap().getMap();
       if (!map.containsKey(key)) {
@@ -2603,301 +2857,366 @@ public final class ProtobufRoot {
     }
 
     public static final int INT32SPACKED_FIELD_NUMBER = 70;
-    private java.util.List<java.lang.Integer> int32SPacked_;
+    private com.google.protobuf.Internal.IntList int32SPacked_;
     /**
      * <code>repeated int32 int32sPacked = 70;</code>
+     * @return A list containing the int32sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getInt32SPackedList() {
       return int32SPacked_;
     }
     /**
      * <code>repeated int32 int32sPacked = 70;</code>
+     * @return The count of int32sPacked.
      */
     public int getInt32SPackedCount() {
       return int32SPacked_.size();
     }
     /**
      * <code>repeated int32 int32sPacked = 70;</code>
+     * @param index The index of the element to return.
+     * @return The int32sPacked at the given index.
      */
     public int getInt32SPacked(int index) {
-      return int32SPacked_.get(index);
+      return int32SPacked_.getInt(index);
     }
     private int int32SPackedMemoizedSerializedSize = -1;
 
     public static final int INT64SPACKED_FIELD_NUMBER = 71;
-    private java.util.List<java.lang.Long> int64SPacked_;
+    private com.google.protobuf.Internal.LongList int64SPacked_;
     /**
      * <code>repeated int64 int64sPacked = 71;</code>
+     * @return A list containing the int64sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getInt64SPackedList() {
       return int64SPacked_;
     }
     /**
      * <code>repeated int64 int64sPacked = 71;</code>
+     * @return The count of int64sPacked.
      */
     public int getInt64SPackedCount() {
       return int64SPacked_.size();
     }
     /**
      * <code>repeated int64 int64sPacked = 71;</code>
+     * @param index The index of the element to return.
+     * @return The int64sPacked at the given index.
      */
     public long getInt64SPacked(int index) {
-      return int64SPacked_.get(index);
+      return int64SPacked_.getLong(index);
     }
     private int int64SPackedMemoizedSerializedSize = -1;
 
     public static final int UINT32SPACKED_FIELD_NUMBER = 72;
-    private java.util.List<java.lang.Integer> uint32SPacked_;
+    private com.google.protobuf.Internal.IntList uint32SPacked_;
     /**
      * <code>repeated uint32 uint32sPacked = 72;</code>
+     * @return A list containing the uint32sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getUint32SPackedList() {
       return uint32SPacked_;
     }
     /**
      * <code>repeated uint32 uint32sPacked = 72;</code>
+     * @return The count of uint32sPacked.
      */
     public int getUint32SPackedCount() {
       return uint32SPacked_.size();
     }
     /**
      * <code>repeated uint32 uint32sPacked = 72;</code>
+     * @param index The index of the element to return.
+     * @return The uint32sPacked at the given index.
      */
     public int getUint32SPacked(int index) {
-      return uint32SPacked_.get(index);
+      return uint32SPacked_.getInt(index);
     }
     private int uint32SPackedMemoizedSerializedSize = -1;
 
     public static final int UINT64SPACKED_FIELD_NUMBER = 73;
-    private java.util.List<java.lang.Long> uint64SPacked_;
+    private com.google.protobuf.Internal.LongList uint64SPacked_;
     /**
      * <code>repeated uint64 uint64sPacked = 73;</code>
+     * @return A list containing the uint64sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getUint64SPackedList() {
       return uint64SPacked_;
     }
     /**
      * <code>repeated uint64 uint64sPacked = 73;</code>
+     * @return The count of uint64sPacked.
      */
     public int getUint64SPackedCount() {
       return uint64SPacked_.size();
     }
     /**
      * <code>repeated uint64 uint64sPacked = 73;</code>
+     * @param index The index of the element to return.
+     * @return The uint64sPacked at the given index.
      */
     public long getUint64SPacked(int index) {
-      return uint64SPacked_.get(index);
+      return uint64SPacked_.getLong(index);
     }
     private int uint64SPackedMemoizedSerializedSize = -1;
 
     public static final int SINT32SPACKED_FIELD_NUMBER = 74;
-    private java.util.List<java.lang.Integer> sint32SPacked_;
+    private com.google.protobuf.Internal.IntList sint32SPacked_;
     /**
      * <code>repeated sint32 sint32sPacked = 74;</code>
+     * @return A list containing the sint32sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getSint32SPackedList() {
       return sint32SPacked_;
     }
     /**
      * <code>repeated sint32 sint32sPacked = 74;</code>
+     * @return The count of sint32sPacked.
      */
     public int getSint32SPackedCount() {
       return sint32SPacked_.size();
     }
     /**
      * <code>repeated sint32 sint32sPacked = 74;</code>
+     * @param index The index of the element to return.
+     * @return The sint32sPacked at the given index.
      */
     public int getSint32SPacked(int index) {
-      return sint32SPacked_.get(index);
+      return sint32SPacked_.getInt(index);
     }
     private int sint32SPackedMemoizedSerializedSize = -1;
 
     public static final int SINT64SPACKED_FIELD_NUMBER = 75;
-    private java.util.List<java.lang.Long> sint64SPacked_;
+    private com.google.protobuf.Internal.LongList sint64SPacked_;
     /**
      * <code>repeated sint64 sint64sPacked = 75;</code>
+     * @return A list containing the sint64sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getSint64SPackedList() {
       return sint64SPacked_;
     }
     /**
      * <code>repeated sint64 sint64sPacked = 75;</code>
+     * @return The count of sint64sPacked.
      */
     public int getSint64SPackedCount() {
       return sint64SPacked_.size();
     }
     /**
      * <code>repeated sint64 sint64sPacked = 75;</code>
+     * @param index The index of the element to return.
+     * @return The sint64sPacked at the given index.
      */
     public long getSint64SPacked(int index) {
-      return sint64SPacked_.get(index);
+      return sint64SPacked_.getLong(index);
     }
     private int sint64SPackedMemoizedSerializedSize = -1;
 
     public static final int FIXED32SPACKED_FIELD_NUMBER = 76;
-    private java.util.List<java.lang.Integer> fixed32SPacked_;
+    private com.google.protobuf.Internal.IntList fixed32SPacked_;
     /**
      * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     * @return A list containing the fixed32sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getFixed32SPackedList() {
       return fixed32SPacked_;
     }
     /**
      * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     * @return The count of fixed32sPacked.
      */
     public int getFixed32SPackedCount() {
       return fixed32SPacked_.size();
     }
     /**
      * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     * @param index The index of the element to return.
+     * @return The fixed32sPacked at the given index.
      */
     public int getFixed32SPacked(int index) {
-      return fixed32SPacked_.get(index);
+      return fixed32SPacked_.getInt(index);
     }
     private int fixed32SPackedMemoizedSerializedSize = -1;
 
     public static final int FIXED64SPACKED_FIELD_NUMBER = 77;
-    private java.util.List<java.lang.Long> fixed64SPacked_;
+    private com.google.protobuf.Internal.LongList fixed64SPacked_;
     /**
      * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     * @return A list containing the fixed64sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getFixed64SPackedList() {
       return fixed64SPacked_;
     }
     /**
      * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     * @return The count of fixed64sPacked.
      */
     public int getFixed64SPackedCount() {
       return fixed64SPacked_.size();
     }
     /**
      * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     * @param index The index of the element to return.
+     * @return The fixed64sPacked at the given index.
      */
     public long getFixed64SPacked(int index) {
-      return fixed64SPacked_.get(index);
+      return fixed64SPacked_.getLong(index);
     }
     private int fixed64SPackedMemoizedSerializedSize = -1;
 
     public static final int SFIXED32SPACKED_FIELD_NUMBER = 78;
-    private java.util.List<java.lang.Integer> sfixed32SPacked_;
+    private com.google.protobuf.Internal.IntList sfixed32SPacked_;
     /**
      * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     * @return A list containing the sfixed32sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getSfixed32SPackedList() {
       return sfixed32SPacked_;
     }
     /**
      * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     * @return The count of sfixed32sPacked.
      */
     public int getSfixed32SPackedCount() {
       return sfixed32SPacked_.size();
     }
     /**
      * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     * @param index The index of the element to return.
+     * @return The sfixed32sPacked at the given index.
      */
     public int getSfixed32SPacked(int index) {
-      return sfixed32SPacked_.get(index);
+      return sfixed32SPacked_.getInt(index);
     }
     private int sfixed32SPackedMemoizedSerializedSize = -1;
 
     public static final int SFIXED64SPACKED_FIELD_NUMBER = 79;
-    private java.util.List<java.lang.Long> sfixed64SPacked_;
+    private com.google.protobuf.Internal.LongList sfixed64SPacked_;
     /**
      * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     * @return A list containing the sfixed64sPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getSfixed64SPackedList() {
       return sfixed64SPacked_;
     }
     /**
      * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     * @return The count of sfixed64sPacked.
      */
     public int getSfixed64SPackedCount() {
       return sfixed64SPacked_.size();
     }
     /**
      * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     * @param index The index of the element to return.
+     * @return The sfixed64sPacked at the given index.
      */
     public long getSfixed64SPacked(int index) {
-      return sfixed64SPacked_.get(index);
+      return sfixed64SPacked_.getLong(index);
     }
     private int sfixed64SPackedMemoizedSerializedSize = -1;
 
     public static final int FLOATSPACKED_FIELD_NUMBER = 80;
-    private java.util.List<java.lang.Float> floatsPacked_;
+    private com.google.protobuf.Internal.FloatList floatsPacked_;
     /**
      * <code>repeated float floatsPacked = 80;</code>
+     * @return A list containing the floatsPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Float>
         getFloatsPackedList() {
       return floatsPacked_;
     }
     /**
      * <code>repeated float floatsPacked = 80;</code>
+     * @return The count of floatsPacked.
      */
     public int getFloatsPackedCount() {
       return floatsPacked_.size();
     }
     /**
      * <code>repeated float floatsPacked = 80;</code>
+     * @param index The index of the element to return.
+     * @return The floatsPacked at the given index.
      */
     public float getFloatsPacked(int index) {
-      return floatsPacked_.get(index);
+      return floatsPacked_.getFloat(index);
     }
     private int floatsPackedMemoizedSerializedSize = -1;
 
     public static final int DOUBLESPACKED_FIELD_NUMBER = 81;
-    private java.util.List<java.lang.Double> doublesPacked_;
+    private com.google.protobuf.Internal.DoubleList doublesPacked_;
     /**
      * <code>repeated double doublesPacked = 81;</code>
+     * @return A list containing the doublesPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Double>
         getDoublesPackedList() {
       return doublesPacked_;
     }
     /**
      * <code>repeated double doublesPacked = 81;</code>
+     * @return The count of doublesPacked.
      */
     public int getDoublesPackedCount() {
       return doublesPacked_.size();
     }
     /**
      * <code>repeated double doublesPacked = 81;</code>
+     * @param index The index of the element to return.
+     * @return The doublesPacked at the given index.
      */
     public double getDoublesPacked(int index) {
-      return doublesPacked_.get(index);
+      return doublesPacked_.getDouble(index);
     }
     private int doublesPackedMemoizedSerializedSize = -1;
 
     public static final int BOOLSPACKED_FIELD_NUMBER = 82;
-    private java.util.List<java.lang.Boolean> boolsPacked_;
+    private com.google.protobuf.Internal.BooleanList boolsPacked_;
     /**
      * <code>repeated bool boolsPacked = 82;</code>
+     * @return A list containing the boolsPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Boolean>
         getBoolsPackedList() {
       return boolsPacked_;
     }
     /**
      * <code>repeated bool boolsPacked = 82;</code>
+     * @return The count of boolsPacked.
      */
     public int getBoolsPackedCount() {
       return boolsPacked_.size();
     }
     /**
      * <code>repeated bool boolsPacked = 82;</code>
+     * @param index The index of the element to return.
+     * @return The boolsPacked at the given index.
      */
     public boolean getBoolsPacked(int index) {
-      return boolsPacked_.get(index);
+      return boolsPacked_.getBoolean(index);
     }
     private int boolsPackedMemoizedSerializedSize = -1;
 
@@ -2915,322 +3234,399 @@ public final class ProtobufRoot {
             };
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @return A list containing the colorsPacked.
      */
+    @java.lang.Override
     public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsPackedList() {
       return new com.google.protobuf.Internal.ListAdapter<
           java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>(colorsPacked_, colorsPacked_converter_);
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @return The count of colorsPacked.
      */
+    @java.lang.Override
     public int getColorsPackedCount() {
       return colorsPacked_.size();
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @param index The index of the element to return.
+     * @return The colorsPacked at the given index.
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsPacked(int index) {
       return colorsPacked_converter_.convert(colorsPacked_.get(index));
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @return A list containing the enum numeric values on the wire for colorsPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
     getColorsPackedValueList() {
       return colorsPacked_;
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of colorsPacked at the given index.
      */
+    @java.lang.Override
     public int getColorsPackedValue(int index) {
       return colorsPacked_.get(index);
     }
     private int colorsPackedMemoizedSerializedSize;
 
     public static final int INT32SNOTPACKED_FIELD_NUMBER = 90;
-    private java.util.List<java.lang.Integer> int32SNotPacked_;
+    private com.google.protobuf.Internal.IntList int32SNotPacked_;
     /**
      * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     * @return A list containing the int32sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getInt32SNotPackedList() {
       return int32SNotPacked_;
     }
     /**
      * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     * @return The count of int32sNotPacked.
      */
     public int getInt32SNotPackedCount() {
       return int32SNotPacked_.size();
     }
     /**
      * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The int32sNotPacked at the given index.
      */
     public int getInt32SNotPacked(int index) {
-      return int32SNotPacked_.get(index);
+      return int32SNotPacked_.getInt(index);
     }
 
     public static final int INT64SNOTPACKED_FIELD_NUMBER = 91;
-    private java.util.List<java.lang.Long> int64SNotPacked_;
+    private com.google.protobuf.Internal.LongList int64SNotPacked_;
     /**
      * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     * @return A list containing the int64sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getInt64SNotPackedList() {
       return int64SNotPacked_;
     }
     /**
      * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     * @return The count of int64sNotPacked.
      */
     public int getInt64SNotPackedCount() {
       return int64SNotPacked_.size();
     }
     /**
      * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The int64sNotPacked at the given index.
      */
     public long getInt64SNotPacked(int index) {
-      return int64SNotPacked_.get(index);
+      return int64SNotPacked_.getLong(index);
     }
 
     public static final int UINT32SNOTPACKED_FIELD_NUMBER = 92;
-    private java.util.List<java.lang.Integer> uint32SNotPacked_;
+    private com.google.protobuf.Internal.IntList uint32SNotPacked_;
     /**
      * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     * @return A list containing the uint32sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getUint32SNotPackedList() {
       return uint32SNotPacked_;
     }
     /**
      * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     * @return The count of uint32sNotPacked.
      */
     public int getUint32SNotPackedCount() {
       return uint32SNotPacked_.size();
     }
     /**
      * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The uint32sNotPacked at the given index.
      */
     public int getUint32SNotPacked(int index) {
-      return uint32SNotPacked_.get(index);
+      return uint32SNotPacked_.getInt(index);
     }
 
     public static final int UINT64SNOTPACKED_FIELD_NUMBER = 93;
-    private java.util.List<java.lang.Long> uint64SNotPacked_;
+    private com.google.protobuf.Internal.LongList uint64SNotPacked_;
     /**
      * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     * @return A list containing the uint64sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getUint64SNotPackedList() {
       return uint64SNotPacked_;
     }
     /**
      * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     * @return The count of uint64sNotPacked.
      */
     public int getUint64SNotPackedCount() {
       return uint64SNotPacked_.size();
     }
     /**
      * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The uint64sNotPacked at the given index.
      */
     public long getUint64SNotPacked(int index) {
-      return uint64SNotPacked_.get(index);
+      return uint64SNotPacked_.getLong(index);
     }
 
     public static final int SINT32SNOTPACKED_FIELD_NUMBER = 94;
-    private java.util.List<java.lang.Integer> sint32SNotPacked_;
+    private com.google.protobuf.Internal.IntList sint32SNotPacked_;
     /**
      * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     * @return A list containing the sint32sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getSint32SNotPackedList() {
       return sint32SNotPacked_;
     }
     /**
      * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     * @return The count of sint32sNotPacked.
      */
     public int getSint32SNotPackedCount() {
       return sint32SNotPacked_.size();
     }
     /**
      * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sint32sNotPacked at the given index.
      */
     public int getSint32SNotPacked(int index) {
-      return sint32SNotPacked_.get(index);
+      return sint32SNotPacked_.getInt(index);
     }
 
     public static final int SINT64SNOTPACKED_FIELD_NUMBER = 95;
-    private java.util.List<java.lang.Long> sint64SNotPacked_;
+    private com.google.protobuf.Internal.LongList sint64SNotPacked_;
     /**
      * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     * @return A list containing the sint64sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getSint64SNotPackedList() {
       return sint64SNotPacked_;
     }
     /**
      * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     * @return The count of sint64sNotPacked.
      */
     public int getSint64SNotPackedCount() {
       return sint64SNotPacked_.size();
     }
     /**
      * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sint64sNotPacked at the given index.
      */
     public long getSint64SNotPacked(int index) {
-      return sint64SNotPacked_.get(index);
+      return sint64SNotPacked_.getLong(index);
     }
 
     public static final int FIXED32SNOTPACKED_FIELD_NUMBER = 96;
-    private java.util.List<java.lang.Integer> fixed32SNotPacked_;
+    private com.google.protobuf.Internal.IntList fixed32SNotPacked_;
     /**
      * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     * @return A list containing the fixed32sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getFixed32SNotPackedList() {
       return fixed32SNotPacked_;
     }
     /**
      * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     * @return The count of fixed32sNotPacked.
      */
     public int getFixed32SNotPackedCount() {
       return fixed32SNotPacked_.size();
     }
     /**
      * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The fixed32sNotPacked at the given index.
      */
     public int getFixed32SNotPacked(int index) {
-      return fixed32SNotPacked_.get(index);
+      return fixed32SNotPacked_.getInt(index);
     }
 
     public static final int FIXED64SNOTPACKED_FIELD_NUMBER = 97;
-    private java.util.List<java.lang.Long> fixed64SNotPacked_;
+    private com.google.protobuf.Internal.LongList fixed64SNotPacked_;
     /**
      * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     * @return A list containing the fixed64sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getFixed64SNotPackedList() {
       return fixed64SNotPacked_;
     }
     /**
      * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     * @return The count of fixed64sNotPacked.
      */
     public int getFixed64SNotPackedCount() {
       return fixed64SNotPacked_.size();
     }
     /**
      * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The fixed64sNotPacked at the given index.
      */
     public long getFixed64SNotPacked(int index) {
-      return fixed64SNotPacked_.get(index);
+      return fixed64SNotPacked_.getLong(index);
     }
 
     public static final int SFIXED32SNOTPACKED_FIELD_NUMBER = 98;
-    private java.util.List<java.lang.Integer> sfixed32SNotPacked_;
+    private com.google.protobuf.Internal.IntList sfixed32SNotPacked_;
     /**
      * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     * @return A list containing the sfixed32sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
         getSfixed32SNotPackedList() {
       return sfixed32SNotPacked_;
     }
     /**
      * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     * @return The count of sfixed32sNotPacked.
      */
     public int getSfixed32SNotPackedCount() {
       return sfixed32SNotPacked_.size();
     }
     /**
      * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sfixed32sNotPacked at the given index.
      */
     public int getSfixed32SNotPacked(int index) {
-      return sfixed32SNotPacked_.get(index);
+      return sfixed32SNotPacked_.getInt(index);
     }
 
     public static final int SFIXED64SNOTPACKED_FIELD_NUMBER = 99;
-    private java.util.List<java.lang.Long> sfixed64SNotPacked_;
+    private com.google.protobuf.Internal.LongList sfixed64SNotPacked_;
     /**
      * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     * @return A list containing the sfixed64sNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Long>
         getSfixed64SNotPackedList() {
       return sfixed64SNotPacked_;
     }
     /**
      * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     * @return The count of sfixed64sNotPacked.
      */
     public int getSfixed64SNotPackedCount() {
       return sfixed64SNotPacked_.size();
     }
     /**
      * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The sfixed64sNotPacked at the given index.
      */
     public long getSfixed64SNotPacked(int index) {
-      return sfixed64SNotPacked_.get(index);
+      return sfixed64SNotPacked_.getLong(index);
     }
 
     public static final int FLOATSNOTPACKED_FIELD_NUMBER = 100;
-    private java.util.List<java.lang.Float> floatsNotPacked_;
+    private com.google.protobuf.Internal.FloatList floatsNotPacked_;
     /**
      * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     * @return A list containing the floatsNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Float>
         getFloatsNotPackedList() {
       return floatsNotPacked_;
     }
     /**
      * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     * @return The count of floatsNotPacked.
      */
     public int getFloatsNotPackedCount() {
       return floatsNotPacked_.size();
     }
     /**
      * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The floatsNotPacked at the given index.
      */
     public float getFloatsNotPacked(int index) {
-      return floatsNotPacked_.get(index);
+      return floatsNotPacked_.getFloat(index);
     }
 
     public static final int DOUBLESNOTPACKED_FIELD_NUMBER = 101;
-    private java.util.List<java.lang.Double> doublesNotPacked_;
+    private com.google.protobuf.Internal.DoubleList doublesNotPacked_;
     /**
      * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     * @return A list containing the doublesNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Double>
         getDoublesNotPackedList() {
       return doublesNotPacked_;
     }
     /**
      * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     * @return The count of doublesNotPacked.
      */
     public int getDoublesNotPackedCount() {
       return doublesNotPacked_.size();
     }
     /**
      * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The doublesNotPacked at the given index.
      */
     public double getDoublesNotPacked(int index) {
-      return doublesNotPacked_.get(index);
+      return doublesNotPacked_.getDouble(index);
     }
 
     public static final int BOOLSNOTPACKED_FIELD_NUMBER = 102;
-    private java.util.List<java.lang.Boolean> boolsNotPacked_;
+    private com.google.protobuf.Internal.BooleanList boolsNotPacked_;
     /**
      * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     * @return A list containing the boolsNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Boolean>
         getBoolsNotPackedList() {
       return boolsNotPacked_;
     }
     /**
      * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     * @return The count of boolsNotPacked.
      */
     public int getBoolsNotPackedCount() {
       return boolsNotPacked_.size();
     }
     /**
      * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The boolsNotPacked at the given index.
      */
     public boolean getBoolsNotPacked(int index) {
-      return boolsNotPacked_.get(index);
+      return boolsNotPacked_.getBoolean(index);
     }
 
     public static final int COLORSNOTPACKED_FIELD_NUMBER = 103;
@@ -3247,33 +3643,45 @@ public final class ProtobufRoot {
             };
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @return A list containing the colorsNotPacked.
      */
+    @java.lang.Override
     public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsNotPackedList() {
       return new com.google.protobuf.Internal.ListAdapter<
           java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>(colorsNotPacked_, colorsNotPacked_converter_);
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @return The count of colorsNotPacked.
      */
+    @java.lang.Override
     public int getColorsNotPackedCount() {
       return colorsNotPacked_.size();
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @param index The index of the element to return.
+     * @return The colorsNotPacked at the given index.
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsNotPacked(int index) {
       return colorsNotPacked_converter_.convert(colorsNotPacked_.get(index));
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @return A list containing the enum numeric values on the wire for colorsNotPacked.
      */
+    @java.lang.Override
     public java.util.List<java.lang.Integer>
     getColorsNotPackedValueList() {
       return colorsNotPacked_;
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     * @param index The index of the value to return.
+     * @return The enum numeric value on the wire of colorsNotPacked at the given index.
      */
+    @java.lang.Override
     public int getColorsNotPackedValue(int index) {
       return colorsNotPacked_.get(index);
     }
@@ -3282,6 +3690,7 @@ public final class ProtobufRoot {
     private com.google.protobuf.LazyStringList strings_;
     /**
      * <code>repeated string strings = 110;</code>
+     * @return A list containing the strings.
      */
     public com.google.protobuf.ProtocolStringList
         getStringsList() {
@@ -3289,18 +3698,23 @@ public final class ProtobufRoot {
     }
     /**
      * <code>repeated string strings = 110;</code>
+     * @return The count of strings.
      */
     public int getStringsCount() {
       return strings_.size();
     }
     /**
      * <code>repeated string strings = 110;</code>
+     * @param index The index of the element to return.
+     * @return The strings at the given index.
      */
     public java.lang.String getStrings(int index) {
       return strings_.get(index);
     }
     /**
      * <code>repeated string strings = 110;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the strings at the given index.
      */
     public com.google.protobuf.ByteString
         getStringsBytes(int index) {
@@ -3311,19 +3725,24 @@ public final class ProtobufRoot {
     private java.util.List<com.google.protobuf.ByteString> bytess_;
     /**
      * <code>repeated bytes bytess = 111;</code>
+     * @return A list containing the bytess.
      */
+    @java.lang.Override
     public java.util.List<com.google.protobuf.ByteString>
         getBytessList() {
       return bytess_;
     }
     /**
      * <code>repeated bytes bytess = 111;</code>
+     * @return The count of bytess.
      */
     public int getBytessCount() {
       return bytess_.size();
     }
     /**
      * <code>repeated bytes bytess = 111;</code>
+     * @param index The index of the element to return.
+     * @return The bytess at the given index.
      */
     public com.google.protobuf.ByteString getBytess(int index) {
       return bytess_.get(index);
@@ -3334,12 +3753,14 @@ public final class ProtobufRoot {
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
+    @java.lang.Override
     public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getUsersList() {
       return users_;
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> 
         getUsersOrBuilderList() {
       return users_;
@@ -3347,18 +3768,21 @@ public final class ProtobufRoot {
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
+    @java.lang.Override
     public int getUsersCount() {
       return users_.size();
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUsers(int index) {
       return users_.get(index);
     }
     /**
      * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUsersOrBuilder(
         int index) {
       return users_.get(index);
@@ -3409,10 +3833,10 @@ public final class ProtobufRoot {
       if (sfixed64_ != 0L) {
         output.writeSFixed64(10, sfixed64_);
       }
-      if (floatValue_ != 0F) {
+      if (java.lang.Float.floatToRawIntBits(floatValue_) != 0) {
         output.writeFloat(11, floatValue_);
       }
-      if (doubleValue_ != 0D) {
+      if (java.lang.Double.doubleToRawLongBits(doubleValue_) != 0) {
         output.writeDouble(12, doubleValue_);
       }
       if (bool_ != false) {
@@ -3448,16 +3872,16 @@ public final class ProtobufRoot {
       if (objSfixed64_ != 0L) {
         output.writeSFixed64(29, objSfixed64_);
       }
-      if (objFloatValue_ != 0F) {
+      if (java.lang.Float.floatToRawIntBits(objFloatValue_) != 0) {
         output.writeFloat(30, objFloatValue_);
       }
-      if (objDoubleValue_ != 0D) {
+      if (java.lang.Double.doubleToRawLongBits(objDoubleValue_) != 0) {
         output.writeDouble(31, objDoubleValue_);
       }
       if (objBool_ != false) {
         output.writeBool(32, objBool_);
       }
-      if (!getStringBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(string_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 40, string_);
       }
       if (!bytes_.isEmpty()) {
@@ -3501,91 +3925,91 @@ public final class ProtobufRoot {
         output.writeUInt32NoTag(int32SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < int32SPacked_.size(); i++) {
-        output.writeInt32NoTag(int32SPacked_.get(i));
+        output.writeInt32NoTag(int32SPacked_.getInt(i));
       }
       if (getInt64SPackedList().size() > 0) {
         output.writeUInt32NoTag(570);
         output.writeUInt32NoTag(int64SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < int64SPacked_.size(); i++) {
-        output.writeInt64NoTag(int64SPacked_.get(i));
+        output.writeInt64NoTag(int64SPacked_.getLong(i));
       }
       if (getUint32SPackedList().size() > 0) {
         output.writeUInt32NoTag(578);
         output.writeUInt32NoTag(uint32SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < uint32SPacked_.size(); i++) {
-        output.writeUInt32NoTag(uint32SPacked_.get(i));
+        output.writeUInt32NoTag(uint32SPacked_.getInt(i));
       }
       if (getUint64SPackedList().size() > 0) {
         output.writeUInt32NoTag(586);
         output.writeUInt32NoTag(uint64SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < uint64SPacked_.size(); i++) {
-        output.writeUInt64NoTag(uint64SPacked_.get(i));
+        output.writeUInt64NoTag(uint64SPacked_.getLong(i));
       }
       if (getSint32SPackedList().size() > 0) {
         output.writeUInt32NoTag(594);
         output.writeUInt32NoTag(sint32SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < sint32SPacked_.size(); i++) {
-        output.writeSInt32NoTag(sint32SPacked_.get(i));
+        output.writeSInt32NoTag(sint32SPacked_.getInt(i));
       }
       if (getSint64SPackedList().size() > 0) {
         output.writeUInt32NoTag(602);
         output.writeUInt32NoTag(sint64SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < sint64SPacked_.size(); i++) {
-        output.writeSInt64NoTag(sint64SPacked_.get(i));
+        output.writeSInt64NoTag(sint64SPacked_.getLong(i));
       }
       if (getFixed32SPackedList().size() > 0) {
         output.writeUInt32NoTag(610);
         output.writeUInt32NoTag(fixed32SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < fixed32SPacked_.size(); i++) {
-        output.writeFixed32NoTag(fixed32SPacked_.get(i));
+        output.writeFixed32NoTag(fixed32SPacked_.getInt(i));
       }
       if (getFixed64SPackedList().size() > 0) {
         output.writeUInt32NoTag(618);
         output.writeUInt32NoTag(fixed64SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < fixed64SPacked_.size(); i++) {
-        output.writeFixed64NoTag(fixed64SPacked_.get(i));
+        output.writeFixed64NoTag(fixed64SPacked_.getLong(i));
       }
       if (getSfixed32SPackedList().size() > 0) {
         output.writeUInt32NoTag(626);
         output.writeUInt32NoTag(sfixed32SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < sfixed32SPacked_.size(); i++) {
-        output.writeSFixed32NoTag(sfixed32SPacked_.get(i));
+        output.writeSFixed32NoTag(sfixed32SPacked_.getInt(i));
       }
       if (getSfixed64SPackedList().size() > 0) {
         output.writeUInt32NoTag(634);
         output.writeUInt32NoTag(sfixed64SPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < sfixed64SPacked_.size(); i++) {
-        output.writeSFixed64NoTag(sfixed64SPacked_.get(i));
+        output.writeSFixed64NoTag(sfixed64SPacked_.getLong(i));
       }
       if (getFloatsPackedList().size() > 0) {
         output.writeUInt32NoTag(642);
         output.writeUInt32NoTag(floatsPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < floatsPacked_.size(); i++) {
-        output.writeFloatNoTag(floatsPacked_.get(i));
+        output.writeFloatNoTag(floatsPacked_.getFloat(i));
       }
       if (getDoublesPackedList().size() > 0) {
         output.writeUInt32NoTag(650);
         output.writeUInt32NoTag(doublesPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < doublesPacked_.size(); i++) {
-        output.writeDoubleNoTag(doublesPacked_.get(i));
+        output.writeDoubleNoTag(doublesPacked_.getDouble(i));
       }
       if (getBoolsPackedList().size() > 0) {
         output.writeUInt32NoTag(658);
         output.writeUInt32NoTag(boolsPackedMemoizedSerializedSize);
       }
       for (int i = 0; i < boolsPacked_.size(); i++) {
-        output.writeBoolNoTag(boolsPacked_.get(i));
+        output.writeBoolNoTag(boolsPacked_.getBoolean(i));
       }
       if (getColorsPackedList().size() > 0) {
         output.writeUInt32NoTag(666);
@@ -3595,43 +4019,43 @@ public final class ProtobufRoot {
         output.writeEnumNoTag(colorsPacked_.get(i));
       }
       for (int i = 0; i < int32SNotPacked_.size(); i++) {
-        output.writeInt32(90, int32SNotPacked_.get(i));
+        output.writeInt32(90, int32SNotPacked_.getInt(i));
       }
       for (int i = 0; i < int64SNotPacked_.size(); i++) {
-        output.writeInt64(91, int64SNotPacked_.get(i));
+        output.writeInt64(91, int64SNotPacked_.getLong(i));
       }
       for (int i = 0; i < uint32SNotPacked_.size(); i++) {
-        output.writeUInt32(92, uint32SNotPacked_.get(i));
+        output.writeUInt32(92, uint32SNotPacked_.getInt(i));
       }
       for (int i = 0; i < uint64SNotPacked_.size(); i++) {
-        output.writeUInt64(93, uint64SNotPacked_.get(i));
+        output.writeUInt64(93, uint64SNotPacked_.getLong(i));
       }
       for (int i = 0; i < sint32SNotPacked_.size(); i++) {
-        output.writeSInt32(94, sint32SNotPacked_.get(i));
+        output.writeSInt32(94, sint32SNotPacked_.getInt(i));
       }
       for (int i = 0; i < sint64SNotPacked_.size(); i++) {
-        output.writeSInt64(95, sint64SNotPacked_.get(i));
+        output.writeSInt64(95, sint64SNotPacked_.getLong(i));
       }
       for (int i = 0; i < fixed32SNotPacked_.size(); i++) {
-        output.writeFixed32(96, fixed32SNotPacked_.get(i));
+        output.writeFixed32(96, fixed32SNotPacked_.getInt(i));
       }
       for (int i = 0; i < fixed64SNotPacked_.size(); i++) {
-        output.writeFixed64(97, fixed64SNotPacked_.get(i));
+        output.writeFixed64(97, fixed64SNotPacked_.getLong(i));
       }
       for (int i = 0; i < sfixed32SNotPacked_.size(); i++) {
-        output.writeSFixed32(98, sfixed32SNotPacked_.get(i));
+        output.writeSFixed32(98, sfixed32SNotPacked_.getInt(i));
       }
       for (int i = 0; i < sfixed64SNotPacked_.size(); i++) {
-        output.writeSFixed64(99, sfixed64SNotPacked_.get(i));
+        output.writeSFixed64(99, sfixed64SNotPacked_.getLong(i));
       }
       for (int i = 0; i < floatsNotPacked_.size(); i++) {
-        output.writeFloat(100, floatsNotPacked_.get(i));
+        output.writeFloat(100, floatsNotPacked_.getFloat(i));
       }
       for (int i = 0; i < doublesNotPacked_.size(); i++) {
-        output.writeDouble(101, doublesNotPacked_.get(i));
+        output.writeDouble(101, doublesNotPacked_.getDouble(i));
       }
       for (int i = 0; i < boolsNotPacked_.size(); i++) {
-        output.writeBool(102, boolsNotPacked_.get(i));
+        output.writeBool(102, boolsNotPacked_.getBoolean(i));
       }
       for (int i = 0; i < colorsNotPacked_.size(); i++) {
         output.writeEnum(103, colorsNotPacked_.get(i));
@@ -3694,11 +4118,11 @@ public final class ProtobufRoot {
         size += com.google.protobuf.CodedOutputStream
           .computeSFixed64Size(10, sfixed64_);
       }
-      if (floatValue_ != 0F) {
+      if (java.lang.Float.floatToRawIntBits(floatValue_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(11, floatValue_);
       }
-      if (doubleValue_ != 0D) {
+      if (java.lang.Double.doubleToRawLongBits(doubleValue_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(12, doubleValue_);
       }
@@ -3746,11 +4170,11 @@ public final class ProtobufRoot {
         size += com.google.protobuf.CodedOutputStream
           .computeSFixed64Size(29, objSfixed64_);
       }
-      if (objFloatValue_ != 0F) {
+      if (java.lang.Float.floatToRawIntBits(objFloatValue_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(30, objFloatValue_);
       }
-      if (objDoubleValue_ != 0D) {
+      if (java.lang.Double.doubleToRawLongBits(objDoubleValue_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(31, objDoubleValue_);
       }
@@ -3758,7 +4182,7 @@ public final class ProtobufRoot {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(32, objBool_);
       }
-      if (!getStringBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(string_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, string_);
       }
       if (!bytes_.isEmpty()) {
@@ -3819,7 +4243,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < int32SPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(int32SPacked_.get(i));
+            .computeInt32SizeNoTag(int32SPacked_.getInt(i));
         }
         size += dataSize;
         if (!getInt32SPackedList().isEmpty()) {
@@ -3833,7 +4257,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < int64SPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt64SizeNoTag(int64SPacked_.get(i));
+            .computeInt64SizeNoTag(int64SPacked_.getLong(i));
         }
         size += dataSize;
         if (!getInt64SPackedList().isEmpty()) {
@@ -3847,7 +4271,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < uint32SPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(uint32SPacked_.get(i));
+            .computeUInt32SizeNoTag(uint32SPacked_.getInt(i));
         }
         size += dataSize;
         if (!getUint32SPackedList().isEmpty()) {
@@ -3861,7 +4285,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < uint64SPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt64SizeNoTag(uint64SPacked_.get(i));
+            .computeUInt64SizeNoTag(uint64SPacked_.getLong(i));
         }
         size += dataSize;
         if (!getUint64SPackedList().isEmpty()) {
@@ -3875,7 +4299,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < sint32SPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeSInt32SizeNoTag(sint32SPacked_.get(i));
+            .computeSInt32SizeNoTag(sint32SPacked_.getInt(i));
         }
         size += dataSize;
         if (!getSint32SPackedList().isEmpty()) {
@@ -3889,7 +4313,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < sint64SPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeSInt64SizeNoTag(sint64SPacked_.get(i));
+            .computeSInt64SizeNoTag(sint64SPacked_.getLong(i));
         }
         size += dataSize;
         if (!getSint64SPackedList().isEmpty()) {
@@ -3992,7 +4416,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < int32SNotPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(int32SNotPacked_.get(i));
+            .computeInt32SizeNoTag(int32SNotPacked_.getInt(i));
         }
         size += dataSize;
         size += 2 * getInt32SNotPackedList().size();
@@ -4001,7 +4425,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < int64SNotPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt64SizeNoTag(int64SNotPacked_.get(i));
+            .computeInt64SizeNoTag(int64SNotPacked_.getLong(i));
         }
         size += dataSize;
         size += 2 * getInt64SNotPackedList().size();
@@ -4010,7 +4434,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < uint32SNotPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(uint32SNotPacked_.get(i));
+            .computeUInt32SizeNoTag(uint32SNotPacked_.getInt(i));
         }
         size += dataSize;
         size += 2 * getUint32SNotPackedList().size();
@@ -4019,7 +4443,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < uint64SNotPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt64SizeNoTag(uint64SNotPacked_.get(i));
+            .computeUInt64SizeNoTag(uint64SNotPacked_.getLong(i));
         }
         size += dataSize;
         size += 2 * getUint64SNotPackedList().size();
@@ -4028,7 +4452,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < sint32SNotPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeSInt32SizeNoTag(sint32SNotPacked_.get(i));
+            .computeSInt32SizeNoTag(sint32SNotPacked_.getInt(i));
         }
         size += dataSize;
         size += 2 * getSint32SNotPackedList().size();
@@ -4037,7 +4461,7 @@ public final class ProtobufRoot {
         int dataSize = 0;
         for (int i = 0; i < sint64SNotPacked_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeSInt64SizeNoTag(sint64SNotPacked_.get(i));
+            .computeSInt64SizeNoTag(sint64SNotPacked_.getLong(i));
         }
         size += dataSize;
         size += 2 * getSint64SNotPackedList().size();
@@ -4129,157 +4553,152 @@ public final class ProtobufRoot {
       }
       org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root other = (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root) obj;
 
-      boolean result = true;
-      result = result && (getInt32()
-          == other.getInt32());
-      result = result && (getInt64()
-          == other.getInt64());
-      result = result && (getUint32()
-          == other.getUint32());
-      result = result && (getUint64()
-          == other.getUint64());
-      result = result && (getSint32()
-          == other.getSint32());
-      result = result && (getSint64()
-          == other.getSint64());
-      result = result && (getFixed32()
-          == other.getFixed32());
-      result = result && (getFixed64()
-          == other.getFixed64());
-      result = result && (getSfixed32()
-          == other.getSfixed32());
-      result = result && (getSfixed64()
-          == other.getSfixed64());
-      result = result && (
-          java.lang.Float.floatToIntBits(getFloatValue())
-          == java.lang.Float.floatToIntBits(
-              other.getFloatValue()));
-      result = result && (
-          java.lang.Double.doubleToLongBits(getDoubleValue())
-          == java.lang.Double.doubleToLongBits(
-              other.getDoubleValue()));
-      result = result && (getBool()
-          == other.getBool());
-      result = result && (getObjInt32()
-          == other.getObjInt32());
-      result = result && (getObjInt64()
-          == other.getObjInt64());
-      result = result && (getObjUint32()
-          == other.getObjUint32());
-      result = result && (getObjUint64()
-          == other.getObjUint64());
-      result = result && (getObjSint32()
-          == other.getObjSint32());
-      result = result && (getObjSint64()
-          == other.getObjSint64());
-      result = result && (getObjFixed32()
-          == other.getObjFixed32());
-      result = result && (getObjFixed64()
-          == other.getObjFixed64());
-      result = result && (getObjSfixed32()
-          == other.getObjSfixed32());
-      result = result && (getObjSfixed64()
-          == other.getObjSfixed64());
-      result = result && (
-          java.lang.Float.floatToIntBits(getObjFloatValue())
-          == java.lang.Float.floatToIntBits(
-              other.getObjFloatValue()));
-      result = result && (
-          java.lang.Double.doubleToLongBits(getObjDoubleValue())
-          == java.lang.Double.doubleToLongBits(
-              other.getObjDoubleValue()));
-      result = result && (getObjBool()
-          == other.getObjBool());
-      result = result && getString()
-          .equals(other.getString());
-      result = result && getBytes()
-          .equals(other.getBytes());
-      result = result && color_ == other.color_;
-      result = result && (hasUser() == other.hasUser());
+      if (getInt32()
+          != other.getInt32()) return false;
+      if (getInt64()
+          != other.getInt64()) return false;
+      if (getUint32()
+          != other.getUint32()) return false;
+      if (getUint64()
+          != other.getUint64()) return false;
+      if (getSint32()
+          != other.getSint32()) return false;
+      if (getSint64()
+          != other.getSint64()) return false;
+      if (getFixed32()
+          != other.getFixed32()) return false;
+      if (getFixed64()
+          != other.getFixed64()) return false;
+      if (getSfixed32()
+          != other.getSfixed32()) return false;
+      if (getSfixed64()
+          != other.getSfixed64()) return false;
+      if (java.lang.Float.floatToIntBits(getFloatValue())
+          != java.lang.Float.floatToIntBits(
+              other.getFloatValue())) return false;
+      if (java.lang.Double.doubleToLongBits(getDoubleValue())
+          != java.lang.Double.doubleToLongBits(
+              other.getDoubleValue())) return false;
+      if (getBool()
+          != other.getBool()) return false;
+      if (getObjInt32()
+          != other.getObjInt32()) return false;
+      if (getObjInt64()
+          != other.getObjInt64()) return false;
+      if (getObjUint32()
+          != other.getObjUint32()) return false;
+      if (getObjUint64()
+          != other.getObjUint64()) return false;
+      if (getObjSint32()
+          != other.getObjSint32()) return false;
+      if (getObjSint64()
+          != other.getObjSint64()) return false;
+      if (getObjFixed32()
+          != other.getObjFixed32()) return false;
+      if (getObjFixed64()
+          != other.getObjFixed64()) return false;
+      if (getObjSfixed32()
+          != other.getObjSfixed32()) return false;
+      if (getObjSfixed64()
+          != other.getObjSfixed64()) return false;
+      if (java.lang.Float.floatToIntBits(getObjFloatValue())
+          != java.lang.Float.floatToIntBits(
+              other.getObjFloatValue())) return false;
+      if (java.lang.Double.doubleToLongBits(getObjDoubleValue())
+          != java.lang.Double.doubleToLongBits(
+              other.getObjDoubleValue())) return false;
+      if (getObjBool()
+          != other.getObjBool()) return false;
+      if (!getString()
+          .equals(other.getString())) return false;
+      if (!getBytes()
+          .equals(other.getBytes())) return false;
+      if (color_ != other.color_) return false;
+      if (hasUser() != other.hasUser()) return false;
       if (hasUser()) {
-        result = result && getUser()
-            .equals(other.getUser());
+        if (!getUser()
+            .equals(other.getUser())) return false;
       }
-      result = result && (hasTypeRecursive() == other.hasTypeRecursive());
+      if (hasTypeRecursive() != other.hasTypeRecursive()) return false;
       if (hasTypeRecursive()) {
-        result = result && getTypeRecursive()
-            .equals(other.getTypeRecursive());
+        if (!getTypeRecursive()
+            .equals(other.getTypeRecursive())) return false;
       }
-      result = result && (hasAny() == other.hasAny());
+      if (hasAny() != other.hasAny()) return false;
       if (hasAny()) {
-        result = result && getAny()
-            .equals(other.getAny());
+        if (!getAny()
+            .equals(other.getAny())) return false;
       }
-      result = result && getAnysList()
-          .equals(other.getAnysList());
-      result = result && internalGetSsMap().equals(
-          other.internalGetSsMap());
-      result = result && internalGetSint32Map().equals(
-          other.internalGetSint32Map());
-      result = result && internalGetSpMap().equals(
-          other.internalGetSpMap());
-      result = result && getInt32SPackedList()
-          .equals(other.getInt32SPackedList());
-      result = result && getInt64SPackedList()
-          .equals(other.getInt64SPackedList());
-      result = result && getUint32SPackedList()
-          .equals(other.getUint32SPackedList());
-      result = result && getUint64SPackedList()
-          .equals(other.getUint64SPackedList());
-      result = result && getSint32SPackedList()
-          .equals(other.getSint32SPackedList());
-      result = result && getSint64SPackedList()
-          .equals(other.getSint64SPackedList());
-      result = result && getFixed32SPackedList()
-          .equals(other.getFixed32SPackedList());
-      result = result && getFixed64SPackedList()
-          .equals(other.getFixed64SPackedList());
-      result = result && getSfixed32SPackedList()
-          .equals(other.getSfixed32SPackedList());
-      result = result && getSfixed64SPackedList()
-          .equals(other.getSfixed64SPackedList());
-      result = result && getFloatsPackedList()
-          .equals(other.getFloatsPackedList());
-      result = result && getDoublesPackedList()
-          .equals(other.getDoublesPackedList());
-      result = result && getBoolsPackedList()
-          .equals(other.getBoolsPackedList());
-      result = result && colorsPacked_.equals(other.colorsPacked_);
-      result = result && getInt32SNotPackedList()
-          .equals(other.getInt32SNotPackedList());
-      result = result && getInt64SNotPackedList()
-          .equals(other.getInt64SNotPackedList());
-      result = result && getUint32SNotPackedList()
-          .equals(other.getUint32SNotPackedList());
-      result = result && getUint64SNotPackedList()
-          .equals(other.getUint64SNotPackedList());
-      result = result && getSint32SNotPackedList()
-          .equals(other.getSint32SNotPackedList());
-      result = result && getSint64SNotPackedList()
-          .equals(other.getSint64SNotPackedList());
-      result = result && getFixed32SNotPackedList()
-          .equals(other.getFixed32SNotPackedList());
-      result = result && getFixed64SNotPackedList()
-          .equals(other.getFixed64SNotPackedList());
-      result = result && getSfixed32SNotPackedList()
-          .equals(other.getSfixed32SNotPackedList());
-      result = result && getSfixed64SNotPackedList()
-          .equals(other.getSfixed64SNotPackedList());
-      result = result && getFloatsNotPackedList()
-          .equals(other.getFloatsNotPackedList());
-      result = result && getDoublesNotPackedList()
-          .equals(other.getDoublesNotPackedList());
-      result = result && getBoolsNotPackedList()
-          .equals(other.getBoolsNotPackedList());
-      result = result && colorsNotPacked_.equals(other.colorsNotPacked_);
-      result = result && getStringsList()
-          .equals(other.getStringsList());
-      result = result && getBytessList()
-          .equals(other.getBytessList());
-      result = result && getUsersList()
-          .equals(other.getUsersList());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getAnysList()
+          .equals(other.getAnysList())) return false;
+      if (!internalGetSsMap().equals(
+          other.internalGetSsMap())) return false;
+      if (!internalGetSint32Map().equals(
+          other.internalGetSint32Map())) return false;
+      if (!internalGetSpMap().equals(
+          other.internalGetSpMap())) return false;
+      if (!getInt32SPackedList()
+          .equals(other.getInt32SPackedList())) return false;
+      if (!getInt64SPackedList()
+          .equals(other.getInt64SPackedList())) return false;
+      if (!getUint32SPackedList()
+          .equals(other.getUint32SPackedList())) return false;
+      if (!getUint64SPackedList()
+          .equals(other.getUint64SPackedList())) return false;
+      if (!getSint32SPackedList()
+          .equals(other.getSint32SPackedList())) return false;
+      if (!getSint64SPackedList()
+          .equals(other.getSint64SPackedList())) return false;
+      if (!getFixed32SPackedList()
+          .equals(other.getFixed32SPackedList())) return false;
+      if (!getFixed64SPackedList()
+          .equals(other.getFixed64SPackedList())) return false;
+      if (!getSfixed32SPackedList()
+          .equals(other.getSfixed32SPackedList())) return false;
+      if (!getSfixed64SPackedList()
+          .equals(other.getSfixed64SPackedList())) return false;
+      if (!getFloatsPackedList()
+          .equals(other.getFloatsPackedList())) return false;
+      if (!getDoublesPackedList()
+          .equals(other.getDoublesPackedList())) return false;
+      if (!getBoolsPackedList()
+          .equals(other.getBoolsPackedList())) return false;
+      if (!colorsPacked_.equals(other.colorsPacked_)) return false;
+      if (!getInt32SNotPackedList()
+          .equals(other.getInt32SNotPackedList())) return false;
+      if (!getInt64SNotPackedList()
+          .equals(other.getInt64SNotPackedList())) return false;
+      if (!getUint32SNotPackedList()
+          .equals(other.getUint32SNotPackedList())) return false;
+      if (!getUint64SNotPackedList()
+          .equals(other.getUint64SNotPackedList())) return false;
+      if (!getSint32SNotPackedList()
+          .equals(other.getSint32SNotPackedList())) return false;
+      if (!getSint64SNotPackedList()
+          .equals(other.getSint64SNotPackedList())) return false;
+      if (!getFixed32SNotPackedList()
+          .equals(other.getFixed32SNotPackedList())) return false;
+      if (!getFixed64SNotPackedList()
+          .equals(other.getFixed64SNotPackedList())) return false;
+      if (!getSfixed32SNotPackedList()
+          .equals(other.getSfixed32SNotPackedList())) return false;
+      if (!getSfixed64SNotPackedList()
+          .equals(other.getSfixed64SNotPackedList())) return false;
+      if (!getFloatsNotPackedList()
+          .equals(other.getFloatsNotPackedList())) return false;
+      if (!getDoublesNotPackedList()
+          .equals(other.getDoublesNotPackedList())) return false;
+      if (!getBoolsNotPackedList()
+          .equals(other.getBoolsNotPackedList())) return false;
+      if (!colorsNotPacked_.equals(other.colorsNotPacked_)) return false;
+      if (!getStringsList()
+          .equals(other.getStringsList())) return false;
+      if (!getBytessList()
+          .equals(other.getBytessList())) return false;
+      if (!getUsersList()
+          .equals(other.getUsersList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -4758,76 +5177,76 @@ public final class ProtobufRoot {
         }
         if (anysBuilder_ == null) {
           anys_ = java.util.Collections.emptyList();
-          bitField1_ = (bitField1_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           anysBuilder_.clear();
         }
         internalGetMutableSsMap().clear();
         internalGetMutableSint32Map().clear();
         internalGetMutableSpMap().clear();
-        int32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000010);
-        int64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000020);
-        uint32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000040);
-        uint64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000080);
-        sint32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000100);
-        sint64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000200);
-        fixed32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000400);
-        fixed64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000800);
-        sfixed32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00001000);
-        sfixed64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00002000);
-        floatsPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00004000);
-        doublesPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00008000);
-        boolsPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00010000);
+        int32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000010);
+        int64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        uint32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        uint64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        sint32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000100);
+        sint64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000200);
+        fixed32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000400);
+        fixed64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000800);
+        sfixed32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00001000);
+        sfixed64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00002000);
+        floatsPacked_ = emptyFloatList();
+        bitField0_ = (bitField0_ & ~0x00004000);
+        doublesPacked_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x00008000);
+        boolsPacked_ = emptyBooleanList();
+        bitField0_ = (bitField0_ & ~0x00010000);
         colorsPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00020000);
-        int32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00040000);
-        int64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00080000);
-        uint32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00100000);
-        uint64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00200000);
-        sint32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00400000);
-        sint64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00800000);
-        fixed32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x01000000);
-        fixed64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x02000000);
-        sfixed32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x04000000);
-        sfixed64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x08000000);
-        floatsNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x10000000);
-        doublesNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x20000000);
-        boolsNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x40000000);
+        bitField0_ = (bitField0_ & ~0x00020000);
+        int32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00040000);
+        int64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00080000);
+        uint32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00100000);
+        uint64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00200000);
+        sint32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00400000);
+        sint64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00800000);
+        fixed32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x01000000);
+        fixed64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x02000000);
+        sfixed32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x04000000);
+        sfixed64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x08000000);
+        floatsNotPacked_ = emptyFloatList();
+        bitField0_ = (bitField0_ & ~0x10000000);
+        doublesNotPacked_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x20000000);
+        boolsNotPacked_ = emptyBooleanList();
+        bitField0_ = (bitField0_ & ~0x40000000);
         colorsNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x80000000);
+        bitField0_ = (bitField0_ & ~0x80000000);
         strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField2_ = (bitField2_ & ~0x00000001);
+        bitField1_ = (bitField1_ & ~0x00000001);
         bytess_ = java.util.Collections.emptyList();
-        bitField2_ = (bitField2_ & ~0x00000002);
+        bitField1_ = (bitField1_ & ~0x00000002);
         if (usersBuilder_ == null) {
           users_ = java.util.Collections.emptyList();
-          bitField2_ = (bitField2_ & ~0x00000004);
+          bitField1_ = (bitField1_ & ~0x00000004);
         } else {
           usersBuilder_.clear();
         }
@@ -4859,8 +5278,6 @@ public final class ProtobufRoot {
         org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root result = new org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root(this);
         int from_bitField0_ = bitField0_;
         int from_bitField1_ = bitField1_;
-        int from_bitField2_ = bitField2_;
-        int to_bitField0_ = 0;
         result.int32_ = int32_;
         result.int64_ = int64_;
         result.uint32_ = uint32_;
@@ -4906,9 +5323,9 @@ public final class ProtobufRoot {
           result.any_ = anyBuilder_.build();
         }
         if (anysBuilder_ == null) {
-          if (((bitField1_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             anys_ = java.util.Collections.unmodifiableList(anys_);
-            bitField1_ = (bitField1_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.anys_ = anys_;
         } else {
@@ -4920,201 +5337,200 @@ public final class ProtobufRoot {
         result.sint32Map_.makeImmutable();
         result.spMap_ = internalGetSpMap();
         result.spMap_.makeImmutable();
-        if (((bitField1_ & 0x00000010) == 0x00000010)) {
-          int32SPacked_ = java.util.Collections.unmodifiableList(int32SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000010);
+        if (((bitField0_ & 0x00000010) != 0)) {
+          int32SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.int32SPacked_ = int32SPacked_;
-        if (((bitField1_ & 0x00000020) == 0x00000020)) {
-          int64SPacked_ = java.util.Collections.unmodifiableList(int64SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000020);
+        if (((bitField0_ & 0x00000020) != 0)) {
+          int64SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000020);
         }
         result.int64SPacked_ = int64SPacked_;
-        if (((bitField1_ & 0x00000040) == 0x00000040)) {
-          uint32SPacked_ = java.util.Collections.unmodifiableList(uint32SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000040);
+        if (((bitField0_ & 0x00000040) != 0)) {
+          uint32SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000040);
         }
         result.uint32SPacked_ = uint32SPacked_;
-        if (((bitField1_ & 0x00000080) == 0x00000080)) {
-          uint64SPacked_ = java.util.Collections.unmodifiableList(uint64SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000080);
+        if (((bitField0_ & 0x00000080) != 0)) {
+          uint64SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000080);
         }
         result.uint64SPacked_ = uint64SPacked_;
-        if (((bitField1_ & 0x00000100) == 0x00000100)) {
-          sint32SPacked_ = java.util.Collections.unmodifiableList(sint32SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000100);
+        if (((bitField0_ & 0x00000100) != 0)) {
+          sint32SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000100);
         }
         result.sint32SPacked_ = sint32SPacked_;
-        if (((bitField1_ & 0x00000200) == 0x00000200)) {
-          sint64SPacked_ = java.util.Collections.unmodifiableList(sint64SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000200);
+        if (((bitField0_ & 0x00000200) != 0)) {
+          sint64SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000200);
         }
         result.sint64SPacked_ = sint64SPacked_;
-        if (((bitField1_ & 0x00000400) == 0x00000400)) {
-          fixed32SPacked_ = java.util.Collections.unmodifiableList(fixed32SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000400);
+        if (((bitField0_ & 0x00000400) != 0)) {
+          fixed32SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000400);
         }
         result.fixed32SPacked_ = fixed32SPacked_;
-        if (((bitField1_ & 0x00000800) == 0x00000800)) {
-          fixed64SPacked_ = java.util.Collections.unmodifiableList(fixed64SPacked_);
-          bitField1_ = (bitField1_ & ~0x00000800);
+        if (((bitField0_ & 0x00000800) != 0)) {
+          fixed64SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00000800);
         }
         result.fixed64SPacked_ = fixed64SPacked_;
-        if (((bitField1_ & 0x00001000) == 0x00001000)) {
-          sfixed32SPacked_ = java.util.Collections.unmodifiableList(sfixed32SPacked_);
-          bitField1_ = (bitField1_ & ~0x00001000);
+        if (((bitField0_ & 0x00001000) != 0)) {
+          sfixed32SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00001000);
         }
         result.sfixed32SPacked_ = sfixed32SPacked_;
-        if (((bitField1_ & 0x00002000) == 0x00002000)) {
-          sfixed64SPacked_ = java.util.Collections.unmodifiableList(sfixed64SPacked_);
-          bitField1_ = (bitField1_ & ~0x00002000);
+        if (((bitField0_ & 0x00002000) != 0)) {
+          sfixed64SPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00002000);
         }
         result.sfixed64SPacked_ = sfixed64SPacked_;
-        if (((bitField1_ & 0x00004000) == 0x00004000)) {
-          floatsPacked_ = java.util.Collections.unmodifiableList(floatsPacked_);
-          bitField1_ = (bitField1_ & ~0x00004000);
+        if (((bitField0_ & 0x00004000) != 0)) {
+          floatsPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00004000);
         }
         result.floatsPacked_ = floatsPacked_;
-        if (((bitField1_ & 0x00008000) == 0x00008000)) {
-          doublesPacked_ = java.util.Collections.unmodifiableList(doublesPacked_);
-          bitField1_ = (bitField1_ & ~0x00008000);
+        if (((bitField0_ & 0x00008000) != 0)) {
+          doublesPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00008000);
         }
         result.doublesPacked_ = doublesPacked_;
-        if (((bitField1_ & 0x00010000) == 0x00010000)) {
-          boolsPacked_ = java.util.Collections.unmodifiableList(boolsPacked_);
-          bitField1_ = (bitField1_ & ~0x00010000);
+        if (((bitField0_ & 0x00010000) != 0)) {
+          boolsPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00010000);
         }
         result.boolsPacked_ = boolsPacked_;
-        if (((bitField1_ & 0x00020000) == 0x00020000)) {
+        if (((bitField0_ & 0x00020000) != 0)) {
           colorsPacked_ = java.util.Collections.unmodifiableList(colorsPacked_);
-          bitField1_ = (bitField1_ & ~0x00020000);
+          bitField0_ = (bitField0_ & ~0x00020000);
         }
         result.colorsPacked_ = colorsPacked_;
-        if (((bitField1_ & 0x00040000) == 0x00040000)) {
-          int32SNotPacked_ = java.util.Collections.unmodifiableList(int32SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x00040000);
+        if (((bitField0_ & 0x00040000) != 0)) {
+          int32SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00040000);
         }
         result.int32SNotPacked_ = int32SNotPacked_;
-        if (((bitField1_ & 0x00080000) == 0x00080000)) {
-          int64SNotPacked_ = java.util.Collections.unmodifiableList(int64SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x00080000);
+        if (((bitField0_ & 0x00080000) != 0)) {
+          int64SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00080000);
         }
         result.int64SNotPacked_ = int64SNotPacked_;
-        if (((bitField1_ & 0x00100000) == 0x00100000)) {
-          uint32SNotPacked_ = java.util.Collections.unmodifiableList(uint32SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x00100000);
+        if (((bitField0_ & 0x00100000) != 0)) {
+          uint32SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00100000);
         }
         result.uint32SNotPacked_ = uint32SNotPacked_;
-        if (((bitField1_ & 0x00200000) == 0x00200000)) {
-          uint64SNotPacked_ = java.util.Collections.unmodifiableList(uint64SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x00200000);
+        if (((bitField0_ & 0x00200000) != 0)) {
+          uint64SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00200000);
         }
         result.uint64SNotPacked_ = uint64SNotPacked_;
-        if (((bitField1_ & 0x00400000) == 0x00400000)) {
-          sint32SNotPacked_ = java.util.Collections.unmodifiableList(sint32SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x00400000);
+        if (((bitField0_ & 0x00400000) != 0)) {
+          sint32SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00400000);
         }
         result.sint32SNotPacked_ = sint32SNotPacked_;
-        if (((bitField1_ & 0x00800000) == 0x00800000)) {
-          sint64SNotPacked_ = java.util.Collections.unmodifiableList(sint64SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x00800000);
+        if (((bitField0_ & 0x00800000) != 0)) {
+          sint64SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x00800000);
         }
         result.sint64SNotPacked_ = sint64SNotPacked_;
-        if (((bitField1_ & 0x01000000) == 0x01000000)) {
-          fixed32SNotPacked_ = java.util.Collections.unmodifiableList(fixed32SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x01000000);
+        if (((bitField0_ & 0x01000000) != 0)) {
+          fixed32SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x01000000);
         }
         result.fixed32SNotPacked_ = fixed32SNotPacked_;
-        if (((bitField1_ & 0x02000000) == 0x02000000)) {
-          fixed64SNotPacked_ = java.util.Collections.unmodifiableList(fixed64SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x02000000);
+        if (((bitField0_ & 0x02000000) != 0)) {
+          fixed64SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x02000000);
         }
         result.fixed64SNotPacked_ = fixed64SNotPacked_;
-        if (((bitField1_ & 0x04000000) == 0x04000000)) {
-          sfixed32SNotPacked_ = java.util.Collections.unmodifiableList(sfixed32SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x04000000);
+        if (((bitField0_ & 0x04000000) != 0)) {
+          sfixed32SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x04000000);
         }
         result.sfixed32SNotPacked_ = sfixed32SNotPacked_;
-        if (((bitField1_ & 0x08000000) == 0x08000000)) {
-          sfixed64SNotPacked_ = java.util.Collections.unmodifiableList(sfixed64SNotPacked_);
-          bitField1_ = (bitField1_ & ~0x08000000);
+        if (((bitField0_ & 0x08000000) != 0)) {
+          sfixed64SNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x08000000);
         }
         result.sfixed64SNotPacked_ = sfixed64SNotPacked_;
-        if (((bitField1_ & 0x10000000) == 0x10000000)) {
-          floatsNotPacked_ = java.util.Collections.unmodifiableList(floatsNotPacked_);
-          bitField1_ = (bitField1_ & ~0x10000000);
+        if (((bitField0_ & 0x10000000) != 0)) {
+          floatsNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x10000000);
         }
         result.floatsNotPacked_ = floatsNotPacked_;
-        if (((bitField1_ & 0x20000000) == 0x20000000)) {
-          doublesNotPacked_ = java.util.Collections.unmodifiableList(doublesNotPacked_);
-          bitField1_ = (bitField1_ & ~0x20000000);
+        if (((bitField0_ & 0x20000000) != 0)) {
+          doublesNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x20000000);
         }
         result.doublesNotPacked_ = doublesNotPacked_;
-        if (((bitField1_ & 0x40000000) == 0x40000000)) {
-          boolsNotPacked_ = java.util.Collections.unmodifiableList(boolsNotPacked_);
-          bitField1_ = (bitField1_ & ~0x40000000);
+        if (((bitField0_ & 0x40000000) != 0)) {
+          boolsNotPacked_.makeImmutable();
+          bitField0_ = (bitField0_ & ~0x40000000);
         }
         result.boolsNotPacked_ = boolsNotPacked_;
-        if (((bitField1_ & 0x80000000) == 0x80000000)) {
+        if (((bitField0_ & 0x80000000) != 0)) {
           colorsNotPacked_ = java.util.Collections.unmodifiableList(colorsNotPacked_);
-          bitField1_ = (bitField1_ & ~0x80000000);
+          bitField0_ = (bitField0_ & ~0x80000000);
         }
         result.colorsNotPacked_ = colorsNotPacked_;
-        if (((bitField2_ & 0x00000001) == 0x00000001)) {
+        if (((bitField1_ & 0x00000001) != 0)) {
           strings_ = strings_.getUnmodifiableView();
-          bitField2_ = (bitField2_ & ~0x00000001);
+          bitField1_ = (bitField1_ & ~0x00000001);
         }
         result.strings_ = strings_;
-        if (((bitField2_ & 0x00000002) == 0x00000002)) {
+        if (((bitField1_ & 0x00000002) != 0)) {
           bytess_ = java.util.Collections.unmodifiableList(bytess_);
-          bitField2_ = (bitField2_ & ~0x00000002);
+          bitField1_ = (bitField1_ & ~0x00000002);
         }
         result.bytess_ = bytess_;
         if (usersBuilder_ == null) {
-          if (((bitField2_ & 0x00000004) == 0x00000004)) {
+          if (((bitField1_ & 0x00000004) != 0)) {
             users_ = java.util.Collections.unmodifiableList(users_);
-            bitField2_ = (bitField2_ & ~0x00000004);
+            bitField1_ = (bitField1_ & ~0x00000004);
           }
           result.users_ = users_;
         } else {
           result.users_ = usersBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5229,7 +5645,7 @@ public final class ProtobufRoot {
           if (!other.anys_.isEmpty()) {
             if (anys_.isEmpty()) {
               anys_ = other.anys_;
-              bitField1_ = (bitField1_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureAnysIsMutable();
               anys_.addAll(other.anys_);
@@ -5242,7 +5658,7 @@ public final class ProtobufRoot {
               anysBuilder_.dispose();
               anysBuilder_ = null;
               anys_ = other.anys_;
-              bitField1_ = (bitField1_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000001);
               anysBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getAnysFieldBuilder() : null;
@@ -5260,7 +5676,7 @@ public final class ProtobufRoot {
         if (!other.int32SPacked_.isEmpty()) {
           if (int32SPacked_.isEmpty()) {
             int32SPacked_ = other.int32SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000010);
           } else {
             ensureInt32SPackedIsMutable();
             int32SPacked_.addAll(other.int32SPacked_);
@@ -5270,7 +5686,7 @@ public final class ProtobufRoot {
         if (!other.int64SPacked_.isEmpty()) {
           if (int64SPacked_.isEmpty()) {
             int64SPacked_ = other.int64SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000020);
           } else {
             ensureInt64SPackedIsMutable();
             int64SPacked_.addAll(other.int64SPacked_);
@@ -5280,7 +5696,7 @@ public final class ProtobufRoot {
         if (!other.uint32SPacked_.isEmpty()) {
           if (uint32SPacked_.isEmpty()) {
             uint32SPacked_ = other.uint32SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000040);
           } else {
             ensureUint32SPackedIsMutable();
             uint32SPacked_.addAll(other.uint32SPacked_);
@@ -5290,7 +5706,7 @@ public final class ProtobufRoot {
         if (!other.uint64SPacked_.isEmpty()) {
           if (uint64SPacked_.isEmpty()) {
             uint64SPacked_ = other.uint64SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000080);
           } else {
             ensureUint64SPackedIsMutable();
             uint64SPacked_.addAll(other.uint64SPacked_);
@@ -5300,7 +5716,7 @@ public final class ProtobufRoot {
         if (!other.sint32SPacked_.isEmpty()) {
           if (sint32SPacked_.isEmpty()) {
             sint32SPacked_ = other.sint32SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000100);
+            bitField0_ = (bitField0_ & ~0x00000100);
           } else {
             ensureSint32SPackedIsMutable();
             sint32SPacked_.addAll(other.sint32SPacked_);
@@ -5310,7 +5726,7 @@ public final class ProtobufRoot {
         if (!other.sint64SPacked_.isEmpty()) {
           if (sint64SPacked_.isEmpty()) {
             sint64SPacked_ = other.sint64SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000200);
+            bitField0_ = (bitField0_ & ~0x00000200);
           } else {
             ensureSint64SPackedIsMutable();
             sint64SPacked_.addAll(other.sint64SPacked_);
@@ -5320,7 +5736,7 @@ public final class ProtobufRoot {
         if (!other.fixed32SPacked_.isEmpty()) {
           if (fixed32SPacked_.isEmpty()) {
             fixed32SPacked_ = other.fixed32SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000400);
+            bitField0_ = (bitField0_ & ~0x00000400);
           } else {
             ensureFixed32SPackedIsMutable();
             fixed32SPacked_.addAll(other.fixed32SPacked_);
@@ -5330,7 +5746,7 @@ public final class ProtobufRoot {
         if (!other.fixed64SPacked_.isEmpty()) {
           if (fixed64SPacked_.isEmpty()) {
             fixed64SPacked_ = other.fixed64SPacked_;
-            bitField1_ = (bitField1_ & ~0x00000800);
+            bitField0_ = (bitField0_ & ~0x00000800);
           } else {
             ensureFixed64SPackedIsMutable();
             fixed64SPacked_.addAll(other.fixed64SPacked_);
@@ -5340,7 +5756,7 @@ public final class ProtobufRoot {
         if (!other.sfixed32SPacked_.isEmpty()) {
           if (sfixed32SPacked_.isEmpty()) {
             sfixed32SPacked_ = other.sfixed32SPacked_;
-            bitField1_ = (bitField1_ & ~0x00001000);
+            bitField0_ = (bitField0_ & ~0x00001000);
           } else {
             ensureSfixed32SPackedIsMutable();
             sfixed32SPacked_.addAll(other.sfixed32SPacked_);
@@ -5350,7 +5766,7 @@ public final class ProtobufRoot {
         if (!other.sfixed64SPacked_.isEmpty()) {
           if (sfixed64SPacked_.isEmpty()) {
             sfixed64SPacked_ = other.sfixed64SPacked_;
-            bitField1_ = (bitField1_ & ~0x00002000);
+            bitField0_ = (bitField0_ & ~0x00002000);
           } else {
             ensureSfixed64SPackedIsMutable();
             sfixed64SPacked_.addAll(other.sfixed64SPacked_);
@@ -5360,7 +5776,7 @@ public final class ProtobufRoot {
         if (!other.floatsPacked_.isEmpty()) {
           if (floatsPacked_.isEmpty()) {
             floatsPacked_ = other.floatsPacked_;
-            bitField1_ = (bitField1_ & ~0x00004000);
+            bitField0_ = (bitField0_ & ~0x00004000);
           } else {
             ensureFloatsPackedIsMutable();
             floatsPacked_.addAll(other.floatsPacked_);
@@ -5370,7 +5786,7 @@ public final class ProtobufRoot {
         if (!other.doublesPacked_.isEmpty()) {
           if (doublesPacked_.isEmpty()) {
             doublesPacked_ = other.doublesPacked_;
-            bitField1_ = (bitField1_ & ~0x00008000);
+            bitField0_ = (bitField0_ & ~0x00008000);
           } else {
             ensureDoublesPackedIsMutable();
             doublesPacked_.addAll(other.doublesPacked_);
@@ -5380,7 +5796,7 @@ public final class ProtobufRoot {
         if (!other.boolsPacked_.isEmpty()) {
           if (boolsPacked_.isEmpty()) {
             boolsPacked_ = other.boolsPacked_;
-            bitField1_ = (bitField1_ & ~0x00010000);
+            bitField0_ = (bitField0_ & ~0x00010000);
           } else {
             ensureBoolsPackedIsMutable();
             boolsPacked_.addAll(other.boolsPacked_);
@@ -5390,7 +5806,7 @@ public final class ProtobufRoot {
         if (!other.colorsPacked_.isEmpty()) {
           if (colorsPacked_.isEmpty()) {
             colorsPacked_ = other.colorsPacked_;
-            bitField1_ = (bitField1_ & ~0x00020000);
+            bitField0_ = (bitField0_ & ~0x00020000);
           } else {
             ensureColorsPackedIsMutable();
             colorsPacked_.addAll(other.colorsPacked_);
@@ -5400,7 +5816,7 @@ public final class ProtobufRoot {
         if (!other.int32SNotPacked_.isEmpty()) {
           if (int32SNotPacked_.isEmpty()) {
             int32SNotPacked_ = other.int32SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x00040000);
+            bitField0_ = (bitField0_ & ~0x00040000);
           } else {
             ensureInt32SNotPackedIsMutable();
             int32SNotPacked_.addAll(other.int32SNotPacked_);
@@ -5410,7 +5826,7 @@ public final class ProtobufRoot {
         if (!other.int64SNotPacked_.isEmpty()) {
           if (int64SNotPacked_.isEmpty()) {
             int64SNotPacked_ = other.int64SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x00080000);
+            bitField0_ = (bitField0_ & ~0x00080000);
           } else {
             ensureInt64SNotPackedIsMutable();
             int64SNotPacked_.addAll(other.int64SNotPacked_);
@@ -5420,7 +5836,7 @@ public final class ProtobufRoot {
         if (!other.uint32SNotPacked_.isEmpty()) {
           if (uint32SNotPacked_.isEmpty()) {
             uint32SNotPacked_ = other.uint32SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x00100000);
+            bitField0_ = (bitField0_ & ~0x00100000);
           } else {
             ensureUint32SNotPackedIsMutable();
             uint32SNotPacked_.addAll(other.uint32SNotPacked_);
@@ -5430,7 +5846,7 @@ public final class ProtobufRoot {
         if (!other.uint64SNotPacked_.isEmpty()) {
           if (uint64SNotPacked_.isEmpty()) {
             uint64SNotPacked_ = other.uint64SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x00200000);
+            bitField0_ = (bitField0_ & ~0x00200000);
           } else {
             ensureUint64SNotPackedIsMutable();
             uint64SNotPacked_.addAll(other.uint64SNotPacked_);
@@ -5440,7 +5856,7 @@ public final class ProtobufRoot {
         if (!other.sint32SNotPacked_.isEmpty()) {
           if (sint32SNotPacked_.isEmpty()) {
             sint32SNotPacked_ = other.sint32SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x00400000);
+            bitField0_ = (bitField0_ & ~0x00400000);
           } else {
             ensureSint32SNotPackedIsMutable();
             sint32SNotPacked_.addAll(other.sint32SNotPacked_);
@@ -5450,7 +5866,7 @@ public final class ProtobufRoot {
         if (!other.sint64SNotPacked_.isEmpty()) {
           if (sint64SNotPacked_.isEmpty()) {
             sint64SNotPacked_ = other.sint64SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x00800000);
+            bitField0_ = (bitField0_ & ~0x00800000);
           } else {
             ensureSint64SNotPackedIsMutable();
             sint64SNotPacked_.addAll(other.sint64SNotPacked_);
@@ -5460,7 +5876,7 @@ public final class ProtobufRoot {
         if (!other.fixed32SNotPacked_.isEmpty()) {
           if (fixed32SNotPacked_.isEmpty()) {
             fixed32SNotPacked_ = other.fixed32SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x01000000);
+            bitField0_ = (bitField0_ & ~0x01000000);
           } else {
             ensureFixed32SNotPackedIsMutable();
             fixed32SNotPacked_.addAll(other.fixed32SNotPacked_);
@@ -5470,7 +5886,7 @@ public final class ProtobufRoot {
         if (!other.fixed64SNotPacked_.isEmpty()) {
           if (fixed64SNotPacked_.isEmpty()) {
             fixed64SNotPacked_ = other.fixed64SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x02000000);
+            bitField0_ = (bitField0_ & ~0x02000000);
           } else {
             ensureFixed64SNotPackedIsMutable();
             fixed64SNotPacked_.addAll(other.fixed64SNotPacked_);
@@ -5480,7 +5896,7 @@ public final class ProtobufRoot {
         if (!other.sfixed32SNotPacked_.isEmpty()) {
           if (sfixed32SNotPacked_.isEmpty()) {
             sfixed32SNotPacked_ = other.sfixed32SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x04000000);
+            bitField0_ = (bitField0_ & ~0x04000000);
           } else {
             ensureSfixed32SNotPackedIsMutable();
             sfixed32SNotPacked_.addAll(other.sfixed32SNotPacked_);
@@ -5490,7 +5906,7 @@ public final class ProtobufRoot {
         if (!other.sfixed64SNotPacked_.isEmpty()) {
           if (sfixed64SNotPacked_.isEmpty()) {
             sfixed64SNotPacked_ = other.sfixed64SNotPacked_;
-            bitField1_ = (bitField1_ & ~0x08000000);
+            bitField0_ = (bitField0_ & ~0x08000000);
           } else {
             ensureSfixed64SNotPackedIsMutable();
             sfixed64SNotPacked_.addAll(other.sfixed64SNotPacked_);
@@ -5500,7 +5916,7 @@ public final class ProtobufRoot {
         if (!other.floatsNotPacked_.isEmpty()) {
           if (floatsNotPacked_.isEmpty()) {
             floatsNotPacked_ = other.floatsNotPacked_;
-            bitField1_ = (bitField1_ & ~0x10000000);
+            bitField0_ = (bitField0_ & ~0x10000000);
           } else {
             ensureFloatsNotPackedIsMutable();
             floatsNotPacked_.addAll(other.floatsNotPacked_);
@@ -5510,7 +5926,7 @@ public final class ProtobufRoot {
         if (!other.doublesNotPacked_.isEmpty()) {
           if (doublesNotPacked_.isEmpty()) {
             doublesNotPacked_ = other.doublesNotPacked_;
-            bitField1_ = (bitField1_ & ~0x20000000);
+            bitField0_ = (bitField0_ & ~0x20000000);
           } else {
             ensureDoublesNotPackedIsMutable();
             doublesNotPacked_.addAll(other.doublesNotPacked_);
@@ -5520,7 +5936,7 @@ public final class ProtobufRoot {
         if (!other.boolsNotPacked_.isEmpty()) {
           if (boolsNotPacked_.isEmpty()) {
             boolsNotPacked_ = other.boolsNotPacked_;
-            bitField1_ = (bitField1_ & ~0x40000000);
+            bitField0_ = (bitField0_ & ~0x40000000);
           } else {
             ensureBoolsNotPackedIsMutable();
             boolsNotPacked_.addAll(other.boolsNotPacked_);
@@ -5530,7 +5946,7 @@ public final class ProtobufRoot {
         if (!other.colorsNotPacked_.isEmpty()) {
           if (colorsNotPacked_.isEmpty()) {
             colorsNotPacked_ = other.colorsNotPacked_;
-            bitField1_ = (bitField1_ & ~0x80000000);
+            bitField0_ = (bitField0_ & ~0x80000000);
           } else {
             ensureColorsNotPackedIsMutable();
             colorsNotPacked_.addAll(other.colorsNotPacked_);
@@ -5540,7 +5956,7 @@ public final class ProtobufRoot {
         if (!other.strings_.isEmpty()) {
           if (strings_.isEmpty()) {
             strings_ = other.strings_;
-            bitField2_ = (bitField2_ & ~0x00000001);
+            bitField1_ = (bitField1_ & ~0x00000001);
           } else {
             ensureStringsIsMutable();
             strings_.addAll(other.strings_);
@@ -5550,7 +5966,7 @@ public final class ProtobufRoot {
         if (!other.bytess_.isEmpty()) {
           if (bytess_.isEmpty()) {
             bytess_ = other.bytess_;
-            bitField2_ = (bitField2_ & ~0x00000002);
+            bitField1_ = (bitField1_ & ~0x00000002);
           } else {
             ensureBytessIsMutable();
             bytess_.addAll(other.bytess_);
@@ -5561,7 +5977,7 @@ public final class ProtobufRoot {
           if (!other.users_.isEmpty()) {
             if (users_.isEmpty()) {
               users_ = other.users_;
-              bitField2_ = (bitField2_ & ~0x00000004);
+              bitField1_ = (bitField1_ & ~0x00000004);
             } else {
               ensureUsersIsMutable();
               users_.addAll(other.users_);
@@ -5574,7 +5990,7 @@ public final class ProtobufRoot {
               usersBuilder_.dispose();
               usersBuilder_ = null;
               users_ = other.users_;
-              bitField2_ = (bitField2_ & ~0x00000004);
+              bitField1_ = (bitField1_ & ~0x00000004);
               usersBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getUsersFieldBuilder() : null;
@@ -5613,17 +6029,20 @@ public final class ProtobufRoot {
       }
       private int bitField0_;
       private int bitField1_;
-      private int bitField2_;
 
       private int int32_ ;
       /**
        * <code>int32 int32 = 1;</code>
+       * @return The int32.
        */
+      @java.lang.Override
       public int getInt32() {
         return int32_;
       }
       /**
        * <code>int32 int32 = 1;</code>
+       * @param value The int32 to set.
+       * @return This builder for chaining.
        */
       public Builder setInt32(int value) {
         
@@ -5633,6 +6052,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>int32 int32 = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInt32() {
         
@@ -5644,12 +6064,16 @@ public final class ProtobufRoot {
       private long int64_ ;
       /**
        * <code>int64 int64 = 2;</code>
+       * @return The int64.
        */
+      @java.lang.Override
       public long getInt64() {
         return int64_;
       }
       /**
        * <code>int64 int64 = 2;</code>
+       * @param value The int64 to set.
+       * @return This builder for chaining.
        */
       public Builder setInt64(long value) {
         
@@ -5659,6 +6083,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>int64 int64 = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInt64() {
         
@@ -5670,12 +6095,16 @@ public final class ProtobufRoot {
       private int uint32_ ;
       /**
        * <code>uint32 uint32 = 3;</code>
+       * @return The uint32.
        */
+      @java.lang.Override
       public int getUint32() {
         return uint32_;
       }
       /**
        * <code>uint32 uint32 = 3;</code>
+       * @param value The uint32 to set.
+       * @return This builder for chaining.
        */
       public Builder setUint32(int value) {
         
@@ -5685,6 +6114,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>uint32 uint32 = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearUint32() {
         
@@ -5696,12 +6126,16 @@ public final class ProtobufRoot {
       private long uint64_ ;
       /**
        * <code>uint64 uint64 = 4;</code>
+       * @return The uint64.
        */
+      @java.lang.Override
       public long getUint64() {
         return uint64_;
       }
       /**
        * <code>uint64 uint64 = 4;</code>
+       * @param value The uint64 to set.
+       * @return This builder for chaining.
        */
       public Builder setUint64(long value) {
         
@@ -5711,6 +6145,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>uint64 uint64 = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearUint64() {
         
@@ -5722,12 +6157,16 @@ public final class ProtobufRoot {
       private int sint32_ ;
       /**
        * <code>sint32 sint32 = 5;</code>
+       * @return The sint32.
        */
+      @java.lang.Override
       public int getSint32() {
         return sint32_;
       }
       /**
        * <code>sint32 sint32 = 5;</code>
+       * @param value The sint32 to set.
+       * @return This builder for chaining.
        */
       public Builder setSint32(int value) {
         
@@ -5737,6 +6176,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sint32 sint32 = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSint32() {
         
@@ -5748,12 +6188,16 @@ public final class ProtobufRoot {
       private long sint64_ ;
       /**
        * <code>sint64 sint64 = 6;</code>
+       * @return The sint64.
        */
+      @java.lang.Override
       public long getSint64() {
         return sint64_;
       }
       /**
        * <code>sint64 sint64 = 6;</code>
+       * @param value The sint64 to set.
+       * @return This builder for chaining.
        */
       public Builder setSint64(long value) {
         
@@ -5763,6 +6207,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sint64 sint64 = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSint64() {
         
@@ -5774,12 +6219,16 @@ public final class ProtobufRoot {
       private int fixed32_ ;
       /**
        * <code>fixed32 fixed32 = 7;</code>
+       * @return The fixed32.
        */
+      @java.lang.Override
       public int getFixed32() {
         return fixed32_;
       }
       /**
        * <code>fixed32 fixed32 = 7;</code>
+       * @param value The fixed32 to set.
+       * @return This builder for chaining.
        */
       public Builder setFixed32(int value) {
         
@@ -5789,6 +6238,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>fixed32 fixed32 = 7;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFixed32() {
         
@@ -5800,12 +6250,16 @@ public final class ProtobufRoot {
       private long fixed64_ ;
       /**
        * <code>fixed64 fixed64 = 8;</code>
+       * @return The fixed64.
        */
+      @java.lang.Override
       public long getFixed64() {
         return fixed64_;
       }
       /**
        * <code>fixed64 fixed64 = 8;</code>
+       * @param value The fixed64 to set.
+       * @return This builder for chaining.
        */
       public Builder setFixed64(long value) {
         
@@ -5815,6 +6269,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>fixed64 fixed64 = 8;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFixed64() {
         
@@ -5826,12 +6281,16 @@ public final class ProtobufRoot {
       private int sfixed32_ ;
       /**
        * <code>sfixed32 sfixed32 = 9;</code>
+       * @return The sfixed32.
        */
+      @java.lang.Override
       public int getSfixed32() {
         return sfixed32_;
       }
       /**
        * <code>sfixed32 sfixed32 = 9;</code>
+       * @param value The sfixed32 to set.
+       * @return This builder for chaining.
        */
       public Builder setSfixed32(int value) {
         
@@ -5841,6 +6300,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sfixed32 sfixed32 = 9;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSfixed32() {
         
@@ -5852,12 +6312,16 @@ public final class ProtobufRoot {
       private long sfixed64_ ;
       /**
        * <code>sfixed64 sfixed64 = 10;</code>
+       * @return The sfixed64.
        */
+      @java.lang.Override
       public long getSfixed64() {
         return sfixed64_;
       }
       /**
        * <code>sfixed64 sfixed64 = 10;</code>
+       * @param value The sfixed64 to set.
+       * @return This builder for chaining.
        */
       public Builder setSfixed64(long value) {
         
@@ -5867,6 +6331,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sfixed64 sfixed64 = 10;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSfixed64() {
         
@@ -5878,12 +6343,16 @@ public final class ProtobufRoot {
       private float floatValue_ ;
       /**
        * <code>float floatValue = 11;</code>
+       * @return The floatValue.
        */
+      @java.lang.Override
       public float getFloatValue() {
         return floatValue_;
       }
       /**
        * <code>float floatValue = 11;</code>
+       * @param value The floatValue to set.
+       * @return This builder for chaining.
        */
       public Builder setFloatValue(float value) {
         
@@ -5893,6 +6362,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>float floatValue = 11;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFloatValue() {
         
@@ -5904,12 +6374,16 @@ public final class ProtobufRoot {
       private double doubleValue_ ;
       /**
        * <code>double doubleValue = 12;</code>
+       * @return The doubleValue.
        */
+      @java.lang.Override
       public double getDoubleValue() {
         return doubleValue_;
       }
       /**
        * <code>double doubleValue = 12;</code>
+       * @param value The doubleValue to set.
+       * @return This builder for chaining.
        */
       public Builder setDoubleValue(double value) {
         
@@ -5919,6 +6393,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>double doubleValue = 12;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDoubleValue() {
         
@@ -5930,12 +6405,16 @@ public final class ProtobufRoot {
       private boolean bool_ ;
       /**
        * <code>bool bool = 13;</code>
+       * @return The bool.
        */
+      @java.lang.Override
       public boolean getBool() {
         return bool_;
       }
       /**
        * <code>bool bool = 13;</code>
+       * @param value The bool to set.
+       * @return This builder for chaining.
        */
       public Builder setBool(boolean value) {
         
@@ -5945,6 +6424,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>bool bool = 13;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBool() {
         
@@ -5956,12 +6436,16 @@ public final class ProtobufRoot {
       private int objInt32_ ;
       /**
        * <code>int32 objInt32 = 20;</code>
+       * @return The objInt32.
        */
+      @java.lang.Override
       public int getObjInt32() {
         return objInt32_;
       }
       /**
        * <code>int32 objInt32 = 20;</code>
+       * @param value The objInt32 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjInt32(int value) {
         
@@ -5971,6 +6455,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>int32 objInt32 = 20;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjInt32() {
         
@@ -5982,12 +6467,16 @@ public final class ProtobufRoot {
       private long objInt64_ ;
       /**
        * <code>int64 objInt64 = 21;</code>
+       * @return The objInt64.
        */
+      @java.lang.Override
       public long getObjInt64() {
         return objInt64_;
       }
       /**
        * <code>int64 objInt64 = 21;</code>
+       * @param value The objInt64 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjInt64(long value) {
         
@@ -5997,6 +6486,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>int64 objInt64 = 21;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjInt64() {
         
@@ -6008,12 +6498,16 @@ public final class ProtobufRoot {
       private int objUint32_ ;
       /**
        * <code>uint32 objUint32 = 22;</code>
+       * @return The objUint32.
        */
+      @java.lang.Override
       public int getObjUint32() {
         return objUint32_;
       }
       /**
        * <code>uint32 objUint32 = 22;</code>
+       * @param value The objUint32 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjUint32(int value) {
         
@@ -6023,6 +6517,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>uint32 objUint32 = 22;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjUint32() {
         
@@ -6034,12 +6529,16 @@ public final class ProtobufRoot {
       private long objUint64_ ;
       /**
        * <code>uint64 objUint64 = 23;</code>
+       * @return The objUint64.
        */
+      @java.lang.Override
       public long getObjUint64() {
         return objUint64_;
       }
       /**
        * <code>uint64 objUint64 = 23;</code>
+       * @param value The objUint64 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjUint64(long value) {
         
@@ -6049,6 +6548,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>uint64 objUint64 = 23;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjUint64() {
         
@@ -6060,12 +6560,16 @@ public final class ProtobufRoot {
       private int objSint32_ ;
       /**
        * <code>sint32 objSint32 = 24;</code>
+       * @return The objSint32.
        */
+      @java.lang.Override
       public int getObjSint32() {
         return objSint32_;
       }
       /**
        * <code>sint32 objSint32 = 24;</code>
+       * @param value The objSint32 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjSint32(int value) {
         
@@ -6075,6 +6579,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sint32 objSint32 = 24;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjSint32() {
         
@@ -6086,12 +6591,16 @@ public final class ProtobufRoot {
       private long objSint64_ ;
       /**
        * <code>sint64 objSint64 = 25;</code>
+       * @return The objSint64.
        */
+      @java.lang.Override
       public long getObjSint64() {
         return objSint64_;
       }
       /**
        * <code>sint64 objSint64 = 25;</code>
+       * @param value The objSint64 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjSint64(long value) {
         
@@ -6101,6 +6610,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sint64 objSint64 = 25;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjSint64() {
         
@@ -6112,12 +6622,16 @@ public final class ProtobufRoot {
       private int objFixed32_ ;
       /**
        * <code>fixed32 objFixed32 = 26;</code>
+       * @return The objFixed32.
        */
+      @java.lang.Override
       public int getObjFixed32() {
         return objFixed32_;
       }
       /**
        * <code>fixed32 objFixed32 = 26;</code>
+       * @param value The objFixed32 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjFixed32(int value) {
         
@@ -6127,6 +6641,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>fixed32 objFixed32 = 26;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjFixed32() {
         
@@ -6138,12 +6653,16 @@ public final class ProtobufRoot {
       private long objFixed64_ ;
       /**
        * <code>fixed64 objFixed64 = 27;</code>
+       * @return The objFixed64.
        */
+      @java.lang.Override
       public long getObjFixed64() {
         return objFixed64_;
       }
       /**
        * <code>fixed64 objFixed64 = 27;</code>
+       * @param value The objFixed64 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjFixed64(long value) {
         
@@ -6153,6 +6672,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>fixed64 objFixed64 = 27;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjFixed64() {
         
@@ -6164,12 +6684,16 @@ public final class ProtobufRoot {
       private int objSfixed32_ ;
       /**
        * <code>sfixed32 objSfixed32 = 28;</code>
+       * @return The objSfixed32.
        */
+      @java.lang.Override
       public int getObjSfixed32() {
         return objSfixed32_;
       }
       /**
        * <code>sfixed32 objSfixed32 = 28;</code>
+       * @param value The objSfixed32 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjSfixed32(int value) {
         
@@ -6179,6 +6703,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sfixed32 objSfixed32 = 28;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjSfixed32() {
         
@@ -6190,12 +6715,16 @@ public final class ProtobufRoot {
       private long objSfixed64_ ;
       /**
        * <code>sfixed64 objSfixed64 = 29;</code>
+       * @return The objSfixed64.
        */
+      @java.lang.Override
       public long getObjSfixed64() {
         return objSfixed64_;
       }
       /**
        * <code>sfixed64 objSfixed64 = 29;</code>
+       * @param value The objSfixed64 to set.
+       * @return This builder for chaining.
        */
       public Builder setObjSfixed64(long value) {
         
@@ -6205,6 +6734,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>sfixed64 objSfixed64 = 29;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjSfixed64() {
         
@@ -6216,12 +6746,16 @@ public final class ProtobufRoot {
       private float objFloatValue_ ;
       /**
        * <code>float objFloatValue = 30;</code>
+       * @return The objFloatValue.
        */
+      @java.lang.Override
       public float getObjFloatValue() {
         return objFloatValue_;
       }
       /**
        * <code>float objFloatValue = 30;</code>
+       * @param value The objFloatValue to set.
+       * @return This builder for chaining.
        */
       public Builder setObjFloatValue(float value) {
         
@@ -6231,6 +6765,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>float objFloatValue = 30;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjFloatValue() {
         
@@ -6242,12 +6777,16 @@ public final class ProtobufRoot {
       private double objDoubleValue_ ;
       /**
        * <code>double objDoubleValue = 31;</code>
+       * @return The objDoubleValue.
        */
+      @java.lang.Override
       public double getObjDoubleValue() {
         return objDoubleValue_;
       }
       /**
        * <code>double objDoubleValue = 31;</code>
+       * @param value The objDoubleValue to set.
+       * @return This builder for chaining.
        */
       public Builder setObjDoubleValue(double value) {
         
@@ -6257,6 +6796,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>double objDoubleValue = 31;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjDoubleValue() {
         
@@ -6268,12 +6808,16 @@ public final class ProtobufRoot {
       private boolean objBool_ ;
       /**
        * <code>bool objBool = 32;</code>
+       * @return The objBool.
        */
+      @java.lang.Override
       public boolean getObjBool() {
         return objBool_;
       }
       /**
        * <code>bool objBool = 32;</code>
+       * @param value The objBool to set.
+       * @return This builder for chaining.
        */
       public Builder setObjBool(boolean value) {
         
@@ -6283,6 +6827,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>bool objBool = 32;</code>
+       * @return This builder for chaining.
        */
       public Builder clearObjBool() {
         
@@ -6294,6 +6839,7 @@ public final class ProtobufRoot {
       private java.lang.Object string_ = "";
       /**
        * <code>string string = 40;</code>
+       * @return The string.
        */
       public java.lang.String getString() {
         java.lang.Object ref = string_;
@@ -6309,6 +6855,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string string = 40;</code>
+       * @return The bytes for string.
        */
       public com.google.protobuf.ByteString
           getStringBytes() {
@@ -6325,6 +6872,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string string = 40;</code>
+       * @param value The string to set.
+       * @return This builder for chaining.
        */
       public Builder setString(
           java.lang.String value) {
@@ -6338,6 +6887,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string string = 40;</code>
+       * @return This builder for chaining.
        */
       public Builder clearString() {
         
@@ -6347,6 +6897,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string string = 40;</code>
+       * @param value The bytes for string to set.
+       * @return This builder for chaining.
        */
       public Builder setStringBytes(
           com.google.protobuf.ByteString value) {
@@ -6363,12 +6915,16 @@ public final class ProtobufRoot {
       private com.google.protobuf.ByteString bytes_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>bytes bytes = 41;</code>
+       * @return The bytes.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getBytes() {
         return bytes_;
       }
       /**
        * <code>bytes bytes = 41;</code>
+       * @param value The bytes to set.
+       * @return This builder for chaining.
        */
       public Builder setBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -6381,6 +6937,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>bytes bytes = 41;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBytes() {
         
@@ -6392,21 +6949,27 @@ public final class ProtobufRoot {
       private int color_ = 0;
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+       * @return The enum numeric value on the wire for color.
        */
-      public int getColorValue() {
+      @java.lang.Override public int getColorValue() {
         return color_;
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+       * @param value The enum numeric value on the wire for color to set.
+       * @return This builder for chaining.
        */
       public Builder setColorValue(int value) {
+        
         color_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+       * @return The color.
        */
+      @java.lang.Override
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor() {
         @SuppressWarnings("deprecation")
         org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color result = org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.valueOf(color_);
@@ -6414,6 +6977,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+       * @param value The color to set.
+       * @return This builder for chaining.
        */
       public Builder setColor(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
         if (value == null) {
@@ -6426,6 +6991,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
+       * @return This builder for chaining.
        */
       public Builder clearColor() {
         
@@ -6434,17 +7000,19 @@ public final class ProtobufRoot {
         return this;
       }
 
-      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User user_ = null;
+      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User user_;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> userBuilder_;
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
+       * @return Whether the user field is set.
        */
       public boolean hasUser() {
         return userBuilder_ != null || user_ != null;
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
+       * @return The user.
        */
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUser() {
         if (userBuilder_ == null) {
@@ -6551,17 +7119,19 @@ public final class ProtobufRoot {
         return userBuilder_;
       }
 
-      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_ = null;
+      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder> typeRecursiveBuilder_;
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+       * @return Whether the typeRecursive field is set.
        */
       public boolean hasTypeRecursive() {
         return typeRecursiveBuilder_ != null || typeRecursive_ != null;
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+       * @return The typeRecursive.
        */
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
         if (typeRecursiveBuilder_ == null) {
@@ -6668,17 +7238,19 @@ public final class ProtobufRoot {
         return typeRecursiveBuilder_;
       }
 
-      private com.google.protobuf.Any any_ = null;
+      private com.google.protobuf.Any any_;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> anyBuilder_;
       /**
        * <code>.google.protobuf.Any any = 50;</code>
+       * @return Whether the any field is set.
        */
       public boolean hasAny() {
         return anyBuilder_ != null || any_ != null;
       }
       /**
        * <code>.google.protobuf.Any any = 50;</code>
+       * @return The any.
        */
       public com.google.protobuf.Any getAny() {
         if (anyBuilder_ == null) {
@@ -6788,9 +7360,9 @@ public final class ProtobufRoot {
       private java.util.List<com.google.protobuf.Any> anys_ =
         java.util.Collections.emptyList();
       private void ensureAnysIsMutable() {
-        if (!((bitField1_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           anys_ = new java.util.ArrayList<com.google.protobuf.Any>(anys_);
-          bitField1_ |= 0x00000001;
+          bitField0_ |= 0x00000001;
          }
       }
 
@@ -6940,7 +7512,7 @@ public final class ProtobufRoot {
       public Builder clearAnys() {
         if (anysBuilder_ == null) {
           anys_ = java.util.Collections.emptyList();
-          bitField1_ = (bitField1_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           anysBuilder_.clear();
@@ -7017,7 +7589,7 @@ public final class ProtobufRoot {
           anysBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
                   anys_,
-                  ((bitField1_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           anys_ = null;
@@ -7055,14 +7627,16 @@ public final class ProtobufRoot {
        * <code>map&lt;string, string&gt; ssMap = 60;</code>
        */
 
+      @java.lang.Override
       public boolean containsSsMap(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetSsMap().getMap().containsKey(key);
       }
       /**
        * Use {@link #getSsMapMap()} instead.
        */
+      @java.lang.Override
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String> getSsMap() {
         return getSsMapMap();
@@ -7070,6 +7644,7 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, string&gt; ssMap = 60;</code>
        */
+      @java.lang.Override
 
       public java.util.Map<java.lang.String, java.lang.String> getSsMapMap() {
         return internalGetSsMap().getMap();
@@ -7077,11 +7652,12 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, string&gt; ssMap = 60;</code>
        */
+      @java.lang.Override
 
       public java.lang.String getSsMapOrDefault(
           java.lang.String key,
           java.lang.String defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetSsMap().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -7089,10 +7665,11 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, string&gt; ssMap = 60;</code>
        */
+      @java.lang.Override
 
       public java.lang.String getSsMapOrThrow(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetSsMap().getMap();
         if (!map.containsKey(key)) {
@@ -7112,7 +7689,7 @@ public final class ProtobufRoot {
 
       public Builder removeSsMap(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableSsMap().getMutableMap()
             .remove(key);
         return this;
@@ -7131,8 +7708,11 @@ public final class ProtobufRoot {
       public Builder putSsMap(
           java.lang.String key,
           java.lang.String value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) {
+  throw new NullPointerException("map value");
+}
+
         internalGetMutableSsMap().getMutableMap()
             .put(key, value);
         return this;
@@ -7178,14 +7758,16 @@ public final class ProtobufRoot {
        * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
        */
 
+      @java.lang.Override
       public boolean containsSint32Map(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetSint32Map().getMap().containsKey(key);
       }
       /**
        * Use {@link #getSint32MapMap()} instead.
        */
+      @java.lang.Override
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.Integer> getSint32Map() {
         return getSint32MapMap();
@@ -7193,6 +7775,7 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
        */
+      @java.lang.Override
 
       public java.util.Map<java.lang.String, java.lang.Integer> getSint32MapMap() {
         return internalGetSint32Map().getMap();
@@ -7200,11 +7783,12 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
        */
+      @java.lang.Override
 
       public int getSint32MapOrDefault(
           java.lang.String key,
           int defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.Integer> map =
             internalGetSint32Map().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -7212,10 +7796,11 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
        */
+      @java.lang.Override
 
       public int getSint32MapOrThrow(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.Integer> map =
             internalGetSint32Map().getMap();
         if (!map.containsKey(key)) {
@@ -7235,7 +7820,7 @@ public final class ProtobufRoot {
 
       public Builder removeSint32Map(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableSint32Map().getMutableMap()
             .remove(key);
         return this;
@@ -7254,7 +7839,7 @@ public final class ProtobufRoot {
       public Builder putSint32Map(
           java.lang.String key,
           int value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         
         internalGetMutableSint32Map().getMutableMap()
             .put(key, value);
@@ -7301,14 +7886,16 @@ public final class ProtobufRoot {
        * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
        */
 
+      @java.lang.Override
       public boolean containsSpMap(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetSpMap().getMap().containsKey(key);
       }
       /**
        * Use {@link #getSpMapMap()} instead.
        */
+      @java.lang.Override
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMap() {
         return getSpMapMap();
@@ -7316,6 +7903,7 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
        */
+      @java.lang.Override
 
       public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMapMap() {
         return internalGetSpMap().getMap();
@@ -7323,11 +7911,12 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
        */
+      @java.lang.Override
 
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
           java.lang.String key,
           org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
             internalGetSpMap().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -7335,10 +7924,11 @@ public final class ProtobufRoot {
       /**
        * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
        */
+      @java.lang.Override
 
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrThrow(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
             internalGetSpMap().getMap();
         if (!map.containsKey(key)) {
@@ -7358,7 +7948,7 @@ public final class ProtobufRoot {
 
       public Builder removeSpMap(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableSpMap().getMutableMap()
             .remove(key);
         return this;
@@ -7377,8 +7967,11 @@ public final class ProtobufRoot {
       public Builder putSpMap(
           java.lang.String key,
           org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) {
+  throw new NullPointerException("map value");
+}
+
         internalGetMutableSpMap().getMutableMap()
             .put(key, value);
         return this;
@@ -7394,53 +7987,65 @@ public final class ProtobufRoot {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> int32SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList int32SPacked_ = emptyIntList();
       private void ensureInt32SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000010) == 0x00000010)) {
-          int32SPacked_ = new java.util.ArrayList<java.lang.Integer>(int32SPacked_);
-          bitField1_ |= 0x00000010;
+        if (!((bitField0_ & 0x00000010) != 0)) {
+          int32SPacked_ = mutableCopy(int32SPacked_);
+          bitField0_ |= 0x00000010;
          }
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @return A list containing the int32sPacked.
        */
       public java.util.List<java.lang.Integer>
           getInt32SPackedList() {
-        return java.util.Collections.unmodifiableList(int32SPacked_);
+        return ((bitField0_ & 0x00000010) != 0) ?
+                 java.util.Collections.unmodifiableList(int32SPacked_) : int32SPacked_;
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @return The count of int32sPacked.
        */
       public int getInt32SPackedCount() {
         return int32SPacked_.size();
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @param index The index of the element to return.
+       * @return The int32sPacked at the given index.
        */
       public int getInt32SPacked(int index) {
-        return int32SPacked_.get(index);
+        return int32SPacked_.getInt(index);
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @param index The index to set the value at.
+       * @param value The int32sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setInt32SPacked(
           int index, int value) {
         ensureInt32SPackedIsMutable();
-        int32SPacked_.set(index, value);
+        int32SPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @param value The int32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addInt32SPacked(int value) {
         ensureInt32SPackedIsMutable();
-        int32SPacked_.add(value);
+        int32SPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @param values The int32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllInt32SPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -7452,61 +8057,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated int32 int32sPacked = 70;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInt32SPacked() {
-        int32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000010);
+        int32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> int64SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList int64SPacked_ = emptyLongList();
       private void ensureInt64SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000020) == 0x00000020)) {
-          int64SPacked_ = new java.util.ArrayList<java.lang.Long>(int64SPacked_);
-          bitField1_ |= 0x00000020;
+        if (!((bitField0_ & 0x00000020) != 0)) {
+          int64SPacked_ = mutableCopy(int64SPacked_);
+          bitField0_ |= 0x00000020;
          }
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @return A list containing the int64sPacked.
        */
       public java.util.List<java.lang.Long>
           getInt64SPackedList() {
-        return java.util.Collections.unmodifiableList(int64SPacked_);
+        return ((bitField0_ & 0x00000020) != 0) ?
+                 java.util.Collections.unmodifiableList(int64SPacked_) : int64SPacked_;
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @return The count of int64sPacked.
        */
       public int getInt64SPackedCount() {
         return int64SPacked_.size();
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @param index The index of the element to return.
+       * @return The int64sPacked at the given index.
        */
       public long getInt64SPacked(int index) {
-        return int64SPacked_.get(index);
+        return int64SPacked_.getLong(index);
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @param index The index to set the value at.
+       * @param value The int64sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setInt64SPacked(
           int index, long value) {
         ensureInt64SPackedIsMutable();
-        int64SPacked_.set(index, value);
+        int64SPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @param value The int64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addInt64SPacked(long value) {
         ensureInt64SPackedIsMutable();
-        int64SPacked_.add(value);
+        int64SPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @param values The int64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllInt64SPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -7518,61 +8136,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated int64 int64sPacked = 71;</code>
+       * @return This builder for chaining.
        */
       public Builder clearInt64SPacked() {
-        int64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000020);
+        int64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> uint32SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList uint32SPacked_ = emptyIntList();
       private void ensureUint32SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000040) == 0x00000040)) {
-          uint32SPacked_ = new java.util.ArrayList<java.lang.Integer>(uint32SPacked_);
-          bitField1_ |= 0x00000040;
+        if (!((bitField0_ & 0x00000040) != 0)) {
+          uint32SPacked_ = mutableCopy(uint32SPacked_);
+          bitField0_ |= 0x00000040;
          }
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @return A list containing the uint32sPacked.
        */
       public java.util.List<java.lang.Integer>
           getUint32SPackedList() {
-        return java.util.Collections.unmodifiableList(uint32SPacked_);
+        return ((bitField0_ & 0x00000040) != 0) ?
+                 java.util.Collections.unmodifiableList(uint32SPacked_) : uint32SPacked_;
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @return The count of uint32sPacked.
        */
       public int getUint32SPackedCount() {
         return uint32SPacked_.size();
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @param index The index of the element to return.
+       * @return The uint32sPacked at the given index.
        */
       public int getUint32SPacked(int index) {
-        return uint32SPacked_.get(index);
+        return uint32SPacked_.getInt(index);
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @param index The index to set the value at.
+       * @param value The uint32sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setUint32SPacked(
           int index, int value) {
         ensureUint32SPackedIsMutable();
-        uint32SPacked_.set(index, value);
+        uint32SPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @param value The uint32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addUint32SPacked(int value) {
         ensureUint32SPackedIsMutable();
-        uint32SPacked_.add(value);
+        uint32SPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @param values The uint32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllUint32SPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -7584,61 +8215,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated uint32 uint32sPacked = 72;</code>
+       * @return This builder for chaining.
        */
       public Builder clearUint32SPacked() {
-        uint32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000040);
+        uint32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> uint64SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList uint64SPacked_ = emptyLongList();
       private void ensureUint64SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000080) == 0x00000080)) {
-          uint64SPacked_ = new java.util.ArrayList<java.lang.Long>(uint64SPacked_);
-          bitField1_ |= 0x00000080;
+        if (!((bitField0_ & 0x00000080) != 0)) {
+          uint64SPacked_ = mutableCopy(uint64SPacked_);
+          bitField0_ |= 0x00000080;
          }
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @return A list containing the uint64sPacked.
        */
       public java.util.List<java.lang.Long>
           getUint64SPackedList() {
-        return java.util.Collections.unmodifiableList(uint64SPacked_);
+        return ((bitField0_ & 0x00000080) != 0) ?
+                 java.util.Collections.unmodifiableList(uint64SPacked_) : uint64SPacked_;
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @return The count of uint64sPacked.
        */
       public int getUint64SPackedCount() {
         return uint64SPacked_.size();
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @param index The index of the element to return.
+       * @return The uint64sPacked at the given index.
        */
       public long getUint64SPacked(int index) {
-        return uint64SPacked_.get(index);
+        return uint64SPacked_.getLong(index);
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @param index The index to set the value at.
+       * @param value The uint64sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setUint64SPacked(
           int index, long value) {
         ensureUint64SPackedIsMutable();
-        uint64SPacked_.set(index, value);
+        uint64SPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @param value The uint64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addUint64SPacked(long value) {
         ensureUint64SPackedIsMutable();
-        uint64SPacked_.add(value);
+        uint64SPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @param values The uint64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllUint64SPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -7650,61 +8294,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated uint64 uint64sPacked = 73;</code>
+       * @return This builder for chaining.
        */
       public Builder clearUint64SPacked() {
-        uint64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000080);
+        uint64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000080);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> sint32SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList sint32SPacked_ = emptyIntList();
       private void ensureSint32SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000100) == 0x00000100)) {
-          sint32SPacked_ = new java.util.ArrayList<java.lang.Integer>(sint32SPacked_);
-          bitField1_ |= 0x00000100;
+        if (!((bitField0_ & 0x00000100) != 0)) {
+          sint32SPacked_ = mutableCopy(sint32SPacked_);
+          bitField0_ |= 0x00000100;
          }
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @return A list containing the sint32sPacked.
        */
       public java.util.List<java.lang.Integer>
           getSint32SPackedList() {
-        return java.util.Collections.unmodifiableList(sint32SPacked_);
+        return ((bitField0_ & 0x00000100) != 0) ?
+                 java.util.Collections.unmodifiableList(sint32SPacked_) : sint32SPacked_;
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @return The count of sint32sPacked.
        */
       public int getSint32SPackedCount() {
         return sint32SPacked_.size();
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @param index The index of the element to return.
+       * @return The sint32sPacked at the given index.
        */
       public int getSint32SPacked(int index) {
-        return sint32SPacked_.get(index);
+        return sint32SPacked_.getInt(index);
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @param index The index to set the value at.
+       * @param value The sint32sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSint32SPacked(
           int index, int value) {
         ensureSint32SPackedIsMutable();
-        sint32SPacked_.set(index, value);
+        sint32SPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @param value The sint32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSint32SPacked(int value) {
         ensureSint32SPackedIsMutable();
-        sint32SPacked_.add(value);
+        sint32SPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @param values The sint32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSint32SPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -7716,61 +8373,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sint32 sint32sPacked = 74;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSint32SPacked() {
-        sint32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000100);
+        sint32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> sint64SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList sint64SPacked_ = emptyLongList();
       private void ensureSint64SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000200) == 0x00000200)) {
-          sint64SPacked_ = new java.util.ArrayList<java.lang.Long>(sint64SPacked_);
-          bitField1_ |= 0x00000200;
+        if (!((bitField0_ & 0x00000200) != 0)) {
+          sint64SPacked_ = mutableCopy(sint64SPacked_);
+          bitField0_ |= 0x00000200;
          }
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @return A list containing the sint64sPacked.
        */
       public java.util.List<java.lang.Long>
           getSint64SPackedList() {
-        return java.util.Collections.unmodifiableList(sint64SPacked_);
+        return ((bitField0_ & 0x00000200) != 0) ?
+                 java.util.Collections.unmodifiableList(sint64SPacked_) : sint64SPacked_;
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @return The count of sint64sPacked.
        */
       public int getSint64SPackedCount() {
         return sint64SPacked_.size();
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @param index The index of the element to return.
+       * @return The sint64sPacked at the given index.
        */
       public long getSint64SPacked(int index) {
-        return sint64SPacked_.get(index);
+        return sint64SPacked_.getLong(index);
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @param index The index to set the value at.
+       * @param value The sint64sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSint64SPacked(
           int index, long value) {
         ensureSint64SPackedIsMutable();
-        sint64SPacked_.set(index, value);
+        sint64SPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @param value The sint64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSint64SPacked(long value) {
         ensureSint64SPackedIsMutable();
-        sint64SPacked_.add(value);
+        sint64SPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @param values The sint64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSint64SPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -7782,61 +8452,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sint64 sint64sPacked = 75;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSint64SPacked() {
-        sint64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000200);
+        sint64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000200);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> fixed32SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList fixed32SPacked_ = emptyIntList();
       private void ensureFixed32SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000400) == 0x00000400)) {
-          fixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>(fixed32SPacked_);
-          bitField1_ |= 0x00000400;
+        if (!((bitField0_ & 0x00000400) != 0)) {
+          fixed32SPacked_ = mutableCopy(fixed32SPacked_);
+          bitField0_ |= 0x00000400;
          }
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @return A list containing the fixed32sPacked.
        */
       public java.util.List<java.lang.Integer>
           getFixed32SPackedList() {
-        return java.util.Collections.unmodifiableList(fixed32SPacked_);
+        return ((bitField0_ & 0x00000400) != 0) ?
+                 java.util.Collections.unmodifiableList(fixed32SPacked_) : fixed32SPacked_;
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @return The count of fixed32sPacked.
        */
       public int getFixed32SPackedCount() {
         return fixed32SPacked_.size();
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @param index The index of the element to return.
+       * @return The fixed32sPacked at the given index.
        */
       public int getFixed32SPacked(int index) {
-        return fixed32SPacked_.get(index);
+        return fixed32SPacked_.getInt(index);
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @param index The index to set the value at.
+       * @param value The fixed32sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setFixed32SPacked(
           int index, int value) {
         ensureFixed32SPackedIsMutable();
-        fixed32SPacked_.set(index, value);
+        fixed32SPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @param value The fixed32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addFixed32SPacked(int value) {
         ensureFixed32SPackedIsMutable();
-        fixed32SPacked_.add(value);
+        fixed32SPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @param values The fixed32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllFixed32SPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -7848,61 +8531,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFixed32SPacked() {
-        fixed32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000400);
+        fixed32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000400);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> fixed64SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList fixed64SPacked_ = emptyLongList();
       private void ensureFixed64SPackedIsMutable() {
-        if (!((bitField1_ & 0x00000800) == 0x00000800)) {
-          fixed64SPacked_ = new java.util.ArrayList<java.lang.Long>(fixed64SPacked_);
-          bitField1_ |= 0x00000800;
+        if (!((bitField0_ & 0x00000800) != 0)) {
+          fixed64SPacked_ = mutableCopy(fixed64SPacked_);
+          bitField0_ |= 0x00000800;
          }
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @return A list containing the fixed64sPacked.
        */
       public java.util.List<java.lang.Long>
           getFixed64SPackedList() {
-        return java.util.Collections.unmodifiableList(fixed64SPacked_);
+        return ((bitField0_ & 0x00000800) != 0) ?
+                 java.util.Collections.unmodifiableList(fixed64SPacked_) : fixed64SPacked_;
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @return The count of fixed64sPacked.
        */
       public int getFixed64SPackedCount() {
         return fixed64SPacked_.size();
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @param index The index of the element to return.
+       * @return The fixed64sPacked at the given index.
        */
       public long getFixed64SPacked(int index) {
-        return fixed64SPacked_.get(index);
+        return fixed64SPacked_.getLong(index);
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @param index The index to set the value at.
+       * @param value The fixed64sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setFixed64SPacked(
           int index, long value) {
         ensureFixed64SPackedIsMutable();
-        fixed64SPacked_.set(index, value);
+        fixed64SPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @param value The fixed64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addFixed64SPacked(long value) {
         ensureFixed64SPackedIsMutable();
-        fixed64SPacked_.add(value);
+        fixed64SPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @param values The fixed64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllFixed64SPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -7914,61 +8610,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFixed64SPacked() {
-        fixed64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00000800);
+        fixed64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00000800);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> sfixed32SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList sfixed32SPacked_ = emptyIntList();
       private void ensureSfixed32SPackedIsMutable() {
-        if (!((bitField1_ & 0x00001000) == 0x00001000)) {
-          sfixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>(sfixed32SPacked_);
-          bitField1_ |= 0x00001000;
+        if (!((bitField0_ & 0x00001000) != 0)) {
+          sfixed32SPacked_ = mutableCopy(sfixed32SPacked_);
+          bitField0_ |= 0x00001000;
          }
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @return A list containing the sfixed32sPacked.
        */
       public java.util.List<java.lang.Integer>
           getSfixed32SPackedList() {
-        return java.util.Collections.unmodifiableList(sfixed32SPacked_);
+        return ((bitField0_ & 0x00001000) != 0) ?
+                 java.util.Collections.unmodifiableList(sfixed32SPacked_) : sfixed32SPacked_;
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @return The count of sfixed32sPacked.
        */
       public int getSfixed32SPackedCount() {
         return sfixed32SPacked_.size();
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @param index The index of the element to return.
+       * @return The sfixed32sPacked at the given index.
        */
       public int getSfixed32SPacked(int index) {
-        return sfixed32SPacked_.get(index);
+        return sfixed32SPacked_.getInt(index);
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @param index The index to set the value at.
+       * @param value The sfixed32sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSfixed32SPacked(
           int index, int value) {
         ensureSfixed32SPackedIsMutable();
-        sfixed32SPacked_.set(index, value);
+        sfixed32SPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @param value The sfixed32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSfixed32SPacked(int value) {
         ensureSfixed32SPackedIsMutable();
-        sfixed32SPacked_.add(value);
+        sfixed32SPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @param values The sfixed32sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSfixed32SPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -7980,61 +8689,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSfixed32SPacked() {
-        sfixed32SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00001000);
+        sfixed32SPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00001000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> sfixed64SPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList sfixed64SPacked_ = emptyLongList();
       private void ensureSfixed64SPackedIsMutable() {
-        if (!((bitField1_ & 0x00002000) == 0x00002000)) {
-          sfixed64SPacked_ = new java.util.ArrayList<java.lang.Long>(sfixed64SPacked_);
-          bitField1_ |= 0x00002000;
+        if (!((bitField0_ & 0x00002000) != 0)) {
+          sfixed64SPacked_ = mutableCopy(sfixed64SPacked_);
+          bitField0_ |= 0x00002000;
          }
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @return A list containing the sfixed64sPacked.
        */
       public java.util.List<java.lang.Long>
           getSfixed64SPackedList() {
-        return java.util.Collections.unmodifiableList(sfixed64SPacked_);
+        return ((bitField0_ & 0x00002000) != 0) ?
+                 java.util.Collections.unmodifiableList(sfixed64SPacked_) : sfixed64SPacked_;
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @return The count of sfixed64sPacked.
        */
       public int getSfixed64SPackedCount() {
         return sfixed64SPacked_.size();
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @param index The index of the element to return.
+       * @return The sfixed64sPacked at the given index.
        */
       public long getSfixed64SPacked(int index) {
-        return sfixed64SPacked_.get(index);
+        return sfixed64SPacked_.getLong(index);
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @param index The index to set the value at.
+       * @param value The sfixed64sPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSfixed64SPacked(
           int index, long value) {
         ensureSfixed64SPackedIsMutable();
-        sfixed64SPacked_.set(index, value);
+        sfixed64SPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @param value The sfixed64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSfixed64SPacked(long value) {
         ensureSfixed64SPackedIsMutable();
-        sfixed64SPacked_.add(value);
+        sfixed64SPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @param values The sfixed64sPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSfixed64SPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -8046,61 +8768,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSfixed64SPacked() {
-        sfixed64SPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00002000);
+        sfixed64SPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00002000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Float> floatsPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.FloatList floatsPacked_ = emptyFloatList();
       private void ensureFloatsPackedIsMutable() {
-        if (!((bitField1_ & 0x00004000) == 0x00004000)) {
-          floatsPacked_ = new java.util.ArrayList<java.lang.Float>(floatsPacked_);
-          bitField1_ |= 0x00004000;
+        if (!((bitField0_ & 0x00004000) != 0)) {
+          floatsPacked_ = mutableCopy(floatsPacked_);
+          bitField0_ |= 0x00004000;
          }
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @return A list containing the floatsPacked.
        */
       public java.util.List<java.lang.Float>
           getFloatsPackedList() {
-        return java.util.Collections.unmodifiableList(floatsPacked_);
+        return ((bitField0_ & 0x00004000) != 0) ?
+                 java.util.Collections.unmodifiableList(floatsPacked_) : floatsPacked_;
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @return The count of floatsPacked.
        */
       public int getFloatsPackedCount() {
         return floatsPacked_.size();
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @param index The index of the element to return.
+       * @return The floatsPacked at the given index.
        */
       public float getFloatsPacked(int index) {
-        return floatsPacked_.get(index);
+        return floatsPacked_.getFloat(index);
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @param index The index to set the value at.
+       * @param value The floatsPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setFloatsPacked(
           int index, float value) {
         ensureFloatsPackedIsMutable();
-        floatsPacked_.set(index, value);
+        floatsPacked_.setFloat(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @param value The floatsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addFloatsPacked(float value) {
         ensureFloatsPackedIsMutable();
-        floatsPacked_.add(value);
+        floatsPacked_.addFloat(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @param values The floatsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllFloatsPacked(
           java.lang.Iterable<? extends java.lang.Float> values) {
@@ -8112,61 +8847,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated float floatsPacked = 80;</code>
+       * @return This builder for chaining.
        */
       public Builder clearFloatsPacked() {
-        floatsPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00004000);
+        floatsPacked_ = emptyFloatList();
+        bitField0_ = (bitField0_ & ~0x00004000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Double> doublesPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.DoubleList doublesPacked_ = emptyDoubleList();
       private void ensureDoublesPackedIsMutable() {
-        if (!((bitField1_ & 0x00008000) == 0x00008000)) {
-          doublesPacked_ = new java.util.ArrayList<java.lang.Double>(doublesPacked_);
-          bitField1_ |= 0x00008000;
+        if (!((bitField0_ & 0x00008000) != 0)) {
+          doublesPacked_ = mutableCopy(doublesPacked_);
+          bitField0_ |= 0x00008000;
          }
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @return A list containing the doublesPacked.
        */
       public java.util.List<java.lang.Double>
           getDoublesPackedList() {
-        return java.util.Collections.unmodifiableList(doublesPacked_);
+        return ((bitField0_ & 0x00008000) != 0) ?
+                 java.util.Collections.unmodifiableList(doublesPacked_) : doublesPacked_;
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @return The count of doublesPacked.
        */
       public int getDoublesPackedCount() {
         return doublesPacked_.size();
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @param index The index of the element to return.
+       * @return The doublesPacked at the given index.
        */
       public double getDoublesPacked(int index) {
-        return doublesPacked_.get(index);
+        return doublesPacked_.getDouble(index);
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @param index The index to set the value at.
+       * @param value The doublesPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setDoublesPacked(
           int index, double value) {
         ensureDoublesPackedIsMutable();
-        doublesPacked_.set(index, value);
+        doublesPacked_.setDouble(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @param value The doublesPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addDoublesPacked(double value) {
         ensureDoublesPackedIsMutable();
-        doublesPacked_.add(value);
+        doublesPacked_.addDouble(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @param values The doublesPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllDoublesPacked(
           java.lang.Iterable<? extends java.lang.Double> values) {
@@ -8178,61 +8926,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated double doublesPacked = 81;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDoublesPacked() {
-        doublesPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00008000);
+        doublesPacked_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x00008000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Boolean> boolsPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.BooleanList boolsPacked_ = emptyBooleanList();
       private void ensureBoolsPackedIsMutable() {
-        if (!((bitField1_ & 0x00010000) == 0x00010000)) {
-          boolsPacked_ = new java.util.ArrayList<java.lang.Boolean>(boolsPacked_);
-          bitField1_ |= 0x00010000;
+        if (!((bitField0_ & 0x00010000) != 0)) {
+          boolsPacked_ = mutableCopy(boolsPacked_);
+          bitField0_ |= 0x00010000;
          }
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @return A list containing the boolsPacked.
        */
       public java.util.List<java.lang.Boolean>
           getBoolsPackedList() {
-        return java.util.Collections.unmodifiableList(boolsPacked_);
+        return ((bitField0_ & 0x00010000) != 0) ?
+                 java.util.Collections.unmodifiableList(boolsPacked_) : boolsPacked_;
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @return The count of boolsPacked.
        */
       public int getBoolsPackedCount() {
         return boolsPacked_.size();
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @param index The index of the element to return.
+       * @return The boolsPacked at the given index.
        */
       public boolean getBoolsPacked(int index) {
-        return boolsPacked_.get(index);
+        return boolsPacked_.getBoolean(index);
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @param index The index to set the value at.
+       * @param value The boolsPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setBoolsPacked(
           int index, boolean value) {
         ensureBoolsPackedIsMutable();
-        boolsPacked_.set(index, value);
+        boolsPacked_.setBoolean(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @param value The boolsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addBoolsPacked(boolean value) {
         ensureBoolsPackedIsMutable();
-        boolsPacked_.add(value);
+        boolsPacked_.addBoolean(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @param values The boolsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllBoolsPacked(
           java.lang.Iterable<? extends java.lang.Boolean> values) {
@@ -8244,10 +9005,11 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated bool boolsPacked = 82;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBoolsPacked() {
-        boolsPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00010000);
+        boolsPacked_ = emptyBooleanList();
+        bitField0_ = (bitField0_ & ~0x00010000);
         onChanged();
         return this;
       }
@@ -8255,13 +9017,14 @@ public final class ProtobufRoot {
       private java.util.List<java.lang.Integer> colorsPacked_ =
         java.util.Collections.emptyList();
       private void ensureColorsPackedIsMutable() {
-        if (!((bitField1_ & 0x00020000) == 0x00020000)) {
+        if (!((bitField0_ & 0x00020000) != 0)) {
           colorsPacked_ = new java.util.ArrayList<java.lang.Integer>(colorsPacked_);
-          bitField1_ |= 0x00020000;
+          bitField0_ |= 0x00020000;
         }
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @return A list containing the colorsPacked.
        */
       public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsPackedList() {
         return new com.google.protobuf.Internal.ListAdapter<
@@ -8269,18 +9032,24 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @return The count of colorsPacked.
        */
       public int getColorsPackedCount() {
         return colorsPacked_.size();
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param index The index of the element to return.
+       * @return The colorsPacked at the given index.
        */
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsPacked(int index) {
         return colorsPacked_converter_.convert(colorsPacked_.get(index));
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param index The index to set the value at.
+       * @param value The colorsPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setColorsPacked(
           int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
@@ -8294,6 +9063,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param value The colorsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addColorsPacked(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
         if (value == null) {
@@ -8306,6 +9077,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param values The colorsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllColorsPacked(
           java.lang.Iterable<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> values) {
@@ -8318,15 +9091,17 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @return This builder for chaining.
        */
       public Builder clearColorsPacked() {
         colorsPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         onChanged();
         return this;
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @return A list containing the enum numeric values on the wire for colorsPacked.
        */
       public java.util.List<java.lang.Integer>
       getColorsPackedValueList() {
@@ -8334,12 +9109,17 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of colorsPacked at the given index.
        */
       public int getColorsPackedValue(int index) {
         return colorsPacked_.get(index);
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of colorsPacked at the given index.
+       * @return This builder for chaining.
        */
       public Builder setColorsPackedValue(
           int index, int value) {
@@ -8350,6 +9130,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param value The enum numeric value on the wire for colorsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addColorsPackedValue(int value) {
         ensureColorsPackedIsMutable();
@@ -8359,6 +9141,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       * @param values The enum numeric values on the wire for colorsPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllColorsPackedValue(
           java.lang.Iterable<java.lang.Integer> values) {
@@ -8370,53 +9154,65 @@ public final class ProtobufRoot {
         return this;
       }
 
-      private java.util.List<java.lang.Integer> int32SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList int32SNotPacked_ = emptyIntList();
       private void ensureInt32SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x00040000) == 0x00040000)) {
-          int32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(int32SNotPacked_);
-          bitField1_ |= 0x00040000;
+        if (!((bitField0_ & 0x00040000) != 0)) {
+          int32SNotPacked_ = mutableCopy(int32SNotPacked_);
+          bitField0_ |= 0x00040000;
          }
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @return A list containing the int32sNotPacked.
        */
       public java.util.List<java.lang.Integer>
           getInt32SNotPackedList() {
-        return java.util.Collections.unmodifiableList(int32SNotPacked_);
+        return ((bitField0_ & 0x00040000) != 0) ?
+                 java.util.Collections.unmodifiableList(int32SNotPacked_) : int32SNotPacked_;
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @return The count of int32sNotPacked.
        */
       public int getInt32SNotPackedCount() {
         return int32SNotPacked_.size();
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The int32sNotPacked at the given index.
        */
       public int getInt32SNotPacked(int index) {
-        return int32SNotPacked_.get(index);
+        return int32SNotPacked_.getInt(index);
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The int32sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setInt32SNotPacked(
           int index, int value) {
         ensureInt32SNotPackedIsMutable();
-        int32SNotPacked_.set(index, value);
+        int32SNotPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @param value The int32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addInt32SNotPacked(int value) {
         ensureInt32SNotPackedIsMutable();
-        int32SNotPacked_.add(value);
+        int32SNotPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @param values The int32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllInt32SNotPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -8428,61 +9224,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearInt32SNotPacked() {
-        int32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00040000);
+        int32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00040000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> int64SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList int64SNotPacked_ = emptyLongList();
       private void ensureInt64SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x00080000) == 0x00080000)) {
-          int64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(int64SNotPacked_);
-          bitField1_ |= 0x00080000;
+        if (!((bitField0_ & 0x00080000) != 0)) {
+          int64SNotPacked_ = mutableCopy(int64SNotPacked_);
+          bitField0_ |= 0x00080000;
          }
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @return A list containing the int64sNotPacked.
        */
       public java.util.List<java.lang.Long>
           getInt64SNotPackedList() {
-        return java.util.Collections.unmodifiableList(int64SNotPacked_);
+        return ((bitField0_ & 0x00080000) != 0) ?
+                 java.util.Collections.unmodifiableList(int64SNotPacked_) : int64SNotPacked_;
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @return The count of int64sNotPacked.
        */
       public int getInt64SNotPackedCount() {
         return int64SNotPacked_.size();
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The int64sNotPacked at the given index.
        */
       public long getInt64SNotPacked(int index) {
-        return int64SNotPacked_.get(index);
+        return int64SNotPacked_.getLong(index);
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The int64sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setInt64SNotPacked(
           int index, long value) {
         ensureInt64SNotPackedIsMutable();
-        int64SNotPacked_.set(index, value);
+        int64SNotPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @param value The int64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addInt64SNotPacked(long value) {
         ensureInt64SNotPackedIsMutable();
-        int64SNotPacked_.add(value);
+        int64SNotPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @param values The int64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllInt64SNotPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -8494,61 +9303,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearInt64SNotPacked() {
-        int64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00080000);
+        int64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00080000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> uint32SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList uint32SNotPacked_ = emptyIntList();
       private void ensureUint32SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x00100000) == 0x00100000)) {
-          uint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(uint32SNotPacked_);
-          bitField1_ |= 0x00100000;
+        if (!((bitField0_ & 0x00100000) != 0)) {
+          uint32SNotPacked_ = mutableCopy(uint32SNotPacked_);
+          bitField0_ |= 0x00100000;
          }
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @return A list containing the uint32sNotPacked.
        */
       public java.util.List<java.lang.Integer>
           getUint32SNotPackedList() {
-        return java.util.Collections.unmodifiableList(uint32SNotPacked_);
+        return ((bitField0_ & 0x00100000) != 0) ?
+                 java.util.Collections.unmodifiableList(uint32SNotPacked_) : uint32SNotPacked_;
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @return The count of uint32sNotPacked.
        */
       public int getUint32SNotPackedCount() {
         return uint32SNotPacked_.size();
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The uint32sNotPacked at the given index.
        */
       public int getUint32SNotPacked(int index) {
-        return uint32SNotPacked_.get(index);
+        return uint32SNotPacked_.getInt(index);
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The uint32sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setUint32SNotPacked(
           int index, int value) {
         ensureUint32SNotPackedIsMutable();
-        uint32SNotPacked_.set(index, value);
+        uint32SNotPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @param value The uint32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addUint32SNotPacked(int value) {
         ensureUint32SNotPackedIsMutable();
-        uint32SNotPacked_.add(value);
+        uint32SNotPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @param values The uint32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllUint32SNotPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -8560,61 +9382,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearUint32SNotPacked() {
-        uint32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00100000);
+        uint32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00100000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> uint64SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList uint64SNotPacked_ = emptyLongList();
       private void ensureUint64SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x00200000) == 0x00200000)) {
-          uint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(uint64SNotPacked_);
-          bitField1_ |= 0x00200000;
+        if (!((bitField0_ & 0x00200000) != 0)) {
+          uint64SNotPacked_ = mutableCopy(uint64SNotPacked_);
+          bitField0_ |= 0x00200000;
          }
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @return A list containing the uint64sNotPacked.
        */
       public java.util.List<java.lang.Long>
           getUint64SNotPackedList() {
-        return java.util.Collections.unmodifiableList(uint64SNotPacked_);
+        return ((bitField0_ & 0x00200000) != 0) ?
+                 java.util.Collections.unmodifiableList(uint64SNotPacked_) : uint64SNotPacked_;
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @return The count of uint64sNotPacked.
        */
       public int getUint64SNotPackedCount() {
         return uint64SNotPacked_.size();
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The uint64sNotPacked at the given index.
        */
       public long getUint64SNotPacked(int index) {
-        return uint64SNotPacked_.get(index);
+        return uint64SNotPacked_.getLong(index);
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The uint64sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setUint64SNotPacked(
           int index, long value) {
         ensureUint64SNotPackedIsMutable();
-        uint64SNotPacked_.set(index, value);
+        uint64SNotPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @param value The uint64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addUint64SNotPacked(long value) {
         ensureUint64SNotPackedIsMutable();
-        uint64SNotPacked_.add(value);
+        uint64SNotPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @param values The uint64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllUint64SNotPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -8626,61 +9461,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearUint64SNotPacked() {
-        uint64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00200000);
+        uint64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00200000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> sint32SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList sint32SNotPacked_ = emptyIntList();
       private void ensureSint32SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x00400000) == 0x00400000)) {
-          sint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(sint32SNotPacked_);
-          bitField1_ |= 0x00400000;
+        if (!((bitField0_ & 0x00400000) != 0)) {
+          sint32SNotPacked_ = mutableCopy(sint32SNotPacked_);
+          bitField0_ |= 0x00400000;
          }
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @return A list containing the sint32sNotPacked.
        */
       public java.util.List<java.lang.Integer>
           getSint32SNotPackedList() {
-        return java.util.Collections.unmodifiableList(sint32SNotPacked_);
+        return ((bitField0_ & 0x00400000) != 0) ?
+                 java.util.Collections.unmodifiableList(sint32SNotPacked_) : sint32SNotPacked_;
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @return The count of sint32sNotPacked.
        */
       public int getSint32SNotPackedCount() {
         return sint32SNotPacked_.size();
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The sint32sNotPacked at the given index.
        */
       public int getSint32SNotPacked(int index) {
-        return sint32SNotPacked_.get(index);
+        return sint32SNotPacked_.getInt(index);
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The sint32sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSint32SNotPacked(
           int index, int value) {
         ensureSint32SNotPackedIsMutable();
-        sint32SNotPacked_.set(index, value);
+        sint32SNotPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @param value The sint32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSint32SNotPacked(int value) {
         ensureSint32SNotPackedIsMutable();
-        sint32SNotPacked_.add(value);
+        sint32SNotPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @param values The sint32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSint32SNotPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -8692,61 +9540,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearSint32SNotPacked() {
-        sint32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00400000);
+        sint32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00400000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> sint64SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList sint64SNotPacked_ = emptyLongList();
       private void ensureSint64SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x00800000) == 0x00800000)) {
-          sint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(sint64SNotPacked_);
-          bitField1_ |= 0x00800000;
+        if (!((bitField0_ & 0x00800000) != 0)) {
+          sint64SNotPacked_ = mutableCopy(sint64SNotPacked_);
+          bitField0_ |= 0x00800000;
          }
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @return A list containing the sint64sNotPacked.
        */
       public java.util.List<java.lang.Long>
           getSint64SNotPackedList() {
-        return java.util.Collections.unmodifiableList(sint64SNotPacked_);
+        return ((bitField0_ & 0x00800000) != 0) ?
+                 java.util.Collections.unmodifiableList(sint64SNotPacked_) : sint64SNotPacked_;
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @return The count of sint64sNotPacked.
        */
       public int getSint64SNotPackedCount() {
         return sint64SNotPacked_.size();
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The sint64sNotPacked at the given index.
        */
       public long getSint64SNotPacked(int index) {
-        return sint64SNotPacked_.get(index);
+        return sint64SNotPacked_.getLong(index);
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The sint64sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSint64SNotPacked(
           int index, long value) {
         ensureSint64SNotPackedIsMutable();
-        sint64SNotPacked_.set(index, value);
+        sint64SNotPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @param value The sint64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSint64SNotPacked(long value) {
         ensureSint64SNotPackedIsMutable();
-        sint64SNotPacked_.add(value);
+        sint64SNotPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @param values The sint64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSint64SNotPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -8758,61 +9619,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearSint64SNotPacked() {
-        sint64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x00800000);
+        sint64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x00800000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> fixed32SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList fixed32SNotPacked_ = emptyIntList();
       private void ensureFixed32SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x01000000) == 0x01000000)) {
-          fixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(fixed32SNotPacked_);
-          bitField1_ |= 0x01000000;
+        if (!((bitField0_ & 0x01000000) != 0)) {
+          fixed32SNotPacked_ = mutableCopy(fixed32SNotPacked_);
+          bitField0_ |= 0x01000000;
          }
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @return A list containing the fixed32sNotPacked.
        */
       public java.util.List<java.lang.Integer>
           getFixed32SNotPackedList() {
-        return java.util.Collections.unmodifiableList(fixed32SNotPacked_);
+        return ((bitField0_ & 0x01000000) != 0) ?
+                 java.util.Collections.unmodifiableList(fixed32SNotPacked_) : fixed32SNotPacked_;
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @return The count of fixed32sNotPacked.
        */
       public int getFixed32SNotPackedCount() {
         return fixed32SNotPacked_.size();
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The fixed32sNotPacked at the given index.
        */
       public int getFixed32SNotPacked(int index) {
-        return fixed32SNotPacked_.get(index);
+        return fixed32SNotPacked_.getInt(index);
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The fixed32sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setFixed32SNotPacked(
           int index, int value) {
         ensureFixed32SNotPackedIsMutable();
-        fixed32SNotPacked_.set(index, value);
+        fixed32SNotPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @param value The fixed32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addFixed32SNotPacked(int value) {
         ensureFixed32SNotPackedIsMutable();
-        fixed32SNotPacked_.add(value);
+        fixed32SNotPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @param values The fixed32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllFixed32SNotPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -8824,61 +9698,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearFixed32SNotPacked() {
-        fixed32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x01000000);
+        fixed32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x01000000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> fixed64SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList fixed64SNotPacked_ = emptyLongList();
       private void ensureFixed64SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x02000000) == 0x02000000)) {
-          fixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(fixed64SNotPacked_);
-          bitField1_ |= 0x02000000;
+        if (!((bitField0_ & 0x02000000) != 0)) {
+          fixed64SNotPacked_ = mutableCopy(fixed64SNotPacked_);
+          bitField0_ |= 0x02000000;
          }
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @return A list containing the fixed64sNotPacked.
        */
       public java.util.List<java.lang.Long>
           getFixed64SNotPackedList() {
-        return java.util.Collections.unmodifiableList(fixed64SNotPacked_);
+        return ((bitField0_ & 0x02000000) != 0) ?
+                 java.util.Collections.unmodifiableList(fixed64SNotPacked_) : fixed64SNotPacked_;
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @return The count of fixed64sNotPacked.
        */
       public int getFixed64SNotPackedCount() {
         return fixed64SNotPacked_.size();
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The fixed64sNotPacked at the given index.
        */
       public long getFixed64SNotPacked(int index) {
-        return fixed64SNotPacked_.get(index);
+        return fixed64SNotPacked_.getLong(index);
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The fixed64sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setFixed64SNotPacked(
           int index, long value) {
         ensureFixed64SNotPackedIsMutable();
-        fixed64SNotPacked_.set(index, value);
+        fixed64SNotPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @param value The fixed64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addFixed64SNotPacked(long value) {
         ensureFixed64SNotPackedIsMutable();
-        fixed64SNotPacked_.add(value);
+        fixed64SNotPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @param values The fixed64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllFixed64SNotPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -8890,61 +9777,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearFixed64SNotPacked() {
-        fixed64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x02000000);
+        fixed64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x02000000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Integer> sfixed32SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.IntList sfixed32SNotPacked_ = emptyIntList();
       private void ensureSfixed32SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x04000000) == 0x04000000)) {
-          sfixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(sfixed32SNotPacked_);
-          bitField1_ |= 0x04000000;
+        if (!((bitField0_ & 0x04000000) != 0)) {
+          sfixed32SNotPacked_ = mutableCopy(sfixed32SNotPacked_);
+          bitField0_ |= 0x04000000;
          }
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @return A list containing the sfixed32sNotPacked.
        */
       public java.util.List<java.lang.Integer>
           getSfixed32SNotPackedList() {
-        return java.util.Collections.unmodifiableList(sfixed32SNotPacked_);
+        return ((bitField0_ & 0x04000000) != 0) ?
+                 java.util.Collections.unmodifiableList(sfixed32SNotPacked_) : sfixed32SNotPacked_;
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @return The count of sfixed32sNotPacked.
        */
       public int getSfixed32SNotPackedCount() {
         return sfixed32SNotPacked_.size();
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The sfixed32sNotPacked at the given index.
        */
       public int getSfixed32SNotPacked(int index) {
-        return sfixed32SNotPacked_.get(index);
+        return sfixed32SNotPacked_.getInt(index);
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The sfixed32sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSfixed32SNotPacked(
           int index, int value) {
         ensureSfixed32SNotPackedIsMutable();
-        sfixed32SNotPacked_.set(index, value);
+        sfixed32SNotPacked_.setInt(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @param value The sfixed32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSfixed32SNotPacked(int value) {
         ensureSfixed32SNotPackedIsMutable();
-        sfixed32SNotPacked_.add(value);
+        sfixed32SNotPacked_.addInt(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @param values The sfixed32sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSfixed32SNotPacked(
           java.lang.Iterable<? extends java.lang.Integer> values) {
@@ -8956,61 +9856,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearSfixed32SNotPacked() {
-        sfixed32SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x04000000);
+        sfixed32SNotPacked_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x04000000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Long> sfixed64SNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.LongList sfixed64SNotPacked_ = emptyLongList();
       private void ensureSfixed64SNotPackedIsMutable() {
-        if (!((bitField1_ & 0x08000000) == 0x08000000)) {
-          sfixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(sfixed64SNotPacked_);
-          bitField1_ |= 0x08000000;
+        if (!((bitField0_ & 0x08000000) != 0)) {
+          sfixed64SNotPacked_ = mutableCopy(sfixed64SNotPacked_);
+          bitField0_ |= 0x08000000;
          }
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @return A list containing the sfixed64sNotPacked.
        */
       public java.util.List<java.lang.Long>
           getSfixed64SNotPackedList() {
-        return java.util.Collections.unmodifiableList(sfixed64SNotPacked_);
+        return ((bitField0_ & 0x08000000) != 0) ?
+                 java.util.Collections.unmodifiableList(sfixed64SNotPacked_) : sfixed64SNotPacked_;
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @return The count of sfixed64sNotPacked.
        */
       public int getSfixed64SNotPackedCount() {
         return sfixed64SNotPacked_.size();
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The sfixed64sNotPacked at the given index.
        */
       public long getSfixed64SNotPacked(int index) {
-        return sfixed64SNotPacked_.get(index);
+        return sfixed64SNotPacked_.getLong(index);
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The sfixed64sNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setSfixed64SNotPacked(
           int index, long value) {
         ensureSfixed64SNotPackedIsMutable();
-        sfixed64SNotPacked_.set(index, value);
+        sfixed64SNotPacked_.setLong(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @param value The sfixed64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addSfixed64SNotPacked(long value) {
         ensureSfixed64SNotPackedIsMutable();
-        sfixed64SNotPacked_.add(value);
+        sfixed64SNotPacked_.addLong(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @param values The sfixed64sNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllSfixed64SNotPacked(
           java.lang.Iterable<? extends java.lang.Long> values) {
@@ -9022,61 +9935,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearSfixed64SNotPacked() {
-        sfixed64SNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x08000000);
+        sfixed64SNotPacked_ = emptyLongList();
+        bitField0_ = (bitField0_ & ~0x08000000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Float> floatsNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.FloatList floatsNotPacked_ = emptyFloatList();
       private void ensureFloatsNotPackedIsMutable() {
-        if (!((bitField1_ & 0x10000000) == 0x10000000)) {
-          floatsNotPacked_ = new java.util.ArrayList<java.lang.Float>(floatsNotPacked_);
-          bitField1_ |= 0x10000000;
+        if (!((bitField0_ & 0x10000000) != 0)) {
+          floatsNotPacked_ = mutableCopy(floatsNotPacked_);
+          bitField0_ |= 0x10000000;
          }
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @return A list containing the floatsNotPacked.
        */
       public java.util.List<java.lang.Float>
           getFloatsNotPackedList() {
-        return java.util.Collections.unmodifiableList(floatsNotPacked_);
+        return ((bitField0_ & 0x10000000) != 0) ?
+                 java.util.Collections.unmodifiableList(floatsNotPacked_) : floatsNotPacked_;
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @return The count of floatsNotPacked.
        */
       public int getFloatsNotPackedCount() {
         return floatsNotPacked_.size();
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The floatsNotPacked at the given index.
        */
       public float getFloatsNotPacked(int index) {
-        return floatsNotPacked_.get(index);
+        return floatsNotPacked_.getFloat(index);
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The floatsNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setFloatsNotPacked(
           int index, float value) {
         ensureFloatsNotPackedIsMutable();
-        floatsNotPacked_.set(index, value);
+        floatsNotPacked_.setFloat(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @param value The floatsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addFloatsNotPacked(float value) {
         ensureFloatsNotPackedIsMutable();
-        floatsNotPacked_.add(value);
+        floatsNotPacked_.addFloat(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @param values The floatsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllFloatsNotPacked(
           java.lang.Iterable<? extends java.lang.Float> values) {
@@ -9088,61 +10014,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearFloatsNotPacked() {
-        floatsNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x10000000);
+        floatsNotPacked_ = emptyFloatList();
+        bitField0_ = (bitField0_ & ~0x10000000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Double> doublesNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.DoubleList doublesNotPacked_ = emptyDoubleList();
       private void ensureDoublesNotPackedIsMutable() {
-        if (!((bitField1_ & 0x20000000) == 0x20000000)) {
-          doublesNotPacked_ = new java.util.ArrayList<java.lang.Double>(doublesNotPacked_);
-          bitField1_ |= 0x20000000;
+        if (!((bitField0_ & 0x20000000) != 0)) {
+          doublesNotPacked_ = mutableCopy(doublesNotPacked_);
+          bitField0_ |= 0x20000000;
          }
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @return A list containing the doublesNotPacked.
        */
       public java.util.List<java.lang.Double>
           getDoublesNotPackedList() {
-        return java.util.Collections.unmodifiableList(doublesNotPacked_);
+        return ((bitField0_ & 0x20000000) != 0) ?
+                 java.util.Collections.unmodifiableList(doublesNotPacked_) : doublesNotPacked_;
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @return The count of doublesNotPacked.
        */
       public int getDoublesNotPackedCount() {
         return doublesNotPacked_.size();
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The doublesNotPacked at the given index.
        */
       public double getDoublesNotPacked(int index) {
-        return doublesNotPacked_.get(index);
+        return doublesNotPacked_.getDouble(index);
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The doublesNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setDoublesNotPacked(
           int index, double value) {
         ensureDoublesNotPackedIsMutable();
-        doublesNotPacked_.set(index, value);
+        doublesNotPacked_.setDouble(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @param value The doublesNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addDoublesNotPacked(double value) {
         ensureDoublesNotPackedIsMutable();
-        doublesNotPacked_.add(value);
+        doublesNotPacked_.addDouble(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @param values The doublesNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllDoublesNotPacked(
           java.lang.Iterable<? extends java.lang.Double> values) {
@@ -9154,61 +10093,74 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearDoublesNotPacked() {
-        doublesNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x20000000);
+        doublesNotPacked_ = emptyDoubleList();
+        bitField0_ = (bitField0_ & ~0x20000000);
         onChanged();
         return this;
       }
 
-      private java.util.List<java.lang.Boolean> boolsNotPacked_ = java.util.Collections.emptyList();
+      private com.google.protobuf.Internal.BooleanList boolsNotPacked_ = emptyBooleanList();
       private void ensureBoolsNotPackedIsMutable() {
-        if (!((bitField1_ & 0x40000000) == 0x40000000)) {
-          boolsNotPacked_ = new java.util.ArrayList<java.lang.Boolean>(boolsNotPacked_);
-          bitField1_ |= 0x40000000;
+        if (!((bitField0_ & 0x40000000) != 0)) {
+          boolsNotPacked_ = mutableCopy(boolsNotPacked_);
+          bitField0_ |= 0x40000000;
          }
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @return A list containing the boolsNotPacked.
        */
       public java.util.List<java.lang.Boolean>
           getBoolsNotPackedList() {
-        return java.util.Collections.unmodifiableList(boolsNotPacked_);
+        return ((bitField0_ & 0x40000000) != 0) ?
+                 java.util.Collections.unmodifiableList(boolsNotPacked_) : boolsNotPacked_;
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @return The count of boolsNotPacked.
        */
       public int getBoolsNotPackedCount() {
         return boolsNotPacked_.size();
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The boolsNotPacked at the given index.
        */
       public boolean getBoolsNotPacked(int index) {
-        return boolsNotPacked_.get(index);
+        return boolsNotPacked_.getBoolean(index);
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The boolsNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setBoolsNotPacked(
           int index, boolean value) {
         ensureBoolsNotPackedIsMutable();
-        boolsNotPacked_.set(index, value);
+        boolsNotPacked_.setBoolean(index, value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @param value The boolsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addBoolsNotPacked(boolean value) {
         ensureBoolsNotPackedIsMutable();
-        boolsNotPacked_.add(value);
+        boolsNotPacked_.addBoolean(value);
         onChanged();
         return this;
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @param values The boolsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllBoolsNotPacked(
           java.lang.Iterable<? extends java.lang.Boolean> values) {
@@ -9220,10 +10172,11 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearBoolsNotPacked() {
-        boolsNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x40000000);
+        boolsNotPacked_ = emptyBooleanList();
+        bitField0_ = (bitField0_ & ~0x40000000);
         onChanged();
         return this;
       }
@@ -9231,13 +10184,14 @@ public final class ProtobufRoot {
       private java.util.List<java.lang.Integer> colorsNotPacked_ =
         java.util.Collections.emptyList();
       private void ensureColorsNotPackedIsMutable() {
-        if (!((bitField1_ & 0x80000000) == 0x80000000)) {
+        if (!((bitField0_ & 0x80000000) != 0)) {
           colorsNotPacked_ = new java.util.ArrayList<java.lang.Integer>(colorsNotPacked_);
-          bitField1_ |= 0x80000000;
+          bitField0_ |= 0x80000000;
         }
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @return A list containing the colorsNotPacked.
        */
       public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsNotPackedList() {
         return new com.google.protobuf.Internal.ListAdapter<
@@ -9245,18 +10199,24 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @return The count of colorsNotPacked.
        */
       public int getColorsNotPackedCount() {
         return colorsNotPacked_.size();
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param index The index of the element to return.
+       * @return The colorsNotPacked at the given index.
        */
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsNotPacked(int index) {
         return colorsNotPacked_converter_.convert(colorsNotPacked_.get(index));
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param index The index to set the value at.
+       * @param value The colorsNotPacked to set.
+       * @return This builder for chaining.
        */
       public Builder setColorsNotPacked(
           int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
@@ -9270,6 +10230,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param value The colorsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addColorsNotPacked(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
         if (value == null) {
@@ -9282,6 +10244,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param values The colorsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllColorsNotPacked(
           java.lang.Iterable<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> values) {
@@ -9294,15 +10258,17 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @return This builder for chaining.
        */
       public Builder clearColorsNotPacked() {
         colorsNotPacked_ = java.util.Collections.emptyList();
-        bitField1_ = (bitField1_ & ~0x80000000);
+        bitField0_ = (bitField0_ & ~0x80000000);
         onChanged();
         return this;
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @return A list containing the enum numeric values on the wire for colorsNotPacked.
        */
       public java.util.List<java.lang.Integer>
       getColorsNotPackedValueList() {
@@ -9310,12 +10276,17 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of colorsNotPacked at the given index.
        */
       public int getColorsNotPackedValue(int index) {
         return colorsNotPacked_.get(index);
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param index The index of the value to return.
+       * @return The enum numeric value on the wire of colorsNotPacked at the given index.
+       * @return This builder for chaining.
        */
       public Builder setColorsNotPackedValue(
           int index, int value) {
@@ -9326,6 +10297,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param value The enum numeric value on the wire for colorsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addColorsNotPackedValue(int value) {
         ensureColorsNotPackedIsMutable();
@@ -9335,6 +10308,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       * @param values The enum numeric values on the wire for colorsNotPacked to add.
+       * @return This builder for chaining.
        */
       public Builder addAllColorsNotPackedValue(
           java.lang.Iterable<java.lang.Integer> values) {
@@ -9348,13 +10323,14 @@ public final class ProtobufRoot {
 
       private com.google.protobuf.LazyStringList strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureStringsIsMutable() {
-        if (!((bitField2_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField1_ & 0x00000001) != 0)) {
           strings_ = new com.google.protobuf.LazyStringArrayList(strings_);
-          bitField2_ |= 0x00000001;
+          bitField1_ |= 0x00000001;
          }
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @return A list containing the strings.
        */
       public com.google.protobuf.ProtocolStringList
           getStringsList() {
@@ -9362,18 +10338,23 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @return The count of strings.
        */
       public int getStringsCount() {
         return strings_.size();
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @param index The index of the element to return.
+       * @return The strings at the given index.
        */
       public java.lang.String getStrings(int index) {
         return strings_.get(index);
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the strings at the given index.
        */
       public com.google.protobuf.ByteString
           getStringsBytes(int index) {
@@ -9381,6 +10362,9 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @param index The index to set the value at.
+       * @param value The strings to set.
+       * @return This builder for chaining.
        */
       public Builder setStrings(
           int index, java.lang.String value) {
@@ -9394,6 +10378,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @param value The strings to add.
+       * @return This builder for chaining.
        */
       public Builder addStrings(
           java.lang.String value) {
@@ -9407,6 +10393,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @param values The strings to add.
+       * @return This builder for chaining.
        */
       public Builder addAllStrings(
           java.lang.Iterable<java.lang.String> values) {
@@ -9418,15 +10406,18 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @return This builder for chaining.
        */
       public Builder clearStrings() {
         strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField2_ = (bitField2_ & ~0x00000001);
+        bitField1_ = (bitField1_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
        * <code>repeated string strings = 110;</code>
+       * @param value The bytes of the strings to add.
+       * @return This builder for chaining.
        */
       public Builder addStringsBytes(
           com.google.protobuf.ByteString value) {
@@ -9442,32 +10433,40 @@ public final class ProtobufRoot {
 
       private java.util.List<com.google.protobuf.ByteString> bytess_ = java.util.Collections.emptyList();
       private void ensureBytessIsMutable() {
-        if (!((bitField2_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField1_ & 0x00000002) != 0)) {
           bytess_ = new java.util.ArrayList<com.google.protobuf.ByteString>(bytess_);
-          bitField2_ |= 0x00000002;
+          bitField1_ |= 0x00000002;
          }
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @return A list containing the bytess.
        */
       public java.util.List<com.google.protobuf.ByteString>
           getBytessList() {
-        return java.util.Collections.unmodifiableList(bytess_);
+        return ((bitField1_ & 0x00000002) != 0) ?
+                 java.util.Collections.unmodifiableList(bytess_) : bytess_;
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @return The count of bytess.
        */
       public int getBytessCount() {
         return bytess_.size();
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @param index The index of the element to return.
+       * @return The bytess at the given index.
        */
       public com.google.protobuf.ByteString getBytess(int index) {
         return bytess_.get(index);
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @param index The index to set the value at.
+       * @param value The bytess to set.
+       * @return This builder for chaining.
        */
       public Builder setBytess(
           int index, com.google.protobuf.ByteString value) {
@@ -9481,6 +10480,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @param value The bytess to add.
+       * @return This builder for chaining.
        */
       public Builder addBytess(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -9493,6 +10494,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @param values The bytess to add.
+       * @return This builder for chaining.
        */
       public Builder addAllBytess(
           java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
@@ -9504,10 +10507,11 @@ public final class ProtobufRoot {
       }
       /**
        * <code>repeated bytes bytess = 111;</code>
+       * @return This builder for chaining.
        */
       public Builder clearBytess() {
         bytess_ = java.util.Collections.emptyList();
-        bitField2_ = (bitField2_ & ~0x00000002);
+        bitField1_ = (bitField1_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -9515,9 +10519,9 @@ public final class ProtobufRoot {
       private java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> users_ =
         java.util.Collections.emptyList();
       private void ensureUsersIsMutable() {
-        if (!((bitField2_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField1_ & 0x00000004) != 0)) {
           users_ = new java.util.ArrayList<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>(users_);
-          bitField2_ |= 0x00000004;
+          bitField1_ |= 0x00000004;
          }
       }
 
@@ -9667,7 +10671,7 @@ public final class ProtobufRoot {
       public Builder clearUsers() {
         if (usersBuilder_ == null) {
           users_ = java.util.Collections.emptyList();
-          bitField2_ = (bitField2_ & ~0x00000004);
+          bitField1_ = (bitField1_ & ~0x00000004);
           onChanged();
         } else {
           usersBuilder_.clear();
@@ -9744,7 +10748,7 @@ public final class ProtobufRoot {
           usersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder>(
                   users_,
-                  ((bitField2_ & 0x00000004) == 0x00000004),
+                  ((bitField1_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           users_ = null;
@@ -9754,7 +10758,7 @@ public final class ProtobufRoot {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -9810,20 +10814,24 @@ public final class ProtobufRoot {
 
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     java.lang.String getName();
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     com.google.protobuf.ByteString
         getNameBytes();
 
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
+     * @return Whether the typeRecursive field is set.
      */
     boolean hasTypeRecursive();
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
+     * @return The typeRecursive.
      */
     org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive();
     /**
@@ -9834,7 +10842,7 @@ public final class ProtobufRoot {
   /**
    * Protobuf type {@code org.apache.servicecomb.foundation.protobuf.internal.model.User}
    */
-  public  static final class User extends
+  public static final class User extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:org.apache.servicecomb.foundation.protobuf.internal.model.User)
       UserOrBuilder {
@@ -9845,6 +10853,13 @@ public final class ProtobufRoot {
     }
     private User() {
       name_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new User();
     }
 
     @java.lang.Override
@@ -9860,7 +10875,6 @@ public final class ProtobufRoot {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -9891,7 +10905,7 @@ public final class ProtobufRoot {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -9901,6 +10915,8 @@ public final class ProtobufRoot {
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
@@ -9926,7 +10942,9 @@ public final class ProtobufRoot {
     private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
+    @java.lang.Override
     public java.lang.String getName() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
@@ -9941,7 +10959,9 @@ public final class ProtobufRoot {
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNameBytes() {
       java.lang.Object ref = name_;
@@ -9960,19 +10980,24 @@ public final class ProtobufRoot {
     private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_;
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
+     * @return Whether the typeRecursive field is set.
      */
+    @java.lang.Override
     public boolean hasTypeRecursive() {
       return typeRecursive_ != null;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
+     * @return The typeRecursive.
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
       return typeRecursive_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
     }
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
+    @java.lang.Override
     public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder() {
       return getTypeRecursive();
     }
@@ -9991,7 +11016,7 @@ public final class ProtobufRoot {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (typeRecursive_ != null) {
@@ -10006,7 +11031,7 @@ public final class ProtobufRoot {
       if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (typeRecursive_ != null) {
@@ -10028,16 +11053,15 @@ public final class ProtobufRoot {
       }
       org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User other = (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User) obj;
 
-      boolean result = true;
-      result = result && getName()
-          .equals(other.getName());
-      result = result && (hasTypeRecursive() == other.hasTypeRecursive());
+      if (!getName()
+          .equals(other.getName())) return false;
+      if (hasTypeRecursive() != other.hasTypeRecursive()) return false;
       if (hasTypeRecursive()) {
-        result = result && getTypeRecursive()
-            .equals(other.getTypeRecursive());
+        if (!getTypeRecursive()
+            .equals(other.getTypeRecursive())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -10232,35 +11256,35 @@ public final class ProtobufRoot {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -10313,6 +11337,7 @@ public final class ProtobufRoot {
       private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
+       * @return The name.
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -10328,6 +11353,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string name = 1;</code>
+       * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -10344,6 +11370,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
        */
       public Builder setName(
           java.lang.String value) {
@@ -10357,6 +11385,7 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string name = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearName() {
         
@@ -10366,6 +11395,8 @@ public final class ProtobufRoot {
       }
       /**
        * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -10379,17 +11410,19 @@ public final class ProtobufRoot {
         return this;
       }
 
-      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_ = null;
+      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder> typeRecursiveBuilder_;
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
+       * @return Whether the typeRecursive field is set.
        */
       public boolean hasTypeRecursive() {
         return typeRecursiveBuilder_ != null || typeRecursive_ != null;
       }
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
+       * @return The typeRecursive.
        */
       public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
         if (typeRecursiveBuilder_ == null) {
@@ -10498,7 +11531,7 @@ public final class ProtobufRoot {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -10582,85 +11615,79 @@ public final class ProtobufRoot {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\022protobufRoot.proto\0229org.apache.service" +
-      "comb.foundation.protobuf.internal.model\032" +
-      "\031google/protobuf/any.proto\"\204\022\n\004Root\022\r\n\005i" +
-      "nt32\030\001 \001(\005\022\r\n\005int64\030\002 \001(\003\022\016\n\006uint32\030\003 \001(" +
-      "\r\022\016\n\006uint64\030\004 \001(\004\022\016\n\006sint32\030\005 \001(\021\022\016\n\006sin" +
-      "t64\030\006 \001(\022\022\017\n\007fixed32\030\007 \001(\007\022\017\n\007fixed64\030\010 " +
-      "\001(\006\022\020\n\010sfixed32\030\t \001(\017\022\020\n\010sfixed64\030\n \001(\020\022" +
-      "\022\n\nfloatValue\030\013 \001(\002\022\023\n\013doubleValue\030\014 \001(\001" +
-      "\022\014\n\004bool\030\r \001(\010\022\020\n\010objInt32\030\024 \001(\005\022\020\n\010objI" +
-      "nt64\030\025 \001(\003\022\021\n\tobjUint32\030\026 \001(\r\022\021\n\tobjUint" +
-      "64\030\027 \001(\004\022\021\n\tobjSint32\030\030 \001(\021\022\021\n\tobjSint64" +
-      "\030\031 \001(\022\022\022\n\nobjFixed32\030\032 \001(\007\022\022\n\nobjFixed64" +
-      "\030\033 \001(\006\022\023\n\013objSfixed32\030\034 \001(\017\022\023\n\013objSfixed" +
-      "64\030\035 \001(\020\022\025\n\robjFloatValue\030\036 \001(\002\022\026\n\016objDo" +
-      "ubleValue\030\037 \001(\001\022\017\n\007objBool\030  \001(\010\022\016\n\006stri" +
-      "ng\030( \001(\t\022\r\n\005bytes\030) \001(\014\022O\n\005color\030* \001(\0162@" +
-      ".org.apache.servicecomb.foundation.proto" +
-      "buf.internal.model.Color\022M\n\004user\030+ \001(\0132?" +
-      ".org.apache.servicecomb.foundation.proto" +
-      "buf.internal.model.User\022V\n\rtypeRecursive" +
-      "\030, \001(\0132?.org.apache.servicecomb.foundati" +
-      "on.protobuf.internal.model.Root\022!\n\003any\0302" +
-      " \001(\0132\024.google.protobuf.Any\022\"\n\004anys\0303 \003(\013" +
-      "2\024.google.protobuf.Any\022Y\n\005ssMap\030< \003(\0132J." +
-      "org.apache.servicecomb.foundation.protob" +
-      "uf.internal.model.Root.SsMapEntry\022a\n\tsin" +
-      "t32Map\030= \003(\0132N.org.apache.servicecomb.fo" +
-      "undation.protobuf.internal.model.Root.Si" +
-      "nt32MapEntry\022Y\n\005spMap\030> \003(\0132J.org.apache" +
-      ".servicecomb.foundation.protobuf.interna" +
-      "l.model.Root.SpMapEntry\022\024\n\014int32sPacked\030" +
-      "F \003(\005\022\024\n\014int64sPacked\030G \003(\003\022\025\n\ruint32sPa" +
-      "cked\030H \003(\r\022\025\n\ruint64sPacked\030I \003(\004\022\025\n\rsin" +
-      "t32sPacked\030J \003(\021\022\025\n\rsint64sPacked\030K \003(\022\022" +
-      "\026\n\016fixed32sPacked\030L \003(\007\022\026\n\016fixed64sPacke" +
-      "d\030M \003(\006\022\027\n\017sfixed32sPacked\030N \003(\017\022\027\n\017sfix" +
-      "ed64sPacked\030O \003(\020\022\024\n\014floatsPacked\030P \003(\002\022" +
-      "\025\n\rdoublesPacked\030Q \003(\001\022\023\n\013boolsPacked\030R " +
-      "\003(\010\022V\n\014colorsPacked\030S \003(\0162@.org.apache.s" +
-      "ervicecomb.foundation.protobuf.internal." +
-      "model.Color\022\033\n\017int32sNotPacked\030Z \003(\005B\002\020\000" +
-      "\022\033\n\017int64sNotPacked\030[ \003(\003B\002\020\000\022\034\n\020uint32s" +
-      "NotPacked\030\\ \003(\rB\002\020\000\022\034\n\020uint64sNotPacked\030" +
-      "] \003(\004B\002\020\000\022\034\n\020sint32sNotPacked\030^ \003(\021B\002\020\000\022" +
-      "\034\n\020sint64sNotPacked\030_ \003(\022B\002\020\000\022\035\n\021fixed32" +
-      "sNotPacked\030` \003(\007B\002\020\000\022\035\n\021fixed64sNotPacke" +
-      "d\030a \003(\006B\002\020\000\022\036\n\022sfixed32sNotPacked\030b \003(\017B" +
-      "\002\020\000\022\036\n\022sfixed64sNotPacked\030c \003(\020B\002\020\000\022\033\n\017f" +
-      "loatsNotPacked\030d \003(\002B\002\020\000\022\034\n\020doublesNotPa" +
-      "cked\030e \003(\001B\002\020\000\022\032\n\016boolsNotPacked\030f \003(\010B\002" +
-      "\020\000\022]\n\017colorsNotPacked\030g \003(\0162@.org.apache" +
-      ".servicecomb.foundation.protobuf.interna" +
-      "l.model.ColorB\002\020\000\022\017\n\007strings\030n \003(\t\022\016\n\006by" +
-      "tess\030o \003(\014\022N\n\005users\030p \003(\0132?.org.apache.s" +
-      "ervicecomb.foundation.protobuf.internal." +
-      "model.User\032,\n\nSsMapEntry\022\013\n\003key\030\001 \001(\t\022\r\n" +
-      "\005value\030\002 \001(\t:\0028\001\0320\n\016Sint32MapEntry\022\013\n\003ke" +
-      "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\032m\n\nSpMapEntry" +
-      "\022\013\n\003key\030\001 \001(\t\022N\n\005value\030\002 \001(\0132?.org.apach" +
-      "e.servicecomb.foundation.protobuf.intern" +
-      "al.model.User:\0028\001\"l\n\004User\022\014\n\004name\030\001 \001(\t\022" +
-      "V\n\rtypeRecursive\030\002 \001(\0132?.org.apache.serv" +
-      "icecomb.foundation.protobuf.internal.mod" +
-      "el.Root*&\n\005Color\022\007\n\003RED\020\000\022\n\n\006YELLOW\020\001\022\010\n" +
-      "\004BLUE\020\002b\006proto3"
+      "\nirepository/servicecomb-java-chassis/fo" +
+      "undations/foundation-protobuf/src/test/r" +
+      "esources/protobufRoot.proto\0229org.apache." +
+      "servicecomb.foundation.protobuf.internal" +
+      ".model\032\031google/protobuf/any.proto\"\204\022\n\004Ro" +
+      "ot\022\r\n\005int32\030\001 \001(\005\022\r\n\005int64\030\002 \001(\003\022\016\n\006uint" +
+      "32\030\003 \001(\r\022\016\n\006uint64\030\004 \001(\004\022\016\n\006sint32\030\005 \001(\021" +
+      "\022\016\n\006sint64\030\006 \001(\022\022\017\n\007fixed32\030\007 \001(\007\022\017\n\007fix" +
+      "ed64\030\010 \001(\006\022\020\n\010sfixed32\030\t \001(\017\022\020\n\010sfixed64" +
+      "\030\n \001(\020\022\022\n\nfloatValue\030\013 \001(\002\022\023\n\013doubleValu" +
+      "e\030\014 \001(\001\022\014\n\004bool\030\r \001(\010\022\020\n\010objInt32\030\024 \001(\005\022" +
+      "\020\n\010objInt64\030\025 \001(\003\022\021\n\tobjUint32\030\026 \001(\r\022\021\n\t" +
+      "objUint64\030\027 \001(\004\022\021\n\tobjSint32\030\030 \001(\021\022\021\n\tob" +
+      "jSint64\030\031 \001(\022\022\022\n\nobjFixed32\030\032 \001(\007\022\022\n\nobj" +
+      "Fixed64\030\033 \001(\006\022\023\n\013objSfixed32\030\034 \001(\017\022\023\n\013ob" +
+      "jSfixed64\030\035 \001(\020\022\025\n\robjFloatValue\030\036 \001(\002\022\026" +
+      "\n\016objDoubleValue\030\037 \001(\001\022\017\n\007objBool\030  \001(\010\022" +
+      "\016\n\006string\030( \001(\t\022\r\n\005bytes\030) \001(\014\022O\n\005color\030" +
+      "* \001(\0162@.org.apache.servicecomb.foundatio" +
+      "n.protobuf.internal.model.Color\022M\n\004user\030" +
+      "+ \001(\0132?.org.apache.servicecomb.foundatio" +
+      "n.protobuf.internal.model.User\022V\n\rtypeRe" +
+      "cursive\030, \001(\0132?.org.apache.servicecomb.f" +
+      "oundation.protobuf.internal.model.Root\022!" +
+      "\n\003any\0302 \001(\0132\024.google.protobuf.Any\022\"\n\004any" +
+      "s\0303 \003(\0132\024.google.protobuf.Any\022Y\n\005ssMap\030<" +
+      " \003(\0132J.org.apache.servicecomb.foundation" +
+      ".protobuf.internal.model.Root.SsMapEntry" +
+      "\022a\n\tsint32Map\030= \003(\0132N.org.apache.service" +
+      "comb.foundation.protobuf.internal.model." +
+      "Root.Sint32MapEntry\022Y\n\005spMap\030> \003(\0132J.org" +
+      ".apache.servicecomb.foundation.protobuf." +
+      "internal.model.Root.SpMapEntry\022\024\n\014int32s" +
+      "Packed\030F \003(\005\022\024\n\014int64sPacked\030G \003(\003\022\025\n\rui" +
+      "nt32sPacked\030H \003(\r\022\025\n\ruint64sPacked\030I \003(\004" +
+      "\022\025\n\rsint32sPacked\030J \003(\021\022\025\n\rsint64sPacked" +
+      "\030K \003(\022\022\026\n\016fixed32sPacked\030L \003(\007\022\026\n\016fixed6" +
+      "4sPacked\030M \003(\006\022\027\n\017sfixed32sPacked\030N \003(\017\022" +
+      "\027\n\017sfixed64sPacked\030O \003(\020\022\024\n\014floatsPacked" +
+      "\030P \003(\002\022\025\n\rdoublesPacked\030Q \003(\001\022\023\n\013boolsPa" +
+      "cked\030R \003(\010\022V\n\014colorsPacked\030S \003(\0162@.org.a" +
+      "pache.servicecomb.foundation.protobuf.in" +
+      "ternal.model.Color\022\033\n\017int32sNotPacked\030Z " +
+      "\003(\005B\002\020\000\022\033\n\017int64sNotPacked\030[ \003(\003B\002\020\000\022\034\n\020" +
+      "uint32sNotPacked\030\\ \003(\rB\002\020\000\022\034\n\020uint64sNot" +
+      "Packed\030] \003(\004B\002\020\000\022\034\n\020sint32sNotPacked\030^ \003" +
+      "(\021B\002\020\000\022\034\n\020sint64sNotPacked\030_ \003(\022B\002\020\000\022\035\n\021" +
+      "fixed32sNotPacked\030` \003(\007B\002\020\000\022\035\n\021fixed64sN" +
+      "otPacked\030a \003(\006B\002\020\000\022\036\n\022sfixed32sNotPacked" +
+      "\030b \003(\017B\002\020\000\022\036\n\022sfixed64sNotPacked\030c \003(\020B\002" +
+      "\020\000\022\033\n\017floatsNotPacked\030d \003(\002B\002\020\000\022\034\n\020doubl" +
+      "esNotPacked\030e \003(\001B\002\020\000\022\032\n\016boolsNotPacked\030" +
+      "f \003(\010B\002\020\000\022]\n\017colorsNotPacked\030g \003(\0162@.org" +
+      ".apache.servicecomb.foundation.protobuf." +
+      "internal.model.ColorB\002\020\000\022\017\n\007strings\030n \003(" +
+      "\t\022\016\n\006bytess\030o \003(\014\022N\n\005users\030p \003(\0132?.org.a" +
+      "pache.servicecomb.foundation.protobuf.in" +
+      "ternal.model.User\032,\n\nSsMapEntry\022\013\n\003key\030\001" +
+      " \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\0320\n\016Sint32MapEntr" +
+      "y\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\032m\n\nSpM" +
+      "apEntry\022\013\n\003key\030\001 \001(\t\022N\n\005value\030\002 \001(\0132?.or" +
+      "g.apache.servicecomb.foundation.protobuf" +
+      ".internal.model.User:\0028\001\"l\n\004User\022\014\n\004name" +
+      "\030\001 \001(\t\022V\n\rtypeRecursive\030\002 \001(\0132?.org.apac" +
+      "he.servicecomb.foundation.protobuf.inter" +
+      "nal.model.Root*&\n\005Color\022\007\n\003RED\020\000\022\n\n\006YELL" +
+      "OW\020\001\022\010\n\004BLUE\020\002b\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.google.protobuf.AnyProto.getDescriptor(),
-        }, assigner);
+        });
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable = new
