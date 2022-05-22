@@ -141,6 +141,7 @@ public class TestThreadPoolMetersInitializer {
 
     MatcherAssert.assertThat(result,
         Matchers.containsInAnyOrder("[Measurement(threadpool.maxThreads:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.rejectedTaskCount:id=groupExecutor-group0,0,0.0)]",
             "[Measurement(threadpool.completedTaskCount:id=groupExecutor-group0,0,0.0)]",
             "[Measurement(threadpool.currentThreadsBusy:id=groupExecutor-group0,0,0.0)]",
             "[Measurement(threadpool.corePoolSize:id=groupExecutor-group0,0,0.0)]",
