@@ -30,8 +30,8 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.models.Swagger;
@@ -64,7 +64,7 @@ public class UrlPathItemTest {
 
   private HttpClientRequest clientRequest;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     accessLogEvent = new ServerAccessLogEvent();
     routingContext = Mockito.mock(RoutingContext.class);

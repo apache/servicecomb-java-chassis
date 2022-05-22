@@ -19,9 +19,9 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class PlainTextItemTest {
@@ -31,7 +31,7 @@ public class PlainTextItemTest {
 
   private StringBuilder strBuilder;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     accessLogEvent = new ServerAccessLogEvent();
     finishEvent = Mockito.mock(InvocationFinishEvent.class);

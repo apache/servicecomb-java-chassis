@@ -30,8 +30,8 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.Cookie;
@@ -60,7 +60,7 @@ public class CookieItemTest {
 
   private RestClientRequestImpl restClientRequest;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     mockContext = Mockito.mock(RoutingContext.class);
     httpServerRequest = Mockito.mock(HttpServerRequest.class);

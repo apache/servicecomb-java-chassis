@@ -27,9 +27,9 @@ import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpClientRequest;
@@ -61,7 +61,7 @@ public class LocalPortItemTest {
 
   private HttpConnection connection;
 
-  @Before
+  @BeforeEach
   public void initStrBuilder() {
     accessLogEvent = new ServerAccessLogEvent();
     routingContext = Mockito.mock(RoutingContext.class);
