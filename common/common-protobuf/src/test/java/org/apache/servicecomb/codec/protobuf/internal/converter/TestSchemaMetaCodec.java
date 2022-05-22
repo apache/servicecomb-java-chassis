@@ -35,10 +35,13 @@ import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaPojo;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
@@ -52,50 +55,47 @@ import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Swagger;
-import mockit.Expectations;
-import mockit.Injectable;
 
 /**
  * SchemaMetaCodec test cases. This test cases covers POJO invoker and producer.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class TestSchemaMetaCodec {
-  @Injectable
-  private MicroserviceMeta providerMicroserviceMeta;
-
-  @Injectable
-  private MicroserviceMeta consumerMicroserviceMeta;
 
   private SchemaMeta providerSchemaMeta;
 
   private SchemaMeta consumerSchemaMeta;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ProtobufManager.clear();
   }
 
   private void mockSchemaMeta(String schemaId, AbstractSwaggerGenerator swaggerGenerator, Object producerInstance)
       throws Exception {
-    new Expectations() {
-      {
-        providerMicroserviceMeta.getMicroserviceName();
-        result = "test";
-        providerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID);
-        result = null;
-        consumerMicroserviceMeta.getMicroserviceName();
-        result = "test";
-        consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID);
-        result = null;
-      }
-    };
+    MicroserviceVersionsMeta microserviceVersionsMeta = Mockito.mock(MicroserviceVersionsMeta.class);
+    ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getExecutorManager()).thenReturn(executorManager);
+
+    MicroserviceMeta providerMicroserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    Mockito.when(providerMicroserviceMeta.getScbEngine()).thenReturn(scbEngine);
+    Mockito.when(providerMicroserviceMeta.getMicroserviceVersionsMeta()).thenReturn(microserviceVersionsMeta);
+    Mockito.when(providerMicroserviceMeta.getMicroserviceName()).thenReturn("test");
+    Mockito.when(providerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
+
+    MicroserviceMeta consumerMicroserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    Mockito.when(consumerMicroserviceMeta.getScbEngine()).thenReturn(scbEngine);
+    Mockito.when(consumerMicroserviceMeta.getMicroserviceVersionsMeta()).thenReturn(microserviceVersionsMeta);
+    Mockito.when(consumerMicroserviceMeta.getMicroserviceName()).thenReturn("test");
+    Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
     Swagger swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
@@ -212,7 +212,7 @@ public class TestSchemaMetaCodec {
         .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assertions.assertEquals(user.name, decodedUser.name);
     // proto buffer encode and decode empty list to be null
-    Assertions.assertEquals(null, decodedUser.friends);
+    Assertions.assertNull(decodedUser.friends);
   }
 
   @Test
@@ -285,7 +285,7 @@ public class TestSchemaMetaCodec {
     decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
     Assertions.assertEquals(user.name, decodedUser.get("test").name);
     // proto buffer encode and decode empty list to be null
-    Assertions.assertEquals(null, decodedUser.get("test").friends);
+    Assertions.assertNull(decodedUser.get("test").friends);
   }
 
   @Test
@@ -363,7 +363,7 @@ public class TestSchemaMetaCodec {
       Assertions.assertEquals(color.ordinal(), decodedArgs.get("color"));
       Assertions.assertEquals(date.getTime(), decodedArgs.get("date"));
       Assertions.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate"));
-      Assertions.assertEquals(true, ((Map) decodedArgs.get("empty")).isEmpty());
+      Assertions.assertTrue(((Map) decodedArgs.get("empty")).isEmpty());
     } else {
       Assertions.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
       Assertions.assertEquals(color, decodedArgs.get("color"));
@@ -387,16 +387,16 @@ public class TestSchemaMetaCodec {
     args.put("empty", null);
     values = requestSerializer.serialize(args);
     decodedArgs = requestDeserializer.deserialize(values);
-    Assertions.assertEquals(null, decodedArgs.get("boolValue"));
-    Assertions.assertEquals(null, decodedArgs.get("iValue"));
-    Assertions.assertEquals(null, decodedArgs.get("lValue"));
-    Assertions.assertEquals(null, decodedArgs.get("fValue"));
-    Assertions.assertEquals(null, decodedArgs.get("dValue"));
-    Assertions.assertEquals(null, decodedArgs.get("iArray"));
-    Assertions.assertEquals(null, decodedArgs.get("color"));
-    Assertions.assertEquals(null, decodedArgs.get("localDate"));
-    Assertions.assertEquals(null, decodedArgs.get("date"));
-    Assertions.assertEquals(null, decodedArgs.get("empty"));
+    Assertions.assertNull(decodedArgs.get("boolValue"));
+    Assertions.assertNull(decodedArgs.get("iValue"));
+    Assertions.assertNull(decodedArgs.get("lValue"));
+    Assertions.assertNull(decodedArgs.get("fValue"));
+    Assertions.assertNull(decodedArgs.get("dValue"));
+    Assertions.assertNull(decodedArgs.get("iArray"));
+    Assertions.assertNull(decodedArgs.get("color"));
+    Assertions.assertNull(decodedArgs.get("localDate"));
+    Assertions.assertNull(decodedArgs.get("date"));
+    Assertions.assertNull(decodedArgs.get("empty"));
 
     // response message
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
