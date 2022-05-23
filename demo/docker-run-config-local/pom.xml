@@ -112,7 +112,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.19.1</version>
             <configuration>
               <argLine>${jacoco.failsafe.argLine}</argLine>
             </configuration>
