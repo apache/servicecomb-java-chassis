@@ -30,7 +30,6 @@ import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;
@@ -77,7 +76,7 @@ public class TestSpringmvcV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test
@@ -100,7 +99,7 @@ public class TestSpringmvcV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test
@@ -120,7 +119,7 @@ public class TestSpringmvcV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test
@@ -140,7 +139,7 @@ public class TestSpringmvcV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test

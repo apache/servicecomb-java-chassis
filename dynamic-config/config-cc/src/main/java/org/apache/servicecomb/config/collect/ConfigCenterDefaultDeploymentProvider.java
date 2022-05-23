@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.config.collect;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;

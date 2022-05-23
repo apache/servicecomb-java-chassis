@@ -23,7 +23,6 @@ import java.net.Socket;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;

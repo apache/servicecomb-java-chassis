@@ -41,7 +41,6 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

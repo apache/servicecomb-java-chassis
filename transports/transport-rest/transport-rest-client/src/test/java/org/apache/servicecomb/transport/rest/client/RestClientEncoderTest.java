@@ -17,24 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-
 // TODO: vert.x 4 changed HttpClientRequest creation behavior, and will
 // connect to server and when successfully HttpClientRequest will created. So tests case will fail.
 // These unit tests is hard to modify, will change it to integration test or think another method

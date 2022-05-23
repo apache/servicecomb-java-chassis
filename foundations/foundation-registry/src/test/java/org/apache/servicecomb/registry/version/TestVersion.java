@@ -175,9 +175,9 @@ public class TestVersion {
   public void testEquals() {
     version = new Version(s1, s1, s1, s1);
 
-    Assertions.assertTrue(version.equals(version));
-    Assertions.assertTrue(version.equals(new Version(s1, s1, s1, s1)));
-    Assertions.assertFalse(version.equals(null));
+    Assertions.assertEquals(version, version);
+    Assertions.assertEquals(version, new Version(s1, s1, s1, s1));
+    Assertions.assertNotEquals(null, version);
   }
 
   @Test

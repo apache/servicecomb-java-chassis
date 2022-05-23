@@ -230,7 +230,7 @@ public class QpsControllerManagerTest {
     };
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
-    Assertions.assertTrue(100 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
+    Assertions.assertEquals(100, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
     new Expectations() {
       {
         invocation.getOperationMeta();

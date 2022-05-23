@@ -76,7 +76,7 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   public ServletInputStream getInputStream() throws IOException {
     if (this.inputStream == null) {
       if (cacheRequest) {
-        byte inputBytes[] = IOUtils.toByteArray(getRequest().getInputStream());
+        byte[] inputBytes = IOUtils.toByteArray(getRequest().getInputStream());
         ByteBuf byteBuf = Unpooled.wrappedBuffer(inputBytes);
         this.inputStream = new BufferInputStream(byteBuf);
         setBodyBuffer(Buffer.buffer(Unpooled.wrappedBuffer(byteBuf)));

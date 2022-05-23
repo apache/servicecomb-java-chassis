@@ -90,7 +90,7 @@ public class TestRestCodec {
       Assertions.assertEquals("abc", header.get("header"));
     } catch (Exception e) {
       e.printStackTrace();
-      Assertions.assertTrue(false);
+      Assertions.fail();
     }
   }
 
@@ -145,7 +145,7 @@ public class TestRestCodec {
       Assertions.assertEquals(400, e.getStatusCode());
       Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
     }
-    Assertions.assertEquals(success, false);
+    Assertions.assertFalse(success);
   }
 
   @Test
@@ -174,6 +174,6 @@ public class TestRestCodec {
     } catch (InvocationException e) {
       Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
     }
-    Assertions.assertEquals(success, false);
+    Assertions.assertFalse(success);
   }
 }

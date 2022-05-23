@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.springmvc.property.creator;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.web.multipart.MultipartFile;
 

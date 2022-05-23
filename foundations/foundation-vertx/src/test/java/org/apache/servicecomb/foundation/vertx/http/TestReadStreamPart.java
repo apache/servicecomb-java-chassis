@@ -152,7 +152,7 @@ public class TestReadStreamPart {
     RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     new MockUp<InputStream>(inputStream) {
       @Mock
-      int read(byte b[]) throws IOException {
+      int read(byte[] b) throws IOException {
         throw error;
       }
     };

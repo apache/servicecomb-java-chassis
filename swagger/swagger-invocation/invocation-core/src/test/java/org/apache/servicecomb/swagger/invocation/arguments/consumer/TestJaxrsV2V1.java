@@ -30,7 +30,6 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBeanParamV1;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;

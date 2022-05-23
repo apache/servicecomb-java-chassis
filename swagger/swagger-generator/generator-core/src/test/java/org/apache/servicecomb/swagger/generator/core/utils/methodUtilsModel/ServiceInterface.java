@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.BaseInterface;
-import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.HelloBean;
-
 public interface ServiceInterface extends BaseInterface<HelloBean> {
   HelloBean getBase(HelloBean param);
 }

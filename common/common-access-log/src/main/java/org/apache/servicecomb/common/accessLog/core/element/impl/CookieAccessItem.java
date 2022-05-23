@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 

@@ -18,7 +18,6 @@
 package org.apache.servicecomb.demo;
 
 import java.io.File;
-import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;

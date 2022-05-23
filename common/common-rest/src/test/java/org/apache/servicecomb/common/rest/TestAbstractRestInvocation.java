@@ -74,7 +74,6 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

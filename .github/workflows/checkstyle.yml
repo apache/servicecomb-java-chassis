@@ -35,4 +35,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: checkstyle
-        run: mvn -B -Pit install -DskipTests -Dspotbugs.skip=true checkstyle:checkstyle
+        run: mvn -B -Pit install -DskipTests -Dspotbugs.skip=true checkstyle:check

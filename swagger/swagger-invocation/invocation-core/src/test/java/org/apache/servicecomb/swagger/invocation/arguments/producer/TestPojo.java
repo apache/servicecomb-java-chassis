@@ -25,7 +25,6 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddWithContextV1;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

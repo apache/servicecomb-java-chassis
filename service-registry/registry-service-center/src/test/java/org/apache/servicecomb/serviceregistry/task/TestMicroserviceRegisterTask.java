@@ -30,7 +30,6 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -156,8 +155,8 @@ public class TestMicroserviceRegisterTask {
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
-    Assertions.assertEquals(false, registerTask.isRegistered());
-    Assertions.assertEquals(false, registerTask.isSchemaIdSetMatch());
+    Assertions.assertFalse(registerTask.isRegistered());
+    Assertions.assertFalse(registerTask.isSchemaIdSetMatch());
     Assertions.assertEquals("serviceId", microservice.getServiceId());
     Assertions.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assertions.assertEquals(1, taskList.size());

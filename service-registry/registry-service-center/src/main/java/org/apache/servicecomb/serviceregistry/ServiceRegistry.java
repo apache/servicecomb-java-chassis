@@ -18,7 +18,6 @@ package org.apache.servicecomb.serviceregistry;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.servicecomb.registry.api.registry.Microservice;

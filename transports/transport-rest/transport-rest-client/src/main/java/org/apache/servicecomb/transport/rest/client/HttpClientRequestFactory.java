@@ -21,7 +21,6 @@ import org.apache.servicecomb.core.Invocation;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 
 /**

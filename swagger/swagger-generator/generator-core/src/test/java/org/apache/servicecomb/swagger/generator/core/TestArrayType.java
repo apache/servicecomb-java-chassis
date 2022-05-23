@@ -20,7 +20,6 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.ModelImpl;

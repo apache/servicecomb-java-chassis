@@ -41,7 +41,7 @@ public class TestRestServletInjector {
       }
     };
 
-    Assertions.assertEquals(null, RestServletInjector.defaultInject(servletContext));
+    Assertions.assertNull(RestServletInjector.defaultInject(servletContext));
   }
 
   @Test

@@ -24,7 +24,6 @@ import java.io.IOException;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.Holder;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

@@ -41,7 +41,6 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
-import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

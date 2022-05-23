@@ -24,7 +24,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.models.ProducerImpl;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -31,8 +31,6 @@ import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-import io.vertx.core.json.Json;
-
 public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceCacheCheckTask.class);
 

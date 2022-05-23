@@ -132,7 +132,7 @@ public class SSLManagerTest {
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
     Assertions.assertArrayEquals(ciphers, ciphersExpected);
-    Assertions.assertEquals(serverSocket.getNeedClientAuth(), true);
+    Assertions.assertTrue(serverSocket.getNeedClientAuth());
 
     SSLOption clientoption = SSLOption.build(DIR + "/client.ssl.properties");
     SSLSocket clientsocket = SSLManager.createSSLSocket(clientoption, custom);
@@ -146,7 +146,7 @@ public class SSLManagerTest {
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
     Assertions.assertArrayEquals(clientciphers, clientciphersExpected);
-    Assertions.assertEquals(clientsocket.getNeedClientAuth(), false);
+    Assertions.assertFalse(clientsocket.getNeedClientAuth());
     boolean validAssert = true;
     try {
       clientsocket.connect(new InetSocketAddress("127.0.0.1", 8886));

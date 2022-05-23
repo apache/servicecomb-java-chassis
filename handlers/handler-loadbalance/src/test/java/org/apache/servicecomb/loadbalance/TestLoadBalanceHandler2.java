@@ -66,10 +66,6 @@ import com.google.common.eventbus.Subscribe;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- *
- */
 public class TestLoadBalanceHandler2 {
   private Holder<Long> mockTimeMillis;
 
@@ -186,7 +182,7 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assertions.assertEquals(null, server);
+    Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
@@ -420,7 +416,7 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assertions.assertEquals(null, server);
+    Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
@@ -549,7 +545,7 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler(discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assertions.assertEquals(null, server);
+    Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
@@ -690,7 +686,7 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler(discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assertions.assertEquals(null, server);
+    Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);

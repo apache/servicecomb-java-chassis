@@ -42,7 +42,7 @@ public class PojoClientTest {
 
   public static Test testFromXml;
 
-  public static final byte buffer[] = new byte[1024];
+  public static final byte[] buffer = new byte[1024];
 
   public static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
 

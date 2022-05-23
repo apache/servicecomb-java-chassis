@@ -631,7 +631,7 @@ public class SpringMvcIntegrationTestBase {
     try {
       restTemplate
           .getForEntity(controllerUrl + "sayhi?name=throwexception", String.class);
-      Assertions.assertFalse(true);
+      Assertions.fail();
     } catch (HttpServerErrorException e) {
       MatcherAssert.assertThat(e.getRawStatusCode(), is(500));
       MatcherAssert.assertThat(e.getResponseBodyAsString(),

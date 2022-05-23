@@ -101,7 +101,7 @@ public class TestCommonToHttpServletRequest {
     queryParams.put("name", Arrays.asList());
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
-    Assertions.assertEquals(null, request.getParameter("name"));
+    Assertions.assertNull(request.getParameter("name"));
   }
 
   @Test
@@ -109,7 +109,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> queryParams = new HashMap<>();
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
-    Assertions.assertEquals(null, request.getParameter("name"));
+    Assertions.assertNull(request.getParameter("name"));
   }
 
   @Test
@@ -153,7 +153,7 @@ public class TestCommonToHttpServletRequest {
     httpHeaders.put("name", Arrays.asList());
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
-    Assertions.assertEquals(null, request.getHeader("name"));
+    Assertions.assertNull(request.getHeader("name"));
   }
 
   @Test
@@ -178,7 +178,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
-    Assertions.assertEquals(null, request.getHeader("name"));
+    Assertions.assertNull(request.getHeader("name"));
   }
 
   @Test

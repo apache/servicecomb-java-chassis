@@ -16,41 +16,11 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.inject.PlaceholderResolver;
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
-import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
-
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
-
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiParam;
@@ -74,6 +44,40 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 import io.swagger.util.ReflectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.inject.PlaceholderResolver;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
 
 public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected AbstractSwaggerGenerator swaggerGenerator;

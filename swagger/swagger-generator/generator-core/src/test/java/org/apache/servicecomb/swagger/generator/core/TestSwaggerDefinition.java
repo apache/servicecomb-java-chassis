@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.annotations.Contact;

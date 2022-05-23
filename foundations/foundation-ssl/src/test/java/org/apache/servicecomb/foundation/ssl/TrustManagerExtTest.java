@@ -392,7 +392,7 @@ public class TrustManagerExtTest {
 
     new MockUp<InputStreamReader>() {
       @Mock
-      public int read(char cbuf[]) throws IOException {
+      public int read(char[] cbuf) throws IOException {
         throw new IOException();
       }
     };

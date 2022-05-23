@@ -55,17 +55,17 @@ public class TestServiceCombServer {
 
   @Test
   public void testEqualsMethod() {
-    Assertions.assertFalse(cs.equals((Object) "abcd"));
+    Assertions.assertNotEquals(cs, (Object) "abcd");
 
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     ServiceCombServer other = new ServiceCombServer(null, transport, new CacheEndpoint("1234", instance1));
-    Assertions.assertFalse(cs.equals(other));
+    Assertions.assertNotEquals(cs, other);
 
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("123456");
     other = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance2));
-    Assertions.assertTrue(cs.equals(other));
+    Assertions.assertEquals(cs, other);
   }
 
   @Test

@@ -20,7 +20,6 @@ package org.apache.servicecomb.swagger.generator.core;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;

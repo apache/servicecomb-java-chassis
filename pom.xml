@@ -174,8 +174,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
-          <configLocation>../etc/checkstyle.xml</configLocation>
-          <excludes>**/demo/**</excludes>
+          <configLocation>ci/checkstyle/checkstyle.xml</configLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
         </configuration>
       </plugin>
       <plugin>

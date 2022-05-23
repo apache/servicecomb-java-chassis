@@ -24,7 +24,6 @@ import javax.ws.rs.Path;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.annotations.SwaggerDefinition;

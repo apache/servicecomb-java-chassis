@@ -47,19 +47,19 @@ public class TestConfig {
     String objectString = new String("Unit Testing");
     Response oResponse = Response.success(objectString, Status.OK);
 
-    Assertions.assertEquals(true, oResponse.isSucceed());
+    Assertions.assertTrue(oResponse.isSucceed());
 
     oResponse = Response.succResp(objectString);
-    Assertions.assertEquals(true, oResponse.isSucceed());
+    Assertions.assertTrue(oResponse.isSucceed());
     Assertions.assertEquals(200, oResponse.getStatusCode());
 
     Throwable oThrowable = new Throwable("Error");
 
     oResponse = Response.consumerFailResp(oThrowable);
-    Assertions.assertEquals(true, oResponse.isFailed());
+    Assertions.assertTrue(oResponse.isFailed());
 
     oResponse = Response.providerFailResp(oThrowable);
-    Assertions.assertEquals(true, oResponse.isFailed());
+    Assertions.assertTrue(oResponse.isFailed());
   }
 
   @Test
@@ -99,14 +99,14 @@ public class TestConfig {
     Assertions.assertEquals(invocation, ContextUtils.getInvocationContext());
 
     ContextUtils.removeInvocationContext();
-    Assertions.assertEquals(null, ContextUtils.getInvocationContext());
+    Assertions.assertNull(ContextUtils.getInvocationContext());
   }
 
   @Test
   public void testResponse() {
     Response response = Response.create(400, "test", null);
     InvocationException exception = response.getResult();
-    Assertions.assertEquals(null, exception.getErrorData());
+    Assertions.assertNull(exception.getErrorData());
 
     response = Response.create(400, "test", "errorData");
     exception = response.getResult();

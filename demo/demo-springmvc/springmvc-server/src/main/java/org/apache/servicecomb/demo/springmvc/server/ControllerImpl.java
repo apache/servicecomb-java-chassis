@@ -37,8 +37,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiOperation;
-
 // This class tests "contract first", the controller.yaml will override annotations defined in class.
 
 @RestSchema(schemaId = "controller")

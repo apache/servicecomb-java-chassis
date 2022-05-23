@@ -17,20 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-
-import java.util.concurrent.CompletableFuture;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.jupiter.api.Test;
-
 // TODO: vert.x 4 changed HttpClientRequest creation behavior, and will
 // connect to server and when successfully HttpClientRequest will created. So tests case will fail.
 // These unit tests is hard to modify, will change it to integration test or think another method
