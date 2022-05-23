@@ -44,7 +44,7 @@ public class TestDefaultRegistryInitializer {
     Assertions.assertEquals(-10, registryInitializer.getOrder());
     Assertions.assertTrue(globalRegistry.getDefaultRegistry() instanceof com.netflix.spectator.servo.ServoRegistry);
     Assertions.assertEquals(1, registries.size());
-    Assertions.assertEquals(1, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
+    Assertions.assertEquals(0, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
 
     registryInitializer.destroy();
 
