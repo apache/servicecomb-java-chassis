@@ -123,10 +123,10 @@ public class TestGroupExecutor {
     groupExecutor.execute(() -> {
     });
     Map<Long, Executor> threadExecutorMap = Deencapsulation.getField(groupExecutor, "threadExecutorMap");
-    Assertions.assertEquals(true, (threadExecutorMap.size() > 0));
+    Assertions.assertTrue((threadExecutorMap.size() > 0));
 
     List<Executor> executorList = Deencapsulation.getField(groupExecutor, "executorList");
-    Assertions.assertEquals(true, (executorList.size() > 1));
+    Assertions.assertTrue((executorList.size() > 1));
 
     ReactiveExecutor oReactiveExecutor = new ReactiveExecutor();
     oReactiveExecutor.execute(() -> strThreadTest = "thread Ran");

@@ -54,8 +54,7 @@ public class TestCompatibilityOfImplementations {
     values = scbWeak.serialize(root);
     Assertions.assertEquals(values.length, 0);
     Map<String, Object> newRootMap = (Map<String, Object>) scbWeak.deserialize(values);
-    Assertions.assertEquals(null,
-        newRootMap.get("fixed32sNotPacked")); // This is different , because depends on default model initializer
+    Assertions.assertNull(newRootMap.get("fixed32sNotPacked")); // This is different , because depends on default model initializer
 
     List<Integer> iValues = new ArrayList<>();
     iValues.add(30);

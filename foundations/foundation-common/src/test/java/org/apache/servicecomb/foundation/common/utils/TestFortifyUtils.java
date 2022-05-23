@@ -54,7 +54,7 @@ public class TestFortifyUtils {
       Assertions.assertNotNull(FortifyUtils.getSecurityXmlDocumentFactory());
     } catch (Exception e) {
       /* Do not Worry */
-      Assertions.assertTrue(false);
+        Assertions.fail();
     }
   }
 

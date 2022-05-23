@@ -26,8 +26,6 @@ import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
@@ -55,7 +53,7 @@ import org.springframework.stereotype.Component;
 public class PojoClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
-  public static final byte buffer[] = new byte[1024];
+  public static final byte[] buffer = new byte[1024];
 
   // reference a not exist a microservice, and never use it
   // this should not cause problems

@@ -28,7 +28,6 @@ import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUti
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
@@ -121,14 +120,14 @@ public class TestApiOperation {
     Operation operation = path.getPost();
     Model result200 = operation.getResponses().get("200").getResponseSchema();
     Assertions.assertEquals(ArrayModel.class, result200.getClass());
-    Assertions.assertEquals(null, ((ArrayModel) result200).getUniqueItems());
+    Assertions.assertNull(((ArrayModel) result200).getUniqueItems());
   }
 
   private void testMap(Path path) {
     Operation operation = path.getPost();
     Model result200 = operation.getResponses().get("200").getResponseSchema();
     Assertions.assertEquals(ModelImpl.class, result200.getClass());
-    Assertions.assertTrue(((ModelImpl) result200).getAdditionalProperties() != null);
+    Assertions.assertNotNull(((ModelImpl) result200).getAdditionalProperties());
   }
 
   private void testPrimitive(Path path) {
@@ -142,7 +141,7 @@ public class TestApiOperation {
 
     ModelImpl result202 = (ModelImpl) operation.getResponses().get("202").getResponseSchema();
     Assertions.assertEquals("string", result202.getType());
-    Assertions.assertEquals(null, result202.getFormat());
+    Assertions.assertNull(result202.getFormat());
   }
 
   private void testBase(Path path) {
@@ -162,11 +161,11 @@ public class TestApiOperation {
 
     Response response = responseMap.get(SwaggerConst.SUCCESS_KEY);
     Assertions.assertNotNull(response);
-    Assertions.assertEquals(null, response.getResponseSchema());
+    Assertions.assertNull(response.getResponseSchema());
 
     response = responseMap.get("202");
     Assertions.assertNotNull(response);
-    Assertions.assertEquals(null, response.getResponseSchema());
+    Assertions.assertNull(response.getResponseSchema());
 
     Assertions.assertEquals(1, response.getHeaders().size());
     Assertions.assertEquals("integer", response.getHeaders().get("h1").getType());

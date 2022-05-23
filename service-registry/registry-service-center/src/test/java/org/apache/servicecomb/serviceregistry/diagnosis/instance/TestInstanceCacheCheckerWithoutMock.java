@@ -30,7 +30,6 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

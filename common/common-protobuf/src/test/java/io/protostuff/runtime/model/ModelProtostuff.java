@@ -24,7 +24,6 @@ import io.protostuff.Tag;
 
 public class ModelProtostuff {
 
-  //CHECKSTYLE:OFF: magicnumber
   @Tag(1)
   private String destMicroservice;
 

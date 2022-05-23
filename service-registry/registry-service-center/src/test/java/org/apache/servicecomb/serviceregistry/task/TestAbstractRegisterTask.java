@@ -68,9 +68,9 @@ public class TestAbstractRegisterTask {
         new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
     ReflectUtils.setField(heartbeatTask, "heartbeatResult", HeartbeatResult.INSTANCE_NOT_REGISTERED);
 
-    Assertions.assertEquals(true, registerTask.isRegistered());
+    Assertions.assertTrue(registerTask.isRegistered());
     eventBus.post(heartbeatTask);
-    Assertions.assertEquals(false, registerTask.isRegistered());
+    Assertions.assertFalse(registerTask.isRegistered());
   }
 
   @Test

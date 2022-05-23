@@ -40,7 +40,6 @@ import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;

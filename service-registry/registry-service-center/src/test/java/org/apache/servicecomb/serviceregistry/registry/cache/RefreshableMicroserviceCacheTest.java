@@ -30,7 +30,6 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

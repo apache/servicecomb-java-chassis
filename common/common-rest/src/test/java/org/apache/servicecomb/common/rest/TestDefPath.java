@@ -33,6 +33,6 @@ public class TestDefPath {
     Assertions.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
     Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
     Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
-    Assertions.assertEquals(null, oSecondPathRegExp.match("{test/test}", null));
+    Assertions.assertNull(oSecondPathRegExp.match("{test/test}", null));
   }
 }

@@ -35,7 +35,6 @@ import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
 import org.apache.servicecomb.foundation.auth.ShaAKSKCipher;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -119,7 +119,7 @@ public class TestJaxrsV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test
@@ -139,7 +139,7 @@ public class TestJaxrsV1V2 {
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
-    Assertions.assertEquals(null, result.get("x-z"));
+    Assertions.assertNull(result.get("x-z"));
   }
 
   @Test

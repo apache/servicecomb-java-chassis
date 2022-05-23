@@ -226,7 +226,7 @@ public class TestDefaultValue {
       Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (InvocationException e) {
       Assertions.assertEquals(400, e.getStatusCode());
-      Assertions.assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is not valid"));
     }
   }
 
@@ -269,7 +269,7 @@ public class TestDefaultValue {
       Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (InvocationException e) {
       Assertions.assertEquals(400, e.getStatusCode());
-      Assertions.assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is not valid"));
     }
   }
 
@@ -313,7 +313,7 @@ public class TestDefaultValue {
       Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (InvocationException e) {
       Assertions.assertEquals(400, e.getStatusCode());
-      Assertions.assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is not valid"));
     }
   }
 

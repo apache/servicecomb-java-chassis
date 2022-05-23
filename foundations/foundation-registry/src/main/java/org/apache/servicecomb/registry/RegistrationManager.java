@@ -54,7 +54,6 @@ import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.jackson.JacksonFactory;
-import io.vertx.core.spi.json.JsonCodec;
 
 public class RegistrationManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationManager.class);

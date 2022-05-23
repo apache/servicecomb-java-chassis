@@ -17,20 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.Json;
-
 // TODO: vert.x 4 changed HttpClientRequest creation behavior, and will
 // connect to server and when successfully HttpClientRequest will created. So tests case will fail.
 // These unit tests is hard to modify, will change it to integration test or think another method

@@ -97,7 +97,7 @@ public class TestEventManager {
     }
 
     // ensure logs: "LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method, throwable);"
-    Assertions.assertTrue(!collector.getEvents().isEmpty());
+    Assertions.assertFalse(collector.getEvents().isEmpty());
     collector.teardown();
   }
 

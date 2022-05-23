@@ -49,7 +49,7 @@ public class TestQueryProcessorCreator {
     Assertions.assertEquals("", result);
 
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
-    Assertions.assertEquals(null, result);
+    Assertions.assertNull(result);
   }
 
   @SuppressWarnings("UnusedAssignment")
@@ -72,11 +72,11 @@ public class TestQueryProcessorCreator {
 
     Mockito.when(request.getParameter("query")).thenReturn("");
     result = (String) processor.getValue(request);
-    Assertions.assertEquals(null, result);
+    Assertions.assertNull(result);
 
     Mockito.when(request.getParameter("query")).thenReturn(null);
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
     result = (String) processor.getValue(request);
-    Assertions.assertEquals(null, result);
+    Assertions.assertNull(result);
   }
 }

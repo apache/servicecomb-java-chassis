@@ -32,7 +32,7 @@ public class TestSSLOptionFactory {
   @Test
   public void testSSLOptionFactory() {
     SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
-    Assertions.assertEquals(factory, null);
+    Assertions.assertNull(factory);
   }
 
   @Test

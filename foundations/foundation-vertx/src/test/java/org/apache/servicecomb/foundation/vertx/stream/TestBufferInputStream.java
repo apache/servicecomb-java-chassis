@@ -103,7 +103,7 @@ public class TestBufferInputStream {
     try {
       instance.close();
     } catch (Exception e) {
-      Assertions.assertTrue(false); // This assertion is made to fail the test case in case the close() throws exception
+      Assertions.fail(); // This assertion is made to fail the test case in case the close() throws exception
     }
   }
 
@@ -114,7 +114,7 @@ public class TestBufferInputStream {
 
   @Test
   public void testReadBoolean() {
-    Assertions.assertEquals(false, instance.readBoolean());
+    Assertions.assertFalse(instance.readBoolean());
   }
 
   @Test

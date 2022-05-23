@@ -24,7 +24,6 @@ import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

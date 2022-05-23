@@ -488,6 +488,6 @@ public class ServiceCenterClientTest {
         .updateServiceSchemaContext("111", new SchemaInfo());
 
     Assertions.assertNotNull(result);
-    Assertions.assertEquals(true, result);
+    Assertions.assertTrue(result);
   }
 }

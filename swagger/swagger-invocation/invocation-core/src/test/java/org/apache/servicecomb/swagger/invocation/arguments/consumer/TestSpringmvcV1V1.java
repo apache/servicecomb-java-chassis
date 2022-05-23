@@ -30,7 +30,6 @@ import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;

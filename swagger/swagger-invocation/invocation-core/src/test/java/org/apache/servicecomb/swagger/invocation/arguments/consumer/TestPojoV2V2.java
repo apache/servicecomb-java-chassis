@@ -17,7 +17,6 @@
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
@@ -30,7 +29,6 @@ import org.apache.servicecomb.swagger.invocation.schemas.ConsumerAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.Swagger;

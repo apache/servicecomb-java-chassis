@@ -58,14 +58,14 @@ public class TestPathProcessor {
   public void testGetValueNoPathVars() throws Exception {
     createProcessor("name", String.class);
 
-    Assertions.assertEquals(null, processor.getValue(request));
+    Assertions.assertNull(processor.getValue(request));
   }
 
   @Test
   public void testGetValuePathNotFound() throws Exception {
     prepareGetValue("name", String.class);
 
-    Assertions.assertEquals(null, processor.getValue(request));
+    Assertions.assertNull(processor.getValue(request));
   }
 
   @Test

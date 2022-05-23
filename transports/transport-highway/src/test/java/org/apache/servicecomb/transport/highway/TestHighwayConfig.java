@@ -48,6 +48,6 @@ public class TestHighwayConfig {
 
   @Test
   public void getAddress() {
-    Assertions.assertEquals(HighwayConfig.getAddress(), null);
+    Assertions.assertNull(HighwayConfig.getAddress());
   }
 }

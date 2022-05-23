@@ -16,34 +16,6 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static org.apache.servicecomb.transport.rest.client.RestFeatureController.SCHEMA_ID;
-
-import java.util.Arrays;
-import java.util.Map;
-
-import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
-import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.filter.impl.ProducerOperationFilter;
-import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
-import org.apache.servicecomb.core.filter.impl.SimpleLoadBalanceFilter;
-import org.apache.servicecomb.core.invocation.InvocationFactory;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-
-import io.vertx.core.http.HttpClientRequest;
-
 // TODO: vert.x 4 changed HttpClientRequest creation behavior, and will
 // connect to server and when successfully HttpClientRequest will created. So tests case will fail.
 // These unit tests is hard to modify, will change it to integration test or think another method
