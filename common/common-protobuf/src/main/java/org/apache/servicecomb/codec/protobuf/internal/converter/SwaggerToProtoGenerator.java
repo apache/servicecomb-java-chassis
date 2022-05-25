@@ -101,10 +101,7 @@ public class SwaggerToProtoGenerator {
   }
 
   public static boolean isValidEnum(String name) {
-    if (name.contains(".") || name.contains("-")) {
-      return false;
-    }
-    return true;
+    return !name.contains(".") && !name.contains("-");
   }
 
   private void convertDefinitions() {
@@ -332,10 +329,7 @@ public class SwaggerToProtoGenerator {
   }
 
   private boolean isUpload(Operation operation) {
-    if (operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA)) {
-      return true;
-    }
-    return false;
+    return operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA);
   }
 
   private boolean isDownload(Operation operation) {
