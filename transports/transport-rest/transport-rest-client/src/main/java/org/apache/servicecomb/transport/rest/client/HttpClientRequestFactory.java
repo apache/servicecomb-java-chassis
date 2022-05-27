@@ -47,3 +47,4 @@ public interface HttpClientRequestFactory {
   Future<HttpClientRequest> create(Invocation invocation, HttpClient httpClient, RequestOptions options)
       throws Throwable;
 }
+

@@ -72,7 +72,7 @@ public class TracingTestBase {
         spans = zipkin.getTrace(traceId(loggedIds));
         tracedValues = tracedValues(spans);
       } catch (InterruptedException e) {
-        log.error("Thread interrupted, ", e.getMessage());
+        log.error("Thread interrupted, {}", e.getMessage());
         Thread.currentThread().interrupt();
       }
     }

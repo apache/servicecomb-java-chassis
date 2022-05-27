@@ -242,7 +242,7 @@ public class SwaggerToProtoGenerator {
   private String tryFindEnumType(List<String> enums) {
     if (enums != null && !enums.isEmpty()) {
       String strEnums = enums.toString();
-      String enumName = "Enum_" + Hashing.sha256().hashString(strEnums, StandardCharsets.UTF_8).toString();
+      String enumName = "Enum_" + Hashing.sha256().hashString(strEnums, StandardCharsets.UTF_8);
       pending.add(() -> createEnum(enumName, enums));
       return enumName;
     }

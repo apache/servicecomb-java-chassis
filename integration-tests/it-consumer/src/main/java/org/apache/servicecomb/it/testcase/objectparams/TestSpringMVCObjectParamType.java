@@ -467,13 +467,13 @@ public class TestSpringMVCObjectParamType {
   public void testQueryObjectWithHeader_rt() {
     HttpHeaders headers = new HttpHeaders();
     headers.add("prefix", prefix);
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         queryObjectHeader(consumers, headers, "/testQueryObjectWithHeader?" + queryParam));
   }
 
   @Test
   public void testQueryObjectWithHeader_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         consumers.getIntf().testQueryObjectWithHeader(prefix, 23, "demo"));
   }
 
@@ -481,13 +481,13 @@ public class TestSpringMVCObjectParamType {
   public void testQueryObjectWithHeaderName_rt() {
     HttpHeaders headers = new HttpHeaders();
     headers.add("prefix", prefix);
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         queryObjectHeader(consumers, headers, "/testQueryObjectWithHeaderName?" + queryParam));
   }
 
   @Test
   public void testQueryObjectWithHeaderName_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         consumers.getIntf().testQueryObjectWithHeaderName(prefix, 23, "demo"));
   }
 
@@ -495,13 +495,13 @@ public class TestSpringMVCObjectParamType {
   public void testQueryObjectWithHeaderValue_rt() {
     HttpHeaders headers = new HttpHeaders();
     headers.add("prefix", prefix);
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         queryObjectHeader(consumers, headers, "/testQueryObjectWithHeaderValue?" + queryParam));
   }
 
   @Test
   public void testQueryObjectWithHeaderValue_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         consumers.getIntf().testQueryObjectWithHeaderValue(prefix, 23, "demo"));
   }
 
@@ -510,49 +510,49 @@ public class TestSpringMVCObjectParamType {
     HttpHeaders headers = new HttpHeaders();
     headers.add("prefix", prefix);
     headers.add("suffix", suffix);
-    Assertions.assertEquals(prefix + queryModel.toString() + suffix,
+    Assertions.assertEquals(prefix + queryModel + suffix,
         queryObjectHeader(consumers, headers, "/testQueryObjectWithHeaderValueAndName?" + queryParam));
   }
 
   @Test
   public void testQueryObjectWithHeaderValueAndName_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString() + suffix,
+    Assertions.assertEquals(prefix + queryModel + suffix,
         consumers.getIntf().testQueryObjectWithHeaderValueAndName(prefix, suffix, 23, "demo"));
   }
 
   @Test
   public void testQueryObjectWithParam_rt() {
-    Assertions.assertEquals(prefix + queryModel.toString(), consumers.getSCBRestTemplate()
+    Assertions.assertEquals(prefix + queryModel, consumers.getSCBRestTemplate()
         .getForObject("/testQueryObjectWithParam?prefix=" + prefix + "&" + queryParam, String.class));
   }
 
   @Test
   public void testQueryObjectWithParam_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         consumers.getIntf().testQueryObjectWithParam(prefix, 23, "demo"));
   }
 
   @Test
   public void testQueryObjectWithParamName_rt() {
-    Assertions.assertEquals(prefix + queryModel.toString(), consumers.getSCBRestTemplate()
+    Assertions.assertEquals(prefix + queryModel, consumers.getSCBRestTemplate()
         .getForObject("/testQueryObjectWithParamName?prefix=" + prefix + "&" + queryParam, String.class));
   }
 
   @Test
   public void testQueryObjectWithParamName_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         consumers.getIntf().testQueryObjectWithParamName(prefix, 23, "demo"));
   }
 
   @Test
   public void testQueryObjectWithParamValue_rt() {
-    Assertions.assertEquals(prefix + queryModel.toString(), consumers.getSCBRestTemplate()
+    Assertions.assertEquals(prefix + queryModel, consumers.getSCBRestTemplate()
         .getForObject("/testQueryObjectWithParamValue?prefix=" + prefix + "&" + queryParam, String.class));
   }
 
   @Test
   public void testQueryObjectWithParamValue_pojo() {
-    Assertions.assertEquals(prefix + queryModel.toString(),
+    Assertions.assertEquals(prefix + queryModel,
         consumers.getIntf().testQueryObjectWithParamValue(prefix, 23, "demo"));
   }
 

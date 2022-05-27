@@ -18,5 +18,5 @@
 package org.apache.servicecomb.it.schema.objectparams;
 
 public enum Color {
-  RED,BLUE,GREEN;
+  RED,BLUE,GREEN
 }

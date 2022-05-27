@@ -141,7 +141,7 @@ public class Consumer {
 
     String expected = "{name=userName, age=10, userId=serviceTokenTest-userId, body1=b1, body2=b2, body3=b3}";
     Assert.isTrue(expected.equalsIgnoreCase(result.toString()),
-        String.format("expected: %s\nreal    : %s", expected, result.toString()));
+        String.format("expected: %s\nreal    : %s", expected, result));
   }
 
   protected void testRecursiveSelf() {
@@ -227,7 +227,7 @@ public class Consumer {
       }
       return null;
     });
-    Assert.isTrue(size.get() == 10 * 1024 * 1024, "size is : " + String.valueOf(size.get()) + " not 10 * 1024 * 1024");
+    Assert.isTrue(size.get() == 10 * 1024 * 1024, "size is : " + size.get() + " not 10 * 1024 * 1024");
     System.out.println("test download bigFile finished");
   }
 

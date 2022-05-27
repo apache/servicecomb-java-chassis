@@ -135,7 +135,7 @@ public final class EndpointUtils {
     if (path.startsWith("/")) {
       path = path.substring(1);
     }
-    if (path.indexOf("/") != -1) {
+    if (path.contains("/")) {
       path = path.substring(0, path.indexOf("/"));
     }
     return path;

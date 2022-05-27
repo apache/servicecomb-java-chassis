@@ -397,7 +397,7 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void clearPartResource_deleteFile() throws IOException {
-    File file = new File("target", UUID.randomUUID().toString() + ".txt");
+    File file = new File("target", UUID.randomUUID() + ".txt");
     FileUtils.write(file, "content", StandardCharsets.UTF_8);
     FilePart part = new FilePart(null, file).setDeleteAfterFinished(true);
 
@@ -408,7 +408,7 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void clearPartResource_notDeleteFile() throws IOException {
-    File file = new File("target", UUID.randomUUID().toString() + ".txt");
+    File file = new File("target", UUID.randomUUID() + ".txt");
     FileUtils.write(file, "content", StandardCharsets.UTF_8);
     FilePart part = new FilePart(null, file);
 

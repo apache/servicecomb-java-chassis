@@ -34,7 +34,7 @@ public class DefaultJsonValueJaxrsSchema {
     response.setType(request.getType());
     StringBuilder sb = new StringBuilder();
     sb.append(request.getDefaultValue());
-    response.setMessage("expected:" + sb.toString() + ":" + (request.getItems() == null ? null
+    response.setMessage("expected:" + sb + ":" + (request.getItems() == null ? null
         : request.getItems().size()));
     return response;
   }

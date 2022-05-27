@@ -90,7 +90,7 @@ public class ParameterValidatorFilter implements ProducerFilter, InitializingBea
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     Set<ConstraintViolation<Object>> violations = doValidate(invocation);
     if (violations.size() > 0) {
-      LOGGER.error("Parameter validation failed : " + violations.toString());
+      LOGGER.error("Parameter validation failed : " + violations);
       return AsyncUtils.completeExceptionally(new ConstraintViolationException(violations));
     }
 
