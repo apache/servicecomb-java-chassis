@@ -18,7 +18,6 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.servicecomb.core.BootListener;
