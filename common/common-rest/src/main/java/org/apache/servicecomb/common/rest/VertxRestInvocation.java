@@ -19,12 +19,18 @@ package org.apache.servicecomb.common.rest;
 
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class VertxRestInvocation extends RestProducerInvocation {
   @Override
   protected void createInvocation() {
     super.createInvocation();
 
-    ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext()
-        .put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
+    RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
+    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx,
+        produceProcessor);
+
+    invocation.setTransportContext(transportContext);
+    routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
   }
 }

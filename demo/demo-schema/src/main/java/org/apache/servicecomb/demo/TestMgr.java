@@ -19,10 +19,12 @@ package org.apache.servicecomb.demo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.commons.lang3.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 public class TestMgr {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestMgr.class);
@@ -30,6 +32,8 @@ public class TestMgr {
   private static final List<Throwable> errorList = new ArrayList<>();
 
   private static String msg = "";
+
+  private static AtomicLong checkes = new AtomicLong(0);
 
   public static void setMsg(String msg) {
     TestMgr.msg = msg;
@@ -44,6 +48,8 @@ public class TestMgr {
   }
 
   public static void check(Object expect, Object real, Throwable error) {
+    checkes.incrementAndGet();
+
     if (expect == real) {
       return;
     }
@@ -61,12 +67,20 @@ public class TestMgr {
   }
 
   public static void checkNotEmpty(String real) {
+    checkes.incrementAndGet();
+
     if (StringUtils.isEmpty(real)) {
       errorList.add(new Error(msg + " | unexpected null result, method is " + getCaller()));
     }
   }
 
+  public static void fail(String desc) {
+    failed(desc, new Exception(desc));
+  }
+
   public static void failed(String desc, Throwable e) {
+    checkes.incrementAndGet();
+
     Error error = new Error(msg + " | " + desc + ", method is " + getCaller());
     if (e != null) {
       error.setStackTrace(error.getStackTrace());
@@ -81,10 +95,14 @@ public class TestMgr {
   public static void summary() {
     if (errorList.isEmpty()) {
       LOGGER.info("............. test finished ............");
+      LOGGER.info("............. total checks : " + checkes.get());
       return;
     }
 
     LOGGER.info("............. test not finished ............");
+    LOGGER.info("............. total checks : " + checkes.get());
+    LOGGER.info("............. total errors : " + errorList.size());
+    LOGGER.info("............. error details: ");
     for (Throwable e : errorList) {
       LOGGER.info("", e);
     }

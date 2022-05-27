@@ -17,56 +17,75 @@
 
 package org.apache.servicecomb.common.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.Assert;
+import org.apache.servicecomb.common.rest.locator.TestPathSchema;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationContext;
-
-import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestEngineSchemaListener {
-  private final SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  static SCBEngine scbEngine;
 
-  private static class TestRestEngineSchemaListenerSchemaImpl {
-    @SuppressWarnings("unused")
-    public int add(int x, int y) {
-      return 0;
-    }
+  static ServicePathManager spm;
+
+  @BeforeClass
+  public static void setup() {
+    ConfigUtil.installDynamicConfig();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
+        .addProducerMeta("sid1", new TestPathSchema())
+        .run();
+    spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
+  }
+
+  @AfterClass
+  public static void teardown() {
+    scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
-  public void test() {
-    BeanUtils.setContext(Mockito.mock(ApplicationContext.class));
+  public void testLocateNotFound() {
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/notExist", "GET"));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]", exception.getMessage());
+  }
 
-    MicroserviceMeta mm = new MicroserviceMeta("app:ms");
-    List<SchemaMeta> smList = new ArrayList<>();
+  @Test
+  public void testLocateNotFoundDynamicRemained() {
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/dynamic/1/2", "GET"));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]", exception.getMessage());
+  }
 
-    SwaggerGenerator generator = new SwaggerGenerator(context, TestRestEngineSchemaListenerSchemaImpl.class);
-    Swagger swagger = generator.generate();
-    swagger.setBasePath("");
-    SchemaMeta sm1 = new SchemaMeta(swagger, mm, "sid1");
-    smList.add(sm1);
+  @Test
+  public void testLocateStaticMethodNotAllowed() {
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/staticEx", "POST"));
+    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]", exception.getMessage());
+  }
 
-    RestEngineSchemaListener listener = new RestEngineSchemaListener();
-    SchemaMeta[] smArr = smList.toArray(new SchemaMeta[smList.size()]);
-    listener.onSchemaLoaded(smArr);
-    // 重复调用，不应该出异常
-    listener.onSchemaLoaded(smArr);
+  @Test
+  public void testLocateDynamicMethodNotAllowed() {
+    InvocationException exception = Assertions.assertThrows(InvocationException.class,
+            () -> spm.producerLocateOperation("/dynamic/1", "POST"));
+    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]", exception.getMessage());
+  }
 
-    ServicePathManager spm = ServicePathManager.getServicePathManager(mm);
-    Assert.assertEquals(mm, spm.getMicroserviceMeta());
+  @Test
+  public void testLocateStaticFound() {
+    Assertions.assertNotNull(spm.producerLocateOperation("/staticEx", "GET"));
+  }
 
-    Assert.assertSame(sm1,
-        spm.consumerLocateOperation("/add/", "POST").getOperation().getOperationMeta().getSchemaMeta());
+  @Test
+  public void testLocateDynamicFound() {
+    OperationLocator locator = spm.producerLocateOperation("/dynamic/1", "GET");
+    Assertions.assertEquals("1", locator.getPathVarMap().get("id"));
   }
 }

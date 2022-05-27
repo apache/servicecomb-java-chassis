@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.CharSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -31,7 +32,13 @@ import io.protostuff.runtime.FieldSchema;
 public class StringReadSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     JavaType javaType = propertyDescriptor.getJavaType();
-    if (String.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()) {
+
+    if (char.class.equals(javaType.getRawClass())) {
+      return new CharFieldStringSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (String.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject() || Character.class
+        .equals(javaType.getRawClass())) {
       return new StringSchema<>(protoField, propertyDescriptor);
     }
 
@@ -40,7 +47,7 @@ public class StringReadSchemas {
   }
 
   private static class StringSchema<T> extends FieldSchema<T> {
-    private final Setter<T, String> setter;
+    private final Setter<T, Object> setter;
 
     public StringSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());
@@ -50,7 +57,28 @@ public class StringReadSchemas {
     @Override
     public int mergeFrom(InputEx input, T message) throws IOException {
       String value = input.readString();
-      setter.set(message, value);
+      if (char.class
+          .equals(javaType.getRawClass()) || Character.class.equals(javaType.getRawClass())) {
+        setter.set(message, value.toCharArray()[0]);
+      } else {
+        setter.set(message, value);
+      }
+      return input.readFieldNumber();
+    }
+  }
+
+  private static class CharFieldStringSchema<T> extends FieldSchema<T> {
+    private final CharSetter<T> setter;
+
+    public CharFieldStringSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      String value = input.readString();
+      setter.set(message, value.toCharArray()[0]);
       return input.readFieldNumber();
     }
   }

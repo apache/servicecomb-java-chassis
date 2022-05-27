@@ -22,8 +22,8 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../parent</relativePath>
+    <version>2.8.0-SNAPSHOT</version>
+    <relativePath>../parents/default</relativePath>
   </parent>
   <groupId>org.apache.servicecomb.demo</groupId>
   <artifactId>demo-parent</artifactId>
@@ -33,21 +33,26 @@
   <modules>
     <module>docker-build-config</module>
     <module>docker-run-config</module>
-    <module>demo-local</module>
-    <module>demo-server-servlet</module>
-    <module>demo-pojo</module>
-    <module>demo-jaxrs</module>
-
-    <module>demo-springmvc</module>
+    <module>docker-run-config-edge</module>
+    <module>docker-run-config-local</module>
     <module>demo-schema</module>
+    <module>demo-pojo</module>
+    <module>demo-filter</module>
+    <module>demo-jaxrs</module>
+    <module>demo-springmvc</module>
     <module>demo-crossapp</module>
+    <module>demo-register-url-prefix</module>
+    <module>demo-local-registry</module>
+    <module>demo-multi-registries</module>
+    <module>demo-zeroconfig-schemadiscovery-registry</module>
     <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
-    <module>demo-spring-boot-discovery</module>
-    <module>demo-multiple</module>
-    <module>demo-signature</module>
     <module>demo-edge</module>
-    <module>perf</module>
+    <module>demo-multiple</module>
+    <module>demo-multi-service-center</module>
+    <module>demo-signature</module>
+    <module>demo-cse-v1</module>
+    <module>demo-cse-v2</module>
   </modules>
 
   <dependencyManagement>
@@ -125,37 +130,28 @@
     </dependencies>
   </dependencyManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-  </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>com.github.odavid.maven.plugins</groupId>
           <artifactId>mixin-maven-plugin</artifactId>
-          <version>0.1-alpha-39</version>
+          <version>0.1-alpha-40</version>
           <extensions>true</extensions>
         </plugin>
         <plugin>
           <groupId>org.commonjava.maven.plugins</groupId>
           <artifactId>directory-maven-plugin</artifactId>
-          <version>0.1</version>
+          <version>1.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
           <configuration>
             <skip>true</skip>
           </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
           <configuration>
             <skip>false</skip>
           </configuration>
@@ -163,7 +159,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.6</version>
           <executions>
             <execution>
               <id>assembly</id>
@@ -188,39 +183,17 @@
     <profile>
       <id>demo-run-release</id>
       <build>
-        <plugins>
-          <plugin>
-            <groupId>org.commonjava.maven.plugins</groupId>
-            <artifactId>directory-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>directoryies</id>
-                <goals>
-                  <goal>directory-of</goal>
-                </goals>
-                <phase>initialize</phase>
-                <configuration>
-                  <property>root.dir</property>
-                  <project>
-                    <groupId>org.apache.servicecomb</groupId>
-                    <artifactId>java-chassis</artifactId>
-                  </project>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
         <pluginManagement>
           <plugins>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-jar-plugin</artifactId>
               <configuration>
-                <outputDirectory>${demo.run.dir}/${project.artifactId}</outputDirectory>
+                <outputDirectory>${project.build.directory}</outputDirectory>
                 <archive>
                   <manifest>
                     <addClasspath>true</addClasspath>
-                    <classpathPrefix>../lib/</classpathPrefix>
+                    <classpathPrefix>./lib/</classpathPrefix>
                     <mainClass>${demo.main}</mainClass>
                   </manifest>
                   <manifestEntries>
@@ -240,7 +213,8 @@
                     <goal>copy-dependencies</goal>
                   </goals>
                   <configuration>
-                    <outputDirectory>${demo.run.dir}/lib</outputDirectory>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                    <silent>true</silent>
                   </configuration>
                 </execution>
               </executions>
@@ -248,9 +222,6 @@
           </plugins>
         </pluginManagement>
       </build>
-      <properties>
-        <demo.run.dir>${root.dir}/demo/target</demo.run.dir>
-      </properties>
     </profile>
   </profiles>
 </project>

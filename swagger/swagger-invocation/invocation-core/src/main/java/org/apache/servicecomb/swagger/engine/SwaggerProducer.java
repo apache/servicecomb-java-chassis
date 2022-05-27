@@ -20,12 +20,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.swagger.models.Swagger;
+
 public class SwaggerProducer {
   private Class<?> producerCls;
 
-  private Class<?> swaggerIntf;
+  private Object producerInstance;
 
-  private Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
+  private Swagger swagger;
+
+  // key is operationId
+  private final Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
 
   public Class<?> getProducerCls() {
     return producerCls;
@@ -35,20 +40,28 @@ public class SwaggerProducer {
     this.producerCls = producerCls;
   }
 
-  public Class<?> getSwaggerIntf() {
-    return swaggerIntf;
+  public Object getProducerInstance() {
+    return producerInstance;
   }
 
-  public void setSwaggerIntf(Class<?> swaggerIntf) {
-    this.swaggerIntf = swaggerIntf;
+  public void setProducerInstance(Object producerInstance) {
+    this.producerInstance = producerInstance;
+  }
+
+  public Swagger getSwagger() {
+    return swagger;
+  }
+
+  public void setSwagger(Swagger swagger) {
+    this.swagger = swagger;
   }
 
   public void addOperation(SwaggerProducerOperation op) {
-    opMap.put(op.getName(), op);
+    opMap.put(op.getOperationId(), op);
   }
 
-  public SwaggerProducerOperation findOperation(String name) {
-    return opMap.get(name);
+  public SwaggerProducerOperation findOperation(String operationId) {
+    return opMap.get(operationId);
   }
 
   public Collection<SwaggerProducerOperation> getAllOperations() {

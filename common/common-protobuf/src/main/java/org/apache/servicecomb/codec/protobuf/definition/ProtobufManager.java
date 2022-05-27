@@ -17,47 +17,90 @@
 
 package org.apache.servicecomb.codec.protobuf.definition;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.annotations.VisibleForTesting;
 
 public final class ProtobufManager {
-  private static ProtobufManager instance = new ProtobufManager();
-
   public static final String EXT_ID = "protobuf";
 
   private static final Object LOCK = new Object();
 
-  private static ScopedProtobufSchemaManager defaultScopedProtobufSchemaManager = new ScopedProtobufSchemaManager(
-      JvmUtils.findClassLoader());
+  static class RuntimeCacheKey {
+    final InvocationType invocationType;
 
-  private ProtobufManager() {
+    final String uniqueOperationId;
+
+    // Using response type as the cache key.
+    // May consider request type as well, but now not implemented
+    final JavaType responseType;
+
+    public RuntimeCacheKey(InvocationType invocationType, String operationId, JavaType responseType) {
+      this.invocationType = invocationType;
+      this.uniqueOperationId = operationId;
+      this.responseType = responseType;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      RuntimeCacheKey that = (RuntimeCacheKey) o;
+
+      if (invocationType != that.invocationType) {
+        return false;
+      }
+      if (!uniqueOperationId.equals(that.uniqueOperationId)) {
+        return false;
+      }
+      return responseType != null ? responseType.equals(that.responseType)
+          : that.responseType == null;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = invocationType.hashCode();
+      result = 31 * result + uniqueOperationId.hashCode();
+      result = 31 * result + (responseType != null ? responseType.hashCode() : 0);
+      return result;
+    }
   }
 
-  /**
-   * only for app classloader
-   * @return
-   */
-  public static ScopedProtobufSchemaManager getDefaultScopedProtobufSchemaManager() {
-    return defaultScopedProtobufSchemaManager;
-  }
+  private static final Map<RuntimeCacheKey, OperationProtobuf> RUNTIME_CACHE = new HashMap<>();
 
-  public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
-    OperationProtobuf operationProtobuf = operationMeta.getExtData(EXT_ID);
+  public static OperationProtobuf getOrCreateOperation(Invocation invocation) {
+    RuntimeCacheKey cacheKey = new RuntimeCacheKey(invocation.getInvocationType(),
+        invocation.getOperationMeta().getMicroserviceQualifiedName(),
+        invocation.findResponseType(Status.OK.getStatusCode()));
+    OperationProtobuf operationProtobuf = RUNTIME_CACHE.get(cacheKey);
     if (operationProtobuf == null) {
       synchronized (LOCK) {
-        MicroserviceMeta microserviceMeta = operationMeta.getMicroserviceMeta();
+        MicroserviceMeta microserviceMeta = invocation.getMicroserviceMeta();
         ScopedProtobufSchemaManager scopedProtobufSchemaManager = microserviceMeta.getExtData(EXT_ID);
         if (scopedProtobufSchemaManager == null) {
-          scopedProtobufSchemaManager = new ScopedProtobufSchemaManager(microserviceMeta.getClassLoader());
+          scopedProtobufSchemaManager = new ScopedProtobufSchemaManager();
           microserviceMeta.putExtData(EXT_ID, scopedProtobufSchemaManager);
         }
 
-        operationProtobuf = operationMeta.getExtData(EXT_ID);
+        operationProtobuf = RUNTIME_CACHE.get(cacheKey);
         if (operationProtobuf == null) {
-          operationProtobuf = new OperationProtobuf(scopedProtobufSchemaManager, operationMeta);
-          operationMeta.putExtData(EXT_ID, operationProtobuf);
+          operationProtobuf = new OperationProtobuf(scopedProtobufSchemaManager, invocation);
+          RUNTIME_CACHE.put(cacheKey, operationProtobuf);
         }
       }
     }
@@ -65,7 +108,8 @@ public final class ProtobufManager {
     return operationProtobuf;
   }
 
-  public static ProtobufManager getInstance() {
-    return instance;
+  @VisibleForTesting
+  public static void clear() {
+    RUNTIME_CACHE.clear();
   }
 }

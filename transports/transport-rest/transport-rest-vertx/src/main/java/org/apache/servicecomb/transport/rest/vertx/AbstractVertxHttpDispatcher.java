@@ -42,7 +42,7 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
     bodyHandler.setBodyLimit(uploadConfig.getMaxSize());
 
     if (uploadConfig.toMultipartConfigElement() != null) {
-      LOGGER.info("set uploads directory to {}.", uploadConfig.getLocation());
+      LOGGER.info("set uploads directory to \"{}\".", uploadConfig.getLocation());
     }
 
     return bodyHandler;

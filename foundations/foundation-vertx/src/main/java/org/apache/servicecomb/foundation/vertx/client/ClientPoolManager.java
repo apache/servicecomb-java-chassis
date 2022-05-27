@@ -39,17 +39,17 @@ import io.vertx.core.Vertx;
  * sync/async is not about net operation, just about consumer invoke mode.
  */
 public class ClientPoolManager<CLIENT_POOL> {
-  private Vertx vertx;
+  private final Vertx vertx;
 
-  private String id = UUID.randomUUID().toString();
+  private final String id = UUID.randomUUID().toString();
 
-  private ClientPoolFactory<CLIENT_POOL> factory;
+  private final ClientPoolFactory<CLIENT_POOL> factory;
 
-  private List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
+  private final List<CLIENT_POOL> pools = new CopyOnWriteArrayList<>();
 
   // reactive mode, when call from other thread, must select a context for it
   // if we use threadId to hash a context, will always select the same context from one thread
-  private AtomicInteger reactiveNextIndex = new AtomicInteger();
+  private final AtomicInteger reactiveNextIndex = new AtomicInteger();
 
   public ClientPoolManager(Vertx vertx, ClientPoolFactory<CLIENT_POOL> factory) {
     this.vertx = vertx;
@@ -105,6 +105,7 @@ public class ClientPoolManager<CLIENT_POOL> {
     // 2.vertx worker thread
     // 3.other vertx thread
     // select a existing context
+    assertPoolsInitialized();
     int idx = reactiveNextIndex.getAndIncrement() % pools.size();
     if (idx < 0) {
       idx = -idx;
@@ -113,7 +114,15 @@ public class ClientPoolManager<CLIENT_POOL> {
   }
 
   public CLIENT_POOL findThreadBindClientPool() {
+    assertPoolsInitialized();
     int idx = (int) (Thread.currentThread().getId() % pools.size());
     return pools.get(idx);
+  }
+
+  private void assertPoolsInitialized() {
+    if (pools.size() == 0) {
+      throw new IllegalStateException("client pool not initialized successfully when making calls."
+          + "Please check if system boot up is ready or some errors happened when startup.");
+    }
   }
 }

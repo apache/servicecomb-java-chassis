@@ -19,8 +19,8 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
-import org.junit.Assert;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import io.swagger.models.parameters.BodyParameter;
@@ -29,36 +29,23 @@ public class TestBodyProcessorCreator {
   @Test
   public void testCreateNormal() {
     ParamValueProcessorCreator creator =
-        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
     BodyParameter param = new BodyParameter();
 
     ParamValueProcessor processor = creator.create(param, String.class);
 
-    Assert.assertEquals(BodyProcessor.class, processor.getClass());
+    Assertions.assertEquals(BodyProcessor.class, processor.getClass());
   }
 
   @Test
   public void testCreateRawJson() {
     ParamValueProcessorCreator creator =
-        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
+        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
     BodyParameter param = new BodyParameter();
     param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
     ParamValueProcessor processor = creator.create(param, String.class);
 
-    Assert.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
-  }
-
-  // now, we ignore rawJson flag
-  @Test
-  public void testCreateInvalidRawJson() {
-    ParamValueProcessorCreator creator =
-        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
-    BodyParameter param = new BodyParameter();
-    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-
-    ParamValueProcessor processor = creator.create(param, Integer.class);
-
-    Assert.assertEquals(BodyProcessor.class, processor.getClass());
+    Assertions.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
   }
 }

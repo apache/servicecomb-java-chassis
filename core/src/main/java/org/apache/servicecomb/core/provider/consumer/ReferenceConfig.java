@@ -17,53 +17,17 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-
+// operation level, to keep compatible, not change name
 public class ReferenceConfig {
-  private MicroserviceVersionRule microserviceVersionRule;
+  protected String transport;
 
-  private String transport = Const.ANY_TRANSPORT;
+  protected String versionRule;
 
-  public ReferenceConfig() {
-  }
+  private boolean thirdPartyService;
 
-  public ReferenceConfig(AppManager appManager, String microserviceName, String versionRule, String transport) {
-    String appId = new MicroserviceMeta(microserviceName).getAppId();
-    this.microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId,
-        microserviceName,
-        versionRule);
-
+  public ReferenceConfig(String transport, String versionRule) {
     this.transport = transport;
-  }
-
-  public MicroserviceMeta getMicroserviceMeta() {
-    MicroserviceVersion microserviceVersion = microserviceVersionRule.getLatestMicroserviceVersion();
-    if (microserviceVersion == null) {
-      throw new IllegalStateException(
-          String.format(
-              "Probably invoke a service before it is registered, or no instance found for it, appId=%s, name=%s",
-              microserviceVersionRule.getAppId(),
-              microserviceVersionRule.getMicroserviceName()));
-    }
-
-    return ((MicroserviceVersionMeta) microserviceVersion).getMicroserviceMeta();
-  }
-
-  public MicroserviceVersionRule getMicroserviceVersionRule() {
-    return microserviceVersionRule;
-  }
-
-  public String getVersionRule() {
-    return microserviceVersionRule.getVersionRule().getVersionRule();
-  }
-
-  public void setMicroserviceVersionRule(MicroserviceVersionRule microserviceVersionRule) {
-    this.microserviceVersionRule = microserviceVersionRule;
+    this.versionRule = versionRule;
   }
 
   public String getTransport() {
@@ -72,5 +36,22 @@ public class ReferenceConfig {
 
   public void setTransport(String transport) {
     this.transport = transport;
+  }
+
+  public boolean is3rdPartyService() {
+    return isThirdPartyService();
+  }
+
+  public String getVersionRule() {
+    return versionRule;
+  }
+
+  public boolean isThirdPartyService() {
+    return thirdPartyService;
+  }
+
+  public ReferenceConfig setThirdPartyService(boolean thirdPartyService) {
+    this.thirdPartyService = thirdPartyService;
+    return this;
   }
 }

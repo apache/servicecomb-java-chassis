@@ -17,27 +17,23 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
+import java.util.Map;
+
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
-public class ProducerArgumentSame implements ArgumentMapper {
-  private int swaggerIdx;
+public class ProducerArgumentSame extends ProducerArgumentMapper {
+  protected String invocationArgumentName;
 
-  private int producerIdx;
+  protected String swaggerArgumentName;
 
-  private Converter converter;
-
-  public ProducerArgumentSame(int swaggerIdx, int producerIdx, Converter converter) {
-    this.swaggerIdx = swaggerIdx;
-    this.producerIdx = producerIdx;
-    this.converter = converter;
+  public ProducerArgumentSame(String invocationArgumentName, String swaggerArgumentName) {
+    this.invocationArgumentName = invocationArgumentName;
+    this.swaggerArgumentName = swaggerArgumentName;
   }
 
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-    Object swaggerParam = invocation.getSwaggerArgument(swaggerIdx);
-    Object producerParam = converter.convert(swaggerParam);
-    producerArguments[producerIdx] = producerParam;
+  public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
+    invocationArguments.put(invocationArgumentName, swaggerArguments.get(swaggerArgumentName));
   }
 }

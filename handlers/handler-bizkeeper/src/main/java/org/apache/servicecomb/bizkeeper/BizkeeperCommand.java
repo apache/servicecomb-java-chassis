@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.bizkeeper;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.hystrix.HystrixObservableCommand;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 
@@ -60,12 +62,17 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
   @Override
   protected Observable<Response> resumeWithFallback() {
     Throwable cause = getFailedExecutionException();
-    Observable<Response> observable = Observable.create(f -> {
+    Observable<Response> observable = Observable.unsafeCreate(f -> {
       try {
         f.onNext(FallbackPolicyManager.getFallbackResponse(type, cause, invocation));
         f.onCompleted();
       } catch (Exception e) {
-        LOG.warn("fallback failed due to:" + e.getMessage());
+        if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+            false).get()) {
+          LOG.warn("fallback failed.", e);
+        } else {
+          LOG.warn("fallback failed due to: {}", e.getMessage());
+        }
         throw e;
       }
     });
@@ -74,12 +81,13 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
 
   @Override
   protected Observable<Response> construct() {
-    Observable<Response> observable = Observable.create(f -> {
+    return Observable.unsafeCreate(f -> {
       try {
         invocation.next(resp -> {
           if (isFailedResponse(resp)) {
-            // e should implements toString
-            LOG.warn("bizkeeper command {} failed due to {}", invocation.getInvocationQualifiedName(),
+            LOG.warn("bizkeeper command {} failed, trace id {} result {}",
+                invocation.getInvocationQualifiedName(),
+                invocation.getTraceId(),
                 resp.getResult());
             f.onError(resp.getResult());
             FallbackPolicyManager.record(type, invocation, resp, false);
@@ -90,12 +98,13 @@ public abstract class BizkeeperCommand extends HystrixObservableCommand<Response
           }
         });
       } catch (Exception e) {
-        LOG.warn("bizkeeper command {} execute failed due to {}", invocation.getInvocationQualifiedName(),
+        LOG.warn("bizkeeper command {} execute failed, trace id {}, cause {}",
+            invocation.getInvocationQualifiedName(),
+            invocation.getTraceId(),
             e.getClass().getName());
         f.onError(e);
       }
     });
-    return observable;
   }
 
   protected abstract boolean isFailedResponse(Response resp);

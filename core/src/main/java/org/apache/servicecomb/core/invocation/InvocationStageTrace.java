@@ -85,7 +85,10 @@ public class InvocationStageTrace {
 
   public static final String PRODUCER_SEND_RESPONSE = "send response";
 
-  private Invocation invocation;
+  private final Invocation invocation;
+
+  // current time for start invocation
+  private long startTimeMillis;
 
   private long start;
 
@@ -95,6 +98,9 @@ public class InvocationStageTrace {
 
   // only for consumer
   private long startSend;
+
+  // only for consumer
+  private long startGetConnection;
 
   // only for consumer
   private long finishGetConnection;
@@ -135,11 +141,22 @@ public class InvocationStageTrace {
   }
 
   public void start(long start) {
+    // remember the current time to start invocation
+    this.startTimeMillis = System.currentTimeMillis();
     this.start = start;
   }
 
   public long getStart() {
     return start;
+  }
+
+  public long getStartTimeMillis() {
+    return startTimeMillis;
+  }
+
+  public InvocationStageTrace setStartTimeMillis(long startTimeMillis) {
+    this.startTimeMillis = startTimeMillis;
+    return this;
   }
 
   public long getStartHandlersRequest() {
@@ -186,8 +203,12 @@ public class InvocationStageTrace {
     return finishGetConnection;
   }
 
-  public void finishGetConnection(long finishGetConnection) {
-    this.finishGetConnection = finishGetConnection;
+  public void startGetConnection() {
+    this.startGetConnection = System.nanoTime();
+  }
+
+  public void finishGetConnection() {
+    this.finishGetConnection = System.nanoTime();
   }
 
   public long getFinishWriteToBuffer() {
@@ -311,7 +332,7 @@ public class InvocationStageTrace {
   }
 
   public double calcGetConnectionTime() {
-    return calc(finishGetConnection, startSend);
+    return calc(finishGetConnection, startGetConnection);
   }
 
   public double calcWriteToBufferTime() {

@@ -21,31 +21,31 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
+import org.apache.servicecomb.swagger.converter.ConverterMgr;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.Property;
 
 public class ArrayPropertyConverter extends AbstractPropertyConverter {
-  public static JavaType findJavaType(SwaggerToClassGenerator swaggerToClassGenerator,
-      Property itemProperty,
-      Boolean uniqueItems) {
-    JavaType itemJavaType = swaggerToClassGenerator.convert(itemProperty);
+  public static JavaType findJavaType(Swagger swagger, Property itemProperty, Boolean uniqueItems) {
+    JavaType itemJavaType = ConverterMgr.findJavaType(swagger, itemProperty);
 
     @SuppressWarnings("rawtypes")
     Class<? extends Collection> collectionClass = List.class;
     if (Boolean.TRUE.equals(uniqueItems)) {
       collectionClass = Set.class;
     }
-    return swaggerToClassGenerator.getTypeFactory().constructCollectionType(collectionClass, itemJavaType);
+    return TypeFactory.defaultInstance().constructCollectionType(collectionClass, itemJavaType);
   }
 
   @Override
-  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object property) {
+  public JavaType doConvert(Swagger swagger, Object property) {
     ArrayProperty arrayProperty = (ArrayProperty) property;
 
-    return findJavaType(swaggerToClassGenerator, arrayProperty.getItems(), arrayProperty.getUniqueItems());
+    return findJavaType(swagger, arrayProperty.getItems(), arrayProperty.getUniqueItems());
   }
 }

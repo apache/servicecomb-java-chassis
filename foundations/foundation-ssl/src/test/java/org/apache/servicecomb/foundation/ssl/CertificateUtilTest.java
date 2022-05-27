@@ -35,15 +35,15 @@ import java.util.Set;
 import javax.security.auth.x500.X500Principal;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class CertificateUtilTest {
-  class MyX509Certificate extends X509Certificate {
+  static class MyX509Certificate extends X509Certificate {
     private static final long serialVersionUID = -3585440601605666278L;
 
     public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
@@ -199,7 +199,7 @@ public class CertificateUtilTest {
     MyX509Certificate xxmyX509Certificate = new MyX509Certificate();
     Set<String> strExpect = CertificateUtil.getCN(xxmyX509Certificate);
 
-    Assert.assertEquals(true, strExpect.contains("Test1234"));
+    Assertions.assertTrue(strExpect.contains("Test1234"));
   }
 
   @Test
@@ -218,9 +218,9 @@ public class CertificateUtilTest {
 
     try {
       Set<String> strExpect = CertificateUtil.getCN(xxmyX509Certificate);
-      Assert.assertEquals(strExpect.size(), 0);
+      Assertions.assertEquals(strExpect.size(), 0);
     } catch (IllegalArgumentException e) {
-      Assert.assertNotNull(null);
+      Assertions.assertNotNull(null);
     }
   }
 
@@ -255,7 +255,7 @@ public class CertificateUtilTest {
     xxmyX509Certificate[1] = myX509Certificate2;
 
     X509Certificate aX509Certificate = CertificateUtil.findOwner(xxmyX509Certificate);
-    Assert.assertNull(aX509Certificate);
+    Assertions.assertNull(aX509Certificate);
   }
 
   @Test
@@ -290,9 +290,9 @@ public class CertificateUtilTest {
 
     try {
       X509Certificate aX509Certificate = CertificateUtil.findOwner(xxmyX509Certificate);
-      Assert.assertNull(aX509Certificate);
+      Assertions.assertNull(aX509Certificate);
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("bad certificate chain: no root CA.", e.getMessage());
+      Assertions.assertEquals("bad certificate chain: no root CA.", e.getMessage());
     }
   }
 }

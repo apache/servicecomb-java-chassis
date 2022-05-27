@@ -16,10 +16,9 @@
  */
 package org.apache.servicecomb.it.testcase.base;
 
-import static org.junit.Assert.assertEquals;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,12 +26,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.Generic;
 import org.apache.servicecomb.it.schema.User;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 
 public class TestGeneric {
@@ -54,6 +55,10 @@ public class TestGeneric {
     Generic<Map<String, List<String>>> genericMapList(Generic<Map<String, List<String>>> mapListGeneric);
 
     Generic<Map<String, List<User>>> genericMapListUser(Generic<Map<String, List<User>>> mapListUserGeneric);
+
+    List<List<String>> genericNestedListString(List<List<String>> nestedListString);
+
+    List<List<User>> genericNestedListUser(List<List<User>> nestedListUser);
   }
 
   private static Consumers<GenericIntf> consumers = new Consumers<>("generic", GenericIntf.class);
@@ -66,7 +71,7 @@ public class TestGeneric {
   public void testHolderUser_intf() {
     Holder<User> holder = new Holder<>(new User());
     Holder<User> result = consumers.getIntf().holderUser(holder);
-    assertEquals(result.value.jsonString(), expectUserStr);
+    Assertions.assertEquals(result.value.jsonString(), expectUserStr);
   }
 
   @Test
@@ -74,7 +79,7 @@ public class TestGeneric {
     Holder<User> holder = new Holder<>(new User());
     @SuppressWarnings("unchecked")
     Holder<User> result = consumers.getSCBRestTemplate().postForObject("/holderUser", holder, Holder.class);
-    assertEquals(result.value.jsonString(), expectUserStr);
+    Assertions.assertEquals(result.value.jsonString(), expectUserStr);
   }
 
   @Test
@@ -83,7 +88,7 @@ public class TestGeneric {
     generic.value = new User();
 
     Generic<User> result = consumers.getIntf().genericUser(generic);
-    assertEquals(result.value.jsonString(), expectUserStr);
+    Assertions.assertEquals(result.value.jsonString(), expectUserStr);
   }
 
   @Test
@@ -92,7 +97,7 @@ public class TestGeneric {
     generic.value = new User();
     @SuppressWarnings("unchecked")
     Generic<User> result = consumers.getSCBRestTemplate().postForObject("/genericUser", generic, Generic.class);
-    assertEquals(result.value.jsonString(), expectUserStr);
+    Assertions.assertEquals(result.value.jsonString(), expectUserStr);
   }
 
   @Test
@@ -100,8 +105,8 @@ public class TestGeneric {
     Generic<Long> generic = new Generic<>();
     generic.value = 100L;
     Generic<Long> result = consumers.getIntf().genericLong(generic);
-    assertEquals(Long.class, result.value.getClass());
-    assertEquals(100L, (long) result.value);
+    Assertions.assertEquals(Long.class, result.value.getClass());
+    Assertions.assertEquals(100L, (long) result.value);
   }
 
   @Test
@@ -110,8 +115,8 @@ public class TestGeneric {
     generic.value = 100L;
     @SuppressWarnings("unchecked")
     Generic<Long> result = consumers.getSCBRestTemplate().postForObject("/genericLong", generic, Generic.class);
-    assertEquals(Long.class, result.value.getClass());
-    assertEquals(100L, (long) result.value);
+    Assertions.assertEquals(Long.class, result.value.getClass());
+    Assertions.assertEquals(100L, (long) result.value);
   }
 
   @Test
@@ -119,9 +124,9 @@ public class TestGeneric {
     Generic<Date> generic = new Generic<>();
     generic.value = new Date(1001);
     Generic<Date> result = consumers.getIntf().genericDate(generic);
-    assertEquals(result.value.getClass(), Date.class);
+    Assertions.assertEquals(result.value.getClass(), Date.class);
     simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-    assertEquals("1970-01-01T00:00:01.001Z", simpleDateFormat.format(result.value));
+    Assertions.assertEquals("1970-01-01T00:00:01.001Z", simpleDateFormat.format(result.value));
   }
 
   @Test
@@ -130,9 +135,9 @@ public class TestGeneric {
     generic.value = new Date(1001);
     @SuppressWarnings("unchecked")
     Generic<Date> result = consumers.getSCBRestTemplate().postForObject("/genericDate", generic, Generic.class);
-    assertEquals(result.value.getClass(), Date.class);
+    Assertions.assertEquals(result.value.getClass(), Date.class);
     simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-    assertEquals("1970-01-01T00:00:01.001Z", simpleDateFormat.format(result.value));
+    Assertions.assertEquals("1970-01-01T00:00:01.001Z", simpleDateFormat.format(result.value));
   }
 
   @Test
@@ -141,8 +146,8 @@ public class TestGeneric {
     generic.value = HttpStatus.OK;
 
     Generic<HttpStatus> result = consumers.getIntf().genericEnum(generic);
-    assertEquals(HttpStatus.class, result.value.getClass());
-    assertEquals(HttpStatus.OK, result.value);
+    Assertions.assertEquals(HttpStatus.class, result.value.getClass());
+    Assertions.assertEquals(HttpStatus.OK, result.value);
   }
 
   @Test
@@ -151,8 +156,8 @@ public class TestGeneric {
     generic.value = HttpStatus.OK;
     @SuppressWarnings("unchecked")
     Generic<HttpStatus> result = consumers.getSCBRestTemplate().postForObject("/genericEnum", generic, Generic.class);
-    assertEquals(HttpStatus.class, result.value.getClass());
-    assertEquals(HttpStatus.OK, result.value);
+    Assertions.assertEquals(HttpStatus.class, result.value.getClass());
+    Assertions.assertEquals(HttpStatus.OK, result.value);
   }
 
   @Test
@@ -162,7 +167,7 @@ public class TestGeneric {
     generic.value.value = new User();
 
     Generic<Generic<User>> result = consumers.getIntf().genericGenericUser(generic);
-    assertEquals(result.value.value.jsonString(), expectUserStr);
+    Assertions.assertEquals(result.value.value.jsonString(), expectUserStr);
   }
 
   @Test
@@ -173,7 +178,7 @@ public class TestGeneric {
     @SuppressWarnings("unchecked")
     Generic<Generic<User>> result = consumers.getSCBRestTemplate()
         .postForObject("/genericGenericUser", generic, Generic.class);
-    assertEquals(result.value.value.jsonString(), expectUserStr);
+    Assertions.assertEquals(result.value.value.jsonString(), expectUserStr);
   }
 
   @Test
@@ -184,7 +189,7 @@ public class TestGeneric {
     mapGeneric.value = map;
     Generic<Map<String, String>> result = consumers.getIntf().genericMap(mapGeneric);
     String test = result.value.get("test");
-    assertEquals(test, "hello");
+    Assertions.assertEquals(test, "hello");
   }
 
   @Test
@@ -197,7 +202,7 @@ public class TestGeneric {
     Generic<Map<String, String>> result = consumers.getSCBRestTemplate()
         .postForObject("/genericMap", mapGeneric, Generic.class);
     String test = result.value.get("test");
-    assertEquals(test, "hello");
+    Assertions.assertEquals(test, "hello");
   }
 
   @Test
@@ -210,7 +215,7 @@ public class TestGeneric {
     mapListGeneric.value = map;
     Generic<Map<String, List<String>>> result = consumers.getIntf().genericMapList(mapListGeneric);
     String test = result.value.get("test").get(0);
-    assertEquals(test, "hello");
+    Assertions.assertEquals(test, "hello");
   }
 
   @Test
@@ -225,7 +230,7 @@ public class TestGeneric {
     Generic<Map<String, List<String>>> result = consumers.getSCBRestTemplate()
         .postForObject("/genericMapList", mapListGeneric, Generic.class);
     String test = result.value.get("test").get(0);
-    assertEquals(test, "hello");
+    Assertions.assertEquals(test, "hello");
   }
 
   @Test
@@ -238,7 +243,7 @@ public class TestGeneric {
     mapListUserGeneric.value = map;
     Generic<Map<String, List<User>>> result = consumers.getIntf().genericMapListUser(mapListUserGeneric);
     String test = result.value.get("test").get(0).jsonString();
-    assertEquals(test, expectUserStr);
+    Assertions.assertEquals(test, expectUserStr);
   }
 
   @Test
@@ -253,6 +258,64 @@ public class TestGeneric {
     Generic<Map<String, List<User>>> result = consumers.getSCBRestTemplate()
         .postForObject("/genericMapListUser", mapListUserGeneric, Generic.class);
     String test = result.value.get("test").get(0).jsonString();
-    assertEquals(test, expectUserStr);
+    Assertions.assertEquals(test, expectUserStr);
+  }
+
+  @Test
+  public void testGenericNestedListString_intfAndRt() {
+    ArrayList<List<String>> nestedListString = new ArrayList<>();
+    nestedListString.add(Arrays.asList("abc", "def"));
+    nestedListString.add(Arrays.asList("ghi", "jkl"));
+
+    List<List<String>> response = consumers.getIntf().genericNestedListString(nestedListString);
+    Assertions.assertEquals(2, response.size());
+    MatcherAssert.assertThat(response.get(0), Matchers.contains("abc", "def"));
+    MatcherAssert.assertThat(response.get(1), Matchers.contains("ghi", "jkl"));
+
+    @SuppressWarnings("unchecked")
+    List<List<String>> response2 = consumers.getSCBRestTemplate()
+        .postForObject("/genericNestedListString", nestedListString, List.class);
+    Assertions.assertEquals(2, response2.size());
+    MatcherAssert.assertThat(response2.get(0), Matchers.contains("abc", "def"));
+    MatcherAssert.assertThat(response2.get(1), Matchers.contains("ghi", "jkl"));
+  }
+
+  @Test
+  public void testGenericNestedListUser_intfAndRt() {
+    User user1 = new User();
+    user1.setAge(1);
+    user1.setIndex(1);
+    user1.setName("abc");
+    user1.setNames(new String[] {"1", "2", "3"});
+    User user2 = new User();
+    user2.setAge(2);
+    user2.setIndex(2);
+    user2.setName("def");
+    user2.setNames(new String[] {"4", "5"});
+    User user3 = new User();
+    user3.setAge(3);
+    user3.setIndex(3);
+    user3.setName("ghi");
+    user3.setNames(new String[] {"6", "7"});
+    User user4 = new User();
+    user4.setAge(4);
+    user4.setIndex(4);
+    user4.setName("jkl");
+    user4.setNames(new String[] {"8", "9", "10"});
+    ArrayList<List<User>> nestedListUser = new ArrayList<>();
+    nestedListUser.add(Arrays.asList(user1, user2));
+    nestedListUser.add(Arrays.asList(user3, user4));
+
+    List<List<User>> response = consumers.getIntf().genericNestedListUser(nestedListUser);
+    Assertions.assertEquals(2, response.size());
+    MatcherAssert.assertThat(response.get(0), Matchers.contains(user1, user2));
+    MatcherAssert.assertThat(response.get(1), Matchers.contains(user3, user4));
+
+    @SuppressWarnings("unchecked")
+    List<List<User>> response2 = consumers.getSCBRestTemplate()
+        .postForObject("/genericNestedListUser", nestedListUser, List.class);
+    Assertions.assertEquals(2, response2.size());
+    MatcherAssert.assertThat(response2.get(0), Matchers.contains(user1, user2));
+    MatcherAssert.assertThat(response2.get(1), Matchers.contains(user3, user4));
   }
 }

@@ -17,23 +17,19 @@
 
 package org.apache.servicecomb.bizkeeper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestConfiguration {
   @Test
   public void testConfiguration() {
 
-    assertNotNull(Configuration.INSTANCE);
-    assertEquals("returnnull", Configuration.FALLBACKPOLICY_POLICY_RETURN);
-    assertEquals("throwexception", Configuration.FALLBACKPOLICY_POLICY_THROW);
+    Assertions.assertNotNull(Configuration.INSTANCE);
+    Assertions.assertEquals("returnnull", Configuration.FALLBACKPOLICY_POLICY_RETURN);
+    Assertions.assertEquals("throwexception", Configuration.FALLBACKPOLICY_POLICY_THROW);
 
     Configuration c = Configuration.INSTANCE;
     Invocation invocation = Mockito.mock(Invocation.class);
@@ -43,22 +39,21 @@ public class TestConfiguration {
     Mockito.when(invocation.getOperationMeta().getMicroserviceName()).thenReturn("testqualify");
 
     int res = c.getIsolationTimeoutInMilliseconds("groupname", test2, "testqualify");
-    assertEquals(30000, res);
+    Assertions.assertEquals(30000, res);
     boolean b1 = c.getIsolationTimeoutEnabled("groupname", test2, "testqualify");
-    assertFalse(b1);
+    Assertions.assertFalse(b1);
     int res1 = c.getIsolationMaxConcurrentRequests("groupname", test2, "testqualify");
-    assertEquals(1000, res1);
+    Assertions.assertEquals(1000, res1);
     boolean b2 = c.isCircuitBreakerEnabled("groupname", test2, "testqualify");
-    assertTrue(b2);
+    Assertions.assertTrue(b2);
     String str = c.getFallbackPolicyPolicy("groupname", test2, "testqualify");
     // no need to give default value now
-    assertEquals(null, str);
+    Assertions.assertNull(str);
 
-    assertFalse(c.isCircuitBreakerForceOpen("groupname", test2, "testqualify"));
-    assertFalse(c.isCircuitBreakerForceClosed("groupname", test2, "testqualify"));
-    assertEquals(15000, c.getCircuitBreakerSleepWindowInMilliseconds("groupname", test2, "testqualify"));
-    assertEquals(20, c.getCircuitBreakerRequestVolumeThreshold("groupname", test2, "testqualify"));
-    assertEquals(50, c.getCircuitBreakerErrorThresholdPercentage("groupname", test2, "testqualify"));
-    assertTrue(c.isFallbackEnabled("groupname", test2, "testqualify"));
+    Assertions.assertFalse(c.isCircuitBreakerForceOpen("groupname", test2, "testqualify"));
+    Assertions.assertFalse(c.isCircuitBreakerForceClosed("groupname", test2, "testqualify"));
+    Assertions.assertEquals(15000, c.getCircuitBreakerSleepWindowInMilliseconds("groupname", test2, "testqualify"));
+    Assertions.assertEquals(20, c.getCircuitBreakerRequestVolumeThreshold("groupname", test2, "testqualify"));
+    Assertions.assertEquals(50, c.getCircuitBreakerErrorThresholdPercentage("groupname", test2, "testqualify"));
   }
 }

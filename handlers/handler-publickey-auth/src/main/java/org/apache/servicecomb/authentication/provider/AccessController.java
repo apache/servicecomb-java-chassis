@@ -23,7 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import com.netflix.config.DynamicPropertyFactory;
  * Add black / white list control to service access
  */
 public class AccessController {
-  class ConfigurationItem {
+  static class ConfigurationItem {
     static final String CATEGORY_PROPERTY = "property";
 
     String category;
@@ -70,14 +71,14 @@ public class AccessController {
   }
 
   private boolean whiteAllowed(Microservice microservice) {
-    if(whiteList.isEmpty()) {
+    if (whiteList.isEmpty()) {
       return true;
     }
     return matchFound(microservice, whiteList);
   }
 
   private boolean blackDenied(Microservice microservice) {
-    if(blackList.isEmpty()) {
+    if (blackList.isEmpty()) {
       return false;
     }
     return matchFound(microservice, blackList);
@@ -88,8 +89,9 @@ public class AccessController {
     for (ConfigurationItem item : ruleList.values()) {
       if (ConfigurationItem.CATEGORY_PROPERTY.equals(item.category)) {
         // we support to configure properties, e.g. serviceName, appId, environment, alias, version and so on, also support key in properties.
-        if (matchMicroserviceField(microservice, item) || matchMicroserviceProperties(microservice, item))
+        if (matchMicroserviceField(microservice, item) || matchMicroserviceProperties(microservice, item)) {
           return true;
+        }
       }
     }
     return matched;
@@ -98,8 +100,9 @@ public class AccessController {
   private boolean matchMicroserviceProperties(Microservice microservice, ConfigurationItem item) {
     Map<String, String> properties = microservice.getProperties();
     for (Entry<String, String> entry : properties.entrySet()) {
-      if (!entry.getKey().equals(item.propertyName))
+      if (!entry.getKey().equals(item.propertyName)) {
         continue;
+      }
       return isPatternMatch(entry.getValue(), item.rule);
     }
     return false;
@@ -110,11 +113,19 @@ public class AccessController {
     try {
       fieldValue = new PropertyDescriptor(item.propertyName, Microservice.class).getReadMethod().invoke(microservice);
     } catch (Exception e) {
-      LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.", item.propertyName);
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+          false).get()) {
+        LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.",
+            item.propertyName, e);
+      } else {
+        LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.",
+            item.propertyName);
+      }
       return false;
     }
-    if (fieldValue.getClass().getName().equals(String.class.getName()))
+    if (fieldValue.getClass().getName().equals(String.class.getName())) {
       return isPatternMatch((String) fieldValue, item.rule);
+    }
     return false;
   }
 
@@ -171,19 +182,20 @@ public class AccessController {
 
     if (KEY_WHITE_LIST_PREFIX.equals(prefix)) {
       this.whiteList = configurations;
-      logConfigurations(prefix, configurations, true);
+      logConfigurations(configurations, true);
     } else {
       this.blackList = configurations;
-      logConfigurations(prefix, configurations, false);
+      logConfigurations(configurations, false);
     }
   }
 
-  private void logConfigurations(String prefix, Map<String, ConfigurationItem> configurations, boolean isWhite) {
-    for (String key : configurations.keySet()) {
-      ConfigurationItem item = configurations.get(key);
-      LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + key + ";category=" + item.category
+  private void logConfigurations(Map<String, ConfigurationItem> configurations, boolean isWhite) {
+    configurations.entrySet().forEach(stringConfigurationItemEntry -> {
+      ConfigurationItem item = stringConfigurationItemEntry.getValue();
+      LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + stringConfigurationItemEntry.getKey()
+          + ";category=" + item.category
           + ";propertyName=" + item.propertyName
           + ";rule=" + item.rule);
-    }
+    });
   }
 }

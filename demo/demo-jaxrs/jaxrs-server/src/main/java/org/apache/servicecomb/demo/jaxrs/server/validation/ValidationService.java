@@ -18,13 +18,15 @@
 package org.apache.servicecomb.demo.jaxrs.server.validation;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import org.apache.servicecomb.demo.validator.Teacher;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestSchema(schemaId = "ValidationService")
 @Path("ValidationService")
@@ -37,7 +39,14 @@ public class ValidationService {
 
   @Path("/validateQuery")
   @GET
-  public String queryValidate(@NotNull @QueryParam("name") String name) {
+  public String queryValidate(@NotEmpty @QueryParam("name") String name) {
     return name;
   }
+
+  @Path("/sayTeacherInfo")
+  @POST
+  public Teacher sayTeacherInfo(@Valid @RequestBody Teacher teacher) {
+    return teacher;
+  }
+
 }

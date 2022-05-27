@@ -18,11 +18,13 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
@@ -32,8 +34,10 @@ import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -43,9 +47,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 public class CseClientHttpRequest implements ClientHttpRequest {
+
   // URL format：cse://microserviceName/business url
   private URI uri;
 
@@ -63,6 +70,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   private Map<String, List<String>> queryParams;
 
   private RequestMeta requestMeta;
+
+  private Type responseType;
 
   public CseClientHttpRequest() {
   }
@@ -108,13 +117,32 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     this.context = context;
   }
 
+  public Type getResponseType() {
+    return responseType;
+  }
+
+  public void setResponseType(Type responseType) {
+    this.responseType = responseType;
+  }
+
   public void setRequestBody(Object requestBody) {
     this.requestBody = requestBody;
+  }
+
+  public void setHttpHeaders(HttpHeaders headers) {
+    if (headers != null) {
+      this.httpHeaders = headers;
+    }
   }
 
   @Override
   public HttpMethod getMethod() {
     return method;
+  }
+
+  @Override
+  public String getMethodValue() {
+    return method.name();
   }
 
   @Override
@@ -140,60 +168,69 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri.getRawSchemeSpecificPart());
     queryParams = queryStringDecoder.parameters();
 
-    Object[] args = this.collectArguments();
+    Map<String, Object> swaggerArguments = this.collectArguments();
 
     // 异常流程，直接抛异常出去
-    return this.invoke(args);
+    return this.invoke(swaggerArguments);
   }
 
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
     String microserviceName = uri.getAuthority();
 
-    ReferenceConfig referenceConfig = findReferenceConfig(microserviceName);
+    MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
+        .createMicroserviceReferenceConfig(microserviceName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
 
-    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager == null) {
       throw new Error(String.format("no schema defined for %s:%s",
           microserviceMeta.getAppId(),
-          microserviceMeta.getName()));
+          microserviceMeta.getMicroserviceName()));
     }
 
     OperationLocator locator = servicePathManager.consumerLocateOperation(path, httpMethod);
     RestOperationMeta swaggerRestOperation = locator.getOperation();
 
+    OperationMeta operationMeta = locator.getOperation().getOperationMeta();
+    ReferenceConfig referenceConfig = microserviceReferenceConfig.createReferenceConfig(operationMeta);
+
     Map<String, String> pathParams = locator.getPathVarMap();
     return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
-  }
-
-  protected ReferenceConfig findReferenceConfig(String microserviceName) {
-    return SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
   }
 
   protected String findUriPath(URI uri) {
     return uri.getRawPath();
   }
 
-  protected Invocation prepareInvocation(Object[] args) {
+  protected Invocation prepareInvocation(Map<String, Object> swaggerArguments) {
     Invocation invocation =
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
-            args);
+            requestMeta.getOperationMeta().buildBaseConsumerRuntimeType(),
+            swaggerArguments);
+
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
-        path + "?" + this.uri.getRawQuery());
+        path + (this.uri.getRawQuery() == null ? "" : "?" + this.uri.getRawQuery()));
 
     if (context != null) {
-      invocation.addContext(context);
+      invocation.addContext(context.getContext());
+      invocation.addLocalContext(context.getLocalContext());
     }
+
+    if (responseType != null &&
+        !(responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType))) {
+      invocation.setSuccessResponseType(TypeFactory.defaultInstance().constructType(responseType));
+    }
+
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
     return invocation;
   }
 
-  private CseClientHttpResponse invoke(Object[] args) {
-    Invocation invocation = prepareInvocation(args);
+  private CseClientHttpResponse invoke(Map<String, Object> swaggerArguments) {
+    Invocation invocation = prepareInvocation(swaggerArguments);
     Response response = doInvoke(invocation);
 
-    if (response.isSuccessed()) {
+    if (response.isSucceed()) {
       return new CseClientHttpResponse(response);
     }
 
@@ -204,10 +241,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return InvokerUtils.innerSyncInvoke(invocation);
   }
 
-  protected Object[] collectArguments() {
+  protected Map<String, Object> collectArguments() {
     HttpServletRequest mockRequest = new CommonToHttpServletRequest(requestMeta.getPathParams(), queryParams,
         httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData(),
         requestMeta.getSwaggerRestOperation().getFileKeys());
+    // no types info, so will not convert any parameters
     return RestCodec.restToArgs(mockRequest, requestMeta.getSwaggerRestOperation());
   }
 }

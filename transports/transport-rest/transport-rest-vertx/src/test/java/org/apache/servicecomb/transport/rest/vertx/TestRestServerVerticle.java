@@ -21,25 +21,26 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.ws.Holder;
-
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
@@ -58,26 +59,29 @@ public class TestRestServerVerticle {
 
   private RestServerVerticle instance = null;
 
-  Future<Void> startFuture = null;
+  Promise<Void> startPromise = null;
 
   @Before
   public void setUp() {
+    ConfigUtil.installDynamicConfig();
     instance = new RestServerVerticle();
-    startFuture = Future.future();
+    startPromise = Promise.promise();
 
-    CseContext.getInstance().setTransportManager(new TransportManager());
+    SCBBootstrap.createSCBEngineForTest();
   }
 
   @After
   public void tearDown() {
     instance = null;
-    startFuture = null;
+    startPromise = null;
+    SCBEngine.getInstance().destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testRestServerVerticleWithRouter(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) throws Exception {
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080");
     new Expectations() {
       {
@@ -98,13 +102,13 @@ public class TestRestServerVerticle {
     RestServerVerticle server = new RestServerVerticle();
     // process stuff done by Expectations
     server.init(vertx, context);
-    server.start(startFuture);
+    server.start(startPromise);
   }
 
   @Test
   public void testRestServerVerticleWithRouterSSL(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) throws Exception {
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?sslEnabled=true");
     new Expectations() {
       {
@@ -125,13 +129,13 @@ public class TestRestServerVerticle {
     RestServerVerticle server = new RestServerVerticle();
     // process stuff done by Expectations
     server.init(vertx, context);
-    server.start(startFuture);
+    server.start(startPromise);
   }
 
   @Test
   public void testRestServerVerticleWithHttp2(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) {
+      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) {
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?protocol=http2");
     new Expectations() {
       {
@@ -153,22 +157,22 @@ public class TestRestServerVerticle {
     boolean status = false;
     try {
       server.init(vertx, context);
-      server.start(startFuture);
+      server.start(startPromise);
     } catch (Exception e) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
   public void testStartFutureAddressEmpty() {
     boolean status = false;
     try {
-      instance.start(startFuture);
+      instance.start(startPromise);
     } catch (Exception ex) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -177,11 +181,11 @@ public class TestRestServerVerticle {
     MockForRestServerVerticle.getInstance().mockTransportConfig();
     MockForRestServerVerticle.getInstance().mockRestServerVerticle();
     try {
-      instance.start(startFuture);
+      instance.start(startPromise);
     } catch (Exception ex) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -200,28 +204,28 @@ public class TestRestServerVerticle {
     CorsHandler corsHandler = new MockUp<CorsHandler>() {
       @Mock
       CorsHandler allowCredentials(boolean allow) {
-        Assert.assertFalse(allow);
+        Assertions.assertFalse(allow);
         counter.incrementAndGet();
         return null;
       }
 
       @Mock
       CorsHandler allowedHeaders(Set<String> headerNames) {
-        Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc", "def"));
+        MatcherAssert.assertThat(headerNames, Matchers.containsInAnyOrder("abc", "def"));
         counter.incrementAndGet();
         return null;
       }
 
       @Mock
       CorsHandler exposedHeaders(Set<String> headerNames) {
-        Assert.assertThat(headerNames, Matchers.containsInAnyOrder("abc2", "def2"));
+        MatcherAssert.assertThat(headerNames, Matchers.containsInAnyOrder("abc2", "def2"));
         counter.incrementAndGet();
         return null;
       }
 
       @Mock
       CorsHandler allowedMethod(HttpMethod method) {
-        Assert.assertTrue(methodSet.contains(method));
+        Assertions.assertTrue(methodSet.contains(method));
         counter.incrementAndGet();
         methodSet.remove(method);
         return null;
@@ -229,7 +233,7 @@ public class TestRestServerVerticle {
 
       @Mock
       CorsHandler maxAgeSeconds(int maxAgeSeconds) {
-        Assert.assertEquals(1, maxAgeSeconds);
+        Assertions.assertEquals(1, maxAgeSeconds);
         counter.incrementAndGet();
         return null;
       }
@@ -238,7 +242,7 @@ public class TestRestServerVerticle {
     new MockUp<RestServerVerticle>() {
       @Mock
       CorsHandler getCorsHandler(String corsAllowedOrigin) {
-        Assert.assertEquals("*", corsAllowedOrigin);
+        Assertions.assertEquals("*", corsAllowedOrigin);
         return corsHandler;
       }
     };
@@ -248,7 +252,7 @@ public class TestRestServerVerticle {
     RestServerVerticle server = new RestServerVerticle();
 
     Deencapsulation.invoke(server, "mountCorsHandler", router);
-    Assert.assertEquals(7, counter.get());
+    Assertions.assertEquals(7, counter.get());
   }
 
   @Test
@@ -275,7 +279,7 @@ public class TestRestServerVerticle {
     RestServerVerticle restServerVerticle = new RestServerVerticle();
 
     Deencapsulation.invoke(restServerVerticle, "mountGlobalRestFailureHandler", mainRouter);
-    Assert.assertNotNull(handlerHolder.value);
+    Assertions.assertNotNull(handlerHolder.value);
 
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse response = Mockito.mock(HttpServerResponse.class);

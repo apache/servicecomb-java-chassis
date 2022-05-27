@@ -21,11 +21,16 @@ import java.nio.channels.ClosedChannelException;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.servicecomb.common.accessLog.AccessLogConfig;
+import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -37,18 +42,15 @@ import org.apache.servicecomb.foundation.vertx.metrics.DefaultHttpServerMetrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
@@ -77,20 +79,20 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
+  public void start(Promise<Void> startPromise) throws Exception {
     try {
       super.start();
       // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
       if (endpointObject == null) {
         LOGGER.warn("rest listen address is not configured, will not start.");
-        startFuture.complete();
+        startPromise.complete();
         return;
       }
       Router mainRouter = Router.router(vertx);
-      mountGlobalRestFailureHandler(mainRouter);
       mountAccessLogHandler(mainRouter);
       mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
+      mountGlobalRestFailureHandler(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter);
       httpServer.connectionHandler(connection -> {
@@ -104,15 +106,20 @@ public class RestServerVerticle extends AbstractVerticle {
           endpointMetric.onRejectByConnectionLimit();
         }
       });
+      List<HttpServerExceptionHandler> httpServerExceptionHandlers =
+          SPIServiceUtils.getAllService(HttpServerExceptionHandler.class);
       httpServer.exceptionHandler(e -> {
-        if(e instanceof ClosedChannelException) {
+        if (e instanceof ClosedChannelException) {
           // This is quite normal in between browser and ege, so do not print out.
           LOGGER.debug("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         } else {
           LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         }
+        httpServerExceptionHandlers.forEach(httpServerExceptionHandler -> {
+          httpServerExceptionHandler.handle(e);
+        });
       });
-      startListen(httpServer, startFuture);
+      startListen(httpServer, startPromise);
     } catch (Throwable e) {
       // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
       LOGGER.error("", e);
@@ -125,18 +132,18 @@ public class RestServerVerticle extends AbstractVerticle {
         SPIServiceUtils.getPriorityHighestService(GlobalRestFailureHandler.class);
     Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?
         ctx -> {
-          if (ctx.response().closed()) {
+          if (ctx.response().closed() || ctx.response().ended()) {
             // response has been sent, do nothing
             LOGGER.error("get a failure with closed response", ctx.failure());
-            ctx.next();
+            return;
           }
           HttpServerResponse response = ctx.response();
           if (ctx.failure() instanceof InvocationException) {
             // ServiceComb defined exception
             InvocationException exception = (InvocationException) ctx.failure();
             response.setStatusCode(exception.getStatusCode());
-            response.setStatusMessage(exception.getErrorData().toString());
-            response.end();
+            response.setStatusMessage(exception.getReasonPhrase());
+            response.end(exception.getErrorData().toString());
             return;
           }
 
@@ -159,14 +166,19 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private void mountAccessLogHandler(Router mainRouter) {
-    if (AccessLogConfiguration.INSTANCE.getAccessLogEnabled()) {
-      String pattern = AccessLogConfiguration.INSTANCE.getAccesslogPattern();
-      LOGGER.info("access log enabled, pattern = {}", pattern);
-      mainRouter.route()
-          .handler(new AccessLogHandler(
-              pattern
-          ));
+    if (!AccessLogConfig.INSTANCE.isServerLogEnabled()) {
+      return;
     }
+    LOGGER.info("access log enabled, pattern = {}", AccessLogConfig.INSTANCE.getServerLogPattern());
+    mainRouter.route().handler(context -> {
+      ServerAccessLogEvent accessLogEvent = new ServerAccessLogEvent()
+          .setRoutingContext(context)
+          .setMilliStartTime(System.currentTimeMillis())
+          .setLocalAddress(LocalHostAccessItem.getLocalAddress(context));
+      context.response().endHandler(event ->
+          EventManager.post(accessLogEvent.setMilliEndTime(System.currentTimeMillis())));
+      context.next();
+    });
   }
 
   /**
@@ -204,7 +216,8 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private void initDispatcher(Router mainRouter) {
-    List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getSortedService(VertxHttpDispatcher.class);
+    List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getOrLoadSortedService(VertxHttpDispatcher.class);
+
     for (VertxHttpDispatcher dispatcher : dispatchers) {
       if (dispatcher.enabled()) {
         dispatcher.init(mainRouter);
@@ -212,13 +225,13 @@ public class RestServerVerticle extends AbstractVerticle {
     }
   }
 
-  private void startListen(HttpServer server, Future<Void> startFuture) {
+  private void startListen(HttpServer server, Promise<Void> startPromise) {
     server.listen(endpointObject.getPort(), endpointObject.getHostOrIp(), ar -> {
       if (ar.succeeded()) {
         LOGGER.info("rest listen success. address={}:{}",
             endpointObject.getHostOrIp(),
             ar.result().actualPort());
-        startFuture.complete();
+        startPromise.complete();
         return;
       }
 
@@ -226,7 +239,7 @@ public class RestServerVerticle extends AbstractVerticle {
           endpointObject.getHostOrIp(),
           endpointObject.getPort());
       LOGGER.error(msg, ar.cause());
-      startFuture.fail(ar.cause());
+      startPromise.fail(ar.cause());
     });
   }
 
@@ -237,14 +250,25 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private HttpServerOptions createDefaultHttpServerOptions() {
     HttpServerOptions serverOptions = new HttpServerOptions();
-    serverOptions.setUsePooledBuffers(true);
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
+    serverOptions.setMaxFormAttributeSize(TransportConfig.getMaxFormAttributeSize());
+    serverOptions.setCompressionLevel(TransportConfig.getCompressionLevel());
+    serverOptions.setMaxChunkSize(TransportConfig.getMaxChunkSize());
+    serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
+    serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
+    serverOptions.setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
-          .setInitialSettings(new Http2Settings().setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams()));
+          .setInitialSettings(new Http2Settings().setPushEnabled(TransportConfig.getPushEnabled())
+              .setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams())
+              .setHeaderTableSize(TransportConfig.getHttp2HeaderTableSize())
+              .setInitialWindowSize(TransportConfig.getInitialWindowSize())
+              .setMaxFrameSize(TransportConfig.getMaxFrameSize())
+              .setMaxHeaderListSize(TransportConfig.getMaxHeaderListSize())
+          );
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =

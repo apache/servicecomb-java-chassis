@@ -22,16 +22,14 @@ public class ProducerMeta {
 
   private Object instance;
 
-  // 因为aop的存在，instance的class不一定等于instanceClass
-  private Class<?> instanceClass;
+  private Class<?> schemaInterface;
 
   public ProducerMeta() {
   }
 
-  public ProducerMeta(String schemaId, Object instance, Class<?> instanceClass) {
+  public ProducerMeta(String schemaId, Object instance) {
     this.schemaId = schemaId;
     this.instance = instance;
-    this.instanceClass = instanceClass;
   }
 
   public String getSchemaId() {
@@ -50,11 +48,11 @@ public class ProducerMeta {
     this.instance = instance;
   }
 
-  public Class<?> getInstanceClass() {
-    return instanceClass;
+  public Class<?> getSchemaInterface() {
+    return schemaInterface;
   }
 
-  public void setInstanceClass(Class<?> instanceClass) {
-    this.instanceClass = instanceClass;
+  public void setSchemaInterface(Class<?> schemaInterface) {
+    this.schemaInterface = schemaInterface;
   }
 }

@@ -16,13 +16,17 @@
  */
 package org.apache.servicecomb.it.extend.engine;
 
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import java.util.Optional;
+
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class ITSCBRestTemplate extends CseRestTemplate {
   private String urlPrefix;
@@ -31,19 +35,23 @@ public class ITSCBRestTemplate extends CseRestTemplate {
 
   private String basePath;
 
+  private MicroserviceInstance instance;
+
   public ITSCBRestTemplate(String schemaId) {
     this.schemaId = schemaId;
   }
 
   public ITSCBRestTemplate init() {
     String producerName = ITJUnitUtils.getProducerName();
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,
-            DefinitionConst.VERSION_RULE_ALL);
-    MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
-    SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
+        .createMicroserviceReferenceConfig(producerName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     basePath = schemaMeta.getSwagger().getBasePath();
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
+    instance = DiscoveryManager.INSTANCE.getAppManager()
+        .getOrCreateMicroserviceManager(RegistrationManager.INSTANCE.getMicroservice().getAppId())
+        .getOrCreateMicroserviceVersions(producerName).getPulledInstances().get(0);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
     setRequestFactory(new ITClientHttpRequestFactory());
@@ -57,5 +65,12 @@ public class ITSCBRestTemplate extends CseRestTemplate {
 
   public String getUrlPrefix() {
     return urlPrefix;
+  }
+
+  public String getAddress(String transport) {
+    Optional<String> addressHolder = instance.getEndpoints().stream()
+        .filter(endpoint -> endpoint.startsWith(transport))
+        .findFirst();
+    return addressHolder.get();
   }
 }

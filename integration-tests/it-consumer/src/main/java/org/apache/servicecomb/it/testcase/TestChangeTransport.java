@@ -17,27 +17,27 @@
 package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestChangeTransport {
-  interface ChangeTranportIntf {
+  interface ChangeTransportIntf {
     String checkTransport();
   }
 
-  static Consumers<ChangeTranportIntf> consumersPojo = new Consumers<>("transportPojo", ChangeTranportIntf.class);
+  static Consumers<ChangeTransportIntf> consumersPojo = new Consumers<>("transportPojo", ChangeTransportIntf.class);
 
-  static Consumers<ChangeTranportIntf> consumersJaxrs = new Consumers<>("transportJaxrs", ChangeTranportIntf.class);
+  static Consumers<ChangeTransportIntf> consumersJaxrs = new Consumers<>("transportJaxrs", ChangeTransportIntf.class);
 
-  static Consumers<ChangeTranportIntf> consumersSpringmvc = new Consumers<>("transportSpringmvc",
-      ChangeTranportIntf.class);
+  static Consumers<ChangeTransportIntf> consumersSpringmvc = new Consumers<>("transportSpringmvc",
+      ChangeTransportIntf.class);
 
-  void checkTransport_intf(Consumers<ChangeTranportIntf> consumers) {
-    Assert.assertEquals(consumers.getTransport(), consumers.getIntf().checkTransport());
+  void checkTransport_intf(Consumers<ChangeTransportIntf> consumers) {
+    Assertions.assertEquals(consumers.getTransport(), consumers.getIntf().checkTransport());
   }
 
-  void checkTransport_rt(Consumers<ChangeTranportIntf> consumers) {
-    Assert.assertEquals(consumers.getTransport(),
+  void checkTransport_rt(Consumers<ChangeTransportIntf> consumers) {
+    Assertions.assertEquals(consumers.getTransport(),
         consumers.getSCBRestTemplate().getForObject("/checkTransport", String.class));
   }
 
@@ -48,7 +48,7 @@ public class TestChangeTransport {
 
   @Test
   public void checkTransport_pojo_rt() {
-    Assert.assertEquals(consumersPojo.getTransport(),
+    Assertions.assertEquals(consumersPojo.getTransport(),
         consumersPojo.getSCBRestTemplate().postForObject("/checkTransport", "", String.class));
   }
 

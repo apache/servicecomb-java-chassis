@@ -37,7 +37,7 @@ public class SFixed64WriteSchemas {
       return new SFixed64Schema<>(protoField, propertyDescriptor);
     }
 
-    return new SFixed64DynamicSchema<>(protoField, propertyDescriptor);
+    return new SFixed64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class SFixed64DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +72,7 @@ public class SFixed64WriteSchemas {
   }
 
   private static class SFixed64Schema<T> extends SFixed64DynamicSchema<T> {
-    protected final Getter<T, Long> getter;
+    protected final Getter<T, Object> getter;
 
     public SFixed64Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +82,9 @@ public class SFixed64WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Long value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarSFixed64(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

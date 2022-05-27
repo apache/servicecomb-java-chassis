@@ -25,12 +25,12 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
-import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
+import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +41,10 @@ import org.slf4j.LoggerFactory;
 public class SimpleLoadBalanceHandler implements Handler {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceHandler.class);
 
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  private final DiscoveryTree discoveryTree = new DiscoveryTree();
 
   // key为grouping filter qualified name
-  private volatile Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
+  private final Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
 
   public SimpleLoadBalanceHandler() {
     discoveryTree.loadFromSPI(DiscoveryFilter.class);
@@ -54,6 +54,11 @@ public class SimpleLoadBalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (invocation.getEndpoint() != null) {
+      invocation.next(asyncResp);
+      return;
+    }
+
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
     VersionedCache endpointsVersionedCache = discoveryTree.discovery(context,

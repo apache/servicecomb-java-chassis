@@ -20,13 +20,9 @@ package org.apache.servicecomb.provider.rest.common;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerContextArgumentMapperFactory;
 
-@Component
-@Qualifier("producer")
-public class ProducerHttpRequestArgMapperFactory implements ContextArgumentMapperFactory {
+public class ProducerHttpRequestArgMapperFactory implements ProducerContextArgumentMapperFactory {
 
   @Override
   public Class<?> getContextClass() {
@@ -34,7 +30,7 @@ public class ProducerHttpRequestArgMapperFactory implements ContextArgumentMappe
   }
 
   @Override
-  public ArgumentMapper create(int providerArgIdx) {
-    return new ProducerHttpRequestArgMapper(providerArgIdx);
+  public ArgumentMapper create(String invocationArgumentName, String swaggerArgumentName) {
+    return new ProducerHttpRequestArgMapper(invocationArgumentName, swaggerArgumentName);
   }
 }

@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
-import org.junit.Assert;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 /**
@@ -33,7 +31,7 @@ import org.mockito.Mockito;
  */
 public class TestServiceCombServer {
 
-  private Transport transport = Mockito.mock(Transport.class);
+  private final Transport transport = Mockito.mock(Transport.class);
 
   private ServiceCombServer cs;
 
@@ -41,50 +39,50 @@ public class TestServiceCombServer {
   public void setUp() {
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("123456");
-    cs = new ServiceCombServer(transport, new CacheEndpoint("abcd", instance));
+    cs = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance));
   }
 
   @Test
   public void testCseServerObj() {
-    assertNotNull(cs);
+    Assertions.assertNotNull(cs);
   }
 
   @Test
   public void testGetEndpoint() {
     cs.getEndpoint();
-    assertNotNull(cs.getEndpoint());
+    Assertions.assertNotNull(cs.getEndpoint());
   }
 
   @Test
   public void testEqualsMethod() {
-    Assert.assertFalse(cs.equals((Object) "abcd"));
+    Assertions.assertNotEquals(cs, (Object) "abcd");
 
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
-    ServiceCombServer other = new ServiceCombServer(transport, new CacheEndpoint("1234", instance1));
-    Assert.assertFalse(cs.equals(other));
+    ServiceCombServer other = new ServiceCombServer(null, transport, new CacheEndpoint("1234", instance1));
+    Assertions.assertNotEquals(cs, other);
 
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("123456");
-    other = new ServiceCombServer(transport, new CacheEndpoint("abcd", instance2));
-    Assert.assertTrue(cs.equals(other));
+    other = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance2));
+    Assertions.assertEquals(cs, other);
   }
 
   @Test
   public void testToStringMethod() {
     cs.toString();
-    assertNotNull(cs.toString());
+    Assertions.assertNotNull(cs.toString());
   }
 
   @Test
   public void testGetHost() {
     cs.getHost();
-    assertNotNull(cs.getHost());
+    Assertions.assertNotNull(cs.getHost());
   }
 
   @Test
   public void testHashCodeMethod() {
     cs.hashCode();
-    assertNotNull(cs.hashCode());
+    Assertions.assertNotNull(cs.hashCode());
   }
 }

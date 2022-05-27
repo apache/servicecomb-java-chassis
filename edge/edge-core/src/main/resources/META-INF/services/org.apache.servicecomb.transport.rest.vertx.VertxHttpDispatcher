@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.edge.core.DefaultEdgeDispatcher
 org.apache.servicecomb.edge.core.URLMappedEdgeDispatcher
+org.apache.servicecomb.edge.core.CommonHttpEdgeDispatcher

@@ -20,9 +20,9 @@ package org.apache.servicecomb.transport.highway.message;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRequestHeader {
 
@@ -43,33 +43,33 @@ public class TestRequestHeader {
 
     Map<String, String> context = null;
     requestHeader.setContext(context);
-    Assert.assertNull(requestHeader.getContext());
+    Assertions.assertNull(requestHeader.getContext());
   }
 
   @Test
   public void testDestMicroservice() {
     requestHeader.setDestMicroservice("test");
-    Assert.assertEquals("test", requestHeader.getDestMicroservice());
+    Assertions.assertEquals("test", requestHeader.getDestMicroservice());
   }
 
   @Test
   public void testFlags() {
 
     requestHeader.setFlags(1);
-    Assert.assertEquals(1, requestHeader.getFlags());
+    Assertions.assertEquals(1, requestHeader.getFlags());
   }
 
   @Test
   public void testOperationName() {
 
     requestHeader.setOperationName("cse");
-    Assert.assertEquals("cse", requestHeader.getOperationName());
+    Assertions.assertEquals("cse", requestHeader.getOperationName());
   }
 
   @Test
   public void testSchemaId() {
 
     requestHeader.setSchemaId("id");
-    Assert.assertEquals("id", requestHeader.getSchemaId());
+    Assertions.assertEquals("id", requestHeader.getSchemaId());
   }
 }

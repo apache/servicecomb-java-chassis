@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 
@@ -36,9 +36,9 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   public static final int DEFAULT_READ_BUFFER_SIZE = 1024 * 1024;
 
-  private Context context;
+  private final Context context;
 
-  private InputStream inputStream;
+  private final InputStream inputStream;
 
   private boolean closed;
 
@@ -54,7 +54,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   private Handler<Void> endHandler;
 
-  private boolean autoCloseInputStream;
+  private final boolean autoCloseInputStream;
 
   public InputStreamToReadStream(Context context, InputStream inputStream,
       boolean autoCloseInputStream) {
@@ -120,7 +120,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     }
   }
 
-  private synchronized void readInWorker(Future<ReadResult> future) {
+  private synchronized void readInWorker(Promise<ReadResult> future) {
     try {
       ReadResult readResult = new ReadResult();
       readResult.doRead();

@@ -23,12 +23,12 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestExecutorManager {
   @Mocked
@@ -53,69 +53,71 @@ public class TestExecutorManager {
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta));
+    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta));
   }
 
   @Test
   public void findExecutor_twoParam_opCfg_withoutOpDef(@Mocked Executor executor,
       @Mocked OperationMeta operationMeta) {
-    String schemaQualifiedName = "schemaId.opId";
+    // String schemaQualifiedName = "schemaId.opId";
+    String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaQualifiedName, opBeanId);
+    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
-        operationMeta.getSchemaQualifiedName();
-        result = schemaQualifiedName;
+        operationMeta.getMicroserviceQualifiedName();
+        result = microserviceQualifiedName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, null));
+    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 
   @Test
   public void findExecutor_twoParam_opCfg_withOpDef(@Mocked Executor executor,
       @Mocked Executor defExecutor,
       @Mocked OperationMeta operationMeta) {
-    String schemaQualifiedName = "schemaId.opId";
+    String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaQualifiedName, opBeanId);
+    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
-        operationMeta.getSchemaQualifiedName();
-        result = schemaQualifiedName;
+        operationMeta.getMicroserviceQualifiedName();
+        result = microserviceQualifiedName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, defExecutor));
+    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, defExecutor));
   }
 
   @Test
   public void findExecutor_twoParam_schemaCfg_withOpDef(@Mocked OperationMeta operationMeta,
       @Mocked Executor defExecutor) {
-    Assert.assertSame(defExecutor, ExecutorManager.findExecutor(operationMeta, defExecutor));
+    Assertions.assertSame(defExecutor, new ExecutorManager().findExecutor(operationMeta, defExecutor));
   }
 
   @Test
   public void findExecutor_twoParam_schemaCfg_withoutOpDef(@Mocked Executor executor,
-      @Mocked SchemaMeta schemaMeta,
       @Mocked OperationMeta operationMeta) {
+    String microserviceName = "serviceName";
     String schemaName = "schemaId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaName, opBeanId);
+    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceName + "." +  schemaName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
-        schemaMeta.getName();
+        operationMeta.getSchemaId();
         result = schemaName;
+        operationMeta.getMicroserviceName();
+        result = microserviceName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
     };
-
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, null));
+    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 
   @Test
@@ -131,6 +133,6 @@ public class TestExecutorManager {
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, null));
+    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 }

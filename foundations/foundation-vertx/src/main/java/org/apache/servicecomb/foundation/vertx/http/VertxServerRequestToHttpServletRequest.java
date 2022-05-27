@@ -51,9 +51,9 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private static final EmptyAsyncContext EMPTY_ASYNC_CONTEXT = new EmptyAsyncContext();
 
-  private RoutingContext context;
+  private final RoutingContext context;
 
-  private HttpServerRequest vertxRequest;
+  private final HttpServerRequest vertxRequest;
 
   private Cookie[] cookies;
 
@@ -61,7 +61,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   private String path;
 
-  private SocketAddress socketAddress;
+  private final SocketAddress socketAddress;
 
   // cache from convert vertx parameters to servlet parameters
   private Map<String, String[]> parameterMap;
@@ -84,6 +84,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   public void setBodyBuffer(Buffer bodyBuffer) {
     super.setBodyBuffer(bodyBuffer);
     context.setBody(bodyBuffer);
+    this.inputStream = null;
   }
 
   @Override
@@ -94,11 +95,11 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   @Override
   public Cookie[] getCookies() {
     if (cookies == null) {
-      Set<io.vertx.ext.web.Cookie> vertxCookies = context.cookies();
-      Cookie tmpCookies[] = new Cookie[vertxCookies.size()];
+      Set<io.vertx.core.http.Cookie> cookieSet = context.request().cookies();
+      Cookie[] tmpCookies = new Cookie[cookieSet.size()];
       int idx = 0;
-      for (io.vertx.ext.web.Cookie oneVertxCookie : vertxCookies) {
-        Cookie cookie = new Cookie(oneVertxCookie.getName(), oneVertxCookie.getValue());
+      for (io.vertx.core.http.Cookie vertxCookie : cookieSet) {
+        Cookie cookie = new Cookie(vertxCookie.getName(), vertxCookie.getValue());
         tmpCookies[idx] = cookie;
         idx++;
       }
@@ -251,9 +252,13 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public ServletInputStream getInputStream() {
-    if (inputStream == null) {
-      inputStream = new BufferInputStream(context.getBody().getByteBuf());
+    if (inputStream != null) {
+      return inputStream;
     }
+    if (context.getBody() == null) {
+      return null;
+    }
+    inputStream = new BufferInputStream(context.getBody().getByteBuf());
     return inputStream;
   }
 

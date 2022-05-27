@@ -25,7 +25,6 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
@@ -57,7 +56,7 @@ public class Impl {
   @RequestMapping(path = "/channel/news/subscribe", method = RequestMethod.POST)
   public AppClientDataRsp subscribeNewsColumn(@RequestBody ChannelRequestBase request) {
     AppClientDataRsp response = new AppClientDataRsp();
-    String rsp = StringUtils.rightPad("edge test", 1024, "*");
+    String rsp = "result from 2.0.0";
     response.setRsp(rsp);
     return response;
   }

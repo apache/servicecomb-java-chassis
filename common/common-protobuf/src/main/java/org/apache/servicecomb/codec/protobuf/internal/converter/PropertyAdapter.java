@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.swagger.models.properties.ArrayProperty;
@@ -65,7 +66,7 @@ public class PropertyAdapter implements SwaggerTypeAdapter {
       return ((StringProperty) property).getEnum();
     }
 
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -79,7 +80,7 @@ public class PropertyAdapter implements SwaggerTypeAdapter {
   }
 
   @Override
-  public boolean isObject() {
+  public boolean isJavaLangObject() {
     return property instanceof ObjectProperty;
   }
 }

@@ -18,26 +18,27 @@ package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestJaxrsProducerResponseMapperFactory {
   JaxrsProducerResponseMapperFactory factory = new JaxrsProducerResponseMapperFactory();
 
   @Test
   public void isMatch_true() {
-    Assert.assertTrue(factory.isMatch(null, Response.class));
+    Assertions.assertTrue(factory.isMatch(Response.class));
   }
 
   @Test
   public void isMatch_false() {
-    Assert.assertFalse(factory.isMatch(null, String.class));
+    Assertions.assertFalse(factory.isMatch(String.class));
   }
 
   @Test
   public void createResponseMapper() {
-    Assert.assertThat(factory.createResponseMapper(null, null, null),
+    MatcherAssert.assertThat(factory.createResponseMapper(null, null),
         Matchers.instanceOf(JaxrsProducerResponseMapper.class));
   }
 }

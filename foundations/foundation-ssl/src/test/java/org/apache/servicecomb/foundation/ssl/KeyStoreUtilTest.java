@@ -26,8 +26,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
-import org.junit.Assert;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import mockit.Mock;
@@ -45,7 +46,7 @@ public class KeyStoreUtilTest {
     try {
       KeyStoreUtil.createKeyStore(storename, storetype, storevalue);
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Bad key store or value.testType not found", e.getMessage());
+      Assertions.assertEquals("Bad key store or value.testType not found", e.getMessage());
     }
   }
 
@@ -58,16 +59,14 @@ public class KeyStoreUtilTest {
     try {
       KeyStoreUtil.createKeyStore(storename, storetype, storevalue);
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Bad key store or value.DerInputStream.getLength(): lengthTag=109, too big.",
+      Assertions.assertEquals("Bad key store or value.DerInputStream.getLength(): lengthTag=109, too big.",
           e.getMessage());
     }
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void testCreateKeyManagersException() {
     KeyStore keystore;
-    char[] keyvalue;
 
     String storename = strFilePath + "/ssl/server.p12";
     String storetype = "PKCS12";
@@ -79,8 +78,14 @@ public class KeyStoreUtilTest {
     try {
       KeyStoreUtil.createKeyManagers(keystore, storeKeyValue);
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Bad key store.Get Key failed: null",
-          e.getMessage());
+      if (SystemUtils.JAVA_SPECIFICATION_VERSION.startsWith("17")) {
+        Assertions.assertEquals("Bad key store.Get Key failed:"
+                        + " Cannot read the array length because \"password\" is null",
+                e.getMessage());
+      } else {
+        Assertions.assertEquals("Bad key store.Get Key failed: null",
+                e.getMessage());
+      }
     }
   }
 
@@ -91,11 +96,11 @@ public class KeyStoreUtilTest {
     boolean validAssert = true;
     try {
       CRL[] crl = KeyStoreUtil.createCRL(crlfile);
-      Assert.assertNull(crl);
+      Assertions.assertNull(crl);
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 
   @Test
@@ -114,7 +119,7 @@ public class KeyStoreUtilTest {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   @Test
@@ -132,9 +137,9 @@ public class KeyStoreUtilTest {
       KeyStoreUtil.createCRL(crlfile);
     } catch (Exception e) {
       validAssert = false;
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   @Test
@@ -151,9 +156,9 @@ public class KeyStoreUtilTest {
       KeyStoreUtil.createCRL(crlfile);
     } catch (Exception e) {
       validAssert = false;
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   private void mockGenerateCRLs() {

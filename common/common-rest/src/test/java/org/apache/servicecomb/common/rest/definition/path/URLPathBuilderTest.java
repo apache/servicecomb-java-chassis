@@ -18,11 +18,12 @@
 package org.apache.servicecomb.common.rest.definition.path;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import io.swagger.models.parameters.Parameter;
@@ -39,11 +40,15 @@ public class URLPathBuilderTest {
     addParam("q1", String.class, QueryParameter::new, paramMap);
 
     URLPathBuilder urlPathBuilder = new URLPathBuilder("/path/{p0}/and/{p1}", paramMap);
-    Object[] args = {10, "abcPath", 11, "queryABC"};
-    Assert.assertEquals("/path/10/and/abcPath?q0=11&q1=queryABC",
-        urlPathBuilder.createRequestPath(args));
-    Assert.assertEquals("/path/10/and/abcPath",
-        urlPathBuilder.createPathString(args));
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("p0", 10);
+    parameters.put("p1", "abcPath");
+    parameters.put("q0", 11);
+    parameters.put("q1", "queryABC");
+    Assertions.assertEquals("/path/10/and/abcPath?q0=11&q1=queryABC",
+        urlPathBuilder.createRequestPath(parameters));
+    Assertions.assertEquals("/path/10/and/abcPath",
+        urlPathBuilder.createPathString(parameters));
   }
 
   @Test
@@ -53,11 +58,13 @@ public class URLPathBuilderTest {
     addParam("q", String.class, QueryParameter::new, paramMap);
 
     URLPathBuilder urlPathBuilder = new URLPathBuilder("/path/{p}", paramMap);
-    Object[] args = {"ab%% %cd%", "ab%% %cd%"};
-    Assert.assertEquals("/path/ab%25%25%20%25cd%25?q=ab%25%25+%25cd%25",
-        urlPathBuilder.createRequestPath(args));
-    Assert.assertEquals("/path/ab%25%25%20%25cd%25",
-        urlPathBuilder.createPathString(args));
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("p", "ab%% %cd%");
+    parameters.put("q", "ab%% %cd%");
+    Assertions.assertEquals("/path/ab%25%25%20%25cd%25?q=ab%25%25+%25cd%25",
+        urlPathBuilder.createRequestPath(parameters));
+    Assertions.assertEquals("/path/ab%25%25%20%25cd%25",
+        urlPathBuilder.createPathString(parameters));
   }
 
   @Test
@@ -67,40 +74,53 @@ public class URLPathBuilderTest {
     addParam("intArr", int[].class, QueryParameter::new, paramMap);
 
     URLPathBuilder urlPathBuilder = new URLPathBuilder("/path", paramMap);
-    Object[] args = new Object[] {
-        new Object[] {"a", "b", "c"},
-        new Object[] {1, 2, 3}
-    };
-    Assert.assertEquals("/path?strArr=a&strArr=b&strArr=c&intArr=1&intArr=2&intArr=3",
-        urlPathBuilder.createRequestPath(args));
-    args = new Object[] {
-        new Object[] {},
-        new Object[] {1, 2, 3}
-    };
-    Assert.assertEquals("/path?intArr=1&intArr=2&intArr=3",
-        urlPathBuilder.createRequestPath(args));
-    args = new Object[] {
-        new Object[] {"a", "b", "c"},
-        new Object[] {}
-    };
-    Assert.assertEquals("/path?strArr=a&strArr=b&strArr=c",
-        urlPathBuilder.createRequestPath(args));
-    args = new Object[] {
-        new Object[] {},
-        new Object[] {}
-    };
-    Assert.assertEquals("/path",
-        urlPathBuilder.createRequestPath(args));
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("strArr", new Object[] {"a", "b", "c"});
+    parameters.put("intArr", new Object[] {1, 2, 3});
+    Assertions.assertEquals("/path?strArr=a&strArr=b&strArr=c&intArr=1&intArr=2&intArr=3",
+        urlPathBuilder.createRequestPath(parameters));
+    parameters.put("strArr", new Object[] {});
+    parameters.put("intArr", new Object[] {1, 2, 3});
+    Assertions.assertEquals("/path?intArr=1&intArr=2&intArr=3",
+        urlPathBuilder.createRequestPath(parameters));
+    parameters.put("strArr", new Object[] {"a", "b", "c"});
+    parameters.put("intArr", new Object[] {});
+    Assertions.assertEquals("/path?strArr=a&strArr=b&strArr=c",
+        urlPathBuilder.createRequestPath(parameters));
+    parameters.put("strArr", new Object[] {});
+    parameters.put("intArr", new Object[] {});
+    Assertions.assertEquals("/path",
+        urlPathBuilder.createRequestPath(parameters));
+  }
+
+  @Test
+  public void testRegexPathParam() throws Exception {
+    Map<String, RestParam> paramMap = new LinkedHashMap<>();
+    addParam("p0", int.class, PathParameter::new, paramMap);
+    addParam("p1", String.class, PathParameter::new, paramMap);
+    addParam("q0", int.class, QueryParameter::new, paramMap);
+    addParam("q1", String.class, QueryParameter::new, paramMap);
+
+    URLPathBuilder urlPathBuilder = new URLPathBuilder("/path/{p0 : .*}/and/{p1:.*}", paramMap);
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("p0", 10);
+    parameters.put("p1", "abcPath");
+    parameters.put("q0", 11);
+    parameters.put("q1", "queryABC");
+    Assertions.assertEquals("/path/10/and/abcPath?q0=11&q1=queryABC",
+        urlPathBuilder.createRequestPath(parameters));
+    Assertions.assertEquals("/path/10/and/abcPath",
+        urlPathBuilder.createPathString(parameters));
   }
 
   private void addParam(String paramName, Type paramType,
       ParameterConstructor constructor, Map<String, RestParam> paramMap) {
     Parameter parameter = constructor.construct();
     parameter.setName(paramName);
-    paramMap.put(paramName, new RestParam(paramMap.size(), parameter, paramType));
+    paramMap.put(paramName, new RestParam(parameter, paramType));
   }
 
-  static interface ParameterConstructor {
+  interface ParameterConstructor {
     Parameter construct();
   }
 }

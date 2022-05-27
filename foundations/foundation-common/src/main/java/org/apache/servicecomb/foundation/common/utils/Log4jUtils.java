@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
@@ -85,6 +87,11 @@ public final class Log4jUtils {
     }
   }
 
+  @VisibleForTesting
+  static boolean isInited() {
+    return inited;
+  }
+
   private static void outputFile(List<Resource> resList,
       Properties properties) throws IOException {
     //不可以作为class的变量初始化，因为在outputFile前一句log机制才初始化完成的
@@ -107,19 +114,14 @@ public final class Log4jUtils {
     }
 
     File mergedfile = new File(res.getFile().getParentFile(), MERGED_FILE);
-    FileUtils.writeStringToFile(mergedfile, content);
-    log.info("Write merged log4j config file to {}", mergedfile.getAbsolutePath());
+    FileUtils.writeStringToFile(mergedfile, content, StandardCharsets.UTF_8, false);
+    log.info("Write merged log4j config file to {}", IOUtils.anonymousPath(mergedfile.getAbsolutePath()));
   }
 
   private static String genFileContext(List<Resource> resList, Properties properties) throws IOException {
     List<Entry<Object, Object>> entryList = properties.entrySet()
         .stream()
-        .sorted(new Comparator<Entry<Object, Object>>() {
-          @Override
-          public int compare(Entry<Object, Object> o1, Entry<Object, Object> o2) {
-            return o1.getKey().toString().compareTo(o2.getKey().toString());
-          }
-        })
+        .sorted(Comparator.comparing(o -> o.getKey().toString()))
         .collect(Collectors.toList());
 
     StringBuilder sb = new StringBuilder();

@@ -41,8 +41,12 @@ public class TracedJaxrsController {
   //@Autowired
   //private RestTemplate template;
 
-  @Autowired
   private TracedPojo tracedPojo;
+
+  @Autowired
+  public TracedJaxrsController(TracedPojo tracedPojo) {
+    this.tracedPojo = tracedPojo;
+  }
 
   @GET
   @Path("/bonjour")

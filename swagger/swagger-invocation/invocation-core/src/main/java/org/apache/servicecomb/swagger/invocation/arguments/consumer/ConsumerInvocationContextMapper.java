@@ -17,20 +17,24 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
+import java.util.Map;
+
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
-public class ConsumerInvocationContextMapper implements ArgumentMapper {
-  private int consumerIdx;
+public class ConsumerInvocationContextMapper extends ConsumerArgumentMapper {
+  protected String invocationArgumentName;
 
-  public ConsumerInvocationContextMapper(int consumerIdx) {
-    this.consumerIdx = consumerIdx;
+  public ConsumerInvocationContextMapper(String invocationArgumentName) {
+    this.invocationArgumentName = invocationArgumentName;
   }
 
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-    InvocationContext context = (InvocationContext) consumerArguments[consumerIdx];
+  public void invocationArgumentToSwaggerArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments,
+      Map<String, Object> invocationArguments) {
+    InvocationContext context = (InvocationContext) invocationArguments.get(invocationArgumentName);
     invocation.addContext(context.getContext());
+    invocation.addLocalContext(context.getLocalContext());
   }
 }

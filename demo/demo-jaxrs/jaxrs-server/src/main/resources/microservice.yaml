@@ -15,16 +15,17 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: jaxrstest
-service_description:
-  name: jaxrs
-  version: 0.0.2
 servicecomb:
   service:
+    application: jaxrstest
+    name: jaxrs
+    version: 0.0.2
     registry:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080
+    server:
+      maxFormAttributeSize: 1024
   highway:
     address: 0.0.0.0:7070
   handler:
@@ -33,3 +34,13 @@ servicecomb:
         default: bizkeeper-provider
   uploads:
     directory: target
+
+  codec:
+    printErrorMessage: true
+
+  executors.Provider.ReactiveSchema: servicecomb.executor.reactive
+
+  invocation:
+    timeout:
+      check:
+        enabled: false

@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.client.ApolloClient;
@@ -47,7 +45,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
-  private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
+  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private static final String APOLLO_CONFIG_URL_KEY = "apollo.config.serverUri";
 
@@ -55,6 +53,11 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
   }
 
   private final UpdateHandler updateHandler = new UpdateHandler();
+
+  @Override
+  public int getOrder() {
+    return ORDER_BASE * 3;
+  }
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
@@ -77,12 +80,12 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
   }
 
   @Override
-  public void addUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+  public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {
     listeners.add(watchedUpdateListener);
   }
 
   @Override
-  public void removeUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+  public void removeUpdateListener(WatchedUpdateListener watchedUpdateListener) {
     listeners.remove(watchedUpdateListener);
   }
 
@@ -124,9 +127,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
             ImmutableMap.copyOf(configuration),
             null));
       } else if (DELETE.equals(action)) {
-        for (String itemKey : configuration.keySet()) {
-          valueCache.remove(itemKey);
-        }
+        configuration.keySet().forEach(valueCache::remove);
         updateConfiguration(createIncremental(null,
             null,
             ImmutableMap.copyOf(configuration)));

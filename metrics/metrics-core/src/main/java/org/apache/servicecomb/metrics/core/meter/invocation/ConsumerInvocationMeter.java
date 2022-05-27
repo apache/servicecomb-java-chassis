@@ -24,32 +24,31 @@ import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
-  private SimpleTimer clientFiltersRequestTimer;
+  private final SimpleTimer clientFiltersRequestTimer;
 
-  private SimpleTimer consumerSendRequestTimer;
+  private final SimpleTimer consumerSendRequestTimer;
 
-  private SimpleTimer consumerGetConnectionTimer;
+  private final SimpleTimer consumerGetConnectionTimer;
 
-  private SimpleTimer consumerWriteToBufTimer;
+  private final SimpleTimer consumerWriteToBufTimer;
 
-  private SimpleTimer consumerWaitResponseTimer;
+  private final SimpleTimer consumerWaitResponseTimer;
 
-  private SimpleTimer consumerWakeConsumerTimer;
+  private final SimpleTimer consumerWakeConsumerTimer;
 
-  private SimpleTimer clientFiltersResponseTimer;
+  private final SimpleTimer clientFiltersResponseTimer;
 
-  public ConsumerInvocationMeter(Registry registry, Id id) {
-    super(registry, id);
-    clientFiltersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
-    consumerSendRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
-    consumerGetConnectionTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
-    consumerWriteToBufTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
-    consumerWakeConsumerTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
-    clientFiltersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
-    consumerWaitResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
+  public ConsumerInvocationMeter(Id id) {
+    super(id);
+    clientFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
+    consumerSendRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
+    consumerGetConnectionTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
+    consumerWriteToBufTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
+    consumerWakeConsumerTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
+    clientFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
+    consumerWaitResponseTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
   }
 
   @Override

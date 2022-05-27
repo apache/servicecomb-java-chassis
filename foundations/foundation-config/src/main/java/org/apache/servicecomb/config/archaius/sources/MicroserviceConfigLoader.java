@@ -20,10 +20,11 @@ package org.apache.servicecomb.config.archaius.sources;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+
 
 public class MicroserviceConfigLoader extends YAMLConfigLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceConfigLoader.class);
@@ -52,8 +53,9 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
   }
 
   public void loadAndSort() {
+    String configFileFromClasspath = null;
     try {
-      String configFileFromClasspath =
+      configFileFromClasspath =
           System.getProperty(DEFAULT_FILE_NAME) == null ? DEFAULT_CONFIG_FILE_NAME
               : System.getProperty(DEFAULT_FILE_NAME);
       super.load(configFileFromClasspath);
@@ -68,8 +70,8 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
       }
 
       sort();
-    } catch (IOException e) {
-      throw new ServiceCombException("Failed to load microservice config", e);
+    } catch (Exception e) {
+      throw new ServiceCombException("Failed to load microservice configFile " + configFileFromClasspath, e);
     }
   }
 

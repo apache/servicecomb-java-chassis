@@ -22,7 +22,7 @@ service_description:
 servicecomb:
   service:
     registry:
-      address: http://127.0.0.1:30100
+      enabled: false
   rest:
     address: 0.0.0.0:8080?sslEnabled=false
   highway:
@@ -33,6 +33,9 @@ servicecomb:
         default: tracing-provider,bizkeeper-provider
       Consumer:
         default: tracing-consumer,loadbalance,bizkeeper-consumer
+  filter-chains:
+    producer:
+      default: scb-producer-transport, schedule, zipkin, validator, producer-operation
   tracing:
     collector:
       address: http://localhost:9411

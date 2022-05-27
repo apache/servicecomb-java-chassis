@@ -17,14 +17,16 @@
 
 package org.apache.servicecomb.core.executor;
 
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public final class ExecutorManager {
+public class ExecutorManager {
   public static final String KEY_EXECUTORS_PREFIX = "servicecomb.executors.Provider.";
 
   public static final String KEY_EXECUTORS_DEFAULT = "servicecomb.executors.default";
@@ -35,16 +37,34 @@ public final class ExecutorManager {
 
   public static final String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREADPOOL;
 
-  private ExecutorManager() {
+  private final Map<String, Executor> executors = new ConcurrentHashMapEx<>();
+
+  public ExecutorManager() {
+    registerExecutor(EXECUTOR_REACTIVE, new ReactiveExecutor());
+  }
+
+  public void registerExecutor(String id, Executor executor) {
+    Executor existing = executors.putIfAbsent(id, executor);
+    if (existing != null) {
+      throw new IllegalStateException(String.format(
+          "duplicated executor, id=%s, old executor=%s, new executor=%s",
+          id, existing.getClass().getName(), executor.getClass().getName()));
+    }
   }
 
   // 只会在初始化时执行，一点点重复的查找，没必要做缓存
-  public static Executor findExecutor(OperationMeta operationMeta) {
+  public Executor findExecutor(OperationMeta operationMeta) {
     return findExecutor(operationMeta, null);
   }
 
-  public static Executor findExecutor(OperationMeta operationMeta, Executor defaultOperationExecutor) {
-    Executor executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaQualifiedName());
+  public Executor findExecutor(OperationMeta operationMeta, Executor defaultOperationExecutor) {
+    // operation级别
+    Executor executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceQualifiedName());
+    if (executor != null) {
+      return executor;
+    }
+
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaQualifiedName());
     if (executor != null) {
       return executor;
     }
@@ -53,26 +73,48 @@ public final class ExecutorManager {
       return defaultOperationExecutor;
     }
 
-    // 尝试schema级别
-    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaMeta().getName());
+    // schema级别
+    executor = findByKey(
+        KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName() + '.' + operationMeta.getSchemaId());
     if (executor != null) {
       return executor;
     }
 
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getSchemaId());
+    if (executor != null) {
+      return executor;
+    }
+
+    // microservice级别
+    executor = findByKey(KEY_EXECUTORS_PREFIX + operationMeta.getMicroserviceName());
+    if (executor != null) {
+      return executor;
+    }
+
+    // 寻找config-key指定的default
     executor = findByKey(KEY_EXECUTORS_DEFAULT);
     if (executor != null) {
       return executor;
     }
 
-    return BeanUtils.getBean(EXECUTOR_DEFAULT);
+    return findExecutorById(EXECUTOR_DEFAULT);
   }
 
-  protected static Executor findByKey(String beanIdKey) {
-    String beanId = DynamicPropertyFactory.getInstance().getStringProperty(beanIdKey, null).get();
-    if (beanId != null) {
-      return BeanUtils.getBean(beanId);
+  protected Executor findByKey(String configKey) {
+    String id = DynamicPropertyFactory.getInstance().getStringProperty(configKey, null).get();
+    if (id == null) {
+      return null;
     }
 
-    return null;
+    return findExecutorById(id);
+  }
+
+  public Executor findExecutorById(String id) {
+    Executor executor = executors.get(id);
+    if (executor != null) {
+      return executor;
+    }
+
+    return BeanUtils.getBean(id);
   }
 }

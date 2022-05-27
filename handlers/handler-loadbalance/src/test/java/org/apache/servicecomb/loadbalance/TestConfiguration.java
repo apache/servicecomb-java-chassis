@@ -17,137 +17,75 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.junit.After;
 import org.junit.Test;
 
-import mockit.Mock;
-import mockit.MockUp;
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.junit.jupiter.api.Assertions;
 
 /**
  *
  */
 public class TestConfiguration {
+  @After
+  public void after() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testConstants() {
 
-    assertEquals("servicecomb.loadbalance.", Configuration.PROP_ROOT);
-    assertEquals("ribbon.", Configuration.PROP_ROOT_20);
-    assertEquals("retryEnabled", Configuration.PROP_RETRY_ENABLED);
-    assertEquals("retryOnNext", Configuration.PROP_RETRY_ONNEXT);
-    assertEquals("retryOnSame", Configuration.PROP_RETRY_ONSAME);
-    assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
+    Assertions.assertEquals("servicecomb.loadbalance.", Configuration.ROOT);
+    Assertions.assertEquals("ribbon.", Configuration.ROOT_20);
+    Assertions.assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
+    Assertions.assertEquals("maxSingleTestWindow", Configuration.FILTER_MAX_SINGLE_TEST_WINDOW);
 
-    assertNotNull(Configuration.INSTANCE);
+    Assertions.assertNotNull(Configuration.INSTANCE);
   }
 
   @Test
   public void testFullConfigurationWithArgsString() {
-    assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
-    assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
-    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
-    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
-  }
-
-  @Test
-  public void testConfigurationWithGetpropertyReturnsStringChar() {
-
-    new MockUp<Configuration>() {
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "tyt";
-      }
-    };
-
-    Configuration.INSTANCE.getRetryOnNext("test");
-
-    assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
-  }
-
-  @Test
-  public void testConfigurationWithGetpropertyReturnsStringNum() {
-
-    new MockUp<Configuration>() {
-
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "1234";
-      }
-    };
-
-    Configuration.INSTANCE.getRetryOnNext("test");
-
-    assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
-  }
-
-  @Test
-  public void testGetRetryOnSameWithGetpropertyReturnsStringChar() {
-
-    new MockUp<Configuration>() {
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "tyt";
-      }
-    };
-
-    Configuration.INSTANCE.getRetryOnSame("test");
-    assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
-  }
-
-  @Test
-  public void testGetRetryOnSameWithGetpropertyReturnsStringNum() {
-
-    new MockUp<Configuration>() {
-
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "1234";
-      }
-    };
-
-    Configuration.INSTANCE.getRetryOnSame("test");
-    assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
-  }
-
-  @Test
-  public void testIsRetryEnabledWithGetpropertyReturnsStringChar() {
-
-    new MockUp<Configuration>() {
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "tyt";
-      }
-    };
-
-    Configuration.INSTANCE.isRetryEnabled("test");
-    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
-  }
-
-  @Test
-  public void testIsRetryEnabledWithGetpropertyReturnsStringNum() {
-
-    new MockUp<Configuration>() {
-
-      @Mock
-      private String getProperty(String defaultValue, String... keys) {
-        return "1234";
-      }
-    };
-
-    Configuration.INSTANCE.isRetryEnabled("test");
-    assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
   }
 
   @Test
   public void testGetSuccessiveFailedTimes() {
-    assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSuccessiveFailedTimes("test"));
   }
 
   @Test
   public void testGetSessionTimeoutInSeconds() {
-    assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
+    Assertions.assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
+  }
+
+
+  /**
+   * The property key of  timerIntervalInMilis  changed from <code>servicecomb.loadbalance.stats.timerIntervalInMilis</code>
+   * to <code>servicecomb.loadbalance.stats.timerIntervalInMillis</code>, check the compatibility
+   */
+  @Test
+  public void testGetTimerIntervalInMillis() {
+    System.setProperty(Configuration.TIMER_INTERVAL_IN_MILLIS, "100");
+    ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
+    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+
+    System.clearProperty(Configuration.TIMER_INTERVAL_IN_MILLIS);
+    localConfiguration = ConfigUtil.createLocalConfig();
+    Assertions.assertNull(localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+
+    System.setProperty("servicecomb.loadbalance.stats.timerIntervalInMilis", "100");
+    localConfiguration = ConfigUtil.createLocalConfig();
+    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+  }
+
+  @Test
+  public void testGetMaxSingleTestWindow() {
+    Assertions.assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
+
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow", 5000);
+    Assertions.assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
   }
 }

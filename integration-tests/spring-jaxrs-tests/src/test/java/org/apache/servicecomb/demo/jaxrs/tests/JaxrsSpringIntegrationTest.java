@@ -17,12 +17,10 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
-import static org.junit.Assert.assertEquals;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,7 +33,6 @@ public class JaxrsSpringIntegrationTest extends JaxrsIntegrationTestBase {
   @BeforeClass
   public static void setUp() {
     System.setProperty("property.test5", "from_system_property");
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
   @AfterClass
@@ -46,16 +43,16 @@ public class JaxrsSpringIntegrationTest extends JaxrsIntegrationTestBase {
   @Test
   public void testGetConfigFromSpringBoot() {
     DynamicProperty dynamicProperty = DynamicProperty.getInstance("property.test0");
-    assertEquals("from_properties", dynamicProperty.getString());
+    Assertions.assertEquals("from_properties", dynamicProperty.getString());
     dynamicProperty = DynamicProperty.getInstance("property.test1");
-    assertEquals("from_yml", dynamicProperty.getString());
+    Assertions.assertEquals("from_yml", dynamicProperty.getString());
     dynamicProperty = DynamicProperty.getInstance("property.test2");
-    assertEquals("from_yaml_from_yml", dynamicProperty.getString());
+    Assertions.assertEquals("from_yaml_from_yml", dynamicProperty.getString());
     dynamicProperty = DynamicProperty.getInstance("property.test3");
-    assertEquals("from_yaml_dev_from_properties", dynamicProperty.getString());
+    Assertions.assertEquals("from_yaml_dev_from_properties", dynamicProperty.getString());
     dynamicProperty = DynamicProperty.getInstance("property.test4");
-    assertEquals("from_microservice_yaml", dynamicProperty.getString());
+    Assertions.assertEquals("from_microservice_yaml", dynamicProperty.getString());
     dynamicProperty = DynamicProperty.getInstance("property.test5");
-    assertEquals("from_system_property", dynamicProperty.getString());
+    Assertions.assertEquals("from_system_property", dynamicProperty.getString());
   }
 }

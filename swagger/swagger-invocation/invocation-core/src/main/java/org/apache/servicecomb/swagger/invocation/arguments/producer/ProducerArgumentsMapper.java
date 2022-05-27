@@ -17,33 +17,32 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 
 /**
- * 将契约参数转为producer原型
- * 比如契约原型是         int add(int x, int y)
- * 而producer原型是int add(HttpRequest request, int x, int y)
+ * map swagger arguments to producer arguments
  */
-public class ProducerArgumentsMapper {
-  private List<ArgumentMapper> producerArgMapperList;
+public class ProducerArgumentsMapper implements ArgumentsMapper {
+  private final List<ArgumentMapper> producerArgMapperList;
 
-  private int producerParameterCount;
-
-  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
+  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList) {
     this.producerArgMapperList = producerArgMapperList;
-    this.producerParameterCount = producerParameterCount;
   }
 
-  public Object[] toProducerArgs(SwaggerInvocation invocation) {
-    Object[] producerArgs = new Object[producerParameterCount];
-
+  @Override
+  public Map<String, Object> swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments) {
+    Map<String, Object> invocationArguments = new HashMap<>(swaggerArguments.size());
     for (ArgumentMapper argMapper : producerArgMapperList) {
-      argMapper.mapArgument(invocation, producerArgs);
+      argMapper.swaggerArgumentToInvocationArguments(invocation, swaggerArguments, invocationArguments);
     }
 
-    return producerArgs;
+    return invocationArguments;
   }
 }

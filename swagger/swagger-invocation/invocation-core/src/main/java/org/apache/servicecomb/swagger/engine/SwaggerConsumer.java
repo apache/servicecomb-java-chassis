@@ -16,15 +16,18 @@
  */
 package org.apache.servicecomb.swagger.engine;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public class SwaggerConsumer {
   private Class<?> consumerIntf;
 
-  private Class<?> swaggerIntf;
-
-  private Map<String, SwaggerConsumerOperation> opMap = new HashMap<>();
+  // key is consumer method name
+  private final Map<Method, SwaggerConsumerOperation> operations = new HashMap<>();
 
   public Class<?> getConsumerIntf() {
     return consumerIntf;
@@ -34,19 +37,25 @@ public class SwaggerConsumer {
     this.consumerIntf = consumerIntf;
   }
 
-  public Class<?> getSwaggerIntf() {
-    return swaggerIntf;
-  }
-
-  public void setSwaggerIntf(Class<?> swaggerIntf) {
-    this.swaggerIntf = swaggerIntf;
-  }
-
   public void addOperation(SwaggerConsumerOperation op) {
-    opMap.put(op.getName(), op);
+    operations.put(op.getConsumerMethod(), op);
   }
 
-  public SwaggerConsumerOperation findOperation(String name) {
-    return opMap.get(name);
+  @VisibleForTesting
+  public SwaggerConsumerOperation findOperation(String consumerMethodName) {
+    for (Entry<Method, SwaggerConsumerOperation> operationEntry : operations.entrySet()) {
+      if (operationEntry.getKey().getName().equals(consumerMethodName)) {
+        return operationEntry.getValue();
+      }
+    }
+    return null;
+  }
+
+  public SwaggerConsumerOperation findOperation(Method consumerMethod) {
+    return operations.get(consumerMethod);
+  }
+
+  public Map<Method, SwaggerConsumerOperation> getOperations() {
+    return operations;
   }
 }

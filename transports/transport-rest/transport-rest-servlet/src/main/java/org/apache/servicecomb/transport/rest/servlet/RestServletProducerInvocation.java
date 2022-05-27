@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
+import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -38,5 +39,12 @@ public class RestServletProducerInvocation extends RestProducerInvocation {
       }
     }
     return false;
+  }
+
+  @Override
+  protected void createInvocation() {
+    super.createInvocation();
+
+    invocation.setTransportContext(new HttpTransportContext(requestEx, responseEx, produceProcessor));
   }
 }

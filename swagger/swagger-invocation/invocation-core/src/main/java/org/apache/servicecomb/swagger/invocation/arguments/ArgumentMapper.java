@@ -17,8 +17,14 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments;
 
+import java.util.Map;
+
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public interface ArgumentMapper {
-  void mapArgument(SwaggerInvocation invocation, Object[] arguments);
+  void swaggerArgumentToInvocationArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
+      Map<String, Object> invocationArguments);
+
+  void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
+      Map<String, Object> invocationArguments);
 }

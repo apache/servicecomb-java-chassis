@@ -17,98 +17,42 @@
 
 package org.apache.servicecomb.codec.protobuf.utils;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
 import java.util.Map;
 
-import org.apache.servicecomb.codec.protobuf.utils.schema.WrapSchemaFactory;
-import org.apache.servicecomb.common.javassist.JavassistUtils;
-import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.codec.protobuf.internal.converter.SwaggerToProtoGenerator;
+import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import io.protostuff.compiler.model.Proto;
+import io.swagger.models.Swagger;
 
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
-
+/**
+ * Manage swagger -> protoBuffer mappings.
+ *
+ * This class have the same lifecycle as MicroserviceMeta, so we need to create an instance
+ * for each MicroserviceMeta.
+ */
 public class ScopedProtobufSchemaManager {
-  private ClassLoader classLoader;
+  // Because this class belongs to each SchemaMeta, the key is the schema id.
+  private final Map<String, ProtoMapper> mapperCache = new ConcurrentHashMapEx<>();
 
-  private Map<String, WrapSchema> schemaCache = new ConcurrentHashMapEx<>();
+  public ScopedProtobufSchemaManager() {
 
-  public ScopedProtobufSchemaManager(ClassLoader classLoader) {
-    this.classLoader = JvmUtils.correctClassLoader(classLoader);
   }
 
-  // 为了支持method args的场景，全部实现ProtobufMessageWrapper接口，有的场景有点浪费，不过无关紧要
-  private WrapSchema createWrapSchema(WrapClassConfig config) {
-    Class<?> cls = JavassistUtils.createClass(classLoader, config);
-    Schema<?> schema = RuntimeSchema.createFrom(cls);
-    return WrapSchemaFactory.createSchema(schema, config.getType());
-  }
-
-  // 适用于将单个类型包装的场景
-  // 比如return
-  public WrapSchema getOrCreateSchema(Type type) {
-    JavaType javaType = TypeFactory.defaultInstance().constructType(type);
-    // List<String> -> java.util.List<java.lang.String>
-    // List<List<String>> -> java.util.List<java.util.List<java.lang.String>>
-    String key = javaType.toCanonical();
-    return schemaCache.computeIfAbsent(key, k -> {
-      if (!ProtobufSchemaUtils.isNeedWrap(javaType.getRawClass())) {
-        // 可以直接使用
-        Schema<?> schema = RuntimeSchema.createFrom(javaType.getRawClass());
-        return WrapSchemaFactory.createSchema(schema, WrapType.NOT_WRAP);
-      }
-
-      // 需要包装
-      WrapClassConfig config = new WrapClassConfig();
-      config.setType(WrapType.NORMAL_WRAP);
-
-      config.setClassName(
-          "gen.wrap.protobuf." +
-              org.apache.servicecomb.swagger.generator.core.utils.ClassUtils.correctClassName(key));
-      if (!Void.TYPE.isAssignableFrom(javaType.getRawClass())) {
-        config.addField("field0", javaType);
-      }
-
-      JavassistUtils.genSingleWrapperInterface(config);
-
-      return createWrapSchema(config);
-    });
-  }
-
-  public WrapSchema getOrCreateArgsSchema(OperationMeta operationMeta) {
-    Method method = operationMeta.getMethod();
-    String type = "gen." + method.getDeclaringClass().getName() + "." + method.getName() + ".Args";
-
-    return schemaCache.computeIfAbsent(type, (t) -> {
-      if (!ProtobufSchemaUtils.isArgsNeedWrap(method)) {
-        // 可以直接使用
-        Class<?> cls = method.getParameterTypes()[0];
-        Schema<?> schema = RuntimeSchema.createFrom(cls);
-        return WrapSchemaFactory.createSchema(schema, WrapType.ARGS_NOT_WRAP);
-      }
-
-      // 需要包装
-      WrapClassConfig config = new WrapClassConfig();
-      config.setType(WrapType.ARGS_WRAP);
-      config.setClassName(type);
-
-      Parameter[] params = method.getParameters();
-      for (int idx = 0; idx < params.length; idx++) {
-        Parameter param = params[idx];
-        String paramName = org.apache.servicecomb.swagger.generator.core.utils.ClassUtils
-            .correctMethodParameterName(operationMeta.getParamName(idx));
-        config.addField(paramName, param.getParameterizedType());
-      }
-
-      JavassistUtils.genMultiWrapperInterface(config);
-
-      return createWrapSchema(config);
+  /**
+   * get the ProtoMapper from Swagger
+   */
+  public ProtoMapper getOrCreateProtoMapper(SchemaMeta schemaMeta) {
+    return mapperCache.computeIfAbsent(schemaMeta.getSchemaId(), key -> {
+      Swagger swagger = schemaMeta.getSwagger();
+      SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator(schemaMeta.getMicroserviceQualifiedName(),
+          swagger);
+      Proto proto = generator.convert();
+      ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
+      return protoMapperFactory.create(proto);
     });
   }
 }

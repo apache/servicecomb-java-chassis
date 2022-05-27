@@ -19,28 +19,37 @@ package org.apache.servicecomb.swagger.converter;
 
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.swagger.models.Swagger;
 
 public abstract class AbstractConverter implements Converter {
   protected abstract Map<String, Object> findVendorExtensions(Object def);
 
-  protected abstract JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object def);
+  protected abstract JavaType doConvert(Swagger swagger, Object def);
+
+  protected JavaType convertRef(Swagger swagger, String ref) {
+    Object def = swagger.getDefinitions().get(ref);
+    return ConverterMgr.findJavaType(swagger, def);
+  }
 
   @Override
-  public JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def) {
+  public JavaType convert(Swagger swagger, Object def) {
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
-    String canonical = ClassUtils.getClassName(vendorExtensions);
-    if (!StringUtils.isEmpty(canonical)) {
-      try {
-        return swaggerToClassGenerator.getTypeFactory().constructFromCanonical(canonical);
-      } catch (Throwable e) {
-        // ignore this
-      }
+    String canonical = SwaggerUtils.getClassName(vendorExtensions);
+    if (StringUtils.isEmpty(canonical)) {
+      return doConvert(swagger, def);
     }
 
-    return doConvert(swaggerToClassGenerator, def);
+    try {
+      return TypeFactory.defaultInstance().constructFromCanonical(canonical);
+    } catch (Throwable e) {
+      // type not exist
+      return OBJECT_JAVA_TYPE;
+    }
   }
 }

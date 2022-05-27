@@ -25,11 +25,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
-import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,8 +76,8 @@ public final class ITUtils {
         minInstanceCount);
 
     Map<String, MicroserviceInstance> instances;
-    for (;;) {
-      MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry()
+    for (; ; ) {
+      MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE
           .getAppManager()
           .getOrCreateMicroserviceVersionRule(appId, microserviceName, strVersionRule);
       instances = microserviceVersionRule.getInstances();
@@ -94,7 +92,7 @@ public final class ITUtils {
           minInstanceCount,
           instances.size());
       // pull at once
-      EventManager.getEventBus().post(new PeriodicPullEvent());
+      DiscoveryManager.INSTANCE.getAppManager().pullInstances();
       forceWait(TimeUnit.SECONDS, 1);
     }
 

@@ -20,16 +20,14 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.servo.DefaultMonitorRegistry;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.servo.ServoRegistry;
 
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultRegistryInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry();
@@ -39,18 +37,19 @@ public class TestDefaultRegistryInitializer {
   DefaultRegistryInitializer registryInitializer = new DefaultRegistryInitializer();
 
   @Test
+  @SuppressWarnings("deprecation")
   public void init() {
     registryInitializer.init(globalRegistry, new EventBus(), new MetricsBootstrapConfig());
 
-    Assert.assertEquals(-10, registryInitializer.getOrder());
-    Assert.assertThat(globalRegistry.getDefaultRegistry(), Matchers.instanceOf(ServoRegistry.class));
-    Assert.assertEquals(1, registries.size());
-    Assert.assertEquals(1, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
+    Assertions.assertEquals(-10, registryInitializer.getOrder());
+    Assertions.assertTrue(globalRegistry.getDefaultRegistry() instanceof com.netflix.spectator.servo.ServoRegistry);
+    Assertions.assertEquals(1, registries.size());
+    Assertions.assertEquals(0, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
 
     registryInitializer.destroy();
 
-    Assert.assertEquals(0, registries.size());
-    Assert.assertEquals(0, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
+    Assertions.assertEquals(0, registries.size());
+    Assertions.assertEquals(0, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
   }
 
   @Test

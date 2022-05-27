@@ -37,7 +37,7 @@ public class SInt64WriteSchemas {
       return new SInt64Schema<>(protoField, propertyDescriptor);
     }
 
-    return new SInt64DynamicSchema<>(protoField, propertyDescriptor);
+    return new SInt64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class SInt64DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +72,7 @@ public class SInt64WriteSchemas {
   }
 
   private static class SInt64Schema<T> extends SInt64DynamicSchema<T> {
-    protected final Getter<T, Long> getter;
+    protected final Getter<T, Object> getter;
 
     public SInt64Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +82,9 @@ public class SInt64WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Long value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarSInt64(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

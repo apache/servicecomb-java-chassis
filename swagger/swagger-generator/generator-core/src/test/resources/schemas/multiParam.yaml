@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/testMultiParamBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -87,6 +87,7 @@ definitions:
         format: "double"
       enumValue:
         type: "string"
+        description: "- RED: \n- YELLOW: \n- BLUE: \n"
         enum:
         - "RED"
         - "YELLOW"

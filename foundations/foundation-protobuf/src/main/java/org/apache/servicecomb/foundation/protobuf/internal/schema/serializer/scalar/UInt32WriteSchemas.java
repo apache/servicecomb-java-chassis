@@ -37,7 +37,7 @@ public class UInt32WriteSchemas {
       return new UInt32Schema<>(protoField, propertyDescriptor);
     }
 
-    return new UInt32DynamicSchema<>(protoField, propertyDescriptor);
+    return new UInt32Schema<>(protoField, propertyDescriptor);
   }
 
   private static class UInt32DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +72,7 @@ public class UInt32WriteSchemas {
   }
 
   private static class UInt32Schema<T> extends UInt32DynamicSchema<T> {
-    protected final Getter<T, Integer> getter;
+    protected final Getter<T, Object> getter;
 
     public UInt32Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +82,9 @@ public class UInt32WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Integer value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarUInt32(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

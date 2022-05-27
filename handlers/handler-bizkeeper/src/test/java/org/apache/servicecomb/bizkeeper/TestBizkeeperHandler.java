@@ -22,9 +22,9 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -75,7 +75,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   @Test
@@ -83,7 +83,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     boolean validAssert;
 
     try {
-      Assert.assertNotNull(bizkeeperHandler);
+      Assertions.assertNotNull(bizkeeperHandler);
       Mockito.when(invocation.getMicroserviceName()).thenReturn("test1");
       Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
       Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
@@ -93,7 +93,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     } catch (Exception exce) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 
   @Test
@@ -107,7 +107,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 
   @Override
@@ -116,12 +116,11 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
 
-    BizkeeperCommand bizkeeperCommand = new ConsumerBizkeeperCommand("groupname", invocation,
+    return new ConsumerBizkeeperCommand("groupname", invocation,
         HystrixObservableCommand.Setter
             .withGroupKey(CommandKey.toHystrixCommandGroupKey("groupname", invocation))
             .andCommandKey(CommandKey.toHystrixCommandKey("groupname", invocation))
             .andCommandPropertiesDefaults(setter));
-    return bizkeeperCommand;
   }
 
   @Test
@@ -133,7 +132,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     System.setProperty("servicecomb.fallback.Group_Name.testHandleForceThrowException.force", "true");
     System.setProperty("servicecomb.fallbackpolicy.Group_Name.testHandleForceThrowException.policy", "throwexception");
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isFailed());
+      Assertions.assertTrue(f.isFailed());
     });
   }
 
@@ -146,8 +145,8 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     System.setProperty("servicecomb.fallback.Group_Name.testHandleForceReturnnull.force", "true");
     System.setProperty("servicecomb.fallbackpolicy.Group_Name.testHandleForceReturnnull.policy", "returnnull");
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isSuccessed());
-      Assert.assertNull(f.getResult());
+      Assertions.assertTrue(f.isSucceed());
+      Assertions.assertNull(f.getResult());
     });
   }
 
@@ -159,19 +158,20 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .thenReturn("testHandleInError");
     FallbackPolicy policy = Mockito.mock(FallbackPolicy.class);
     Mockito.when(policy.name()).thenReturn("throwException");
-    Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class))).thenThrow(new RuntimeException());
+    Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class), Mockito.isNull()))
+        .thenThrow(new RuntimeException());
     FallbackPolicyManager.addPolicy(policy);
     System.setProperty("servicecomb.fallbackpolicy.groupname.testHandleInError.policy", "throwException");
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) {
-        AsyncResponse asyncRsp = invocation.getArgumentAt(0, AsyncResponse.class);
+        AsyncResponse asyncRsp = invocation.getArgument(0, AsyncResponse.class);
         asyncRsp.fail(InvocationType.CONSUMER, new Exception("testHandleInError"));
         return null;
       }
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isFailed());
+      Assertions.assertTrue(f.isFailed());
     });
   }
 
@@ -183,7 +183,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .thenReturn("testHandlNextException");
     Mockito.doThrow(new Exception("testHandlNextException")).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isFailed());
+      Assertions.assertTrue(f.isFailed());
     });
   }
 
@@ -196,13 +196,13 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) {
-        AsyncResponse asyncRsp = invocation.getArgumentAt(0, AsyncResponse.class);
+        AsyncResponse asyncRsp = invocation.getArgument(0, AsyncResponse.class);
         asyncRsp.success("");
         return null;
       }
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isSuccessed());
+      Assertions.assertTrue(f.isSucceed());
     });
   }
 }

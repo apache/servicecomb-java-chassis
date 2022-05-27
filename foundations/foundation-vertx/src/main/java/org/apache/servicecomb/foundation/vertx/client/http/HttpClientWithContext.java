@@ -25,9 +25,9 @@ public class HttpClientWithContext {
     void run(HttpClient httpClient);
   }
 
-  private HttpClient httpClient;
+  private final HttpClient httpClient;
 
-  private Context context;
+  private final Context context;
 
   public HttpClientWithContext(HttpClient httpClient, Context context) {
     this.httpClient = httpClient;
@@ -39,9 +39,7 @@ public class HttpClientWithContext {
   }
 
   public void runOnContext(RunHandler handler) {
-    context.runOnContext((v) -> {
-      handler.run(httpClient);
-    });
+    context.runOnContext((v) -> handler.run(httpClient));
   }
 
   public Context context() {

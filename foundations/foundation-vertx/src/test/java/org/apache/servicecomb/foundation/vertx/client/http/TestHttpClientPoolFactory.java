@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.foundation.vertx.client.http;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.http.HttpClient;
@@ -26,9 +25,10 @@ import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.impl.VertxInternal;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHttpClientPoolFactory {
-  private HttpClientOptions httpClientOptions = new HttpClientOptions();
+  private final HttpClientOptions httpClientOptions = new HttpClientOptions();
 
   HttpClientPoolFactory factory = new HttpClientPoolFactory(httpClientOptions);
 
@@ -45,7 +45,7 @@ public class TestHttpClientPoolFactory {
     };
     HttpClientWithContext pool = factory.createClientPool(context);
 
-    Assert.assertSame(context, pool.context());
-    Assert.assertSame(httpClient, pool.getHttpClient());
+    Assertions.assertSame(context, pool.context());
+    Assertions.assertSame(httpClient, pool.getHttpClient());
   }
 }

@@ -17,17 +17,13 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -35,6 +31,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.netflix.config.DynamicProperty;
@@ -70,7 +67,7 @@ public class AbortFaultTest {
 
   @AfterClass
   public static void classTeardown() {
-    VertxUtils.closeVertxByName("faultinjectionTest");
+    VertxUtils.blockCloseVertxByName("faultinjectionTest");
   }
 
   @Test
@@ -80,10 +77,10 @@ public class AbortFaultTest {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "100");
 
-    assertEquals("421", DynamicProperty
+    Assertions.assertEquals("421", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
         .getString());
-    assertEquals("100", DynamicProperty
+    Assertions.assertEquals("100", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
@@ -96,10 +93,10 @@ public class AbortFaultTest {
     abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals(421, resultHolder.value.getStatusCode());
-    assertEquals("aborted by fault inject", resultHolder.value.getReasonPhrase());
-    assertEquals("CommonExceptionData [message=aborted by fault inject]", resultHolder.value.getErrorData().toString());
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals(421, resultHolder.value.getStatusCode());
+    Assertions.assertEquals("aborted by fault inject", resultHolder.value.getReasonPhrase());
+    Assertions.assertEquals("CommonExceptionData [message=aborted by fault inject]", resultHolder.value.getErrorData().toString());
   }
 
   @Test
@@ -108,10 +105,10 @@ public class AbortFaultTest {
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
     ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "0");
 
-    assertEquals("421", DynamicProperty
+    Assertions.assertEquals("421", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
         .getString());
-    assertEquals("0", DynamicProperty
+    Assertions.assertEquals("0", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
@@ -124,16 +121,16 @@ public class AbortFaultTest {
     abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 
   @Test
   public void injectFaultNoPercentageConfig() {
     ArchaiusUtils
-        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
 
-    assertNull(DynamicProperty
+    Assertions.assertNull(DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
@@ -146,8 +143,8 @@ public class AbortFaultTest {
     abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 
   @Test
@@ -155,7 +152,7 @@ public class AbortFaultTest {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
 
-    assertEquals("10", DynamicProperty
+    Assertions.assertEquals("10", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
@@ -168,7 +165,7 @@ public class AbortFaultTest {
     abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 }

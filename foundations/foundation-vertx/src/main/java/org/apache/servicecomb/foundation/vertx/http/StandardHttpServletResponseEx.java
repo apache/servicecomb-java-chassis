@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
@@ -36,9 +37,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletResponseEx extends HttpServletResponseWrapper implements HttpServletResponseEx {
-  private BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
+  private final BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
 
-  private Map<String, Object> attributes = new HashMap<>();
+  private final Map<String, Object> attributes = new HashMap<>();
 
   private StatusType statusType;
 
@@ -74,6 +75,12 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
   }
 
   @Override
+  public void setStatus(int sc) {
+    super.setStatus(sc);
+    statusType = Status.fromStatusCode(sc);
+  }
+
+  @Override
   public int getStatus() {
     return statusType.getStatusCode();
   }
@@ -104,6 +111,10 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
 
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
+    if (part == null) {
+      return CompletableFuture.completedFuture(null);
+    }
+
     DownloadUtils.prepareDownloadHeader(this, part);
 
     OutputStream outputStream;

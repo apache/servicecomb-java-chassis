@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.foundation.vertx;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSimpleJsonObject {
   @Test
@@ -26,12 +26,12 @@ public class TestSimpleJsonObject {
 
     SimpleJsonObject json = new SimpleJsonObject();
     json.put("k", value);
-    Assert.assertSame(value, json.getValue("k"));
+    Assertions.assertSame(value, json.getValue("k"));
   }
 
   @Test
   public void testCopy() {
     SimpleJsonObject json = new SimpleJsonObject();
-    Assert.assertSame(json, json.copy());
+    Assertions.assertSame(json, json.copy());
   }
 }

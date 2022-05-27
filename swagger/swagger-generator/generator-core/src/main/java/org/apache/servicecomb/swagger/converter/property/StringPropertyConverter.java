@@ -19,28 +19,14 @@ package org.apache.servicecomb.swagger.converter.property;
 
 import java.util.List;
 
-import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
-import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.models.Swagger;
 import io.swagger.models.properties.StringProperty;
 
 public class StringPropertyConverter extends AbstractPropertyConverter {
-  public static JavaType findJavaType(SwaggerToClassGenerator swaggerToClassGenerator, String type,
-      String format, List<String> enums) {
-    if (!isEnum(enums)) {
-      return ConverterMgr.findJavaType(type, format);
-    }
-
-    // enum，且需要动态生成class
-    Class<?> enumCls = JavassistUtils
-        .getOrCreateEnumWithPackageName(swaggerToClassGenerator.getClassLoader(),
-            swaggerToClassGenerator.getPackageName(), enums);
-    return TypeFactory.defaultInstance().constructType(enumCls);
-  }
 
   public static boolean isEnum(StringProperty stringProperty) {
     return isEnum(stringProperty.getEnum());
@@ -51,13 +37,14 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
   }
 
   @Override
-  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object property) {
+  public JavaType doConvert(Swagger swagger, Object property) {
     StringProperty stringProperty = (StringProperty) property;
 
     List<String> enums = stringProperty.getEnum();
-    return findJavaType(swaggerToClassGenerator,
-        stringProperty.getType(),
-        stringProperty.getFormat(),
-        enums);
+    if (!isEnum(enums)) {
+      return ConverterMgr.findJavaType(stringProperty.getType(), stringProperty.getFormat());
+    }
+
+    return OBJECT_JAVA_TYPE;
   }
 }

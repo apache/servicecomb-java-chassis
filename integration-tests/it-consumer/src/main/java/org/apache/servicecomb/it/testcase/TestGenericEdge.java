@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,23 +25,28 @@ import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.schema.Generic;
 import org.apache.servicecomb.it.schema.User;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestGenericEdge {
   private static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("generic");
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGenericMap() {
     Generic<Map<String, String>> mapGeneric = new Generic<>();
     Map<String, String> map = new HashMap<>();
     map.put("test", "hello");
     mapGeneric.value = map;
-    @SuppressWarnings("unchecked")
     Generic<Map<String, String>> result = client.postForObject("/genericMap", mapGeneric, Generic.class);
     String test = result.value.get("test");
-    assertEquals(test, "hello");
+    Assertions.assertEquals(test, "hello");
+    result = client.postForObject("/genericMap", mapGeneric, Generic.class);
+    test = result.value.get("test");
+    Assertions.assertEquals(test, "hello");
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGenericMapList() {
     Generic<Map<String, List<String>>> mapListGeneric = new Generic<>();
     Map<String, List<String>> map = new HashMap<>();
@@ -51,21 +54,26 @@ public class TestGenericEdge {
     list.add("hello");
     map.put("test", list);
     mapListGeneric.value = map;
-    @SuppressWarnings("unchecked")
     Generic<Map<String, List<String>>> result = client.postForObject("/genericMapList", mapListGeneric, Generic.class);
     String test = result.value.get("test").get(0);
-    assertEquals("hello", test);
+    Assertions.assertEquals("hello", test);
+    result = client.postForObject("/genericMapList", mapListGeneric, Generic.class);
+    test = result.value.get("test").get(0);
+    Assertions.assertEquals("hello", test);
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGenericUser() {
     Generic<User> generic = new Generic<>();
     generic.value = new User();
-    @SuppressWarnings("unchecked")
+
     Generic<Map<String, Object>> result = client.postForObject("/genericUser", generic, Generic.class);
-    Map<String, Object> resultUser = result.value;
-    assertEquals("nameA", resultUser.get("name"));
-    assertEquals(100, resultUser.get("age"));
+    Assertions.assertEquals("nameA", result.value.get("name"));
+    Assertions.assertEquals(100, result.value.get("age"));
+    result = client.postForObject("/genericUser", generic, Generic.class);
+    Assertions.assertEquals("nameA", result.value.get("name"));
+    Assertions.assertEquals(100, result.value.get("age"));
   }
 
   @Test
@@ -81,8 +89,12 @@ public class TestGenericEdge {
     Generic<Map<String, List<Map<String, Object>>>> result = client
         .postForObject("/genericMapListUser", mapListUserGeneric, Generic.class);
     Map<String, Object> resultUser = result.value.get("test").get(0);
+    Assertions.assertEquals("nameA", resultUser.get("name"));
+    Assertions.assertEquals(100, resultUser.get("age"));
 
-    assertEquals("nameA", resultUser.get("name"));
-    assertEquals(100, resultUser.get("age"));
+    result = client.postForObject("/genericMapListUser", mapListUserGeneric, Generic.class);
+    resultUser = result.value.get("test").get(0);
+    Assertions.assertEquals("nameA", resultUser.get("name"));
+    Assertions.assertEquals(100, resultUser.get("age"));
   }
 }

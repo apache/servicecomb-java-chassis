@@ -21,6 +21,8 @@ public interface BootListener {
   enum EventType {
     BEFORE_HANDLER,
     AFTER_HANDLER,
+    BEFORE_FILTER,
+    AFTER_FILTER,
     BEFORE_PRODUCER_PROVIDER,
     AFTER_PRODUCER_PROVIDER,
     BEFORE_CONSUMER_PROVIDER,
@@ -38,20 +40,30 @@ public interface BootListener {
 
     private EventType eventType;
 
+    public BootEvent() {
+    }
+
+    public BootEvent(SCBEngine scbEngine, EventType eventType) {
+      this.scbEngine = scbEngine;
+      this.eventType = eventType;
+    }
+
     public SCBEngine getScbEngine() {
       return scbEngine;
     }
 
-    public void setScbEngine(SCBEngine scbEngine) {
+    public BootEvent setScbEngine(SCBEngine scbEngine) {
       this.scbEngine = scbEngine;
+      return this;
     }
 
     public EventType getEventType() {
       return eventType;
     }
 
-    public void setEventType(EventType eventType) {
+    public BootEvent setEventType(EventType eventType) {
       this.eventType = eventType;
+      return this;
     }
   }
 
@@ -59,5 +71,108 @@ public interface BootListener {
     return 0;
   }
 
-  void onBootEvent(BootEvent event);
+  default void onBootEvent(BootEvent event) {
+    switch (event.eventType) {
+      case BEFORE_HANDLER:
+        onBeforeHandler(event);
+        return;
+      case AFTER_HANDLER:
+        onAfterHandler(event);
+        return;
+      case BEFORE_FILTER:
+        onBeforeFilter(event);
+        return;
+      case AFTER_FILTER:
+        onAfterFilter(event);
+        return;
+      case BEFORE_PRODUCER_PROVIDER:
+        onBeforeProducerProvider(event);
+        return;
+      case AFTER_PRODUCER_PROVIDER:
+        onAfterProducerProvider(event);
+        return;
+      case BEFORE_CONSUMER_PROVIDER:
+        onBeforeConsumerProvider(event);
+        return;
+      case AFTER_CONSUMER_PROVIDER:
+        onAfterConsumerProvider(event);
+        return;
+      case BEFORE_TRANSPORT:
+        onBeforeTransport(event);
+        return;
+      case AFTER_TRANSPORT:
+        onAfterTransport(event);
+        return;
+      case BEFORE_REGISTRY:
+        onBeforeRegistry(event);
+        return;
+      case AFTER_REGISTRY:
+        onAfterRegistry(event);
+        return;
+      case BEFORE_CLOSE:
+        onBeforeClose(event);
+        return;
+      case AFTER_CLOSE:
+        onAfterClose(event);
+        return;
+      default:
+        throw new IllegalStateException("unknown boot event type: " + event.eventType);
+    }
+  }
+
+  default void onBeforeHandler(BootEvent event) {
+
+  }
+
+  default void onAfterHandler(BootEvent event) {
+
+  }
+
+  default void onBeforeFilter(BootEvent event) {
+
+  }
+
+  default void onAfterFilter(BootEvent event) {
+
+  }
+
+  default void onBeforeProducerProvider(BootEvent event) {
+
+  }
+
+  default void onAfterProducerProvider(BootEvent event) {
+
+  }
+
+  default void onBeforeConsumerProvider(BootEvent event) {
+
+  }
+
+  default void onAfterConsumerProvider(BootEvent event) {
+
+  }
+
+  default void onBeforeTransport(BootEvent event) {
+
+  }
+
+  default void onAfterTransport(BootEvent event) {
+
+  }
+
+  default void onBeforeRegistry(BootEvent event) {
+
+  }
+
+  default void onAfterRegistry(BootEvent event) {
+
+  }
+
+  default void onBeforeClose(BootEvent event) {
+
+  }
+
+  default void onAfterClose(BootEvent event) {
+
+  }
 }

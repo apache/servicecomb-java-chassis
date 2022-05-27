@@ -16,53 +16,89 @@
  */
 package org.apache.servicecomb.swagger.invocation.springmvc.response;
 
-import javax.ws.rs.core.Response.Status;
+import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
+import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
+import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 
-import mockit.Expectations;
-import mockit.Mocked;
+import io.swagger.models.Swagger;
 
 public class TestSpringmvcConsumerResponseMapper {
-  @Mocked
-  ConsumerResponseMapper realMapper;
+  interface ConsumerResponseForTest {
+    ResponseEntity<String> responseEntity();
 
-  SpringmvcConsumerResponseMapper mapper;
+    CompletableFuture<ResponseEntity<String>> asyncResponseEntity();
+  }
 
-  Response response = Response.ok("1");
+  SwaggerEnvironment environment = new SwaggerEnvironment();
+
+  SwaggerConsumer swaggerConsumer;
+
+  String result = "abc";
+
+  Response response = Response.ok(result);
 
   @Before
   public void setup() {
-    mapper = new SpringmvcConsumerResponseMapper(realMapper);
-
-    new Expectations() {
-      {
-        realMapper.mapResponse(response);
-        result = 1;
-      }
-    };
+    Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
+    swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }
 
   @Test
-  public void mapResponse_withoutHeader() {
+  public void responseEntity() {
+    SwaggerConsumerOperation operation = swaggerConsumer.findOperation("responseEntity");
+
     @SuppressWarnings("unchecked")
-    ResponseEntity<Integer> responseEntity = (ResponseEntity<Integer>) mapper.mapResponse(response);
-    Assert.assertEquals((Integer) 1, responseEntity.getBody());
-    Assert.assertEquals(Status.OK.getStatusCode(), responseEntity.getStatusCodeValue());
+    ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
+        .mapResponse(response);
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertTrue(responseEntity.getHeaders().isEmpty());
   }
 
   @Test
-  public void mapResponse_withHeader() {
-    response.getHeaders().addHeader("h", "v");
+  public void responseEntityWithHeader() {
+    SwaggerConsumerOperation operation = swaggerConsumer.findOperation("responseEntity");
+    response.addHeader("h", "v");
 
     @SuppressWarnings("unchecked")
-    ResponseEntity<Integer> responseEntity = (ResponseEntity<Integer>) mapper.mapResponse(response);
-    Assert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v"));
+    ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
+        .mapResponse(response);
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertEquals(1, responseEntity.getHeaders().size());
+    MatcherAssert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v"));
+  }
+
+  @Test
+  public void asyncResponseEntity() {
+    SwaggerConsumerOperation operation = swaggerConsumer.findOperation("asyncResponseEntity");
+
+    @SuppressWarnings("unchecked")
+    ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
+        .mapResponse(response);
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertTrue(responseEntity.getHeaders().isEmpty());
+  }
+
+  @Test
+  public void asyncResponseEntityWithHeader() {
+    SwaggerConsumerOperation operation = swaggerConsumer.findOperation("asyncResponseEntity");
+    response.addHeader("h", "v1").addHeader("h", "v2");
+    response.addHeader("h1", null);
+
+    @SuppressWarnings("unchecked")
+    ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
+        .mapResponse(response);
+    Assertions.assertEquals(result, responseEntity.getBody());
+    Assertions.assertEquals(1, responseEntity.getHeaders().size());
+    MatcherAssert.assertThat(responseEntity.getHeaders().get("h"), Matchers.contains("v1", "v2"));
   }
 }

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.it.testcase.thirdparty;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,17 +30,22 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.junit.Assert;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +59,8 @@ public class Test3rdPartyInvocation {
   private static final String ASYNC_THIRD_PARTY_MICROSERVICE_NAME = THIRD_PARTY_MICROSERVICE_NAME + "Async";
 
   // to get endpoint from urlPrefix
-  static GateRestTemplate rt = GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
+  private static Consumers<DataTypeJaxrsSchemaIntf> consumersJaxrs =
+      new Consumers<>("dataTypePojo", DataTypeJaxrsSchemaIntf.class);
 
   private static DataTypeJaxrsSchemaIntf dataTypeJaxrsSchema;
 
@@ -61,24 +68,20 @@ public class Test3rdPartyInvocation {
 
   @BeforeClass
   public static void beforeClass() {
-    String urlPrefix = rt.getUrlPrefix();
-    int beginIndex = urlPrefix.indexOf("//");
-    int endIndex = urlPrefix.indexOf("/", beginIndex + 3);
-    String endpoint = "rest:" + urlPrefix.substring(beginIndex, endIndex);
-    RegistryUtils.getServiceRegistry()
-        .registerMicroserviceMappingByEndpoints(
-            THIRD_PARTY_MICROSERVICE_NAME, "1.2.1",
-            Collections.singletonList(endpoint),
-            DataTypeJaxrsSchemaIntf.class);
+    String endpoint =
+        ((ITSCBRestTemplate) consumersJaxrs.getSCBRestTemplate()).getAddress(Const.RESTFUL);
+    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints(
+        THIRD_PARTY_MICROSERVICE_NAME, "1.2.1",
+        Collections.singletonList(endpoint),
+        DataTypeJaxrsSchemaIntf.class);
 
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setEndpoints(Collections.singletonList(endpoint));
-    RegistryUtils.getServiceRegistry()
-        .registerMicroserviceMapping(
-            ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1",
-            Collections.singletonList(instance),
-            DataTypeJaxrsSchemaAsyncIntf.class
-        );
+    RegistrationManager.INSTANCE.registerMicroserviceMapping(
+        ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1",
+        Collections.singletonList(instance),
+        DataTypeJaxrsSchemaAsyncIntf.class
+    );
 
     dataTypeJaxrsSchema = Invoker.createProxy(
         THIRD_PARTY_MICROSERVICE_NAME, THIRD_PARTY_MICROSERVICE_NAME, DataTypeJaxrsSchemaIntf.class);
@@ -88,47 +91,69 @@ public class Test3rdPartyInvocation {
 
   @Test
   public void testSyncInvoke_RPC() {
-    Assert.assertEquals(1, dataTypeJaxrsSchema.intPath(1));
-    Assert.assertEquals(2, dataTypeJaxrsSchema.intQuery(2));
-    Assert.assertEquals(3, dataTypeJaxrsSchema.intHeader(3));
-    Assert.assertEquals(4, dataTypeJaxrsSchema.intCookie(4));
-    Assert.assertEquals(5, dataTypeJaxrsSchema.intForm(5));
-    Assert.assertEquals(6, dataTypeJaxrsSchema.intBody(6));
-    Assert.assertEquals(7, dataTypeJaxrsSchema.intAdd(3, 4));
-    Assert.assertEquals("abc", dataTypeJaxrsSchema.stringPath("abc"));
-    Assert.assertEquals("def", dataTypeJaxrsSchema.stringQuery("def"));
-    Assert.assertEquals("ghi", dataTypeJaxrsSchema.stringHeader("ghi"));
-    Assert.assertEquals("jkl", dataTypeJaxrsSchema.stringCookie("jkl"));
-    Assert.assertEquals("mn", dataTypeJaxrsSchema.stringForm("mn"));
-    Assert.assertEquals("opq", dataTypeJaxrsSchema.stringBody("opq"));
-    Assert.assertEquals("uvwxyz", dataTypeJaxrsSchema.stringConcat("uvw", "xyz"));
+    Assertions.assertEquals(1, dataTypeJaxrsSchema.intPath(1));
+    Assertions.assertEquals(2, dataTypeJaxrsSchema.intQuery(2));
+    Assertions.assertEquals(3, dataTypeJaxrsSchema.intHeader(3));
+    Assertions.assertEquals(4, dataTypeJaxrsSchema.intCookie(4));
+    Assertions.assertEquals(5, dataTypeJaxrsSchema.intForm(5));
+    Assertions.assertEquals(6, dataTypeJaxrsSchema.intBody(6));
+    Assertions.assertEquals(7, dataTypeJaxrsSchema.intAdd(3, 4));
+    Assertions.assertEquals("abc", dataTypeJaxrsSchema.stringPath("abc"));
+    Assertions.assertEquals("def", dataTypeJaxrsSchema.stringQuery("def"));
+    Assertions.assertEquals("ghi", dataTypeJaxrsSchema.stringHeader("ghi"));
+    Assertions.assertEquals("jkl", dataTypeJaxrsSchema.stringCookie("jkl"));
+    Assertions.assertEquals("mn", dataTypeJaxrsSchema.stringForm("mn"));
+    Assertions.assertEquals("opq", dataTypeJaxrsSchema.stringBody("opq"));
+    Assertions.assertEquals("uvwxyz", dataTypeJaxrsSchema.stringConcat("uvw", "xyz"));
+  }
+
+  @Test
+  public void testExposeServiceCombHeaders() {
+    String testParam = "test";
+    String testParam2 = "test2";
+    List<String> response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
+    // user defined header, even though start with x-cse, will not be removed
+    MatcherAssert.assertThat(response, Matchers.contains("host", "x_cse_test", "x_cse_test2"));
+
+    ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled", "false");
+    response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
+    MatcherAssert.assertThat(response,
+        Matchers.contains("host", "x-cse-context", "x-cse-target-microservice", "x_cse_test", "x_cse_test2"));
+
+    ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled", "true");
+    ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled.3rdPartyDataTypeJaxrs", "false");
+    response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
+    MatcherAssert.assertThat(response,
+        Matchers.contains("host", "x-cse-context", "x-cse-target-microservice", "x_cse_test", "x_cse_test2"));
+
+    ArchaiusUtils.setProperty("servicecomb.request.clientRequestHeaderFilterEnabled.3rdPartyDataTypeJaxrs", "true");
   }
 
   @Test
   public void testAsyncInvoke_RPC() throws ExecutionException, InterruptedException {
     Holder<Boolean> addChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.intAdd(5, 6).whenComplete((result, t) -> {
-      Assert.assertEquals(11, result.intValue());
-      Assert.assertNull(t);
+      Assertions.assertEquals(11, result.intValue());
+      Assertions.assertNull(t);
       addChecked.value = true;
     }).get();
-    Assert.assertTrue(addChecked.value);
+    Assertions.assertTrue(addChecked.value);
 
     Holder<Boolean> postStringChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.stringBody("abc").whenComplete((result, t) -> {
-      Assert.assertEquals("abc", result);
-      Assert.assertNull(t);
+      Assertions.assertEquals("abc", result);
+      Assertions.assertNull(t);
       postStringChecked.value = true;
     }).get();
-    Assert.assertTrue(postStringChecked.value);
+    Assertions.assertTrue(postStringChecked.value);
 
     Holder<Boolean> concatChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.stringConcat("uvw", "xyz").whenComplete((result, t) -> {
-      Assert.assertEquals("uvwxyz", result);
-      Assert.assertNull(t);
+      Assertions.assertEquals("uvwxyz", result);
+      Assertions.assertNull(t);
       concatChecked.value = true;
     }).get();
-    Assert.assertTrue(concatChecked.value);
+    Assertions.assertTrue(concatChecked.value);
   }
 
   @Test
@@ -136,17 +161,17 @@ public class Test3rdPartyInvocation {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     ResponseEntity<Integer> responseEntity = restTemplate
         .getForEntity(
-            "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
+            "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             int.class);
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
-    Assert.assertEquals(33, responseEntity.getBody().intValue());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(33, responseEntity.getBody().intValue());
 
     ResponseEntity<String> stringBodyResponse = restTemplate
-        .exchange("cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/stringBody",
+        .exchange("cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/stringBody",
             HttpMethod.POST,
             new HttpEntity<>("abc"), String.class);
-    Assert.assertEquals(200, stringBodyResponse.getStatusCodeValue());
-    Assert.assertEquals("abc", stringBodyResponse.getBody());
+    Assertions.assertEquals(200, stringBodyResponse.getStatusCodeValue());
+    Assertions.assertEquals("abc", stringBodyResponse.getBody());
   }
 
   @Test
@@ -155,22 +180,22 @@ public class Test3rdPartyInvocation {
     ListenableFuture<ResponseEntity<Integer>> responseFuture = cseAsyncRestTemplate
         .getForEntity(
             "cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME
-                + "/rest/it-producer/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
+                + "/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             Integer.class);
     ResponseEntity<Integer> responseEntity = responseFuture.get();
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
-    Assert.assertEquals(33, responseEntity.getBody().intValue());
+    Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
+    Assertions.assertEquals(33, responseEntity.getBody().intValue());
 
     ListenableFuture<ResponseEntity<String>> stringBodyFuture = cseAsyncRestTemplate
-        .exchange("cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/stringBody",
+        .exchange("cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/stringBody",
             HttpMethod.POST,
             new HttpEntity<>("abc"), String.class);
     ResponseEntity<String> stringBodyResponse = stringBodyFuture.get();
-    Assert.assertEquals(200, stringBodyResponse.getStatusCodeValue());
-    Assert.assertEquals("abc", stringBodyResponse.getBody());
+    Assertions.assertEquals(200, stringBodyResponse.getStatusCodeValue());
+    Assertions.assertEquals("abc", stringBodyResponse.getBody());
   }
 
-  @Path("/rest/it-producer/v1/dataTypeJaxrs")
+  @Path("/v1/dataTypeJaxrs")
   interface DataTypeJaxrsSchemaIntf {
     @Path("intPath/{input}")
     @GET
@@ -228,9 +253,14 @@ public class Test3rdPartyInvocation {
     @Path("stringConcat")
     @GET
     String stringConcat(@QueryParam("str1") String str1, @QueryParam("str2") String str2);
+
+    @Path("requestHeaders")
+    @GET
+    List<String> getRequestHeaders(@HeaderParam(value = "x_cse_test") String testServiceCombHeader,
+        @HeaderParam(value = "x_cse_test2") String testServiceCombHeader2);
   }
 
-  @Path("/rest/it-producer/v1/dataTypeJaxrs")
+  @Path("/v1/dataTypeJaxrs")
   interface DataTypeJaxrsSchemaAsyncIntf {
     @Path("intAdd")
     @GET

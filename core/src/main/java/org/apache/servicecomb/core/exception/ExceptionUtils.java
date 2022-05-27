@@ -30,8 +30,6 @@ public class ExceptionUtils {
 
   protected static final RegisterManager<String, String> ERROR_DESC_MGR = new RegisterManager<>(ERROR_DESC_MGR_MSG);
 
-  private static final String SERVICECOMB_SCHEMA_OPERATION_ID_INVALID = "servicecomb.schema.operation.id.invalid";
-
   private static final String SERVICECOMB_HANDLER_REF_NOT_EXIST = "servicecomb.handler.ref.not.exist";
 
   private static final String SERVICECOMB_PRODUCER_OPERATION_NOT_EXIST = "servicecomb.producer.operation.not.exist";
@@ -40,7 +38,6 @@ public class ExceptionUtils {
 
   static {
     ERROR_DESC_MGR.register(SERVICECOMB_HANDLER_REF_NOT_EXIST, "Handler not exist, id=%s");
-    ERROR_DESC_MGR.register(SERVICECOMB_SCHEMA_OPERATION_ID_INVALID, "OperationId is invalid, schemaId=%s, path=%s");
     ERROR_DESC_MGR.register(SERVICECOMB_PRODUCER_OPERATION_NOT_EXIST,
         "Producer operation not exist, schemaId=%s, operationName=%s");
     ERROR_DESC_MGR.register(SERVICECOMB_LB_NO_AVAILABLE_ADDRESS,
@@ -71,12 +68,6 @@ public class ExceptionUtils {
     return createCseException(SERVICECOMB_PRODUCER_OPERATION_NOT_EXIST,
         schemaId,
         operationName);
-  }
-
-  public static CseException operationIdInvalid(String schemaId, String path) {
-    return createCseException(SERVICECOMB_SCHEMA_OPERATION_ID_INVALID,
-        schemaId,
-        path);
   }
 
   public static CseException handlerRefNotExist(String id) {

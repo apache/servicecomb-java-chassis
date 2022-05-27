@@ -27,9 +27,9 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /usingRequestMapping:
-    put:
-      operationId: "usingRequestMapping"
+  /usingDeleteMapping:
+    delete:
+      operationId: "usingDeleteMapping"
       parameters:
       - name: "query"
         in: "query"
@@ -37,7 +37,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /usingGetMapping:
     get:
@@ -49,31 +49,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
-          description: "response of 200"
-  /usingPutMapping:
-    put:
-      operationId: "usingPutMapping"
-      parameters:
-      - name: "query"
-        in: "query"
-        required: false
-        type: "integer"
-        format: "int32"
-      responses:
-        200:
-          description: "response of 200"
-  /usingPostMapping:
-    post:
-      operationId: "usingPostMapping"
-      parameters:
-      - name: "query"
-        in: "query"
-        required: false
-        type: "integer"
-        format: "int32"
-      responses:
-        200:
+        "200":
           description: "response of 200"
   /usingPatchMapping:
     patch:
@@ -85,11 +61,11 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
-  /usingDeleteMapping:
-    delete:
-      operationId: "usingDeleteMapping"
+  /usingPostMapping:
+    post:
+      operationId: "usingPostMapping"
       parameters:
       - name: "query"
         in: "query"
@@ -97,5 +73,29 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
+          description: "response of 200"
+  /usingPutMapping:
+    put:
+      operationId: "usingPutMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        "200":
+          description: "response of 200"
+  /usingRequestMapping:
+    put:
+      operationId: "usingRequestMapping"
+      parameters:
+      - name: "query"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        "200":
           description: "response of 200"

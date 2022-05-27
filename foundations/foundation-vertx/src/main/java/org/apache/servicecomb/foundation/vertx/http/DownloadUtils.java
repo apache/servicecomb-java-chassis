@@ -40,7 +40,9 @@ public final class DownloadUtils {
     if (responseEx.getHeader(HttpHeaders.CONTENT_LENGTH.toString()) == null) {
       responseEx.setChunked(true);
     }
-
+    if (part == null) {
+      return;
+    }
     if (responseEx.getHeader(HttpHeaders.CONTENT_TYPE.toString()) == null) {
       responseEx.setHeader(HttpHeaders.CONTENT_TYPE.toString(), part.getContentType());
     }
@@ -55,7 +57,10 @@ public final class DownloadUtils {
   }
 
   public static void clearPartResource(Part part) {
-    if (FilePartForSend.class.isInstance(part) && ((FilePartForSend) part).isDeleteAfterFinished()) {
+    if (part == null) {
+      return;
+    }
+    if (part instanceof FilePartForSend && ((FilePartForSend) part).isDeleteAfterFinished()) {
       try {
         part.delete();
       } catch (IOException e) {

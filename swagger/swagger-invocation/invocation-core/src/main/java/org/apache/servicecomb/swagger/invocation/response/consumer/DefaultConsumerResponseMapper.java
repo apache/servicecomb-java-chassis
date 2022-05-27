@@ -17,17 +17,10 @@
 package org.apache.servicecomb.swagger.invocation.response.consumer;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
 public class DefaultConsumerResponseMapper implements ConsumerResponseMapper {
-  private Converter converter;
-
-  public DefaultConsumerResponseMapper(Converter converter) {
-    this.converter = converter;
-  }
-
   @Override
   public Object mapResponse(Response response) {
-    return converter.convert(response.getResult());
+    return response.getResult();
   }
 }

@@ -24,15 +24,15 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 
 public class TcpRequest {
-  private long begin;
+  private final long begin;
 
-  private long msTimeout;
+  private final long msTimeout;
 
-  private Context callContext;
+  private final Context callContext;
 
-  private long threadId;
+  private final long threadId;
 
-  private TcpResponseCallback responseCallback;
+  private final TcpResponseCallback responseCallback;
 
   public TcpRequest(long msTimeout, TcpResponseCallback responseCallback) {
     callContext = Vertx.currentContext();

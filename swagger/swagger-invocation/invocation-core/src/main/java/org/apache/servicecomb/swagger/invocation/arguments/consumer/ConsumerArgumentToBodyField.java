@@ -17,68 +17,42 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import org.apache.servicecomb.swagger.invocation.arguments.FieldInfo;
 
 /**
- * 透明RPC的典型场景
- * 因为没有标注指明RESTful映射方式
- * 所以，所有参数被包装为一个class，每个参数是一个field
+ * <pre>
+ * Typical scene of transparent RPC
+ * all parameters of consumer method wrapped to a bean in contract
+ * </pre>
  */
-public class ConsumerArgumentToBodyField implements ArgumentMapper {
-  private Class<?> swaggerParamType;
+public final class ConsumerArgumentToBodyField extends ConsumerArgumentMapper {
+  private final String invocationArgumentName;
 
-  // key为consumerArgs的下标
-  private Map<Integer, FieldInfo> fieldMap;
+  private final String parameterName;
 
-  public ConsumerArgumentToBodyField(Class<?> swaggerParamType, Map<Integer, FieldInfo> fieldMap) {
-    this.swaggerParamType = correctType(swaggerParamType);
-    this.fieldMap = fieldMap;
+  private final String swaggerArgumentName;
+
+  public ConsumerArgumentToBodyField(String invocationArgumentName,
+      String swaggerArgumentName, String parameterName) {
+    this.invocationArgumentName = invocationArgumentName;
+    this.parameterName = parameterName;
+    this.swaggerArgumentName = swaggerArgumentName;
   }
 
-  protected Class<?> correctType(Class<?> swaggerParamType) {
-    if (!Modifier.isAbstract(swaggerParamType.getModifiers())) {
-      return swaggerParamType;
-    }
-
-    if (List.class.isAssignableFrom(swaggerParamType)) {
-      return ArrayList.class;
-    }
-
-    if (Set.class.isAssignableFrom(swaggerParamType)) {
-      return HashSet.class;
-    }
-
-    throw new Error("not support " + swaggerParamType.getName());
-  }
-
-  public Class<?> getSwaggerParamType() {
-    return swaggerParamType;
-  }
-
+  @SuppressWarnings("unchecked")
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-    try {
-      Object body = swaggerParamType.newInstance();
-      for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
-        FieldInfo info = entry.getValue();
-
-        Object consumerParam = consumerArguments[entry.getKey()];
-        Object swaggerParam = info.getConverter().convert(consumerParam);
-        info.getField().set(body, swaggerParam);
-      }
-      invocation.setSwaggerArgument(0, body);
-    } catch (Throwable e) {
-      throw new Error(e);
+  public void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
+      Map<String, Object> swaggerArguments,
+      Map<String, Object> invocationArguments) {
+    Object consumerArgument = invocationArguments.get(invocationArgumentName);
+    if (swaggerArguments.get(swaggerArgumentName) == null) {
+      swaggerArguments.put(swaggerArgumentName, new LinkedHashMap<String, Object>());
+    }
+    if (consumerArgument != null) {
+      ((Map<String, Object>) swaggerArguments.get(swaggerArgumentName)).put(parameterName, consumerArgument);
     }
   }
 }

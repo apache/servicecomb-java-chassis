@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 
@@ -29,9 +31,9 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
  */
 public class URLPathBuilder {
 
-  private List<UrlParamWriter> pathParamWriterList = new ArrayList<>();
+  private final List<UrlParamWriter> pathParamWriterList = new ArrayList<>();
 
-  private List<UrlParamWriter> queryParamWriterList = new ArrayList<>();
+  private final List<UrlParamWriter> queryParamWriterList = new ArrayList<>();
 
   private static final String SLASH = "/";
 
@@ -42,7 +44,6 @@ public class URLPathBuilder {
 
   private void initQueryWriterList(Map<String, RestParam> paramMap) {
     for (RestParam param : paramMap.values()) {
-
       if (!QueryProcessorCreator.PARAMTYPE.equals(param.getParamProcessor().getProcessorType())) {
         continue;
       }
@@ -71,11 +72,17 @@ public class URLPathBuilder {
           tmpPath.setLength(0);
         }
       } else if (currentChar == '}') {
-        if (tmpPath.length() != 0) {
-          RestParam param = paramMap.get(tmpPath.toString());
-          this.pathParamWriterList.add(new PathVarParamWriter(param));
-          tmpPath.setLength(0);
+        if (tmpPath.length() == 0) {
+          continue;
         }
+        String tmpPathStr = tmpPath.toString();
+        String pathParamName = tmpPathStr;
+        if (tmpPathStr.contains(":")) {
+          pathParamName = tmpPathStr.split(":", 2)[0].trim();
+        }
+        RestParam param = paramMap.get(pathParamName);
+        this.pathParamWriterList.add(new PathVarParamWriter(param));
+        tmpPath.setLength(0);
       } else {
         tmpPath.append(currentChar);
       }
@@ -85,7 +92,7 @@ public class URLPathBuilder {
     }
   }
 
-  public String createRequestPath(Object[] args) throws Exception {
+  public String createRequestPath(Map<String, Object> args) throws Exception {
     URLPathStringBuilder builder = new URLPathStringBuilder();
 
     genPathString(builder, args);
@@ -94,26 +101,26 @@ public class URLPathBuilder {
     return builder.build();
   }
 
-  public String createPathString(Object[] args) throws Exception {
+  public String createPathString(Map<String, Object> args) throws Exception {
     URLPathStringBuilder builder = new URLPathStringBuilder();
     genPathString(builder, args);
     return builder.build();
   }
 
-  private void genPathString(URLPathStringBuilder builder, Object[] args) throws Exception {
+  private void genPathString(URLPathStringBuilder builder, Map<String, Object> args) throws Exception {
     for (UrlParamWriter writer : this.pathParamWriterList) {
       writer.write(builder, args);
     }
   }
 
-  private void genQueryString(URLPathStringBuilder builder, Object[] args) throws Exception {
+  private void genQueryString(URLPathStringBuilder builder, Map<String, Object> args) throws Exception {
     for (UrlParamWriter writer : queryParamWriterList) {
       writer.write(builder, args);
     }
   }
 
   public static class URLPathStringBuilder {
-    private StringBuilder stringBuilder = new StringBuilder();
+    private final StringBuilder stringBuilder = new StringBuilder();
 
     private boolean queryPrefixNotWrite = true;
 
@@ -122,7 +129,7 @@ public class URLPathBuilder {
       return this;
     }
 
-    public URLPathStringBuilder appendQuery(String key, String value) {
+    public URLPathStringBuilder appendQuery(@Nonnull String name, @Nonnull String encodedValue) {
       if (queryPrefixNotWrite) {
         stringBuilder.append('?');
         queryPrefixNotWrite = false;
@@ -130,7 +137,7 @@ public class URLPathBuilder {
         stringBuilder.append('&');
       }
 
-      stringBuilder.append(key).append("=").append(value);
+      stringBuilder.append(name).append("=").append(encodedValue);
       return this;
     }
 

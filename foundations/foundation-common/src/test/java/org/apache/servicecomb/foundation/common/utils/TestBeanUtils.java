@@ -16,11 +16,14 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.math.BigDecimal;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.springframework.aop.SpringProxy;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -33,6 +36,16 @@ public class TestBeanUtils {
   }
 
   static class Impl implements Intf {
+
+  }
+
+  // 被代理的类
+  static class TestBean{
+
+  }
+
+  // 模拟 CgLib 代理产生的子类
+  static class TestBean$$TestBeanByCGLIB$$e1a36bab extends TestBean implements SpringProxy {
 
   }
 
@@ -58,8 +71,8 @@ public class TestBeanUtils {
     factory.addAspect(aspect);
     Intf proxy = factory.getProxy();
 
-    Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
-    Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
+    Assertions.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
+    Assertions.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
   }
 
   @Test
@@ -69,12 +82,14 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = null;
+        JvmUtils.findMainClassByStackTrace();
+        result = null;
       }
     };
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -84,12 +99,14 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = TestBeanUtils.class;
+        JvmUtils.findMainClassByStackTrace();
+        result = TestBeanUtils.class;
       }
     };
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -99,12 +116,14 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = String.class;
+        JvmUtils.findMainClassByStackTrace();
+        result = BigDecimal.class;
       }
     };
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb,java.lang", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb,java.lang,java.math", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -114,12 +133,14 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = null;
+        JvmUtils.findMainClassByStackTrace();
+        result = null;
       }
     };
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("a.b,c.d,org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("a.b,c.d,org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -129,10 +150,22 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = TestBeanUtils.class;
+        JvmUtils.findMainClassByStackTrace();
+        result = TestBeanUtils.class;
       }
     };
     BeanUtils.init();
 
-    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assertions.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
+
+  @Test
+  public void testGetImplClassFromBeanFromCglib(){
+    TestBean testBeanByCGLIB = new TestBean$$TestBeanByCGLIB$$e1a36bab();
+    Class<?> generatedClass = BeanUtils.getImplClassFromBean(testBeanByCGLIB);
+    Assertions.assertNotNull(generatedClass);
+    Assertions.assertEquals(TestBean.class, generatedClass);
+  }
+
+
 }

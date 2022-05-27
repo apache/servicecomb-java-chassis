@@ -25,6 +25,10 @@ public final class PojoConst {
 
   public static final String SCHEMA_ID = "schema-id";
 
+  public static final String FIELD_SCHEMA_INTERFACE = "schemaInterfaceName";
+
+  public static final String SCHEMA_INTERFACE = "schema-interface";
+
   public static final String IMPL = "implementation";
 
   public static final String FIELD_MICROSERVICE_NAME = "microserviceName";

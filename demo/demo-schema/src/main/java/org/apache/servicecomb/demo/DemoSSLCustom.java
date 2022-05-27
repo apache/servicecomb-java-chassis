@@ -17,11 +17,16 @@
 
 package org.apache.servicecomb.demo;
 
-import java.net.URL;
+import java.io.File;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DemoSSLCustom extends SSLCustom {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DemoSSLCustom.class);
+
   @Override
   public char[] decode(char[] encrypted) {
     return encrypted;
@@ -29,11 +34,40 @@ public class DemoSSLCustom extends SSLCustom {
 
   @Override
   public String getFullPath(String filename) {
-    URL url = Thread.currentThread().getContextClassLoader().getResource("certificates/" + filename);
-    if (url == null) {
-      return filename;
+    LOGGER.info("current working dir :" + System.getProperty("user.dir"));
+
+    if (StringUtils.isEmpty(filename)) {
+      return null;
     }
 
-    return url.getPath();
+    // local for different IDEs
+    File localFile = new File(
+        System.getProperty("user.dir") + "/demo/demo-springmvc/springmvc-server/src/main/resources/certificates/"
+            + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    localFile = new File(
+        System.getProperty("user.dir") + "/src/main/resources/certificates/"
+            + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    localFile = new File(System.getProperty("user.dir") + "/certificates/" + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    // docker
+    localFile = new File("/maven/maven/certificates/" + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    // in jar, maybe
+    LOGGER.info("not found file {} in file system, maybe in jar.", filename);
+    return "certificates/" + filename;
   }
 }

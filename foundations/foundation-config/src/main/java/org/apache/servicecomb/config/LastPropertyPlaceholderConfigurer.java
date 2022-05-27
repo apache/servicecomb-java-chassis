@@ -20,7 +20,7 @@ package org.apache.servicecomb.config;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +36,6 @@ public class LastPropertyPlaceholderConfigurer implements BeanFactoryPostProcess
 
   @Override
   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-    new PropertyPlaceholderConfigurer().postProcessBeanFactory(beanFactory);
+    new PropertySourcesPlaceholderConfigurer().postProcessBeanFactory(beanFactory);
   }
 }

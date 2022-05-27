@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 
@@ -27,7 +28,7 @@ import io.vertx.core.buffer.Buffer;
 public interface RestClientRequest {
   void write(Buffer bodyBuffer);
 
-  void end();
+  Future<Void> end();
 
   void addCookie(String name, String value);
 
@@ -39,5 +40,5 @@ public interface RestClientRequest {
 
   Buffer getBodyBuffer() throws Exception;
 
-  void attach(String name, Object part);
+  void attach(String name, Object partOrList);
 }

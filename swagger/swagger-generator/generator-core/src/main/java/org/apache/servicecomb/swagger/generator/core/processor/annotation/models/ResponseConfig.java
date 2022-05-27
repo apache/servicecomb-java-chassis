@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtils;
 
+import io.swagger.annotations.Example;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.Response;
 
@@ -36,6 +37,8 @@ public class ResponseConfig extends ResponseConfigBase {
   // 根据本config生成的response
   private Response response;
 
+  private Example examples;
+
   public int getCode() {
     return code;
   }
@@ -46,10 +49,6 @@ public class ResponseConfig extends ResponseConfigBase {
 
   public List<ResponseHeaderConfig> getResponseHeaders() {
     return responseHeaders;
-  }
-
-  public void setResponseHeaders(List<ResponseHeaderConfig> responseHeaders) {
-    this.responseHeaders = responseHeaders;
   }
 
   public void setResponseHeaders(ResponseHeader[] responseHeaders) {
@@ -72,5 +71,13 @@ public class ResponseConfig extends ResponseConfigBase {
 
   public void setResponse(Response response) {
     this.response = response;
+  }
+
+  public Example getExamples() {
+    return examples;
+  }
+
+  public void setExamples(Example examples) {
+    this.examples = examples;
   }
 }

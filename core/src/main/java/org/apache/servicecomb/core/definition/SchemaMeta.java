@@ -14,161 +14,105 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.core.definition;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.servicecomb.core.Handler;
-import org.apache.servicecomb.core.exception.ExceptionUtils;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
+import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 
-public class SchemaMeta extends CommonService<OperationMeta> {
+public class SchemaMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(SchemaMeta.class);
 
-  // 如果要生成class，使用这个package
-  private String packageName;
+  private final MicroserviceMeta microserviceMeta;
 
-  private Swagger swagger;
+  private final Swagger swagger;
 
-  private MicroserviceMeta microserviceMeta;
+  private final String schemaId;
 
-  // microserviceName:schemaId
-  private String microserviceQualifiedName;
+  // microserviceName.schemaId
+  private final String microserviceQualifiedName;
 
-  // 契约对应的接口
-  private Class<?> swaggerIntf;
+  private final Map<String, OperationMeta> operations = new HashMap<>();
 
-  // handlerChain是microservice级别的
-  private List<Handler> consumerHandlerChain;
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
 
-  private List<Handler> providerHandlerChain;
+  public SchemaMeta(MicroserviceMeta microserviceMeta, String schemaId, Swagger swagger) {
+    this.microserviceMeta = microserviceMeta;
+    this.schemaId = schemaId;
+    this.swagger = swagger;
+    this.microserviceQualifiedName = microserviceMeta.getMicroserviceName() + "." + schemaId;
 
-  private SwaggerToClassGenerator swaggerToClassGenerator;
-
-  public SchemaMeta(Swagger swagger, MicroserviceMeta microserviceMeta, String schemaId) {
     try {
-      this.packageName = SchemaUtils.generatePackageName(microserviceMeta, schemaId);
-
-      this.swagger = swagger;
-      this.name = schemaId;
-
-      this.microserviceMeta = microserviceMeta;
-      this.microserviceQualifiedName = microserviceMeta.getName() + "." + schemaId;
-
-      swaggerToClassGenerator = new SwaggerToClassGenerator(microserviceMeta.getClassLoader(), swagger, packageName);
-      swaggerIntf = swaggerToClassGenerator.convert();
-
-      createOperationMgr("schemaMeta " + schemaId + " operation mgr");
-      operationMgr.setRegisterErrorFmt("Operation name repeat, schema=%s, operation=%s");
-
-      initOperations();
+      initOperationMetas();
     } catch (Throwable e) {
-      LOGGER.error("Unhandled exception to service " + microserviceMeta.getName() + " schema " + schemaId);
+      LOGGER.error("Unhandled exception to {}.", microserviceQualifiedName, e);
       throw e;
     }
   }
 
-  public SwaggerToClassGenerator getSwaggerToClassGenerator() {
-    return swaggerToClassGenerator;
-  }
-
-  public String getPackageName() {
-    return packageName;
-  }
-
-  private void initOperations() {
-    if (swagger.getPaths() == null) {
-      LOGGER.warn(swagger.getInfo().getTitle() + " with path " + swagger.getBasePath()
-          + " is an empty interface, please delete it or fill with one method!");
-      return;
+  private SchemaMeta initOperationMetas() {
+    SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
+    for (SwaggerOperation swaggerOperation : swaggerOperations.getOperations().values()) {
+      operations.put(swaggerOperation.getOperationId(), new OperationMeta().init(this, swaggerOperation));
     }
-
-    for (Entry<String, Path> entry : swagger.getPaths().entrySet()) {
-      String strPath = entry.getKey();
-      Path path = entry.getValue();
-      for (Entry<HttpMethod, Operation> operationEntry : path.getOperationMap().entrySet()) {
-        Operation operation = operationEntry.getValue();
-        if (operation.getOperationId() == null) {
-          throw ExceptionUtils.operationIdInvalid(getSchemaId(), strPath);
-        }
-
-        // org.apache.servicecomb.swagger.engine.SwaggerEnvironment.createConsumer(Class<?>, Class<?>)
-        // org.apache.servicecomb.swagger.engine.SwaggerEnvironment.createProducer(Object, Swagger)
-        // had make sure that consumer/swagger or producer/swagger can work
-        //
-        // in this place, do not throw exception when method not exists
-        // eg:
-        //   swagger interface is a.b.c, and consumer interface is a.b.c too.
-        //   version 1, they are the same
-        //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
-        //              interface a.b.c in consumer process is the old interface
-        //              so for swagger, can not do any valid check here
-        //              only need to save found method, that's enough.
-        Method method = ReflectUtils.findMethod(swaggerIntf, operation.getOperationId());
-        if (method == null) {
-          LOGGER.warn("method {} not found in swagger interface {}, schemaId={}",
-              operation.getOperationId(),
-              swaggerIntf.getName(),
-              getSchemaId());
-          continue;
-        }
-
-        String httpMethod = operationEntry.getKey().name();
-        OperationMeta operationMeta = new OperationMeta();
-        operationMeta.init(this, method, strPath, httpMethod, operation);
-        operationMgr.register(method.getName(), operationMeta);
-      }
-    }
-  }
-
-  public Swagger getSwagger() {
-    return swagger;
-  }
-
-  public String getSchemaId() {
-    return name;
-  }
-
-  public String getMicroserviceQualifiedName() {
-    return microserviceQualifiedName;
-  }
-
-  public String getMicroserviceName() {
-    return microserviceMeta.getName();
+    return this;
   }
 
   public MicroserviceMeta getMicroserviceMeta() {
     return microserviceMeta;
   }
 
-  public Class<?> getSwaggerIntf() {
-    return swaggerIntf;
+  public Swagger getSwagger() {
+    return swagger;
   }
 
-  public List<Handler> getConsumerHandlerChain() {
-    return consumerHandlerChain;
+  public String getAppId() {
+    return microserviceMeta.getAppId();
   }
 
-  public void setConsumerHandlerChain(List<Handler> consumerHandlerChain) {
-    this.consumerHandlerChain = consumerHandlerChain;
+  public String getMicroserviceName() {
+    return microserviceMeta.getMicroserviceName();
   }
 
-  public List<Handler> getProviderHandlerChain() {
-    return providerHandlerChain;
+  public String getSchemaId() {
+    return schemaId;
   }
 
-  public void setProviderHandlerChain(List<Handler> providerHandlerChain) {
-    this.providerHandlerChain = providerHandlerChain;
+  public String getMicroserviceQualifiedName() {
+    return microserviceQualifiedName;
+  }
+
+  public Map<String, OperationMeta> getOperations() {
+    return operations;
+  }
+
+  public void putExtData(String key, Object data) {
+    vendorExtensions.put(key, data);
+  }
+
+  public <T> T getExtData(String key) {
+    return vendorExtensions.get(key);
+  }
+
+  public OperationMeta findOperation(String operationId) {
+    return operations.get(operationId);
+  }
+
+  public OperationMeta ensureFindOperation(String operationId) {
+    OperationMeta value = operations.get(operationId);
+    if (value == null) {
+      throw new IllegalStateException(String
+          .format("Can not find OperationMeta, microserviceName=%s, schemaId=%s, operationId=%s.",
+              getMicroserviceName(), getSchemaId(), operationId));
+    }
+
+    return value;
   }
 }

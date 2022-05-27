@@ -18,12 +18,9 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
 import java.util.concurrent.TimeUnit;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
@@ -39,9 +36,6 @@ public class TestMeasurementTree {
   Registry registry = new DefaultRegistry(clock);
 
   Timer timer;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -65,12 +59,12 @@ public class TestMeasurementTree {
     MeasurementGroupConfig config = new MeasurementGroupConfig("id", "g1", "g2", Statistic.count.key());
     tree.from(registry.iterator(), config);
 
-    Assert.assertEquals(2, tree.getChildren().size());
+    Assertions.assertEquals(2, tree.getChildren().size());
 
     MeasurementNode node = tree.findChild("id", "g1v", "g2v");
-    Assert.assertEquals(2d, node.findChild(Statistic.count.value()).getMeasurements().get(0).value(), 0);
-    Assert.assertEquals(12d, node.findChild(Statistic.totalTime.value()).getMeasurements().get(0).value(), 0);
-    Assert.assertEquals(0d, tree.findChild("id_notCare").summary(), 0);
+    Assertions.assertEquals(2d, node.findChild(Statistic.count.value()).getMeasurements().get(0).value(), 0);
+    Assertions.assertEquals(12d, node.findChild(Statistic.totalTime.value()).getMeasurements().get(0).value(), 0);
+    Assertions.assertEquals(0d, tree.findChild("id_notCare").summary(), 0);
   }
 
   @Test
@@ -79,17 +73,16 @@ public class TestMeasurementTree {
       MeasurementGroupConfig config = new MeasurementGroupConfig("id", new DefaultTagFinder("notExist", true));
       tree.from(registry.iterator(), config);
     } catch (Exception e) {
-      Assert.fail("should not throw exception");
+      Assertions.fail("should not throw exception");
     }
   }
 
   @Test
   public void from_failed() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("tag key \"notExist\" not exist in Measurement(id:g1=g1v:g2=g2v:statistic=count:t3=t3v:t4=t4v,0,0.0)"));
-
-    MeasurementGroupConfig config = new MeasurementGroupConfig("id", "notExist");
-    tree.from(registry.iterator(), config);
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      MeasurementGroupConfig config = new MeasurementGroupConfig("id", "notExist");
+      tree.from(registry.iterator(), config);
+    });
+    Assertions.assertEquals("tag key \"notExist\" not exist in Measurement(id:g1=g1v:g2=g2v:statistic=count:t3=t3v:t4=t4v,0,0.0)", exception.getMessage());
   }
 }

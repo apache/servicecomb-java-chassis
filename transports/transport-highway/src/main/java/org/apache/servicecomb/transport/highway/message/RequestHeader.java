@@ -19,56 +19,49 @@ package org.apache.servicecomb.transport.highway.message;
 
 import java.util.Map;
 
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
-import io.protostuff.ProtobufOutput;
-import io.protostuff.Tag;
 import io.vertx.core.buffer.Buffer;
 
-/**
- * tag的缺失、乱序，是因为要兼容历史版本
- * 1.tag(4)，是历史版本中的压缩算法名，转移到login消息中传递
- */
 public class RequestHeader {
-  private static WrapSchema requestHeaderSchema = ProtobufManager.getDefaultScopedProtobufSchemaManager()
-      .getOrCreateSchema(RequestHeader.class);
+  private static final ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  public static WrapSchema getRequestHeaderSchema() {
-    return requestHeaderSchema;
+  private static final RootDeserializer<RequestHeader> rootDeserializer = protoMapperFactory
+      .createFromName("RequestHeader.proto")
+      .createRootDeserializer("RequestHeader", RequestHeader.class);
+
+  private static final RootSerializer rootSerializer = protoMapperFactory.createFromName("RequestHeader.proto")
+      .createRootSerializer("RequestHeader", RequestHeader.class);
+
+  public static RootSerializer getRootSerializer() {
+    return rootSerializer;
   }
 
   public static RequestHeader readObject(Buffer bodyBuffer) throws Exception {
-    return requestHeaderSchema.readObject(bodyBuffer);
+    return rootDeserializer.deserialize(bodyBuffer.getBytes());
   }
 
-  //CHECKSTYLE:OFF: magicnumber
-  @Tag(2)
-  private byte msgType;
+  private int msgType;
 
   // 运行时必须的数据，比如body是否压缩
   // 预留特性选项
-  @Tag(3)
   private int flags;
 
-  @Tag(1)
   private String destMicroservice;
 
-  @Tag(5)
   private String schemaId;
 
-  @Tag(6)
   private String operationName;
 
-  @Tag(7)
   private Map<String, String> context;
 
-  //CHECKSTYLE:ON
-  public byte getMsgType() {
+  public int getMsgType() {
     return msgType;
   }
 
-  public void setMsgType(byte msgType) {
+  public void setMsgType(int msgType) {
     this.msgType = msgType;
   }
 
@@ -110,9 +103,5 @@ public class RequestHeader {
 
   public void setContext(Map<String, String> context) {
     this.context = context;
-  }
-
-  public void writeObject(ProtobufOutput output) throws Exception {
-    requestHeaderSchema.writeObject(output, this);
   }
 }

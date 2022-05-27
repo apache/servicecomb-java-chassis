@@ -16,26 +16,19 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
-import org.springframework.stereotype.Component;
 
-@Component
+import com.netflix.config.DynamicPropertyFactory;
+
 public class MetricsBootListener implements BootListener {
-  private MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
-
-  @Inject
-  private ProducerSchemaFactory producerSchemaFactory;
+  private final MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
 
   private SlowInvocationLogger slowInvocationLogger;
 
@@ -48,32 +41,25 @@ public class MetricsBootListener implements BootListener {
   }
 
   @Override
-  public void onBootEvent(BootEvent event) {
-    switch (event.getEventType()) {
-      case BEFORE_PRODUCER_PROVIDER:
-        registerSchemas();
-        break;
-      case AFTER_REGISTRY:
-        slowInvocationLogger = new SlowInvocationLogger(event.getScbEngine());
-        metricsBootstrap.start(new GlobalRegistry(), EventManager.getEventBus());
-        break;
-      case BEFORE_CLOSE:
-        metricsBootstrap.shutdown();
-        break;
-      default:
-        break;
+  public void onBeforeProducerProvider(BootEvent event) {
+    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
+      return;
     }
-  }
-
-  private void registerSchemas() {
-    producerSchemaFactory.getOrCreateProducerSchema("healthEndpoint",
-        HealthCheckerRestPublisher.class,
-        new HealthCheckerRestPublisher());
 
     MetricsRestPublisher metricsRestPublisher =
         SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
-    producerSchemaFactory.getOrCreateProducerSchema("metricsEndpoint",
-        metricsRestPublisher.getClass(),
-        metricsRestPublisher);
+    event.getScbEngine().getProducerProviderManager()
+        .addProducerMeta("metricsEndpoint", metricsRestPublisher);
+  }
+
+  @Override
+  public void onAfterRegistry(BootEvent event) {
+    slowInvocationLogger = new SlowInvocationLogger(event.getScbEngine());
+    metricsBootstrap.start(new GlobalRegistry(), EventManager.getEventBus());
+  }
+
+  @Override
+  public void onBeforeClose(BootEvent event) {
+    metricsBootstrap.shutdown();
   }
 }

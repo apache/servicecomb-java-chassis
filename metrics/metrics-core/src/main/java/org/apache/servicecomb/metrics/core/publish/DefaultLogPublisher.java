@@ -26,6 +26,8 @@ import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyScopeConfig;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
@@ -43,12 +45,13 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Meter;
 
-import io.vertx.core.impl.VertxImplEx;
+import io.vertx.core.Vertx;
 
 public class DefaultLogPublisher implements MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLogPublisher.class);
@@ -58,29 +61,39 @@ public class DefaultLogPublisher implements MetricsInitializer {
   // for a client, maybe will connect to too many endpoints, so default not print detail, just print summary
   public static final String ENDPOINTS_CLIENT_DETAIL_ENABLED = "servicecomb.metrics.publisher.defaultLog.endpoints.client.detail.enabled";
 
-  //sample
-  private static final String SIMPLE_HEADER = "%s:\n  simple:\n"
-      + "    status          tps      latency             operation\n";
+  private static final String FIRST_LINE_SIMPLE_FORMAT = "  %-11s %-8.1f %-18s %s%s\n";
 
-  private static final String FIRST_LINE_SIMPLE_FORMAT = "    %-15s %-8s %-19s %s\n";
-
-  private static final String SIMPLE_FORMAT = "                    %-8s %-19s %s\n";
+  private static final String SIMPLE_FORMAT = "              %-8.1f %-18s %s%s\n";
 
   //details
   private static final String PRODUCER_DETAILS_FORMAT = ""
-      + "        prepare: %-19s queue       : %-19s filtersReq : %-19s handlersReq: %s\n"
-      + "        execute: %-19s handlersResp: %-19s filtersResp: %-19s sendResp   : %s\n";
+      + "        prepare: %-18s queue       : %-18s filtersReq : %-18s handlersReq: %s\n"
+      + "        execute: %-18s handlersResp: %-18s filtersResp: %-18s sendResp   : %s\n";
 
   private static final String CONSUMER_DETAILS_FORMAT = ""
-      + "        prepare     : %-19s handlersReq : %-19s cFiltersReq: %-19s sendReq     : %s\n"
-      + "        getConnect  : %-19s writeBuf    : %-19s waitResp   : %-19s wakeConsumer: %s\n"
-      + "        cFiltersResp: %-19s handlersResp: %s\n";
+      + "        prepare     : %-18s handlersReq : %-18s cFiltersReq: %-18s sendReq     : %s\n"
+      + "        getConnect  : %-18s writeBuf    : %-18s waitResp   : %-18s wakeConsumer: %s\n"
+      + "        cFiltersResp: %-18s handlersResp: %s\n";
 
   private static final String EDGE_DETAILS_FORMAT = ""
-      + "        prepare     : %-19s queue       : %-19s sFiltersReq : %-19s handlersReq : %s\n"
-      + "        cFiltersReq : %-19s sendReq     : %-19s getConnect  : %-19s writeBuf    : %s\n"
-      + "        waitResp    : %-19s wakeConsumer: %-19s cFiltersResp: %-19s handlersResp: %s\n"
-      + "        sFiltersResp: %-19s sendResp    : %s\n";
+      + "        prepare     : %-18s queue       : %-18s sFiltersReq : %-18s handlersReq : %s\n"
+      + "        cFiltersReq : %-18s sendReq     : %-18s getConnect  : %-18s writeBuf    : %s\n"
+      + "        waitResp    : %-18s wakeConsumer: %-18s cFiltersResp: %-18s handlersResp: %s\n"
+      + "        sFiltersResp: %-18s sendResp    : %s\n";
+
+  private LatencyDistributionConfig latencyDistributionConfig;
+
+  /**
+   * if config is 0,1,10,100 then header will be:<br>
+   *   [0,1)  [1,10) [10,100) [100,)
+   */
+  private String latencyDistributionHeader = "";
+
+  /**
+   * if config is 0,1,10,100 then format will be:<br>
+   *   %-7d %-7d %-9d %-7d
+   */
+  private String latencyDistributionFormat = "";
 
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
@@ -90,7 +103,34 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
 
+    initLatencyDistribution();
+
     eventBus.register(this);
+  }
+
+  private void initLatencyDistribution() {
+    // default length is 7 which include a space, one minute 999999 requests, TPS is 16666, mostly it's enough
+    int leastLatencyScopeStrLength = DynamicPropertyFactory.getInstance()
+        .getIntProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, 7)
+        .get();
+
+    String config = DynamicPropertyFactory.getInstance()
+        .getStringProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION, null)
+        .get();
+    latencyDistributionConfig = new LatencyDistributionConfig(config);
+    String header;
+    for (LatencyScopeConfig scopeConfig : latencyDistributionConfig.getScopeConfigs()) {
+      if (scopeConfig.getMsMax() == Long.MAX_VALUE) {
+        header = String.format("[%d,) ", scopeConfig.getMsMin());
+      } else {
+        header = String.format("[%d,%d) ", scopeConfig.getMsMin(), scopeConfig.getMsMax());
+      }
+      header = Strings.padEnd(header, leastLatencyScopeStrLength, ' ');
+      latencyDistributionHeader += header;
+
+      String format = "%-" + (header.length() - 1) + "d ";
+      latencyDistributionFormat += format;
+    }
   }
 
   @Subscribe
@@ -106,7 +146,6 @@ public class DefaultLogPublisher implements MetricsInitializer {
   protected void printLog(List<Meter> meters) {
     StringBuilder sb = new StringBuilder();
     sb.append("\n");
-
     PublishModelFactory factory = new PublishModelFactory(meters);
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
@@ -150,7 +189,6 @@ public class DefaultLogPublisher implements MetricsInitializer {
       if (sendRate == 0 && receiveRate == 0 && receivePacketsRate == 0 && sendPacketsRate == 0) {
         continue;
       }
-
       appendLine(tmpSb, "    %-12s %-12s %-12s %-12s %s",
           NetUtils.humanReadableBytes((long) sendRate),
           NetUtils.humanReadableBytes((long) receiveRate),
@@ -170,30 +208,27 @@ public class DefaultLogPublisher implements MetricsInitializer {
         processNode == null || processNode.getMeasurements().isEmpty()) {
       return;
     }
-
     double allRate = cpuNode.summary();
     double processRate = processNode.summary();
-
     appendLine(sb, "  cpu:");
     appendLine(sb, "    all usage: %.2f%%    all idle: %.2f%%    process: %.2f%%", allRate * 100,
         (1 - allRate) * 100, processRate * 100);
   }
 
-
   protected void printThreadPoolMetrics(DefaultPublishModel model, StringBuilder sb) {
     if (model.getThreadPools().isEmpty()) {
       return;
     }
-
     sb.append("threadPool:\n");
-    sb.append("  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n");
+    sb.append("  coreSize maxThreads poolSize currentBusy rejected queueSize taskCount taskFinished name\n");
     for (Entry<String, ThreadPoolPublishModel> entry : model.getThreadPools().entrySet()) {
       ThreadPoolPublishModel threadPoolPublishModel = entry.getValue();
-      sb.append(String.format("  %-12d %-10d %-8d %-18d %-9d %-9.1f %-18.1f %s\n",
+      sb.append(String.format("  %-8d %-10d %-8d %-11d %-8.0f %-9d %-9.1f %-12.1f %s\n",
           threadPoolPublishModel.getCorePoolSize(),
           threadPoolPublishModel.getMaxThreads(),
           threadPoolPublishModel.getPoolSize(),
           threadPoolPublishModel.getCurrentThreadsBusy(),
+          threadPoolPublishModel.getRejected(),
           threadPoolPublishModel.getQueueSize(),
           threadPoolPublishModel.getAvgTaskCount(),
           threadPoolPublishModel.getAvgCompletedTaskCount(),
@@ -206,8 +241,12 @@ public class DefaultLogPublisher implements MetricsInitializer {
     if (edgePerf == null) {
       return;
     }
-    sb.append(String.format(SIMPLE_HEADER, "edge"));
-
+    sb.append(""
+        + "edge:\n"
+        + " simple:\n"
+        + "  status      tps      latency            ")
+        .append(latencyDistributionHeader)
+        .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
     //print sample
     for (Map<String, OperationPerfGroup> statusMap : edgePerf.getGroups().values()) {
@@ -218,20 +257,20 @@ public class DefaultLogPublisher implements MetricsInitializer {
         detailsBuilder.append(printEdgeDetailsPerf(perfGroup));
       }
     }
-
-    sb.append("  details:\n")
-        .append(detailsBuilder);
+    sb.append(" details:\n").append(detailsBuilder);
   }
-
 
   protected void printConsumerLog(DefaultPublishModel model, StringBuilder sb) {
     OperationPerfGroups consumerPerf = model.getConsumer().getOperationPerfGroups();
     if (consumerPerf == null) {
       return;
     }
-
-    sb.append(String.format(SIMPLE_HEADER, "consumer"));
-
+    sb.append(""
+        + "consumer:\n"
+        + " simple:\n"
+        + "  status      tps      latency            ")
+        .append(latencyDistributionHeader)
+        .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
     //print sample
     for (Map<String, OperationPerfGroup> statusMap : consumerPerf.getGroups().values()) {
@@ -242,18 +281,20 @@ public class DefaultLogPublisher implements MetricsInitializer {
         detailsBuilder.append(printConsumerDetailsPerf(perfGroup));
       }
     }
-    sb.append("  details:\n")
-        .append(detailsBuilder);
+    sb.append(" details:\n").append(detailsBuilder);
   }
-
 
   protected void printProducerLog(DefaultPublishModel model, StringBuilder sb) {
     OperationPerfGroups producerPerf = model.getProducer().getOperationPerfGroups();
-
     if (producerPerf == null) {
       return;
     }
-    sb.append(String.format(SIMPLE_HEADER, "producer"));
+    sb.append(""
+        + "producer:\n"
+        + " simple:\n"
+        + "  status      tps      latency            ")
+        .append(latencyDistributionHeader)
+        .append("operation\n");
     // use detailsBuilder, we can traverse the map only once
     StringBuilder detailsBuilder = new StringBuilder();
     //print sample
@@ -266,37 +307,50 @@ public class DefaultLogPublisher implements MetricsInitializer {
       }
     }
     //print details
-    sb.append("  details:\n")
-        .append(detailsBuilder);
+    sb.append(" details:\n").append(detailsBuilder);
   }
-
 
   private StringBuilder printSamplePerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
+    boolean firstLine = true;
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      if (i == 0) {
-        // first line
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
+      if (firstLine) {
+        firstLine = false;
         String status = perfGroup.getTransport() + "." + perfGroup.getStatus();
-        sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status, stageTotal.getTps(),
-            getDetailsFromPerf(stageTotal), operationPerf.getOperation()));
+        sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status,
+            stageTotal.getTps(),
+            getDetailsFromPerf(stageTotal),
+            formatLatencyDistribution(operationPerf),
+            operationPerf.getOperation()));
       } else {
-        sb.append(String
-            .format(SIMPLE_FORMAT, stageTotal.getTps(), getDetailsFromPerf(stageTotal), operationPerf.getOperation()));
+        sb.append(String.format(SIMPLE_FORMAT, stageTotal.getTps(),
+            getDetailsFromPerf(stageTotal),
+            formatLatencyDistribution(operationPerf),
+            operationPerf.getOperation()));
       }
     }
-    //print summary
     OperationPerf summaryOperation = perfGroup.getSummary();
     PerfInfo stageSummaryTotal = summaryOperation.findStage(MeterInvocationConst.STAGE_TOTAL);
-    sb.append(
-        String.format(SIMPLE_FORMAT, stageSummaryTotal.getTps(), getDetailsFromPerf(stageSummaryTotal), "(summary)"));
+    //print summary
+    sb.append(String.format(SIMPLE_FORMAT, stageSummaryTotal.getTps(),
+        getDetailsFromPerf(stageSummaryTotal),
+        formatLatencyDistribution(summaryOperation),
+        "(summary)"));
     return sb;
+  }
+
+  private String formatLatencyDistribution(OperationPerf operationPerf) {
+    return String.format(latencyDistributionFormat, (Object[]) operationPerf.getLatencyDistribution());
   }
 
   private StringBuilder printProducerDetailsPerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    //append rest.200:
+    //append rest."200":
     sb.append("    ")
         .append(perfGroup.getTransport())
         .append(".")
@@ -304,7 +358,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(":\n");
     PerfInfo prepare, queue, filtersReq, handlersReq, execute, handlersResp, filtersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
       filtersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
@@ -334,7 +391,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printConsumerDetailsPerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    //append rest.200:
+    //append rest."200":
     sb.append("    ")
         .append(perfGroup.getTransport())
         .append(".")
@@ -344,7 +401,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
         waitResp, wakeConsumer, clientFiltersResp, handlersResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       handlersReq = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
       clientFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
@@ -378,7 +438,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printEdgeDetailsPerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    //append rest.200:
+    //append rest."200":
     sb.append("    ")
         .append(perfGroup.getTransport())
         .append(".")
@@ -388,6 +448,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, queue, serverFiltersReq, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
         waitResp, wakeConsumer, clientFiltersResp, handlersResp, serverFiltersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
       serverFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
@@ -432,10 +496,11 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     appendLine(sb, "  instances:");
     appendLine(sb, "    name       eventLoopContext-created");
-    for (Entry<String, VertxImplEx> entry : VertxUtils.getVertxMap().entrySet()) {
+    for (Entry<String, Vertx> entry : VertxUtils.getVertxMap().entrySet()) {
       appendLine(sb, "    %-10s %d",
           entry.getKey(),
-          entry.getValue().getEventLoopContextCreatedCount());
+          // TODO will be fixed by next vertx update.entry.getValue().getEventLoopContextCreatedCount()
+          0);
     }
 
     ClientEndpointsLogPublisher client = new ClientEndpointsLogPublisher(tree, sb,
@@ -447,7 +512,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       if (client.isExists()) {
         client.print(DynamicPropertyFactory
             .getInstance()
-            .getBooleanProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, false)
+            .getBooleanProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, true)
             .get());
       }
 

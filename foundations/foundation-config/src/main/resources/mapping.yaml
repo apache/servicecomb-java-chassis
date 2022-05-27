@@ -14,5 +14,9 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
+servicecomb-config-order: -100
 
 SERVICECOMB_ENV: service_description.environment
+
+servicecomb.loadbalance.stats.timerIntervalInMilis:
+  - servicecomb.loadbalance.stats.timerIntervalInMillis

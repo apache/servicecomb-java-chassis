@@ -41,7 +41,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +48,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TrustManagerExtTest {
   final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -260,8 +260,8 @@ public class TrustManagerExtTest {
 
     TrustManagerExt trustManagerExt = new TrustManagerExt((X509ExtendedTrustManager) trustManager[0],
         option, custom);
-    Assert.assertEquals(3, trustManagerExt.getAcceptedIssuers()[0].getVersion());
-    Assert.assertNotNull(trustManagerExt);
+    Assertions.assertEquals(3, trustManagerExt.getAcceptedIssuers()[0].getVersion());
+    Assertions.assertNotNull(trustManagerExt);
   }
 
   @Test
@@ -286,7 +286,7 @@ public class TrustManagerExtTest {
     MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
     TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
 
-    Assert.assertNotNull(trustManagerExt);
+    Assertions.assertNotNull(trustManagerExt);
     boolean validAssert = true;
     try {
       trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
@@ -295,7 +295,7 @@ public class TrustManagerExtTest {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 
   @Test
@@ -331,7 +331,7 @@ public class TrustManagerExtTest {
     } catch (Exception e) {
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 
   @Test
@@ -359,10 +359,10 @@ public class TrustManagerExtTest {
     try {
       trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
     } catch (CertificateException e) {
-      Assert.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
+      Assertions.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   @Test
@@ -392,7 +392,7 @@ public class TrustManagerExtTest {
 
     new MockUp<InputStreamReader>() {
       @Mock
-      public int read(char cbuf[]) throws IOException {
+      public int read(char[] cbuf) throws IOException {
         throw new IOException();
       }
     };
@@ -403,9 +403,9 @@ public class TrustManagerExtTest {
       trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
       trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
     } catch (Exception e) {
-      Assert.assertEquals("java.security.cert.CertificateException", e.getClass().getName());
+      Assertions.assertEquals("java.security.cert.CertificateException", e.getClass().getName());
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 }

@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.event;
 import org.apache.servicecomb.core.Invocation;
 
 public class InvocationBaseEvent {
-  private Invocation invocation;
+  private final Invocation invocation;
 
   public InvocationBaseEvent(Invocation invocation) {
     this.invocation = invocation;

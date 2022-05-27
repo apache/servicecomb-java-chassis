@@ -20,9 +20,9 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.springframework.util.StringUtils;
 
 import com.google.common.net.UrlEscapers;
+import org.apache.commons.lang3.StringUtils;
 
 public final class HttpUtils {
   private HttpUtils() {
@@ -33,7 +33,6 @@ public final class HttpUtils {
    * @param headerValue example: attachment;filename=a.txt
    *
    */
-  // 
   public static String parseParamFromHeaderValue(String headerValue, String paramName) {
     if (StringUtils.isEmpty(headerValue)) {
       return null;

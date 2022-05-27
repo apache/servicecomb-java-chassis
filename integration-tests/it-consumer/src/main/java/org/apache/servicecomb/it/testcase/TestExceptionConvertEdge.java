@@ -18,26 +18,34 @@
 package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 
 public class TestExceptionConvertEdge {
-  private static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("edgeExceptionConvertSchema");
+  private static final GateRestTemplate CLIENT = GateRestTemplate.createEdgeRestTemplate("edgeExceptionConvertSchema");
 
   @Test
   public void testTimeoutAdd() {
-    int result = client.getForObject("/add?x=10&y=12", Integer.class);
-    Assert.assertEquals(22, result);
+    int result = CLIENT.getForObject("/add?x=10&y=12", Integer.class);
+    Assertions.assertEquals(22, result);
 
     try {
-      client.getForObject("/add?x=88&y=21", Object.class);
-    } catch (RestClientException e) {
-      HttpClientErrorException exception = (HttpClientErrorException) e;
-      Assert.assertEquals(HttpStatus.EXPECTATION_FAILED, exception.getStatusCode());
-      Assert.assertTrue(exception.getResponseBodyAsString().contains("change the response"));
+      CLIENT.getForObject("/add?x=88&y=21", Object.class);
+      // This test case have some problem: for some test case, e.g. spring boot, will get result, others may timeout
+      // Because of timeout settings.
+    } catch (HttpClientErrorException exception) {
+      Assertions.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), exception.getRawStatusCode());
+      Assertions.assertTrue(exception.getResponseBodyAsString().contains("change the response"));
+    }
+    try {
+      CLIENT.getForObject("/add?x=88&y=21", Object.class);
+      // This test case have some problem: for some test case, e.g. spring boot, will get result, others may timeout
+      // Because of timeout settings.
+    } catch (HttpClientErrorException exception) {
+      Assertions.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), exception.getRawStatusCode());
+      Assertions.assertTrue(exception.getResponseBodyAsString().contains("change the response"));
     }
   }
 }

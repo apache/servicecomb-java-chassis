@@ -20,37 +20,26 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
 
 public class ResponseMapperFactorys<MAPPER> {
-  private List<ResponseMapperFactory<MAPPER>> factorys;
-
-  public ResponseMapperFactorys(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls, ConverterMgr converterMgr) {
-    this(factoryCls);
-    this.setConverterMgr(converterMgr);
-  }
+  private final List<ResponseMapperFactory<MAPPER>> factorys;
 
   @SuppressWarnings("unchecked")
   public ResponseMapperFactorys(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls) {
     factorys = (List<ResponseMapperFactory<MAPPER>>) SPIServiceUtils.getSortedService(factoryCls);
   }
 
-  public void setConverterMgr(ConverterMgr converterMgr) {
-    factorys.forEach(factory -> factory.setConverterMgr(converterMgr));
-  }
-
-  public MAPPER createResponseMapper(Type swaggerType, Type providerType) {
+  public MAPPER createResponseMapper(Type providerType) {
     for (ResponseMapperFactory<MAPPER> factory : factorys) {
-      if (!factory.isMatch(swaggerType, providerType)) {
+      if (!factory.isMatch(providerType)) {
         continue;
       }
 
-      return factory.createResponseMapper(this, swaggerType, providerType);
+      return factory.createResponseMapper(this, providerType);
     }
 
     throw new IllegalStateException(
-        String.format("can not find response mapper for %s and %s, this should never happened.",
-            swaggerType.getTypeName(),
+        String.format("can not find response mapper for %s, this should never happened.",
             providerType.getTypeName()));
   }
 }

@@ -30,7 +30,7 @@ import mockit.MockUp;
 
 public class MockUtil {
 
-  private static MockUtil instance = new MockUtil();
+  private static final MockUtil instance = new MockUtil();
 
   private MockUtil() {
 

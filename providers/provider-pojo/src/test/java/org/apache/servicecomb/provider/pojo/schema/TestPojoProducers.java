@@ -17,15 +17,14 @@
 
 package org.apache.servicecomb.provider.pojo.schema;
 
+import mockit.Expectations;
+import mockit.Injectable;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
-import org.junit.Assert;
 import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Injectable;
+import org.junit.jupiter.api.Assertions;
 
 public class TestPojoProducers {
   PojoProducers producer = new PojoProducers();
@@ -33,22 +32,22 @@ public class TestPojoProducers {
   @Test
   public void postProcessBeforeInitialization() {
     Object bean = new Object();
-    Assert.assertSame(bean, producer.postProcessBeforeInitialization(bean, "test"));
+    Assertions.assertSame(bean, producer.postProcessBeforeInitialization(bean, "test"));
   }
 
   @Test
   public void testPojoProducers() {
     Person bean = new Person();
-    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
-    Assert.assertEquals(producer.getProducers().size(), 1);
+    Assertions.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
+    Assertions.assertEquals(producer.getProducerMetas().size(), 1);
   }
 
   @Test
   public void testPojoProducersSchemaNull(@Injectable RpcSchema schema) {
     IPerson bean = new IPerson() {
     };
-    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
-    Assert.assertEquals(producer.getProducers().size(), 0);
+    Assertions.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
+    Assertions.assertEquals(producer.getProducerMetas().size(), 0);
   }
 
   @RpcSchema
@@ -63,8 +62,8 @@ public class TestPojoProducers {
       {
       }
     };
-    Assert.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
-    Assert.assertEquals(producer.getProducers().size(), 1);
+    Assertions.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
+    Assertions.assertEquals(producer.getProducerMetas().size(), 1);
   }
 
   @Test

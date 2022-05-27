@@ -30,7 +30,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  */
 public class UrlWithProviderPrefixClientHttpRequestFactory implements ClientHttpRequestFactory {
   static class UrlWithProviderPrefixClientHttpRequest extends CseClientHttpRequest {
-    private String prefix;
+    private final String prefix;
 
     public UrlWithProviderPrefixClientHttpRequest(URI uri, HttpMethod httpMethod, String prefix) {
       super(uri, httpMethod);
@@ -43,7 +43,7 @@ public class UrlWithProviderPrefixClientHttpRequestFactory implements ClientHttp
     }
   }
 
-  private String prefix;
+  private final String prefix;
 
   public UrlWithProviderPrefixClientHttpRequestFactory(String prefix) {
     this.prefix = prefix;

@@ -28,7 +28,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 
 public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletRequest {
-  private HttpClientRequest clientRequest;
+  private final HttpClientRequest clientRequest;
 
   private String characterEncoding;
 
@@ -79,7 +79,7 @@ public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public String getMethod() {
-    return clientRequest.method().name();
+    return clientRequest.getMethod().name();
   }
 
   @Override

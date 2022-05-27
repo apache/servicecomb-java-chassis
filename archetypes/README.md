@@ -17,7 +17,7 @@ From http://maven.apache.org/guides/introduction/introduction-to-archetypes.html
 
   Archetype for create a common microservice using pojo provider.
   
-4. business-service-spring-boot-starter
+4. business-service-spring-boot2-starter
 
   Archetype for create a common microservice using spring-boot-starter provider.
 

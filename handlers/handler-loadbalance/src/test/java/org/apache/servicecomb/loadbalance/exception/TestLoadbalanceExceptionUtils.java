@@ -17,25 +17,19 @@
 
 package org.apache.servicecomb.loadbalance.exception;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.core.exception.CseException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-/**
- *
- *
- */
 public class TestLoadbalanceExceptionUtils {
 
   @Test
   public void testLoadbalanceExceptionUtils() {
 
-    assertEquals("servicecomb.handler.lb.wrong.rule", LoadbalanceExceptionUtils.CSE_HANDLER_LB_WRONG_RULE);
+    Assertions.assertEquals("servicecomb.handler.lb.wrong.rule", LoadbalanceExceptionUtils.CSE_HANDLER_LB_WRONG_RULE);
     CseException cseException = LoadbalanceExceptionUtils.createLoadbalanceException("servicecomb.handler.lb.wrong.rule",
         new Throwable(),
         "ARGS");
-    Assert.assertNotNull(cseException);
+    Assertions.assertNotNull(cseException);
   }
 }

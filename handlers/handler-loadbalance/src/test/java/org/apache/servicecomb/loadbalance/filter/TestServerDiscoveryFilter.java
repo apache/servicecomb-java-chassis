@@ -17,66 +17,81 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServerDiscoveryFilter {
-  ServerDiscoveryFilter filter = new ServerDiscoveryFilter();
+  static SCBEngine scbEngine;
 
-  @Mocked
-  TransportManager transportManager;
+  static TransportManager transportManager;
+
+  ServerDiscoveryFilter filter = new ServerDiscoveryFilter();
 
   @Mocked
   Transport trasport;
 
-  @Before
-  public void setup() {
-    CseContext.getInstance().setTransportManager(transportManager);
+  @BeforeClass
+  public static void setup() {
+    ConfigUtil.installDynamicConfig();
+    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
+    transportManager = scbEngine.getTransportManager();
   }
 
-  @After
-  public void teardown() {
-    CseContext.getInstance().setTransportManager(null);
+  @AfterClass
+  public static void teardown() {
+    scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void createEndpoint_TransportNotExist() {
-    new Expectations() {
+    new Expectations(transportManager) {
       {
         transportManager.findTransport(anyString);
         result = null;
       }
     };
 
-    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, null, null);
-    Assert.assertNull(server);
+    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, Const.RESTFUL, null, null);
+    Assertions.assertNull(server);
   }
 
   @Test
-  public void createEndpointNormal() {
-    new Expectations() {
+  public void createEndpointNormal(@Injectable DiscoveryContext context, @Injectable Invocation invocation) {
+    new Expectations(transportManager) {
       {
         transportManager.findTransport(anyString);
         result = trasport;
+        context.getInputParameters();
+        result = invocation;
+        invocation.getMicroserviceName();
+        result = "test";
       }
     };
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("0000001");
 
-    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, "rest://localhost:8080", instance);
-    Assert.assertSame(instance, server.getInstance());
-    Assert.assertSame(trasport, server.getEndpoint().getTransport());
-    Assert.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
+    ServiceCombServer server = (ServiceCombServer) filter
+        .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
+    Assertions.assertSame(instance, server.getInstance());
+    Assertions.assertSame(trasport, server.getEndpoint().getTransport());
+    Assertions.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
   }
 }

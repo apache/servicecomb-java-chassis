@@ -25,20 +25,22 @@
     <format>dir</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory>/</outputDirectory>
-      <unpack>false</unpack>
+
+  <fileSets>
+    <fileSet>
+      <outputDirectory>/maven</outputDirectory>
+      <directory>${project.build.directory}</directory>
       <includes>
-        <include>${artifact}</include>
+        <include>**/*.jar</include>
       </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>/lib</outputDirectory>
-      <unpack>false</unpack>
-      <excludes>
-        <exclude>${artifact}</exclude>
-      </excludes>
-    </dependencySet>
-  </dependencySets>
+    </fileSet>
+    <fileSet>
+      <outputDirectory>/maven</outputDirectory>
+      <directory>${project.build.directory}/classes</directory>
+      <includes>
+        <include>certificates/*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
 </assembly>

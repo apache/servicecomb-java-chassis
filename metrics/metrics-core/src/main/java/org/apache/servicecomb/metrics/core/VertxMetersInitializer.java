@@ -16,12 +16,13 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
+import org.apache.servicecomb.metrics.core.meter.vertx.HttpClientEndpointsMeter;
+import org.apache.servicecomb.metrics.core.meter.vertx.ServerEndpointsMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.VertxEndpointsMeter;
-import org.apache.servicecomb.metrics.core.meter.vertx.VertxServerEndpointsMeter;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.Id;
@@ -42,20 +43,17 @@ public class VertxMetersInitializer implements MetricsInitializer {
     Registry registry = globalRegistry.getDefaultRegistry();
 
     Id endpointsId = registry.createId(VERTX_ENDPOINTS);
-    VertxEndpointsMeter clientMeter = new VertxEndpointsMeter(endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_CLINET),
-        AbstractTransport
-            .getTransportVertxFactory()
-            .getMetricsFactory()
+    VertxEndpointsMeter clientMeter = new HttpClientEndpointsMeter(
+        endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_CLINET),
+        SharedVertxFactory.getMetricsFactory()
             .getVertxMetrics()
             .getClientEndpointMetricManager()
             .getClientEndpointMetricMap());
     SpectatorUtils.registerMeter(registry, clientMeter);
 
-    VertxEndpointsMeter serverMeter = new VertxServerEndpointsMeter(
+    VertxEndpointsMeter serverMeter = new ServerEndpointsMeter(
         endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
-        AbstractTransport
-            .getTransportVertxFactory()
-            .getMetricsFactory()
+        SharedVertxFactory.getMetricsFactory()
             .getVertxMetrics()
             .getServerEndpointMetricMap());
     SpectatorUtils.registerMeter(registry, serverMeter);

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -52,7 +52,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
       }
 
       for (Cookie cookie : cookies) {
-        if (paramPath.equals(cookie.getName())) {
+        if (Objects.equals(paramPath, cookie.getName())) {
           value = cookie.getValue();
           break;
         }
@@ -88,7 +88,8 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new CookieProcessor(parameter.getName(), targetType, ((CookieParameter) parameter).getDefaultValue(),
         parameter.getRequired());
   }

@@ -16,45 +16,67 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
-
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtobufOutput;
 
 public class HighwayOutputStream extends TcpOutputStream {
   public HighwayOutputStream(long msgId) {
     super(msgId);
   }
 
-  public void write(RequestHeader header, WrapSchema bodySchema, Object body) throws Exception {
-    write(RequestHeader.getRequestHeaderSchema(), header, bodySchema, body);
+  public void write(RequestHeader header, RequestRootSerializer requestRootSerializer, Object body) throws Exception {
+    write(RequestHeader.getRootSerializer().serialize(header), requestRootSerializer.serialize(body));
   }
 
-  public void write(ResponseHeader header, WrapSchema bodySchema, Object body) throws Exception {
-    write(ResponseHeader.getResponseHeaderSchema(), header, bodySchema, body);
+  public void write(ResponseHeader header, ResponseRootSerializer responseRootSerializer, Object body)
+      throws Exception {
+    write(ResponseHeader.getRootSerializer().serialize(header), responseRootSerializer.serialize(body));
   }
 
-  public void write(WrapSchema headerSchema, Object header, WrapSchema bodySchema, Object body) throws Exception {
-    // 写protobuf数据
-    LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
-    ProtobufOutput output = new ProtobufOutput(linkedBuffer);
+  public void write(RequestHeader header, RootSerializer bodySerializer, Object body) throws Exception {
+    write(RequestHeader.getRootSerializer(), header, bodySerializer, body);
+  }
 
-    // 写header
-    if (headerSchema != null) {
-      headerSchema.writeObject(output, header);
+  public void write(ResponseHeader header, RootSerializer bodySerializer, Object body) throws Exception {
+    write(ResponseHeader.getRootSerializer(), header, bodySerializer, body);
+  }
+
+  public void write(RootSerializer headerSerializer, Object header, RootSerializer bodySerializer, Object body)
+      throws Exception {
+    byte[] headerBytes = new byte[0];
+    byte[] bodyBytes = new byte[0];
+
+    if (headerSerializer != null) {
+      headerBytes = headerSerializer.serialize(header);
     }
-    int headerSize = output.getSize();
 
-    // 写body
-    // void时bodySchema为null
-    if (bodySchema != null) {
-      bodySchema.writeObject(output, body);
+    if (bodySerializer != null) {
+      bodyBytes = bodySerializer.serialize(body);
     }
 
-    writeLength(output.getSize(), headerSize);
-    LinkedBuffer.writeTo(this, linkedBuffer);
+    write(headerBytes, bodyBytes);
+  }
+
+  private void write(byte[] headerBytes, byte[] bodyBytes)
+      throws Exception {
+    int headerLength = 0;
+    int totalLength = 0;
+
+    if (headerBytes != null) {
+      headerLength = headerBytes.length;
+      totalLength = totalLength + headerLength;
+    }
+
+    if (bodyBytes != null) {
+      totalLength = totalLength + bodyBytes.length;
+    }
+
+    this.writeLength(totalLength, headerLength);
+    this.write(headerBytes);
+    this.write(bodyBytes);
   }
 }

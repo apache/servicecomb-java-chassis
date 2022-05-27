@@ -16,31 +16,30 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.parser;
 
+import com.google.common.base.MoreObjects;
+import io.protostuff.compiler.model.Proto;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.net.URL;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.google.common.base.MoreObjects;
-
-import io.protostuff.compiler.model.Proto;
+import java.nio.charset.StandardCharsets;
 
 public class TestProtoParser {
   @Test
   public void parse() throws IOException {
     URL url = Thread.currentThread().getContextClassLoader().getResource("protobufRoot.proto");
-    String content = IOUtils.toString(url);
+    String content = IOUtils.toString(url, StandardCharsets.UTF_8);
 
     ProtoParser parser = new ProtoParser();
     Proto protoFromContent = parser.parseFromContent(content);
     Proto protoFromName = parser.parse("protobufRoot.proto");
 
-    Assert.assertNotNull(protoFromContent.getMessage("Root"));
-    Assert.assertNotNull(protoFromContent.getMessage("User"));
+    Assertions.assertNotNull(protoFromContent.getMessage("Root"));
+    Assertions.assertNotNull(protoFromContent.getMessage("User"));
 
-    Assert.assertEquals(MoreObjects.toStringHelper(protoFromContent)
+    Assertions.assertEquals(MoreObjects.toStringHelper(protoFromContent)
             .omitNullValues()
             .add("messages", protoFromContent.getMessages())
             .toString(),

@@ -20,8 +20,8 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.http.HttpServerResponse;
@@ -31,9 +31,10 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAbstractEdgeDispatcher {
-  class AbstractEdgeDispatcherForTest extends AbstractEdgeDispatcher {
+  static class AbstractEdgeDispatcherForTest extends AbstractEdgeDispatcher {
     @Override
     public int getOrder() {
       return 0;
@@ -43,7 +44,6 @@ public class TestAbstractEdgeDispatcher {
     public void init(Router router) {
     }
   }
-
 
   @Test
   public void onFailure(@Mocked RoutingContext context) {
@@ -65,7 +65,7 @@ public class TestAbstractEdgeDispatcher {
     new Expectations() {
       {
         context.failure();
-        returns(new Error("failed"), null);
+        returns(new RuntimeExceptionWithoutStackTrace("failed"), null);
         context.response();
         result = response;
       }
@@ -74,8 +74,8 @@ public class TestAbstractEdgeDispatcher {
     AbstractEdgeDispatcherForTest dispatcher = new AbstractEdgeDispatcherForTest();
     dispatcher.onFailure(context);
 
-    Assert.assertEquals(502, map.get("code"));
-    Assert.assertEquals("Bad Gateway", map.get("msg"));
+    Assertions.assertEquals(502, map.get("code"));
+    Assertions.assertEquals("Bad Gateway", map.get("msg"));
 
     new Expectations() {
       {
@@ -90,7 +90,7 @@ public class TestAbstractEdgeDispatcher {
     dispatcher = new AbstractEdgeDispatcherForTest();
     dispatcher.onFailure(context);
 
-    Assert.assertEquals(401, map.get("code"));
-    Assert.assertEquals("unauthorized", map.get("msg"));
+    Assertions.assertEquals(401, map.get("code"));
+    Assertions.assertEquals("unauthorized", map.get("msg"));
   }
 }

@@ -28,7 +28,7 @@ import rx.subjects.ReplaySubject;
 
 public class BizkeeperHandlerDelegate {
 
-  private BizkeeperHandler handler;
+  private final BizkeeperHandler handler;
 
   public BizkeeperHandlerDelegate(BizkeeperHandler handler) {
     this.handler = handler;
@@ -54,7 +54,7 @@ public class BizkeeperHandlerDelegate {
 
       @Override
       public Observable<Response> toObservable() {
-        return Observable.create(f -> {
+        return Observable.unsafeCreate(f -> {
           try {
             f.onNext(FallbackPolicyManager.getFallbackResponse(handler.groupname, null, invocation));
           } catch (Exception e) {

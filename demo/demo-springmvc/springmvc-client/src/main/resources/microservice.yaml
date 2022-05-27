@@ -22,7 +22,7 @@ service_description:
 servicecomb:
   service:
     registry:
-      address: http://127.0.0.1:9980,http://127.0.0.1:30100
+      address: http://127.0.0.1:30100
       autodiscovery: true
       client:
         timeout:
@@ -33,15 +33,7 @@ servicecomb:
           interval: 3
         pull:
           interval: 90
-        watch: false
-      autodiscovery: true
-# can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
-  config:
-    client:
-      serverUri: http://127.0.0.1:30113
-      refreshMode: 1
-      refresh_interval: 5000
-      refreshPort: 30114
+        watch: true
   rest:
     client:
       connection:
@@ -52,10 +44,20 @@ servicecomb:
     chain:
       Consumer:
         default: loadbalance,fault-injection-consumer,bizkeeper-consumer
+  invocation:
+    timeout:
+      check:
+        enabled: true
+        strategy: processing-time
+    springmvc:
+      SpringMVCCommonSchemaInterface:
+        testInvocationTimeoutInClientWait:
+          timeout: 300
   tracing:
     enabled: true
     samplingRate: 0.5
   loadbalance:
+    userDefinedEndpoint.enabled: true
     strategy:
       name: WeightedResponse
     retryEnabled: true
@@ -109,6 +111,17 @@ servicecomb:
   test:
     duplicate1: newer
 
+# test governance retry
+  matchGroup:
+    retry-governance: |
+      matches:
+        - apiPath:
+            prefix: "/retry/governance/"
+  retry:
+    retry-governance: |
+      maxAttempts: 2
+      retryOnResponseStatus: [500]
+
 cse:
   fallback:
     Consumer:
@@ -126,6 +139,11 @@ cse:
             timeoutInMilliseconds: 1000
   test:
     duplicate2: newer
+
+3rd-svc:
+  urls:
+    - http://localhost:8080
+
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

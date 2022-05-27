@@ -22,13 +22,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Mocked;
 
@@ -44,9 +42,6 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   HttpServerFilterBeforeSendResponseExecutor executor =
       new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Before
   public void setup() {
     httpServerFilters.add(new HttpServerFilterBaseForTest());
@@ -56,7 +51,7 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   public void runSucc() throws InterruptedException, ExecutionException {
     CompletableFuture<Void> result = executor.run();
 
-    Assert.assertNull(result.get());
+    Assertions.assertNull(result.get());
   }
 
   @Test
@@ -64,15 +59,13 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
     httpServerFilters.add(new HttpServerFilterBaseForTest() {
       @Override
       public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
-        throw new Error("");
+        throw new RuntimeExceptionWithoutStackTrace();
       }
     });
 
     CompletableFuture<Void> result = executor.run();
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.instanceOf(Error.class));
-
-    result.get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, result::get);
+    Assertions.assertTrue(exception.getCause() instanceof RuntimeExceptionWithoutStackTrace);
   }
 }

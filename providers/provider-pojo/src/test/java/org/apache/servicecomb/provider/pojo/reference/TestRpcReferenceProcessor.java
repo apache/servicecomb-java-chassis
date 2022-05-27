@@ -17,11 +17,17 @@
 
 package org.apache.servicecomb.provider.pojo.reference;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.PersonReference;
-import org.junit.Assert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
 
 import mockit.Injectable;
@@ -29,33 +35,47 @@ import mockit.Injectable;
 public class TestRpcReferenceProcessor {
   RpcReferenceProcessor consumers = new RpcReferenceProcessor();
 
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @After
+  public void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void postProcessAfterInitialization() {
     Object bean = new Object();
-    Assert.assertSame(bean, consumers.postProcessAfterInitialization(bean, "test"));
+    Assertions.assertSame(bean, consumers.postProcessAfterInitialization(bean, "test"));
   }
 
   @Test
-  public void testReference(@Injectable ApplicationContext applicationContext) throws Exception {
+  public void testReference(@Injectable ApplicationContext applicationContext) {
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+
     PersonReference bean = new PersonReference();
 
-    Assert.assertNull(bean.person);
+    Assertions.assertNull(bean.person);
 
     consumers.setEmbeddedValueResolver((strVal) -> strVal);
-    Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
+    Assertions.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
-    Assert.assertNotNull(bean.person);
+    Assertions.assertNotNull(bean.person);
+
+    scbEngine.destroy();
   }
 
   @Test
-  public void testNoReference(@Injectable ApplicationContext applicationContext) throws Exception {
+  public void testNoReference(@Injectable ApplicationContext applicationContext) {
     Person bean = new Person();
 
-    Assert.assertNull(bean.name);
+    Assertions.assertNull(bean.name);
 
-    Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
+    Assertions.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
-    Assert.assertNull(bean.name);
+    Assertions.assertNull(bean.name);
   }
 
   @Test

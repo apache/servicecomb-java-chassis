@@ -18,40 +18,45 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
-import java.util.Collections;
-
-import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.Assert;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
+import org.hamcrest.MatcherAssert;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.util.StringValueResolver;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSwaggerGenerator {
+  @BeforeClass
+  public static void setup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testBasePathPlaceHolder() {
-    StringValueResolver stringValueResolver =
-        SpringUtils.createStringValueResolver(Collections.singletonMap("var", "varValue"));
+    ArchaiusUtils.setProperty("var", "varValue");
 
-    PojoSwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-    context.setEmbeddedValueResolver(stringValueResolver);
-
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, null);
+    PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
     swaggerGenerator.setBasePath("/a/${var}/b");
 
-    Assert.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
+    Assertions.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
   }
 
   @Test
   public void testAddDefaultTag() {
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), null);
+    PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
 
     swaggerGenerator.addDefaultTag("test1");
     swaggerGenerator.addDefaultTag("");
     swaggerGenerator.addDefaultTag(null);
     swaggerGenerator.addDefaultTag("test2");
 
-    assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
+    MatcherAssert.assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
   }
 }

@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.loadbalance;
 
-import com.netflix.client.RetryHandler;
-
 /**
  * By implements ExtensionsFactory, users can add new extends for rules, filters, etc.
  */
@@ -29,10 +27,6 @@ public interface ExtensionsFactory {
   }
 
   default ServerListFilterExt createServerListFilter(String key, String value, Object... args) {
-    return null;
-  }
-
-  default RetryHandler createRetryHandler(String retryName, String microservice) {
     return null;
   }
 }

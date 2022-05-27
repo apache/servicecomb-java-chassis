@@ -17,6 +17,8 @@
 package org.apache.servicecomb.swagger.invocation.exception;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.core.Response.StatusType;
 
@@ -32,7 +34,7 @@ public final class ExceptionFactory {
   //    private static final int PROVIDER_INNER_STATUS_CODE = 510;
   public static final int PRODUCER_INNER_STATUS_CODE = 590;
 
-  public static final String PRODUCER_INNER_REASON_PHRASE = "Cse Internal Server Error";
+  public static final String PRODUCER_INNER_REASON_PHRASE = "Unexpected producer error, please check logs for details";
 
   public static final StatusType PRODUCER_INNER_STATUS =
       new HttpStatus(PRODUCER_INNER_STATUS_CODE, PRODUCER_INNER_REASON_PHRASE);
@@ -42,9 +44,9 @@ public final class ExceptionFactory {
   //    private static final int CONSUMER_INNER_STATUS_CODE = 420;
   public static final int CONSUMER_INNER_STATUS_CODE = 490;
 
-  public static final String CONSUMER_INNER_REASON_PHRASE = "Cse Internal Bad Request";
+  public static final String CONSUMER_INNER_REASON_PHRASE = "Unexpected consumer error, please check logs for details";
 
-  private static ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
+  private static final ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
   public static final StatusType CONSUMER_INNER_STATUS =
       new HttpStatus(CONSUMER_INNER_STATUS_CODE, CONSUMER_INNER_REASON_PHRASE);
@@ -69,13 +71,13 @@ public final class ExceptionFactory {
     return create(PRODUCER_INNER_STATUS, errorData);
   }
 
-  protected static InvocationException doCreate(StatusType status,
-      Object errorData) {
+  private static InvocationException doCreate(StatusType status,
+                                              Object errorData) {
     return new InvocationException(status, errorData);
   }
 
-  protected static InvocationException doCreate(int statusCode, String reasonPhrase, CommonExceptionData data,
-      Throwable e) {
+  private static InvocationException doCreate(int statusCode, String reasonPhrase, CommonExceptionData data,
+                                              Throwable e) {
     return new InvocationException(statusCode, reasonPhrase, data, e);
   }
 
@@ -110,13 +112,11 @@ public final class ExceptionFactory {
   // 如果e中取不出可以直接返回的InvocationException
   // 则需要创建新的InvocationException实例，此时不允许使用e.getMessage，因为可能会涉及关键信息被传给远端
   // 新创建的InvocationException，会使用errorMsg来构建CommonExceptionData
-  protected static InvocationException convertException(int statusCode, String reasonPhrase, Throwable e,
-      String errorMsg) {
-    if (InvocationTargetException.class.isInstance(e)) {
-      e = ((InvocationTargetException) e).getTargetException();
-    }
+  private static InvocationException convertException(int statusCode, String reasonPhrase, Throwable e,
+                                                      String errorMsg) {
+    e = unwrap(e);
 
-    if (InvocationException.class.isInstance(e)) {
+    if (e instanceof InvocationException) {
       return (InvocationException) e;
     }
 
@@ -126,5 +126,27 @@ public final class ExceptionFactory {
 
   public static Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
     return exceptionToProducerResponseConverters.convertExceptionToResponse(swaggerInvocation, e);
+  }
+
+  public static Throwable unwrapIncludeInvocationException(Throwable throwable) {
+    throwable = unwrap(throwable);
+    if (throwable instanceof InvocationException) {
+      throwable = throwable.getCause();
+    }
+    return throwable;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends Throwable> T unwrap(Throwable throwable) {
+    if (throwable instanceof InvocationTargetException) {
+      throwable = ((InvocationTargetException) throwable).getTargetException();
+    }
+    if (throwable instanceof CompletionException) {
+      throwable = throwable.getCause();
+    }
+    if (throwable instanceof ExecutionException) {
+      throwable = throwable.getCause();
+    }
+    return (T) throwable;
   }
 }

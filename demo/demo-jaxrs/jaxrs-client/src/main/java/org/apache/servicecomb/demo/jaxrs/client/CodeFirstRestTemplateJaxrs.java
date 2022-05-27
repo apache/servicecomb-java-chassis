@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.jaxrs.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,19 +51,19 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   }
 
   @Override
-  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyRest(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
-    super.testOnlyRest(template, cseUrlPrefix);
+    super.testOnlyRest(microserviceName, template, cseUrlPrefix);
   }
 
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "Hello World";
     File file1 = File.createTempFile("jaxrstest1", ".txt");
-    FileUtils.writeStringToFile(file1, file1Content);
+    FileUtils.writeStringToFile(file1, file1Content, StandardCharsets.UTF_8, false);
 
     testFileUpload(template, cseUrlPrefix, file1, file1Content);
     testFileAndStringUpload(template, cseUrlPrefix, file1, file1Content);
@@ -74,7 +75,7 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
     map.put("file1", new FileSystemResource(file1));
     String file2Content = "Hello EveryOne";
     File file2 = File.createTempFile("测试2", ".txt");
-    FileUtils.writeStringToFile(file2, file2Content);
+    FileUtils.writeStringToFile(file2, file2Content, StandardCharsets.UTF_8, false);
     map.put("file2", new FileSystemResource(file2));
 
     String result1 = template.postForObject(cseUrlPrefix + "/upload1", new HttpEntity<>(new HashMap<>()), String.class);
@@ -117,6 +118,6 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
       }
     }
     TestMgr.check(404, exception.getRawStatusCode());
-    TestMgr.check("404 Not Found", exception.getMessage());
+    TestMgr.check("404 Not Found: \"{\"message\":\"Not Found\"}\"", exception.getMessage());
   }
 }

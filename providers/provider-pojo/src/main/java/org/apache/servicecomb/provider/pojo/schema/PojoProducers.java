@@ -16,35 +16,27 @@
  */
 package org.apache.servicecomb.provider.pojo.schema;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.servicecomb.foundation.common.RegisterManager;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 public class PojoProducers implements BeanPostProcessor {
-  // key为schemaId
-  private RegisterManager<String, PojoProducerMeta> pojoMgr = new RegisterManager<>("pojo service manager");
+  private final List<ProducerMeta> producerMetas = new ArrayList<>();
 
-  public void registerPojoProducer(PojoProducerMeta pojoProducer) {
-    pojoMgr.register(pojoProducer.getSchemaId(), pojoProducer);
+  public synchronized void registerPojoProducer(PojoProducerMeta pojoProducer) {
+    producerMetas.add(pojoProducer);
   }
 
-  public Collection<PojoProducerMeta> getProducers() {
-    return pojoMgr.values();
-  }
-
-  /**
-   * @deprecated Replaced by {@link #getProducers()}
-   */
-  @Deprecated
-  public Collection<PojoProducerMeta> getProcucers() {
-    return getProducers();
+  public List<ProducerMeta> getProducerMetas() {
+    return producerMetas;
   }
 
   @Override
@@ -63,8 +55,8 @@ public class PojoProducers implements BeanPostProcessor {
     // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
     // 所以，需要先取出原class，再取标注
     Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
-    if(beanCls == null) {
-    	return;
+    if (beanCls == null) {
+      return;
     }
     RpcSchema rpcSchema = beanCls.getAnnotation(RpcSchema.class);
     if (rpcSchema == null) {
@@ -83,8 +75,8 @@ public class PojoProducers implements BeanPostProcessor {
 
     PojoProducerMeta pojoProducerMeta = new PojoProducerMeta();
     pojoProducerMeta.setSchemaId(schemaId);
+    pojoProducerMeta.setSchemaInterface(rpcSchema.schemaInterface());
     pojoProducerMeta.setInstance(bean);
-    pojoProducerMeta.setInstanceClass(beanCls);
 
     registerPojoProducer(pojoProducerMeta);
   }

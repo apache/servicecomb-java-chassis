@@ -30,7 +30,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JacksonXmlRootElement
 public class Config {
   // key为handler id
-  private Map<String, Class<Handler>> handlerClassMap = new HashMap<>();
+  private final Map<String, Class<Handler>> handlerClassMap = new HashMap<>();
 
   public void mergeFrom(Config otherConfig) {
     handlerClassMap.putAll(otherConfig.handlerClassMap);

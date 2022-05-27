@@ -18,9 +18,11 @@
 package org.apache.servicecomb.foundation.vertx;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -51,12 +53,25 @@ public final class VertxTLSBuilder {
   public static NetServerOptions buildNetServerOptions(SSLOption sslOption, SSLCustom sslCustom,
       NetServerOptions netServerOptions) {
     buildTCPSSLOptions(sslOption, sslCustom, netServerOptions);
-    if (sslOption.isAuthPeer()) {
-      netServerOptions.setClientAuth(ClientAuth.REQUIRED);
-    } else {
-      netServerOptions.setClientAuth(ClientAuth.REQUEST);
-    }
+    setClientAuth(sslOption, netServerOptions);
     return netServerOptions;
+  }
+
+  private static void setClientAuth(SSLOption sslOption, NetServerOptions netServerOptions) {
+    if (sslOption.isAuthPeer() || org.apache.servicecomb.foundation.ssl.ClientAuth.REQUIRED
+        .equals(sslOption.getClientAuth())) {
+      netServerOptions.setClientAuth(ClientAuth.REQUIRED);
+      return;
+    }
+
+    if (org.apache.servicecomb.foundation.ssl.ClientAuth.NONE
+        .equals(sslOption.getClientAuth())) {
+      netServerOptions.setClientAuth(ClientAuth.NONE);
+      return;
+    }
+
+    netServerOptions.setClientAuth(ClientAuth.REQUEST);
+    return;
   }
 
   public static void buildHttpClientOptions(String sslKey, HttpClientOptions httpClientOptions) {
@@ -95,20 +110,18 @@ public final class VertxTLSBuilder {
     tcpClientOptions.setSsl(true);
 
     if (sslOption.getEngine().equalsIgnoreCase("openssl")) {
-      OpenSSLEngineOptions options = new OpenSSLEngineOptions();
-      options.setSessionCacheEnabled(true);
       tcpClientOptions.setOpenSslEngineOptions(new OpenSSLEngineOptions());
     }
     String fullKeyStore = sslCustom.getFullPath(sslOption.getKeyStore());
     if (isFileExists(fullKeyStore)) {
       if (STORE_PKCS12.equalsIgnoreCase(sslOption.getKeyStoreType())) {
         PfxOptions keyPfxOptions = new PfxOptions();
-        keyPfxOptions.setPath(sslCustom.getFullPath(sslOption.getKeyStore()));
+        keyPfxOptions.setPath(fullKeyStore);
         keyPfxOptions.setPassword(new String(sslCustom.decode(sslOption.getKeyStoreValue().toCharArray())));
         tcpClientOptions.setPfxKeyCertOptions(keyPfxOptions);
       } else if (STORE_JKS.equalsIgnoreCase(sslOption.getKeyStoreType())) {
         JksOptions keyJksOptions = new JksOptions();
-        keyJksOptions.setPath(sslCustom.getFullPath(sslOption.getKeyStore()));
+        keyJksOptions.setPath(fullKeyStore);
         keyJksOptions.setPassword(new String(sslCustom.decode(sslOption.getKeyStoreValue().toCharArray())));
         tcpClientOptions.setKeyStoreOptions(keyJksOptions);
       } else {
@@ -121,13 +134,13 @@ public final class VertxTLSBuilder {
     if (isFileExists(fullTrustStore)) {
       if (STORE_PKCS12.equalsIgnoreCase(sslOption.getTrustStoreType())) {
         PfxOptions trustPfxOptions = new PfxOptions();
-        trustPfxOptions.setPath(sslCustom.getFullPath(sslOption.getTrustStore()));
+        trustPfxOptions.setPath(fullTrustStore);
         trustPfxOptions
             .setPassword(new String(sslCustom.decode(sslOption.getTrustStoreValue().toCharArray())));
         tcpClientOptions.setPfxTrustOptions(trustPfxOptions);
       } else if (STORE_JKS.equalsIgnoreCase(sslOption.getTrustStoreType())) {
         JksOptions trustJksOptions = new JksOptions();
-        trustJksOptions.setPath(sslCustom.getFullPath(sslOption.getTrustStore()));
+        trustJksOptions.setPath(fullTrustStore);
         trustJksOptions
             .setPassword(new String(sslCustom.decode(sslOption.getTrustStoreValue().toCharArray())));
         tcpClientOptions.setTrustStoreOptions(trustJksOptions);
@@ -141,7 +154,7 @@ public final class VertxTLSBuilder {
     tcpClientOptions
         .setEnabledSecureTransportProtocols(new HashSet<String>(Arrays.asList(sslOption.getProtocols().split(","))));
 
-    for (String cipher : SSLManager.getEnalbedCiphers(sslOption.getCiphers())) {
+    for (String cipher : SSLManager.getEnabledCiphers(sslOption.getCiphers())) {
       tcpClientOptions.addEnabledCipherSuite(cipher);
     }
 
@@ -152,10 +165,18 @@ public final class VertxTLSBuilder {
   }
 
   private static boolean isFileExists(String name) {
-    if (name == null || name.isEmpty()) {
+    if (StringUtils.isEmpty(name)) {
       return false;
     }
     File f = new File(name);
-    return f.exists();
+    if (f.isFile()) {
+      return true;
+    }
+
+    ClassLoader classLoader =
+        Thread.currentThread().getContextClassLoader() == null ? VertxTLSBuilder.class.getClassLoader()
+            : Thread.currentThread().getContextClassLoader();
+    URL resource = classLoader.getResource(name);
+    return resource != null;
   }
 }

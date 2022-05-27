@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.common.rest.definition.RestOperationComparator;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +41,6 @@ public class MicroservicePaths {
 
   // 运行阶段,以path优先级,从高到低排列的operation列表
   protected List<RestOperationMeta> dynamicPathOperationsList = new ArrayList<>();
-
-  public void cloneTo(MicroservicePaths other) {
-    other.staticPathOperations.putAll(staticPathOperations);
-    other.dynamicPathOperationsList.addAll(dynamicPathOperationsList);
-  }
 
   public void sortPath() {
     RestOperationComparator comparator = new RestOperationComparator();
@@ -100,11 +96,13 @@ public class MicroservicePaths {
 
   protected void printPath(Collection<RestOperationMeta> operations) {
     for (RestOperationMeta operation : operations) {
+      SwaggerProducerOperation producerOperation = operation.getOperationMeta().getSwaggerProducerOperation();
+
       LOGGER.info("Swagger mapped \"{[{}], method=[{}], produces={}}\" onto {}",
           operation.getAbsolutePath(),
           operation.getHttpMethod(),
           operation.getProduces(),
-          operation.getOperationMeta().getMethod());
+          producerOperation.getProducerMethod());
     }
   }
 }

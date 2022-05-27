@@ -34,7 +34,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.foundation.common.utils.PartUtils;
+import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
+import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
@@ -44,6 +47,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import io.vertx.core.Context;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
@@ -66,10 +71,18 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected Buffer bodyBuffer;
 
+  private final Handler<Throwable> throwableHandler;
+
   public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp) {
+    this(request, context, asyncResp, null);
+  }
+
+  public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp,
+      Handler<Throwable> throwableHandler) {
     this.context = context;
     this.asyncResp = asyncResp;
     this.request = request;
+    this.throwableHandler = throwableHandler;
   }
 
   @Override
@@ -85,46 +98,51 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void attach(String name, Object part) {
-    if (null == part) {
+  public void attach(String name, Object partOrList) {
+    if (null == partOrList) {
       LOGGER.debug("null file is ignored, file name = [{}]", name);
       return;
     }
-    if (List.class.isAssignableFrom(part.getClass())) {
-      List<Part> parts = (List<Part>) part;
-      uploads.putAll(name, parts);
+
+    if (partOrList.getClass().isArray()) {
+      for (Object part : (Object[]) partOrList) {
+        uploads.put(name, PartUtils.getSinglePart(name, part));
+      }
+    }
+
+    if (List.class.isAssignableFrom(partOrList.getClass())) {
+      for (Object part : (List<Object>) partOrList) {
+        uploads.put(name, PartUtils.getSinglePart(name, part));
+      }
       return;
     }
-    // must be part
-    uploads.put(name, (Part) part);
+
+    uploads.put(name, PartUtils.getSinglePart(name, partOrList));
   }
 
   @Override
-  public void end() {
+  public Future<Void> end() {
     writeCookies();
 
     if (!uploads.isEmpty()) {
-      doEndWithUpload();
-      return;
+      return doEndWithUpload();
     }
 
-    doEndNormal();
+    return doEndNormal();
   }
 
-  protected void doEndWithUpload() {
+  protected Future<Void> doEndWithUpload() {
     request.setChunked(true);
 
     String boundary = "boundary" + UUID.randomUUID().toString();
     putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
 
-    genBodyForm(boundary);
-
-    attachFiles(boundary);
+    return genBodyForm(boundary).onSuccess(v -> attachFiles(boundary)).onFailure(e -> asyncResp.consumerFail(e));
   }
 
-  private void genBodyForm(String boundary) {
+  private Future<Void> genBodyForm(String boundary) {
     if (formMap == null) {
-      return;
+      return Future.succeededFuture();
     }
 
     try {
@@ -138,10 +156,11 @@ public class RestClientRequestImpl implements RestClientRequest {
             output.write(value.getBytes(StandardCharsets.UTF_8));
           }
         }
-        request.write(output.getBuffer());
+
+        return writeBuffer(output.getBuffer());
       }
     } catch (Exception e) {
-      asyncResp.consumerFail(e);
+      return Future.failedFuture(e);
     }
   }
 
@@ -149,20 +168,19 @@ public class RestClientRequestImpl implements RestClientRequest {
     return string.getBytes(StandardCharsets.UTF_8);
   }
 
-  protected void doEndNormal() {
+  protected Future<Void> doEndNormal() {
     try {
       genBodyBuffer();
     } catch (Exception e) {
       asyncResp.consumerFail(e);
-      return;
+      return Future.succeededFuture();
     }
 
     if (bodyBuffer == null) {
-      request.end();
-      return;
+      return request.end();
     }
 
-    request.end(bodyBuffer);
+    return request.end(bodyBuffer);
   }
 
   private void attachFiles(String boundary) {
@@ -172,8 +190,7 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   private void attachFile(String boundary, Iterator<Entry<String, Part>> uploadsIterator) {
     if (!uploadsIterator.hasNext()) {
-      request.write(boundaryEndInfo(boundary));
-      request.end();
+      writeBuffer(boundaryEndInfo(boundary)).onSuccess(v -> request.end()).onFailure(e -> asyncResp.consumerFail(e));
       return;
     }
 
@@ -183,19 +200,19 @@ public class RestClientRequestImpl implements RestClientRequest {
     String name = entry.getKey();
     Part part = entry.getValue();
     String filename = part.getSubmittedFileName();
-    Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
-    request.write(fileHeader);
 
-    new PumpFromPart(context, part).toWriteStream(request).whenComplete((v, e) -> {
-      if (e != null) {
-        LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
-        asyncResp.consumerFail(e);
-        return;
-      }
+    LOGGER.debug("Start attach file [{}:{}].", name, filename);
+    writeBuffer(fileBoundaryInfo(boundary, name, part)).onSuccess(r ->
+        new PumpFromPart(context, part).toWriteStream(request, throwableHandler).whenComplete((v, e) -> {
+          if (e != null) {
+            LOGGER.warn("Failed attach file [{}:{}].", name, filename, e);
+            asyncResp.consumerFail(e);
+            return;
+          }
 
-      LOGGER.debug("finish sending file [{}:{}].", name, filename);
-      attachFile(boundary, uploadsIterator);
-    });
+          LOGGER.debug("Finish attach file [{}:{}].", name, filename);
+          attachFile(boundary, uploadsIterator);
+        })).onFailure(e -> asyncResp.consumerFail(e));
   }
 
   private Buffer boundaryEndInfo(String boundary) {
@@ -217,6 +234,11 @@ public class RestClientRequestImpl implements RestClientRequest {
     buffer.appendString("Content-Transfer-Encoding: binary\r\n");
     buffer.appendString("\r\n");
     return buffer;
+  }
+
+  protected Future<Void> writeBuffer(Buffer buffer) {
+    return new InputStreamToReadStream(context,
+        new BufferInputStream(buffer.getByteBuf()), true).pipe().endOnComplete(false).to(request);
   }
 
   private void genBodyBuffer() throws Exception {
@@ -257,6 +279,18 @@ public class RestClientRequestImpl implements RestClientRequest {
           .append("; ");
     }
     request.putHeader(HttpHeaders.COOKIE, builder.toString());
+  }
+
+  public Context getContext() {
+    return context;
+  }
+
+  public HttpClientRequest getRequest() {
+    return request;
+  }
+
+  public Map<String, String> getCookieMap() {
+    return cookieMap;
   }
 
   @Override

@@ -17,23 +17,23 @@
 
 package org.apache.servicecomb.swagger.converter.model;
 
-import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.ArrayModel;
+import io.swagger.models.Swagger;
 
 public class ArrayModelConverter extends AbstractModelConverter {
   @Override
-  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object model) {
+  public JavaType doConvert(Swagger swagger, Object model) {
     ArrayModel arrayModel = (ArrayModel) model;
 
     if (arrayModel.getItems() != null) {
-      return ArrayPropertyConverter.findJavaType(swaggerToClassGenerator, arrayModel.getItems(), false);
+      return ArrayPropertyConverter.findJavaType(swagger, arrayModel.getItems(), false);
     }
 
     // don't know when will this happen.
-    throw new Error("not support null array model items.");
+    throw new IllegalStateException("not support null array model items.");
   }
 }

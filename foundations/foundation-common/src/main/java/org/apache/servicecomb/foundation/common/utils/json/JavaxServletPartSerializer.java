@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 
+// 什么情况下用？
 public class JavaxServletPartSerializer extends StdSerializer<Part> {
   private static final long serialVersionUID = 348443113789878443L;
 
@@ -40,7 +41,7 @@ public class JavaxServletPartSerializer extends StdSerializer<Part> {
 
   @Override
   public void serialize(Part value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-    final ObjectCodec preservedCodec = ((TokenBuffer) gen).asParser().getCodec();
+    ObjectCodec preservedCodec = ((TokenBuffer) gen).asParser().getCodec();
     // set codec as null to avoid recursive dead loop
     // JsonGenerator is instantiated for each serialization, so there should be no thread safe issue
     gen.setCodec(null);

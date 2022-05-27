@@ -18,14 +18,8 @@
 package org.apache.servicecomb.loadbalance;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Objects;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -35,14 +29,13 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
+import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -51,100 +44,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.reactive.ExecutionContext;
-import com.netflix.loadbalancer.reactive.ExecutionInfo;
-import com.netflix.loadbalancer.reactive.ExecutionListener;
-import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
-import com.netflix.loadbalancer.reactive.ServerOperation;
-
-import rx.Observable;
 
 /**
  *  Load balance handler.
  */
 public class LoadbalanceHandler implements Handler {
+  public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
+
+  // Enough times to make sure to choose a different server in high volume.
+  private static final int COUNT = 17;
+
   public static final String CONTEXT_KEY_SERVER_LIST = "x-context-server-list";
 
   public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
 
+  // set endpoint in invocation.localContext
+  // ignore logic of loadBalance
   public static final boolean supportDefinedEndpoint =
       DynamicPropertyFactory.getInstance()
           .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
 
-  // just a wrapper to make sure in retry mode to choose a different server.
-  class RetryLoadBalancer implements ILoadBalancer {
-    // Enough times to make sure to choose a different server in high volume.
-    static final int COUNT = 17;
-
-    Server lastServer = null;
-
-    LoadBalancer delegate;
-
-    RetryLoadBalancer(LoadBalancer delegate) {
-      this.delegate = delegate;
-    }
-
-    @Override
-    public void addServers(List<Server> newServers) {
-      throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    @Override
-    public Server chooseServer(Object key) {
-      for (int i = 0; i < COUNT; i++) {
-        Server s = delegate.chooseServer((Invocation) key);
-        if (s != null && !s.equals(lastServer)) {
-          lastServer = s;
-          break;
-        }
-      }
-
-      return lastServer;
-    }
-
-
-    @Override
-    public void markServerDown(Server server) {
-      throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    @Override
-    @Deprecated
-    public List<Server> getServerList(boolean availableOnly) {
-      throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    @Override
-    public List<Server> getReachableServers() {
-      throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    @Override
-    public List<Server> getAllServers() {
-      throw new UnsupportedOperationException("Not implemented.");
-    }
-  }
-
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
-
-  private static final ExecutorService RETRY_POOL = Executors.newCachedThreadPool(new ThreadFactory() {
-    private AtomicInteger count = new AtomicInteger(0);
-
-    @Override
-    public Thread newThread(Runnable r) {
-      Thread thread = new Thread(r, "retry-pool-thread-" + count.getAndIncrement());
-      // avoid block shutdown
-      thread.setDaemon(true);
-      return thread;
-    }
-  });
 
   private DiscoveryTree discoveryTree = new DiscoveryTree();
 
   // key为grouping filter qualified name
-  private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
+  private final Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
 
   private final Object lock = new Object();
 
@@ -183,14 +108,20 @@ public class LoadbalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (supportDefinedEndpoint) {
-      if (defineEndpointAndHandle(invocation, asyncResp)) {
-        return;
-      }
+    AsyncResponse response = asyncResp;
+    asyncResp = async -> {
+      ServiceCombServerStats.checkAndReleaseTryingChance(invocation);
+      response.handle(async);
+    };
+
+    if (handleSuppliedEndpoint(invocation, asyncResp)) {
+      invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, false);
+      return;
     }
+    invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, true);
 
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
-    if (!isEqual(strategy, this.strategy)) {
+    if (!Objects.equals(strategy, this.strategy)) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         clearLoadBalancer();
@@ -200,18 +131,26 @@ public class LoadbalanceHandler implements Handler {
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
 
-    if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
-      send(invocation, asyncResp, loadBalancer);
-    } else {
-      sendWithRetry(invocation, asyncResp, loadBalancer);
-    }
+    send(invocation, asyncResp, loadBalancer);
   }
 
-  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    String endpointUri = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
-    if (endpointUri == null) {
-      return false;
+  // user's can invoke a service by supplying target Endpoint.
+  // in this case, we do not using load balancer, and no stats of server calculated, no retrying.
+  private boolean handleSuppliedEndpoint(Invocation invocation,
+      AsyncResponse asyncResp) throws Exception {
+    if (invocation.getEndpoint() != null) {
+      invocation.next(asyncResp);
+      return true;
     }
+
+    if (supportDefinedEndpoint) {
+      return defineEndpointAndHandle(invocation, asyncResp);
+    }
+
+    return false;
+  }
+
+  private Endpoint parseEndpoint(String endpointUri) throws Exception {
     URI formatUri = new URI(endpointUri);
     Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
     if (transport == null) {
@@ -219,11 +158,21 @@ public class LoadbalanceHandler implements Handler {
       throw new InvocationException(Status.BAD_REQUEST,
           "the endpoint's transport is not found.");
     }
-    Endpoint endpoint = new Endpoint(transport, endpointUri);
-    invocation.setEndpoint(endpoint);
-    invocation.next(resp -> {
-      asyncResp.handle(resp);
-    });
+    return new Endpoint(transport, endpointUri);
+  }
+
+  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    Object endpoint = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
+    if (endpoint == null) {
+      return false;
+    }
+    if (endpoint instanceof String) {
+      // compatible to old usage
+      endpoint = parseEndpoint((String) endpoint);
+    }
+
+    invocation.setEndpoint((Endpoint) endpoint);
+    invocation.next(asyncResp);
     return true;
   }
 
@@ -231,9 +180,9 @@ public class LoadbalanceHandler implements Handler {
     loadBalancerMap.clear();
   }
 
-  private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer chosenLB) throws Exception {
+  private void send(Invocation invocation, AsyncResponse asyncResp, LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
-    ServiceCombServer server = chosenLB.chooseServer(invocation);
+    ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {
       asyncResp.consumerFail(new InvocationException(Status.INTERNAL_SERVER_ERROR, "No available address found."));
       return;
@@ -244,6 +193,7 @@ public class LoadbalanceHandler implements Handler {
       // this stats is for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (isFailedResponse(resp)) {
+        // this stats is for SessionStickinessRule
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
         ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
       } else {
@@ -254,154 +204,49 @@ public class LoadbalanceHandler implements Handler {
     });
   }
 
-  private void sendWithRetry(Invocation invocation, AsyncResponse asyncResp,
-      final LoadBalancer chosenLB) throws Exception {
-    long time = System.currentTimeMillis();
-    // retry in loadbalance, 2.0 feature
-    final int currentHandler = invocation.getHandlerIndex();
-
-    final SyncResponseExecutor orginExecutor;
-    final Executor newExecutor;
-    if (invocation.getResponseExecutor() instanceof SyncResponseExecutor) {
-      orginExecutor = (SyncResponseExecutor) invocation.getResponseExecutor();
-      newExecutor = new Executor() {
-        @Override
-        public void execute(Runnable command) {
-          // retry的场景，对于同步调用, 同步调用的主线程已经被挂起，无法再主线程中进行重试;
-          // 重试也不能在网络线程（event-loop）中进行，未被保护的阻塞操作会导致网络线程挂起
-          RETRY_POOL.submit(command);
-        }
-      };
-      invocation.setResponseExecutor(newExecutor);
-    } else {
-      orginExecutor = null;
-      newExecutor = null;
+  private ServiceCombServer chooseServer(Invocation invocation, LoadBalancer chosenLB) {
+    RetryContext retryContext = invocation.getLocalContext(RetryContext.RETRY_CONTEXT);
+    if (retryContext == null) {
+      return chosenLB.chooseServer(invocation);
     }
 
-    ExecutionListener<Invocation, Response> listener = new ExecutionListener<Invocation, Response>() {
-      @Override
-      public void onExecutionStart(ExecutionContext<Invocation> context) throws AbortExecutionException {
-      }
+    if (!retryContext.isRetry()) {
+      ServiceCombServer server = chosenLB.chooseServer(invocation);
+      invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, server);
+      return server;
+    }
 
-      @Override
-      public void onStartWithServer(ExecutionContext<Invocation> context,
-          ExecutionInfo info) throws AbortExecutionException {
-      }
-
-      @Override
-      public void onExceptionWithServer(ExecutionContext<Invocation> context, Throwable exception,
-          ExecutionInfo info) {
-        LOGGER.error("Invoke server failed. Operation {}; server {}; {}-{} msg {}",
-            context.getRequest().getInvocationQualifiedName(),
-            context.getRequest().getEndpoint(),
-            info.getNumberOfPastServersAttempted(),
-            info.getNumberOfPastAttemptsOnServer(),
-            ExceptionUtils.getExceptionMessageWithoutTrace(exception));
-      }
-
-      @Override
-      public void onExecutionSuccess(ExecutionContext<Invocation> context, Response response,
-          ExecutionInfo info) {
-        if (info.getNumberOfPastServersAttempted() > 0 || info.getNumberOfPastAttemptsOnServer() > 0) {
-          LOGGER.error("Invoke server success. Operation {}; server {}",
-              context.getRequest().getInvocationQualifiedName(),
-              context.getRequest().getEndpoint());
+    ServiceCombServer lastServer = invocation.getLocalContext(CONTEXT_KEY_LAST_SERVER);
+    ServiceCombServer nextServer = lastServer;
+    if (!retryContext.trySameServer()) {
+      for (int i = 0; i < COUNT; i++) {
+        ServiceCombServer s = chosenLB.chooseServer(invocation);
+        if (s == null) {
+          break;
         }
-        if (orginExecutor != null) {
-          orginExecutor.execute(() -> {
-            asyncResp.complete(response);
-          });
-        } else {
-          asyncResp.complete(response);
+        if (!s.equals(nextServer)) {
+          nextServer = s;
+          break;
         }
       }
+    }
 
-      @Override
-      public void onExecutionFailed(ExecutionContext<Invocation> context, Throwable finalException,
-          ExecutionInfo info) {
-        LOGGER.error("Invoke all server failed. Operation {}, e={}",
-            context.getRequest().getInvocationQualifiedName(),
-            ExceptionUtils.getExceptionMessageWithoutTrace(finalException));
-        if (orginExecutor != null) {
-          orginExecutor.execute(() -> {
-            fail(finalException);
-          });
-        } else {
-          fail(finalException);
-        }
-      }
-
-      private void fail(Throwable finalException) {
-        int depth = 10;
-        Throwable t = finalException;
-        while (depth-- > 0) {
-          if (t instanceof InvocationException) {
-            asyncResp.consumerFail(t);
-            return;
-          }
-          t = finalException.getCause();
-        }
-        asyncResp.consumerFail(finalException);
-      }
-    };
-    List<ExecutionListener<Invocation, Response>> listeners = new ArrayList<>(0);
-    listeners.add(listener);
-    ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
-
-    LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
-        .withLoadBalancer(new RetryLoadBalancer(chosenLB))
-        .withServerLocator(invocation)
-        .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
-        .withListeners(listeners)
-        .withExecutionContext(context)
-        .build();
-
-    Observable<Response> observable = command.submit(new ServerOperation<Response>() {
-      public Observable<Response> call(Server s) {
-        return Observable.create(f -> {
-          try {
-            ServiceCombServer server = (ServiceCombServer) s;
-            chosenLB.getLoadBalancerStats().incrementNumRequests(s);
-            invocation.setHandlerIndex(currentHandler); // for retry
-            invocation.setEndpoint(server.getEndpoint());
-            invocation.next(resp -> {
-              if (isFailedResponse(resp)) {
-                LOGGER.error("service {}, call error, msg is {}, server is {} ",
-                    invocation.getInvocationQualifiedName(),
-                    ExceptionUtils.getExceptionMessageWithoutTrace((Throwable) resp.getResult()),
-                    s);
-                chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-                ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
-                f.onError(resp.getResult());
-              } else {
-                chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
-                chosenLB.getLoadBalancerStats().noteResponseTime(s,
-                    (System.currentTimeMillis() - time));
-                ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
-                f.onNext(resp);
-                f.onCompleted();
-              }
-            });
-          } catch (Exception e) {
-            LOGGER.error("execution error, msg is {}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
-            f.onError(e);
-          }
-        });
-      }
-    });
-
-    observable.subscribe(response -> {
-    }, error -> {
-    }, () -> {
-    });
+    LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
+        invocation.getMicroserviceQualifiedName(),
+        nextServer == null ? "" : nextServer.getHostPort(),
+        lastServer == null ? "" : lastServer.getHostPort(),
+        invocation.getTraceId());
+    invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, nextServer);
+    return nextServer;
   }
 
   protected boolean isFailedResponse(Response resp) {
     if (resp.isFailed()) {
-      if (InvocationException.class.isInstance(resp.getResult())) {
-        InvocationException e = (InvocationException) resp.getResult();
+      if (resp.getResult() instanceof InvocationException) {
+        InvocationException e = resp.getResult();
         return e.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE
-            || e.getStatusCode() == 503;
+            || e.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode()
+            || e.getStatusCode() == Status.REQUEST_TIMEOUT.getStatusCode();
       } else {
         return true;
       }
@@ -420,17 +265,11 @@ public class LoadbalanceHandler implements Handler {
     invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
     return loadBalancerMap
-        .computeIfAbsent(serversVersionedCache.name(), name -> {
-          return createLoadBalancer(invocation.getMicroserviceName());
-        });
+        .computeIfAbsent(serversVersionedCache.name(), name -> createLoadBalancer(invocation.getMicroserviceName()));
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
     RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
-  }
-
-  public boolean isEqual(String str1, String str2) {
-    return (str1 == null ? str2 == null : str1.equals(str2));
   }
 }

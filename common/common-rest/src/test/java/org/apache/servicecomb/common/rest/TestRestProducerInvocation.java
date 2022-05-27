@@ -17,31 +17,33 @@
 
 package org.apache.servicecomb.common.rest;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.common.rest.locator.TestPathSchema;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -58,26 +60,38 @@ public class TestRestProducerInvocation {
   @Mocked
   HttpServletResponseEx responseEx;
 
-  @Mocked
-  RestOperationMeta restOperationMeta;
-
-  @Mocked
-  MicroserviceMeta microserviceMeta;
-
-  List<HttpServerFilter> httpServerFilters = Collections.emptyList();
-
   RestProducerInvocation restProducerInvocation;
 
   Throwable throwableOfSendFailResponse;
 
   boolean scheduleInvocation;
 
-  boolean runOnExecutor;
+  static List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
-  boolean invokeNoParam;
+  static SCBEngine scbEngine;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  static OperationMeta operationMeta;
+
+  static RestOperationMeta restOperationMeta;
+
+  static MicroserviceMeta microserviceMeta;
+
+  @BeforeClass
+  public static void classSetup() {
+    ConfigUtil.installDynamicConfig();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
+        .addProducerMeta("sid1", new TestPathSchema())
+        .run();
+    operationMeta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1.dynamicId");
+    restOperationMeta = RestMetaUtils.getRestOperationMeta(operationMeta);
+    microserviceMeta = operationMeta.getMicroserviceMeta();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
+  }
 
   private void initRestProducerInvocation() {
     restProducerInvocation.transport = transport;
@@ -87,18 +101,9 @@ public class TestRestProducerInvocation {
     restProducerInvocation.httpServerFilters = httpServerFilters;
   }
 
-  @Before
-  public void setup() {
-    SCBEngine.getInstance().setProducerMicroserviceMeta(microserviceMeta);
-  }
-
-  @After
-  public void teardown() {
-    SCBEngine.getInstance().setProducerMicroserviceMeta(null);
-  }
-
   @Test
-  public void invokeSendFail(@Mocked InvocationException expected) {
+  public void invokeSendFail() {
+    InvocationException expected = new InvocationException(javax.ws.rs.core.Response.Status.BAD_REQUEST, "test");
     restProducerInvocation = new MockUp<RestProducerInvocation>() {
       @Mock
       void sendFailResponse(Throwable throwable) {
@@ -118,7 +123,7 @@ public class TestRestProducerInvocation {
 
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
-    Assert.assertSame(expected, throwableOfSendFailResponse);
+    Assertions.assertSame(expected, throwableOfSendFailResponse);
   }
 
   @Test
@@ -139,8 +144,8 @@ public class TestRestProducerInvocation {
     };
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
-    Assert.assertTrue(scheduleInvocation);
-    Assert.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
+    Assertions.assertTrue(scheduleInvocation);
+    Assertions.assertSame(requestEx, requestEx.getAttribute(RestConst.REST_REQUEST));
   }
 
   @Test
@@ -148,14 +153,6 @@ public class TestRestProducerInvocation {
     Microservice microservice = new Microservice();
     microservice.setServiceName("ms");
 
-    new Expectations(RegistryUtils.class) {
-      {
-        requestEx.getHeader(Const.TARGET_MICROSERVICE);
-        result = null;
-        RegistryUtils.getMicroservice();
-        result = microservice;
-      }
-    };
     new Expectations(ServicePathManager.class) {
       {
         //just make the method throw Exception
@@ -166,9 +163,9 @@ public class TestRestProducerInvocation {
     restProducerInvocation = new RestProducerInvocation();
     initRestProducerInvocation();
 
-    expectedException.expect(Exception.class);
-    expectedException.expectMessage("[message=Not Found]");
-    restProducerInvocation.findRestOperation();
+    Exception exception = Assertions.assertThrows(Exception.class,
+            () -> restProducerInvocation.findRestOperation());
+    Assertions.assertTrue(exception.getMessage().contains("[message=Not Found]"));
   }
 
   @Test
@@ -207,7 +204,7 @@ public class TestRestProducerInvocation {
     initRestProducerInvocation();
 
     restProducerInvocation.findRestOperation();
-    Assert.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
-    Assert.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+    Assertions.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
+    Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
   }
 }

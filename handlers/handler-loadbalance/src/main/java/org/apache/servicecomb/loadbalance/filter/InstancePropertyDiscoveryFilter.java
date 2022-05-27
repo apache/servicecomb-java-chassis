@@ -23,10 +23,10 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.Configuration;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.discovery.AbstractDiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -59,12 +59,11 @@ public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
     Map<String, MicroserviceInstance> instances = parent.data();
     Map<String, String> filterOptions =
         Configuration.INSTANCE.getFlowsplitFilterOptions(invocation.getMicroserviceName());
-    for (String id : instances.keySet()) {
-      MicroserviceInstance target = instances.get(id);
+    instances.forEach((key, target) -> {
       if (allowVisit(target, filterOptions)) {
-        matchedInstance.put(id, target);
+        matchedInstance.put(key, target);
       }
-    }
+    });
     parent.child(MATCHED, new DiscoveryTreeNode()
         .subName(parent, MATCHED)
         .data(matchedInstance));

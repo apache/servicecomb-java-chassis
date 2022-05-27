@@ -34,10 +34,11 @@ import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -168,8 +169,12 @@ public class Consumer {
     int response = template.getForObject(url + "?x=2&y=3", Integer.class);
     Assert.isTrue(response == 5, "not get 5.");
 
-    Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
-    Assert.isTrue(raw.get("message").equals("Cse Internal Server Error"), "x99");
+    try {
+      Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
+    } catch (HttpServerErrorException e) {
+      Assert.isTrue(e.getRawStatusCode() == 500, "x99");
+      Assert.isTrue(e.getResponseBodyAsString().contains("Unexpected exception when processing the request"), "x99");
+    }
 
     try {
       template.getForObject(url + "?x=88&y=3", Map.class);
@@ -263,8 +268,8 @@ public class Consumer {
   }
 
   private URIEndpointObject prepareEdge(String prefix) {
-    Microservice microservice = RegistryUtils.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils.getServiceRegistry()
+    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) DiscoveryManager.INSTANCE
         .getAppManager()
         .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
         .getVersionedCache()
@@ -279,16 +284,16 @@ public class Consumer {
   }
 
   protected void invokeBusiness(String urlPrefix, ChannelRequestBase request) {
-    String url = urlPrefix + "/channel/news/subscribe";
+    for (int i = 0; i < 3; i++) {
+      String url = urlPrefix + "/channel/news/subscribe";
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
 
-    HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
+      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
 
-    ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
-    System.out.println("urlPrefix: " + urlPrefix);
-    System.out.println(response.getHeaders());
-    System.out.println(response.getBody().toString());
+      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
+      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
+    }
   }
 }

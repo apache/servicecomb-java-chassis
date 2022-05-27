@@ -23,12 +23,19 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
+  edge:
+    filter:
+      addHeader:
+        enabled: true
+        allowedHeaders: xxx
   rest:
-    address: 127.0.0.1:18080
+    address: 0.0.0.0:18080
     server:
-      verticle-count: 8
+      # for test case run in one core machine
+      verticle-count: 1
     client:
-      verticle-count: 8
+      verticle-count: 1
+      http2.useAlpnEnabled: false
   handler:
     chain:
       Consumer:
@@ -56,3 +63,21 @@ servicecomb:
               path: "/url/business/v2/.*"
               microserviceName: business
               versionRule: 2.0.0-3.0.0
+        http:
+          enabled: true
+          mappings:
+            businessV2:
+              prefixSegmentCount: 1
+              path: "/http/business/v2/.*"
+              microserviceName: business
+              versionRule: 2.0.0
+            businessV1:
+              prefixSegmentCount: 1
+              path: "/http/business/v1/add.*"
+              microserviceName: business
+              versionRule: 1.0.0-1.2.0
+            businessV1_1:
+              prefixSegmentCount: 1
+              path: "/http/business/v1/dec.*"
+              microserviceName: business
+              versionRule: 1.1.0

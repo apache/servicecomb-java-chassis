@@ -20,25 +20,25 @@ package org.apache.servicecomb.foundation.vertx;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.impl.RoutingContextInternal;
 
 public class TestSimpleBodyHandler {
 
   private SimpleBodyHandler instance;
 
-  private RoutingContext context;
+  private RoutingContextInternal context;
 
   @Before
   public void setUp() throws Exception {
-    context = Mockito.mock(RoutingContext.class);
+    context = Mockito.mock(RoutingContextInternal.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     Mockito.when(context.request()).thenReturn(request);
     MultiMap multiMap = Mockito.mock(MultiMap.class);
@@ -63,7 +63,7 @@ public class TestSimpleBodyHandler {
       }
     };
     instance.handle(context);
-    Assert.assertTrue(instance.checkContentType(context));
+    Assertions.assertTrue(instance.checkContentType(context));
   }
 
   @Test
@@ -75,6 +75,6 @@ public class TestSimpleBodyHandler {
       }
     };
     instance.handle(context);
-    Assert.assertFalse(instance.checkContentType(context));
+    Assertions.assertFalse(instance.checkContentType(context));
   }
 }

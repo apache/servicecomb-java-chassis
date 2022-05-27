@@ -35,7 +35,7 @@ import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
 
 public class PublishModelFactory {
-  private MeasurementTree tree;
+  private final MeasurementTree tree;
 
   public PublishModelFactory(List<Meter> meters) {
     tree = createMeasurementTree(meters);
@@ -60,7 +60,8 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_TRANSPORT,
         MeterInvocationConst.TAG_OPERATION,
         MeterInvocationConst.TAG_STATUS,
-        MeterInvocationConst.TAG_STAGE,
+        MeterInvocationConst.TAG_TYPE,
+        new DefaultTagFinder(MeterInvocationConst.TAG_STAGE, true),
         MeterInvocationConst.TAG_STATISTIC);
 
     //os config

@@ -17,33 +17,95 @@
 
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.assertEquals;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
+import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestParamCodecEdge {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestParamCodecEdge.class);
+
   static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("paramCodec");
+  static GateRestTemplate restOnlyClient = GateRestTemplate.createEdgeRestTemplate("paramCodecRestOnly");
 
   @Test
   public void spaceCharEncode() {
     String paramString = "a%2B+%20b%% %20c";
+    String paramQueryStringResult = "a%2B %20b%% %20c";
     String result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
-    assertEquals(paramString + " +%20%% " + paramString + " true", result);
+    Assertions.assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+        paramString + " +%20%% " + paramString + " true"), result);
+    result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
+    Assertions.assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+        paramString + " +%20%% " + paramString + " true"), result);
+  }
+
+  private String matchOr(String result, String expected1, String expected2) {
+    // spring mvc & rpc handles "+' differently, both '+' or ' ' is correct according to HTTP SPEC. spring mvc changed from '+' to ' ' since spring 5.
+    if (result.equals(expected1)) {
+      return expected1;
+    }
+    return expected2;
   }
 
   @Test
   public void enumSpecialName() {
-    assertEquals(Media.AAC,
-        client.postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
-    assertEquals(Media.FLAC,
-        client.postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
-    assertEquals(Media.H_264,
-        client.postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
-    assertEquals(Media.MPEG_2,
-        client.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
-    assertEquals(Media.WMV,
-        client.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
+    Assertions.assertEquals(Media.AAC,
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
+    Assertions.assertEquals(Media.FLAC,
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
+    Assertions.assertEquals(Media.H_264,
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
+    Assertions.assertEquals(Media.MPEG_2,
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
+    Assertions.assertEquals(Media.WMV,
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
+  }
+
+  @Test
+  public void testStringUrlEncodedForm() throws IOException {
+    doTestStringUrlEncodedForm();
+    doTestStringUrlEncodedForm();
+  }
+
+  private void doTestStringUrlEncodedForm() throws IOException {
+    String requestUri = client.getUrlPrefix() + "/stringUrlencodedForm";
+    URL url = new URL(requestUri);
+    HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+    httpConnection.setDoOutput(true);
+    httpConnection.setRequestMethod("POST");
+    httpConnection.setRequestProperty("Content-Type", MediaType.APPLICATION_FORM_URLENCODED);
+    httpConnection.setUseCaches(false);
+    httpConnection.connect();
+    try (DataOutputStream dataOutputStream = new DataOutputStream(httpConnection.getOutputStream())) {
+      dataOutputStream.writeBytes("A=aaa&B=ddd");
+      dataOutputStream.flush();
+    } catch (IOException e) {
+      LOGGER.error("failed to write buffer!", e);
+      Assertions.fail("failed to write buffer!");
+      return;
+    }
+
+    StringBuilder responseBody = new StringBuilder();
+    try (Scanner scanner = new Scanner(httpConnection.getInputStream())) {
+      while (scanner.hasNextLine()) {
+        responseBody.append(scanner.nextLine());
+      }
+    }
+    Assertions.assertEquals("{\"A\":\"aaa\",\"B\":\"ddd\",\"param0\":\"" + ITJUnitUtils.getProducerName() + "\","
+            + "\"param1\":\"v1\",\"param2\":\"paramCodec/stringUrlencodedForm\"}",
+        responseBody.toString());
+    Assertions.assertEquals(200, httpConnection.getResponseCode());
   }
 }

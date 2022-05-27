@@ -19,8 +19,8 @@ package org.apache.servicecomb.swagger.extend.property.creator;
 
 import javax.servlet.http.Part;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.swagger.models.properties.FileProperty;
@@ -32,11 +32,11 @@ public class TestPartPropertyCreator {
   @SuppressWarnings("unchecked")
   @Test
   public void classes() {
-    Assert.assertThat(creator.classes(), Matchers.arrayContaining(Part.class));
+    MatcherAssert.assertThat(creator.classes(), Matchers.arrayContaining(Part.class));
   }
 
   @Test
   public void createProperty() {
-    Assert.assertThat(creator.createProperty(), Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(creator.createProperty(), Matchers.instanceOf(FileProperty.class));
   }
 }

@@ -33,9 +33,9 @@ public class InvocationException extends RuntimeException {
    * http header中的statusCode
    * 不直接使用Status类型，是为了支持业务自定义code
    */
-  private StatusType status;
+  private final StatusType status;
 
-  private Object errorData;
+  private final Object errorData;
 
   public InvocationException(StatusType status, Object errorData) {
     this.status = status;
@@ -43,19 +43,29 @@ public class InvocationException extends RuntimeException {
   }
 
   public InvocationException(StatusType status, String msg) {
-    this.status = status;
-    this.errorData = new CommonExceptionData(msg);
+    this(status, new CommonExceptionData(msg));
   }
 
   public InvocationException(int statusCode, String reasonPhrase, Object errorData, Throwable cause) {
-    super(cause);
-    status = new HttpStatus(statusCode, reasonPhrase);
-    this.errorData = errorData;
+    this(new HttpStatus(statusCode, reasonPhrase), errorData, cause);
   }
 
   public InvocationException(int statusCode, String reasonPhrase, Object errorData) {
-    status = new HttpStatus(statusCode, reasonPhrase);
+    this(new HttpStatus(statusCode, reasonPhrase), errorData);
+  }
+
+  public InvocationException(StatusType status, Object errorData, Throwable cause) {
+    super(cause);
+    this.status = status;
     this.errorData = errorData;
+  }
+
+  public InvocationException(StatusType status, String code, String msg) {
+    this(status, new CommonExceptionData(code, msg));
+  }
+
+  public InvocationException(StatusType status, String code, String msg, Throwable cause) {
+    this(status, new CommonExceptionData(code, msg), cause);
   }
 
   public StatusType getStatus() {
@@ -74,6 +84,11 @@ public class InvocationException extends RuntimeException {
     return errorData;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T> T getError() {
+    return (T) errorData;
+  }
+
   @Override
   public String getMessage() {
     return this.toString();
@@ -81,11 +96,7 @@ public class InvocationException extends RuntimeException {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("InvocationException: code=");
-    sb.append(getStatusCode());
-    sb.append(";msg=");
-    sb.append(getErrorData());
-    return sb.toString();
+    return "InvocationException: code=" + getStatusCode()
+        + ";msg=" + getErrorData();
   }
 }

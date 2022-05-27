@@ -37,7 +37,7 @@ public class BoolWriteSchemas {
       return new BooleanSchema<>(protoField, propertyDescriptor);
     }
 
-    return new BooleanDynamicSchema<>(protoField, propertyDescriptor);
+    return new BooleanSchema<>(protoField, propertyDescriptor);
   }
 
   private static class BooleanDynamicSchema<T> extends FieldSchema<T> {
@@ -77,19 +77,19 @@ public class BoolWriteSchemas {
   }
 
   private static class BooleanSchema<T> extends BooleanDynamicSchema<T> {
-    protected final Getter<T, Boolean> getter;
+    protected final Getter<T, Object> getter;
 
     public BooleanSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Boolean value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarBool(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

@@ -28,7 +28,7 @@ import org.apache.servicecomb.foundation.common.part.AbstractPart;
 import io.vertx.ext.web.FileUpload;
 
 public class FileUploadPart extends AbstractPart {
-  private FileUpload fileUpload;
+  private final FileUpload fileUpload;
 
   public FileUploadPart(FileUpload fileUpload) {
     this.fileUpload = fileUpload;

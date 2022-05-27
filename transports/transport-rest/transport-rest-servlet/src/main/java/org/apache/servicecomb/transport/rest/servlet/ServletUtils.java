@@ -28,14 +28,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRegistration.Dynamic;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.UploadConfig;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 public class ServletUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletUtils.class);
@@ -68,7 +69,7 @@ public class ServletUtils {
     }
 
     int idx = urlPattern.indexOf("/*");
-    if (idx < 0 || (idx >= 0 && idx != urlPattern.length() - 2)) {
+    if (idx < 0 || idx != urlPattern.length() - 2) {
       throw new ServiceCombException("only support rule like /* or /path/* or /path1/path2/* and so on.");
     }
   }
@@ -106,6 +107,9 @@ public class ServletUtils {
 
   static List<ServletRegistration> findServletRegistrations(ServletContext servletContext,
       Class<?> servletCls) {
+    if (servletContext == null) {
+      return null;
+    }
     return servletContext.getServletRegistrations()
         .values()
         .stream()
@@ -132,7 +136,7 @@ public class ServletUtils {
       return;
     }
 
-    System.setProperty(Const.URL_PREFIX, urlPrefix);
+    ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     LOGGER.info("UrlPrefix of this instance is \"{}\".", urlPrefix);
   }
 
@@ -153,21 +157,20 @@ public class ServletUtils {
   static void setServletParameters(ServletContext servletContext) {
     UploadConfig uploadConfig = new UploadConfig();
     MultipartConfigElement multipartConfig = uploadConfig.toMultipartConfigElement();
-    if (multipartConfig == null) {
-      return;
-    }
 
     File dir = createUploadDir(servletContext, multipartConfig.getLocation());
-    LOGGER.info("set uploads directory to {}.", dir.getAbsolutePath());
+    LOGGER.info("set uploads directory to \"{}\".", dir.getAbsolutePath());
 
     List<ServletRegistration> servlets = findServletRegistrations(servletContext, RestServlet.class);
-    for (ServletRegistration servletRegistration : servlets) {
-      if (!Dynamic.class.isInstance(servletRegistration)) {
-        continue;
-      }
+    if (servlets != null) {
+      for (ServletRegistration servletRegistration : servlets) {
+        if (!Dynamic.class.isInstance(servletRegistration)) {
+          continue;
+        }
 
-      Dynamic dynamic = (Dynamic) servletRegistration;
-      dynamic.setMultipartConfig(multipartConfig);
+        Dynamic dynamic = (Dynamic) servletRegistration;
+        dynamic.setMultipartConfig(multipartConfig);
+      }
     }
   }
 

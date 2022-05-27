@@ -20,13 +20,13 @@ package org.apache.dynamicconfig.test;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
+import org.junit.jupiter.api.Assertions;
 
 public class DynamicConfigurationIT {
   private static Vertx vertx = null;
@@ -45,9 +45,8 @@ public class DynamicConfigurationIT {
     vertx.close();
   }
 
-
   @Test
   public void testDynamicConfiguration() {
-    Assert.assertEquals(6666, DynamicPropertyFactory.getInstance().getIntProperty("timeout", 0).get());
+    Assertions.assertEquals(6666, DynamicPropertyFactory.getInstance().getIntProperty("timeout", 0).get());
   }
 }

@@ -17,49 +17,52 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestServlet {
   private RestServlet restservlet = null;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+
     restservlet = new RestServlet();
 
-    CseContext.getInstance().setTransportManager(Mockito.mock(TransportManager.class));
+    SCBBootstrap.createSCBEngineForTest();
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     restservlet = null;
+    SCBEngine.getInstance().destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testInit() throws ServletException {
     restservlet.init();
-    Assert.assertTrue(true);
+    Assertions.assertTrue(true);
   }
 
   // useless, but for coverage
   @Test
-  public void testService() throws ServletException, IOException {
+  public void testService() {
     Holder<Boolean> holder = new Holder<>();
     ServletRestDispatcher servletRestServer = new MockUp<ServletRestDispatcher>() {
       @Mock
@@ -70,6 +73,6 @@ public class TestRestServlet {
 
     Deencapsulation.setField(restservlet, "servletRestServer", servletRestServer);
     restservlet.service(null, null);
-    Assert.assertTrue(holder.value);
+    Assertions.assertTrue(holder.value);
   }
 }

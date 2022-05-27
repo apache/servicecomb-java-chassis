@@ -16,5 +16,32 @@
 ## ---------------------------------------------------------------------------
 
 servicecomb-config-order: -500
+
 servicecomb:
-  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
+  exception:
+    invocation:
+      print-stack-trace: false
+  filter-chains:
+    enabled: false
+    transport:
+      scb-consumer-transport:
+        rest: rest-client-codec, rest-client-sender
+      scb-producer-transport:
+        rest: rest-server-codec
+    definition:
+      scb-consumer: simple-load-balance, scb-consumer-transport
+      scb-producer: scb-producer-transport, schedule, producer-operation
+    consumer:
+      framework: scb-consumer
+      # when there is no "default" chains, will read framework chains as "default" chains
+      #default: scb-consumer
+      # samples for customize microservice filter chain
+      #policies:
+      #  ms-1: retry, load-balance, transport-client, ms-1-consumer-transport
+    producer:
+      framework: scb-producer
+      # when there is no "default" chains, will read framework chains as "default" chains
+      #default: scb-producer
+      # samples for customize microservice filter chain
+      #policies:
+      #  ms-1: qps-limiter, ms-1-producer-transport, schedule, producer-operation

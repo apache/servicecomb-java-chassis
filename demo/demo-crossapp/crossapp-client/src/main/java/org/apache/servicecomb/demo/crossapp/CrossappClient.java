@@ -50,12 +50,15 @@ public class CrossappClient {
     System.setProperty("sun.net.http.allowRestrictedHeaders", "false");
   }
 
+  @SuppressWarnings({"deprecation"})
   public static void run() {
     Object result = InvokerUtils.syncInvoke("appServer:appService", "helloworld", "sayHello", null);
     TestMgr.check("hello world", result);
 
     RestTemplate restTemplate = RestTemplateBuilder.create();
     result = restTemplate.getForObject("cse://appServer:appService/helloworld/hello", String.class);
+    TestMgr.check("hello world", result);
+    result = restTemplate.getForObject("servicecomb://appServer:appService/helloworld/hello", String.class);
     TestMgr.check("hello world", result);
 
     result = helloWorld.sayHello();
@@ -75,7 +78,7 @@ public class CrossappClient {
         .exchange("http://127.0.0.1:8080/helloworld/hello", HttpMethod.OPTIONS, requestEntity,
             String.class);
 
-    TestMgr.check("200", responseEntity.getStatusCodeValue());
+    TestMgr.check("204", responseEntity.getStatusCodeValue());
     TreeSet<String> sortedSet = new TreeSet<>(responseEntity.getHeaders().get("Access-Control-Allow-Methods"));
     TestMgr.check("[DELETE,POST,GET,PUT]", sortedSet);
     sortedSet = new TreeSet<>(responseEntity.getHeaders().get("Access-Control-Allow-Headers"));

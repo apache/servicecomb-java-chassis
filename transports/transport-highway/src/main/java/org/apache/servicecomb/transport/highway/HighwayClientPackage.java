@@ -20,11 +20,15 @@ import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HighwayClientPackage extends AbstractTcpClientPackage {
-  private Invocation invocation;
+  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientPackage.class);
 
-  private OperationProtobuf operationProtobuf;
+  private final Invocation invocation;
+
+  private final OperationProtobuf operationProtobuf;
 
   public HighwayClientPackage(Invocation invocation, OperationProtobuf operationProtobuf, long msRequestTimeout) {
     this.invocation = invocation;
@@ -40,6 +44,7 @@ public class HighwayClientPackage extends AbstractTcpClientPackage {
       String msg = String.format("encode request failed. appid=%s, qualifiedName=%s",
           invocation.getAppId(),
           invocation.getOperationMeta().getMicroserviceQualifiedName());
+      LOGGER.error(msg, e);
       throw new Error(msg, e);
     }
   }

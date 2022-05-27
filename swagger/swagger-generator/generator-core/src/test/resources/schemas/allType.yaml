@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/AllType"
       responses:
-        200:
+        "200":
           description: "response of 200"
 definitions:
   AllType:
@@ -83,6 +83,7 @@ definitions:
         format: "double"
       enumValue:
         type: "string"
+        description: "- RED: \n- YELLOW: \n- BLUE: \n"
         enum:
         - "RED"
         - "YELLOW"

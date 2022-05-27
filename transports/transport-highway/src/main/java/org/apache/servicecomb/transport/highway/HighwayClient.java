@@ -17,10 +17,13 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -31,6 +34,8 @@ import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,25 +86,14 @@ public class HighwayClient {
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    invocation.getInvocationStageTrace().startGetConnection();
+    HighwayClientConnection tcpClient = findClientPool(invocation);
+
     invocation.getInvocationStageTrace().startClientFiltersRequest();
-    invocation.getInvocationStageTrace().startSend();
+    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
+    HighwayClientPackage clientPackage = createClientPackage(invocation, operationProtobuf);
 
-    HighwayClientConnectionPool tcpClientPool = clientMgr.findClientPool(invocation.isSync());
-
-    OperationMeta operationMeta = invocation.getOperationMeta();
-    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
-
-    HighwayClientConnection tcpClient =
-        tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
-
-    invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
-
-    HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf,
-        operationMeta.getConfig().getMsRequestTimeout());
-
-    LOGGER.debug("Sending request by highway, qualifiedName={}, endpoint={}.",
-        invocation.getMicroserviceQualifiedName(),
-        invocation.getEndpoint().getEndpoint());
+    invocation.onStartSendRequest();
     tcpClient.send(clientPackage, ar -> {
       invocation.getInvocationStageTrace().finishWriteToBuffer(clientPackage.getFinishWriteToBuffer());
       invocation.getInvocationStageTrace().finishReceiveResponse();
@@ -109,6 +103,16 @@ public class HighwayClient {
         if (ar.failed()) {
           // 只会是本地异常
           invocation.getInvocationStageTrace().finishClientFiltersResponse();
+          if (ar.cause() instanceof TimeoutException) {
+            // give an accurate cause for timeout exception
+            //   The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080
+            // should not copy the message to invocationException to avoid leak server ip address
+            LOGGER.info("Request timeout, Details: {}.", ar.cause().getMessage());
+
+            asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
+                new CommonExceptionData("Request Timeout.")));
+            return;
+          }
           asyncResp.consumerFail(ar.cause());
           return;
         }
@@ -127,5 +131,19 @@ public class HighwayClient {
         }
       });
     });
+  }
+
+  public HighwayClientPackage createClientPackage(Invocation invocation, OperationProtobuf operationProtobuf) {
+    long msRequestTimeout = invocation.getOperationMeta().getConfig().getMsRequestTimeout();
+    return new HighwayClientPackage(invocation, operationProtobuf, msRequestTimeout);
+  }
+
+  public HighwayClientConnection findClientPool(Invocation invocation) {
+    HighwayClientConnection tcpClient = clientMgr.findClientPool(invocation.isSync())
+        .findOrCreateClient(invocation.getEndpoint().getEndpoint());
+
+    invocation.getInvocationStageTrace().finishGetConnection();
+
+    return tcpClient;
   }
 }

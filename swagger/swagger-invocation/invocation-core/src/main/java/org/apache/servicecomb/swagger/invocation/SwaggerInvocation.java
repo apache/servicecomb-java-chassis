@@ -24,8 +24,6 @@ public class SwaggerInvocation extends InvocationContext {
   // 本实例是在consumer端，还是在provider端
   protected InvocationType invocationType;
 
-  protected Object[] swaggerArguments;
-
   protected InvocationContext parentContext;
 
   public SwaggerInvocation() {
@@ -42,23 +40,6 @@ public class SwaggerInvocation extends InvocationContext {
 
   public InvocationType getInvocationType() {
     return invocationType;
-  }
-
-  public Object[] getSwaggerArguments() {
-    return swaggerArguments;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getSwaggerArgument(int idx) {
-    return (T) swaggerArguments[idx];
-  }
-
-  public void setSwaggerArguments(Object[] swaggerArguments) {
-    this.swaggerArguments = swaggerArguments;
-  }
-
-  public void setSwaggerArgument(int idx, Object swaggerArgument) {
-    this.swaggerArguments[idx] = swaggerArgument;
   }
 
   public String getInvocationQualifiedName() {

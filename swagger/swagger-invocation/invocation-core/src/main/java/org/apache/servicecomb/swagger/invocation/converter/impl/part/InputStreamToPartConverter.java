@@ -23,11 +23,9 @@ import java.lang.reflect.Type;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
-import org.apache.servicecomb.swagger.invocation.converter.CustomizedConverter;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
-@Component
-public class InputStreamToPartConverter implements CustomizedConverter {
+public class InputStreamToPartConverter implements Converter {
   @Override
   public Type getSrcType() {
     return InputStream.class;

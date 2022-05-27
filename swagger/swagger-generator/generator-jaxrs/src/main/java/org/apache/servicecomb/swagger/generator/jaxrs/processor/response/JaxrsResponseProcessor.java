@@ -22,35 +22,36 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.ResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.properties.Property;
-
-public class JaxrsResponseProcessor implements ResponseTypeProcessor {
+public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
-  public Class<?> getResponseType() {
+  public Class<?> getProcessType() {
     return Response.class;
   }
 
   @Override
-  public Property process(OperationGenerator operationGenerator) {
-    // Response完全表达应答类型
-    // 如果produces是text，那么可以假设是string，否则只能报错
+  public Type extractResponseType(Type genericResponseType) {
+    return null;
+  }
+
+  @Override
+  public Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type genericResponseType) {
+    // Response can not express respone type
+    // if produces is text，then can assume to be string, otherwise can only throw exception
     List<String> produces = operationGenerator.getOperation().getProduces();
     if (produces == null) {
-      produces = operationGenerator.getSwagger().getProduces();
+      produces = swaggerGenerator.getSwagger().getProduces();
     }
     if (produces != null) {
       if (produces.contains(MediaType.TEXT_PLAIN)) {
-        Type responseType = String.class;
-        ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
-        return ModelConverters.getInstance().readAsProperty(responseType);
+        return String.class;
       }
     }
 
-    throw new Error("Use ApiOperation or ApiResponses to declare response type");
+    throw new IllegalStateException("Use ApiOperation or ApiResponses to declare response type");
   }
 }

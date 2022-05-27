@@ -18,7 +18,7 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import io.swagger.models.parameters.FormParameter;
@@ -33,6 +33,6 @@ public class TestFormProcessorCreator {
 
     ParamValueProcessor processor = creator.create(p, String.class);
 
-    Assert.assertEquals(FormProcessor.class, processor.getClass());
+    Assertions.assertEquals(FormProcessor.class, processor.getClass());
   }
 }

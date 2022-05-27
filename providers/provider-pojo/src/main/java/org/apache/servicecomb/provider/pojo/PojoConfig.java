@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+// 作用是什么？
 @Configuration
 class PojoConfig {
 

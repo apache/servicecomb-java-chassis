@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 
 public final class Const {
   private Const() {
@@ -37,7 +37,13 @@ public final class Const {
 
   public static final String PRODUCER_OPERATION = "producer-operation";
 
+  public static final String CONSUMER_OPERATION = "consumer-operation";
+
   public static final String SRC_MICROSERVICE = "x-cse-src-microservice";
+
+  public static final String SRC_SERVICE_ID = "x-src-serviceId";
+
+  public static final String SRC_INSTANCE_ID = "x-src-instanceId";
 
   public static final String TARGET_MICROSERVICE = "x-cse-target-microservice";
 
@@ -46,4 +52,7 @@ public final class Const {
   public static final String AUTH_TOKEN = "x-cse-auth-rsatoken";
 
   public static final String TRACE_ID_NAME = "X-B3-TraceId";
+
+  // controlling whether to print stack information with sensitive errors
+  public static final String PRINT_SENSITIVE_ERROR_MESSAGE = "servicecomb.error.printSensitiveErrorMessage";
 }

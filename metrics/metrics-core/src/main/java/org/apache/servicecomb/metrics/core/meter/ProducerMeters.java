@@ -22,7 +22,7 @@ import org.apache.servicecomb.metrics.core.meter.invocation.ProducerInvocationMe
 import com.netflix.spectator.api.Registry;
 
 public class ProducerMeters {
-  private AbstractInvocationMeters invocationMeters;
+  private final AbstractInvocationMeters invocationMeters;
 
   public ProducerMeters(Registry registry) {
     invocationMeters = new ProducerInvocationMeters(registry);

@@ -20,58 +20,83 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.BootListener.BootEvent;
-import org.apache.servicecomb.core.BootListener.EventType;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.provider.producer.ProducerMeta;
+import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
-
 public class TestMetricsBootListener {
-  MetricsBootListener listener = new MetricsBootListener();
+  @Before
+  public void setUp() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @After
+  public void tearDown() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
-  public void registerSchemas() {
-    List<Object[]> argsList = new ArrayList<>();
+  public void onBeforeProducerProvider_metrics_endpoint_enabled_by_default() {
+    final MetricsBootListener listener = new MetricsBootListener();
 
-    ProducerSchemaFactory producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
-      @Mock
-      SchemaMeta getOrCreateProducerSchema(String schemaId,
-          Class<?> producerClass,
-          Object producerInstance) {
-        argsList.add(new Object[] {schemaId, producerClass, producerInstance});
-        return null;
+    final List<ProducerMeta> producerMetas = new ArrayList<>();
+    final BootEvent event = new BootEvent();
+    final ProducerMeta producerMeta = new ProducerMeta();
+    final SCBEngine scbEngine = new SCBEngine() {
+      final public ProducerProviderManager producerProviderManager = new ProducerProviderManager(this) {
+
+        @Override
+        public void addProducerMeta(String schemaId, Object instance) {
+          producerMeta.setSchemaId(schemaId);
+          producerMeta.setInstance(instance);
+          producerMetas.add(producerMeta);
+        }
+      };
+
+      @Override
+      public ProducerProviderManager getProducerProviderManager() {
+        return producerProviderManager;
       }
-    }.getMockInstance();
-    Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
+    };
+    event.setScbEngine(scbEngine);
+    listener.onBeforeProducerProvider(event);
 
-    Microservice microservice = new Microservice();
-    microservice.setServiceName("name");
+    MatcherAssert.assertThat(producerMetas, Matchers.contains(producerMeta));
+    MatcherAssert.assertThat(producerMeta.getSchemaId(), Matchers.equalTo("metricsEndpoint"));
+    MatcherAssert.assertThat(producerMeta.getInstance(), Matchers.instanceOf(MetricsRestPublisher.class));
+  }
 
-    BootEvent event = new BootEvent();
-    event.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
-    listener.onBootEvent(event);
+  @Test
+  public void onBeforeProducerProvider_metrics_endpoint_disabled() {
+    ArchaiusUtils.setProperty("servicecomb.metrics.endpoint.enabled", false);
+    final MetricsBootListener listener = new MetricsBootListener();
 
-    Object[] args = argsList.get(0);
-    //we have remove parameter microserviceName
-    Assert.assertEquals("healthEndpoint", args[0]);
-    Assert.assertEquals(HealthCheckerRestPublisher.class, args[1]);
-    Assert.assertEquals(HealthCheckerRestPublisher.class, args[2].getClass());
+    final List<ProducerMeta> producerMetas = new ArrayList<>();
+    final BootEvent event = new BootEvent();
+    final SCBEngine scbEngine = new SCBEngine() {
+      final public ProducerProviderManager producerProviderManager = new ProducerProviderManager(this) {
 
-    MetricsRestPublisher metricsRestPublisher =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
-    args = argsList.get(1);
-    //we have remove parameter microserviceName
-    Assert.assertEquals("metricsEndpoint", args[0]);
-    Assert.assertEquals(MetricsRestPublisher.class, args[1]);
-    Assert.assertSame(metricsRestPublisher, args[2]);
+        @Override
+        public void addProducerMeta(String schemaId, Object instance) {
+          producerMetas.add(new ProducerMeta(schemaId, instance));
+        }
+      };
+
+      @Override
+      public ProducerProviderManager getProducerProviderManager() {
+        return producerProviderManager;
+      }
+    };
+    event.setScbEngine(scbEngine);
+    listener.onBeforeProducerProvider(event);
+
+    MatcherAssert.assertThat(producerMetas, Matchers.empty());
   }
 }

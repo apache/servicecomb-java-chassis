@@ -32,7 +32,7 @@ public class BytesWriteSchemas {
       return new BytesSchema<>(protoField, propertyDescriptor);
     }
 
-    return new BytesDynamicSchema<>(protoField, propertyDescriptor);
+    return new BytesSchema<>(protoField, propertyDescriptor);
   }
 
   private static class BytesDynamicSchema<T> extends FieldSchema<T> {
@@ -52,7 +52,7 @@ public class BytesWriteSchemas {
   }
 
   private static class BytesSchema<T> extends BytesDynamicSchema<T> {
-    protected final Getter<T, byte[]> getter;
+    protected final Getter<T, Object> getter;
 
     public BytesSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -62,9 +62,9 @@ public class BytesWriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      byte[] value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeByteArray(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

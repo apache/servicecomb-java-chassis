@@ -17,31 +17,26 @@
 
 package org.apache.servicecomb.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.servicecomb.core.endpoint.EndpointsCache;
-import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.Assert;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTransport {
+  @BeforeClass
+  public static void classSetup() {
+
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    SCBEngine.getInstance().destroy();
+  }
+
   @Test
   public void testEndpoint() throws Exception {
     Endpoint oEndpoint = new Endpoint(new Transport() {
-
       @Override
       public void send(Invocation invocation, AsyncResponse asyncResp) {
       }
@@ -72,40 +67,9 @@ public class TestTransport {
       }
     }, "rest://127.0.0.1:8080");
     oEndpoint.getTransport().init();
-    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
-    Assert.assertEquals("127.0.0.1", oEndpoint.getAddress());
-    Assert.assertEquals("test", oEndpoint.getTransport().getName());
-    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
-  }
-
-  @Test
-  public void testAbstractTransport(@Mocked Microservice microservice,
-      @Injectable InstanceCacheManager instanceCacheManager, @Injectable TransportManager transportManager,
-      @Mocked InstanceCache instanceCache, @Injectable MicroserviceInstance instance) {
-    EndpointsCache.init(instanceCacheManager, transportManager);
-    EndpointsCache oEndpointsCache = new EndpointsCache("app", "testname", "test", "rest");
-
-    List<Endpoint> endpoionts = oEndpointsCache.getLatestEndpoints();
-    Assert.assertEquals(endpoionts.size(), 0);
-
-    Map<String, List<CacheEndpoint>> allTransportMap = new HashMap<>();
-    CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://127.0.0.1:9999", instance);
-    List<CacheEndpoint> restEndpoints = new ArrayList<>();
-    restEndpoints.add(cacheEndpoint);
-    allTransportMap.put("rest", restEndpoints);
-
-    new Expectations() {
-      {
-        instanceCacheManager.getOrCreate(anyString, anyString, anyString);
-        result = instanceCache;
-        instanceCache.cacheChanged((InstanceCache) any);
-        result = true;
-        instanceCache.getOrCreateTransportMap();
-        result = allTransportMap;
-      }
-    };
-
-    endpoionts = oEndpointsCache.getLatestEndpoints();
-    Assert.assertEquals(endpoionts.size(), 1);
+    Assertions.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
+    Assertions.assertEquals("127.0.0.1", oEndpoint.getAddress());
+    Assertions.assertEquals("test", oEndpoint.getTransport().getName());
+    Assertions.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
   }
 }

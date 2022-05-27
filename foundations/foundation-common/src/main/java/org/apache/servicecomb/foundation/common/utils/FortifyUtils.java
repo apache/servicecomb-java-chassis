@@ -36,9 +36,9 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public final class FortifyUtils {
 
-  private static Method getMessageMethod;
+  private static final Method getMessageMethod;
 
-  private static Method printStackTraceMethod;
+  private static final Method printStackTraceMethod;
 
   static {
     try {
@@ -83,7 +83,7 @@ public final class FortifyUtils {
   }
 
   public static String getErrorInfo(Throwable e, boolean isPrintMsg) {
-    StringBuffer error = new StringBuffer(System.lineSeparator());
+    StringBuilder error = new StringBuilder(System.lineSeparator());
     error.append("Exception: ").append(e.getClass().getName()).append("; ");
 
     if (isPrintMsg) {

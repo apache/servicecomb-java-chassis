@@ -20,28 +20,27 @@ package org.apache.servicecomb.foundation.common.cache;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionedCache {
-  private static AtomicInteger VERSION = Deencapsulation.getField(VersionedCache.class, "VERSION");
+  private static final AtomicInteger VERSION = Deencapsulation.getField(VersionedCache.class, "VERSION");
 
   @Test
   public void construct() {
     VersionedCache cache = new VersionedCache();
 
-    Assert.assertNull(cache.data());
-    Assert.assertNull(cache.arrayData());
-    Assert.assertTrue(cache.isEmpty());
+    Assertions.assertNull(cache.data());
+    Assertions.assertNull(cache.arrayData());
+    Assertions.assertTrue(cache.isEmpty());
   }
 
   @Test
   public void autoCacheVersion() {
     VersionedCache cache = new VersionedCache().autoCacheVersion();
 
-    Assert.assertEquals(VERSION.get(), cache.cacheVersion());
+    Assertions.assertEquals(VERSION.get(), cache.cacheVersion());
   }
 
   @Test
@@ -49,14 +48,14 @@ public class TestVersionedCache {
     VersionedCache parent = new VersionedCache().autoCacheVersion();
     VersionedCache cache = new VersionedCache().cacheVersion(parent.cacheVersion());
 
-    Assert.assertEquals(parent.cacheVersion(), cache.cacheVersion());
+    Assertions.assertEquals(parent.cacheVersion(), cache.cacheVersion());
   }
 
   @Test
   public void setName() {
     VersionedCache cache = new VersionedCache().name("n");
 
-    Assert.assertEquals("n", cache.name());
+    Assertions.assertEquals("n", cache.name());
   }
 
   @Test
@@ -64,31 +63,31 @@ public class TestVersionedCache {
     VersionedCache parent = new VersionedCache().name("parent");
     VersionedCache child = new VersionedCache().subName(parent, "child");
 
-    Assert.assertEquals("parent/child", child.name());
+    Assertions.assertEquals("parent/child", child.name());
   }
 
   @Test
   public void setMapData() {
     VersionedCache cache = new VersionedCache().data(Collections.emptyMap());
 
-    Assert.assertSame(Collections.emptyMap(), cache.data());
-    Assert.assertSame(Collections.emptyMap(), cache.mapData());
-    Assert.assertTrue(cache.isEmpty());
+    Assertions.assertSame(Collections.emptyMap(), cache.data());
+    Assertions.assertSame(Collections.emptyMap(), cache.mapData());
+    Assertions.assertTrue(cache.isEmpty());
 
     cache.data(Collections.singletonMap("k", "v"));
-    Assert.assertFalse(cache.isEmpty());
+    Assertions.assertFalse(cache.isEmpty());
   }
 
   @Test
   public void setCollectionData() {
     VersionedCache cache = new VersionedCache().data(Collections.emptyList());
 
-    Assert.assertSame(Collections.emptyList(), cache.data());
-    Assert.assertSame(Collections.emptyList(), cache.collectionData());
-    Assert.assertTrue(cache.isEmpty());
+    Assertions.assertSame(Collections.emptyList(), cache.data());
+    Assertions.assertSame(Collections.emptyList(), cache.collectionData());
+    Assertions.assertTrue(cache.isEmpty());
 
     cache.data(Collections.singletonList("v"));
-    Assert.assertFalse(cache.isEmpty());
+    Assertions.assertFalse(cache.isEmpty());
   }
 
   @Test
@@ -96,24 +95,24 @@ public class TestVersionedCache {
     Object[] array = Collections.emptyList().toArray();
     VersionedCache cache = new VersionedCache().data(array);
 
-    Assert.assertSame(array, cache.data());
-    Assert.assertSame(array, cache.arrayData());
-    Assert.assertTrue(cache.isEmpty());
+    Assertions.assertSame(array, cache.data());
+    Assertions.assertSame(array, cache.arrayData());
+    Assertions.assertTrue(cache.isEmpty());
 
     cache.data(new String[] {"a", "b"});
-    Assert.assertFalse(cache.isEmpty());
+    Assertions.assertFalse(cache.isEmpty());
   }
 
   @Test
   public void setCommonData() {
     VersionedCache cache = new VersionedCache().data(null);
 
-    Assert.assertNull(cache.data());
-    Assert.assertNull(cache.arrayData());
-    Assert.assertTrue(cache.isEmpty());
+    Assertions.assertNull(cache.data());
+    Assertions.assertNull(cache.arrayData());
+    Assertions.assertTrue(cache.isEmpty());
 
     cache.data("a");
-    Assert.assertFalse(cache.isEmpty());
+    Assertions.assertFalse(cache.isEmpty());
   }
 
   @Test
@@ -121,9 +120,9 @@ public class TestVersionedCache {
     VersionedCache cacheOld = new VersionedCache().autoCacheVersion();
     VersionedCache cacheNew = new VersionedCache().autoCacheVersion();
 
-    Assert.assertTrue(cacheOld.isExpired(cacheNew));
-    Assert.assertFalse(cacheOld.isExpired(cacheOld));
-    Assert.assertFalse(cacheNew.isExpired(cacheOld));
+    Assertions.assertTrue(cacheOld.isExpired(cacheNew));
+    Assertions.assertFalse(cacheOld.isExpired(cacheOld));
+    Assertions.assertFalse(cacheNew.isExpired(cacheOld));
   }
 
   @Test
@@ -132,7 +131,7 @@ public class TestVersionedCache {
     VersionedCache cacheNew = new VersionedCache().autoCacheVersion();
     VersionedCache cacheSame = new VersionedCache().cacheVersion(cacheNew.cacheVersion());
 
-    Assert.assertFalse(cacheOld.isSameVersion(cacheNew));
-    Assert.assertTrue(cacheSame.isSameVersion(cacheNew));
+    Assertions.assertFalse(cacheOld.isSameVersion(cacheNew));
+    Assertions.assertTrue(cacheSame.isSameVersion(cacheNew));
   }
 }

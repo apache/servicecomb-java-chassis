@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -34,11 +35,11 @@ public class EnumWriteSchemas {
       return new EnumSchema<>(protoField, propertyDescriptor);
     }
 
-    return new EnumDynamicSchema<>(protoField, propertyDescriptor);
+    return new EnumSchema<>(protoField, propertyDescriptor);
   }
 
   private static class EnumDynamicSchema<T> extends FieldSchema<T> {
-    private EnumMeta enumMeta;
+    private final EnumMeta enumMeta;
 
     public EnumDynamicSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());
@@ -80,6 +81,12 @@ public class EnumWriteSchemas {
         return;
       }
 
+      if (value instanceof DynamicEnum) {
+        // protobuf can not support unknown enum, because protobuf encode enum as tag value
+        writeTo(output, ((DynamicEnum<?>) value).getValue());
+        return;
+      }
+
       if (value instanceof Number) {
         // need to check if it is a valid number
         // because maybe come from http request
@@ -106,23 +113,19 @@ public class EnumWriteSchemas {
   }
 
   private static class EnumSchema<T> extends EnumDynamicSchema<T> {
-    protected final Getter<T, Enum<?>> getter;
+    protected final Getter<T, Object> getter;
 
     public EnumSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      // already be a Enum, need to check if it is a valid Enum?
-      // wrong case:
-      //   expect a Color enum, but be a Sharp enum?, who will do this?
-      // for safe, check it......
-      Enum<?> value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        stringWrite(output, value.name());
+        writeTo(output, value);
       }
     }
   }

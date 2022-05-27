@@ -19,14 +19,10 @@ package org.apache.servicecomb.qps;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
-/**
- *
- *
- */
 public class TestConfig {
   @BeforeClass
   public static void classSetup() {
@@ -42,18 +38,18 @@ public class TestConfig {
   public void testEnabled() {
     Config.INSTANCE = new Config();
 
-    Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
-    ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, false);
-    Assert.assertEquals(false, Config.INSTANCE.isProviderEnabled());
+    Assertions.assertTrue(Config.INSTANCE.isProviderEnabled());
+    ArchaiusUtils.setProperty(Config.PROVIDER_ENABLED, false);
+    Assertions.assertFalse(Config.INSTANCE.isProviderEnabled());
 
-    ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, null);
-    Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
+    ArchaiusUtils.setProperty(Config.PROVIDER_ENABLED, null);
+    Assertions.assertTrue(Config.INSTANCE.isProviderEnabled());
 
-    Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
-    ArchaiusUtils.updateProperty(Config.CONSUMER_ENABLED, false);
-    Assert.assertEquals(false, Config.INSTANCE.isConsumerEnabled());
+    Assertions.assertTrue(Config.INSTANCE.isConsumerEnabled());
+    ArchaiusUtils.setProperty(Config.CONSUMER_ENABLED, false);
+    Assertions.assertFalse(Config.INSTANCE.isConsumerEnabled());
 
-    ArchaiusUtils.updateProperty(Config.CONSUMER_ENABLED, null);
-    Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
+    ArchaiusUtils.setProperty(Config.CONSUMER_ENABLED, null);
+    Assertions.assertTrue(Config.INSTANCE.isConsumerEnabled());
   }
 }

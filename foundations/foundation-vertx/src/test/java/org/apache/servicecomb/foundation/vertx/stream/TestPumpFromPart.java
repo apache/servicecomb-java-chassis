@@ -28,16 +28,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream.ReadResult;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.impl.SyncContext;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestPumpFromPart {
   String src = RandomStringUtils.random(100);
@@ -80,9 +81,9 @@ public class TestPumpFromPart {
   public void do_pump_succ(Context context) throws Throwable {
     run(context, true);
 
-    Assert.assertEquals(src, outputStream.getBuffer().toString());
-    Assert.assertTrue(inputStreamClosed);
-    Assert.assertTrue(outputStreamClosed);
+    Assertions.assertEquals(src, outputStream.getBuffer().toString());
+    Assertions.assertTrue(inputStreamClosed);
+    Assertions.assertTrue(outputStreamClosed);
   }
 
   @Test
@@ -94,8 +95,8 @@ public class TestPumpFromPart {
   public void do_pump_outputNotClose(Context context) throws Throwable {
     run(context, false);
 
-    Assert.assertEquals(src, outputStream.getBuffer().toString());
-    Assert.assertFalse(outputStreamClosed);
+    Assertions.assertEquals(src, outputStream.getBuffer().toString());
+    Assertions.assertFalse(outputStreamClosed);
   }
 
   @Test
@@ -107,21 +108,21 @@ public class TestPumpFromPart {
   public void pump_error(Context context) {
     try {
       run(context, true);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (Throwable e) {
-      Assert.assertThat(e, Matchers.instanceOf(ExecutionException.class));
-      Assert.assertThat(e.getCause(), Matchers.sameInstance(error));
+      MatcherAssert.assertThat(e, Matchers.instanceOf(ExecutionException.class));
+      MatcherAssert.assertThat(e.getCause(), Matchers.sameInstance(error));
     }
 
-    Assert.assertTrue(inputStreamClosed);
-    Assert.assertTrue(outputStreamClosed);
+    Assertions.assertTrue(inputStreamClosed);
+    Assertions.assertTrue(outputStreamClosed);
   }
 
   @Test
   public void pump_read_error() throws IOException {
     new MockUp<InputStreamToReadStream>() {
       @Mock
-      void readInWorker(Future<ReadResult> future) {
+      void readInWorker(Promise<ReadResult> future) {
         future.fail(error);
       }
     };
@@ -133,14 +134,14 @@ public class TestPumpFromPart {
     };
 
     pump_error(null);
-    Assert.assertTrue(inputStreamClosed);
-    Assert.assertTrue(outputStreamClosed);
+    Assertions.assertTrue(inputStreamClosed);
+    Assertions.assertTrue(outputStreamClosed);
 
     inputStreamClosed = false;
     outputStreamClosed = false;
     pump_error(context);
-    Assert.assertTrue(inputStreamClosed);
-    Assert.assertTrue(outputStreamClosed);
+    Assertions.assertTrue(inputStreamClosed);
+    Assertions.assertTrue(outputStreamClosed);
   }
 
   @Test
@@ -159,13 +160,13 @@ public class TestPumpFromPart {
     };
 
     pump_error(null);
-    Assert.assertTrue(inputStreamClosed);
-    Assert.assertTrue(outputStreamClosed);
+    Assertions.assertTrue(inputStreamClosed);
+    Assertions.assertTrue(outputStreamClosed);
 
     inputStreamClosed = false;
     outputStreamClosed = false;
     pump_error(context);
-    Assert.assertTrue(inputStreamClosed);
-    Assert.assertTrue(outputStreamClosed);
+    Assertions.assertTrue(inputStreamClosed);
+    Assertions.assertTrue(outputStreamClosed);
   }
 }

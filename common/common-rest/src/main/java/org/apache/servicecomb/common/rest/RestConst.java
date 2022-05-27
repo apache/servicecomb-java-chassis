@@ -29,7 +29,11 @@ public final class RestConst {
 
   public static final String SCHEME = "cse";
 
+  public static final String SCHEME_NEW = "servicecomb";
+
   public static final String URI_PREFIX = SCHEME + "://";
+
+  public static final String URI_PREFIX_NEW = SCHEME_NEW + "://";
 
   // in HttpServletRequest attribute
   public static final String PATH_PARAMETERS = "servicecomb-paths";
@@ -61,6 +65,10 @@ public final class RestConst {
 
   public static final String UPLOAD_DIR = "servicecomb.uploads.directory";
 
+  public static final String UPLOAD_DEFAULT_ENV_VARIABLE = "java.io.tmpdir";
+
+  public static final String UPLOAD_DEFAULT_DIR = System.getProperty(UPLOAD_DEFAULT_ENV_VARIABLE);
+
   // limit of one upload file, only available for servlet rest transport
   public static final String UPLOAD_MAX_FILE_SIZE = "servicecomb.uploads.maxFileSize";
 
@@ -72,4 +80,6 @@ public final class RestConst {
   public static final String UPLOAD_FILE_SIZE_THRESHOLD = "servicecomb.uploads.fileSizeThreshold";
 
   public static final String PROVIDER_SCAN_REST_CONTROLLER = "servicecomb.provider.rest.scanRestController";
+
+  public static final String PRINT_CODEC_ERROR_MESSGAGE = "servicecomb.codec.printErrorMessage";
 }

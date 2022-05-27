@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestResponseHeader {
 
@@ -45,7 +45,7 @@ public class TestResponseHeader {
   public void testSetContext() {
     context.put("key1", "v1");
     responseHeader.setContext(context);
-    Assert.assertNotNull(responseHeader.getContext());
-    Assert.assertEquals("v1", responseHeader.getContext().get("key1"));
+    Assertions.assertNotNull(responseHeader.getContext());
+    Assertions.assertEquals("v1", responseHeader.getContext().get("key1"));
   }
 }

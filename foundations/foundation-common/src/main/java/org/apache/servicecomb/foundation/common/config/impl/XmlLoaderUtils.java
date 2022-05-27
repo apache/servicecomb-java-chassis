@@ -38,7 +38,7 @@ public final class XmlLoaderUtils {
   private XmlLoaderUtils() {
   }
 
-  private static ObjectMapper xmlMapper = new XmlMapper();
+  private static final ObjectMapper xmlMapper = new XmlMapper();
 
   @SuppressWarnings("unchecked")
   public static <T> T load(Resource res, Class<?> cls) throws Exception {

@@ -18,25 +18,6 @@
 package org.apache.servicecomb.foundation.common.base;
 
 public interface ServiceCombConstants {
-
-  String CONFIG_APPLICATION_ID_KEY = "APPLICATION_ID";
-
-  String CONFIG_SERVICE_DESCRIPTION_KEY = "service_description";
-
-  String CONFIG_MICROSERVICE_NAME_KEY = "name";
-
-  String CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY = CONFIG_SERVICE_DESCRIPTION_KEY + "." + CONFIG_MICROSERVICE_NAME_KEY;
-
-  String CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY = CONFIG_SERVICE_DESCRIPTION_KEY + ".version";
-
-  String CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY = CONFIG_SERVICE_DESCRIPTION_KEY + ".role";
-
-  String CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY = CONFIG_SERVICE_DESCRIPTION_KEY + ".description";
-
-  String DEFAULT_MICROSERVICE_NAME = "defaultMicroservice";
-
-  String DEFAULT_APPLICATION_ID = "defaultApplicationId";
-
   String CONFIG_TRACING_COLLECTOR_ADDRESS = "servicecomb.tracing.collector.address";
 
   String CONFIG_TRACING_COLLECTOR_API_V1 = "v1";
@@ -44,8 +25,6 @@ public interface ServiceCombConstants {
   String CONFIG_TRACING_COLLECTOR_API_V2 = "v2";
 
   String CONFIG_TRACING_COLLECTOR_API_VERSION = "servicecomb.tracing.collector.apiVersion";
-
-  String CONFIG_TRACING_ENABLED_KEY = "servicecomb.tracing.enabled";
 
   String CONFIG_TRACING_COLLECTOR_PATH = "/api/{0}/spans";
 
@@ -61,11 +40,11 @@ public interface ServiceCombConstants {
 
   String CONFIG_DEFAULT_REGISTER_BY = "SDK";
 
-  String SERVICECOMB_ENV = "service_description.environment";
-
-  String DEFAULT_SERVICECOMB_ENV = "";
-
   String DEVELOPMENT_SERVICECOMB_ENV = "development";
 
-  String PRODUCTION_SERVICECOMB_ENV = "production";
+  String SERVICE_MAPPING = "SERVICE_MAPPING";
+
+  String VERSION_MAPPING = "VERSION_MAPPING";
+
+  String APP_MAPPING = "APP_MAPPING";
 }

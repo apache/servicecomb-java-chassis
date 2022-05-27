@@ -18,8 +18,8 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.web.client.RequestCallback;
 
 import mockit.Injectable;
@@ -29,10 +29,10 @@ public class TestCseRequestCallback {
   @Test
   public void testNormal(@Mocked RequestCallback callback) throws IOException {
     CseClientHttpRequest request = new CseClientHttpRequest();
-    CseRequestCallback cb = new CseRequestCallback(null, callback);
+    CseRequestCallback cb = new CseRequestCallback(null, callback, null);
     cb.doWithRequest(request);
 
-    Assert.assertEquals(null, request.getContext());
+    Assertions.assertNull(request.getContext());
   }
 
   @Test
@@ -41,9 +41,9 @@ public class TestCseRequestCallback {
     CseClientHttpRequest request = new CseClientHttpRequest();
 
     entity.addContext("c1", "c2");
-    CseRequestCallback cb = new CseRequestCallback(entity, callback);
+    CseRequestCallback cb = new CseRequestCallback(entity, callback, null);
     cb.doWithRequest(request);
 
-    Assert.assertEquals(entity.getContext(), request.getContext());
+    Assertions.assertEquals(entity.getContext(), request.getContext());
   }
 }

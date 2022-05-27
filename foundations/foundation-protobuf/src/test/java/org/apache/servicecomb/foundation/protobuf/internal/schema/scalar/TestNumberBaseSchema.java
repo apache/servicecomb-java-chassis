@@ -25,13 +25,12 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import io.protostuff.compiler.model.Field;
 import io.protostuff.compiler.model.Type;
+import org.junit.jupiter.api.Assertions;
 
 @Ignore
 public abstract class TestNumberBaseSchema extends TestSchemaBase {
@@ -52,19 +51,19 @@ public abstract class TestNumberBaseSchema extends TestSchemaBase {
     // null
     scbMap = new HashMap<>();
     scbMap.put(field, null);
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // empty string[]
     scbMap.put(field, new String[] {});
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // string[]
     scbMap.put(field, new String[] {String.valueOf(value)});
-    Assert.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
+    Assertions.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
 
     // string
     scbMap.put(field, String.valueOf(value));
-    Assert.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
+    Assertions.assertArrayEquals(expectBytes, rootSerializer.serialize(scbMap));
   }
 
   private byte[] doTestPojoNormal(String name) throws Throwable {
@@ -91,13 +90,13 @@ public abstract class TestNumberBaseSchema extends TestSchemaBase {
     strings_invalid(protoField);
   }
 
-  private void strings_invalid(Field field) throws IOException {
-    expectedException.expect(NumberFormatException.class);
-    expectedException.expectMessage(Matchers.is("For input string: \"a\""));
-
-    scbMap = new HashMap<>();
-    scbMap.put(field.getName(), new String[] {"a"});
-    rootSerializer.serialize(scbMap);
+  private void strings_invalid(Field field) {
+    NumberFormatException exception = Assertions.assertThrows(NumberFormatException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put(field.getName(), new String[] {"a"});
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("For input string: \"a\"", exception.getMessage());
   }
 
   @Test
@@ -110,17 +109,17 @@ public abstract class TestNumberBaseSchema extends TestSchemaBase {
     string_invalid(protoField);
   }
 
-  private void string_invalid(Field field) throws IOException {
-    expectedException.expect(NumberFormatException.class);
-    expectedException.expectMessage(Matchers.is("For input string: \"a\""));
-
-    scbMap = new HashMap<>();
-    scbMap.put(field.getName(), "a");
-    rootSerializer.serialize(scbMap);
+  private void string_invalid(Field field) {
+    NumberFormatException exception = Assertions.assertThrows(NumberFormatException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put(field.getName(), "a");
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("For input string: \"a\"", exception.getMessage());
   }
 
   @Test
-  public void primitiveType_invalid() throws Throwable {
+  public void primitiveType_invalid() {
     type_invalid(primitiveProtoField);
   }
 
@@ -129,17 +128,16 @@ public abstract class TestNumberBaseSchema extends TestSchemaBase {
     type_invalid(protoField);
   }
 
-  private void type_invalid(Field field) throws IOException {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is(String.format("not support serialize from %s to proto %s, field=%s:%s",
+  private void type_invalid(Field field) {
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put(field.getName(), new User());
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals(String.format("not support serialize from %s to proto %s, field=%s:%s",
             User.class.getName(),
             field.getTypeName(),
             ((Type) field.getParent()).getCanonicalName(),
-            field.getName())));
-
-    scbMap = new HashMap<>();
-    scbMap.put(field.getName(), new User());
-    rootSerializer.serialize(scbMap);
+            field.getName()), exception.getMessage());
   }
 }

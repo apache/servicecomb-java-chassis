@@ -19,7 +19,9 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.TypesUtil;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
@@ -92,10 +94,25 @@ public class DeserializerSchemaManager extends SchemaManager {
     super(protoMapper);
   }
 
+  public <T> RootDeserializer<T> createRootDeserializer(Message message, Map<String, Type> types) {
+    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, types);
+    return new RootDeserializer<>(messageSchema);
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
+    if (ProtoUtils.isAnyMessage(message)) {
+      SchemaEx<Object> messageSchema = new AnyEntrySchema(protoMapper, type);
+      return new RootDeserializer(messageSchema);
+    }
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
     SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType);
     return new RootDeserializer<>(messageSchema);
+  }
+
+  @Override
+  protected <T> SchemaEx<T> newMessageSchema(Message message, Map<String, Type> types) {
+    return new MessageReadSchema<>(protoMapper, message, types);
   }
 
   @Override
@@ -104,10 +121,16 @@ public class DeserializerSchemaManager extends SchemaManager {
       Field protoField = message.getField(1);
       if (javaType.isJavaLangObject()) {
         javaType =
-            protoField.isRepeated() && protoField.getType().isMessage() && !protoField.isMap() ? ProtoConst.LIST_TYPE
+            protoField.isRepeated() && !protoField.isMap() ? ProtoConst.LIST_TYPE
                 : ProtoConst.MAP_TYPE;
       }
-      javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
+
+      if (javaType.isPrimitive()) {
+        javaType = TypeFactory.defaultInstance()
+            .constructParametricType(PropertyWrapper.class, TypesUtil.primitiveJavaTypeToWrapper(javaType));
+      } else {
+        javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
+      }
     }
 
     if (javaType.isJavaLangObject()) {
@@ -215,7 +238,7 @@ public class DeserializerSchemaManager extends SchemaManager {
     }
 
     if (ProtoUtils.isAnyField(protoField)) {
-      AnyEntrySchema anyEntrySchema = new AnyEntrySchema(protoMapper);
+      AnyEntrySchema anyEntrySchema = new AnyEntrySchema(protoMapper, null);
       return AnyRepeatedReadSchemas.create(protoField, propertyDescriptor, anyEntrySchema);
     }
 

@@ -25,10 +25,11 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
@@ -66,8 +67,8 @@ public class TestSpringmvcProducerResponseMapper {
     ResponseEntity<String[]> responseEntity =
         new ResponseEntity<>(arrResult, org.springframework.http.HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
-    Assert.assertThat((List<String>) response.getResult(), Matchers.contains("a", "b"));
-    Assert.assertEquals(Status.OK, response.getStatus());
+    MatcherAssert.assertThat((List<String>) response.getResult(), Matchers.contains("a", "b"));
+    Assertions.assertEquals(Status.OK, response.getStatus());
   }
 
   @Test
@@ -75,8 +76,8 @@ public class TestSpringmvcProducerResponseMapper {
     ResponseEntity<String[]> responseEntity =
         new ResponseEntity<>(arrResult, org.springframework.http.HttpStatus.BAD_REQUEST);
     Response response = mapper.mapResponse(null, responseEntity);
-    Assert.assertSame(arrResult, response.getResult());
-    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus().getStatusCode());
+    Assertions.assertSame(arrResult, response.getResult());
+    Assertions.assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus().getStatusCode());
   }
 
   @Test
@@ -88,7 +89,7 @@ public class TestSpringmvcProducerResponseMapper {
         new ResponseEntity<>(arrResult, headers, org.springframework.http.HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
 
-    List<Object> hv = response.getHeaders().getHeader("h");
-    Assert.assertThat(hv, Matchers.contains("v"));
+    List<String> hv = response.getHeaders("h");
+    MatcherAssert.assertThat(hv, Matchers.contains("v"));
   }
 }

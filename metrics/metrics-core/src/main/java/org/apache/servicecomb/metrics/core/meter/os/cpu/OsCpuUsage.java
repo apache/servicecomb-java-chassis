@@ -33,9 +33,9 @@ import com.netflix.spectator.api.Id;
  */
 public class OsCpuUsage extends AbstractCpuUsage {
 
-  private Period total = new Period();
+  private final Period total = new Period();
 
-  private Period idle = new Period();
+  private final Period idle = new Period();
 
   public OsCpuUsage(Id id) {
     super(id);

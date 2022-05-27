@@ -18,9 +18,16 @@
 package org.apache.servicecomb.swagger.converter;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.swagger.models.Swagger;
 
 public interface Converter {
-  // def可能是property或model
-  // def不可能为null
-  JavaType convert(SwaggerToClassGenerator swaggerToClassGenerator, Object def);
+  static final JavaType OBJECT_JAVA_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
+
+  static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
+
+  // def can be property or model
+  // def can not be null
+  JavaType convert(Swagger swagger, Object def);
 }

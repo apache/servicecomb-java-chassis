@@ -20,9 +20,8 @@ package org.apache.servicecomb.swagger.generator.core;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.Assert;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Test;
 
 import io.swagger.annotations.Contact;
@@ -34,10 +33,9 @@ import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSwaggerDefinition {
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
   @SwaggerDefinition(
       basePath = "base",
       host = "host",
@@ -72,65 +70,55 @@ public class TestSwaggerDefinition {
   @SuppressWarnings("unchecked")
   @Test
   public void testSwaggerDefinition() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, SwaggerAnnotation.class);
-    swaggerGenerator.generate();
+    Swagger swagger = SwaggerGenerator.generate(SwaggerAnnotation.class);
 
-    Swagger swagger = swaggerGenerator.getSwagger();
-
-    Assert.assertEquals(SwaggerAnnotation.class.getName(),
+    Assertions.assertEquals(SwaggerAnnotation.class.getName(),
         swagger.getInfo().getVendorExtensions().get(SwaggerConst.EXT_JAVA_INTF));
-    Assert.assertEquals("2.0", swagger.getSwagger());
-    Assert.assertEquals("/base", swagger.getBasePath());
-    Assert.assertEquals("host", swagger.getHost());
-    Assert.assertEquals(Arrays.asList("json", "xml"), swagger.getConsumes());
-    Assert.assertEquals(Arrays.asList("abc", "123"), swagger.getProduces());
+    Assertions.assertEquals("2.0", swagger.getSwagger());
+    Assertions.assertEquals("/base", swagger.getBasePath());
+    Assertions.assertEquals("host", swagger.getHost());
+    Assertions.assertEquals(Arrays.asList("json", "xml"), swagger.getConsumes());
+    Assertions.assertEquals(Arrays.asList("abc", "123"), swagger.getProduces());
 
-    Assert.assertEquals(1, swagger.getTags().size());
+    Assertions.assertEquals(1, swagger.getTags().size());
     io.swagger.models.Tag tagA = swagger.getTags().get(0);
-    Assert.assertEquals("tagA", tagA.getName());
-    Assert.assertEquals("desc of tagA", tagA.getDescription());
-    Assert.assertEquals("tagA ext docs", tagA.getExternalDocs().getDescription());
-    Assert.assertEquals("url of tagA ext docs", tagA.getExternalDocs().getUrl());
-    Assert.assertEquals(1, tagA.getVendorExtensions().size());
+    Assertions.assertEquals("tagA", tagA.getName());
+    Assertions.assertEquals("desc of tagA", tagA.getDescription());
+    Assertions.assertEquals("tagA ext docs", tagA.getExternalDocs().getDescription());
+    Assertions.assertEquals("url of tagA ext docs", tagA.getExternalDocs().getUrl());
+    Assertions.assertEquals(1, tagA.getVendorExtensions().size());
 
     Map<String, Object> tagValue = (Map<String, Object>) tagA.getVendorExtensions().get("x-tagA");
-    Assert.assertEquals("value of tagAExt", tagValue.get("x-tagAExt"));
+    Assertions.assertEquals("value of tagAExt", tagValue.get("x-tagAExt"));
 
     io.swagger.models.Info info = swagger.getInfo();
-    Assert.assertEquals("title of SwaggerAnnotation", info.getTitle());
-    Assert.assertEquals("0.1", info.getVersion());
-    Assert.assertEquals("termsOfService", info.getTermsOfService());
-    Assert.assertEquals("description of info for SwaggerAnnotation", info.getDescription());
+    Assertions.assertEquals("title of SwaggerAnnotation", info.getTitle());
+    Assertions.assertEquals("0.1", info.getVersion());
+    Assertions.assertEquals("termsOfService", info.getTermsOfService());
+    Assertions.assertEquals("description of info for SwaggerAnnotation", info.getDescription());
 
-    Assert.assertEquals("contact", info.getContact().getName());
-    Assert.assertEquals("contact@email.com", info.getContact().getEmail());
-    Assert.assertEquals("http://contact", info.getContact().getUrl());
+    Assertions.assertEquals("contact", info.getContact().getName());
+    Assertions.assertEquals("contact@email.com", info.getContact().getEmail());
+    Assertions.assertEquals("http://contact", info.getContact().getUrl());
 
-    Assert.assertEquals("license ", info.getLicense().getName());
-    Assert.assertEquals("http://license", info.getLicense().getUrl());
+    Assertions.assertEquals("license ", info.getLicense().getName());
+    Assertions.assertEquals("http://license", info.getLicense().getUrl());
 
-    Assert.assertEquals(2, info.getVendorExtensions().size());
+    Assertions.assertEquals(2, info.getVendorExtensions().size());
 
     Map<String, Object> infoValue = (Map<String, Object>) info.getVendorExtensions().get("x-info");
-    Assert.assertEquals("value of infoExt", infoValue.get("x-infoExt"));
+    Assertions.assertEquals("value of infoExt", infoValue.get("x-infoExt"));
 
-    Assert.assertEquals("SwaggerAnnotation ext docs", swagger.getExternalDocs().getDescription());
-    Assert.assertEquals("url of SwaggerAnnotation ext docs", swagger.getExternalDocs().getUrl());
+    Assertions.assertEquals("SwaggerAnnotation ext docs", swagger.getExternalDocs().getDescription());
+    Assertions.assertEquals("url of SwaggerAnnotation ext docs", swagger.getExternalDocs().getUrl());
   }
 
   @Test
   public void testFillDefault() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, SwaggerNoAnnotation.class);
-    swaggerGenerator.generate();
-    swaggerGenerator.correctSwagger();
-
-    Swagger swagger = swaggerGenerator.getSwagger();
-
-    Assert.assertEquals("2.0", swagger.getSwagger());
-    Assert.assertEquals("/SwaggerNoAnnotation", swagger.getBasePath());
-    Assert.assertEquals("swagger definition for " + SwaggerNoAnnotation.class.getName(),
+    Swagger swagger = SwaggerGenerator.generate(SwaggerNoAnnotation.class);
+    Assertions.assertEquals("2.0", swagger.getSwagger());
+    Assertions.assertEquals("/SwaggerNoAnnotation", swagger.getBasePath());
+    Assertions.assertEquals("swagger definition for " + SwaggerNoAnnotation.class.getName(),
         swagger.getInfo().getTitle());
   }
 }

@@ -17,10 +17,12 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.cert.CRL;
 import java.security.cert.CRLException;
@@ -38,25 +40,43 @@ public final class KeyStoreUtil {
 
   }
 
-  public static KeyStore createKeyStore(String storename, String storetype,
-      char[] storevalue) {
-    InputStream is = null;
+  public static KeyStore createKeyStore(String storeName, String storeType,
+      char[] storeValue) {
+    if (storeName == null) {
+      return null;
+    }
+
+    File storeFile = new File(storeName);
+
     try {
-      KeyStore keystore = KeyStore.getInstance(storetype);
-      is = new FileInputStream(storename);
-      keystore.load(is, storevalue);
+      if (storeFile.isFile()) {
+        return createKeyStore(new FileInputStream(storeFile), storeType, storeValue);
+      }
+
+      ClassLoader classLoader =
+          Thread.currentThread().getContextClassLoader() == null ? KeyStoreUtil.class.getClassLoader()
+              : Thread.currentThread().getContextClassLoader();
+      URL resource = classLoader.getResource(storeName);
+      if (resource != null) {
+        return createKeyStore(resource.openStream(), storeType, storeValue);
+      }
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Bad key store or value."
+          + e.getMessage());
+    }
+
+    return null;
+  }
+
+  public static KeyStore createKeyStore(InputStream store, String storeType,
+      char[] storeValue) {
+    try (InputStream is = store) {
+      KeyStore keystore = KeyStore.getInstance(storeType);
+      keystore.load(is, storeValue);
       return keystore;
     } catch (Exception e) {
       throw new IllegalArgumentException("Bad key store or value."
           + e.getMessage());
-    } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-          ignore();
-        }
-      }
     }
   }
 
@@ -67,8 +87,7 @@ public final class KeyStoreUtil {
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
       is = new FileInputStream(crlfile);
       Collection c = cf.generateCRLs(is);
-      CRL[] crls = (CRL[]) c.toArray(new CRL[c.size()]);
-      return crls;
+      return (CRL[]) c.toArray(new CRL[c.size()]);
     } catch (CertificateException e) {
       throw new IllegalArgumentException("bad cert file.");
     } catch (FileNotFoundException e) {
@@ -104,8 +123,7 @@ public final class KeyStoreUtil {
       TrustManagerFactory tmfactory =
           TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmfactory.init(keystore);
-      TrustManager[] trustmanagers = tmfactory.getTrustManagers();
-      return trustmanagers;
+      return tmfactory.getTrustManagers();
     } catch (Exception e) {
       throw new IllegalArgumentException("Bad trust store."
           + e.getMessage());

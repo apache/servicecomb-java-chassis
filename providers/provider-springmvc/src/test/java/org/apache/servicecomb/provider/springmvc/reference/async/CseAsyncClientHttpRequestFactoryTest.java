@@ -19,15 +19,15 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import java.net.URI;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 
 public class CseAsyncClientHttpRequestFactoryTest {
   @Test
   public void testCseAsyncClientHttpRequestFactory() {
     CseAsyncClientHttpRequestFactory cseAsyncClientHttpRequestFactory = new CseAsyncClientHttpRequestFactory();
-    Assert.assertEquals(HttpMethod.GET,
+    Assertions.assertEquals(HttpMethod.GET,
         cseAsyncClientHttpRequestFactory.createAsyncRequest(URI.create("/test"), HttpMethod.GET).getMethod());
   }
 }

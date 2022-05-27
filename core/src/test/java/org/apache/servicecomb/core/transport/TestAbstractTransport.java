@@ -24,27 +24,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.util.ReflectionUtils;
 
 import com.netflix.config.DynamicProperty;
 
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
-  private Method updatePropertyMethod =
+  private final Method updatePropertyMethod =
       ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
 
   private void updateProperty(String key, Object value) {
@@ -69,60 +64,30 @@ public class TestAbstractTransport {
     }
   }
 
-  @Injectable
-  AbstractServiceRegistry serviceRegistry;
-
-  @Before
-  public void setup() {
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-  }
-
-  @After
-  public void teardown() {
-    RegistryUtils.setServiceRegistry(null);
-  }
-
   @AfterClass
   public static void classTeardown() {
-    VertxUtils.closeVertxByName("transport");
+    VertxUtils.blockCloseVertxByName("transport");
   }
 
   @Test
   public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
     new Expectations() {
       {
-        serviceRegistry.getFeatures().isCanEncodeEndpoint();
-        result = true;
+        RegistrationManager.getPublishAddress("my", "127.0.0.1:9090");
       }
     };
 
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
-    Assert.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
+    Assertions.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
         transport.getEndpoint().getEndpoint());
-  }
-
-  @Test
-  public void testSetListenAddressWithoutSchemaChineseSpaceOldSC() {
-    MyAbstractTransport transport = new MyAbstractTransport();
-    try {
-      transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
-      Assert.fail("must throw exception");
-    } catch (ServiceCombException e) {
-      Assert.assertEquals(
-          "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
-          e.getMessage());
-      Assert.assertEquals(
-          "Illegal character in query at index 31: rest://127.0.0.1:9090?country=中 国",
-          e.getCause().getMessage());
-    }
   }
 
   @Test
   public void testSetListenAddressWithoutSchemaNormalNotEncode() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "chinese"));
-    Assert.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
+    Assertions.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
   }
 
   @Test
@@ -130,21 +95,21 @@ public class TestAbstractTransport {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090?a=aValue",
         Collections.singletonMap("country", "chinese"));
-    Assert.assertEquals("my://127.0.0.1:9090?a=aValue&country=chinese", transport.getEndpoint().getEndpoint());
+    Assertions.assertEquals("my://127.0.0.1:9090?a=aValue&country=chinese", transport.getEndpoint().getEndpoint());
   }
 
   @Test
   public void testMyAbstractTransport() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090");
-    Assert.assertEquals("my", transport.getName());
-    Assert.assertEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
-    Assert.assertEquals("127.0.0.1", ((IpPort) transport.parseAddress("my://127.0.0.1:9090")).getHostOrIp());
+    Assertions.assertEquals("my", transport.getName());
+    Assertions.assertEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
+    Assertions.assertEquals("127.0.0.1", ((IpPort) transport.parseAddress("my://127.0.0.1:9090")).getHostOrIp());
     transport.setListenAddressWithoutSchema("0.0.0.0:9090");
-    Assert.assertNotEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
+    Assertions.assertNotEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
     transport.setListenAddressWithoutSchema(null);
-    Assert.assertNull(transport.getEndpoint().getEndpoint());
-    Assert.assertNull(transport.parseAddress(null));
+    Assertions.assertNull(transport.getEndpoint().getEndpoint());
+    Assertions.assertNull(transport.parseAddress(null));
   }
 
   @Test(expected = IllegalArgumentException.class)

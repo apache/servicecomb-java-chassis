@@ -17,25 +17,23 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.Produces;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class ProducesAnnotationProcessor implements MethodAnnotationProcessor {
+public class ProducesAnnotationProcessor implements MethodAnnotationProcessor<Produces> {
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    Produces produces = (Produces) annotation;
+  public Type getProcessType() {
+    return Produces.class;
+  }
 
-    List<String> produceList = Arrays.stream(produces.value()).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!produceList.isEmpty()) {
-      operationGenerator.getOperation().setProduces(produceList);
-    }
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Produces produces) {
+    SwaggerUtils.setProduces(operationGenerator.getOperation(), produces.value());
   }
 }

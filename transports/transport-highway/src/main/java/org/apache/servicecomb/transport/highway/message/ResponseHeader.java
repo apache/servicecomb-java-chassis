@@ -17,47 +17,55 @@
 
 package org.apache.servicecomb.transport.highway.message;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
-import io.protostuff.ProtobufOutput;
-import io.protostuff.Tag;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
-  private static WrapSchema responseHeaderSchema = ProtobufManager.getDefaultScopedProtobufSchemaManager()
-      .getOrCreateSchema(ResponseHeader.class);
+  private static final ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  public static WrapSchema getResponseHeaderSchema() {
-    return responseHeaderSchema;
+  private static final RootDeserializer<ResponseHeader> rootDeserializer = protoMapperFactory
+      .createFromName("ResponseHeader.proto")
+      .createRootDeserializer("ResponseHeader", ResponseHeader.class);
+
+  private static final RootSerializer rootSerializer = protoMapperFactory.createFromName("ResponseHeader.proto")
+      .createRootSerializer("ResponseHeader", ResponseHeader.class);
+
+  public static RootSerializer getRootSerializer() {
+    return rootSerializer;
   }
 
   public static ResponseHeader readObject(Buffer bodyBuffer) throws Exception {
-    return responseHeaderSchema.readObject(bodyBuffer);
+    return rootDeserializer.deserialize(bodyBuffer.getBytes());
   }
 
   // 运行时必须的数据，比如body是否压缩
   // 预留特性选项
-  //CHECKSTYLE:OFF: magicnumber
-  @Tag(5)
   private int flags;
 
-  @Tag(1)
   private int statusCode;
 
-  @Tag(2)
-  private String reason;
+  private String reasonPhrase;
 
-  @Tag(3)
   private Map<String, String> context;
 
-  @Tag(4)
   private Headers headers = new Headers();
 
-  //CHECKSTYLE:ON: magicnumber
+  public int getFlags() {
+    return flags;
+  }
+
+  public void setFlags(int flags) {
+    this.flags = flags;
+  }
+
   public int getStatusCode() {
     return statusCode;
   }
@@ -67,11 +75,11 @@ public class ResponseHeader {
   }
 
   public String getReasonPhrase() {
-    return reason;
+    return reasonPhrase;
   }
 
   public void setReasonPhrase(String reason) {
-    this.reason = reason;
+    this.reasonPhrase = reason;
   }
 
   public Map<String, String> getContext() {
@@ -90,7 +98,29 @@ public class ResponseHeader {
     this.headers = headers;
   }
 
-  public void writeObject(ProtobufOutput output) throws Exception {
-    responseHeaderSchema.writeObject(output, this);
+  public void fromMultiMap(MultiMap multiMap) {
+    if (multiMap == null) {
+      return;
+    }
+
+    for (Entry<String, String> entry : multiMap.entries()) {
+      headers.addHeader(entry.getKey(), entry.getValue());
+    }
+  }
+
+  public MultiMap toMultiMap() {
+    MultiMap multiMap = MultiMap.caseInsensitiveMultiMap();
+    Map<String, List<Object>> headerMap = headers.getHeaderMap();
+    if (headerMap == null) {
+      return multiMap;
+    }
+
+    for (Entry<String, List<Object>> entry : headerMap.entrySet()) {
+      String key = entry.getKey();
+      for (Object value : entry.getValue()) {
+        multiMap.add(key, value.toString());
+      }
+    }
+    return multiMap;
   }
 }

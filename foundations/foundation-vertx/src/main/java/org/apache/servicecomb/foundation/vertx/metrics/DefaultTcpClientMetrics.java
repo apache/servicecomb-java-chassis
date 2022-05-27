@@ -27,6 +27,8 @@ import io.vertx.core.spi.metrics.TCPMetrics;
  * important: not singleton, every NetClient instance relate to a TCPMetrics instance
  */
 public class DefaultTcpClientMetrics implements TCPMetrics<DefaultTcpSocketMetric> {
+  private static final String PROTOCOL = "tcp://";
+
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   public DefaultTcpClientMetrics(DefaultClientEndpointMetricManager clientEndpointMetricManager) {
@@ -35,8 +37,11 @@ public class DefaultTcpClientMetrics implements TCPMetrics<DefaultTcpSocketMetri
 
   @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager.onConnect(remoteAddress);
-    return new DefaultTcpSocketMetric(endpointMetric);
+    DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager
+        .getOrCreateEndpointMetric(PROTOCOL + remoteAddress.toString());
+    DefaultTcpSocketMetric socketMetric = new DefaultTcpSocketMetric(endpointMetric);
+    socketMetric.onConnect();
+    return socketMetric;
   }
 
   @Override
@@ -52,21 +57,5 @@ public class DefaultTcpClientMetrics implements TCPMetrics<DefaultTcpSocketMetri
   @Override
   public void bytesWritten(DefaultTcpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
     socketMetric.getEndpointMetric().addBytesWritten(numberOfBytes);
-  }
-
-  @Override
-  public void exceptionOccurred(DefaultTcpSocketMetric socketMetric, SocketAddress remoteAddress, Throwable t) {
-
-  }
-
-  @Override
-  @Deprecated
-  public boolean isEnabled() {
-    return true;
-  }
-
-  @Override
-  public void close() {
-
   }
 }

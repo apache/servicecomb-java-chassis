@@ -19,17 +19,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>integration-tests</artifactId>
+    <groupId>org.apache.servicecomb.tests</groupId>
+    <version>2.8.0-SNAPSHOT</version>
+  </parent>
 
-  <groupId>org.apache.servicecomb.tests</groupId>
   <artifactId>it-producer-deploy-springboot2-servlet</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <name>Java Chassis::IT::SpringBoot2 Servlet</name>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-dependencies-springboot2</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <artifactId>java-chassis-dependencies</artifactId>
+        <version>2.8.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -40,11 +44,11 @@
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-producer</artifactId>
-      <version>1.2.0-SNAPSHOT</version>
+      <version>2.8.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot2-starter-servlet</artifactId>
+      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -59,43 +63,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <compilerArgument>-parameters</compilerArgument>
             <encoding>UTF-8</encoding>
             <source>1.8</source>
             <target>1.8</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <configuration>
-            <excludes>
-              <exclude>DISCLAIMER</exclude>
-              <exclude>.travis.yml</exclude>
-              <exclude>**/*.md</exclude>
-              <excldue>**/*.MD</excldue>
-              <exclude>**/target/*</exclude>
-              <!-- Skip the code style configuration file -->
-              <exclude>**/etc/eclipse-java-google-style.xml</exclude>
-              <exclude>**/etc/intellij-java-google-style.xml</exclude>
-              <!-- Skip the ssl configuration files -->
-              <exculde>**/resources/ssl/**</exculde>
-              <!-- SKip the licenses files -->
-              <exclude>**/src/release/licenses/**</exclude>
-              <!-- Skip the demo log files -->
-              <exclude>**/logs/**.log</exclude>
-              <exclude>**/**.log</exclude>
-              <!-- Skip the target files -->
-              <exclude>**/target/**</exclude>
-              <!-- Skip the source files which are forked from vertx -->
-              <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
-              <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
-              <exclude>**/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java</exclude>
-              <!--Skip protobuf generated file-->
-              <exclude>**/java/org/apache/servicecomb/foundation/protobuf/internal/model/ProtobufRoot.java</exclude>
-            </excludes>
           </configuration>
         </plugin>
       </plugins>
@@ -115,29 +88,30 @@
         </file>
       </activation>
 
+      <!--must manage by profile, otherwise when "mvn install" will cause classpath problem-->
       <build>
         <plugins>
           <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
-            <version>2.0.0.RELEASE</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>repackage</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
-
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
-            <version>2.6</version>
+            <executions>
+              <execution>
+                <id>default-jar</id>
+                <phase>package</phase>
+              </execution>
+            </executions>
             <configuration>
               <archive>
+                <manifest>
+                  <addClasspath>false</addClasspath>
+                  <mainClass>${it.main}</mainClass>
+                </manifest>
                 <manifestEntries>
-                  <Class-Path>.</Class-Path>
+                  <Class-Path>. ..</Class-Path>
                 </manifestEntries>
               </archive>
             </configuration>

@@ -17,46 +17,29 @@
 
 package org.apache.servicecomb.core.transport;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
+import org.apache.servicecomb.registry.RegistrationManager;
 
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
 
   /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
    */
   public static final String ENDPOINT_KEY = "servicecomb.endpoint";
 
-  private static final long REQUEST_TIMEOUT_CFG_FAIL = -1;
-
-  // 所有transport使用同一个vertx实例，避免创建太多的线程
-  private static TransportVertxFactory transportVertxFactory = new TransportVertxFactory();
-
-  public static TransportVertxFactory getTransportVertxFactory() {
-    return transportVertxFactory;
-  }
-
-  protected Vertx transportVertx = getTransportVertxFactory().getTransportVertx();
+  protected Vertx transportVertx = SharedVertxFactory.getSharedVertx();
 
   protected Endpoint endpoint;
 
@@ -86,7 +69,7 @@ public abstract class AbstractTransport implements Transport {
 
     this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
     if (this.endpoint.getEndpoint() != null) {
-      this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(),
+      this.publishEndpoint = new Endpoint(this, RegistrationManager.getPublishAddress(getName(),
           addressWithoutSchema));
     } else {
       this.publishEndpoint = null;
@@ -109,37 +92,8 @@ public abstract class AbstractTransport implements Transport {
       return new BasicNameValuePair(entry.getKey(), entry.getValue());
     }).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
 
-    if (!RegistryUtils.getServiceRegistry().getFeatures().isCanEncodeEndpoint()) {
-      addressWithoutSchema = genAddressWithoutSchemaForOldSC(addressWithoutSchema, encodedQuery);
-    } else {
-      addressWithoutSchema += encodedQuery;
-    }
+    addressWithoutSchema += encodedQuery;
 
-    return addressWithoutSchema;
-  }
-
-  private String genAddressWithoutSchemaForOldSC(String addressWithoutSchema, String encodedQuery) {
-    // old service center do not support encodedQuery
-    // sdk must query service center's version, and determine if encode query
-    // traced by JAV-307
-    try {
-      LOGGER.warn("Service center do not support encoded query, so we use unencoded query, "
-          + "this caused not support chinese/space (and maybe other char) in query value.");
-      String decodedQuery = URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8.name());
-      addressWithoutSchema += decodedQuery;
-    } catch (UnsupportedEncodingException e) {
-      // never happened
-      throw new ServiceCombException("Failed to decode query.", e);
-    }
-
-    try {
-      // make sure consumer can handle this endpoint
-      new URI(Const.RESTFUL + "://" + addressWithoutSchema);
-    } catch (URISyntaxException e) {
-      throw new ServiceCombException(
-          "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
-          e);
-    }
     return addressWithoutSchema;
   }
 

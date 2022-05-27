@@ -40,28 +40,35 @@ public class TestRestTemplate {
   public void runRest() {
     checkQueryGenericObject();
     checkQueryGenericString();
+    checkQueryObject();
   }
 
   private void testvoidResponse() {
-    final ResponseEntity<Void> resultEntity = restTemplate
+    ResponseEntity<Void> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/testvoidInRestTemplate", void.class);
     Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "void return type invocation failed");
   }
 
   private void testVoidResponse() {
-    final ResponseEntity<Void> resultEntity = restTemplate
+    ResponseEntity<Void> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
+    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
+    resultEntity = restTemplate
+        .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
     Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
   }
 
   private void checkAllVoidTestResult() {
-    final ResponseEntity<Boolean> resultEntity = restTemplate
+    ResponseEntity<Boolean> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/checkVoidResult", boolean.class);
+    Assert.isTrue(resultEntity.getBody(), "not all void test is passed");
+    restTemplate
+        .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/checkVoidResult", boolean.class);
     Assert.isTrue(resultEntity.getBody(), "not all void test is passed");
   }
 
   private void checkQueryObject() {
-    final ResponseEntity<String> responseEntity = restTemplate
+    ResponseEntity<String> responseEntity = restTemplate
         .postForEntity("cse://springmvc/codeFirstSpringmvc/checkQueryObject?name={1}&otherName={2}",
             new Person("bodyName"), String.class, "name1", "otherName2");
     TestMgr.check("invocationContext_is_null=false,person=name1,otherName=otherName2,name=name1,requestBody=bodyName",
@@ -69,10 +76,10 @@ public class TestRestTemplate {
   }
 
   private void checkQueryGenericObject() {
-    final GenericParam<Person> requestBody = new GenericParam<>();
-    requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
-    final HttpEntity<GenericParam<Person>> requestEntity = new HttpEntity<>(requestBody);
-    final ResponseEntity<String> responseEntity = restTemplate
+    GenericParam<Person> requestBody = new GenericParam<>();
+    requestBody.num(1).str("str1").setData(new Person("bodyPerson"));
+    HttpEntity<GenericParam<Person>> requestEntity = new HttpEntity<>(requestBody);
+    ResponseEntity<String> responseEntity = restTemplate
         .exchange("cse://springmvc/codeFirstSpringmvc/checkQueryGenericObject?str={1}&num={2}",
             HttpMethod.PUT, requestEntity, String.class, "str2", 2);
     TestMgr.check(
@@ -81,9 +88,9 @@ public class TestRestTemplate {
   }
 
   private void checkQueryGenericString() {
-    final GenericParam<Person> requestBody = new GenericParam<>();
-    requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
-    final ResponseEntity<String> responseEntity = restTemplate.exchange(
+    GenericParam<Person> requestBody = new GenericParam<>();
+    requestBody.num(1).str("str1").setData(new Person("bodyPerson"));
+    ResponseEntity<String> responseEntity = restTemplate.exchange(
         "cse://springmvc/codeFirstSpringmvc/checkQueryGenericString?str={1}&num={2}&data={3}&strExtended={4}&intExtended={5}",
         HttpMethod.PUT, new HttpEntity<>(requestBody), String.class, "str2", 2, "dataTest",
         "strInSubclass", 33);

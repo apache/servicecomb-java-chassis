@@ -19,15 +19,16 @@ package org.apache.servicecomb.demo.pojo.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.Test;
@@ -39,6 +40,7 @@ import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -49,9 +51,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PojoClient {
-  public static final byte buffer[] = new byte[1024];
+  private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
-  public static CodeFirstPojoClient codeFirstPojoClient;
+  public static final byte[] buffer = new byte[1024];
 
   // reference a not exist a microservice, and never use it
   // this should not cause problems
@@ -62,8 +64,6 @@ public class PojoClient {
   public static Test test;
 
   public static Test testFromXml;
-
-  private static Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
   private static SmartCare smartcare;
 
@@ -79,38 +79,46 @@ public class PojoClient {
     Log4jUtils.init();
     BeanUtils.init();
 
-    run();
+    try {
+      run();
+    } catch (Exception e) {
+      TestMgr.check("success", "failed");
+      LOGGER.error("-------------- test failed -------------");
+      LOGGER.error("", e);
+      LOGGER.error("-------------- test failed -------------");
+    }
 
     TestMgr.summary();
   }
 
-  private static void testContextClassLoaderIsNull() {
-    IntStream.range(0, 100).parallel().forEach(item -> {
-      if (Thread.currentThread().getName().equals("main")) {
-        return;
-      }
-      // in web environment, this could be null, here we just mock a null class loader.
-      Thread.currentThread().setContextClassLoader(null);
-      TestMgr.check(null, test.postTestStatic(2));
-    });
+  private static void testContextClassLoaderIsNull() throws Exception {
+    ForkJoinPool pool = new ForkJoinPool(4);
+    pool.submit(() ->
+        IntStream.range(0, 20).parallel().forEach(item -> {
+          if (Thread.currentThread().getName().equals("main")) {
+            return;
+          }
+          // in web environment, this could be null, here we just mock a null class loader.
+          Thread.currentThread().setContextClassLoader(null);
+          TestMgr.check(null, test.postTestStatic(2));
+        })).get();
   }
 
   public static void run() throws Exception {
-    testContextClassLoaderIsNull();
+    testHttpClientsIsOk();
+    CategorizedTestCaseRunner.runCategorizedTestCase("pojo");
 
     smartcare = BeanUtils.getBean("smartcare");
-
     String microserviceName = "pojo";
-    codeFirstPojoClient.testCodeFirst(microserviceName);
 
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
+      testContextClassLoaderIsNull();
       testNull(testFromXml);
       testNull(test);
-      testEmpty(test);
 
       // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
       // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
@@ -147,10 +155,30 @@ public class PojoClient {
 
       if ("rest".equals(transport)) {
         testTraceIdOnNotSetBefore();
+        testNullRest(test);
+        testExceptionRest(test);
+        testEmptyRest(test);
+      } else if ("highway".equals(transport)) {
+        testNullHighway(test);
+        testEmptyHighway(test);
       }
 
       testTraceIdOnContextContainsTraceId();
     }
+  }
+
+  private static void testHttpClientsIsOk() {
+    TestMgr.check(HttpClients.getClient("registry") != null, true);
+    TestMgr.check(HttpClients.getClient("registry-watch") != null, false);
+    TestMgr.check(HttpClients.getClient("config-center") != null, false);
+    TestMgr.check(HttpClients.getClient("http-transport-client") != null, false);
+    TestMgr.check(HttpClients.getClient("http2-transport-client") != null, true);
+
+    TestMgr.check(HttpClients.getClient("registry", false) != null, true);
+    TestMgr.check(HttpClients.getClient("registry-watch", false) != null, false);
+    TestMgr.check(HttpClients.getClient("config-center", false) != null, false);
+    TestMgr.check(HttpClients.getClient("http-transport-client", false) != null, false);
+    TestMgr.check(HttpClients.getClient("http2-transport-client", false) != null, true);
   }
 
   /**
@@ -190,6 +218,26 @@ public class PojoClient {
         smartCare.delApplication("app0"));
   }
 
+  private static void testExceptionRest(Test test) {
+    try {
+      test.testException(456);
+    } catch (InvocationException e) {
+      TestMgr.check("456 error", e.getErrorData());
+    }
+
+    try {
+      test.testException(556);
+    } catch (InvocationException e) {
+      TestMgr.check("[556 error]", e.getErrorData());
+    }
+
+    try {
+      test.testException(557);
+    } catch (InvocationException e) {
+      TestMgr.check("[[557 error]]", e.getErrorData());
+    }
+  }
+
   private static void testException(Test test) {
     try {
       test.testException(456);
@@ -222,27 +270,45 @@ public class PojoClient {
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
   }
 
+  @SuppressWarnings({"deprecation"})
   private static void testCommonInvoke(String transport) {
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", new Object[] {2, new User()});
+    Map<String, Object> arguments = new HashMap<>();
+    arguments.put("index", 2);
+    arguments.put("user", new User());
+    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", arguments);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=2]", result);
 
+    arguments = new HashMap<>();
+    arguments.put("index", 3);
+    arguments.put("user", new User());
     result =
         InvokerUtils.syncInvoke("pojo",
             "0.0.4",
             transport,
             "server",
             "splitParam",
-            new Object[] {3, new User()});
+            arguments);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=3]", result);
   }
 
-  private static void testEmpty(Test test) {
+  private static void testEmptyHighway(Test test) {
     TestMgr.check("code is ''", test.getTestString(""));
+  }
+
+  private static void testEmptyRest(Test test) {
+    TestMgr.check("code is ''", test.getTestString(""));
+  }
+
+  private static void testNullRest(Test test) {
+    TestMgr.check(null, test.wrapParam(null));
+  }
+
+  private static void testNullHighway(Test test) {
+    TestMgr.check("nameA", test.wrapParam(null).getName());
   }
 
   private static void testNull(Test test) {
     TestMgr.check("code is 'null'", test.getTestString(null));
-    TestMgr.check(null, test.wrapParam(null));
     TestMgr.check(null, test.postTestStatic(2));
     TestMgr.check(null, test.patchTestStatic(2));
   }
@@ -278,10 +344,5 @@ public class PojoClient {
     LOGGER.info("wrap param result:{}", result);
 
     TestMgr.check("User [name=nameA,  users count:1, age=100, index=0]", result);
-  }
-
-  @Inject
-  public void setCodeFirstPojoClient(CodeFirstPojoClient codeFirstPojoClient) {
-    PojoClient.codeFirstPojoClient = codeFirstPojoClient;
   }
 }

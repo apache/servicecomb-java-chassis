@@ -17,8 +17,14 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
@@ -26,6 +32,10 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.base.Defaults;
+
+import io.swagger.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
 
 public final class HighwayCodec {
@@ -44,24 +54,40 @@ public final class HighwayCodec {
     header.setContext(invocation.getContext());
 
     HighwayOutputStream os = new HighwayOutputStream(msgId);
-    os.write(header, operationProtobuf.getRequestSchema(), invocation.getArgs());
+    os.write(header, operationProtobuf.getRequestRootSerializer(), invocation.getSwaggerArguments());
     return os;
+  }
+
+  private static Map<String, Object> addPrimitiveTypeDefaultValues(Invocation invocation,
+      Map<String, Object> swaggerArguments) {
+    // proto buffer never serialize default values, put it back in provider
+    if (invocation.getOperationMeta().getSwaggerProducerOperation() != null && !invocation.isEdge()) {
+      List<Parameter> swaggerParameters = invocation.getOperationMeta().getSwaggerOperation()
+          .getParameters();
+      for (Parameter parameter : swaggerParameters) {
+        if (swaggerArguments.get(parameter.getName()) == null) {
+          Type type = invocation.getOperationMeta().getSwaggerProducerOperation()
+              .getSwaggerParameterType(parameter.getName());
+          swaggerArguments.put(parameter.getName(), defaultPrimitiveValue(null, type));
+        }
+      }
+    }
+    return swaggerArguments;
   }
 
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
-    WrapSchema schema = operationProtobuf.getRequestSchema();
-    Object[] args = schema.readObject(bodyBuffer);
-
-    invocation.setSwaggerArguments(args);
-    invocation.mergeContext(header.getContext());
+    RequestRootDeserializer<Object> requestDeserializer = operationProtobuf.getRequestRootDeserializer();
+    Map<String, Object> swaggerArguments = requestDeserializer.deserialize(bodyBuffer.getBytes());
+    addPrimitiveTypeDefaultValues(invocation, swaggerArguments);
+    invocation.setSwaggerArguments(swaggerArguments);
   }
 
   public static RequestHeader readRequestHeader(Buffer headerBuffer) throws Exception {
     return RequestHeader.readObject(headerBuffer);
   }
 
-  public static Buffer encodeResponse(long msgId, ResponseHeader header, WrapSchema bodySchema,
+  public static Buffer encodeResponse(long msgId, ResponseHeader header, ResponseRootSerializer bodySchema,
       Object body) throws Exception {
     try (HighwayOutputStream os = new HighwayOutputStream(msgId)) {
       os.write(header, bodySchema, body);
@@ -76,12 +102,28 @@ public final class HighwayCodec {
       invocation.getContext().putAll(header.getContext());
     }
 
-    WrapSchema bodySchema = operationProtobuf.findResponseSchema(header.getStatusCode());
-    Object body = bodySchema.readObject(tcpData.getBodyBuffer());
+    ResponseRootDeserializer<Object> bodySchema = operationProtobuf
+        .findResponseRootDeserializer(header.getStatusCode());
+    JavaType type = invocation.findResponseType(header.getStatusCode());
+    Object body = bodySchema
+        .deserialize(tcpData.getBodyBuffer().getBytes(), type);
 
-    Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
-    response.setHeaders(header.getHeaders());
+    Response response = Response.create(header.getStatusCode(), header.getReasonPhrase()
+        , defaultPrimitiveValue(body, type));
+    response.setHeaders(header.toMultiMap());
 
     return response;
+  }
+
+  private static Object defaultPrimitiveValue(Object body, Type type) {
+    if (body == null) {
+      if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
+        return Defaults.defaultValue((Class<?>) type);
+      }
+      if (type instanceof JavaType && ((JavaType) type).isPrimitive()) {
+        return Defaults.defaultValue(((JavaType) type).getRawClass());
+      }
+    }
+    return body;
   }
 }

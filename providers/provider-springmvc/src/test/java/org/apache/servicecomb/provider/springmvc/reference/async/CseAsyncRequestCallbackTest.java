@@ -18,8 +18,8 @@
 package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 
 import mockit.Injectable;
@@ -30,7 +30,7 @@ public class CseAsyncRequestCallbackTest {
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     CseAsyncRequestCallback<HttpEntity<?>> cb = new CseAsyncRequestCallback<>(null);
     cb.doWithRequest(request);
-    Assert.assertEquals(null, request.getContext());
+    Assertions.assertNull(request.getContext());
   }
 
   @Test
@@ -38,7 +38,7 @@ public class CseAsyncRequestCallbackTest {
     CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     cb.doWithRequest(request);
-    Assert.assertEquals(entity.getBody(), request.getBody());
+    Assertions.assertEquals(entity.getBody(), request.getBody());
   }
 
   @Test
@@ -47,6 +47,6 @@ public class CseAsyncRequestCallbackTest {
     entity.addContext("c1", "c2");
     CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
     cb.doWithRequest(request);
-    Assert.assertEquals(entity.getContext(), request.getContext());
+    Assertions.assertEquals(entity.getContext(), request.getContext());
   }
 }

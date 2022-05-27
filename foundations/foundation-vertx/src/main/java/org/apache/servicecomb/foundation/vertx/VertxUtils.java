@@ -23,16 +23,19 @@ import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import javax.xml.ws.Holder;
-
+import io.vertx.core.file.impl.FileResolverImpl;
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;
@@ -41,9 +44,9 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.impl.FileResolver;
-import io.vertx.core.impl.VertxImplEx;
-import io.vertx.core.logging.SLF4JLogDelegateFactory;
+import io.vertx.core.impl.VertxBuilder;
+import io.vertx.core.impl.VertxThread;
+import io.vertx.core.spi.VertxThreadFactory;
 
 /**
  * VertxUtils
@@ -51,29 +54,22 @@ import io.vertx.core.logging.SLF4JLogDelegateFactory;
  *
  */
 public final class VertxUtils {
-  static {
-    // initialize vertx logger, this can be done multiple times
-    System.setProperty("vertx.logger-delegate-factory-class-name", SLF4JLogDelegateFactory.class.getName());
-    io.vertx.core.logging.LoggerFactory.initialise();
-  }
-
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxUtils.class);
 
   private static final long BLOCKED_THREAD_CHECK_INTERVAL = Long.MAX_VALUE / 2;
 
   // key为vertx实例名称，以支撑vertx功能分组
-  private static Map<String, VertxImplEx> vertxMap = new ConcurrentHashMapEx<>();
+  private static final Map<String, Vertx> vertxMap = new ConcurrentHashMapEx<>();
 
   private VertxUtils() {
   }
 
-  public static Map<String, VertxImplEx> getVertxMap() {
+  public static Map<String, Vertx> getVertxMap() {
     return vertxMap;
   }
 
   public static <T extends AbstractVerticle> void deployVerticle(Vertx vertx, Class<T> cls, int instanceCount) {
     DeploymentOptions options = new DeploymentOptions().setInstances(instanceCount);
-
     vertx.deployVerticle(cls.getName(), options);
   }
 
@@ -111,11 +107,7 @@ public final class VertxUtils {
   }
 
   public static Vertx getOrCreateVertxByName(String name, VertxOptions vertxOptions) {
-    return vertxMap.computeIfAbsent(name, vertxName -> (VertxImplEx) init(vertxName, vertxOptions));
-  }
-
-  public static Vertx init(VertxOptions vertxOptions) {
-    return init(null, vertxOptions);
+    return vertxMap.computeIfAbsent(name, vertxName -> init(vertxName, vertxOptions));
   }
 
   public static Vertx init(String name, VertxOptions vertxOptions) {
@@ -129,23 +121,31 @@ public final class VertxUtils {
       LOGGER.info("in debug mode, disable blocked thread check.");
     }
 
-    configureVertxFileCaching();
-    return new VertxImplEx(name, vertxOptions);
+    configureVertxFileCaching(vertxOptions);
+
+    return new VertxBuilder(vertxOptions).threadFactory(new VertxThreadFactory() {
+      @Override
+      public VertxThread newVertxThread(Runnable target, String threadName, boolean worker, long maxExecTime,
+          TimeUnit maxExecTimeUnit) {
+        return VertxThreadFactory.super
+            .newVertxThread(target, name + "-" + threadName, worker, maxExecTime, maxExecTimeUnit);
+      }
+    }).init().vertx();
   }
 
   /**
    * 配置vertx的文件缓存功能，默认关闭
    */
-  protected static void configureVertxFileCaching() {
-    if (System.getProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME) == null) {
-      System.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, "true");
-    }
+  private static void configureVertxFileCaching(VertxOptions vertxOptions) {
+    boolean disableFileCPResolving = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true).get();
+    vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(!disableFileCPResolving);
   }
 
   // try to reference byte[]
   // otherwise copy byte[]
   public static byte[] getBytesFast(InputStream inputStream) throws IOException {
-    if (BufferInputStream.class.isInstance(inputStream)) {
+    if (inputStream instanceof BufferInputStream) {
       return getBytesFast(((BufferInputStream) inputStream).getByteBuf());
     }
 
@@ -194,7 +194,26 @@ public final class VertxUtils {
     try {
       future.get();
     } catch (Throwable e) {
-      LOGGER.error("Failed to close vertx {}.", name, e);
+      LOGGER.error("Failed to wait close vertx {}.", name, e);
+    }
+  }
+
+  public static void blockCloseVertx(Vertx vertx) {
+    CountDownLatch latch = new CountDownLatch(1);
+    vertx.close(ar -> {
+      if (ar.succeeded()) {
+        LOGGER.info("Success to close vertx {}.", vertx);
+      } else {
+        LOGGER.info("Failed to close vertx {}.", vertx);
+      }
+
+      latch.countDown();
+    });
+
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      LOGGER.info("Failed to wait close vertx {}.", vertx);
     }
   }
 }

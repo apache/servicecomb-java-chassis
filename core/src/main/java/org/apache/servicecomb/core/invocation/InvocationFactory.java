@@ -17,50 +17,53 @@
 
 package org.apache.servicecomb.core.invocation;
 
+import java.util.Map;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public final class InvocationFactory {
   private InvocationFactory() {
   }
 
-  private static String getMicroserviceName() {
-    return RegistryUtils.getMicroservice().getServiceName();
-  }
-
   public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
-      Object[] swaggerArguments) {
+      InvocationRuntimeType invocationRuntimeType, Map<String, Object> swaggerArguments) {
     Invocation invocation = new Invocation(referenceConfig,
         operationMeta,
+        invocationRuntimeType,
         swaggerArguments);
-    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
+    return setSrcMicroservice(invocation);
+  }
+
+  public static Invocation setSrcMicroservice(Invocation invocation) {
+    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
+    invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
+    if (addSourceServiceId()) {
+      invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
+    }
+    if (addSourceInstanceId()) {
+      invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
+    }
     return invocation;
   }
 
-  /*
-   * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
-   */
-  public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
-      Object[] swaggerArguments) {
-    OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
-    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
+  public static boolean addSourceServiceId() {
+    return DynamicPropertyFactory.getInstance().
+        getBooleanProperty("servicecomb.context.source.serviceId", true).get();
   }
 
-  /*
-   * 为tcc场景提供的快捷方式,consumer端使用
-   */
-  public static Invocation forConsumer(ReferenceConfig referenceConfig, String operationQualifiedName,
-      Object[] swaggerArguments) {
-    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
-    OperationMeta operationMeta = microserviceMeta.ensureFindOperation(operationQualifiedName);
-    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
+  public static boolean addSourceInstanceId() {
+    return DynamicPropertyFactory.getInstance().
+        getBooleanProperty("servicecomb.context.source.instanceId", true).get();
   }
 
   /*
@@ -68,7 +71,7 @@ public final class InvocationFactory {
    */
   public static Invocation forProvider(Endpoint endpoint,
       OperationMeta operationMeta,
-      Object[] swaggerArguments) {
+      Map<String, Object> swaggerArguments) {
     SCBEngine.getInstance().ensureStatusUp();
     return new Invocation(endpoint,
         operationMeta,

@@ -17,6 +17,11 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.scalar;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.util.Date;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.LongGetter;
@@ -33,11 +38,7 @@ public class Int64WriteSchemas {
       return new Int64PrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
-    if (Long.class.equals(propertyDescriptor.getJavaType().getRawClass())) {
-      return new Int64Schema<>(protoField, propertyDescriptor);
-    }
-
-    return new Int64DynamicSchema<>(protoField, propertyDescriptor);
+    return new Int64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class Int64DynamicSchema<T> extends FieldSchema<T> {
@@ -67,12 +68,30 @@ public class Int64WriteSchemas {
         return;
       }
 
+      if (value instanceof Date) {
+        long parsedValue = ((Date) value).getTime();
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof LocalDate) {
+        long parsedValue = ((LocalDate) value).getLong(ChronoField.EPOCH_DAY);
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof LocalDateTime) {
+        long parsedValue = ((LocalDateTime) value).toInstant(ZoneOffset.UTC).toEpochMilli();
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
       ProtoUtils.throwNotSupportWrite(protoField, value);
     }
   }
 
   private static class Int64Schema<T> extends Int64DynamicSchema<T> {
-    protected final Getter<T, Long> getter;
+    protected final Getter<T, Object> getter;
 
     public Int64Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +101,9 @@ public class Int64WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Long value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarInt64(tag, tagSize, value);
+        this.writeTo(output, value);
       }
     }
   }

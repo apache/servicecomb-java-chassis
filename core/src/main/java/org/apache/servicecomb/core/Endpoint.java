@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 /**
  * Endpoint : 表示一个Endpoint。Transport识别其内部格式.
@@ -45,6 +45,13 @@ public class Endpoint {
     this.address = transport.parseAddress(this.endpoint);
   }
 
+  public Endpoint(Transport transport, String endpoint, MicroserviceInstance instance, Object address) {
+    this.transport = transport;
+    this.endpoint = endpoint;
+    this.instance = instance;
+    this.address = address;
+  }
+
   public String getEndpoint() {
     return endpoint;
   }
@@ -64,5 +71,18 @@ public class Endpoint {
   @Override
   public String toString() {
     return endpoint;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Endpoint) {
+      return this.endpoint.equals(((Endpoint) o).getEndpoint());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.endpoint.hashCode();
   }
 }

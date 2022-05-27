@@ -20,21 +20,22 @@ package org.apache.servicecomb.foundation.vertx.client.tcp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.FutureFactoryImpl;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestNetClientWrapper {
   @Mocked
@@ -69,8 +70,8 @@ public class TestNetClientWrapper {
 
   @Test
   public void getClientConfig() {
-    Assert.assertSame(normalClientConfig, netClientWrapper.getClientConfig(false));
-    Assert.assertSame(sslClientConfig, netClientWrapper.getClientConfig(true));
+    Assertions.assertSame(normalClientConfig, netClientWrapper.getClientConfig(false));
+    Assertions.assertSame(sslClientConfig, netClientWrapper.getClientConfig(true));
   }
 
   @Test
@@ -78,18 +79,22 @@ public class TestNetClientWrapper {
     int port = 8000;
     String host = "localhost";
 
-    FutureFactoryImpl futureFactory = new FutureFactoryImpl();
+    Promise<NetSocket> promiseConnect = Promise.promise();
     new MockUp<NetClient>(normalNetClient) {
       @Mock
       NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        connectHandler.handle(futureFactory.succeededFuture(normalSocket));
+        promiseConnect.complete(normalSocket);
+        connectHandler.handle(promiseConnect.future());
         return null;
       }
     };
+
+    Promise<NetSocket> sslPromiseConnect = Promise.promise();
     new MockUp<NetClient>(sslNetClient) {
       @Mock
       NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        connectHandler.handle(futureFactory.succeededFuture(sslSocket));
+        sslPromiseConnect.complete(sslSocket);
+        connectHandler.handle(sslPromiseConnect.future());
         return null;
       }
     };
@@ -102,6 +107,6 @@ public class TestNetClientWrapper {
       socks.add(asyncSocket.result());
     });
 
-    Assert.assertThat(socks, Matchers.contains(normalSocket, sslSocket));
+    MatcherAssert.assertThat(socks, Matchers.contains(normalSocket, sslSocket));
   }
 }

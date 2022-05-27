@@ -17,65 +17,40 @@
 
 package org.apache.servicecomb.common.rest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.loader.SchemaListener;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.registry.api.event.CreateMicroserviceVersionEvent;
 
-@Component
-public class RestEngineSchemaListener implements SchemaListener, BootListener {
+import com.google.common.eventbus.Subscribe;
 
+public class RestEngineSchemaListener implements BootListener {
   @Override
-  public void onBootEvent(BootEvent event) {
-    if (!event.getEventType().equals(EventType.BEFORE_REGISTRY)) {
-      return;
-    }
-
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
-    ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
-    if (servicePathManager != null) {
-      servicePathManager.buildProducerPaths();
-    }
+  public int getOrder() {
+    return -10000;
   }
 
   @Override
-  public void onSchemaLoaded(SchemaMeta... schemaMetas) {
-    // 此时相应的ServicePathManager可能正在被使用，为避免太高的复杂度，使用copy on write逻辑
-    Map<String, ServicePathManager> mgrMap = new HashMap<>();
-    for (SchemaMeta schemaMeta : schemaMetas) {
-      MicroserviceMeta microserviceMeta = schemaMeta.getMicroserviceMeta();
-      ServicePathManager mgr = findPathManager(mgrMap, microserviceMeta);
-      mgr.addSchema(schemaMeta);
-    }
-
-    for (ServicePathManager mgr : mgrMap.values()) {
-      // 对具有动态path operation进行排序
-      mgr.sortPath();
-
-      mgr.saveToMicroserviceMeta();
-    }
+  public void onBeforeRegistry(BootEvent event) {
+    createServicePathManager(event.getScbEngine().getProducerMicroserviceMeta())
+        .buildProducerPaths();
+    event.getScbEngine().getEventBus().register(this);
   }
 
-  protected ServicePathManager findPathManager(Map<String, ServicePathManager> mgrMap,
-      MicroserviceMeta microserviceMeta) {
-    ServicePathManager mgr = mgrMap.get(microserviceMeta.getName());
-    if (mgr != null) {
-      return mgr;
-    }
+  @EnableExceptionPropagation
+  @Subscribe
+  public void onCreateMicroserviceVersion(CreateMicroserviceVersionEvent event) {
+    MicroserviceVersion microserviceVersion = event.getMicroserviceVersion();
+    MicroserviceMeta microserviceMeta = CoreMetaUtils.getMicroserviceMeta(microserviceVersion);
+    createServicePathManager(microserviceMeta);
+  }
 
-    mgr = ServicePathManager.getServicePathManager(microserviceMeta);
-    if (mgr == null) {
-      mgr = new ServicePathManager(microserviceMeta);
-    } else {
-      mgr = mgr.cloneServicePathManager();
-    }
-    mgrMap.put(microserviceMeta.getName(), mgr);
-    return mgr;
+  private ServicePathManager createServicePathManager(MicroserviceMeta microserviceMeta) {
+    // already connect ServicePathManager and MicroserviceMeta instance
+    // no need to save ServicePathManager instance again
+    return new ServicePathManager(microserviceMeta);
   }
 }

@@ -17,9 +17,10 @@
 
 package org.apache.servicecomb.common.rest.filter.inner;
 
-import java.util.concurrent.CompletableFuture;
+import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter.isDownloadFileResponseType;
 
-import javax.servlet.http.Part;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
@@ -28,6 +29,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -57,8 +59,8 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-    Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
-    invocation.setSwaggerArguments(args);
+    Map<String, Object> swaggerArguments = RestCodec.restToArgs(requestEx, restOperationMeta);
+    invocation.setSwaggerArguments(swaggerArguments);
     return null;
   }
 
@@ -72,8 +74,8 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       body = ((InvocationException) body).getErrorData();
     }
 
-    if (Part.class.isInstance(body)) {
-      return responseEx.sendPart((Part) body);
+    if (null != invocation && isDownloadFileResponseType(invocation, response)) {
+      return responseEx.sendPart(PartUtils.getSinglePart(null, body));
     }
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");

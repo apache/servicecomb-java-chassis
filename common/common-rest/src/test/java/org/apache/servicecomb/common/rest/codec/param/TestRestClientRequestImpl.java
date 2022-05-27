@@ -25,16 +25,17 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Multimap;
 
+import io.vertx.core.Context;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -46,6 +47,9 @@ public class TestRestClientRequestImpl {
   @Mocked
   private HttpClientRequest request;
 
+  @Mocked
+  private Context context;
+
   @Test
   public void testForm() throws Exception {
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
@@ -53,14 +57,14 @@ public class TestRestClientRequestImpl {
     restClientRequest.addForm("def", "world");
     restClientRequest.addForm("ghi", null);
     Buffer buffer = restClientRequest.getBodyBuffer();
-    Assert.assertEquals("abc=Hello&def=world&", buffer.toString());
+    Assertions.assertEquals("abc=Hello&def=world&", buffer.toString());
   }
 
   @Test
   public void testCookie() throws Exception {
     HttpClientRequest request = new MockUp<HttpClientRequest>() {
 
-      MultiMap map = new CaseInsensitiveHeaders();
+      final MultiMap map = MultiMap.caseInsensitiveMultiMap();
 
       @Mock
       public HttpClientRequest putHeader(CharSequence key, CharSequence val) {
@@ -79,8 +83,8 @@ public class TestRestClientRequestImpl {
     restClientRequest.write(Buffer.buffer("I love servicecomb"));
     restClientRequest.end();
     Buffer buffer = restClientRequest.getBodyBuffer();
-    Assert.assertEquals("I love servicecomb", buffer.toString());
-    Assert.assertEquals("sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ",
+    Assertions.assertEquals("I love servicecomb", buffer.toString());
+    Assertions.assertEquals("sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ",
         restClientRequest.request.headers().get(HttpHeaders.COOKIE));
   }
 
@@ -96,7 +100,7 @@ public class TestRestClientRequestImpl {
     };
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     Buffer buffer = restClientRequest.fileBoundaryInfo("boundary", "name", part);
-    Assert.assertEquals("\r\n" +
+    Assertions.assertEquals("\r\n" +
         "--boundary\r\n" +
         "Content-Disposition: form-data; name=\"name\"; filename=\"null\"\r\n" +
         "Content-Type: abc\r\n" +
@@ -116,7 +120,7 @@ public class TestRestClientRequestImpl {
     };
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     Buffer buffer = restClientRequest.fileBoundaryInfo("boundary", "name", part);
-    Assert.assertEquals("\r\n" +
+    Assertions.assertEquals("\r\n" +
         "--boundary\r\n" +
         "Content-Disposition: form-data; name=\"name\"; filename=\"a.txt\"\r\n" +
         "Content-Type: text/plain\r\n" +
@@ -133,8 +137,8 @@ public class TestRestClientRequestImpl {
     restClientRequest.attach(fileName, part);
 
     Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
-    Assert.assertEquals(1, uploads.size());
-    Assert.assertThat(uploads.asMap(), Matchers.hasEntry(fileName, Arrays.asList(part)));
+    Assertions.assertEquals(1, uploads.size());
+    MatcherAssert.assertThat(uploads.asMap(), Matchers.hasEntry(fileName, Arrays.asList(part)));
   }
 
   @Test
@@ -144,7 +148,7 @@ public class TestRestClientRequestImpl {
     restClientRequest.attach("fileName", null);
 
     Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
-    Assert.assertTrue(uploads.isEmpty());
+    Assertions.assertTrue(uploads.isEmpty());
   }
 
   @Test
@@ -165,10 +169,10 @@ public class TestRestClientRequestImpl {
         result = uuid;
       }
     };
-    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
     restClientRequest.doEndWithUpload();
 
-    Assert.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
-        headers.get(HttpHeaders.CONTENT_TYPE.toString()));
+    Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
+        headers.get(HttpHeaders.CONTENT_TYPE));
   }
 }

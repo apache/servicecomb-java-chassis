@@ -18,8 +18,11 @@ package org.apache.servicecomb.it.schema;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.Part;
 import javax.ws.rs.FormParam;
@@ -30,10 +33,15 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestSchema(schemaId = "uploadJaxrsSchema")
 @Path("/v1/uploadJaxrsSchema")
 public class UploadJaxrsSchema {
+  private static final Logger LOGGER = LoggerFactory.getLogger(UploadJaxrsSchema.class);
+
   @Path("/upload1")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
@@ -51,7 +59,6 @@ public class UploadJaxrsSchema {
     }
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
-
 
   @Path("/uploadList1")
   @POST
@@ -77,7 +84,6 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
 
-
   @Path("/upload2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
@@ -97,28 +103,25 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(message).toString();
   }
 
-
   @Path("/uploadList2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
   public String uploadList2(@FormParam("file1") List<Part> file1, @FormParam("message") String message) {
     StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
+    file1.forEach(part -> stringBuilder.append(getStrFromPart(part)));
     return stringBuilder.append(message).toString();
   }
 
-  @Path("/uploadArrayList2")
-  @POST
-  @Produces(MediaType.TEXT_PLAIN)
-  public String uploadArrayList2(@FormParam("file1") ArrayList<Part> file1, @FormParam("message") String message) {
-    StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
-    return stringBuilder.append(message).toString();
-  }
+//  @Path("/uploadArrayList2")
+//  @POST
+//  @Produces(MediaType.TEXT_PLAIN)
+//  public String uploadArrayList2(@FormParam("file1") ArrayList<Part> file1, @FormParam("message") String message) {
+//    StringBuilder stringBuilder = new StringBuilder();
+//    file1.forEach(part -> {
+//      stringBuilder.append(getStrFromPart(part));
+//    });
+//    return stringBuilder.append(message).toString();
+//  }
 
   @Path("/uploadMix")
   @POST
@@ -136,11 +139,39 @@ public class UploadJaxrsSchema {
   }
 
   private static String getStrFromPart(Part file1) {
+    String result;
     try (InputStream is1 = file1.getInputStream()) {
-      return IOUtils.toString(is1, "utf-8");
+      result = IOUtils.toString(is1, "utf-8");
+      LOGGER.info("get str from part {}={}={}", result, file1.getSubmittedFileName(), file1.getName());
     } catch (IOException e) {
-      e.printStackTrace();
+      result = "e:" + e.getMessage();
     }
-    return "";
+    return result;
+  }
+
+  @Path("/uploadMultiformMix")
+  @POST
+  public Map<String, String> uploadMultiformMix(@FormParam("file") MultipartFile file,
+      @FormParam("fileList") List<MultipartFile> fileList,
+      @FormParam("str") String str,
+      @FormParam("strList") List<String> strList) throws IOException {
+    HashMap<String, String> map = new HashMap<>();
+    map.put("file", new String(file.getBytes(), StandardCharsets.UTF_8.name()));
+    map.put("fileList", _fileUpload(fileList));
+    map.put("str", str);
+    map.put("strList", strList.toString());
+    return map;
+  }
+
+  private static String _fileUpload(List<MultipartFile> fileList) {
+    StringBuilder stringBuilder = new StringBuilder();
+    try {
+      for (MultipartFile multipartFile : fileList) {
+        stringBuilder.append(IOUtils.toString(multipartFile.getBytes(), StandardCharsets.UTF_8.name()));
+      }
+    } catch (IOException e) {
+      throw new IllegalArgumentException(e);
+    }
+    return stringBuilder.toString();
   }
 }

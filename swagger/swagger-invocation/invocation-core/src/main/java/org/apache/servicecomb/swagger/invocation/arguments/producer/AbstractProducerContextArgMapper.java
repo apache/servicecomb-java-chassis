@@ -17,20 +17,25 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
+import java.util.Map;
+
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
-public abstract class AbstractProducerContextArgMapper implements ArgumentMapper {
-  protected int producerArgIdx;
+public abstract class AbstractProducerContextArgMapper extends ProducerArgumentMapper {
+  protected String invocationArgumentName;
 
-  public AbstractProducerContextArgMapper(int producerArgIdx) {
-    this.producerArgIdx = producerArgIdx;
+  protected String swaggerArgumentName;
+
+  public AbstractProducerContextArgMapper(String invocationArgumentName, String swaggerArgumentName) {
+    this.invocationArgumentName = invocationArgumentName;
+    this.swaggerArgumentName = swaggerArgumentName;
   }
 
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
+  public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
     Object producerArg = createContextArg(invocation);
-    producerArguments[producerArgIdx] = producerArg;
+    invocationArguments.put(this.invocationArgumentName, producerArg);
   }
 
   public abstract Object createContextArg(SwaggerInvocation invocation);

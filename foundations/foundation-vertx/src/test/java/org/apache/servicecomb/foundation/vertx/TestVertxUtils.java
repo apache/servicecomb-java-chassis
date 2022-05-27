@@ -18,21 +18,24 @@
 package org.apache.servicecomb.foundation.vertx;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import javax.xml.ws.Holder;
-
+import io.vertx.core.file.impl.FileResolverImpl;
+import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVertxUtils {
   @Test
@@ -47,25 +50,72 @@ public class TestVertxUtils {
     });
     latch.await();
 
-    Assert.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
-    VertxUtils.closeVertxByName("ut");
+    Assertions.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
+    VertxUtils.blockCloseVertxByName("ut");
+  }
+
+  @Test
+  public void testCreateVertxWithFileCPResolving() {
+    // Prepare
+    ArchaiusUtils.resetConfig();
+
+    // create .vertx folder
+    ArchaiusUtils.setProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, false);
+    deleteCacheFile();
+    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingFalse", null);
+    Assertions.assertTrue(isCacheFileExists());
+    VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingFalse");
+
+    // don't create .vertx folder
+    deleteCacheFile();
+    Assertions.assertFalse(isCacheFileExists());
+    ArchaiusUtils.setProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true);
+    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingTrue", null);
+    Assertions.assertFalse(isCacheFileExists());
+    VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingTrue");
+
+    ArchaiusUtils.resetConfig();
+  }
+
+  private void deleteCacheFile() {
+    String cacheDirBase = System.getProperty(FileResolverImpl.CACHE_DIR_BASE_PROP_NAME,
+        System.getProperty("java.io.tmpdir", "."));
+    File folder = new File(cacheDirBase);
+    File[] files = folder.listFiles();
+    for (File f : files) {
+      if (f.getName().startsWith("vertx-cache")) {
+        FileUtils.deleteQuietly(f);
+      }
+    }
+  }
+
+  private boolean isCacheFileExists() {
+    String cacheDirBase = System.getProperty(FileResolverImpl.CACHE_DIR_BASE_PROP_NAME,
+        System.getProperty("java.io.tmpdir", "."));
+    File folder = new File(cacheDirBase);
+    File[] files = folder.listFiles();
+    for (File f : files) {
+      if (f.getName().startsWith("vertx-cache")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Test
   public void testVertxUtilsInitNullOptions() {
-    Vertx vertx = VertxUtils.init(null);
-    Assert.assertNotEquals(null, vertx);
-    vertx.close();
+    Vertx vertx = VertxUtils.init(null, null);
+    Assertions.assertNotEquals(null, vertx);
+    VertxUtils.blockCloseVertx(vertx);
   }
 
   @Test
   public void testVertxUtilsInitWithOptions() {
     VertxOptions oOptions = new VertxOptions();
-    oOptions.setClustered(false);
 
-    Vertx vertx = VertxUtils.init(oOptions);
-    Assert.assertNotEquals(null, vertx);
-    vertx.close();
+    Vertx vertx = VertxUtils.init(null, oOptions);
+    Assertions.assertNotEquals(null, vertx);
+    VertxUtils.blockCloseVertx(vertx);
   }
 
   @Test
@@ -75,7 +125,7 @@ public class TestVertxUtils {
 
     try (BufferInputStream inputStream = new BufferInputStream(byteBuf)) {
       byte[] result = VertxUtils.getBytesFast(inputStream);
-      Assert.assertSame(bytes, result);
+      Assertions.assertSame(bytes, result);
     }
   }
 
@@ -85,7 +135,7 @@ public class TestVertxUtils {
 
     try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
       byte[] result = VertxUtils.getBytesFast(inputStream);
-      Assert.assertEquals(1, result[0]);
+      Assertions.assertEquals(1, result[0]);
     }
   }
 
@@ -95,7 +145,7 @@ public class TestVertxUtils {
     buffer.appendByte((byte) 1);
 
     byte[] result = VertxUtils.getBytesFast(buffer);
-    Assert.assertEquals(1, result[0]);
+    Assertions.assertEquals(1, result[0]);
   }
 
   @Test
@@ -104,17 +154,17 @@ public class TestVertxUtils {
     ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
 
     byte[] result = VertxUtils.getBytesFast(byteBuf);
-    Assert.assertSame(bytes, result);
+    Assertions.assertSame(bytes, result);
   }
 
   @Test
   public void testgetBytesFastByteBufCopy() {
     ByteBuf byteBuf = Unpooled.directBuffer();
     byteBuf.writeByte(1);
-    Assert.assertFalse(byteBuf.hasArray());
+    Assertions.assertFalse(byteBuf.hasArray());
 
     byte[] result = VertxUtils.getBytesFast(byteBuf);
-    Assert.assertEquals(1, result[0]);
+    Assertions.assertEquals(1, result[0]);
 
     byteBuf.release();
   }

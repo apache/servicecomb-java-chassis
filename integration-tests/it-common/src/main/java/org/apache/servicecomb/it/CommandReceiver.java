@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class CommandReceiver {
       for (; ; ) {
         SCBEngine.getInstance().destroy();
         if (ITBootListener.isDone() && SCBStatus.DOWN.equals(SCBEngine.getInstance().getStatus())) {
-          LOGGER.info("succeed to close " + RegistryUtils.getMicroservice().getServiceName());
+          LOGGER.info("succeed to close " + RegistrationManager.INSTANCE.getMicroservice().getServiceName());
           break;
         }
         ITUtils.forceWait(TimeUnit.SECONDS, 1);
@@ -95,7 +95,6 @@ public class CommandReceiver {
 
       //make sure kill for servlet
       System.exit(0);
-
     }, "it-stop").start();
   }
 }

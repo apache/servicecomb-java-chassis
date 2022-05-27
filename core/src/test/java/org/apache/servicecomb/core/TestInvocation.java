@@ -17,9 +17,9 @@
 package org.apache.servicecomb.core;
 
 import java.util.Arrays;
+import java.util.Map;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationBaseEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
@@ -29,13 +29,14 @@ import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.tracing.BraveTraceIdGenerator;
 import org.apache.servicecomb.core.tracing.TraceIdGenerator;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,6 +47,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocation {
   Invocation invocation;
@@ -57,7 +59,10 @@ public class TestInvocation {
   OperationMeta operationMeta;
 
   @Mocked
-  Object[] swaggerArguments;
+  InvocationRuntimeType invocationRuntimeType;
+
+  @Mocked
+  Map<String, Object> arguments;
 
   static long nanoTime = 123;
 
@@ -93,11 +98,11 @@ public class TestInvocation {
     };
     EventManager.register(subscriber);
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     invocation.onStart(nanoTime);
 
-    Assert.assertSame(invocation, result.value);
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
+    Assertions.assertSame(invocation, result.value);
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
 
     EventManager.unregister(subscriber);
   }
@@ -106,10 +111,10 @@ public class TestInvocation {
   public void onStartExecute() {
     mockNonaTime();
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     invocation.onExecuteStart();
 
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartExecution());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test
@@ -125,54 +130,54 @@ public class TestInvocation {
     };
     EventManager.register(subscriber);
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
-    Assert.assertFalse(invocation.isFinished());
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Assertions.assertFalse(invocation.isFinished());
     Response response = Response.succResp(null);
     invocation.onFinish(response);
 
-    Assert.assertEquals(nanoTime, result.value.getNanoCurrent());
-    Assert.assertSame(invocation, result.value.getInvocation());
-    Assert.assertSame(response, result.value.getResponse());
-    Assert.assertTrue(invocation.isFinished());
+    Assertions.assertEquals(nanoTime, result.value.getNanoCurrent());
+    Assertions.assertSame(invocation, result.value.getInvocation());
+    Assertions.assertSame(response, result.value.getResponse());
+    Assertions.assertTrue(invocation.isFinished());
 
     // should not post event again
     InvocationFinishEvent oldEvent = result.value;
     invocation.onFinish(null);
-    Assert.assertSame(oldEvent, result.value);
+    Assertions.assertSame(oldEvent, result.value);
 
     EventManager.unregister(subscriber);
   }
 
   @Test
   public void isConsumer_yes() {
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
-    Assert.assertFalse(invocation.isConsumer());
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Assertions.assertFalse(invocation.isConsumer());
   }
 
   @Test
   public void isConsumer_no(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
-    Assert.assertTrue(invocation.isConsumer());
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Assertions.assertTrue(invocation.isConsumer());
   }
 
   @Test
   public void localContext(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
 
     invocation.addLocalContext("k", 1);
-    Assert.assertSame(invocation.getHandlerContext(), invocation.getLocalContext());
-    Assert.assertEquals(1, (int) invocation.getLocalContext("k"));
+    Assertions.assertSame(invocation.getHandlerContext(), invocation.getLocalContext());
+    Assertions.assertEquals(1, (int) invocation.getLocalContext("k"));
   }
 
   @Test
   public void traceId_fromContext(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
 
     invocation.onStart(0);
 
-    Assert.assertEquals("abc", invocation.getTraceId());
-    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId());
+    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
   }
 
   @Test
@@ -184,12 +189,12 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
 
     invocation.onStart(0);
 
-    Assert.assertEquals("abc", invocation.getTraceId());
-    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId());
+    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
   }
 
   @Test
@@ -200,12 +205,12 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
 
     invocation.onStart(requestEx, 0);
 
-    Assert.assertEquals("abc", invocation.getTraceId());
-    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId());
+    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
   }
 
   @Test
@@ -217,12 +222,12 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
 
     invocation.onStart(requestEx, 0);
 
-    Assert.assertEquals("abc", invocation.getTraceId());
-    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId());
+    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
   }
 
   @Test
@@ -247,7 +252,7 @@ public class TestInvocation {
       }
     };
 
-    Assert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.contains(gen1, gen3));
+    MatcherAssert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.contains(gen1, gen3));
   }
 
   InvocationBaseEvent invocationBaseEvent;
@@ -261,13 +266,13 @@ public class TestInvocation {
       }
     };
     EventManager.getEventBus().register(listener);
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     mockNonaTime();
     invocation.onBusinessMethodStart();
     EventManager.getEventBus().unregister(listener);
 
-    Assert.assertSame(invocation, invocationBaseEvent.getInvocation());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assertions.assertSame(invocation, invocationBaseEvent.getInvocation());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
   }
 
   @Test
@@ -279,36 +284,48 @@ public class TestInvocation {
       }
     };
     EventManager.getEventBus().register(listener);
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     invocation.onBusinessMethodFinish();
     EventManager.getEventBus().unregister(listener);
 
-    Assert.assertSame(invocation, invocationBaseEvent.getInvocation());
+    Assertions.assertSame(invocation, invocationBaseEvent.getInvocation());
   }
 
   @Test
   public void onBusinessFinish() {
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     mockNonaTime();
     invocation.onBusinessFinish();
 
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
+    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
   }
 
   @Test
   public void marker(@Mocked ReferenceConfig referenceConfig) {
     Invocation.INVOCATION_ID.set(0);
 
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
-    Assert.assertEquals("abc-0", invocation.getMarker().toString());
-    Assert.assertEquals("abc-0", invocation.getMarker().getName());
+    Assertions.assertEquals("abc-0", invocation.getTraceIdLogger().getName());
 
-    invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
-    Assert.assertEquals("abc-1", invocation.getMarker().toString());
-    Assert.assertEquals("abc-1", invocation.getMarker().getName());
+    Assertions.assertEquals("abc-1", invocation.getTraceIdLogger().getName());
+  }
+
+  @Test
+  public void isThirdPartyInvocation(@Mocked ReferenceConfig referenceConfig) {
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Assertions.assertFalse(invocation.isThirdPartyInvocation());
+
+    new Expectations() {
+      {
+        referenceConfig.is3rdPartyService();
+        result = true;
+      }
+    };
+    Assertions.assertTrue(invocation.isThirdPartyInvocation());
   }
 }

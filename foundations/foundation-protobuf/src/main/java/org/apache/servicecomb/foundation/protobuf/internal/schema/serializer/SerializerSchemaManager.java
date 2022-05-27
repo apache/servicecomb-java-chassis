@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer;
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
@@ -26,6 +27,7 @@ import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaManager;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.any.AnyEntrySchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.any.AnySchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.repeated.impl.AnyRepeatedWriteSchemas;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.repeated.impl.BytesRepeatedWriteSchemas;
@@ -92,19 +94,27 @@ public class SerializerSchemaManager extends SchemaManager {
   }
 
   public RootSerializer createRootSerializer(Message message, Type type) {
+    if (ProtoUtils.isAnyMessage(message)) {
+      SchemaEx<Object> messageSchema = new AnyEntrySchema(protoMapper, type);
+      return new RootSerializer(messageSchema);
+    }
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
     SchemaEx<Object> messageSchema = getOrCreateMessageSchema(message, javaType);
-
-    if (isWrapProperty(message)) {
-      messageSchema = new RootPropertyWrapperWriteSchema<>(messageSchema);
-    }
-
     return new RootSerializer(messageSchema);
+  }
+
+  public RootSerializer createRootSerializer(Message message, Map<String, Type> types) {
+    throw new IllegalStateException("not implemented");
   }
 
   @Override
   protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType) {
     return new MessageWriteSchema<>(protoMapper, message, javaType);
+  }
+
+  @Override
+  protected <T> SchemaEx<T> newMessageSchema(Message message, Map<String, Type> types) {
+    throw new IllegalStateException("not implemented");
   }
 
   protected <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor) {

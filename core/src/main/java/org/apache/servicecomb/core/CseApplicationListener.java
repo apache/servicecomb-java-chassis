@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
-import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
-import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -43,9 +41,15 @@ public class CseApplicationListener
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    if (this.applicationContext == applicationContext) {
+      // same object. avoid initialize many times.
+      return;
+    }
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
-    RegistryUtils.init();
+    HttpClients.load();
+    RegistrationManager.INSTANCE.init();
+    DiscoveryManager.INSTANCE.init();
   }
 
   public void setInitEventClass(Class<?> initEventClass) {
@@ -65,22 +69,28 @@ public class CseApplicationListener
         ((AbstractApplicationContext) applicationContext).registerShutdownHook();
       }
 
-      if (SCBEngine.getInstance().getBootListenerList() == null) {
-        //SCBEngine init first, hence we do not need worry that when other beans need use the
-        //producer microserviceMeta, the SCBEngine is not inited.
-        String serviceName = RegistryUtils.getMicroservice().getServiceName();
-        SCBEngine.getInstance().setProducerMicroserviceMeta(new MicroserviceMeta(serviceName).setConsumer(false));
-        SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
-        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
-        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
-        SCBEngine.getInstance().setSchemaListenerManager(applicationContext.getBean(SchemaListenerManager.class));
-        SCBEngine.getInstance().setBootListenerList(applicationContext.getBeansOfType(BootListener.class).values());
-        SCBEngine.getInstance().setStaticSchemaFactory(applicationContext.getBean(StaticSchemaFactory.class));
-      }
+      SCBEngine scbEngine = SCBEngine.getInstance();
+      //SCBEngine init first, hence we do not need worry that when other beans need use the
+      //producer microserviceMeta, the SCBEngine is not inited.
+//        String serviceName = RegistryUtils.getMicroservice().getServiceName();
+//        SCBEngine.getInstance().setProducerMicroserviceMeta(new MicroserviceMeta(serviceName).setConsumer(false));
+//        SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
+//        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
+//        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
+      scbEngine.setApplicationContext(applicationContext);
+      scbEngine.setPriorityPropertyManager(applicationContext.getBean(PriorityPropertyManager.class));
+      scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
+      scbEngine.getConsumerProviderManager().getConsumerProviderList()
+          .addAll(applicationContext.getBeansOfType(ConsumerProvider.class).values());
+      scbEngine.getProducerProviderManager().getProducerProviderList()
+          .addAll(applicationContext.getBeansOfType(ProducerProvider.class).values());
+      scbEngine.addBootListeners(applicationContext.getBeansOfType(BootListener.class).values());
 
-      SCBEngine.getInstance().init();
+      scbEngine.run();
     } else if (event instanceof ContextClosedEvent) {
-      SCBEngine.getInstance().destroy();
+      if (SCBEngine.getInstance() != null) {
+        SCBEngine.getInstance().destroy();
+      }
     }
   }
 }

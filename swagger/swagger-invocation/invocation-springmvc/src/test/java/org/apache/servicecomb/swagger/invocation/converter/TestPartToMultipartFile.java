@@ -22,14 +22,11 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.Part;
-import javax.xml.ws.Holder;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -41,9 +38,6 @@ public class TestPartToMultipartFile {
   Part part;
 
   PartToMultipartFile multipartFile;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -60,7 +54,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(name, multipartFile.getName());
+    Assertions.assertEquals(name, multipartFile.getName());
   }
 
   @Test
@@ -73,7 +67,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(submittedFileName, multipartFile.getOriginalFilename());
+    Assertions.assertEquals(submittedFileName, multipartFile.getOriginalFilename());
   }
 
   @Test
@@ -86,7 +80,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(contentType, multipartFile.getContentType());
+    Assertions.assertEquals(contentType, multipartFile.getContentType());
   }
 
   @Test
@@ -98,7 +92,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertTrue(multipartFile.isEmpty());
+    Assertions.assertTrue(multipartFile.isEmpty());
   }
 
   @Test
@@ -110,7 +104,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertFalse(multipartFile.isEmpty());
+    Assertions.assertFalse(multipartFile.isEmpty());
   }
 
   @Test
@@ -123,7 +117,7 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertEquals(size, multipartFile.getSize());
+    Assertions.assertEquals(size, multipartFile.getSize());
   }
 
   class ByteArrayInputStreamForTest extends ByteArrayInputStream {
@@ -150,8 +144,8 @@ public class TestPartToMultipartFile {
       }
     };
 
-    Assert.assertArrayEquals(bytes, multipartFile.getBytes());
-    Assert.assertTrue(is.closed);
+    Assertions.assertArrayEquals(bytes, multipartFile.getBytes());
+    Assertions.assertTrue(is.closed);
   }
 
   @Test
@@ -163,10 +157,9 @@ public class TestPartToMultipartFile {
       }
     };
 
-    expectedException.expect(IOException.class);
-    expectedException.expectMessage(Matchers.is("open stream failed"));
-
-    multipartFile.getBytes();
+    IOException exception = Assertions.assertThrows(IOException.class,
+            () -> multipartFile.getBytes());
+    Assertions.assertEquals("open stream failed", exception.getMessage());
   }
 
   @Test
@@ -181,6 +174,6 @@ public class TestPartToMultipartFile {
     };
 
     multipartFile.transferTo(dest);
-    Assert.assertEquals(dest.getPath(), destName.value);
+    Assertions.assertEquals(dest.getPath(), destName.value);
   }
 }

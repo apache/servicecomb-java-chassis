@@ -17,16 +17,23 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.models.Swagger;
 
-public class RestControllerClassAnnotationProcessor implements ClassAnnotationProcessor {
+public class RestControllerClassAnnotationProcessor implements ClassAnnotationProcessor<RestController> {
+  @Override
+  public Type getProcessType() {
+    return RestController.class;
+  }
 
   @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
+  public void process(SwaggerGenerator swaggerGenerator, RestController restController) {
     Swagger swagger = swaggerGenerator.getSwagger();
     if (StringUtils.isEmpty(swagger.getBasePath())) {
       swagger.setBasePath("/");

@@ -18,12 +18,22 @@
 package org.apache.servicecomb.it;
 
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableServiceComb
 public class SpringBoot2StandaloneApplication {
+  // inject this bean to ensure @ConditionalOnProperty can work with configuration from microservice.yaml
+  private ConditionBean conditionBean;
+
+  @Autowired
+  public SpringBoot2StandaloneApplication setDynamicBean(ConditionBean conditionBean) {
+    this.conditionBean = conditionBean;
+    return this;
+  }
+
   public static void main(String[] args) {
     new CommandReceiver();
 

@@ -19,32 +19,38 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.Assert;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.hamcrest.MatcherAssert;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.Property;
+import org.junit.jupiter.api.Assertions;
 
 public class TestApiOperation {
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiOperationAnnotation.class);
+
+  @AfterClass
+  public static void teardown() {
+    swaggerOperations = null;
+  }
 
   interface ApiOperationAnnotation {
     @ApiOperation(
@@ -86,86 +92,82 @@ public class TestApiOperation {
 
   @Test
   public void testApiOperation() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, ApiOperationAnnotation.class);
-    swaggerGenerator.generate();
-
-    Swagger swagger = swaggerGenerator.getSwagger();
+    Swagger swagger = swaggerOperations.getSwagger();
     testBase(swagger.getPath("/test"));
     testPrimitive(swagger.getPath("/testPrimitive"));
     testMap(swagger.getPath("/testMap"));
     testList(swagger.getPath("/testList"));
     testSet(swagger.getPath("/testSet"));
-    assertThat(swagger.getPath("/testHidden"), is(nullValue()));
+    MatcherAssert.assertThat(swagger.getPath("/testHidden"), is(nullValue()));
   }
 
   @Test
   public void testUnknown() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.TestApiOperation$UnknownResponseContainer:testUnknown",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.TestApiOperation$UnknownResponseContainer:testUnknown.",
         "not support responseContainer xxx",
-        context,
         UnknownResponseContainer.class);
   }
 
   private void testSet(Path path) {
     Operation operation = path.getPost();
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals(ArrayProperty.class, result200.getClass());
-    Assert.assertEquals(true, ((ArrayProperty) result200).getUniqueItems());
+    Model result200 = operation.getResponses().get("200").getResponseSchema();
+    Assertions.assertEquals(ArrayModel.class, result200.getClass());
+    Assertions.assertEquals(true, ((ArrayModel) result200).getUniqueItems());
   }
 
   private void testList(Path path) {
     Operation operation = path.getPost();
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals(ArrayProperty.class, result200.getClass());
-    Assert.assertEquals(null, ((ArrayProperty) result200).getUniqueItems());
+    Model result200 = operation.getResponses().get("200").getResponseSchema();
+    Assertions.assertEquals(ArrayModel.class, result200.getClass());
+    Assertions.assertNull(((ArrayModel) result200).getUniqueItems());
   }
 
   private void testMap(Path path) {
     Operation operation = path.getPost();
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals(MapProperty.class, result200.getClass());
+    Model result200 = operation.getResponses().get("200").getResponseSchema();
+    Assertions.assertEquals(ModelImpl.class, result200.getClass());
+    Assertions.assertNotNull(((ModelImpl) result200).getAdditionalProperties());
   }
 
   private void testPrimitive(Path path) {
     Operation operation = path.getPost();
 
-    Assert.assertEquals(2, operation.getResponses().size());
+    Assertions.assertEquals(2, operation.getResponses().size());
 
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals("integer", result200.getType());
-    Assert.assertEquals("int32", result200.getFormat());
+    ModelImpl result200 = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
+    Assertions.assertEquals("integer", result200.getType());
+    Assertions.assertEquals("int32", result200.getFormat());
 
-    Property result202 = operation.getResponses().get("202").getSchema();
-    Assert.assertEquals("string", result202.getType());
-    Assert.assertEquals(null, result202.getFormat());
+    ModelImpl result202 = (ModelImpl) operation.getResponses().get("202").getResponseSchema();
+    Assertions.assertEquals("string", result202.getType());
+    Assertions.assertNull(result202.getFormat());
   }
 
   private void testBase(Path path) {
-    Assert.assertEquals(1, path.getOperations().size());
+    Assertions.assertEquals(1, path.getOperations().size());
 
     Operation operation = path.getGet();
 
-    Assert.assertEquals("summary", operation.getSummary());
-    Assert.assertEquals("notes", operation.getDescription());
-    Assert.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
-    Assert.assertEquals(Arrays.asList("application/json"), operation.getProduces());
-    Assert.assertEquals(Arrays.asList("application/json"), operation.getConsumes());
-    Assert.assertEquals(Arrays.asList(Scheme.HTTP, Scheme.HTTPS), operation.getSchemes());
+    Assertions.assertEquals("summary", operation.getSummary());
+    Assertions.assertEquals("notes", operation.getDescription());
+    Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
+    Assertions.assertEquals(Arrays.asList("application/json"), operation.getProduces());
+    Assertions.assertEquals(Arrays.asList("application/json"), operation.getConsumes());
+    Assertions.assertEquals(Arrays.asList(Scheme.HTTP, Scheme.HTTPS), operation.getSchemes());
 
     Map<String, Response> responseMap = operation.getResponses();
-    Assert.assertEquals(2, responseMap.size());
+    Assertions.assertEquals(2, responseMap.size());
 
     Response response = responseMap.get(SwaggerConst.SUCCESS_KEY);
-    Assert.assertNotNull(response);
-    Assert.assertEquals(null, response.getSchema());
+    Assertions.assertNotNull(response);
+    Assertions.assertNull(response.getResponseSchema());
 
     response = responseMap.get("202");
-    Assert.assertNotNull(response);
-    Assert.assertEquals(null, response.getSchema());
+    Assertions.assertNotNull(response);
+    Assertions.assertNull(response.getResponseSchema());
 
-    Assert.assertEquals(1, response.getHeaders().size());
-    Assert.assertEquals("integer", response.getHeaders().get("h1").getType());
+    Assertions.assertEquals(1, response.getHeaders().size());
+    Assertions.assertEquals("integer", response.getHeaders().get("h1").getType());
   }
 }

@@ -33,7 +33,7 @@ import org.springframework.util.ResourceUtils;
 public abstract class AbstractConfigLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfigLoader.class);
 
-  private static final String ORDER_KEY = "servicecomb-config-order";
+  public static final String ORDER_KEY = "servicecomb-config-order";
 
   protected final List<ConfigModel> configModels = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public abstract class AbstractConfigLoader {
   public ConfigModel load(URL url) throws IOException {
     Map<String, Object> config = loadData(url);
     // load a empty or all commented yaml, will get a null map
-    // this is not a error
+    // this is not an error
     if (config == null) {
       config = new LinkedHashMap<>();
     }
@@ -98,7 +98,7 @@ public abstract class AbstractConfigLoader {
     return urlList;
   }
 
-  private class ConfigModelWrapper {
+  private static class ConfigModelWrapper {
     ConfigModel model;
 
     int addOrder;

@@ -19,26 +19,25 @@ package org.apache.servicecomb.swagger.converter.property;
 
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
+import org.apache.servicecomb.swagger.converter.ConverterMgr;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.models.Swagger;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 
 public class MapPropertyConverter extends AbstractPropertyConverter {
   @Override
-  public JavaType doConvert(SwaggerToClassGenerator swaggerToClassGenerator, Object property) {
+  public JavaType doConvert(Swagger swagger, Object property) {
     MapProperty mapProperty = (MapProperty) property;
     Property valueProperty = mapProperty.getAdditionalProperties();
-    return findJavaType(swaggerToClassGenerator, valueProperty);
+    return findJavaType(swagger, valueProperty);
   }
 
-  public static JavaType findJavaType(SwaggerToClassGenerator swaggerToClassGenerator, Property valueProperty) {
-    JavaType valueJavaType = swaggerToClassGenerator.convert(valueProperty);
-
-    return swaggerToClassGenerator.getTypeFactory().constructMapType(Map.class,
-        swaggerToClassGenerator.getTypeFactory().constructType(String.class),
-        valueJavaType);
+  public static JavaType findJavaType(Swagger swagger, Property valueProperty) {
+    JavaType valueJavaType = ConverterMgr.findJavaType(swagger, valueProperty);
+    return TypeFactory.defaultInstance().constructMapType(Map.class, STRING_JAVA_TYPE, valueJavaType);
   }
 }

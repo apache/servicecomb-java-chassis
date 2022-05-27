@@ -17,10 +17,11 @@
 
 package org.apache.servicecomb.core.consumer;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestSyncResponseExecutor {
@@ -29,14 +30,15 @@ public class TestSyncResponseExecutor {
     SyncResponseExecutor executor = new SyncResponseExecutor();
     Runnable cmd = Mockito.mock(Runnable.class);
     Response response = Mockito.mock(Response.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
     executor.execute(cmd);
     executor.setResponse(response);
 
     try {
-      Response responseValue = executor.waitResponse();
-      Assert.assertNotNull(responseValue);
+      Response responseValue = executor.waitResponse(invocation);
+      Assertions.assertNotNull(responseValue);
     } catch (Exception e) {
-      Assert.assertNotNull(e);
+      Assertions.assertNotNull(e);
     }
   }
 }

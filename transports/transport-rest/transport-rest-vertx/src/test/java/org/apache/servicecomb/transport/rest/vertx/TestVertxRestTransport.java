@@ -25,8 +25,8 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.AbstractVerticle;
@@ -39,16 +39,16 @@ import mockit.MockUp;
 
 public class TestVertxRestTransport {
 
-  private VertxRestTransport instance = new VertxRestTransport();
+  private final VertxRestTransport instance = new VertxRestTransport();
 
   @Test
   public void testGetInstance() {
-    Assert.assertNotNull(instance);
+    Assertions.assertNotNull(instance);
   }
 
   @Test
   public void testGetName() {
-    Assert.assertEquals("rest", instance.getName());
+    Assertions.assertEquals("rest", instance.getName());
   }
 
   @Test
@@ -71,7 +71,7 @@ public class TestVertxRestTransport {
     } catch (Exception e) {
       status = true;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -90,13 +90,13 @@ public class TestVertxRestTransport {
 
       validAssert = false;
     }
-    Assert.assertFalse(validAssert);
+    Assertions.assertFalse(validAssert);
   }
 
   @Test
   public void testGetOrder() {
     VertxRestTransport transport = new VertxRestTransport();
-    Assert.assertEquals(-1000, transport.getOrder());
+    Assertions.assertEquals(-1000, transport.getOrder());
   }
 
   @Test
@@ -109,7 +109,7 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
-    Assert.assertTrue(transport.canInit());
+    Assertions.assertTrue(transport.canInit());
   }
 
   @Test
@@ -125,7 +125,7 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
-    Assert.assertFalse(transport.canInit());
+    Assertions.assertFalse(transport.canInit());
 
     ss.close();
   }
@@ -144,6 +144,6 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
-    Assert.assertTrue(transport.canInit());
+    Assertions.assertTrue(transport.canInit());
   }
 }

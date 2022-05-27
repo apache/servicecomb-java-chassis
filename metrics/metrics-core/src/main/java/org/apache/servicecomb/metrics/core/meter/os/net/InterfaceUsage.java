@@ -31,7 +31,7 @@ import com.netflix.spectator.api.Measurement;
 public class InterfaceUsage {
   private final String name;
 
-  private List<NetStat> netStats = new ArrayList<>();
+  private final List<NetStat> netStats = new ArrayList<>();
 
   public InterfaceUsage(Id id, String name) {
     this.name = name;
@@ -52,9 +52,7 @@ public class InterfaceUsage {
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow) {
-    netStats.forEach(netStat -> {
-      measurements.add(new Measurement(netStat.getId(), msNow, netStat.getRate()));
-    });
+    netStats.forEach(netStat -> measurements.add(new Measurement(netStat.getId(), msNow, netStat.getRate())));
   }
 
   public void update(String interfaceData, long secondInterval) {

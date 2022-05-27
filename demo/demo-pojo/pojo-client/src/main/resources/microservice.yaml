@@ -29,13 +29,27 @@ servicecomb:
         watch: false
         empty:
           protection: true
+  rest.client.enabled: false # using only http2
+  swagger:
+    disableDataTypeCheck: true
   handler:
     chain:
       Consumer:
-        default: qps-flowcontrol-consumer,bizkeeper-consumer,loadbalance
+        default: qps-flowcontrol-consumer,auth-consumer,bizkeeper-consumer,loadbalance
   isolation:
     Consumer:
       enabled: false
   loadbalance:
     strategy:
       name: Random
+  metrics:
+    window_time: 12000
+    publisher.defaultLog.enabled: false # when in testing , can turn on
+  flowcontrol:
+    Consumer:
+      qps:
+        limit:
+          pojo:
+            FlowControlClientSchema:
+              foo: 3
+              bar: 3000

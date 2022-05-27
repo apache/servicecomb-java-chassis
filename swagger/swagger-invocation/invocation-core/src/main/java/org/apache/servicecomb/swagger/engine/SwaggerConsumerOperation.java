@@ -17,28 +17,27 @@
 package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 public class SwaggerConsumerOperation {
-  private String name;
+  private Class<?> consumerClass;
 
   private Method consumerMethod;
 
-  private Method swaggerMethod;
+  private String[] consumerParameterNames;
 
-  private ConsumerArgumentsMapper argumentsMapper;
+  private SwaggerOperation swaggerOperation;
+
+  private ArgumentsMapper argumentsMapper;
 
   private ConsumerResponseMapper responseMapper;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public Method getConsumerMethod() {
     return consumerMethod;
@@ -46,21 +45,33 @@ public class SwaggerConsumerOperation {
 
   public void setConsumerMethod(Method consumerMethod) {
     this.consumerMethod = consumerMethod;
+
+    this.consumerParameterNames = Arrays.stream(consumerMethod.getParameters())
+        .map(Parameter::getName)
+        .toArray(String[]::new);
   }
 
-  public Method getSwaggerMethod() {
-    return swaggerMethod;
+  public Class<?> getConsumerClass() {
+    return consumerClass;
   }
 
-  public void setSwaggerMethod(Method swaggerMethod) {
-    this.swaggerMethod = swaggerMethod;
+  public void setConsumerClass(Class<?> consumerClass) {
+    this.consumerClass = consumerClass;
   }
 
-  public ConsumerArgumentsMapper getArgumentsMapper() {
+  public SwaggerOperation getSwaggerOperation() {
+    return swaggerOperation;
+  }
+
+  public void setSwaggerOperation(SwaggerOperation swaggerOperation) {
+    this.swaggerOperation = swaggerOperation;
+  }
+
+  public ArgumentsMapper getArgumentsMapper() {
     return argumentsMapper;
   }
 
-  public void setArgumentsMapper(ConsumerArgumentsMapper argumentsMapper) {
+  public void setArgumentsMapper(ArgumentsMapper argumentsMapper) {
     this.argumentsMapper = argumentsMapper;
   }
 
@@ -70,5 +81,13 @@ public class SwaggerConsumerOperation {
 
   public void setResponseMapper(ConsumerResponseMapper responseMapper) {
     this.responseMapper = responseMapper;
+  }
+
+  public Map<String, Object> toInvocationArguments(Object[] args) {
+    Map<String, Object> arguments = new HashMap<>();
+    for (int i = 0; i < consumerParameterNames.length; i++) {
+      arguments.put(consumerParameterNames[i], args[i]);
+    }
+    return arguments;
   }
 }

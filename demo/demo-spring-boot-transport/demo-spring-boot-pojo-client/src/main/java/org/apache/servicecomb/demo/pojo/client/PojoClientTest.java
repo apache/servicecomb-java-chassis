@@ -18,14 +18,16 @@
 package org.apache.servicecomb.demo.pojo.client;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.Test;
 import org.apache.servicecomb.demo.server.TestRequest;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,7 @@ public class PojoClientTest {
 
   public static Test testFromXml;
 
-  public static final byte buffer[] = new byte[1024];
+  public static final byte[] buffer = new byte[1024];
 
   public static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
 
@@ -56,7 +58,7 @@ public class PojoClientTest {
     String microserviceName = "pojo";
 
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
@@ -89,18 +91,26 @@ public class PojoClientTest {
         result);
   }
 
+  @SuppressWarnings({"deprecation"})
   private static void testCommonInvoke(String transport) {
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", new Object[] {2, new User()});
+    Map<String, Object> arguments = new HashMap<>();
+    arguments.put("index", 2);
+    arguments.put("user", new User());
+
+    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", arguments);
     TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
         + ", age=100, index=2]", result);
 
+    arguments = new HashMap<>();
+    arguments.put("index", 3);
+    arguments.put("user", new User());
     result =
         InvokerUtils.syncInvoke("pojo",
             "0.0.1",
             transport,
             "server",
             "splitParam",
-            new Object[] {3, new User()});
+            arguments);
     TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
         + ", age=100, index=3]", result);
   }

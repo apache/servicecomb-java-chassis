@@ -27,7 +27,7 @@ import mockit.MockUp;
 
 public class MockForRestServerVerticle {
 
-  private static MockForRestServerVerticle instance = new MockForRestServerVerticle();
+  private static final MockForRestServerVerticle instance = new MockForRestServerVerticle();
 
   private MockForRestServerVerticle() {
     // private constructor for Singleton

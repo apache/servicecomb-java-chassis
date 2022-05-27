@@ -18,8 +18,8 @@ package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +35,8 @@ public class TestTraceEdge {
     HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
 
     String traceId = client.exchange("/echo-proxy", HttpMethod.GET, requestEntity, String.class).getBody();
-    Assert.assertEquals("testId", traceId);
+    Assertions.assertEquals("testId", traceId);
+    traceId = client.exchange("/echo-proxy", HttpMethod.GET, requestEntity, String.class).getBody();
+    Assertions.assertEquals("testId", traceId);
   }
 }

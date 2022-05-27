@@ -17,17 +17,31 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.aop.TargetClassAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public final class BeanUtils {
-  public static final String DEFAULT_BEAN_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
+  private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
+
+  public static final String DEFAULT_BEAN_CORE_RESOURCE = "classpath*:META-INF/spring/scb-core-bean.xml";
+
+  public static final String DEFAULT_BEAN_NORMAL_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
+
+  public static final String[] DEFAULT_BEAN_RESOURCE = new String[] {DEFAULT_BEAN_CORE_RESOURCE
+      , DEFAULT_BEAN_NORMAL_RESOURCE};
 
   public static final String SCB_SCAN_PACKAGE = "scb-scan-package";
 
@@ -42,11 +56,37 @@ public final class BeanUtils {
     init(DEFAULT_BEAN_RESOURCE);
   }
 
-
   public static void init(String... configLocations) {
     prepareServiceCombScanPackage();
 
-    context = new ClassPathXmlApplicationContext(configLocations);
+    Set<String> locationSet = new LinkedHashSet<>();
+    addBeanLocation(locationSet, DEFAULT_BEAN_RESOURCE);
+    addBeanLocation(locationSet, configLocations);
+    context = new ClassPathXmlApplicationContext(locationSet.toArray(new String[locationSet.size()]));
+  }
+
+  public static void addBeanLocation(Set<String> locationSet, String... location) {
+    Arrays.stream(location).forEach(loc -> addBeanLocation(locationSet, loc));
+  }
+
+  public static void addBeanLocation(Set<String> locationSet, String location) {
+    if (location == null) {
+      return;
+    }
+
+    location = location.trim();
+    if (StringUtils.isNotEmpty(location)) {
+      locationSet.add(location);
+    }
+  }
+
+  private static void addItem(Set<String> set, String item) {
+    for (String it : set) {
+      if (item.startsWith(it)) {
+        return;
+      }
+    }
+    set.add(item);
   }
 
   public static void prepareServiceCombScanPackage() {
@@ -56,25 +96,26 @@ public final class BeanUtils {
     if (exists != null) {
       for (String exist : exists.trim().split(",")) {
         if (!exist.isEmpty()) {
-          scanPackags.add(exist.trim());
+          addItem(scanPackags, exist.trim());
         }
       }
     }
 
     // ensure servicecomb package exist
-    scanPackags.add(SCB_PACKAGE);
+    addItem(scanPackags, SCB_PACKAGE);
 
     // add main class package
-    Class<?> mainClass = JvmUtils.findMainClass();
-    if (mainClass != null) {
-      String pkg = mainClass.getPackage().getName();
-      if (!pkg.startsWith(SCB_PACKAGE)) {
-        scanPackags.add(pkg);
+    for (Class<?> mainClass : new Class<?>[] {JvmUtils.findMainClass(), JvmUtils.findMainClassByStackTrace()}) {
+      if (mainClass != null && mainClass.getPackage() != null) {
+        String pkg = mainClass.getPackage().getName();
+        addItem(scanPackags, pkg);
       }
     }
 
     // finish
-    System.setProperty(SCB_SCAN_PACKAGE, StringUtils.join(scanPackags, ","));
+    String scbScanPackages = StringUtils.join(scanPackags, ",");
+    System.setProperty(SCB_SCAN_PACKAGE, scbScanPackages);
+    LOGGER.info("Scb scan package list: " + scbScanPackages);
   }
 
   public static ApplicationContext getContext() {
@@ -93,11 +134,45 @@ public final class BeanUtils {
     return (T) context.getBean(name);
   }
 
+  public static <T> Map<String, T> getBeansOfType(Class<T> type) {
+    if (context == null) {
+      // for some test case
+      return Collections.emptyMap();
+    }
+    return context.getBeansOfType(type);
+  }
+
+  public static <T> T getBean(Class<T> type) {
+    if (context == null) {
+      // for some test case
+      return null;
+    }
+    return context.getBean(type);
+  }
+
+  /**
+   * Get the implemented class of the given instance
+   * @param bean the instance to get implemented class from
+   * @return the implemented class (if the checked class is proxied, return the ultimate target class)
+   * @see org.springframework.aop.framework.AopProxyUtils#ultimateTargetClass
+   */
   public static Class<?> getImplClassFromBean(Object bean) {
-    if (TargetClassAware.class.isInstance(bean)) {
-      return ((TargetClassAware) bean).getTargetClass();
+    return AopProxyUtils.ultimateTargetClass(bean);
+  }
+
+  public static <T extends SPIOrder & SPIEnabled> void addBeans(Class<T> cls, List<T> exists) {
+    if (context == null) {
+      return;
     }
 
-    return bean.getClass();
+    for (T instance : exists) {
+      context.getAutowireCapableBeanFactory().autowireBean(instance);
+    }
+    for (T bean : context.getBeansOfType(cls).values()) {
+      if (bean.enabled()) {
+        exists.add(bean);
+      }
+    }
+    exists.sort(Comparator.comparingInt(SPIOrder::getOrder));
   }
 }

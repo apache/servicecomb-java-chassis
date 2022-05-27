@@ -24,7 +24,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
+import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
+import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -33,57 +34,48 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.ArrayProperty;
 
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "query";
 
   public static class QueryProcessor extends AbstractParamProcessor {
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean emptyAsNull = DynamicPropertyFactory.getInstance()
+    private final boolean emptyAsNull = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.emptyAsNull", false).get();
 
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
+    private final boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false).get();
 
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+    private final boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false).get();
 
-    private SwaggerParamCollectionFormat collectionFormat;
+    private final boolean repeatedType;
 
-    public QueryProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required,
-        String collectionFormat) {
-      super(paramPath, targetType, defaultValue, required);
-      if (StringUtils.isNoneEmpty(collectionFormat)) {
-        this.collectionFormat = SwaggerParamCollectionFormat.valueOf(collectionFormat.toUpperCase());
-      }
+    private final QueryCodec queryCodec;
+
+    public QueryProcessor(QueryParameter queryParameter, JavaType targetType) {
+      super(queryParameter.getName(), targetType, queryParameter.getDefaultValue(), queryParameter.getRequired());
+
+      this.repeatedType = ArrayProperty.isType(queryParameter.getType());
+      this.queryCodec = QueryCodecsUtils.find(queryParameter.getCollectionFormat());
     }
 
     @Override
     public Object getValue(HttpServletRequest request) {
-      Object value = null;
-      if (targetType.isContainerType()
-          && SwaggerParamCollectionFormat.MULTI.equals(collectionFormat)) {
-        value = request.getParameterValues(paramPath);
-        //Even if the paramPath does not exist, value won't be null at now
-      } else {
-        value = request.getParameter(paramPath);
-        // make some old systems happy
-        if (emptyAsNull) {
-          if (StringUtils.isEmpty((String) value)) {
-            value = null;
-          }
-        }
-        if (value == null) {
-          value = checkRequiredAndDefaultValue();
-        }
-        if (null != collectionFormat) {
-          value = collectionFormat.splitParam((String) value);
-        }
+      return queryCodec.decode(this, request);
+    }
+
+    public Object getAndCheckParameter(HttpServletRequest request) {
+      Object value = request.getParameter(paramPath);
+      // make some old systems happy
+      if (emptyAsNull && StringUtils.isEmpty((String) value)) {
+        value = null;
       }
 
-      return convertValue(value, targetType);
+      return value != null ? value : checkRequiredAndDefaultValue();
     }
 
     private Object checkRequiredAndDefaultValue() {
@@ -94,6 +86,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       if (!ignoreDefaultValue && defaultValue != null) {
         return defaultValue;
       }
+
       return null;
     }
 
@@ -107,8 +100,16 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       return PARAMTYPE;
     }
 
-    public SwaggerParamCollectionFormat getCollectionFormat() {
-      return collectionFormat;
+    public QueryCodec getQueryCodec() {
+      return queryCodec;
+    }
+
+    public boolean isRepeatedType() {
+      return repeatedType;
+    }
+
+    public Object convertValue(Object value) {
+      return convertValue(value, targetType);
     }
   }
 
@@ -118,10 +119,8 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    QueryParameter queryParameter = (QueryParameter) parameter;
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new QueryProcessor(parameter.getName(), targetType, queryParameter.getDefaultValue(),
-        parameter.getRequired(),
-        queryParameter.getCollectionFormat());
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
+    return new QueryProcessor((QueryParameter) parameter, targetType);
   }
 }

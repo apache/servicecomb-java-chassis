@@ -19,37 +19,30 @@ package org.apache.servicecomb.foundation.common.http;
 
 import javax.ws.rs.core.Response.StatusType;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestHttpStatusUtils {
   HttpStatusManager mgr = new HttpStatusManager();
 
   StatusType st;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Test
   public void testStandard() {
     st = HttpStatusUtils.getOrCreateByStatusCode(200);
-    Assert.assertEquals(200, st.getStatusCode());
+    Assertions.assertEquals(200, st.getStatusCode());
   }
 
   @Test
   public void testNotStandard() {
     st = mgr.getOrCreateByStatusCode(250);
-    Assert.assertEquals(250, st.getStatusCode());
+    Assertions.assertEquals(250, st.getStatusCode());
   }
 
   @Test
   public void testAddRepeat() {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("repeated status code: 200"));
-
-    mgr.addStatusType(new HttpStatus(200, "ok"));
+    IllegalStateException illegalStateException = Assertions.assertThrows(IllegalStateException.class,
+            () -> mgr.addStatusType(new HttpStatus(200, "ok")));
+    Assertions.assertEquals("repeated status code: 200", illegalStateException.getMessage());
   }
 }

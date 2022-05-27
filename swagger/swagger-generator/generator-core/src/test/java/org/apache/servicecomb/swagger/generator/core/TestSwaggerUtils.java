@@ -17,38 +17,48 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
+import static junit.framework.TestCase.fail;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.when;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
+import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
+import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
 import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.After;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+
+import io.swagger.models.Swagger;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.ObjectProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
+import mockit.Expectations;
 
 public class TestSwaggerUtils {
-  ClassLoader classLoader = new ClassLoader() {
-  };
 
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
-  private SwaggerGenerator testSchemaMethod(String resultName, String... methodNames) {
-    return UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/" + resultName + ".yaml",
-        context,
+  private void testSchemaMethod(String resultName, String... methodNames) {
+    UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
         Schema.class,
         methodNames);
-  }
-
-  @After
-  public void tearDown() {
-    JavassistUtils.clearByClassLoader(classLoader);
   }
 
   @Test
@@ -94,15 +104,18 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void testEnum() {
-    SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
-    Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
+  public void should_not_lost_ApiParam_description_when_wrap_parameter_to_body() {
+    testSchemaMethod("wrapToBodyWithDesc", "wrapToBodyWithDesc");
+  }
 
-    Method method = ReflectUtils.findMethod(intf, "testEnum");
-    Class<?> bodyCls = method.getParameterTypes()[0];
-    Field[] fields = bodyCls.getFields();
-    Assert.assertEquals(Color.class, fields[0].getType());
-    Assert.assertEquals(fields[0].getType(), fields[1].getType());
+  @Test
+  public void testOneEnum() {
+    testSchemaMethod("oneEnum", "testOneEnum");
+  }
+
+  @Test
+  public void testEnum() {
+    testSchemaMethod("enum", "testEnum");
   }
 
   @Test
@@ -140,6 +153,11 @@ public class TestSwaggerUtils {
   @Test
   public void testList() {
     testSchemaMethod("list", "testList");
+  }
+
+  @Test
+  public void nestedListString() {
+    testSchemaMethod("nestedListString", "nestedListString");
   }
 
   @Test
@@ -188,29 +206,154 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void testDate() {
-    SwaggerGenerator generator = testSchemaMethod("date", "testDate");
-    Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
+  public void testOptional() {
+    testSchemaMethod("testOptional", "testOptional");
+  }
 
-    Method method = ReflectUtils.findMethod(intf, "testDate");
-    Assert.assertEquals(Date.class, method.getReturnType());
+  @Test
+  public void testCompletableFutureOptional() {
+    testSchemaMethod("testCompletableFutureOptional", "testCompletableFutureOptional");
+  }
+
+  @Test
+  public void testDate() {
+    testSchemaMethod("date", "testDate");
+  }
+
+  @Test
+  public void testPart() {
+    testSchemaMethod("part", "part");
+  }
+
+  @Test
+  public void testPartArray() {
+    testSchemaMethod("partArray", "partArray");
+  }
+
+  @Test
+  public void testPartList() {
+    testSchemaMethod("partList", "partList");
+  }
+
+  @Test
+  public void should_ignore_httpServletRequest() {
+    testSchemaMethod("ignoreRequest", "ignoreRequest");
   }
 
   @Test
   public void testRepeatOperation() {
     UnitTestSwaggerUtils.testException(
-        "OperationId must be unique. org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add",
-        context,
+        "OperationId must be unique. method=org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add.",
         RepeatOperation.class);
   }
 
   @Test
   public void testInvalidResponseHeader() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test.",
         "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
-        context,
         InvalidResponseHeader.class,
         "test");
+  }
+
+  @Test
+  public void noParameterName() {
+    Method method = ReflectUtils.findMethod(Schema.class, "testint");
+    Parameter parameter = method.getParameters()[0];
+    new Expectations(parameter) {
+      {
+        parameter.isNamePresent();
+        result = false;
+      }
+    };
+
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
+            () -> SwaggerGeneratorUtils.collectParameterName(parameter));
+    String expectedMsg = "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
+            + "solution:\n"
+            + "  change pom.xml, add compiler argument: -parameters, for example:\n"
+            + "    <plugin>\n"
+            + "      <groupId>org.apache.maven.plugins</groupId>\n"
+            + "      <artifactId>maven-compiler-plugin</artifactId>\n"
+            + "      <configuration>\n"
+            + "        <compilerArgument>-parameters</compilerArgument>\n"
+            + "      </configuration>\n"
+            + "    </plugin>";
+    Assertions.assertEquals(expectedMsg, exception.getMessage());
+  }
+
+  @Test
+  public void testGetRawJsonType() {
+    io.swagger.models.parameters.Parameter param = Mockito.mock(io.swagger.models.parameters.Parameter.class);
+    Map<String, Object> extensions = new HashMap<>();
+    when(param.getVendorExtensions()).thenReturn(extensions);
+
+    extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+    Assertions.assertTrue(SwaggerUtils.isRawJsonType(param));
+
+    extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
+    Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
+  }
+
+  @Test
+  public void isComplexProperty() {
+    Property property = new RefProperty("ref");
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
+    property = new ObjectProperty();
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
+    property = new MapProperty();
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
+    property = new ArrayProperty(new ObjectProperty());
+    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
+
+    property = new ArrayProperty(new StringProperty());
+    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
+    property = new StringProperty();
+    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
+  }
+
+  private static class AllTypeTest1 {
+    TestType1 t1;
+
+    List<TestType1> t2;
+
+    Map<String, TestType1> t3;
+
+    TestType1[] t4;
+  }
+
+  private static class AllTypeTest2 {
+    TestType2 t1;
+
+    List<TestType2> t2;
+
+    Map<String, TestType2> t3;
+
+    TestType2[] t4;
+  }
+
+  @Test
+  public void testAddDefinitions() {
+    Field[] fields1 = AllTypeTest1.class.getDeclaredFields();
+    Field[] fields2 = AllTypeTest2.class.getDeclaredFields();
+    for (int i = 0; i < fields1.length; i++) {
+      for (int j = 0; j < fields2.length; j++) {
+        if (fields1[i].isSynthetic() || fields2[j].isSynthetic()) {
+          continue;
+        }
+        try {
+          testExcep(fields1[i].getGenericType(), fields2[j].getGenericType());
+          fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+          MatcherAssert.assertThat(e.getMessage(), containsString("duplicate param model:"));
+        }
+      }
+    }
+  }
+
+  private void testExcep(Type f1, Type f2) {
+    Swagger swagger = new Swagger();
+    SwaggerUtils.addDefinitions(swagger, f1);
+    SwaggerUtils.addDefinitions(swagger, f2);
   }
 }

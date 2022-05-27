@@ -17,18 +17,37 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 
-public class RequestBodyAnnotationProcessor implements ParameterAnnotationProcessor {
+public class RequestBodyAnnotationProcessor implements ParameterProcessor<BodyParameter, RequestBody> {
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
-    BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIdx);
-    bodyParameter.setRequired(((RequestBody) annotation).required());
-    operationGenerator.addProviderParameter(bodyParameter);
+  public Type getProcessType() {
+    return RequestBody.class;
+  }
+
+  @Override
+  public String getParameterName(RequestBody parameterAnnotation) {
+    return null;
+  }
+
+  @Override
+  public HttpParameterType getHttpParameterType(RequestBody parameterAnnotation) {
+    return HttpParameterType.BODY;
+  }
+
+  @Override
+  public void fillParameter(Swagger swagger, Operation operation, BodyParameter bodyParameter, JavaType type,
+      RequestBody requestBody) {
+    bodyParameter.setRequired(requestBody.required());
   }
 }

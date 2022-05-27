@@ -21,8 +21,6 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.handler.impl.ProducerOperationHandler;
 
 public class ProducerHandlerManager extends AbstractHandlerManager {
-  public static final ProducerHandlerManager INSTANCE = new ProducerHandlerManager();
-
   @Override
   protected String getName() {
     return "Provider";

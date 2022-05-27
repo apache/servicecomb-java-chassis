@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -32,23 +33,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.SyncContext;
-import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.streams.WriteStream;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -74,9 +73,6 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Mocked
   Context context;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   boolean chunked;
 
@@ -138,9 +134,9 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     }.getMockInstance();
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = context;
       }
     };
@@ -153,7 +149,7 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
 
       @Mock
-      <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
+      <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, boolean ordered,
           Handler<AsyncResult<T>> resultHandler) {
         SyncContext.syncExecuteBlocking(blockingCodeHandler, resultHandler);
       }
@@ -169,40 +165,40 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void construct_invalid() throws IOException {
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
 
-    expectedException.expect(NullPointerException.class);
-    expectedException.expectMessage(Matchers.is("must run in vertx context."));
-
-    new VertxServerResponseToHttpServletResponse(serverResponse);
+    NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> {
+      new VertxServerResponseToHttpServletResponse(serverResponse);
+    });
+    Assertions.assertEquals("must run in vertx context.", exception.getMessage());
   }
 
   @Test
   public void setContentType() {
     response.setContentType("json");
-    Assert.assertEquals("json", headers.get(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("json", headers.get(HttpHeaders.CONTENT_TYPE));
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void setStatus() {
     response.setStatus(222, "test");
-    Assert.assertEquals(222, httpStatus.getStatusCode());
-    Assert.assertEquals("test", httpStatus.getReasonPhrase());
+    Assertions.assertEquals(222, httpStatus.getStatusCode());
+    Assertions.assertEquals("test", httpStatus.getReasonPhrase());
   }
 
   @Test
   public void getStatusType() {
     StatusType status = response.getStatusType();
 
-    Assert.assertSame(status, response.getStatusType());
-    Assert.assertEquals(123, httpStatus.getStatusCode());
-    Assert.assertEquals("default", httpStatus.getReasonPhrase());
+    Assertions.assertSame(status, response.getStatusType());
+    Assertions.assertEquals(123, httpStatus.getStatusCode());
+    Assertions.assertEquals("default", httpStatus.getReasonPhrase());
   }
 
   @Test
@@ -211,9 +207,9 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.addHeader("n1", "v1_2");
     response.addHeader("n2", "v2");
 
-    Assert.assertEquals(2, headers.size());
-    Assert.assertThat(headers.getAll("n1"), Matchers.contains("v1_1", "v1_2"));
-    Assert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
+    Assertions.assertEquals(2, headers.size());
+    MatcherAssert.assertThat(headers.getAll("n1"), Matchers.contains("v1_1", "v1_2"));
+    MatcherAssert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
   }
 
   @Test
@@ -222,26 +218,26 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.setHeader("n1", "v1_2");
     response.setHeader("n2", "v2");
 
-    Assert.assertEquals(2, headers.size());
-    Assert.assertThat(headers.getAll("n1"), Matchers.contains("v1_2"));
-    Assert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
+    Assertions.assertEquals(2, headers.size());
+    MatcherAssert.assertThat(headers.getAll("n1"), Matchers.contains("v1_2"));
+    MatcherAssert.assertThat(headers.getAll("n2"), Matchers.contains("v2"));
   }
 
   @Test
   public void getStatus() {
-    Assert.assertEquals(123, response.getStatus());
+    Assertions.assertEquals(123, response.getStatus());
   }
 
   @Test
   public void getContentType() {
     headers.set(HttpHeaders.CONTENT_TYPE, "json");
-    Assert.assertEquals("json", response.getContentType());
+    Assertions.assertEquals("json", response.getContentType());
   }
 
   @Test
   public void getHeader() {
     headers.set(HttpHeaders.CONTENT_TYPE, "json");
-    Assert.assertEquals("json", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("json", response.getHeader(HttpHeaders.CONTENT_TYPE));
   }
 
   @Test
@@ -249,7 +245,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     headers.add("h1", "h1_1");
     headers.add("h1", "h1_2");
 
-    Assert.assertThat(response.getHeaders("h1"), Matchers.contains("h1_1", "h1_2"));
+    MatcherAssert.assertThat(response.getHeaders("h1"), Matchers.contains("h1_1", "h1_2"));
   }
 
   @Test
@@ -257,34 +253,34 @@ public class TestVertxServerResponseToHttpServletResponse {
     headers.add("h1", "h1");
     headers.add("h2", "h2");
 
-    Assert.assertThat(response.getHeaderNames(), Matchers.contains("h1", "h2"));
+    MatcherAssert.assertThat(response.getHeaderNames(), Matchers.contains("h1", "h2"));
   }
 
   @Test
   public void flushBuffer_sameContext() throws IOException {
     response.flushBuffer();
 
-    Assert.assertFalse(runOnContextInvoked);
+    Assertions.assertFalse(runOnContextInvoked);
   }
 
   @Test
   public void flushBuffer_diffContext() throws IOException {
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
     response.flushBuffer();
 
-    Assert.assertTrue(runOnContextInvoked);
+    Assertions.assertTrue(runOnContextInvoked);
   }
 
   @Test
   public void internalFlushBufferNoBody() throws IOException {
     response.internalFlushBuffer();
 
-    Assert.assertFalse(flushWithBody);
+    Assertions.assertFalse(flushWithBody);
   }
 
   @Test
@@ -292,7 +288,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.setBodyBuffer(Buffer.buffer());
     response.internalFlushBuffer();
 
-    Assert.assertTrue(flushWithBody);
+    Assertions.assertTrue(flushWithBody);
   }
 
   @Test
@@ -307,9 +303,9 @@ public class TestVertxServerResponseToHttpServletResponse {
     };
     DownloadUtils.prepareDownloadHeader(response, part);
 
-    Assert.assertTrue(serverResponse.isChunked());
-    Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals(
+    Assertions.assertTrue(serverResponse.isChunked());
+    Assertions.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals(
         "attachment;filename=%E6%B5%8B%20%20%20%20%20%E8%AF%95;filename*=utf-8''%E6%B5%8B%20%20%20%20%20%E8%AF%95",
         response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
   }
@@ -322,14 +318,14 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     DownloadUtils.prepareDownloadHeader(response, part);
 
-    Assert.assertFalse(serverResponse.isChunked());
-    Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("disposition", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assertions.assertFalse(serverResponse.isChunked());
+    Assertions.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assertions.assertEquals("disposition", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
   }
 
   @Test
   public void sendPart_openInputStreamFailed(@Mocked Part part)
-      throws IOException, InterruptedException, ExecutionException {
+      throws IOException {
     IOException ioException = new IOException("forbid open stream");
     new Expectations() {
       {
@@ -340,15 +336,19 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     CompletableFuture<Void> future = response.sendPart(part);
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.sameInstance(ioException));
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, future::get);
+    Assertions.assertTrue(exception.getCause() instanceof IOException);
+  }
 
-    future.get();
+  @Test
+  public void sendPart_testPartIsNull(@Mocked Part part) throws InterruptedException, ExecutionException {
+    CompletableFuture<Void> future1 = response.sendPart(null);
+    Assertions.assertNull(future1.get());
   }
 
   @Test
   public void sendPart_inputStreamBreak(@Mocked Part part, @Mocked InputStream inputStream)
-      throws IOException, InterruptedException, ExecutionException {
+      throws IOException {
     IOException ioException = new IOException("forbid read");
     new Expectations() {
       {
@@ -361,10 +361,8 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     CompletableFuture<Void> future = response.sendPart(part);
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.sameInstance(ioException));
-
-    future.get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, future::get);
+    Assertions.assertTrue(exception.getCause() instanceof IOException);
   }
 
   @Test
@@ -372,12 +370,12 @@ public class TestVertxServerResponseToHttpServletResponse {
     CompletableFuture<Void> future = new CompletableFuture<>();
     new MockUp<PumpFromPart>() {
       @Mock
-      CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream) {
+      CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream, Handler<Throwable> throwableHandler) {
         return future;
       }
     };
 
-    Assert.assertSame(future, response.sendPart(part));
+    Assertions.assertSame(future, response.sendPart(part));
   }
 
   @Test
@@ -394,29 +392,29 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     CompletableFuture<Void> future = response.sendPart(part);
 
-    Assert.assertNull(future.get());
+    Assertions.assertNull(future.get());
   }
 
   @Test
   public void clearPartResource_deleteFile() throws IOException {
     File file = new File("target", UUID.randomUUID().toString() + ".txt");
-    FileUtils.write(file, "content");
+    FileUtils.write(file, "content", StandardCharsets.UTF_8);
     FilePart part = new FilePart(null, file).setDeleteAfterFinished(true);
 
-    Assert.assertTrue(file.exists());
+    Assertions.assertTrue(file.exists());
     DownloadUtils.clearPartResource(part);
-    Assert.assertFalse(file.exists());
+    Assertions.assertFalse(file.exists());
   }
 
   @Test
   public void clearPartResource_notDeleteFile() throws IOException {
     File file = new File("target", UUID.randomUUID().toString() + ".txt");
-    FileUtils.write(file, "content");
+    FileUtils.write(file, "content", StandardCharsets.UTF_8);
     FilePart part = new FilePart(null, file);
 
-    Assert.assertTrue(file.exists());
+    Assertions.assertTrue(file.exists());
     DownloadUtils.clearPartResource(part);
-    Assert.assertTrue(file.exists());
+    Assertions.assertTrue(file.exists());
 
     file.delete();
   }

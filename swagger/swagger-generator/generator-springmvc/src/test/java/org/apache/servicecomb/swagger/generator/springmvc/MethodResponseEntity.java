@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(path = "MethodResponseEntity")
+@RequestMapping(path = "MethodResponseEntity", method = RequestMethod.POST)
 public class MethodResponseEntity {
 
   @RequestMapping(method = RequestMethod.PUT, path = "usingRequestMapping")

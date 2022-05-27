@@ -35,13 +35,13 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class SSLManagerTest {
   private final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -50,7 +50,7 @@ public class SSLManagerTest {
   public void testSSLManagerServerAndClient(final @Mocked NetworkInterface nif) throws Exception {
     final InetAddress ia = Inet4Address.getByName("10.57.65.225");
     final Enumeration<NetworkInterface> interfaces = new Enumeration<NetworkInterface>() {
-      int count = 1;
+      final int count = 1;
 
       int cur = 0;
 
@@ -70,7 +70,7 @@ public class SSLManagerTest {
     };
 
     final Enumeration<InetAddress> ias = new Enumeration<InetAddress>() {
-      int count = 1;
+      final int count = 1;
 
       int cur = 0;
 
@@ -120,18 +120,19 @@ public class SSLManagerTest {
       }
     };
     final SSLServerSocket serverSocket = SSLManager.createSSLServerSocket(option, custom);
+    Assertions.assertTrue(serverSocket.getNeedClientAuth());
     serverSocket.bind(new InetSocketAddress("127.0.0.1", 8886));
     String[] protos = serverSocket.getEnabledCipherSuites();
     String[] protosExpected =
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
-    Assert.assertArrayEquals(protos, protosExpected);
+    Assertions.assertArrayEquals(protos, protosExpected);
     String[] ciphers = serverSocket.getEnabledCipherSuites();
     String[] ciphersExpected =
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
-    Assert.assertArrayEquals(ciphers, ciphersExpected);
-    Assert.assertEquals(serverSocket.getNeedClientAuth(), true);
+    Assertions.assertArrayEquals(ciphers, ciphersExpected);
+    Assertions.assertTrue(serverSocket.getNeedClientAuth());
 
     SSLOption clientoption = SSLOption.build(DIR + "/client.ssl.properties");
     SSLSocket clientsocket = SSLManager.createSSLSocket(clientoption, custom);
@@ -139,13 +140,13 @@ public class SSLManagerTest {
     String[] clientprotosExpected =
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
-    Assert.assertArrayEquals(clientprotos, clientprotosExpected);
+    Assertions.assertArrayEquals(clientprotos, clientprotosExpected);
     String[] clientciphers = clientsocket.getEnabledCipherSuites();
     String[] clientciphersExpected =
         "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
-    Assert.assertArrayEquals(clientciphers, clientciphersExpected);
-    Assert.assertEquals(clientsocket.getNeedClientAuth(), false);
+    Assertions.assertArrayEquals(clientciphers, clientciphersExpected);
+    Assertions.assertFalse(clientsocket.getNeedClientAuth());
     boolean validAssert = true;
     try {
       clientsocket.connect(new InetSocketAddress("127.0.0.1", 8886));
@@ -165,8 +166,7 @@ public class SSLManagerTest {
             s.getOutputStream().write(new byte[] {0, 1});
           } catch (IOException e) {
             e.printStackTrace();
-            // this should not happen, do a false assert
-            Assert.assertEquals(false, true);
+             Assertions.fail("this should not happen");
           }
         }
       }.start();
@@ -180,7 +180,7 @@ public class SSLManagerTest {
       e.printStackTrace();
       validAssert = false;
     }
-    Assert.assertTrue(validAssert);
+    Assertions.assertTrue(validAssert);
   }
 
   @Test
@@ -199,8 +199,33 @@ public class SSLManagerTest {
     };
 
     SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
-    Assert.assertEquals(false, aSSLEngine.getUseClientMode());
-    Assert.assertNotNull(aSSLEngine);
+    // if client mode may not decided at initialization. Different JDK is different, do not check it.
+    // Assertions.assertEquals(false, aSSLEngine.getUseClientMode());
+    Assertions.assertTrue(aSSLEngine.getNeedClientAuth());
+  }
+
+  @Test
+  public void testCreateSSLEngineClientAuthNone() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
+    option.setClientAuth("NONE");
+    option.setAuthPeer(false);
+    SSLCustom custom = new SSLCustom() {
+      @Override
+      public String getFullPath(String filename) {
+        return DIR + "/ssl/" + filename;
+      }
+
+      @Override
+      public char[] decode(char[] encrypted) {
+        return encrypted;
+      }
+    };
+
+    SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom);
+    // if client mode may not decided at initialization. Different JDK is different, do not check it.
+    // Assertions.assertEquals(false, aSSLEngine.getUseClientMode());
+    Assertions.assertFalse(aSSLEngine.getNeedClientAuth());
+    Assertions.assertFalse(aSSLEngine.getWantClientAuth());
   }
 
   @Test
@@ -221,8 +246,18 @@ public class SSLManagerTest {
     int port = 39093;
     String peerHost = "host1";
     SSLEngine aSSLEngine = SSLManager.createSSLEngine(option, custom, peerHost, port);
-    Assert.assertNotNull(aSSLEngine);
-    Assert.assertEquals("host1", aSSLEngine.getPeerHost().toString());
+    Assertions.assertNotNull(aSSLEngine);
+    Assertions.assertEquals("host1", aSSLEngine.getPeerHost());
+  }
+
+  @Test
+  public void testCreateSSLContextResource() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.resource.properties");
+
+    SSLCustom custom = SSLCustom.defaultSSLCustom();
+
+    SSLContext context = SSLManager.createSSLContext(option, custom);
+    Assertions.assertNotNull(context);
   }
 
   @Test
@@ -249,10 +284,10 @@ public class SSLManagerTest {
     };
 
     try {
-      SSLContext context = SSLManager.createSSLContext(option, custom);
-      Assert.assertNotNull(context);
+      SSLManager.createSSLContext(option, custom);
+      Assertions.assertNotNull(null);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -280,10 +315,10 @@ public class SSLManagerTest {
     };
 
     try {
-      SSLContext context = SSLManager.createSSLContext(option, custom);
-      Assert.assertNotNull(context);
+      SSLManager.createSSLContext(option, custom);
+      Assertions.assertNotNull(null);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -311,11 +346,11 @@ public class SSLManagerTest {
     };
 
     try {
-      SSLServerSocket context = SSLManager.createSSLServerSocket(option, custom);
+      SSLManager.createSSLServerSocket(option, custom);
 
-      Assert.assertNotNull(context);
+      Assertions.assertNotNull(null);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -343,10 +378,10 @@ public class SSLManagerTest {
     };
 
     try {
-      SSLServerSocket context = SSLManager.createSSLServerSocket(option, custom);
-      Assert.assertNotNull(context);
+      SSLManager.createSSLServerSocket(option, custom);
+      Assertions.assertNotNull(null);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -374,10 +409,10 @@ public class SSLManagerTest {
     };
 
     try {
-      SSLSocket context = SSLManager.createSSLSocket(option, custom);
-      Assert.assertNotNull(context);
+      SSLManager.createSSLSocket(option, custom);
+      Assertions.assertNotNull(null);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -405,10 +440,10 @@ public class SSLManagerTest {
     };
 
     try {
-      SSLSocket context = SSLManager.createSSLSocket(option, custom);
-      Assert.assertNotNull(context);
+      SSLManager.createSSLSocket(option, custom);
+      Assertions.assertNotNull(null);
     } catch (Exception e) {
-      Assert.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
+      Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
   }
 
@@ -428,11 +463,12 @@ public class SSLManagerTest {
     };
 
     SSLSocketFactory aSSLSocketFactory = SSLManager.createSSLSocketFactory(option, custom);
-    Assert.assertNotNull(aSSLSocketFactory.getDefaultCipherSuites()[0]);
+    Assertions.assertNotNull(aSSLSocketFactory.getDefaultCipherSuites()[0]);
   }
 
+  @Test
   public void testGetSupportedCiphers() {
-    String[] ciphers = SSLManager.getEnalbedCiphers("TLS_RSA_WITH_AES_128_GCM_SHA256");
-    Assert.assertEquals(ciphers[0], "TLS_RSA_WITH_AES_128_GCM_SHA256");
+    String[] ciphers = SSLManager.getEnabledCiphers("TLS_RSA_WITH_AES_128_GCM_SHA256");
+    Assertions.assertEquals(ciphers[0], "TLS_RSA_WITH_AES_128_GCM_SHA256");
   }
 }

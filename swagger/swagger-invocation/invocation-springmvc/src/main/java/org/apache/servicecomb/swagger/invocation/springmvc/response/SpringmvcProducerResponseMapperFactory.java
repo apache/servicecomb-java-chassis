@@ -26,7 +26,7 @@ import org.springframework.http.ResponseEntity;
 
 public class SpringmvcProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type producerType) {
+  public boolean isMatch(Type producerType) {
     if (!ParameterizedType.class.isAssignableFrom(producerType.getClass())) {
       return false;
     }
@@ -36,9 +36,9 @@ public class SpringmvcProducerResponseMapperFactory implements ProducerResponseM
 
   @Override
   public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
-      Type swaggerType, Type producerType) {
+      Type producerType) {
     Type realProducerType = ((ParameterizedType) producerType).getActualTypeArguments()[0];
-    ProducerResponseMapper realMapper = factorys.createResponseMapper(swaggerType, realProducerType);
+    ProducerResponseMapper realMapper = factorys.createResponseMapper(realProducerType);
     return new SpringmvcProducerResponseMapper(realMapper);
   }
 }

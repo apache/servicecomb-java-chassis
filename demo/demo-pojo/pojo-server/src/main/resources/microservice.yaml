@@ -25,11 +25,23 @@ servicecomb:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080?protocol=http2
+    server:
+      http2:
+        useAlpnEnabled: false
   highway:
     address: 0.0.0.0:7070
-  #executors:
-    #default: test
-    #Provider:
-      #server: test
-      #server.wrapParam: test
+  swagger:
+    disableDataTypeCheck: true
+  handler:
+    chain:
+      Provider:
+        default: qps-flowcontrol-provider,auth-provider
+  flowcontrol:
+    Provider:
+      qps:
+        limit:
+          ANY:
+            FlowControlSchema:
+              foo: 3
+              bar: 3000
 

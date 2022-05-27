@@ -20,20 +20,19 @@ service_description:
   name: springmvc
   version: 0.0.3
   paths:
-  - path: /test1/testpath
-    property:
-      checksession: false
-  - path: /test2/testpath
-    property:
-      checksession: true
+    - path: /test1/testpath
+      property:
+        checksession: false
+    - path: /test2/testpath
+      property:
+        checksession: true
 instance_description:
-  initialStatus : TESTING
+  initialStatus: TESTING
 servicecomb:
-  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
   service:
     registry:
       registerPath: true
-      address: http://127.0.0.1:30100
+      address: http://127.0.0.1:9980,http://127.0.0.1:30100
       client:
         timeout:
           idle: 60
@@ -43,27 +42,38 @@ servicecomb:
           interval: 3
         pull:
           interval: 10
-        watch: false
+        watch: true
       autodiscovery: true
-  # can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
-  config:
-    client:
-      serverUri: http://127.0.0.1:30113
-      refreshMode: 0
-      refresh_interval: 5000
-      refreshPort: 30114
   uploads:
     directory: target
   rest:
-    address: 0.0.0.0:8082?sslEnabled=true
+    address: 0.0.0.0:8080?sslEnabled=false
     server:
       compression: true
   highway:
-    address: 0.0.0.0:7072?sslEnabled=true
+    address: 0.0.0.0:7070?sslEnabled=true
+  invocation:
+    timeout:
+      check:
+        enabled: true
+        strategy: processing-time
+    SpringMVCCommonSchemaInterface:
+      testInvocationTimeout:
+        timeout: 1000
+      testInvocationTimeoutWithInvocation:
+        timeout: 1000
   handler:
     chain:
       Provider:
-        default: bizkeeper-provider
+        default: test-provider, bizkeeper-provider, qps-flowcontrol-provider
+  flowcontrol:
+    strategy: MyStrategy
+    Provider:
+      qps:
+        enabled: true
+        global:
+          limit: 10
+          bucket: 30
   tracing:
     enabled: true
     samplingRate: 0.5
@@ -71,6 +81,7 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
+  codec.printErrorMessage: true
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true
@@ -85,4 +96,6 @@ ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
 ssl.sslCustomClass: org.apache.servicecomb.demo.DemoSSLCustom
+
+vertx.disableFileCPResolving: false  # false: create the .vertx directory, true: do not create
 

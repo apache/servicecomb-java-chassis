@@ -21,12 +21,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Deploys {
+
+  public static final String PROPERTY_KEY_MAX_INSTANCE_HEAP_SIZE = "SCB_IT_MAX_HEAP_SIZE";
+
+  public static final String DEFAULT_MAX_INSTANCE_HEAP_SIZE = "128m";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Deploys.class);
 
   private static final String DEFAULT_MICROSERVICE_VERSION = "1.0.0";
@@ -47,7 +54,7 @@ public class Deploys {
 
   private MicroserviceDeploy springBoot2ServletProducer;
 
-  private MicroserviceDeploy zuul;
+  private String itInstanceMaxHeapSizeOption;
 
   public ServiceCenterDeploy getServiceCenter() {
     return serviceCenter;
@@ -55,10 +62,6 @@ public class Deploys {
 
   public MicroserviceDeploy getEdge() {
     return edge;
-  }
-
-  public MicroserviceDeploy getZuul() {
-    return zuul;
   }
 
   public MicroserviceDeploy getBaseProducer() {
@@ -82,6 +85,12 @@ public class Deploys {
   }
 
   public void init() throws Throwable {
+    String maxHeapSize = System.getProperty(PROPERTY_KEY_MAX_INSTANCE_HEAP_SIZE);
+    if (StringUtils.isEmpty(maxHeapSize)) {
+      itInstanceMaxHeapSizeOption = "-Xmx" + DEFAULT_MAX_INSTANCE_HEAP_SIZE;
+    } else {
+      itInstanceMaxHeapSizeOption = "-Xmx" + maxHeapSize;
+    }
     initPomVersion();
     LOGGER.info("test version: {}", pomVersion);
 
@@ -92,11 +101,6 @@ public class Deploys {
     initBaseHttp2Producer();
     initSpringBoot2StandaloneProducer();
     initSpringBoot2ServletProducer();
-//    initZuul();
-  }
-
-  public void setPomVersion(String pomVersion) {
-    this.pomVersion = pomVersion;
   }
 
   private void initPomVersion() throws Throwable {
@@ -192,7 +196,10 @@ public class Deploys {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("baseProducer");
     definition.setCmd("it-producer");
-    definition.setArgs(new String[] {});
+    definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -206,14 +213,17 @@ public class Deploys {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("baseHttp2Producer");
     definition.setCmd("it-producer");
-    definition.setArgs(new String[] {});
+    definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     URL urlServer = Thread.currentThread().getContextClassLoader().getResource("certificates/server.p12");
     URL urlTrust = Thread.currentThread().getContextClassLoader().getResource("certificates/trust.jks");
     if (urlServer != null && urlTrust != null) {
-      definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
-          "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
-          "-Dserver.p12=" + urlServer.getPath(),
-          "-Dtrust.jks=" + urlTrust.getPath()
+      definition.appendArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
+              "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
+              "-Dserver.p12=" + urlServer.getPath(),
+              "-Dtrust.jks=" + urlTrust.getPath()
       });
     }
     definition.setAppId("integration-test");
@@ -229,7 +239,11 @@ public class Deploys {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("baseHttp2CProducer");
     definition.setCmd("it-producer");
-    definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2"});
+    definition
+        .setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2", itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer-h2c");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -243,7 +257,10 @@ public class Deploys {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("springBoot2ServletProducer");
     definition.setCmd("it-producer-deploy-springboot2-servlet");
-    definition.setArgs(new String[] {});
+    definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer-deploy-springboot2-servlet");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -257,7 +274,10 @@ public class Deploys {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("springBoot2StandaloneProducer");
     definition.setCmd("it-producer-deploy-springboot2-standalone");
-    definition.setArgs(new String[] {});
+    definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer-deploy-springboot2-standalone");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -271,7 +291,10 @@ public class Deploys {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("edge");
     definition.setCmd("it-edge");
-    definition.setArgs(new String[] {});
+    definition.setArgs(new String[] {itInstanceMaxHeapSizeOption});
+    if (!SystemUtils.IS_JAVA_1_8) {
+      definition.appendArgs(new String[] {"--add-opens", "java.base/java.lang=ALL-UNNAMED"});
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-edge");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -280,14 +303,4 @@ public class Deploys {
 
     edge = new MicroserviceDeploy(definition);
   }
-
-  //  private void initZuul() {
-  //    MicroserviceDeployDefinition zuulDefinition = new MicroserviceDeployDefinition();
-  //    zuulDefinition.setDeployName("zuul");
-  //    zuulDefinition.setCmd("it-zuul");
-  //
-  //    initDeployDefinition(zuulDefinition);
-  //
-  //    zuul = new MicroserviceDeploy(zuulDefinition);
-  //  }
 }

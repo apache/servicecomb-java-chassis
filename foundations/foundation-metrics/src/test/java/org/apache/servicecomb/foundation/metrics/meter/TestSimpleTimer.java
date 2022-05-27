@@ -16,10 +16,9 @@
  */
 package org.apache.servicecomb.foundation.metrics.meter;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.netflix.spectator.api.SpectatorUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSimpleTimer {
   SimpleTimer timer = new SimpleTimer(SpectatorUtils.createDefaultId("name"));
@@ -29,13 +28,13 @@ public class TestSimpleTimer {
     timer.record(2);
     timer.record(4);
 
-    Assert.assertFalse(timer.measure().iterator().hasNext());
+    Assertions.assertFalse(timer.measure().iterator().hasNext());
 
     timer.calcMeasurements(1, 2);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "[Measurement(name:statistic=count,1,1.0), Measurement(name:statistic=totalTime,1,3.0000000000000004E-9), Measurement(name:statistic=max,1,4.0E-9)]",
         timer.measure().toString());
-    Assert.assertFalse(timer.hasExpired());
-    Assert.assertEquals("name", timer.id().name());
+    Assertions.assertFalse(timer.hasExpired());
+    Assertions.assertEquals("name", timer.id().name());
   }
 }

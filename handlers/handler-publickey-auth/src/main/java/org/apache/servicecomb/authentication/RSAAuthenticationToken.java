@@ -26,17 +26,19 @@ public class RSAAuthenticationToken {
 
   public final static long TOKEN_ACTIVE_TIME = 24 * 60 * 60 * 1000;
 
-  private String instanceId;
+  private final String instanceId;
 
-  private String serviceId;
+  private final String serviceId;
 
-  private long generateTime;
+  private final long generateTime;
 
-  private String randomCode;
+  private final String randomCode;
 
-  private String sign;
+  private final String sign;
 
-  private String tokenFormat;
+  private final String tokenFormat;
+
+  private final String plainToken;
 
   public RSAAuthenticationToken(String instanceId, String serviceId, long generateTime,
       String randomCode, String sign) {
@@ -51,12 +53,12 @@ public class RSAAuthenticationToken {
         generateTime,
         randomCode,
         sign);
+    this.plainToken = String.format("%s@%s@%s@%s", this.instanceId, this.serviceId, this.generateTime, this.randomCode);
   }
 
   public String plainToken() {
-    return String.format("%s@%s@%s@%s", this.instanceId, this.serviceId, this.generateTime, this.randomCode);
+    return this.plainToken;
   }
-
 
   public String getInstanceId() {
     return instanceId;
@@ -83,15 +85,11 @@ public class RSAAuthenticationToken {
       return null;
     }
     return new RSAAuthenticationToken(tokenArr[0], tokenArr[1],
-        Long.valueOf(tokenArr[2]), tokenArr[3], tokenArr[4]);
+        Long.parseLong(tokenArr[2]), tokenArr[3], tokenArr[4]);
   }
 
   public String getServiceId() {
     return serviceId;
-  }
-
-  public void setServiceId(String serviceId) {
-    this.serviceId = serviceId;
   }
 
   @Override

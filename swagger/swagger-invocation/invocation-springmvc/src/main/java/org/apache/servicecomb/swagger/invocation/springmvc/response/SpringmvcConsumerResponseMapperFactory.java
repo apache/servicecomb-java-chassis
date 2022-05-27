@@ -26,7 +26,7 @@ import org.springframework.http.ResponseEntity;
 
 public class SpringmvcConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type consumerType) {
+  public boolean isMatch(Type consumerType) {
     if (!ParameterizedType.class.isAssignableFrom(consumerType.getClass())) {
       return false;
     }
@@ -36,9 +36,9 @@ public class SpringmvcConsumerResponseMapperFactory implements ConsumerResponseM
 
   @Override
   public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
-      Type swaggerType, Type consumerType) {
+      Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
-    ConsumerResponseMapper realMapper = factorys.createResponseMapper(swaggerType, realConsumerType);
+    ConsumerResponseMapper realMapper = factorys.createResponseMapper(realConsumerType);
     return new SpringmvcConsumerResponseMapper(realMapper);
   }
 }

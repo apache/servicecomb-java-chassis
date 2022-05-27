@@ -31,7 +31,7 @@ import com.netflix.spectator.api.SpectatorUtils;
 public abstract class AbstractInvocationMeters {
   protected Registry registry;
 
-  private Map<String, AbstractInvocationMeter> metersMap = new ConcurrentHashMapEx<>();
+  private final Map<String, AbstractInvocationMeter> metersMap = new ConcurrentHashMapEx<>();
 
   // not care for concurrency, just for make build key faster 
   private int maxKeyLen = 64;

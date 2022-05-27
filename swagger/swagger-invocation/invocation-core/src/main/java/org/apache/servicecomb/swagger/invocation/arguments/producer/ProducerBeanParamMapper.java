@@ -17,47 +17,56 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
-import org.apache.servicecomb.swagger.invocation.converter.impl.ConverterCommon;
 
-public class ProducerBeanParamMapper implements ArgumentMapper {
+public class ProducerBeanParamMapper extends ProducerArgumentMapper {
+  private static class FieldMeta {
+    String swaggerParameterName;
 
-  private int producerIdx;
+    Setter<Object, Object> setter;
 
-  private Map<String, Integer> swaggerParamIndexMap;
+    public FieldMeta(String swaggerParameterName, Setter<Object, Object> setter) {
+      this.swaggerParameterName = swaggerParameterName;
+      this.setter = setter;
+    }
+  }
 
-  private Converter converter;
+  protected String invocationArgumentName;
 
-  /**
-   * @param producerNameToSwaggerIndexMap name of the fields and setters defined in @BeanParam parameter to swagger
-   * param index
-   * @param producerIdx index of producer param
-   * @param producerParamType type of producer param
-   */
-  public ProducerBeanParamMapper(Map<String, Integer> producerNameToSwaggerIndexMap, int producerIdx,
-      Type producerParamType) {
-    this.producerIdx = producerIdx;
-    this.swaggerParamIndexMap = new HashMap<>();
-    this.swaggerParamIndexMap.putAll(producerNameToSwaggerIndexMap);
-    converter = new ConverterCommon(producerParamType);
+  private final Class<?> producerParamType;
+
+  private final List<FieldMeta> fields = new ArrayList<>();
+
+  public ProducerBeanParamMapper(String invocationArgumentName, Class<?> producerParamType) {
+    this.invocationArgumentName = invocationArgumentName;
+    this.producerParamType = producerParamType;
+  }
+
+  public void addField(String swaggerParameterName, Setter<Object, Object> setter) {
+    fields.add(new FieldMeta(swaggerParameterName, setter));
   }
 
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-    Map<String, Object> jsonMap = new HashMap<>(swaggerParamIndexMap.size());
+  public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
+    try {
+      Object paramInstance = producerParamType.newInstance();
+      invocationArguments.put(invocationArgumentName, paramInstance);
 
-    for (Entry<String, Integer> swaggerIndexEntry : swaggerParamIndexMap.entrySet()) {
-      jsonMap.put(swaggerIndexEntry.getKey(), invocation.getSwaggerArgument(swaggerIndexEntry.getValue()));
+      for (FieldMeta fieldMeta : fields) {
+        Object value = swaggerArguments.get(fieldMeta.swaggerParameterName);
+        if (value != null) {
+          // can not set primitive data
+          fieldMeta.setter.set(paramInstance, value);
+        }
+      }
+    } catch (Throwable e) {
+      throw new IllegalStateException("failed to map bean param.", e);
     }
-
-    final Object producerParam = converter.convert(jsonMap);
-    producerArguments[producerIdx] = producerParam;
   }
 }

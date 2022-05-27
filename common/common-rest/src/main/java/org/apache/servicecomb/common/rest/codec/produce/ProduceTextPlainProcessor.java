@@ -42,22 +42,6 @@ public class ProduceTextPlainProcessor implements ProduceProcessor {
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     // plainText类型，肯定是返回string的，想不出有其他类型的场景
     return IOUtils.toString(input, StandardCharsets.UTF_8);
-    // TODO: 该方法尚需进一步修改
-    //        Class<?> returnCls = type.getRawClass();
-    //        if (returnCls.isPrimitive()) {
-    //            // 处理char类型
-    //            if (returnCls == char.class) {
-    //                return ((String)result).charAt(0);
-    //            }
-    //            // 处理其他如int, long, boolean等类型
-    //            return RestObjectMapper.INSTANCE.readValue((String)result, type);
-    //        }
-    //        else {
-    //            // 处理如String等其他复杂类型
-    //            // 对于更多处理不了的复杂类型建议使用"application/json"
-    //            return returnCls.getConstructor(new Class<?>[] {String.class})
-    //                    .newInstance((String)result);
-    //        }
   }
 
   @Override

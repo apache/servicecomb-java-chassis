@@ -48,7 +48,7 @@ public class HighwayClientConnection extends TcpClientConnection {
       login.setProtocol(Const.HIGHWAY);
 
       HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId());
-      os.write(header, LoginRequest.getLoginRequestSchema(), login);
+      os.write(header, LoginRequest.getRootSerializer(), login);
       return os;
     } catch (Throwable e) {
       throw new Error("impossible.", e);
@@ -58,7 +58,7 @@ public class HighwayClientConnection extends TcpClientConnection {
   @Override
   protected boolean onLoginResponse(Buffer bodyBuffer) {
     try {
-      LoginResponse response = LoginResponse.readObject(bodyBuffer);
+      LoginResponse.readObject(bodyBuffer);
       return true;
     } catch (Throwable e) {
       LOGGER.error("decode login response failed.", e);

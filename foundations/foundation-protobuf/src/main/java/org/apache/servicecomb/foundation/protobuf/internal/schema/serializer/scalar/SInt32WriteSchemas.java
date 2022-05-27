@@ -37,7 +37,7 @@ public class SInt32WriteSchemas {
       return new SInt32Schema<>(protoField, propertyDescriptor);
     }
 
-    return new SInt32DynamicSchema<>(protoField, propertyDescriptor);
+    return new SInt32Schema<>(protoField, propertyDescriptor);
   }
 
   private static class SInt32DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +72,7 @@ public class SInt32WriteSchemas {
   }
 
   private static class SInt32Schema<T> extends SInt32DynamicSchema<T> {
-    protected final Getter<T, Integer> getter;
+    protected final Getter<T, Object> getter;
 
     public SInt32Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +82,9 @@ public class SInt32WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Integer value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarSInt32(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

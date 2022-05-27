@@ -22,8 +22,8 @@ import java.util.Collections;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,6 +33,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxClientRequestToHttpServletRequest {
   @Mocked
@@ -56,7 +57,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("/path", request.getRequestURI());
+    Assertions.assertEquals("/path", request.getRequestURI());
   }
 
   @Test
@@ -68,7 +69,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("a=1&b=2", request.getQueryString());
+    Assertions.assertEquals("a=1&b=2", request.getQueryString());
   }
 
   @Test
@@ -82,7 +83,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertEquals("value", request.getHeader("name"));
+    Assertions.assertEquals("value", request.getHeader("name"));
   }
 
   @Test
@@ -96,7 +97,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test
@@ -110,7 +111,7 @@ public class TestVertxClientRequestToHttpServletRequest {
       }
     };
 
-    Assert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
+    MatcherAssert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
   }
 
   @Test
@@ -125,7 +126,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.setHeader("name", "v1");
     request.setHeader("name", "v2");
-    Assert.assertThat(headers.getAll("name"), Matchers.contains("v2"));
+    MatcherAssert.assertThat(headers.getAll("name"), Matchers.contains("v2"));
   }
 
   @Test
@@ -140,24 +141,24 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.addHeader("name", "v1");
     request.addHeader("name", "v2");
-    Assert.assertThat(headers.getAll("name"), Matchers.contains("v1", "v2"));
+    MatcherAssert.assertThat(headers.getAll("name"), Matchers.contains("v1", "v2"));
   }
 
   @Test
   public void testGetContextPath() {
-    Assert.assertEquals("", request.getContextPath());
+    Assertions.assertEquals("", request.getContextPath());
   }
 
   @Test
   public void getMethod() {
     new Expectations() {
       {
-        clientRequest.method();
+        clientRequest.getMethod();
         result = HttpMethod.GET;
       }
     };
 
-    Assert.assertEquals("GET", request.getMethod());
+    Assertions.assertEquals("GET", request.getMethod());
   }
 
   @Test
@@ -172,7 +173,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.addHeader(HttpHeaders.CONTENT_TYPE, "ct");
 
-    Assert.assertEquals("ct", request.getContentType());
+    Assertions.assertEquals("ct", request.getContentType());
   }
 
   @Test
@@ -192,6 +193,6 @@ public class TestVertxClientRequestToHttpServletRequest {
 
     request.addHeader(HttpHeaders.CONTENT_TYPE, contentType);
 
-    Assert.assertEquals("ce", request.getCharacterEncoding());
+    Assertions.assertEquals("ce", request.getCharacterEncoding());
   }
 }

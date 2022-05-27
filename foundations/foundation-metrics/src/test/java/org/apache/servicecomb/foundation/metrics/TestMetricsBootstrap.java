@@ -25,8 +25,8 @@ import java.util.concurrent.ThreadFactory;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
@@ -38,6 +38,7 @@ import com.netflix.spectator.api.Registry;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestMetricsBootstrap {
   MetricsBootstrap bootstrap = new MetricsBootstrap();
@@ -65,7 +66,7 @@ public class TestMetricsBootstrap {
     bootstrap.start(globalRegistry, eventBus);
     bootstrap.shutdown();
 
-    Assert.assertThat(initList, Matchers.contains(metricsInitializer, metricsInitializer));
+    MatcherAssert.assertThat(initList, Matchers.contains(metricsInitializer, metricsInitializer));
   }
 
   @Test
@@ -96,8 +97,8 @@ public class TestMetricsBootstrap {
 
     bootstrap.pollMeters();
     bootstrap.shutdown();
-    Assert.assertEquals(meters, result.getMeters());
-    Assert.assertThat(result.getMeasurements(), Matchers.contains(measurement));
+    Assertions.assertEquals(meters, result.getMeters());
+    MatcherAssert.assertThat(result.getMeasurements(), Matchers.contains(measurement));
   }
 
   @Test
@@ -145,12 +146,12 @@ public class TestMetricsBootstrap {
 
     bootstrap.shutdown();
 
-    Assert.assertThat(destroyList, Matchers.contains(initializer2, initializer1));
+    MatcherAssert.assertThat(destroyList, Matchers.contains(initializer2, initializer1));
   }
 
   @Test
   public void shutdown_notStart() {
-    Assert.assertNull(Deencapsulation.getField(bootstrap, "executorService"));
+    Assertions.assertNull(Deencapsulation.getField(bootstrap, "executorService"));
 
     // should not throw exception
     bootstrap.shutdown();

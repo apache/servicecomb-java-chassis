@@ -37,7 +37,7 @@ public class DoubleWriteSchemas {
       return new DoubleSchema<>(protoField, propertyDescriptor);
     }
 
-    return new DoubleDynamicSchema<>(protoField, propertyDescriptor);
+    return new DoubleSchema<>(protoField, propertyDescriptor);
   }
 
   private static class DoubleDynamicSchema<T> extends FieldSchema<T> {
@@ -72,19 +72,19 @@ public class DoubleWriteSchemas {
   }
 
   private static class DoubleSchema<T> extends DoubleDynamicSchema<T> {
-    protected final Getter<T, Double> getter;
+    protected final Getter<T, Object> getter;
 
     public DoubleSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Double value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarDouble(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

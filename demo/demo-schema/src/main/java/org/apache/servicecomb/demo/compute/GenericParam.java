@@ -28,7 +28,11 @@ public class GenericParam<T> {
     return str;
   }
 
-  public GenericParam<T> setStr(String str) {
+  public void setStr(String str) {
+    this.str = str;
+  }
+
+  public GenericParam<T> str(String str) {
     this.str = str;
     return this;
   }
@@ -37,7 +41,11 @@ public class GenericParam<T> {
     return num;
   }
 
-  public GenericParam<T> setNum(long num) {
+  public void setNum(long num) {
+    this.num = num;
+  }
+
+  public GenericParam<T> num(long num) {
     this.num = num;
     return this;
   }
@@ -46,14 +54,18 @@ public class GenericParam<T> {
     return data;
   }
 
-  public GenericParam<T> setData(T data) {
+  public void setData(T data) {
+    this.data = data;
+  }
+
+  public GenericParam<T> data(T data) {
     this.data = data;
     return this;
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("GenericParam{");
+    StringBuilder sb = new StringBuilder("GenericParam{");
     sb.append("str='").append(str).append('\'');
     sb.append(", num=").append(num);
     sb.append(", data=").append(data);

@@ -18,23 +18,21 @@
 package org.apache.servicecomb.edge.core;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.AbstractRestInvocation;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.vertx.executor.VertxContextExecutor;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
@@ -44,13 +42,11 @@ public class EdgeInvocation extends AbstractRestInvocation {
 
   protected String microserviceName;
 
-  protected MicroserviceVersionRule microserviceVersionRule;
-
-  protected MicroserviceVersionMeta latestMicroserviceVersionMeta;
+  protected MicroserviceReferenceConfig microserviceReferenceConfig;
 
   protected ReferenceConfig referenceConfig;
 
-  protected String versionRule = DefinitionConst.VERSION_RULE_ALL;
+  protected String versionRule = null;//DefinitionConst.VERSION_RULE_ALL;
 
   protected RoutingContext routingContext;
 
@@ -65,33 +61,24 @@ public class EdgeInvocation extends AbstractRestInvocation {
   }
 
   public void edgeInvoke() {
-    findMicroserviceVersionMeta();
-    findRestOperation(latestMicroserviceVersionMeta.getMicroserviceMeta());
-
-    scheduleInvocation();
+    findMicroserviceVersionMeta().whenCompleteAsync((r, e) -> {
+      if (e != null) {
+        sendFailResponse(e);
+      } else {
+        try {
+          microserviceReferenceConfig = r;
+          findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
+          scheduleInvocation();
+        } catch (Throwable error) {
+          sendFailResponse(error);
+        }
+      }
+    }, VertxContextExecutor.create(Vertx.currentContext()));
   }
 
-  protected void findMicroserviceVersionMeta() {
-    String versionRule = chooseVersionRule();
-
-    String appId = RegistryUtils.getAppId();
-    int idxAt = microserviceName.indexOf(org.apache.servicecomb.serviceregistry.api.Const.APP_SERVICE_SEPARATOR);
-    if (idxAt != -1) {
-      appId = microserviceName.substring(0, idxAt);
-    }
-
-    microserviceVersionRule = RegistryUtils.getServiceRegistry()
-        .getAppManager()
-        .getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
-    latestMicroserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
-
-    if (latestMicroserviceVersionMeta == null) {
-      throw new ServiceCombException(
-          String.format("Failed to find latest MicroserviceVersionMeta, appId=%s, microserviceName=%s, versionRule=%s.",
-              appId,
-              microserviceName,
-              versionRule));
-    }
+  protected CompletableFuture<MicroserviceReferenceConfig> findMicroserviceVersionMeta() {
+    return SCBEngine.getInstance()
+        .createMicroserviceReferenceConfigAsync(microserviceName, chooseVersionRule());
   }
 
   public void setVersionRule(String versionRule) {
@@ -105,7 +92,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   //   v1->1.0.0-2.0.0
   //   v2->2.0.0-3.0.0
   // that means if a(1.x.x) bigger then b(1.y.y), then a compatible to b
-  //        but a(2.x.x) not compatible to b   
+  //        but a(2.x.x) not compatible to b
   protected String chooseVersionRule() {
     // this will use all instance of the microservice
     // and this required all new version compatible to old version
@@ -119,17 +106,22 @@ public class EdgeInvocation extends AbstractRestInvocation {
 
   @Override
   protected void createInvocation() {
-    ReferenceConfig referenceConfig = new ReferenceConfig();
-    referenceConfig.setMicroserviceVersionRule(microserviceVersionRule);
-    referenceConfig.setTransport(Const.ANY_TRANSPORT);
+    ReferenceConfig referenceConfig = microserviceReferenceConfig
+        .createReferenceConfig(restOperationMeta.getOperationMeta());
 
     this.invocation = InvocationFactory.forConsumer(referenceConfig,
         restOperationMeta.getOperationMeta(),
+        restOperationMeta.getOperationMeta().buildBaseConsumerRuntimeType(),
         null);
     this.invocation.setSync(false);
     this.invocation.setEdge(true);
     this.invocation.getHandlerContext().put(EDGE_INVOCATION_CONTEXT, Vertx.currentContext());
     this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
     this.routingContext.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
+  }
+
+  @Override
+  protected void setContext() throws Exception {
+    // do not read InvocationContext from HTTP header, for security reason
   }
 }

@@ -16,14 +16,16 @@
  */
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class OperationPerf {
   private String operation;
 
   private Map<String, PerfInfo> stages = new HashMap<>();
+
+  private Integer[] latencyDistribution;
 
   public String getOperation() {
     return operation;
@@ -37,6 +39,14 @@ public class OperationPerf {
     return stages;
   }
 
+  public Integer[] getLatencyDistribution() {
+    return latencyDistribution;
+  }
+
+  public void setLatencyDistribution(Integer[] latencyDistribution) {
+    this.latencyDistribution = latencyDistribution;
+  }
+
   public void setStages(Map<String, PerfInfo> stages) {
     this.stages = stages;
   }
@@ -46,11 +56,21 @@ public class OperationPerf {
   }
 
   public void add(OperationPerf operationPerf) {
-    for (Entry<String, PerfInfo> entry : operationPerf.stages.entrySet()) {
-      PerfInfo perfInfo = stages.computeIfAbsent(entry.getKey(), n -> {
-        return new PerfInfo();
-      });
-      perfInfo.add(entry.getValue());
+    operationPerf.stages.forEach((key, value) -> {
+      PerfInfo perfInfo = stages.computeIfAbsent(key, n -> new PerfInfo());
+      perfInfo.add(value);
+    });
+
+    if (operationPerf.getLatencyDistribution() == null) {
+      return;
+    }
+
+    if (latencyDistribution == null) {
+      latencyDistribution = new Integer[operationPerf.getLatencyDistribution().length];
+      Arrays.fill(latencyDistribution, 0);
+    }
+    for (int idx = 0; idx < operationPerf.getLatencyDistribution().length; idx++) {
+      latencyDistribution[idx] += operationPerf.getLatencyDistribution()[idx];
     }
   }
 }

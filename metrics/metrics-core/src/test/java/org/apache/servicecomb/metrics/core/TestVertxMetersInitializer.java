@@ -19,16 +19,15 @@ package org.apache.servicecomb.metrics.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.core.transport.TransportVertxFactory;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,11 +41,13 @@ import com.netflix.spectator.api.Registry;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import mockit.Expectations;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxMetersInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
@@ -54,8 +55,6 @@ public class TestVertxMetersInitializer {
   Registry registry = new DefaultRegistry(globalRegistry.getClock());
 
   EventBus eventBus = new EventBus();
-
-  TransportVertxFactory transportVertxFactory;
 
   VertxMetersInitializer vertxMetersInitializer = new VertxMetersInitializer();
 
@@ -67,7 +66,7 @@ public class TestVertxMetersInitializer {
 
   public static class TestServerVerticle extends AbstractVerticle {
     @Override
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startPromise) {
       Router mainRouter = Router.router(vertx);
       mainRouter.route("/").handler(context -> {
         context.response().end(context.getBody());
@@ -78,55 +77,53 @@ public class TestVertxMetersInitializer {
       server.listen(0, "0.0.0.0", ar -> {
         if (ar.succeeded()) {
           port = ar.result().actualPort();
-          startFuture.complete();
+          startPromise.complete();
           return;
         }
 
-        startFuture.fail(ar.cause());
+        startPromise.fail(ar.cause());
       });
     }
   }
 
   public static class TestClientVerticle extends AbstractVerticle {
-    @SuppressWarnings("deprecation")
     @Override
-    public void start(Future<Void> startFuture) {
+    public void start(Promise<Void> startPromise) {
       HttpClient client = vertx.createHttpClient();
-      client.post(port, "127.0.0.1", "/").handler(resp -> {
-        resp.bodyHandler((buffer) -> {
-          startFuture.complete();
-        });
-      }).end(body);
+      client.request(HttpMethod.GET, port, "127.0.0.1", "/", ar -> {
+        if (ar.succeeded()) {
+          HttpClientRequest request = ar.result();
+          request.send(body, resp -> {
+            if (resp.succeeded()) {
+              resp.result().bodyHandler((buffer) -> {
+                startPromise.complete();
+              });
+            }
+          });
+        }
+      });
     }
   }
 
   @Before
   public void setup() {
-    VertxUtils.blockCloseVertxByName("transport");
+    HttpClients.load();
   }
 
   @After
   public void teardown() {
-    VertxUtils.blockCloseVertxByName("transport");
+    HttpClients.destroy();
   }
 
   @Test
   public void init() throws InterruptedException {
-    transportVertxFactory = new TransportVertxFactory();
-    new Expectations(AbstractTransport.class) {
-      {
-        AbstractTransport.getTransportVertxFactory();
-        result = transportVertxFactory;
-      }
-    };
-
     globalRegistry.add(registry);
     vertxMetersInitializer.init(globalRegistry, eventBus, null);
     logPublisher.init(null, eventBus, null);
     VertxUtils
-        .blockDeploy(transportVertxFactory.getTransportVertx(), TestServerVerticle.class, new DeploymentOptions());
+        .blockDeploy(SharedVertxFactory.getSharedVertx(), TestServerVerticle.class, new DeploymentOptions());
     VertxUtils
-        .blockDeploy(transportVertxFactory.getTransportVertx(), TestClientVerticle.class, new DeploymentOptions());
+        .blockDeploy(SharedVertxFactory.getSharedVertx(), TestClientVerticle.class, new DeploymentOptions());
 
     globalRegistry.poll(1);
     List<Meter> meters = Lists.newArrayList(registry.iterator());
@@ -155,24 +152,44 @@ public class TestVertxMetersInitializer {
     int idx = actual.indexOf("vertx:\n");
     actual = actual.substring(idx);
 
+    String clientLatency;
+    String serverLatency;
+
     String expect = "vertx:\n"
         + "  instances:\n"
         + "    name       eventLoopContext-created\n"
-        + "    transport  4\n"
-        + "  transport:\n"
-        + "    client.endpoints:\n"
-        + "      remote                connectCount    disconnectCount connections     send(Bps)    receive(Bps)\n";
-    if (printDetail) {
-      expect += String.format(
-          "      127.0.0.1:%-5s       1               0               1               4            21          \n",
-          port);
-    }
-    expect += "      (summary)             1               0               1               4            21          \n"
-        + "    server.endpoints:\n"
-        + "      listen                connectCount    disconnectCount rejectByLimit   connections  send(Bps)    receive(Bps)\n"
-        + "      0.0.0.0:0             1               0               0               1            21           4           \n"
-        + "      (summary)             1               0               0               1            21           4           \n\n";
+        + "    registry   0\n"
+        + "    registry-watch 0\n"
+        + "    transport  0\n"
+        + "  transport:\n";
 
-    Assert.assertEquals(expect, actual);
+    int clientLatencyIndex = actual.indexOf("1            0               0             1           1        ")
+        + "1            0               0             1           1        ".length();
+    clientLatency = actual.substring(clientLatencyIndex, actual.indexOf(" ", clientLatencyIndex));
+    int serverLatencyIndex = actual.lastIndexOf("1            0               0             1           1        ")
+        + "1            0               0             1           1        ".length();
+    serverLatency = actual.substring(serverLatencyIndex, actual.indexOf(" ", serverLatencyIndex));
+    int portSize = String.valueOf(port).length();
+    // in new vert.x version, bytes written must be higher than 4K or will be zero
+    if (printDetail) {
+      expect = expect + "    client.endpoints:\n"
+          + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
+      expect +=
+          "      1            0               0             1           1        %-7s 4         21           http://127.0.0.1:%-"
+              + portSize + "s\n";
+    }
+    expect += ""
+        + "    server.endpoints:\n"
+        + "      connectCount disconnectCount rejectByLimit connections requests latency send(Bps) receive(Bps) listen\n"
+        + "      1            0               0             1           1        %-7s 21        4            0.0.0.0:0\n\n";
+
+    if (printDetail) {
+      expect = String
+          .format(expect, clientLatency, port, serverLatency);
+    } else {
+      expect = String.format(expect, serverLatency);
+    }
+
+    Assertions.assertEquals(expect, actual);
   }
 }

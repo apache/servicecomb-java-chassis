@@ -17,26 +17,29 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Operation;
 import io.swagger.models.Scheme;
 import io.swagger.util.BaseReaderUtils;
 
-public class ApiOperationProcessor implements MethodAnnotationProcessor {
-
+public class ApiOperationProcessor implements MethodAnnotationProcessor<ApiOperation> {
   private static final String SEPARATOR = ",";
 
+  public Type getProcessType() {
+    return ApiOperation.class;
+  }
+
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    ApiOperation apiOperationAnnotation = (ApiOperation) annotation;
+  public void process(SwaggerGenerator swaggerGenerator,
+      OperationGenerator operationGenerator, ApiOperation apiOperationAnnotation) {
     Operation operation = operationGenerator.getOperation();
 
     operationGenerator.setHttpMethod(apiOperationAnnotation.httpMethod());
@@ -53,10 +56,10 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor {
     operation.getVendorExtensions().putAll(BaseReaderUtils.parseExtensions(apiOperationAnnotation.extensions()));
 
     convertTags(apiOperationAnnotation.tags(), operation);
-    convertProduces(apiOperationAnnotation.produces(), operation);
-    convertConsumes(apiOperationAnnotation.consumes(), operation);
+    SwaggerUtils.setCommaConsumes(operation, apiOperationAnnotation.consumes());
+    SwaggerUtils.setCommaProduces(operation, apiOperationAnnotation.produces());
     convertProtocols(apiOperationAnnotation.protocols(), operation);
-    AnnotationUtils.addResponse(operationGenerator.getSwagger(),
+    AnnotationUtils.addResponse(swaggerGenerator.getSwagger(),
         operation,
         apiOperationAnnotation);
 
@@ -77,32 +80,6 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor {
       }
 
       operation.addScheme(Scheme.forValue(protocol));
-    }
-  }
-
-  // consumes以分号为创建，比如：application/json, application/xml
-  private void convertConsumes(String consumes, Operation operation) {
-    if (StringUtils.isEmpty(consumes)) {
-      return;
-    }
-
-    List<String> consumeList = Arrays.stream(consumes.split(SEPARATOR)).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!consumeList.isEmpty()) {
-      operation.setConsumes(consumeList);
-    }
-  }
-
-  // produces以分号为创建，比如：application/json, application/xml
-  private void convertProduces(String produces, Operation operation) {
-    if (StringUtils.isEmpty(produces)) {
-      return;
-    }
-
-    List<String> produceList = Arrays.stream(produces.split(SEPARATOR)).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!produceList.isEmpty()) {
-      operation.setProduces(produceList);
     }
   }
 

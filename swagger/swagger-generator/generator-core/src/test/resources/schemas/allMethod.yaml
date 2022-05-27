@@ -27,6 +27,125 @@ consumes:
 produces:
 - "application/json"
 paths:
+  /ignoreRequest:
+    post:
+      operationId: "ignoreRequest"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/ignoreRequestBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /nestedListString:
+    post:
+      operationId: "nestedListString"
+      parameters:
+      - in: "body"
+        name: "param"
+        required: false
+        schema:
+          $ref: "#/definitions/nestedListStringBody"
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              type: "array"
+              items:
+                type: "string"
+  /part:
+    post:
+      operationId: "part"
+      consumes:
+      - "multipart/form-data"
+      parameters:
+      - name: "part"
+        in: "formData"
+        required: false
+        type: "file"
+      responses:
+        "200":
+          description: "response of 200"
+  /partArray:
+    post:
+      operationId: "partArray"
+      consumes:
+      - "multipart/form-data"
+      parameters:
+      - name: "part"
+        in: "formData"
+        required: false
+        type: "array"
+        items:
+          type: "file"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "response of 200"
+  /partList:
+    post:
+      operationId: "partList"
+      consumes:
+      - "multipart/form-data"
+      parameters:
+      - name: "part"
+        in: "formData"
+        required: false
+        type: "array"
+        items:
+          type: "file"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "response of 200"
+  /testAllType:
+    post:
+      operationId: "testAllType"
+      parameters:
+      - in: "body"
+        name: "obj"
+        required: false
+        schema:
+          $ref: "#/definitions/AllType"
+      responses:
+        "200":
+          description: "response of 200"
+  /testApiOperation:
+    post:
+      operationId: "testApiOperation"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          headers:
+            h:
+              type: "string"
+  /testApiResponse:
+    post:
+      operationId: "testApiResponse"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          headers:
+            h:
+              type: "string"
+  /testArray:
+    post:
+      operationId: "testArray"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testArrayBody"
+      responses:
+        "200":
+          description: "response of 200"
   /testBoolean:
     post:
       operationId: "testBoolean"
@@ -37,7 +156,107 @@ paths:
         schema:
           $ref: "#/definitions/testBooleanBody"
       responses:
-        200:
+        "200":
+          description: "response of 200"
+  /testByte:
+    post:
+      operationId: "testByte"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testByteBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testBytes:
+    post:
+      operationId: "testBytes"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testBytesBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testChar:
+    post:
+      operationId: "testChar"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testCharBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testCompletableFuture:
+    post:
+      operationId: "testCompletableFuture"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "string"
+  /testCompletableFutureOptional:
+    post:
+      operationId: "testCompletableFutureOptional"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "string"
+  /testDate:
+    post:
+      operationId: "testDate"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "string"
+            format: "date-time"
+  /testDouble:
+    post:
+      operationId: "testDouble"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testDoubleBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testEnum:
+    post:
+      operationId: "testEnum"
+      parameters:
+      - in: "body"
+        name: "testEnumBody"
+        required: false
+        schema:
+          $ref: "#/definitions/testEnumBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testFloat:
+    post:
+      operationId: "testFloat"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testFloatBody"
+      responses:
+        "200":
           description: "response of 200"
   /testInteger:
     post:
@@ -49,55 +268,19 @@ paths:
         schema:
           $ref: "#/definitions/testIntegerBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
-  /testchar:
+  /testList:
     post:
-      operationId: "testchar"
+      operationId: "testList"
       parameters:
       - in: "body"
         name: "value"
         required: false
         schema:
-          $ref: "#/definitions/testcharBody"
+          $ref: "#/definitions/testListBody"
       responses:
-        200:
-          description: "response of 200"
-  /testSet:
-    post:
-      operationId: "testSet"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testSetBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testbytes:
-    post:
-      operationId: "testbytes"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testbytesBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testfloat:
-    post:
-      operationId: "testfloat"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testfloatBody"
-      responses:
-        200:
+        "200":
           description: "response of 200"
   /testLong:
     post:
@@ -109,29 +292,31 @@ paths:
         schema:
           $ref: "#/definitions/testLongBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
-  /testApiResponse:
+  /testMap:
     post:
-      operationId: "testApiResponse"
-      parameters: []
-      responses:
-        200:
-          description: "response of 200"
-          headers:
-            h:
-              type: "string"
-  /testChar:
-    post:
-      operationId: "testChar"
+      operationId: "testMap"
       parameters:
       - in: "body"
         name: "value"
         required: false
         schema:
-          $ref: "#/definitions/testCharBody"
+          $ref: "#/definitions/testMapBody"
       responses:
-        200:
+        "200":
+          description: "response of 200"
+  /testMapList:
+    post:
+      operationId: "testMapList"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testMapListBody"
+      responses:
+        "200":
           description: "response of 200"
   /testMultiParam:
     post:
@@ -143,7 +328,7 @@ paths:
         schema:
           $ref: "#/definitions/testMultiParamBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -159,180 +344,50 @@ paths:
         schema:
           $ref: "#/definitions/User"
       responses:
-        200:
+        "200":
           description: "response of 200"
-  /testshort:
+  /testOneEnum:
     post:
-      operationId: "testshort"
+      operationId: "testOneEnum"
       parameters:
       - in: "body"
-        name: "value"
+        name: "color"
         required: false
         schema:
-          $ref: "#/definitions/testshortBody"
+          $ref: "#/definitions/testOneEnumBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
-  /testdouble:
+  /testOptional:
     post:
-      operationId: "testdouble"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testdoubleBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testMap:
-    post:
-      operationId: "testMap"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testMapBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testMapList:
-    post:
-      operationId: "testMapList"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testMapListBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testCompletableFuture:
-    post:
-      operationId: "testCompletableFuture"
+      operationId: "testOptional"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
-  /testDouble:
-    post:
-      operationId: "testDouble"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testDoubleBody"
-      responses:
-        200:
-          description: "response of 200"
   /testResponseHeader:
     post:
       operationId: "testResponseHeader"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           headers:
             h:
               type: "string"
-  /testApiOperation:
+  /testSet:
     post:
-      operationId: "testApiOperation"
-      parameters: []
-      responses:
-        200:
-          description: "response of 200"
-          headers:
-            h:
-              type: "string"
-  /testArray:
-    post:
-      operationId: "testArray"
+      operationId: "testSet"
       parameters:
       - in: "body"
         name: "value"
         required: false
         schema:
-          $ref: "#/definitions/testArrayBody"
+          $ref: "#/definitions/testSetBody"
       responses:
-        200:
-          description: "response of 200"
-  /testByte:
-    post:
-      operationId: "testByte"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testByteBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testboolean:
-    post:
-      operationId: "testboolean"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testbooleanBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testint:
-    post:
-      operationId: "testint"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testintBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testBytes:
-    post:
-      operationId: "testBytes"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testBytesBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testEnum:
-    post:
-      operationId: "testEnum"
-      parameters:
-      - in: "body"
-        name: "testEnumBody"
-        required: false
-        schema:
-          $ref: "#/definitions/testEnumBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testFloat:
-    post:
-      operationId: "testFloat"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testFloatBody"
-      responses:
-        200:
+        "200":
           description: "response of 200"
   /testShort:
     post:
@@ -344,43 +399,7 @@ paths:
         schema:
           $ref: "#/definitions/testShortBody"
       responses:
-        200:
-          description: "response of 200"
-  /testList:
-    post:
-      operationId: "testList"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testListBody"
-      responses:
-        200:
-          description: "response of 200"
-  /testAllType:
-    post:
-      operationId: "testAllType"
-      parameters:
-      - in: "body"
-        name: "obj"
-        required: false
-        schema:
-          $ref: "#/definitions/AllType"
-      responses:
-        200:
-          description: "response of 200"
-  /testbyte:
-    post:
-      operationId: "testbyte"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testbyteBody"
-      responses:
-        200:
+        "200":
           description: "response of 200"
   /testString:
     post:
@@ -392,18 +411,92 @@ paths:
         schema:
           $ref: "#/definitions/testStringBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
-  /testDate:
+  /testboolean:
     post:
-      operationId: "testDate"
-      parameters: []
+      operationId: "testboolean"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbooleanBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
-          schema:
-            type: "string"
-            format: "date-time"
+  /testbyte:
+    post:
+      operationId: "testbyte"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbyteBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testbytes:
+    post:
+      operationId: "testbytes"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testbytesBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testchar:
+    post:
+      operationId: "testchar"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testcharBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testdouble:
+    post:
+      operationId: "testdouble"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testdoubleBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testfloat:
+    post:
+      operationId: "testfloat"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testfloatBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /testint:
+    post:
+      operationId: "testint"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testintBody"
+      responses:
+        "200":
+          description: "response of 200"
   /testlong:
     post:
       operationId: "testlong"
@@ -414,9 +507,48 @@ paths:
         schema:
           $ref: "#/definitions/testlongBody"
       responses:
-        200:
+        "200":
+          description: "response of 200"
+  /testshort:
+    post:
+      operationId: "testshort"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/testshortBody"
+      responses:
+        "200":
+          description: "response of 200"
+  /wrapToBodyWithDesc:
+    post:
+      operationId: "wrapToBodyWithDesc"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/wrapToBodyWithDescBody"
+      responses:
+        "200":
           description: "response of 200"
 definitions:
+  ignoreRequestBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+  nestedListStringBody:
+    type: "object"
+    properties:
+      param:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "string"
   AllType:
     type: "object"
     properties:
@@ -460,6 +592,7 @@ definitions:
         format: "double"
       enumValue:
         type: "string"
+        description: "- RED: \n- YELLOW: \n- BLUE: \n"
         enum:
         - "RED"
         - "YELLOW"
@@ -649,6 +782,16 @@ definitions:
         additionalProperties:
           $ref: "#/definitions/User"
     x-java-class: "gen.cse.ms.ut.testMultiParamBody"
+  testOneEnumBody:
+    type: "object"
+    properties:
+      color:
+        type: "string"
+        enum:
+        - "RED"
+        - "YELLOW"
+        - "BLUE"
+        x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
   testSetBody:
     type: "object"
     properties:
@@ -720,3 +863,10 @@ definitions:
       value:
         type: "integer"
         format: "int16"
+  wrapToBodyWithDescBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+        description: "desc"

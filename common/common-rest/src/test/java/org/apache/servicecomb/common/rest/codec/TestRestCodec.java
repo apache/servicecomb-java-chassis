@@ -34,7 +34,7 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -48,7 +48,7 @@ public class TestRestCodec {
 
   private static RestOperationMeta restOperation;
 
-  private static Map<String, String> header = new HashMap<>();
+  private static final Map<String, String> header = new HashMap<>();
 
   private static RestClientRequest clientRequest = new RestClientRequestImpl(null, null, null) {
     public void putHeader(String name, String value) {
@@ -60,14 +60,18 @@ public class TestRestCodec {
 
   @BeforeClass
   public static void beforeClass() {
+    Parameter hp = new HeaderParameter();
+    hp.setName("header");
+    RestParam restParam = new RestParam(hp, int.class);
+
     restOperation = Mockito.mock(RestOperationMeta.class);
     //        clientRequest = Mockito.mock(RestClientRequest.class);
     paramList = new ArrayList<>();
 
-    Parameter hp = new HeaderParameter();
-    hp.setName("header");
-    paramList.add(new RestParam(0, hp, int.class));
+
+    paramList.add(restParam);
     when(restOperation.getParamList()).thenReturn(paramList);
+    when(restOperation.getParamByName("test")).thenReturn(restParam);
   }
 
   @AfterClass
@@ -80,10 +84,13 @@ public class TestRestCodec {
   @Test
   public void testArgsToRest() {
     try {
-      RestCodec.argsToRest(new String[] {"abc"}, restOperation, clientRequest);
-      Assert.assertEquals("abc", header.get("header"));
+      Map<String, Object> args = new HashMap<>();
+      args.put("header", "abc");
+      RestCodec.argsToRest(args, restOperation, clientRequest);
+      Assertions.assertEquals("abc", header.get("header"));
     } catch (Exception e) {
-      Assert.assertTrue(false);
+      e.printStackTrace();
+      Assertions.fail();
     }
   }
 
@@ -103,11 +110,13 @@ public class TestRestCodec {
         result = processer;
         processer.getValue(request);
         result = s;
+        restParam.getParamName();
+        result = "test";
       }
     };
 
-    Object[] xx = RestCodec.restToArgs(request, restOperation);
-    Assert.assertEquals(xx[0], s);
+    Map<String, Object> xx = RestCodec.restToArgs(request, restOperation);
+    Assertions.assertEquals(xx.get("test"), s);
   }
 
   @Test
@@ -133,10 +142,10 @@ public class TestRestCodec {
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {
-      Assert.assertEquals(400, e.getStatusCode());
-      Assert.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
+      Assertions.assertEquals(400, e.getStatusCode());
+      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
     }
-    Assert.assertEquals(success, false);
+    Assertions.assertFalse(success);
   }
 
   @Test
@@ -163,8 +172,8 @@ public class TestRestCodec {
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {
-      Assert.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
+      Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
     }
-    Assert.assertEquals(success, false);
+    Assertions.assertFalse(success);
   }
 }

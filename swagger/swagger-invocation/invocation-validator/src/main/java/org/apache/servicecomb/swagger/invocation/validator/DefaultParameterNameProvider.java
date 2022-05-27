@@ -20,15 +20,15 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.ParameterNameProvider;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
-
 
 public class DefaultParameterNameProvider implements ParameterNameProvider {
   private final Map<AccessibleObject, List<String>> methodCache = new ConcurrentHashMapEx<>();
@@ -44,11 +44,12 @@ public class DefaultParameterNameProvider implements ParameterNameProvider {
   }
 
   private List<String> getParameterNamesEx(Executable methodOrConstructor) {
-    int parameterCount = methodOrConstructor.getParameterCount();
-    List<String> parameterNames = new ArrayList<>(parameterCount);
-
-    for (int i = 0; i < parameterCount; i++) {
-      parameterNames.add(ParamUtils.getParameterName(methodOrConstructor, i));
+    Parameter[] parameters = methodOrConstructor.getParameters();
+    List<String> parameterNames = new ArrayList<>(parameters.length);
+    for (int idx = 0; idx < parameters.length; idx++) {
+      Parameter parameter = parameters[idx];
+      String parameterName = parameter.isNamePresent() ? parameter.getName() : "arg" + idx;
+      parameterNames.add(parameterName);
     }
     return Collections.unmodifiableList(parameterNames);
   }

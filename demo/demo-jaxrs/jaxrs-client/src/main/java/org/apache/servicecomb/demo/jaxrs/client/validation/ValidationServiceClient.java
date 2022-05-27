@@ -21,9 +21,10 @@ import java.util.ArrayList;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.validation.ValidationModel;
+import org.apache.servicecomb.demo.validator.Teacher;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +36,7 @@ public class ValidationServiceClient {
 
   public static void run() {
     // highway do not support this feature
-    CseContext.getInstance().getConsumerProviderManager().setTransport("jaxrs", "rest");
+    ArchaiusUtils.setProperty("servicecomb.references.transport.jaxrs", "rest");
     testValidation();
   }
 
@@ -70,8 +71,8 @@ public class ValidationServiceClient {
       TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.members"), true);
     }
 
-    String strResult = template.getForObject(urlPrefix + "/validateQuery?name=", String.class);
-    TestMgr.check(strResult, "");
+    String strResult = template.getForObject(urlPrefix + "/validateQuery?name=a", String.class);
+    TestMgr.check(strResult, "a");
 
     try {
       template.getForObject(urlPrefix + "/validateQuery", String.class);
@@ -79,7 +80,29 @@ public class ValidationServiceClient {
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(e.getErrorData().toString().contains("propertyPath=queryValidate.name"), true);
+      TestMgr.check(e.getErrorData().toString().contains("Parameter is not valid for operation"), true);
     }
+
+    try {
+      Teacher teacher = new Teacher();
+      teacher.setName("teacher");
+      teacher.setAge("20");
+      Teacher response = template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
+      TestMgr.check(response.getName(), "teacher");
+    } catch (InvocationException e) {
+      TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
+    }
+
+    try {
+      Teacher teacher = new Teacher();
+      teacher.setAge("20");
+      template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
+      TestMgr.fail("Name should not empty");
+    } catch (InvocationException e) {
+      TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
+    }
+
   }
 }

@@ -21,23 +21,21 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class TestSpringmvcProducerResponseMapperFactory {
   SpringmvcProducerResponseMapperFactory factory = new SpringmvcProducerResponseMapperFactory();
 
-  ConverterMgr converterMgr = new ConverterMgr();
-
-  ResponseMapperFactorys<ProducerResponseMapper> factorys =
-      new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class, converterMgr);
+  ResponseMapperFactorys<ProducerResponseMapper> factorys = new ResponseMapperFactorys<>(
+      ProducerResponseMapperFactory.class);
 
   public ResponseEntity<String[]> responseEntity() {
     return null;
@@ -50,31 +48,30 @@ public class TestSpringmvcProducerResponseMapperFactory {
   @Test
   public void isMatch_true() {
     Method method = ReflectUtils.findMethod(this.getClass(), "responseEntity");
-    Assert.assertTrue(factory.isMatch(null, method.getGenericReturnType()));
+    Assertions.assertTrue(factory.isMatch(method.getGenericReturnType()));
   }
 
   @Test
   public void isMatch_Parameterized_false() {
     Method method = ReflectUtils.findMethod(this.getClass(), "list");
-    Assert.assertFalse(factory.isMatch(null, method.getGenericReturnType()));
+    Assertions.assertFalse(factory.isMatch(method.getGenericReturnType()));
   }
 
   @Test
   public void isMatch_false() {
-    Assert.assertFalse(factory.isMatch(null, String.class));
+    Assertions.assertFalse(factory.isMatch(String.class));
   }
 
   @Test
   public void createResponseMapper() {
     Method responseEntityMethod = ReflectUtils.findMethod(this.getClass(), "responseEntity");
-    Method listMethod = ReflectUtils.findMethod(this.getClass(), "list");
 
     ProducerResponseMapper mapper = factory
-        .createResponseMapper(factorys, listMethod.getGenericReturnType(), responseEntityMethod.getGenericReturnType());
-    Assert.assertThat(mapper, Matchers.instanceOf(SpringmvcProducerResponseMapper.class));
+        .createResponseMapper(factorys, responseEntityMethod.getGenericReturnType());
+    MatcherAssert.assertThat(mapper, Matchers.instanceOf(SpringmvcProducerResponseMapper.class));
 
-    ResponseEntity<String[]> responseEntity = new ResponseEntity<String[]>(new String[] {"a", "b"}, HttpStatus.OK);
+    ResponseEntity<String[]> responseEntity = new ResponseEntity<>(new String[] {"a", "b"}, HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
-    Assert.assertThat(response.getResult(), Matchers.contains("a", "b"));
+    MatcherAssert.assertThat(response.getResult(), Matchers.arrayContaining("a", "b"));
   }
 }

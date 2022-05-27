@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import com.netflix.spectator.api.Tag;
 
 public class DefaultTagFinder implements TagFinder {
-  private String tagKey;
+  private final String tagKey;
 
   private boolean skipOnNull;
 

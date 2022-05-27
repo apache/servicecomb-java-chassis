@@ -51,8 +51,6 @@ public final class Configuration {
   // following items only supports consumer
   private static final String FALLBACK = "servicecomb.fallback.";
 
-  private static final String FALLBACK_ENABLED = "enabled";
-
   private static final String FALLBACK_FORCE = "force";
 
   private static final String FALLBACK_MAX_CONCURRENT_REQUESTS = "maxConcurrentRequests";
@@ -194,14 +192,6 @@ public final class Configuration {
     } catch (NumberFormatException e) {
       return DEFAULT_THRESHOLD_PERCENTAGE;
     }
-  }
-
-  public boolean isFallbackEnabled(String type, String microserviceName, String qualifiedOperationName) {
-    String p = getProperty("true",
-        FALLBACK + type + "." + qualifiedOperationName + "." + FALLBACK_ENABLED,
-        FALLBACK + type + "." + microserviceName + "." + FALLBACK_ENABLED,
-        FALLBACK + type + "." + FALLBACK_ENABLED);
-    return Boolean.parseBoolean(p);
   }
 
   public boolean isFallbackForce(String type, String microserviceName, String qualifiedOperationName) {

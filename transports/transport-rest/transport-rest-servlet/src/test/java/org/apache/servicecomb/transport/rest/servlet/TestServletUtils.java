@@ -37,11 +37,12 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +50,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServletUtils {
   @Before
@@ -74,9 +76,9 @@ public class TestServletUtils {
   public void testCheckUrlPatternMiddleWideChar() {
     try {
       ServletUtils.checkUrlPattern("/abc/*def");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
+      Assertions.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
     }
   }
 
@@ -84,9 +86,9 @@ public class TestServletUtils {
   public void testCheckUrlPatternNoWideChar() {
     try {
       ServletUtils.checkUrlPattern("/abcdef");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
+      Assertions.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
     }
   }
 
@@ -94,9 +96,9 @@ public class TestServletUtils {
   public void testCheckUrlPatternNotStartWithSlash() {
     try {
       ServletUtils.checkUrlPattern("abcdef/*");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
+      Assertions.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
     }
   }
 
@@ -106,17 +108,17 @@ public class TestServletUtils {
 
     Collection<String> urlPatterns = Arrays.asList(urlPattern);
     String[] result = ServletUtils.filterUrlPatterns(urlPatterns);
-    Assert.assertThat(result, Matchers.arrayContaining("/r1/*"));
+    MatcherAssert.assertThat(result, Matchers.arrayContaining("/r1/*"));
 
     result = ServletUtils.filterUrlPatterns(urlPattern);
-    Assert.assertThat(result, Matchers.arrayContaining("/r1/*"));
+    MatcherAssert.assertThat(result, Matchers.arrayContaining("/r1/*"));
   }
 
   @Test
   public void testFilterUrlPatternsEmpty() {
     Collection<String> urlPatterns = Arrays.asList(" ", "\t");
     String[] result = ServletUtils.filterUrlPatterns(urlPatterns);
-    Assert.assertThat(result, Matchers.emptyArray());
+    MatcherAssert.assertThat(result, Matchers.emptyArray());
   }
 
   @Test
@@ -124,9 +126,9 @@ public class TestServletUtils {
     Collection<String> urlPatterns = Arrays.asList("/abc");
     try {
       ServletUtils.filterUrlPatterns(urlPatterns);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
+      Assertions.assertEquals("only support rule like /* or /path/* or /path1/path2/* and so on.", e.getMessage());
     }
   }
 
@@ -143,7 +145,7 @@ public class TestServletUtils {
     };
 
     String[] result = ServletUtils.collectUrlPatterns(servletContext, RestServlet.class);
-    Assert.assertThat(result, Matchers.emptyArray());
+    MatcherAssert.assertThat(result, Matchers.emptyArray());
   }
 
   @Test
@@ -169,23 +171,23 @@ public class TestServletUtils {
     };
 
     String[] result = ServletUtils.collectUrlPatterns(servletContext, RestServlet.class);
-    Assert.assertThat(result, Matchers.arrayContaining("/r1/*", "/r1/1/*"));
+    MatcherAssert.assertThat(result, Matchers.arrayContaining("/r1/*", "/r1/1/*"));
   }
 
   @Test
   public void testSaveUrlPrefixNull(@Mocked ServletContext servletContext) {
-    System.clearProperty(Const.URL_PREFIX);
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
 
     ServletUtils.saveUrlPrefix(servletContext);
 
-    Assert.assertNull(System.getProperty(Const.URL_PREFIX));
-    System.clearProperty(Const.URL_PREFIX);
+    Assertions.assertNull(ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX));
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 
   @Test
   public void testSaveUrlPrefixNormal(@Mocked ServletContext servletContext,
       @Mocked ServletRegistration servletRegistration) {
-    System.clearProperty(Const.URL_PREFIX);
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
     new Expectations() {
       {
         servletContext.getContextPath();
@@ -201,8 +203,9 @@ public class TestServletUtils {
 
     ServletUtils.saveUrlPrefix(servletContext);
 
-    Assert.assertThat(System.getProperty(Const.URL_PREFIX), Matchers.is("/root/rest"));
-    System.clearProperty(Const.URL_PREFIX);
+    MatcherAssert.assertThat(ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX),
+        Matchers.is("/root/rest"));
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 
   @Test
@@ -216,17 +219,17 @@ public class TestServletUtils {
     };
 
     File expectDir = new File(tempDir, "upload");
-    Assert.assertFalse(expectDir.exists());
+    Assertions.assertFalse(expectDir.exists());
 
     File dir = ServletUtils.createUploadDir(servletContext, "upload");
-    Assert.assertTrue(expectDir.exists());
-    Assert.assertEquals(expectDir.getAbsolutePath(), dir.getAbsolutePath());
+    Assertions.assertTrue(expectDir.exists());
+    Assertions.assertEquals(expectDir.getAbsolutePath(), dir.getAbsolutePath());
 
     dir.delete();
-    Assert.assertFalse(expectDir.exists());
+    Assertions.assertFalse(expectDir.exists());
 
     tempDir.delete();
-    Assert.assertFalse(tempDir.exists());
+    Assertions.assertFalse(tempDir.exists());
   }
 
   @Test
@@ -234,17 +237,17 @@ public class TestServletUtils {
     File tempDir = Files.createTempDirectory("temp").toFile();
 
     File expectDir = new File(tempDir, "upload");
-    Assert.assertFalse(expectDir.exists());
+    Assertions.assertFalse(expectDir.exists());
 
     File dir = ServletUtils.createUploadDir(servletContext, expectDir.getAbsolutePath());
-    Assert.assertTrue(expectDir.exists());
-    Assert.assertEquals(expectDir.getAbsolutePath(), dir.getAbsolutePath());
+    Assertions.assertTrue(expectDir.exists());
+    Assertions.assertEquals(expectDir.getAbsolutePath(), dir.getAbsolutePath());
 
     dir.delete();
-    Assert.assertFalse(expectDir.exists());
+    Assertions.assertFalse(expectDir.exists());
 
     tempDir.delete();
-    Assert.assertFalse(tempDir.exists());
+    Assertions.assertFalse(tempDir.exists());
   }
 
   @Test
@@ -284,16 +287,16 @@ public class TestServletUtils {
 
     ServletUtils.setServletParameters(servletContext);
 
-    Assert.assertEquals(1, multipartConfigs.size());
+    Assertions.assertEquals(1, multipartConfigs.size());
 
     MultipartConfigElement multipartConfigElement = multipartConfigs.get(0);
-    Assert.assertEquals(uploadDir.getAbsolutePath(), multipartConfigElement.getLocation());
-    Assert.assertEquals(-1, multipartConfigElement.getMaxFileSize());
-    Assert.assertEquals(-1, multipartConfigElement.getMaxRequestSize());
-    Assert.assertEquals(0, multipartConfigElement.getFileSizeThreshold());
+    Assertions.assertEquals(uploadDir.getAbsolutePath(), multipartConfigElement.getLocation());
+    Assertions.assertEquals(-1, multipartConfigElement.getMaxFileSize());
+    Assertions.assertEquals(-1, multipartConfigElement.getMaxRequestSize());
+    Assertions.assertEquals(0, multipartConfigElement.getFileSizeThreshold());
 
     uploadDir.delete();
     tempDir.delete();
-    Assert.assertFalse(tempDir.exists());
+    Assertions.assertFalse(tempDir.exists());
   }
 }

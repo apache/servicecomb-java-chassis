@@ -31,7 +31,7 @@ public class AnyRepeatedReadSchemas {
 
       collectionReader = (input, collection) -> {
         while (true) {
-          Object value = anyEntrySchema.deseriaze(input);
+          Object value = anyEntrySchema.deserialize(input);
           collection.add(value);
 
           int fieldNumber = input.readFieldNumber();

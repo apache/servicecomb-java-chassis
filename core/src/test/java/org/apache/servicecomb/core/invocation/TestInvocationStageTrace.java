@@ -16,17 +16,21 @@
  */
 package org.apache.servicecomb.core.invocation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationStageTrace {
   Invocation invocation;
@@ -42,7 +46,10 @@ public class TestInvocationStageTrace {
   @Mocked
   OperationMeta operationMeta;
 
-  Object[] args = new Object[] {};
+  @Mocked
+  InvocationRuntimeType invocationRuntimeType;
+
+  Map<String, Object> args = new HashMap<>();
 
   static long nanoTime = 0;
 
@@ -58,7 +65,7 @@ public class TestInvocationStageTrace {
 
   @Test
   public void consumer() {
-    invocation = new Invocation(referenceConfig, operationMeta, args);
+    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, args);
     stageTrace = new InvocationStageTrace(invocation);
 
     stageTrace.start(1);
@@ -67,8 +74,10 @@ public class TestInvocationStageTrace {
     nanoTime = 3;
     stageTrace.startClientFiltersRequest();
     nanoTime = 4;
+    stageTrace.startGetConnection();
     stageTrace.startSend();
-    stageTrace.finishGetConnection(5);
+    nanoTime = 5;
+    stageTrace.finishGetConnection();
     stageTrace.finishWriteToBuffer(6);
     nanoTime = 7;
     stageTrace.finishReceiveResponse();
@@ -81,29 +90,29 @@ public class TestInvocationStageTrace {
     nanoTime = 11;
     stageTrace.finish();
 
-    Assert.assertEquals(1, stageTrace.getStart());
-    Assert.assertEquals(2, stageTrace.getStartHandlersRequest());
-    Assert.assertEquals(3, stageTrace.getStartClientFiltersRequest());
-    Assert.assertEquals(4, stageTrace.getStartSend());
-    Assert.assertEquals(5, stageTrace.getFinishGetConnection());
-    Assert.assertEquals(6, stageTrace.getFinishWriteToBuffer());
-    Assert.assertEquals(7, stageTrace.getFinishReceiveResponse());
-    Assert.assertEquals(8, stageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(9, stageTrace.getFinishClientFiltersResponse());
-    Assert.assertEquals(10, stageTrace.getFinishHandlersResponse());
-    Assert.assertEquals(11, stageTrace.getFinish());
+    Assertions.assertEquals(1, stageTrace.getStart());
+    Assertions.assertEquals(2, stageTrace.getStartHandlersRequest());
+    Assertions.assertEquals(3, stageTrace.getStartClientFiltersRequest());
+    Assertions.assertEquals(4, stageTrace.getStartSend());
+    Assertions.assertEquals(5, stageTrace.getFinishGetConnection());
+    Assertions.assertEquals(6, stageTrace.getFinishWriteToBuffer());
+    Assertions.assertEquals(7, stageTrace.getFinishReceiveResponse());
+    Assertions.assertEquals(8, stageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(9, stageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals(10, stageTrace.getFinishHandlersResponse());
+    Assertions.assertEquals(11, stageTrace.getFinish());
 
-    Assert.assertEquals(1f, stageTrace.calcInvocationPrepareTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcHandlersRequestTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcClientFiltersRequestTime(), 0.1f);
-    Assert.assertEquals(2f, stageTrace.calcSendRequestTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcGetConnectionTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcWriteToBufferTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcReceiveResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcWakeConsumer(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcClientFiltersResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcHandlersResponseTime(), 0.1f);
-    Assert.assertEquals(10f, stageTrace.calcTotalTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcInvocationPrepareTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcHandlersRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcClientFiltersRequestTime(), 0.1f);
+    Assertions.assertEquals(2f, stageTrace.calcSendRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcGetConnectionTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcWriteToBufferTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcReceiveResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcWakeConsumer(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcClientFiltersResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcHandlersResponseTime(), 0.1f);
+    Assertions.assertEquals(10f, stageTrace.calcTotalTime(), 0.1f);
   }
 
   @Test
@@ -131,31 +140,31 @@ public class TestInvocationStageTrace {
     nanoTime = 10;
     stageTrace.finish();
 
-    Assert.assertEquals(1, stageTrace.getStart());
-    Assert.assertEquals(2, stageTrace.getStartSchedule());
-    Assert.assertEquals(3, stageTrace.getStartExecution());
-    Assert.assertEquals(4, stageTrace.getStartServerFiltersRequest());
-    Assert.assertEquals(5, stageTrace.getStartHandlersRequest());
-    Assert.assertEquals(6, stageTrace.getStartBusinessMethod());
-    Assert.assertEquals(7, stageTrace.getFinishBusiness());
-    Assert.assertEquals(8, stageTrace.getFinishHandlersResponse());
-    Assert.assertEquals(9, stageTrace.getFinishServerFiltersResponse());
-    Assert.assertEquals(10, stageTrace.getFinish());
+    Assertions.assertEquals(1, stageTrace.getStart());
+    Assertions.assertEquals(2, stageTrace.getStartSchedule());
+    Assertions.assertEquals(3, stageTrace.getStartExecution());
+    Assertions.assertEquals(4, stageTrace.getStartServerFiltersRequest());
+    Assertions.assertEquals(5, stageTrace.getStartHandlersRequest());
+    Assertions.assertEquals(6, stageTrace.getStartBusinessMethod());
+    Assertions.assertEquals(7, stageTrace.getFinishBusiness());
+    Assertions.assertEquals(8, stageTrace.getFinishHandlersResponse());
+    Assertions.assertEquals(9, stageTrace.getFinishServerFiltersResponse());
+    Assertions.assertEquals(10, stageTrace.getFinish());
 
-    Assert.assertEquals(1f, stageTrace.calcInvocationPrepareTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcThreadPoolQueueTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcServerFiltersRequestTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcHandlersRequestTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcBusinessTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcHandlersResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcServerFiltersResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcSendResponseTime(), 0.1f);
-    Assert.assertEquals(9f, stageTrace.calcTotalTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcInvocationPrepareTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcThreadPoolQueueTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcServerFiltersRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcHandlersRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcBusinessTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcHandlersResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcServerFiltersResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcSendResponseTime(), 0.1f);
+    Assertions.assertEquals(9f, stageTrace.calcTotalTime(), 0.1f);
   }
 
   @Test
   public void edge() {
-    invocation = new Invocation(referenceConfig, operationMeta, args);
+    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, args);
     stageTrace = new InvocationStageTrace(invocation);
     invocation.setEdge(true);
 
@@ -171,8 +180,10 @@ public class TestInvocationStageTrace {
     nanoTime = 6;
     stageTrace.startClientFiltersRequest();
     nanoTime = 7;
+    stageTrace.startGetConnection();
     stageTrace.startSend();
-    stageTrace.finishGetConnection(8);
+    nanoTime = 8;
+    stageTrace.finishGetConnection();
     stageTrace.finishWriteToBuffer(9);
     nanoTime = 10;
     stageTrace.finishReceiveResponse();
@@ -187,38 +198,38 @@ public class TestInvocationStageTrace {
     nanoTime = 15;
     stageTrace.finish();
 
-    Assert.assertEquals(1, stageTrace.getStart());
-    Assert.assertEquals(2, stageTrace.getStartSchedule());
-    Assert.assertEquals(3, stageTrace.getStartExecution());
-    Assert.assertEquals(4, stageTrace.getStartServerFiltersRequest());
-    Assert.assertEquals(5, stageTrace.getStartHandlersRequest());
-    Assert.assertEquals(6, stageTrace.getStartClientFiltersRequest());
-    Assert.assertEquals(7, stageTrace.getStartSend());
-    Assert.assertEquals(8, stageTrace.getFinishGetConnection());
-    Assert.assertEquals(9, stageTrace.getFinishWriteToBuffer());
-    Assert.assertEquals(10, stageTrace.getFinishReceiveResponse());
-    Assert.assertEquals(11, stageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(12, stageTrace.getFinishClientFiltersResponse());
-    Assert.assertEquals(13, stageTrace.getFinishHandlersResponse());
-    Assert.assertEquals(14, stageTrace.getFinishServerFiltersResponse());
-    Assert.assertEquals(15, stageTrace.getFinish());
+    Assertions.assertEquals(1, stageTrace.getStart());
+    Assertions.assertEquals(2, stageTrace.getStartSchedule());
+    Assertions.assertEquals(3, stageTrace.getStartExecution());
+    Assertions.assertEquals(4, stageTrace.getStartServerFiltersRequest());
+    Assertions.assertEquals(5, stageTrace.getStartHandlersRequest());
+    Assertions.assertEquals(6, stageTrace.getStartClientFiltersRequest());
+    Assertions.assertEquals(7, stageTrace.getStartSend());
+    Assertions.assertEquals(8, stageTrace.getFinishGetConnection());
+    Assertions.assertEquals(9, stageTrace.getFinishWriteToBuffer());
+    Assertions.assertEquals(10, stageTrace.getFinishReceiveResponse());
+    Assertions.assertEquals(11, stageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(12, stageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals(13, stageTrace.getFinishHandlersResponse());
+    Assertions.assertEquals(14, stageTrace.getFinishServerFiltersResponse());
+    Assertions.assertEquals(15, stageTrace.getFinish());
 
-    Assert.assertEquals(1f, stageTrace.calcInvocationPrepareTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcThreadPoolQueueTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcServerFiltersRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcInvocationPrepareTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcThreadPoolQueueTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcServerFiltersRequestTime(), 0.1f);
 
-    Assert.assertEquals(1f, stageTrace.calcHandlersRequestTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcClientFiltersRequestTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcGetConnectionTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcWriteToBufferTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcReceiveResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcWakeConsumer(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcClientFiltersResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcHandlersResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcHandlersRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcClientFiltersRequestTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcGetConnectionTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcWriteToBufferTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcReceiveResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcWakeConsumer(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcClientFiltersResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcHandlersResponseTime(), 0.1f);
 
-    Assert.assertEquals(1f, stageTrace.calcServerFiltersResponseTime(), 0.1f);
-    Assert.assertEquals(1f, stageTrace.calcSendResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcServerFiltersResponseTime(), 0.1f);
+    Assertions.assertEquals(1f, stageTrace.calcSendResponseTime(), 0.1f);
 
-    Assert.assertEquals(14f, stageTrace.calcTotalTime(), 0.1f);
+    Assertions.assertEquals(14f, stageTrace.calcTotalTime(), 0.1f);
   }
 }

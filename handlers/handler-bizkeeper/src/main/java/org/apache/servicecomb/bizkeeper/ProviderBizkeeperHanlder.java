@@ -40,11 +40,10 @@ public class ProviderBizkeeperHanlder extends BizkeeperHandler {
         .withRequestLogEnabled(false);
     setCommonProperties(invocation, setter);
 
-    BizkeeperCommand command = new ProviderBizkeeperCommand(groupname, invocation,
+    return new ProviderBizkeeperCommand(groupname, invocation,
         HystrixObservableCommand.Setter
             .withGroupKey(CommandKey.toHystrixCommandGroupKey(groupname, invocation))
             .andCommandKey(CommandKey.toHystrixCommandKey(groupname, invocation))
             .andCommandPropertiesDefaults(setter));
-    return command;
   }
 }

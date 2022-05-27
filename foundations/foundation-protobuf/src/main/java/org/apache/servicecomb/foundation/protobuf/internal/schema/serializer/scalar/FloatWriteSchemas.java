@@ -37,7 +37,7 @@ public class FloatWriteSchemas {
       return new FloatSchema<>(protoField, propertyDescriptor);
     }
 
-    return new FloatDynamicSchema<>(protoField, propertyDescriptor);
+    return new FloatSchema<>(protoField, propertyDescriptor);
   }
 
   private static class FloatDynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +72,7 @@ public class FloatWriteSchemas {
   }
 
   private static class FloatSchema<T> extends FloatDynamicSchema<T> {
-    protected final Getter<T, Float> getter;
+    protected final Getter<T, Object> getter;
 
     public FloatSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +82,9 @@ public class FloatWriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Float value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarFloat(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

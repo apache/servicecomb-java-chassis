@@ -26,7 +26,7 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
 public class AbstractPart implements Part {
-  private static MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+  private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
 
   protected String name;
 

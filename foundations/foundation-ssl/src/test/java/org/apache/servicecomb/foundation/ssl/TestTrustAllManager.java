@@ -17,13 +17,13 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.net.Socket;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLEngine;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class TestTrustAllManager {
   @Test
@@ -45,6 +45,6 @@ public class TestTrustAllManager {
     manager.checkServerTrusted((X509Certificate[]) null,
         (String) null,
         (SSLEngine) null);
-    Assert.assertEquals(manager.getAcceptedIssuers() == null, true);
+    Assertions.assertNull(manager.getAcceptedIssuers());
   }
 }

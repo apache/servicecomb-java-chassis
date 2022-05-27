@@ -17,16 +17,16 @@
 package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.netflix.spectator.api.Measurement;
 
-public class MeasurementNode {
-  private String name;
+public class MeasurementNode implements Comparable<MeasurementNode> {
+  private final String name;
 
-  private List<Measurement> measurements = new ArrayList<>();
+  private final List<Measurement> measurements = new ArrayList<>();
 
   private Map<String, MeasurementNode> children;
 
@@ -64,12 +64,10 @@ public class MeasurementNode {
 
   public MeasurementNode addChild(String childName, Measurement measurement) {
     if (children == null) {
-      children = new HashMap<>();
+      children = new LinkedHashMap<>();
     }
 
-    MeasurementNode node = children.computeIfAbsent(childName, name -> {
-      return new MeasurementNode(name, null);
-    });
+    MeasurementNode node = children.computeIfAbsent(childName, name -> new MeasurementNode(name, null));
     node.addMeasurement(measurement);
 
     return node;
@@ -90,5 +88,10 @@ public class MeasurementNode {
     }
 
     return result;
+  }
+
+  @Override
+  public int compareTo(MeasurementNode o) {
+    return this.name.compareTo(o.name);
   }
 }

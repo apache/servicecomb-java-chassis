@@ -20,12 +20,12 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 import java.net.URI;
 
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AsyncClientHttpRequest;
-import org.springframework.http.client.AsyncClientHttpRequestFactory;
 
-public class CseAsyncClientHttpRequestFactory implements AsyncClientHttpRequestFactory {
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+public class CseAsyncClientHttpRequestFactory implements org.springframework.http.client.AsyncClientHttpRequestFactory {
   @Override
-  public AsyncClientHttpRequest createAsyncRequest(URI uri, HttpMethod httpMethod) {
+  public org.springframework.http.client.AsyncClientHttpRequest createAsyncRequest(URI uri, HttpMethod httpMethod) {
     return new CseAsyncClientHttpRequest(uri, httpMethod);
   }
 }

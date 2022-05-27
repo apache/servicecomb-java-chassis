@@ -18,10 +18,13 @@
 package org.apache.servicecomb.config.spi;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 
 import com.netflix.config.WatchedConfigurationSource;
 
-public interface ConfigCenterConfigurationSource extends WatchedConfigurationSource {
+public interface ConfigCenterConfigurationSource extends WatchedConfigurationSource, SPIOrder {
+  int ORDER_BASE = 100;
+
   boolean isValidSource(Configuration localConfiguration);
 
   void init(Configuration localConfiguration);

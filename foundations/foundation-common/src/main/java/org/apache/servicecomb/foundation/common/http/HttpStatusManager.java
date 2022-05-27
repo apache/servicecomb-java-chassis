@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class HttpStatusManager {
-  private Map<Integer, StatusType> statusMap = new ConcurrentHashMap<>();
+  private final Map<Integer, StatusType> statusMap = new ConcurrentHashMap<>();
 
   public HttpStatusManager() {
     for (Status status : Status.values()) {

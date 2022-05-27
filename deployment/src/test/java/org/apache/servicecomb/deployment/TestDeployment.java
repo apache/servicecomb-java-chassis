@@ -20,8 +20,8 @@ package org.apache.servicecomb.deployment;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDeployment {
   @After
@@ -31,45 +31,9 @@ public class TestDeployment {
 
   @Test
   public void testConfiguration() {
-    DefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "https://127.0.0.1:30100");
-    info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "http://lcalhost/custom");
-
-    Assert.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
-  }
-
-  @Test
-  public void testConfigurationEnv() {
-    System.setProperty("servicecomb.service.registry.address", "https://localhost:9999");
-    System.setProperty("servicecomb.config.client.serverUri", "https://localhost:9988");
-    DefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "https://localhost:9999");
-    info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "http://lcalhost/custom");
-
-    System.getProperties().remove("servicecomb.service.registry.address");
-    System.getProperties().remove("servicecomb.config.client.serverUri");
-  }
-
-  @Test
-  public void testConfigurationEnvTwo() {
-    System.setProperty("servicecomb.service.registry.address", "https://localhost:9999,https://localhost:9998");
-    System.setProperty("servicecomb.config.client.serverUri", "https://localhost:9988,https://localhost:9987");
-    DefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().size(), 2);
-    Assert.assertEquals(info.getAccessURL().get(0), "https://localhost:9999");
-    Assert.assertEquals(info.getAccessURL().get(1), "https://localhost:9998");
-    info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "http://lcalhost/custom");
-    Assert.assertEquals(info.getAccessURL().size(), 1);
-
-    System.getProperties().remove("servicecomb.service.registry.address");
-    System.getProperties().remove("servicecomb.config.client.serverUri");
+    CustomDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo("TestCenter");
+    Assertions.assertEquals("http://localhost/custom", info.getAccessURL().get(0));
+    Assertions.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
   }
 }

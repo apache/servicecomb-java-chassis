@@ -22,7 +22,7 @@ info:
   title: cse test
   version: 1.0.0
   x-java-interface: org.apache.servicecomb.demo.server.Test
-  
+
 # the domain of the service
 #host: api.uber.com
 
@@ -34,7 +34,7 @@ info:
 basePath: /pojo/rest
 produces:
   - application/json
-  
+
 paths:
   /testStringArray:
     get:
@@ -47,9 +47,9 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: asdf
-          schema: 
+          schema:
             type: string
   /testStatic:
     get:
@@ -57,12 +57,12 @@ paths:
       parameters:
         - name: code
           in: query
-          required: true
+          required: false
           type: string
       responses:
-        200:
+        "200":
           description: asdf
-          schema: 
+          schema:
             type: string
     post:
       operationId: postTestStatic
@@ -73,9 +73,9 @@ paths:
           type: integer
           format: int32
       responses:
-        200:
+        "200":
           description: asdf
-          schema: 
+          schema:
             type: string
   /testException/{code}:
     get:
@@ -87,23 +87,23 @@ paths:
           type: integer
           format: int32
       responses:
-        200:
+        "200":
           description: asdf
-          schema: 
+          schema:
             type: string
         456:
           description: asdf
-          schema: 
+          schema:
             type: string
         556:
           description: asdf
-          schema: 
+          schema:
             type: array
             items:
               type: string
         557:
           description: asdf
-          schema: 
+          schema:
             type: array
             items:
               type: array
@@ -121,10 +121,10 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/User'
-      responses: 
-        200:
+      responses:
+        "200":
           description: asdf
-          schema: 
+          schema:
             $ref: '#/definitions/User'
         default:
           description: asf
@@ -134,15 +134,15 @@ paths:
     post:
       operationId: wrapParam
       parameters:
-        - name: TestRequest
+        - name: request
           in: body
-          required: true
-          schema: 
+          required: false
+          schema:
             $ref: '#/definitions/TestRequest'
-      responses: 
-        200:
+      responses:
+        "200":
           description: asdf
-          schema: 
+          schema:
             $ref: '#/definitions/User'
         default:
           description: asf
@@ -159,11 +159,11 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: add string
           schema:
             type: string
-            
+
 definitions:
   Error:
     type: object

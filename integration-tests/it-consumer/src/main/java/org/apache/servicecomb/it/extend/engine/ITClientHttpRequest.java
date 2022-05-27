@@ -18,13 +18,12 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.net.URI;
 
-import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
+import org.apache.servicecomb.provider.springmvc.reference.RequestMeta;
 import org.springframework.http.HttpMethod;
 
 public class ITClientHttpRequest extends CseClientHttpRequest {
-  private String transport;
+  private final String transport;
 
   public ITClientHttpRequest(URI uri, HttpMethod method, String transport) {
     super(uri, method);
@@ -32,12 +31,11 @@ public class ITClientHttpRequest extends CseClientHttpRequest {
   }
 
   @Override
-  protected ReferenceConfig findReferenceConfig(String microserviceName) {
-    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
-        .createReferenceConfig(microserviceName);
+  protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
+    RequestMeta requestMeta = super.createRequestMeta(httpMethod, uri);
     if (transport != null) {
-      referenceConfig.setTransport(transport);
+      requestMeta.getReferenceConfig().setTransport(transport);
     }
-    return referenceConfig;
+    return requestMeta;
   }
 }

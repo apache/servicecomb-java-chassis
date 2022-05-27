@@ -22,7 +22,7 @@
   <parent>
     <artifactId>integration-tests</artifactId>
     <groupId>org.apache.servicecomb.tests</groupId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>2.8.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -33,12 +33,12 @@
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>jaxrs-tests</artifactId>
-      <version>1.2.0-SNAPSHOT</version>
+      <version>2.8.0-SNAPSHOT</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot-starter-provider</artifactId>
+      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -47,6 +47,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-local</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

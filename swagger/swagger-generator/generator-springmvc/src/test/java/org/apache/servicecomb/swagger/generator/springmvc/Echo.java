@@ -17,11 +17,20 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping(
     path = "Echo",
@@ -43,10 +52,64 @@ public class Echo {
   }
 
   @RequestMapping
+  public void cookie(@CookieValue(value = "cookie", required = false) int cookie) {
+  }
+
+  @RequestMapping
   public void rawJsonStringMethod(@RawJsonRequestBody String jsonInput) {
   }
 
   @RequestMapping
   public void enumBody(@RequestBody Color color) {
+  }
+
+  @RequestMapping
+  public CompletableFuture<ResponseEntity<List<String>>> asyncResponseEntity() {
+    return null;
+  }
+
+  @RequestMapping
+  public ResponseEntity<Optional<String>> testResponseEntityOptional() {
+    return null;
+  }
+
+  @RequestMapping
+  public CompletableFuture<ResponseEntity<Optional<String>>> testCompletableFutureResponseEntityOptional() {
+    return null;
+  }
+
+  @RequestMapping
+  public void part(MultipartFile part) {
+
+  }
+
+  @RequestMapping
+  public void partArray(MultipartFile[] part) {
+
+  }
+
+  @RequestMapping
+  public void partList(List<MultipartFile> part) {
+
+  }
+
+  @RequestMapping
+  public void partAnnotation(@RequestPart MultipartFile part) {
+
+  }
+
+  @RequestMapping
+  public void partArrayAnnotation(@RequestPart MultipartFile[] part) {
+
+  }
+
+  @RequestMapping
+  public void partListAnnotation(@RequestPart List<MultipartFile> part) {
+
+  }
+
+  @PostMapping("nestedListString")
+  public List<List<String>> nestedListString(@RequestBody List<List<String>> param) {
+    return param;
   }
 }

@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.Subscribe;
@@ -43,17 +43,25 @@ public class TestCircutBreakerEventNotifier {
 
   Object receiveEvent = null;
 
+  public static class EventSubscriber {
+    List<AlarmEvent> taskList;
+
+    public EventSubscriber(List<AlarmEvent> taskList) {
+      this.taskList = taskList;
+    }
+
+    @Subscribe
+    public void onEvent(AlarmEvent circutBreakerEvent) {
+      taskList.add(circutBreakerEvent);
+    }
+  }
+
   @Before
   public void setUp() throws Exception {
     taskList = new ArrayList<>();
     circutBreakerEventNotifier = new CircutBreakerEventNotifier();
     commandKey = Mockito.mock(HystrixCommandKey.class);
-    receiveEvent = new Object() {
-      @Subscribe
-      public void onEvent(AlarmEvent circutBreakerEvent) {
-        taskList.add(circutBreakerEvent);
-      }
-    };
+    receiveEvent = new EventSubscriber(taskList);
     circutBreakerEventNotifier.eventBus.register(receiveEvent);
   }
 
@@ -72,8 +80,8 @@ public class TestCircutBreakerEventNotifier {
       }
     };
     circutBreakerEventNotifier.markEvent(HystrixEventType.SHORT_CIRCUITED, commandKey);
-    Assert.assertEquals(1, taskList.size());
+    Assertions.assertEquals(1, taskList.size());
     circutBreakerEventNotifier.markEvent(HystrixEventType.SUCCESS, commandKey);
-    Assert.assertEquals(2, taskList.size());
+    Assertions.assertEquals(2, taskList.size());
   }
 }

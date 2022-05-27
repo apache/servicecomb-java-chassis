@@ -22,11 +22,11 @@ import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.netflix.config.DynamicPropertyFactory;
+import org.junit.jupiter.api.Assertions;
 
 public class TestEdgeBootListener {
   EdgeBootListener listener = new EdgeBootListener();
@@ -51,7 +51,7 @@ public class TestEdgeBootListener {
     bootEvent.setEventType(EventType.AFTER_CONSUMER_PROVIDER);
     listener.onBootEvent(bootEvent);
 
-    Assert.assertEquals(ExecutorManager.EXECUTOR_DEFAULT,
+    Assertions.assertEquals(ExecutorManager.EXECUTOR_DEFAULT,
         DynamicPropertyFactory.getInstance().getStringProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, null).get());
   }
 
@@ -62,7 +62,7 @@ public class TestEdgeBootListener {
     bootEvent.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
     listener.onBootEvent(bootEvent);
 
-    Assert.assertEquals(ExecutorManager.EXECUTOR_DEFAULT,
+    Assertions.assertEquals(ExecutorManager.EXECUTOR_DEFAULT,
         DynamicPropertyFactory.getInstance().getStringProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, null).get());
   }
 
@@ -71,7 +71,7 @@ public class TestEdgeBootListener {
     bootEvent.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
     listener.onBootEvent(bootEvent);
 
-    Assert.assertEquals(ExecutorManager.EXECUTOR_REACTIVE,
+    Assertions.assertEquals(ExecutorManager.EXECUTOR_REACTIVE,
         DynamicPropertyFactory.getInstance().getStringProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, null).get());
   }
 }

@@ -17,33 +17,35 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestLoadBalancer {
-  private RuleExt rule = Mockito.mock(RuleExt.class);
+  private final RuleExt rule = Mockito.mock(RuleExt.class);
 
   @Test
   public void testLoadBalancerFullOperationWithoutException() {
     List<ServiceCombServer> newServers = new ArrayList<>();
     ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
     Invocation invocation = Mockito.mock(Invocation.class);
+    MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
     newServers.add(server);
-    when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(newServers);
+    Mockito.when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(newServers);
+    Mockito.when(server.getInstance()).thenReturn(microserviceInstance);
+    Mockito.when(microserviceInstance.getInstanceId()).thenReturn("123456");
     LoadBalancer loadBalancer = new LoadBalancer(rule, "test");
     loadBalancer.chooseServer(invocation);
 
-    when(rule.choose(newServers, invocation)).thenReturn(server);
+    Mockito.when(rule.choose(newServers, invocation)).thenReturn(server);
 
-    Assert.assertEquals(server, loadBalancer.chooseServer(invocation));
-    Assert.assertNotNull(loadBalancer.getLoadBalancerStats());
-    Assert.assertEquals("test", loadBalancer.getMicroServiceName());
+    Assertions.assertEquals(server, loadBalancer.chooseServer(invocation));
+    Assertions.assertNotNull(loadBalancer.getLoadBalancerStats());
+    Assertions.assertEquals("test", loadBalancer.getMicroServiceName());
   }
 }

@@ -26,16 +26,21 @@ import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.vertx.http.DownloadUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
 
 public class PumpFromPart {
-  private Context context;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PumpFromPart.class);
 
-  private Part part;
+  private final Context context;
+
+  private final Part part;
 
   public PumpFromPart(Context context, Part part) {
     this.context = context;
@@ -62,10 +67,19 @@ public class PumpFromPart {
     return future;
   }
 
-  public CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream) {
+  public CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream, Handler<Throwable> throwableHandler) {
     return prepareReadStream()
-        .thenCompose(readStream -> new PumpCommon().pump(context, readStream, writeStream))
-        .whenComplete((v, e) -> DownloadUtils.clearPartResource(part));
+        .thenCompose(readStream -> new PumpCommon().pump(context, readStream, writeStream, throwableHandler))
+        .whenComplete((v, e) -> {
+          if (e != null) {
+            LOGGER.error("to write stream failed.", e);
+          }
+          DownloadUtils.clearPartResource(part);
+          // PumpImpl will add drainHandler to writeStream,
+          // in order to support write multiple files to same writeStream,
+          // need reset after one stream is successful.
+          writeStream.drainHandler(null);
+        });
   }
 
   public CompletableFuture<Void> toOutputStream(OutputStream outputStream, boolean autoCloseOutputStream) {
@@ -79,13 +93,14 @@ public class PumpFromPart {
   private CompletableFuture<Void> toOutputStreamAsync(OutputStream outputStream, boolean autoCloseOutputStream) {
     OutputStreamToWriteStream outputStreamToWriteStream = new OutputStreamToWriteStream(context, outputStream,
         autoCloseOutputStream);
-    return toWriteStream(outputStreamToWriteStream);
+    return toWriteStream(outputStreamToWriteStream, null);
   }
 
   // DO NOT use a mocked sync context to unify the pump logic
   // otherwise when pump big stream, will cause stack overflow
   private CompletableFuture<Void> toOutputStreamSync(OutputStream outputStream, boolean autoCloseOutputStream) {
     CompletableFuture<Void> future = new CompletableFuture<>();
+    future.whenComplete((v, e) -> DownloadUtils.clearPartResource(part));
 
     try (InputStream inputStream = part.getInputStream()) {
       IOUtils.copyLarge(inputStream, outputStream);

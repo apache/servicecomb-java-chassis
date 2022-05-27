@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
@@ -46,7 +48,7 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletRequestEx extends HttpServletRequestWrapper implements HttpServletRequestEx {
-  private BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
+  private final BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();
 
   private boolean cacheRequest;
 
@@ -65,11 +67,16 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
     this.cacheRequest = cacheRequest;
   }
 
+  @VisibleForTesting
+  public boolean isCacheRequest() {
+    return cacheRequest;
+  }
+
   @Override
   public ServletInputStream getInputStream() throws IOException {
     if (this.inputStream == null) {
       if (cacheRequest) {
-        byte inputBytes[] = IOUtils.toByteArray(getRequest().getInputStream());
+        byte[] inputBytes = IOUtils.toByteArray(getRequest().getInputStream());
         ByteBuf byteBuf = Unpooled.wrappedBuffer(inputBytes);
         this.inputStream = new BufferInputStream(byteBuf);
         setBodyBuffer(Buffer.buffer(Unpooled.wrappedBuffer(byteBuf)));
@@ -132,7 +139,7 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   private Map<String, List<String>> parseUrlEncodedBody() {
     try (InputStream inputStream = getInputStream()) {
       Map<String, List<String>> listMap = new HashMap<>();
-      String body = IOUtils.toString(inputStream);
+      String body = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
       List<NameValuePair> pairs = URLEncodedUtils
           .parse(body, getCharacterEncoding() == null ? null : Charset.forName(getCharacterEncoding()));
       for (NameValuePair pair : pairs) {

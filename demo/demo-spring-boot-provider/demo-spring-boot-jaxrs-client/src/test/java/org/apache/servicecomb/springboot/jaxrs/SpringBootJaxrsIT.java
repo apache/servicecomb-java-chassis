@@ -17,13 +17,11 @@
 
 package org.apache.servicecomb.springboot.jaxrs;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class SpringBootJaxrsIT {
 
@@ -34,8 +32,12 @@ public class SpringBootJaxrsIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    JaxrsClient.main(new String[0]);
-
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+    try {
+      JaxrsClient.main(new String[0]);
+      Assertions.assertTrue(TestMgr.errors().isEmpty());
+    } catch (Throwable e) {
+      e.printStackTrace();
+      Assertions.fail("test case failed, message=" + e.getMessage());
+    }
   }
 }

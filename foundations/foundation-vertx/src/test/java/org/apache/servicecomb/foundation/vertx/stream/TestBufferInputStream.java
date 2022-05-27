@@ -17,15 +17,20 @@
 
 package org.apache.servicecomb.foundation.vertx.stream;
 
-import java.io.UnsupportedEncodingException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class TestBufferInputStream {
 
@@ -44,29 +49,53 @@ public class TestBufferInputStream {
 
   @Test
   public void testRead() {
-    Assert.assertEquals(0, instance.read());
+    Assertions.assertEquals(0, instance.read());
   }
 
   @Test
-  public void testReadByteArray() throws UnsupportedEncodingException {
-    byte[] b = "csr".getBytes("UTF-8");
-    Assert.assertEquals(-1, instance.read(b));
+  public void testReadDecorate() throws IOException {
+    String text = "abcdefg123456789";
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    GZIPOutputStream gzipOutputStream = new GZIPOutputStream(out);
+    gzipOutputStream.write(text.getBytes());
+    gzipOutputStream.close();
+
+    ByteBuf buffer = Unpooled.buffer();
+    buffer.writeBytes(out.toByteArray());
+    out.close();
+    BufferInputStream bufferInputStream = new BufferInputStream(buffer);
+    GZIPInputStream gzipInputStream = new GZIPInputStream(bufferInputStream);
+    StringBuffer sb = new StringBuffer();
+    byte[] bufferByte = new byte[256];
+    int n;
+    while ((n = gzipInputStream.read(bufferByte)) >= 0) {
+      sb.append(new String(bufferByte, 0, n));
+    }
+    gzipInputStream.close();
+
+    Assertions.assertEquals(text, sb.toString());
   }
 
   @Test
-  public void testReadByteArrayIntInt() throws UnsupportedEncodingException {
-    byte[] b = "csr".getBytes("UTF-8");
-    Assert.assertEquals(-1, instance.read(b, 1, 0));
+  public void testReadByteArray() {
+    byte[] b = "csr".getBytes(StandardCharsets.UTF_8);
+    Assertions.assertEquals(-1, instance.read(b));
+  }
+
+  @Test
+  public void testReadByteArrayIntInt() {
+    byte[] b = "csr".getBytes(StandardCharsets.UTF_8);
+    Assertions.assertEquals(-1, instance.read(b, 1, 0));
   }
 
   @Test
   public void testSkip() {
-    Assert.assertEquals(0, instance.skip(1));
+    Assertions.assertEquals(0, instance.skip(1));
   }
 
   @Test
   public void testAvailable() {
-    Assert.assertEquals(0, instance.available());
+    Assertions.assertEquals(0, instance.available());
   }
 
   @Test
@@ -74,42 +103,42 @@ public class TestBufferInputStream {
     try {
       instance.close();
     } catch (Exception e) {
-      Assert.assertTrue(false); // This assertion is made to fail the test case in case the close() throws exception
+      Assertions.fail(); // This assertion is made to fail the test case in case the close() throws exception
     }
   }
 
   @Test
   public void testBufferInputStream() {
-    Assert.assertNotNull(instance);
+    Assertions.assertNotNull(instance);
   }
 
   @Test
   public void testReadBoolean() {
-    Assert.assertEquals(false, instance.readBoolean());
+    Assertions.assertFalse(instance.readBoolean());
   }
 
   @Test
   public void testReadShort() {
-    Assert.assertEquals(0, instance.readShort());
+    Assertions.assertEquals(0, instance.readShort());
   }
 
   @Test
   public void testReadInt() {
-    Assert.assertEquals(0, instance.readInt());
+    Assertions.assertEquals(0, instance.readInt());
   }
 
   @Test
   public void testReadLong() {
-    Assert.assertEquals(0, instance.readLong());
+    Assertions.assertEquals(0, instance.readLong());
   }
 
   @Test
   public void testGetIndex() {
-    Assert.assertEquals(0, instance.getIndex());
+    Assertions.assertEquals(0, instance.getIndex());
   }
 
   @Test
   public void testReadString() {
-    Assert.assertNotNull(instance.readString());
+    Assertions.assertNotNull(instance.readString());
   }
 }

@@ -19,10 +19,10 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
 
 import java.net.URI;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,11 +53,11 @@ public class TestRestTemplateBuilder {
 
     RestTemplate restTemplate = RestTemplateBuilder.create();
 
-    assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
+    MatcherAssert.assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
 
     RestTemplateWrapper wrapper = (RestTemplateWrapper) restTemplate;
 
-    assertThat(wrapper.getRestTemplate(url), is(underlying));
-    assertThat(wrapper.getRestTemplate(URI.create(url)), is(underlying));
+    MatcherAssert.assertThat(wrapper.getRestTemplate(url), is(underlying));
+    MatcherAssert.assertThat(wrapper.getRestTemplate(URI.create(url)), is(underlying));
   }
 }

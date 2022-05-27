@@ -21,13 +21,14 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../parent</relativePath>
+    <version>2.8.0-SNAPSHOT</version>
+    <relativePath>../parents/default</relativePath>
   </parent>
   <artifactId>foundations</artifactId>
   <name>Java Chassis::Foundations</name>
   <packaging>pom</packaging>
   <modules>
+    <module>foundation-spi</module>
     <module>foundation-vertx</module>
     <module>foundation-common</module>
     <module>foundation-config</module>
@@ -35,5 +36,6 @@
     <module>foundation-ssl</module>
     <module>foundation-test-scaffolding</module>
     <module>foundation-protobuf</module>
+    <module>foundation-registry</module>
   </modules>
 </project>

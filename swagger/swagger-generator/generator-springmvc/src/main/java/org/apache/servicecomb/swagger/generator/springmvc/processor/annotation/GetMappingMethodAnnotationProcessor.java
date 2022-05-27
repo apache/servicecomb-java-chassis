@@ -17,30 +17,22 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.models.Operation;
-
-public class GetMappingMethodAnnotationProcessor extends AbstractHttpMethodMappingAnnotationProcessor {
+public class GetMappingMethodAnnotationProcessor extends AbstractHttpMethodMappingAnnotationProcessor<GetMapping> {
+  @Override
+  public Type getProcessType() {
+    return GetMapping.class;
+  }
 
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    GetMapping mappingAnnotation = (GetMapping) annotation;
-    Operation operation = operationGenerator.getOperation();
-
-    // path/value是等同的
-    this.processPath(mappingAnnotation.path(), operationGenerator);
-    this.processPath(mappingAnnotation.value(), operationGenerator);
-    this.processMethod(RequestMethod.GET, operationGenerator);
-    this.processConsumes(mappingAnnotation.consumes(), operation);
-    this.processProduces(mappingAnnotation.produces(), operation);
-
-    if (StringUtils.isEmpty(operationGenerator.getHttpMethod())
-        && StringUtils.isEmpty(operationGenerator.getSwaggerGenerator().getHttpMethod())) {
-      throw new Error("HttpMethod must not both be empty in class and method");
-    }
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, GetMapping getMapping) {
+    doProcess(operationGenerator,
+        getMapping.path(), getMapping.value(), RequestMethod.GET, getMapping.consumes(), getMapping.produces());
   }
 }

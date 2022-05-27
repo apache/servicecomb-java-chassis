@@ -1,0 +1,40 @@
+#
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+# spring boot configurations
+server:
+  port: 9093  # should be same with servicecomb.rest.address to use web container
+
+# override common configurations in common module
+servicecomb-config-order: 10
+
+servicecomb:
+  service:
+    application: demo-java-chassis-cse-v2
+    name: provider
+    version: 0.0.1
+    registry:
+      address: ${CSE_V2_SC}
+      instance:
+        watch: false
+  kie:
+    serverUri: ${CSE_V2_CC}
+    customLabel: public
+
+  rest:
+    address: 0.0.0.0:9093 # should be same with server.port to use web container
+

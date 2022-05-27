@@ -23,16 +23,16 @@ import java.util.Map;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
-import org.junit.Assert;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Injectable;
+import org.junit.jupiter.api.Assertions;
 
 public class TestInstancePropertyDiscoveryFilter {
 
@@ -61,17 +61,17 @@ public class TestInstancePropertyDiscoveryFilter {
   @Test
   public void testAllowVisit() {
     Map<String, String> filterOptions = new HashMap<>();
-    Assert.assertTrue(filter.allowVisit(instance, filterOptions));
+    Assertions.assertTrue(filter.allowVisit(instance, filterOptions));
 
     filterOptions.put("tag0", "value0");
-    Assert.assertTrue(filter.allowVisit(instance, filterOptions));
+    Assertions.assertTrue(filter.allowVisit(instance, filterOptions));
 
     filterOptions.put("tag2", "value2");
-    Assert.assertFalse(filter.allowVisit(instance, filterOptions));
+    Assertions.assertFalse(filter.allowVisit(instance, filterOptions));
 
     filterOptions.clear();
     filterOptions.put("tag0", "value1");
-    Assert.assertFalse(filter.allowVisit(instance, filterOptions));
+    Assertions.assertFalse(filter.allowVisit(instance, filterOptions));
   }
 
   @Test
@@ -92,6 +92,6 @@ public class TestInstancePropertyDiscoveryFilter {
     };
 
     DiscoveryTreeNode node = filter.discovery(context, parent);
-    Assert.assertEquals(1, ((Map<String, MicroserviceInstance>) node.data()).keySet().size());
+    Assertions.assertEquals(1, ((Map<String, MicroserviceInstance>) node.data()).keySet().size());
   }
 }

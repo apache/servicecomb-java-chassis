@@ -17,18 +17,14 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAbstractHttpServletRequest {
   HttpServletRequest request = new AbstractHttpServletRequest() {
@@ -39,478 +35,409 @@ public class TestAbstractHttpServletRequest {
     String key = "a1";
     String value = "abc";
     request.setAttribute(key, value);
-    Assert.assertSame(value, request.getAttribute(key));
-    Assert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key));
+    Assertions.assertSame(value, request.getAttribute(key));
+    MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key));
 
     request.setAttribute("a2", "v");
-    Assert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key, "a2"));
+    MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key, "a2"));
 
     request.removeAttribute(key);
-    Assert.assertNull(request.getAttribute(key));
+    Assertions.assertNull(request.getAttribute(key));
   }
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
-  private void setExceptionExpected() {
-    expectedException.expect(Error.class);
-    expectedException.expectMessage(Matchers.is("not supported method"));
+  private void checkError(Error error) {
+    Assertions.assertEquals("not supported method", error.getMessage());
   }
 
   @Test
   public void testGetCharacterEncoding() {
-    setExceptionExpected();
-
-    request.getCharacterEncoding();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getCharacterEncoding());
+    checkError(error);
   }
 
   @Test
-  public void testSetCharacterEncoding() throws UnsupportedEncodingException {
-    setExceptionExpected();
-
-    request.setCharacterEncoding("");
+  public void testSetCharacterEncoding() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.setCharacterEncoding(""));
+    checkError(error);
   }
 
   @Test
   public void testGetContentLength() {
-    setExceptionExpected();
-
-    request.getContentLength();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getContentLength());
+    checkError(error);
   }
 
   @Test
   public void testGetContentLengthLong() {
-    setExceptionExpected();
-
-    request.getContentLengthLong();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getContentLengthLong());
+    checkError(error);
   }
 
   @Test
   public void testGetContentType() {
-    setExceptionExpected();
-
-    request.getContentType();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getContentType());
+    checkError(error);
   }
 
   @Test
-  public void testGetInputStream() throws IOException {
-    setExceptionExpected();
-
-    request.getInputStream();
+  public void testGetInputStream() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.getInputStream());
+    checkError(error);
   }
 
   @Test
   public void testGetParameter() {
-    setExceptionExpected();
-
-    request.getParameter("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getParameter(""));
+    checkError(error);
   }
 
   @Test
   public void testGetParameterNames() {
-    setExceptionExpected();
-
-    request.getParameterNames();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getParameterNames());
+    checkError(error);
   }
 
   @Test
   public void testGetParameterValues() {
-    setExceptionExpected();
-
-    request.getParameterValues("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getParameterValues(""));
+    checkError(error);
   }
 
   @Test
   public void testGetParameterMap() {
-    setExceptionExpected();
-
-    request.getParameterMap();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getParameterMap());
+    checkError(error);
   }
 
   @Test
   public void testGetProtocol() {
-    setExceptionExpected();
-
-    request.getProtocol();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getProtocol());
+    checkError(error);
   }
 
   @Test
   public void testGetScheme() {
-    setExceptionExpected();
-
-    request.getScheme();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getScheme());
+    checkError(error);
   }
 
   @Test
   public void testGetServerName() {
-    setExceptionExpected();
-
-    request.getServerName();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getServerName());
+    checkError(error);
   }
 
   @Test
   public void testGetServerPort() {
-    setExceptionExpected();
-
-    request.getServerPort();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getServerPort());
+    checkError(error);
   }
 
   @Test
-  public void testGetReader() throws IOException {
-    setExceptionExpected();
-
-    request.getReader();
+  public void testGetReader() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.getReader());
+    checkError(error);
   }
 
   @Test
   public void testGetRemoteAddr() {
-    setExceptionExpected();
-
-    request.getRemoteAddr();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRemoteAddr());
+    checkError(error);
   }
 
   @Test
   public void testGetRemoteHost() {
-    setExceptionExpected();
-
-    request.getRemoteHost();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRemoteHost());
+    checkError(error);
   }
 
   @Test
   public void testGetLocale() {
-    setExceptionExpected();
-
-    request.getLocale();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getLocale());
+    checkError(error);
   }
 
   @Test
   public void testGetLocales() {
-    setExceptionExpected();
-
-    request.getLocales();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getLocales());
+    checkError(error);
   }
 
   @Test
   public void testIsSecure() {
-    setExceptionExpected();
-
-    request.isSecure();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isSecure());
+    checkError(error);
   }
 
   @Test
   public void testGetRequestDispatcher() {
-    setExceptionExpected();
-
-    request.getRequestDispatcher("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRequestDispatcher(""));
+    checkError(error);
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testGetRealPath() {
-    setExceptionExpected();
-
-    request.getRealPath("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRealPath(""));
+    checkError(error);
   }
 
   @Test
   public void testGetRemotePort() {
-    setExceptionExpected();
-
-    request.getRemotePort();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRemotePort());
+    checkError(error);
   }
 
   @Test
   public void testGetLocalName() {
-    setExceptionExpected();
-
-    request.getLocalName();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getLocalName());
+    checkError(error);
   }
 
   @Test
   public void testGetLocalAddr() {
-    setExceptionExpected();
-
-    request.getLocalAddr();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getLocalAddr());
+    checkError(error);
   }
 
   @Test
   public void testGetLocalPort() {
-    setExceptionExpected();
-
-    request.getLocalPort();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getLocalPort());
+    checkError(error);
   }
 
   @Test
   public void testGetServletContext() {
-    setExceptionExpected();
-
-    request.getServletContext();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getServletContext());
+    checkError(error);
   }
 
   @Test
   public void testStartAsync() {
-    setExceptionExpected();
-
-    request.startAsync();
+    Error error = Assertions.assertThrows(Error.class, () -> request.startAsync());
+    checkError(error);
   }
 
   @Test
   public void testStartAsyncWithParam() {
-    setExceptionExpected();
-
-    request.startAsync(null, null);
+    Error error = Assertions.assertThrows(Error.class, () -> request.startAsync(null, null));
+    checkError(error);
   }
 
   @Test
   public void testIsAsyncStarted() {
-    setExceptionExpected();
-
-    request.isAsyncStarted();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isAsyncStarted());
+    checkError(error);
   }
 
   @Test
   public void testIsAsyncSupported() {
-    setExceptionExpected();
-
-    request.isAsyncSupported();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isAsyncSupported());
+    checkError(error);
   }
 
   @Test
   public void testGetAsyncContext() {
-    setExceptionExpected();
-
-    request.getAsyncContext();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getAsyncContext());
+    checkError(error);
   }
 
   @Test
   public void testGetDispatcherType() {
-    setExceptionExpected();
-
-    request.getDispatcherType();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getDispatcherType());
+    checkError(error);
   }
 
   @Test
   public void testGetAuthType() {
-    setExceptionExpected();
-
-    request.getAuthType();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getAuthType());
+    checkError(error);
   }
 
   @Test
   public void testGetCookies() {
-    setExceptionExpected();
-
-    request.getCookies();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getCookies());
+    checkError(error);
   }
 
   @Test
   public void testGetDateHeader() {
-    setExceptionExpected();
-
-    request.getDateHeader("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getDateHeader(""));
+    checkError(error);
   }
 
   @Test
   public void testGetHeader() {
-    setExceptionExpected();
-
-    request.getHeader("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getHeader(""));
+    checkError(error);
   }
 
   @Test
   public void testGetHeaders() {
-    setExceptionExpected();
-
-    request.getHeaders("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getHeaders(""));
+    checkError(error);
   }
 
   @Test
   public void testGetHeaderNames() {
-    setExceptionExpected();
-
-    request.getHeaderNames();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getHeaderNames());
+    checkError(error);
   }
 
   @Test
   public void testGetIntHeader() {
-    setExceptionExpected();
-
-    request.getIntHeader("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.getIntHeader(""));
+    checkError(error);
   }
 
   @Test
   public void testGetMethod() {
-    setExceptionExpected();
-
-    request.getMethod();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getMethod());
+    checkError(error);
   }
 
   @Test
   public void testGetPathInfo() {
-    setExceptionExpected();
-
-    request.getPathInfo();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getPathInfo());
+    checkError(error);
   }
 
   @Test
   public void testGetPathTranslated() {
-    setExceptionExpected();
-
-    request.getPathTranslated();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getPathTranslated());
+    checkError(error);
   }
 
   @Test
   public void testGetContextPath() {
-    setExceptionExpected();
-
-    request.getContextPath();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getContextPath());
+    checkError(error);
   }
 
   @Test
   public void testGetQueryString() {
-    setExceptionExpected();
-
-    request.getQueryString();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getQueryString());
+    checkError(error);
   }
 
   @Test
   public void testGetRemoteUser() {
-    setExceptionExpected();
-
-    request.getRemoteUser();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRemoteUser());
+    checkError(error);
   }
 
   @Test
   public void testIsUserInRole() {
-    setExceptionExpected();
-
-    request.isUserInRole("");
+    Error error = Assertions.assertThrows(Error.class, () -> request.isUserInRole(""));
+    checkError(error);
   }
 
   @Test
   public void testGetUserPrincipal() {
-    setExceptionExpected();
-
-    request.getUserPrincipal();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getUserPrincipal());
+    checkError(error);
   }
 
   @Test
   public void testGetRequestedSessionId() {
-    setExceptionExpected();
-
-    request.getRequestedSessionId();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRequestedSessionId());
+    checkError(error);
   }
 
   @Test
   public void testGetRequestURI() {
-    setExceptionExpected();
-
-    request.getRequestURI();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRequestURI());
+    checkError(error);
   }
 
   @Test
   public void testGetRequestURL() {
-    setExceptionExpected();
-
-    request.getRequestURL();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getRequestURL());
+    checkError(error);
   }
 
   @Test
   public void testGetServletPath() {
-    setExceptionExpected();
-
-    request.getServletPath();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getServletPath());
+    checkError(error);
   }
 
   @Test
   public void testGetSessionWithParam() {
-    setExceptionExpected();
-
-    request.getSession(true);
+    Error error = Assertions.assertThrows(Error.class, () -> request.getSession(true));
+    checkError(error);
   }
 
   @Test
   public void testGetSession() {
-    setExceptionExpected();
-
-    request.getSession();
+    Error error = Assertions.assertThrows(Error.class, () -> request.getSession());
+    checkError(error);
   }
 
   @Test
   public void testChangeSessionId() {
-    setExceptionExpected();
-
-    request.changeSessionId();
+    Error error = Assertions.assertThrows(Error.class, () -> request.changeSessionId());
+    checkError(error);
   }
 
   @Test
   public void testIsRequestedSessionIdValid() {
-    setExceptionExpected();
-
-    request.isRequestedSessionIdValid();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isRequestedSessionIdValid());
+    checkError(error);
   }
 
   @Test
   public void testIsRequestedSessionIdFromCookie() {
-    setExceptionExpected();
-
-    request.isRequestedSessionIdFromCookie();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isRequestedSessionIdFromCookie());
+    checkError(error);
   }
 
   @Test
   public void testIsRequestedSessionIdFromURL() {
-    setExceptionExpected();
-
-    request.isRequestedSessionIdFromURL();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isRequestedSessionIdFromURL());
+    checkError(error);
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testIsRequestedSessionIdFromUrl() {
-    setExceptionExpected();
-
-    request.isRequestedSessionIdFromUrl();
+    Error error = Assertions.assertThrows(Error.class, () -> request.isRequestedSessionIdFromUrl());
+    checkError(error);
   }
 
   @Test
-  public void testAuthenticate() throws IOException, ServletException {
-    setExceptionExpected();
-
-    request.authenticate(null);
+  public void testAuthenticate() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.authenticate(null));
+    checkError(error);
   }
 
   @Test
-  public void testLogin() throws ServletException {
-    setExceptionExpected();
-
-    request.login(null, null);
+  public void testLogin() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.login(null, null));
+    checkError(error);
   }
 
   @Test
-  public void testLogout() throws ServletException {
-    setExceptionExpected();
-
-    request.logout();
+  public void testLogout() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.logout());
+    checkError(error);
   }
 
   @Test
-  public void testGetParts() throws IOException, ServletException {
-    setExceptionExpected();
-
-    request.getParts();
+  public void testGetParts() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.getParts());
+    checkError(error);
   }
 
   @Test
-  public void testGetPart() throws IOException, ServletException {
-    setExceptionExpected();
-
-    request.getPart("");
+  public void testGetPart() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.getPart(""));
+    checkError(error);
   }
 
   @Test
-  public void testUpgrade() throws IOException, ServletException {
-    setExceptionExpected();
-
-    request.upgrade(null);
+  public void testUpgrade() {
+    Error error = Assertions.assertThrows(Error.class, () -> request.upgrade(null));
+    checkError(error);
   }
 }

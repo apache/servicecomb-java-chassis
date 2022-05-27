@@ -24,9 +24,10 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpHeaders;
 
 import mockit.Expectations;
@@ -37,7 +38,7 @@ public class TestRestTemplateCopyHeaderFilter {
 
   @Test
   public void getOrder() {
-    Assert.assertEquals(Integer.MIN_VALUE, filter.getOrder());
+    Assertions.assertEquals(-10000, filter.getOrder());
   }
 
   @Test
@@ -52,7 +53,7 @@ public class TestRestTemplateCopyHeaderFilter {
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequest(invocation, requestEx);
-    Assert.assertFalse(requestEx.getHeaderNames().hasMoreElements());
+    Assertions.assertFalse(requestEx.getHeaderNames().hasMoreElements());
   }
 
   @Test
@@ -72,9 +73,9 @@ public class TestRestTemplateCopyHeaderFilter {
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequest(invocation, requestEx);
-    Assert.assertEquals("headerValue0", requestEx.getHeader("headerName0"));
-    Assert.assertEquals("headerValue2", requestEx.getHeader("headerName2"));
-    Assert.assertNull(requestEx.getHeader("headerName1"));
+    Assertions.assertEquals("headerValue0", requestEx.getHeader("headerName0"));
+    Assertions.assertEquals("headerValue2", requestEx.getHeader("headerName2"));
+    Assertions.assertNull(requestEx.getHeader("headerName1"));
   }
 
   @Test
@@ -93,7 +94,7 @@ public class TestRestTemplateCopyHeaderFilter {
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequest(invocation, requestEx);
-    Assert.assertThat(Collections.list(requestEx.getHeaders("name")), Matchers.contains("value"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test
@@ -112,11 +113,11 @@ public class TestRestTemplateCopyHeaderFilter {
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequest(invocation, requestEx);
-    Assert.assertNull((requestEx.getHeader(HttpHeaders.CONTENT_LENGTH)));
+    Assertions.assertNull((requestEx.getHeader(HttpHeaders.CONTENT_LENGTH)));
   }
 
   @Test
   public void afterReceiveResponse() {
-    Assert.assertNull(filter.afterReceiveResponse(null, null));
+    Assertions.assertNull(filter.afterReceiveResponse(null, null));
   }
 }

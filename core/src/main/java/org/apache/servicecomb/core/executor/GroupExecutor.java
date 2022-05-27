@@ -23,9 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -40,7 +39,7 @@ public class GroupExecutor implements Executor, Closeable {
   public static final String KEY_GROUP = "servicecomb.executor.default.group";
 
   // Deprecated
-  public static final String KEY_THREAD = "servicecomb.executor.default.thread-per-group";
+  public static final String KEY_OLD_MAX_THREAD = "servicecomb.executor.default.thread-per-group";
 
   public static final String KEY_CORE_THREADS = "servicecomb.executor.default.coreThreads-per-group";
 
@@ -49,6 +48,10 @@ public class GroupExecutor implements Executor, Closeable {
   public static final String KEY_MAX_IDLE_SECOND = "servicecomb.executor.default.maxIdleSecond-per-group";
 
   public static final String KEY_MAX_QUEUE_SIZE = "servicecomb.executor.default.maxQueueSize-per-group";
+
+  private static final AtomicBoolean LOG_PRINTED = new AtomicBoolean();
+
+  protected String groupName;
 
   protected int groupCount;
 
@@ -61,36 +64,54 @@ public class GroupExecutor implements Executor, Closeable {
   protected int maxQueueSize;
 
   // to avoid multiple network thread conflicted when put tasks to executor queue
-  private List<ExecutorService> executorList = new ArrayList<>();
+  private final List<ExecutorService> executorList = new ArrayList<>();
 
   // for bind network thread to one executor
   // it's impossible that has too many network thread, so index will not too big that less than 0
-  private AtomicInteger index = new AtomicInteger();
+  private final AtomicInteger index = new AtomicInteger();
 
-  private Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
+  private final Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
 
-  public void init() {
+  public GroupExecutor init() {
+    return init("group");
+  }
+
+  public GroupExecutor init(String groupName) {
+    this.groupName = groupName;
     initConfig();
 
     for (int groupIdx = 0; groupIdx < groupCount; groupIdx++) {
-      ThreadPoolExecutor executor = new ThreadPoolExecutor(coreThreads,
+      GroupThreadFactory factory = new GroupThreadFactory(groupName + groupIdx);
+
+      ThreadPoolExecutorEx executor = new ThreadPoolExecutorEx(coreThreads,
           maxThreads,
           maxIdleInSecond,
           TimeUnit.SECONDS,
-          new LinkedBlockingQueue<>(maxQueueSize));
+          new LinkedBlockingQueueEx(maxQueueSize),
+          factory);
       executorList.add(executor);
     }
+
+    return this;
   }
 
   public void initConfig() {
+    if (LOG_PRINTED.compareAndSet(false, true)) {
+      LOGGER.info("thread pool rules:\n"
+          + "1.use core threads.\n"
+          + "2.if all core threads are busy, then create new thread.\n"
+          + "3.if thread count reach the max limitation, then queue the request.\n"
+          + "4.if queue is full, and threads count is max, then reject the request.");
+    }
+
     groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
     coreThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_CORE_THREADS, 25).get();
 
     maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_THREADS, -1).get();
     if (maxThreads <= 0) {
-      maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_THREAD, -1).get();
+      maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_OLD_MAX_THREAD, -1).get();
       if (maxThreads > 0) {
-        LOGGER.warn("{} is deprecated, recommended to use {}.", KEY_THREAD, KEY_MAX_THREADS);
+        LOGGER.warn("{} is deprecated, recommended to use {}.", KEY_OLD_MAX_THREAD, KEY_MAX_THREADS);
       } else {
         maxThreads = 100;
       }
@@ -104,8 +125,8 @@ public class GroupExecutor implements Executor, Closeable {
     maxQueueSize = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_QUEUE_SIZE, Integer.MAX_VALUE).get();
 
     LOGGER.info(
-        "executor group={}. per group settings, coreThreads={}, maxThreads={}, maxIdleInSecond={}, maxQueueSize={}.",
-        groupCount, coreThreads, maxThreads, maxIdleInSecond, maxQueueSize);
+        "executor name={}, group={}. per group settings, coreThreads={}, maxThreads={}, maxIdleInSecond={}, maxQueueSize={}.",
+        groupName, groupCount, coreThreads, maxThreads, maxIdleInSecond, maxQueueSize);
   }
 
   public List<ExecutorService> getExecutorList() {

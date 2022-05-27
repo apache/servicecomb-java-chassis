@@ -28,6 +28,8 @@ public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
 
   private String implementation;
 
+  private String schemaInterfaceName;
+
   public String getImplementation() {
     return implementation;
   }
@@ -36,8 +38,17 @@ public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
     this.implementation = implementation;
   }
 
+  public String getSchemaInterfaceName() {
+    return schemaInterfaceName;
+  }
+
+  public PojoProducerMeta setSchemaInterfaceName(String schemaInterfaceName) {
+    this.schemaInterfaceName = schemaInterfaceName;
+    return this;
+  }
+
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     pojoProducers.registerPojoProducer(this);
   }
 }

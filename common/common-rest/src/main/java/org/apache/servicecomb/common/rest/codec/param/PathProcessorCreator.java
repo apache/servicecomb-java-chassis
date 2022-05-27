@@ -18,19 +18,20 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.foundation.common.http.HttpUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
+import org.springframework.util.StringUtils;
 
 public class PathProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "path";
@@ -41,7 +42,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       @SuppressWarnings("unchecked")
       Map<String, String> pathVarMap = (Map<String, String>) request.getAttribute(RestConst.PATH_PARAMETERS);
       if (pathVarMap == null) {
@@ -52,7 +53,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
       if (value == null) {
         return null;
       }
-      return convertValue(HttpUtils.uriDecodePath(value), targetType);
+      return convertValue(StringUtils.uriDecode(value, StandardCharsets.UTF_8), targetType);
     }
 
     @Override
@@ -72,7 +73,8 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new PathProcessor(parameter.getName(), targetType, ((PathParameter) parameter).getDefaultValue(), true);
   }
 }

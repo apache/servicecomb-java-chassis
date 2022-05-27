@@ -17,11 +17,14 @@
 package org.apache.servicecomb.core.definition;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
+import org.apache.servicecomb.core.Const;
 
 @InjectProperties(prefix = "servicecomb")
 public class OperationConfig {
@@ -45,10 +48,12 @@ public class OperationConfig {
       ".${schema}",
       "");
 
-  @InjectProperty(keys = "${consumer-producer}.invocation.slow.enabled${op-priority}", defaultValue = "false")
+  @InjectProperty(keys = {"metrics.${consumer-producer}.invocation.slow.enabled${op-priority}",
+      "${consumer-producer}.invocation.slow.enabled${op-priority}"}, defaultValue = "false")
   private boolean slowInvocationEnabled;
 
-  @InjectProperty(keys = {"${consumer-producer}.invocation.slow.msTime${op-priority}"}, defaultValue = "1000")
+  @InjectProperty(keys = {"metrics.${consumer-producer}.invocation.slow.msTime${op-priority}",
+      "${consumer-producer}.invocation.slow.msTime${op-priority}"}, defaultValue = "1000")
   private long msSlowInvocation;
 
   private long nanoSlowInvocation;
@@ -60,8 +65,29 @@ public class OperationConfig {
   private long msRequestTimeout;
 
   /**
+   * Invocation timeout.
+   */
+  @InjectProperty(keys = {"invocation.${op-any-priority}.timeout", "invocation.timeout"}, defaultValue = "-1")
+  private long msInvocationTimeout;
+
+  private long nanoInvocationTimeout;
+
+  /**
+   * whether to remove certain headers from the 3rd party invocations
+   */
+  @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "true")
+  private boolean clientRequestHeaderFilterEnabled = true;
+
+  /**
    * producer wait in thread pool timeout
    */
+  private final Map<String, Long> nanoRequestWaitInPoolTimeoutByTransport = new HashMap<>();
+
+  @InjectProperty(keys = "Provider.requestWaitInPoolTimeout${op-priority}", defaultValue = "30000")
+  private long msDefaultRequestWaitInPoolTimeout;
+
+  private long nanoDefaultRequestWaitInPoolTimeout;
+
   @InjectProperty(keys = {
       "Provider.requestWaitInPoolTimeout${op-priority}",
       "highway.server.requestWaitInPoolTimeout"}, defaultValue = "30000")
@@ -75,6 +101,15 @@ public class OperationConfig {
   private long msRestRequestWaitInPoolTimeout;
 
   private long nanoRestRequestWaitInPoolTimeout;
+
+  @InjectProperty(keys = {
+      "operation${op-priority}.transport", // Deprecated
+      "references.transport${op-priority}"
+  })
+  private String transport;
+
+  @InjectProperty(keys = {"governance.${op-any-priority}.matchType", "governance.matchType"}, defaultValue = "rest")
+  private String governanceMatchType;
 
   public boolean isSlowInvocationEnabled() {
     return slowInvocationEnabled;
@@ -105,6 +140,27 @@ public class OperationConfig {
     this.msRequestTimeout = msRequestTimeout;
   }
 
+  public long getNanoRequestWaitInPoolTimeout(String transport) {
+    return nanoRequestWaitInPoolTimeoutByTransport.getOrDefault(transport, nanoDefaultRequestWaitInPoolTimeout);
+  }
+
+  public void registerRequestWaitInPoolTimeout(String transport, long msTimeout) {
+    nanoRequestWaitInPoolTimeoutByTransport.put(transport, TimeUnit.MILLISECONDS.toNanos(msTimeout));
+  }
+
+  public long getMsDefaultRequestWaitInPoolTimeout() {
+    return msDefaultRequestWaitInPoolTimeout;
+  }
+
+  public void setMsDefaultRequestWaitInPoolTimeout(long msDefaultRequestWaitInPoolTimeout) {
+    this.msDefaultRequestWaitInPoolTimeout = msDefaultRequestWaitInPoolTimeout;
+    this.nanoDefaultRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msDefaultRequestWaitInPoolTimeout);
+  }
+
+  public long getNanoDefaultRequestWaitInPoolTimeout() {
+    return nanoDefaultRequestWaitInPoolTimeout;
+  }
+
   public long getMsHighwayRequestWaitInPoolTimeout() {
     return msHighwayRequestWaitInPoolTimeout;
   }
@@ -112,6 +168,7 @@ public class OperationConfig {
   public void setMsHighwayRequestWaitInPoolTimeout(long msHighwayRequestWaitInPoolTimeout) {
     this.msHighwayRequestWaitInPoolTimeout = msHighwayRequestWaitInPoolTimeout;
     this.nanoHighwayRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msHighwayRequestWaitInPoolTimeout);
+    registerRequestWaitInPoolTimeout(Const.HIGHWAY, msHighwayRequestWaitInPoolTimeout);
   }
 
   public long getNanoHighwayRequestWaitInPoolTimeout() {
@@ -125,9 +182,50 @@ public class OperationConfig {
   public void setMsRestRequestWaitInPoolTimeout(long msRestRequestWaitInPoolTimeout) {
     this.msRestRequestWaitInPoolTimeout = msRestRequestWaitInPoolTimeout;
     this.nanoRestRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msRestRequestWaitInPoolTimeout);
+    registerRequestWaitInPoolTimeout(Const.RESTFUL, msRestRequestWaitInPoolTimeout);
   }
 
   public long getNanoRestRequestWaitInPoolTimeout() {
     return nanoRestRequestWaitInPoolTimeout;
+  }
+
+  public long getMsInvocationTimeout() {
+    return msInvocationTimeout;
+  }
+
+  public void setMsInvocationTimeout(long msInvocationTimeout) {
+    this.msInvocationTimeout = msInvocationTimeout;
+    this.nanoInvocationTimeout = TimeUnit.MILLISECONDS.toNanos(msInvocationTimeout);
+  }
+
+  public String getGovernanceMatchType() {
+    return governanceMatchType;
+  }
+
+  public void setGovernanceMatchType(String governanceMatchType) {
+    this.governanceMatchType = governanceMatchType;
+  }
+
+  public long getNanoInvocationTimeout() {
+    return this.nanoInvocationTimeout;
+  }
+
+  public boolean isClientRequestHeaderFilterEnabled() {
+    return clientRequestHeaderFilterEnabled;
+  }
+
+  public void setClientRequestHeaderFilterEnabled(boolean clientRequestHeaderFilterEnabled) {
+    this.clientRequestHeaderFilterEnabled = clientRequestHeaderFilterEnabled;
+  }
+
+  public String getTransport() {
+    return transport;
+  }
+
+  public void setTransport(String transport) {
+    if (transport == null) {
+      transport = Const.ANY_TRANSPORT;
+    }
+    this.transport = transport;
   }
 }

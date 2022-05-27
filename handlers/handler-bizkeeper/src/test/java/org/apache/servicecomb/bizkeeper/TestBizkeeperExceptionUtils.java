@@ -18,17 +18,17 @@
 package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.exception.CseException;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestBizkeeperExceptionUtils {
 
   @Test
   public void testCreateBizkeeperException() {
-    Assert.assertEquals("servicecomb.bizkeeper.fallback", BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK);
+    Assertions.assertEquals("servicecomb.bizkeeper.fallback", BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK);
     CseException cseException = BizkeeperExceptionUtils.createBizkeeperException("servicecomb.bizkeeper.fallback",
         new Throwable(),
         "ARGS");
-    Assert.assertNotNull(cseException);
+    Assertions.assertNotNull(cseException);
   }
 }

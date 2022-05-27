@@ -21,23 +21,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.discovery.AbstractDiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 
 public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
-  private static final String KEY_ZONE_AWARE_STEP = "_KEY_ZONE_AWARE_STEP";
+  public static final String KEY_ZONE_AWARE_STEP = "_KEY_ZONE_AWARE_STEP";
 
   private static final String GROUP_RegionAndAZMatch = "instancesRegionAndAZMatch";
 
-  private static final String GROUP_instancesAZMatch = "instancesAZMatch";
+  private static final String GROUP_InstancesAZMatch = "instancesAZMatch";
 
-  private static final String GROUP_instancesNoMatch = "instancesNoMatch";
+  private static final String GROUP_InstancesNoMatch = "instancesNoMatch";
+
+  public static final String GROUP_Instances_All = "instancesAll";
 
   @Override
   public int getOrder() {
@@ -57,14 +59,13 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   protected void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    MicroserviceInstance myself = RegistryUtils.getMicroserviceInstance();
+    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
 
     Map<String, MicroserviceInstance> instancesRegionAndAZMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instancesAZMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instancesNoMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instances = parent.data();
-    for (String id : instances.keySet()) {
-      MicroserviceInstance target = instances.get(id);
+    instances.forEach((id, target) -> {
       if (regionAndAZMatch(myself, target)) {
         instancesRegionAndAZMatch.put(id, target);
       } else if (regionMatch(myself, target)) {
@@ -72,17 +73,20 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
       } else {
         instancesNoMatch.put(id, target);
       }
-    }
+    });
     Map<String, DiscoveryTreeNode> children = new HashMap<>();
     children.put(GROUP_RegionAndAZMatch, new DiscoveryTreeNode()
         .subName(parent, GROUP_RegionAndAZMatch)
         .data(instancesRegionAndAZMatch));
-    children.put(GROUP_instancesAZMatch, new DiscoveryTreeNode()
-        .subName(parent, GROUP_instancesAZMatch)
+    children.put(GROUP_InstancesAZMatch, new DiscoveryTreeNode()
+        .subName(parent, GROUP_InstancesAZMatch)
         .data(instancesAZMatch));
-    children.put(GROUP_instancesNoMatch, new DiscoveryTreeNode()
-        .subName(parent, GROUP_instancesNoMatch)
+    children.put(GROUP_InstancesNoMatch, new DiscoveryTreeNode()
+        .subName(parent, GROUP_InstancesNoMatch)
         .data(instancesNoMatch));
+    children.put(GROUP_Instances_All, new DiscoveryTreeNode()
+        .subName(parent, GROUP_Instances_All)
+        .data(instances));
     parent.children(children);
   }
 
@@ -93,10 +97,13 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
       key = GROUP_RegionAndAZMatch;
       context.pushRerunFilter();
     } else if (GROUP_RegionAndAZMatch.equals(key)) {
-      key = GROUP_instancesAZMatch;
+      key = GROUP_InstancesAZMatch;
       context.pushRerunFilter();
-    } else if (GROUP_instancesAZMatch.equals(key)) {
-      key = GROUP_instancesNoMatch;
+    } else if (GROUP_InstancesAZMatch.equals(key)) {
+      key = GROUP_InstancesNoMatch;
+      context.pushRerunFilter();
+    } else if (GROUP_InstancesNoMatch.equals(key)) {
+      key = GROUP_Instances_All;
     } else {
       throw new ServiceCombException("not possible happen, maybe a bug.");
     }

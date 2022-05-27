@@ -37,13 +37,15 @@ public class ClientRestArgsFilter implements HttpClientFilter {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     RestClientRequestImpl restClientRequest = (RestClientRequestImpl) invocation.getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     try {
-      RestCodec.argsToRest(invocation.getArgs(), swaggerRestOperation, restClientRequest);
+      RestCodec.argsToRest(invocation.getSwaggerArguments(), swaggerRestOperation,
+          restClientRequest);
       requestEx.setBodyBuffer(restClientRequest.getBodyBuffer());
     } catch (Throwable e) {
       throw ExceptionFactory.convertConsumerException(e);

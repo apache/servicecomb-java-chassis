@@ -18,10 +18,10 @@
 package org.apache.servicecomb.foundation.common.event;
 
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.google.common.eventbus.Subscribe;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestEventManager {
   private int objCount = 0;
@@ -32,14 +32,14 @@ public class TestEventManager {
     EventManager.register(listener);
     EventManager.post("a");
     EventManager.post(1);
-    Assert.assertEquals(2, objCount);
-    Assert.assertEquals(1, iCount);
+    Assertions.assertEquals(2, objCount);
+    Assertions.assertEquals(1, iCount);
 
     EventManager.unregister(listener);
     EventManager.post("a");
     EventManager.post(1);
-    Assert.assertEquals(2, objCount);
-    Assert.assertEquals(1, iCount);
+    Assertions.assertEquals(2, objCount);
+    Assertions.assertEquals(1, iCount);
   }
 
   @Test
@@ -47,7 +47,7 @@ public class TestEventManager {
     LogCollector collector = new LogCollector();
 
     test(this);
-    Assert.assertTrue(collector.getEvents().isEmpty());
+    Assertions.assertTrue(collector.getEvents().isEmpty()); // ensure no warning logs
     collector.teardown();
   }
 
@@ -65,8 +65,39 @@ public class TestEventManager {
         iCount++;
       }
     };
-    test(listener);
-    Assert.assertTrue(collector.getEvents().isEmpty());
+    try {
+      test(listener);
+      Assertions.fail();
+    } catch (IllegalStateException e) {
+      Assertions.assertTrue(true);
+    }
+
+    collector.teardown();
+  }
+
+  @Test
+  public void anonymousListenerPublic() {
+    LogCollector collector = new LogCollector();
+    Object listener = new Object() {
+      @Subscribe
+      public void onObject(Object obj) {
+        objCount++;
+      }
+
+      @Subscribe
+      public void onInt(Integer obj) {
+        iCount++;
+      }
+    };
+    try {
+      test(listener);
+      Assertions.fail();
+    } catch (IllegalStateException e) {
+      Assertions.assertTrue(true);
+    }
+
+    // ensure logs: "LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method, throwable);"
+    Assertions.assertFalse(collector.getEvents().isEmpty());
     collector.teardown();
   }
 

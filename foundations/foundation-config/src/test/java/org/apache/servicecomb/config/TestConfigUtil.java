@@ -20,7 +20,6 @@ package org.apache.servicecomb.config;
 import static com.seanyinx.github.unit.scaffolding.Randomness.uniquify;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -31,14 +30,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.servicecomb.config.archaius.sources.ConfigModel;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -47,13 +47,12 @@ import com.netflix.config.DynamicConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
 
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.Assertions;
 
 public class TestConfigUtil {
-
   private static final String systemPropertyName = "servicecomb.cse.servicecomb.system.setting";
 
   private static final String systemExpected = uniquify("ran");
@@ -66,6 +65,8 @@ public class TestConfigUtil {
 
   @BeforeClass
   public static void beforeTest() {
+    Logger.getRootLogger().setLevel(Level.OFF);
+
     ArchaiusUtils.resetConfig();
 
     System.setProperty(systemPropertyName, systemExpected);
@@ -77,11 +78,30 @@ public class TestConfigUtil {
     }
 
     ConfigUtil.installDynamicConfig();
+
+    Logger.getRootLogger().setLevel(Level.INFO);
   }
 
   @AfterClass
   public static void tearDown() {
     ArchaiusUtils.resetConfig();
+  }
+
+  @Test
+  public void testArrayData() {
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    Assertions.assertEquals("a,b,c", configuration.getString("test.commonSeparatedString"));
+    Assertions.assertEquals(1, configuration.getStringArray("test.commonSeparatedString").length);
+    Assertions.assertEquals("a,b,c", configuration.getStringArray("test.commonSeparatedString")[0]);
+
+    Assertions.assertEquals("b,c,d", configuration.getString("test.commonSeparatedStringHolder"));
+    Assertions.assertEquals(1, configuration.getStringArray("test.commonSeparatedStringHolder").length);
+    Assertions.assertEquals("b,c,d", configuration.getStringArray("test.commonSeparatedStringHolder")[0]);
+
+    Assertions.assertEquals("m", configuration.getString("test.stringArray")); // first element
+    Assertions.assertEquals(2, configuration.getStringArray("test.stringArray").length);
+    Assertions.assertEquals("m", configuration.getStringArray("test.stringArray")[0]);
+    Assertions.assertEquals("n", configuration.getStringArray("test.stringArray")[1]);
   }
 
   @Test
@@ -92,87 +112,67 @@ public class TestConfigUtil {
     ConfigUtil.addConfig("service_description.version", "1.0.2");
     ConfigUtil.addConfig("cse.test.enabled", true);
     ConfigUtil.addConfig("cse.test.num", 10);
-    AbstractConfiguration configuration = ConfigUtil.createDynamicConfig();
-    Assert.assertEquals(configuration.getString("service_description.name"), "service_name_test");
-    Assert.assertTrue(configuration.getBoolean("cse.test.enabled"));
-    Assert.assertEquals(configuration.getInt("cse.test.num"), 10);
+    AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
+    Assertions.assertEquals(configuration.getString("service_description.name"), "service_name_test");
+    Assertions.assertTrue(configuration.getBoolean("cse.test.enabled"));
+    Assertions.assertEquals(configuration.getInt("cse.test.num"), 10);
   }
 
   @Test
   public void testCreateDynamicConfigNoConfigCenterSPI() {
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
-        result = null;
-      }
-    };
-
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader(dynamicConfig);
-    List<ConfigModel> list = loader.getConfigModels();
-    Assert.assertEquals(loader, ConfigUtil.getMicroserviceConfigLoader(dynamicConfig));
-    Assert.assertEquals(1, list.size());
-    Assert.assertNotEquals(DynamicWatchedConfiguration.class,
-        ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
-  }
-
-  @Test
-  public void testCreateDynamicConfigHasConfigCenter() {
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-    Assert.assertEquals(DynamicWatchedConfiguration.class,
+    AbstractConfiguration dynamicConfig = ConfigUtil.createLocalConfig();
+    Assertions.assertNotEquals(DynamicWatchedConfiguration.class,
         ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
   }
 
   @Test
   public void testGetPropertyInvalidConfig() {
-    Assert.assertNull(ConfigUtil.getProperty(null, "any"));
-    Assert.assertNull(ConfigUtil.getProperty(new Object(), "any"));
+    Assertions.assertNull(ConfigUtil.getProperty(null, "any"));
+    Assertions.assertNull(ConfigUtil.getProperty(new Object(), "any"));
   }
 
   @Test
   public void propertiesFromFileIsDuplicatedToCse() {
     String expected = "value";
 
-    assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("cse.cse.servicecomb.file", null)
-        .get(),
-        equalTo(null));
+    Assertions.assertNull(DynamicPropertyFactory
+            .getInstance()
+            .getStringProperty("cse.cse.servicecomb.file", null)
+            .get());
 
-    assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.file", null)
-        .get(),
-        equalTo(expected));
+    Assertions.assertEquals(expected, DynamicPropertyFactory
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.file", null)
+            .get());
   }
 
   @Test
   public void propertiesFromSystemIsDuplicatedToCse() {
-    assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty(systemPropertyName, null)
-        .get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory
+            .getInstance()
+            .getStringProperty(systemPropertyName, null)
+            .get(),
         equalTo(systemExpected));
 
-    assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
-        .get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
+            .get(),
         equalTo(systemExpected));
   }
 
   @Test
   public void propertiesFromEnvironmentIsDuplicatedToCse() {
-    assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty(environmentPropertyName, null)
-        .get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory
+            .getInstance()
+            .getStringProperty(environmentPropertyName, null)
+            .get(),
         equalTo(environmentExpected));
 
-    assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
-        .get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
+            .get(),
         equalTo(environmentExpected));
   }
 
@@ -182,11 +182,11 @@ public class TestConfigUtil {
 
     AbstractConfiguration config = new DynamicConfiguration();
     config.addProperty("cse.list", list);
-    Deencapsulation.invoke(ConfigUtil.class, "duplicateCseConfigToServicecomb", config);
+    ConfigUtil.duplicateCseConfigToServicecomb(config);
 
     Object result = config.getProperty("servicecomb.list");
-    assertThat(result, instanceOf(List.class));
-    assertThat(result, equalTo(list));
+    MatcherAssert.assertThat(result, instanceOf(List.class));
+    MatcherAssert.assertThat(result, equalTo(list));
   }
 
   @Test
@@ -197,17 +197,17 @@ public class TestConfigUtil {
 
     configurationSource.addProperty(someProperty, expected);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     String changed = uniquify("changed");
     configurationSource.addProperty(someProperty, changed);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(changed));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(changed));
 
     expected = uniquify("ran");
@@ -216,17 +216,17 @@ public class TestConfigUtil {
 
     configurationSource.addProperty(someProperty, expected);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     changed = uniquify("changed");
     configurationSource.addProperty(someProperty, changed);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(changed));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(changed));
   }
 
@@ -237,34 +237,34 @@ public class TestConfigUtil {
     String injectProperty = "servicecomb.cse.servicecomb.change";
     configurationSource.addProperty(someProperty, expected);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     String changed = uniquify("changed");
     configurationSource.setProperty(someProperty, changed);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(changed));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(changed));
 
     expected = uniquify("ran");
     someProperty = "cse.servicecomb.cse.change";
     injectProperty = "servicecomb.servicecomb.cse.change";
     configurationSource.addProperty(someProperty, expected);
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     changed = uniquify("changed");
     configurationSource.setProperty(someProperty, changed);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(changed));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(changed));
   }
 
@@ -275,16 +275,16 @@ public class TestConfigUtil {
     String injectProperty = "servicecomb.cse.servicecomb.delete";
     configurationSource.addProperty(someProperty, expected);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     configurationSource.deleteProperty(someProperty);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(null));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(null));
 
     expected = uniquify("ran");
@@ -292,16 +292,16 @@ public class TestConfigUtil {
     injectProperty = "servicecomb.servicecomb.cse.delete";
     configurationSource.addProperty(someProperty, expected);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(expected));
 
     configurationSource.deleteProperty(someProperty);
 
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(null));
-    assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
+    MatcherAssert.assertThat(DynamicPropertyFactory.getInstance().getStringProperty(injectProperty, null).get(),
         equalTo(null));
   }
 
@@ -311,8 +311,7 @@ public class TestConfigUtil {
     AbstractConfiguration config = new DynamicConfiguration();
     config.addProperty(someProperty, "testing");
     AbstractConfiguration result = ConfigUtil.convertEnvVariable(config);
-    assertThat(result.getString("cse.service.registry.address"), equalTo("testing"));
-    assertThat(result.getString("cse_service_registry_address"), equalTo("testing"));
+    Assertions.assertEquals("testing", result.getString("cse.service.registry.address"));
   }
 
   @Test
@@ -331,11 +330,11 @@ public class TestConfigUtil {
 
     ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
 
-    Assert.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
-    Assert.assertEquals(propertyHigherPriority, localConfiguration.getString(overriddenConfigKey));
+    Assertions.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
+    Assertions.assertEquals(propertyHigherPriority, localConfiguration.getString(overriddenConfigKey));
     // Test mapping key/value from self mappfing.xml
-    Assert.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey1));
-    Assert.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey2));
+    Assertions.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey1));
+    Assertions.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey2));
   }
 
   @SuppressWarnings("unchecked")
@@ -343,7 +342,7 @@ public class TestConfigUtil {
     Class<?>[] classes = Collections.class.getDeclaredClasses();
     Map<String, String> env = System.getenv();
     for (Class<?> cl : classes) {
-      if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+      if ("java.util.Collections$UnmodifiableMap" .equals(cl.getName())) {
         Field field = cl.getDeclaredField("m");
         field.setAccessible(true);
         Object obj = field.get(env);
@@ -372,6 +371,6 @@ public class TestConfigUtil {
 
     ConfigUtil.destroyConfigCenterConfigurationSource();
 
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 }

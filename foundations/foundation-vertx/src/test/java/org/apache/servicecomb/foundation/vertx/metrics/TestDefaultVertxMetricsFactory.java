@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.Vertx;
@@ -24,6 +23,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.core.spi.metrics.VertxMetrics;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultVertxMetricsFactory {
   @Mocked
@@ -40,11 +40,10 @@ public class TestDefaultVertxMetricsFactory {
     options.setMetricsOptions(metricsOptions);
     VertxMetrics vertxMetrics = factory.metrics(options);
 
-    Assert.assertSame(factory, metricsOptions.getFactory());
-    Assert.assertTrue(metricsOptions.isEnabled());
+    Assertions.assertSame(factory, metricsOptions.getFactory());
+    Assertions.assertTrue(metricsOptions.isEnabled());
 
-    Assert.assertSame(factory.getVertxMetrics(), vertxMetrics);
-    Assert.assertTrue(vertxMetrics.isMetricsEnabled());
-    Assert.assertTrue(vertxMetrics.isEnabled());
+    Assertions.assertSame(factory.getVertxMetrics(), vertxMetrics);
+    Assertions.assertTrue(vertxMetrics.isMetricsEnabled());
   }
 }

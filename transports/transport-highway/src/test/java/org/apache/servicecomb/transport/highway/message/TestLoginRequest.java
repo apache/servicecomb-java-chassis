@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.transport.highway.message;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestLoginRequest {
   @Test
@@ -26,7 +26,7 @@ public class TestLoginRequest {
     req.setProtocol("p");
     req.setZipName("z");
 
-    Assert.assertEquals("p", req.getProtocol());
-    Assert.assertEquals("z", req.getZipName());
+    Assertions.assertEquals("p", req.getProtocol());
+    Assertions.assertEquals("z", req.getZipName());
   }
 }

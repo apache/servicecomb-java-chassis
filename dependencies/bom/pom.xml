@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>java-chassis-dependencies-parent</artifactId>
+    <version>2.8.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>java-chassis-bom</artifactId>
+  <name>Java Chassis::Bom</name>
+  <packaging>pom</packaging>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Service Comb -->
+      <!-- sort by project directory name, easy to check if the module is missed -->
+      <!-- Service Comb : archetypes -->
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-jaxrs-archetype</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-pojo-archetype</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-spring-boot2-starter-archetype</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-springmvc-archetype</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Service Comb : clients -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-center-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-clients-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-kie-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>http-client-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>service-center-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Service Comb : common -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>common-access-log</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>common-protobuf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>common-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Service Comb : core -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- ServiceComb： deployment -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- ServiceComb： dynamic-config -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-apollo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-cc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-kie</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-nacos</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- ServiceComb： edge -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>edge-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb： foundations -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-metrics</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-protobuf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-registry</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-spi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-ssl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-test-scaffolding</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-vertx</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- ServiceComb：governance -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>servicecomb-governance</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- ServiceComb： handlers -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-bizkeeper</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-fault-injection</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-flowcontrol-qps</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-governance</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-loadbalance</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-publickey-auth</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-router</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-tracing-zipkin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb： inspector -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>inspector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb： metrics -->
+
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>metrics-prometheus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb： providers -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-jaxrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-pojo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-rest-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-springmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb： service registry -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-lightweight</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-local</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-schema-discovery</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-service-center</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-zero-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb： solutions -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>solution-basic</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb: spring boot -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb ServiceStage extension -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>servicestage-environment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>servicestage</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>dashboard</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>darklaunch</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb: swagger -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-jaxrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-spring-data</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-springmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-jaxrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-springmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-validator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb: tracing -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>tracing-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>tracing-zipkin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- ServiceComb: transports -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-highway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-rest-servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-rest-vertx</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

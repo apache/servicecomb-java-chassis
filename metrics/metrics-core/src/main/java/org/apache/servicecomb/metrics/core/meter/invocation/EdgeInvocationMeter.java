@@ -25,23 +25,22 @@ import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
 
 public class EdgeInvocationMeter extends ConsumerInvocationMeter {
-  private SimpleTimer executorQueueTimer;
+  private final SimpleTimer executorQueueTimer;
 
-  private SimpleTimer serverFiltersRequestTimer;
+  private final SimpleTimer serverFiltersRequestTimer;
 
-  private SimpleTimer serverFiltersResponseTimer;
+  private final SimpleTimer serverFiltersResponseTimer;
 
-  private SimpleTimer sendResponseTimer;
+  private final SimpleTimer sendResponseTimer;
 
-  public EdgeInvocationMeter(Registry registry, Id id) {
-    super(registry, id);
-    executorQueueTimer = creatStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-    serverFiltersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
-    serverFiltersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
-    sendResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
+  public EdgeInvocationMeter(Id id) {
+    super(id);
+    executorQueueTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
+    serverFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
+    serverFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
+    sendResponseTimer = createStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
   }
 
   @Override

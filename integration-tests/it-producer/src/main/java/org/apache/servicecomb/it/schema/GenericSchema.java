@@ -20,8 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
@@ -97,5 +96,21 @@ public class GenericSchema {
     Assert.isInstanceOf(Generic.class, mapListUserGeneric);
     Assert.isInstanceOf(Map.class, mapListUserGeneric.value);
     return mapListUserGeneric;
+  }
+
+  @PostMapping(path = "genericNestedListString")
+  public List<List<String>> genericNestedListString(@RequestBody List<List<String>> nestedListString) {
+    Assert.isInstanceOf(List.class, nestedListString);
+    Assert.isInstanceOf(List.class, nestedListString.get(0));
+    Assert.isInstanceOf(String.class, nestedListString.get(0).get(0));
+    return nestedListString;
+  }
+
+  @PostMapping(path = "genericNestedListUser")
+  public List<List<User>> genericNestedListUser(@RequestBody List<List<User>> nestedListUser) {
+    Assert.isInstanceOf(List.class, nestedListUser);
+    Assert.isInstanceOf(List.class, nestedListUser.get(0));
+    Assert.isInstanceOf(User.class, nestedListUser.get(0).get(0));
+    return nestedListUser;
   }
 }

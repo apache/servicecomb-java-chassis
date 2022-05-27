@@ -26,7 +26,7 @@ import javax.servlet.ServletInputStream;
 import io.netty.buffer.ByteBuf;
 
 public class BufferInputStream extends ServletInputStream {
-  private ByteBuf byteBuf;
+  private final ByteBuf byteBuf;
 
   public BufferInputStream(ByteBuf buffer) {
     this.byteBuf = buffer;
@@ -45,7 +45,7 @@ public class BufferInputStream extends ServletInputStream {
 
   @Override
   public int read() {
-    return byteBuf.readByte();
+    return byteBuf.readUnsignedByte();
   }
 
   public boolean readBoolean() {

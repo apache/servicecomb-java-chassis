@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,24 +40,55 @@ public final class JvmUtils {
 
   /**
    *
-   * @return main class or null, never throw exception
+   * @return main class or null, never throw exception.
+   * Note that this method does not ensure that the scbMainClass can be returned correctly in the some scene.
+   */
+  public static Class<?> findMainClassByStackTrace() {
+    String mainClass = null;
+    StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+    if (stackTrace != null && stackTrace.length > 0) {
+      for (StackTraceElement stackTraceElement : stackTrace) {
+        if ("main".equals(stackTraceElement.getMethodName())) {
+          mainClass = stackTraceElement.getClassName();
+          break;
+        }
+      }
+    }
+    if(StringUtils.isEmpty(mainClass)){
+      LOGGER.info("Can't found main class by stackTrace.");
+      return null;
+    }
+    try {
+      Class<?> cls = Class.forName(mainClass);
+      LOGGER.info("Found main class \"{}\" by stackTrace.", mainClass);
+      return cls;
+    } catch (Throwable e) {
+      LOGGER.warn("\"{}\" is not a valid class.", mainClass, e);
+      return null;
+    }
+  }
+
+  /**
+   *
+   * @return main class or null, never throw exception.
+   * Note that this method does not ensure that the scbMainClass can be returned correctly in the some scene,like "mvn spring-boot:run".
    */
   public static Class<?> findMainClass() {
+    //Get the mainClass from the call stack
+    String mainClass = null;
     // 1.run with java -cp ......
     //   command is main class and args
     // 2.run with java -jar ......
     //   command is jar file name and args
     String command = System.getProperty(SUN_JAVA_COMMAND);
-    if (command == null || command.isEmpty()) {
+    if (StringUtils.isNotEmpty(command)) {
+      String mainClassOrJar = command.trim().split(" ")[0];
+      mainClass = readFromJar(mainClassOrJar);
+    }
+    if(StringUtils.isEmpty(mainClass)){
+      LOGGER.info("Can't found main class by manifest.");
       return null;
     }
-
-    String mainClassOrJar = command.trim().split(" ")[0];
-    String mainClass = readFromJar(mainClassOrJar);
-    if (mainClass == null || mainClass.isEmpty()) {
-      return null;
-    }
-
     try {
       Class<?> cls = Class.forName(mainClass);
       LOGGER.info("Found main class \"{}\".", mainClass);
@@ -78,6 +110,10 @@ public final class JvmUtils {
       URL url = new URL(manifestUri);
       try (InputStream inputStream = url.openStream()) {
         Manifest manifest = new Manifest(inputStream);
+        String startClass = manifest.getMainAttributes().getValue("Start-Class");
+        if (StringUtils.isNotEmpty(startClass)) {
+          return startClass;
+        }
         return manifest.getMainAttributes().getValue("Main-Class");
       }
     } catch (Throwable e) {

@@ -19,15 +19,13 @@ package org.apache.servicecomb.swagger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.junit.Assert;
-import org.junit.Rule;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -38,8 +36,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestSwaggerUtils {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void swaggerToStringNormal() {
@@ -47,21 +43,20 @@ public class TestSwaggerUtils {
     String content = SwaggerUtils.swaggerToString(swagger);
 
     Swagger newSwagger = SwaggerUtils.parseSwagger(content);
-    Assert.assertEquals(swagger, newSwagger);
+    Assertions.assertEquals(swagger, newSwagger);
   }
 
   @Test
-  public void swaggerToStringException(@Mocked Swagger swagger) throws JsonProcessingException {
+  public void swaggerToStringException(@Mocked Swagger swagger) {
     new Expectations() {
       {
         swagger.getBasePath();
-        result = new Error("failed");
+        result = new RuntimeExceptionWithoutStackTrace();
       }
     };
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("Convert swagger to string failed, ");
-
-    SwaggerUtils.swaggerToString(swagger);
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> SwaggerUtils.swaggerToString(swagger));
+    Assertions.assertEquals("Convert swagger to string failed, ", exception.getMessage());
   }
 
   @Test
@@ -69,37 +64,35 @@ public class TestSwaggerUtils {
     String content = "swagger: \"2.0\"";
     new Expectations(IOUtils.class) {
       {
-        IOUtils.toString(url);
+        IOUtils.toString(url, StandardCharsets.UTF_8);
         result = content;
       }
     };
 
     Swagger swagger = Yaml.mapper().readValue(content, Swagger.class);
     Swagger result = SwaggerUtils.parseSwagger(url);
-    Assert.assertEquals(swagger, result);
+    Assertions.assertEquals(swagger, result);
   }
 
   @Test
   public void parseSwaggerUrlException(@Mocked URL url) throws IOException {
     new Expectations(IOUtils.class) {
       {
-        IOUtils.toString(url);
-        result = new Error("failed");
+        IOUtils.toString(url, StandardCharsets.UTF_8);
+        result = new RuntimeExceptionWithoutStackTrace("failed");
       }
     };
 
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("Parse swagger from url failed, ");
-
-    SwaggerUtils.parseSwagger(url);
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> SwaggerUtils.parseSwagger(url));
+    Assertions.assertTrue(exception.getMessage().contains("Parse swagger from url failed, "));
   }
 
   @Test
-  public void parseSwaggerContentException() throws IOException {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage("Parse swagger from content failed, ");
-
-    SwaggerUtils.parseSwagger("");
+  public void parseSwaggerContentException() {
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> SwaggerUtils.parseSwagger(""));
+    Assertions.assertEquals("Parse swagger from content failed, ", exception.getMessage());
   }
 
   @Test
@@ -110,7 +103,7 @@ public class TestSwaggerUtils {
     operation.addResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertEquals("response of 200", response.getDescription());
+    Assertions.assertEquals("response of 200", response.getDescription());
   }
 
   @Test
@@ -122,7 +115,7 @@ public class TestSwaggerUtils {
     operation.addResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertEquals("description", response.getDescription());
+    Assertions.assertEquals("description", response.getDescription());
   }
 
   @Test
@@ -133,7 +126,7 @@ public class TestSwaggerUtils {
     operation.addResponse("default", response);
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertSame(response, operation.getResponses().get("200"));
+    Assertions.assertSame(response, operation.getResponses().get("200"));
   }
 
   @Test
@@ -146,7 +139,7 @@ public class TestSwaggerUtils {
     operation.addResponse("301", new Response());
 
     SwaggerUtils.correctResponses(operation);
-    Assert.assertSame(response, operation.getResponses().get("200"));
+    Assertions.assertSame(response, operation.getResponses().get("200"));
   }
 
   @Test
@@ -172,19 +165,18 @@ public class TestSwaggerUtils {
 
     SwaggerUtils.correctResponses(swagger);
 
-    Assert.assertEquals("response of 200", response.getDescription());
+    Assertions.assertEquals("response of 200", response.getDescription());
   }
 
-
   @Test(expected = ServiceCombException.class)
-  public void testInvalidate() throws Exception {
+  public void testInvalidate() {
     URL resource = TestSwaggerUtils.class.getResource("/swagger1.yaml");
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
     SwaggerUtils.validateSwagger(swagger);
   }
 
   @Test
-  public void testInvalidateValid() throws Exception {
+  public void testInvalidateValid() {
     URL resource = TestSwaggerUtils.class.getResource("/swagger2.yaml");
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
     SwaggerUtils.validateSwagger(swagger);

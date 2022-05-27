@@ -16,90 +16,183 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.function.Consumer;
+import java.util.Objects;
+import java.util.function.Function;
 
-import org.apache.servicecomb.config.priority.impl.PropertyGetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.Property;
+import com.netflix.config.DynamicProperty;
 
-public abstract class PriorityProperty<T> {
+/**
+ * must create by PriorityPropertyManager<br>
+ *   or register to PriorityPropertyManager manually
+ * @param <T>
+ */
+public class PriorityProperty<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(PriorityProperty.class);
 
-  // priorityKeys[0] has the highest priority
-  private final String[] priorityKeys;
+  private final PriorityPropertyType<T> propertyType;
 
   private final String joinedPriorityKeys;
 
-  // when got invalid value will try next level
-  // null always be a invalid value
-  private final T invalidValue;
+  private final Function<DynamicProperty, T> internalValueReader;
 
-  // when got invalid value by lowest level, will use defaultValue
-  private final T defaultValue;
-
-  private Property<T>[] properties;
+  private final DynamicProperty[] properties;
 
   private T finalValue;
 
-  private Consumer<T> callback = v -> {
-  };
+  public PriorityProperty(PriorityPropertyType<T> propertyType) {
+    this.propertyType = propertyType;
+    this.joinedPriorityKeys = Arrays.toString(propertyType.getPriorityKeys());
+    this.internalValueReader = collectReader(propertyType.getType());
+    this.properties = createProperties(propertyType.getPriorityKeys());
+    initValue();
+  }
 
-  @SuppressWarnings("unchecked")
-  public PriorityProperty(T invalidValue, T defaultValue, PropertyGetter<T> propertyGetter, String... priorityKeys) {
-    this.priorityKeys = priorityKeys;
-    this.joinedPriorityKeys = Arrays.toString(priorityKeys);
-    this.invalidValue = invalidValue;
-    this.defaultValue = defaultValue;
-
-    properties = (Property<T>[]) Array.newInstance(Property.class, priorityKeys.length);
+  private DynamicProperty[] createProperties(String[] priorityKeys) {
+    DynamicProperty[] properties = new DynamicProperty[priorityKeys.length];
     for (int idx = 0; idx < priorityKeys.length; idx++) {
       String key = priorityKeys[idx].trim();
-      // use invalidValue to be defaultValue
-      // only when all priority is invalid, then use defaultValue
-      properties[idx] = propertyGetter.getProperty(key, invalidValue);
-      properties[idx].addCallback(() -> updateFinalValue(false));
+      properties[idx] = DynamicProperty.getInstance(key);
     }
-    updateFinalValue(true);
+    return properties;
+  }
+
+  private Function<DynamicProperty, T> collectReader(Type type) {
+    if (type == int.class || type == Integer.class) {
+      return this::readInt;
+    }
+
+    if (type == long.class || type == Long.class) {
+      return this::readLong;
+    }
+
+    if (type == String.class) {
+      return this::readString;
+    }
+
+    if (type == boolean.class || type == Boolean.class) {
+      return this::readBoolean;
+    }
+
+    if (type == double.class || type == Double.class) {
+      return this::readDouble;
+    }
+
+    if (type == float.class || type == Float.class) {
+      return this::readFloat;
+    }
+
+    throw new IllegalStateException("not support, type=" + type.getTypeName());
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readInt(DynamicProperty property) {
+    return (T) property.getInteger();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readLong(DynamicProperty property) {
+    return (T) property.getLong();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readString(DynamicProperty property) {
+    return (T) property.getString();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readBoolean(DynamicProperty property) {
+    return (T) property.getBoolean();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readDouble(DynamicProperty property) {
+    return (T) property.getDouble();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readFloat(DynamicProperty property) {
+    return (T) property.getFloat();
   }
 
   public String[] getPriorityKeys() {
-    return priorityKeys;
+    return propertyType.getPriorityKeys();
   }
 
-  private synchronized void updateFinalValue(boolean init) {
+  public T getDefaultValue() {
+    return propertyType.getDefaultValue();
+  }
+
+  public DynamicProperty[] getProperties() {
+    return properties;
+  }
+
+  void initValue() {
+    String effectiveKey = doUpdateFinalValue();
+    LOGGER.debug("config inited, \"{}\" set to {}, effective key is \"{}\".",
+        joinedPriorityKeys, finalValue, effectiveKey);
+  }
+
+  synchronized boolean updateValue() {
+    T lastValue = finalValue;
+    String effectiveKey = doUpdateFinalValue();
+    if (effectiveKey != null) {
+      LOGGER.debug("config changed, \"{}\" changed from {} to {}, effective key is \"{}\".",
+          joinedPriorityKeys, lastValue, finalValue, effectiveKey);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   *
+   * @return if value changed, return effectiveKey, otherwise null
+   */
+  private String doUpdateFinalValue() {
+    T lastValue = finalValue;
+
     String effectiveKey = "default value";
-    T value = defaultValue;
-    for (Property<T> property : properties) {
-      if (property.getValue() == null || property.getValue().equals(invalidValue)) {
+    T value = propertyType.getDefaultValue();
+    for (DynamicProperty property : properties) {
+      T propValue = internalValueReader.apply(property);
+      if (propValue == null || propValue.equals(propertyType.getInvalidValue())) {
         continue;
       }
 
       effectiveKey = property.getName();
-      value = property.getValue();
+      value = propValue;
       break;
     }
 
-    if (init) {
-      LOGGER.debug("config inited, \"{}\" set to {}, effective key is \"{}\".",
-          joinedPriorityKeys, value, effectiveKey);
-    } else {
-      LOGGER.info("config changed, \"{}\" changed from {} to {}, effective key is \"{}\".",
-          joinedPriorityKeys, finalValue, value, effectiveKey);
+    if (Objects.equals(lastValue, value)) {
+      return null;
     }
+
     finalValue = value;
-    callback.accept(finalValue);
+    return effectiveKey;
   }
 
   public T getValue() {
     return finalValue;
   }
 
-  public void setCallback(Consumer<T> callback) {
-    this.callback = callback;
-    callback.accept(finalValue);
+  public boolean isChangedKey(String changedKey) {
+    if (changedKey == null) {
+      // property source changed or clear, and so on
+      return true;
+    }
+
+    for (DynamicProperty property : properties) {
+      if (changedKey.equals(property.getName())) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 }

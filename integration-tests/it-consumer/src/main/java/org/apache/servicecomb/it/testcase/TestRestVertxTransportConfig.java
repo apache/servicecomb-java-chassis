@@ -17,20 +17,21 @@
 
 package org.apache.servicecomb.it.testcase;
 
-import static org.junit.Assert.fail;
-
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Assert;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import com.google.common.base.Strings;
+import org.junit.jupiter.api.Assertions;
 
-import io.netty.handler.codec.TooLongFrameException;
+import javax.ws.rs.core.Response;
 
 public class TestRestVertxTransportConfig {
   // GET /v1/restServerConfig/testMaxInitialLineLength?q=...... HTTP/1.1
-  private static final String INITIAL_LINE_SUFFIX = " HTTP/1.1";
+  private static final String INITIAL_LINE_SUFFIX = " HTTP/1.1\r";
 
   private static final String INITIAL_LINE_PREFIX = "GET /v1/restVertxTransportConfig/testMaxInitialLineLength?q=";
 
@@ -56,7 +57,7 @@ public class TestRestVertxTransportConfig {
   public void testMaxInitialLineLength5000() {
     String q = Strings.repeat("q", 5000 - INITIAL_LINE_PREFIX.length() - INITIAL_LINE_SUFFIX.length());
     String result = consumers.getIntf().testMaxInitialLineLength(q);
-    Assert.assertEquals("OK", result);
+    Assertions.assertEquals("OK", result);
   }
 
   @Test
@@ -64,9 +65,9 @@ public class TestRestVertxTransportConfig {
     String q = Strings.repeat("q", 5001 - INITIAL_LINE_PREFIX.length() - INITIAL_LINE_SUFFIX.length());
     try {
       consumers.getIntf().testMaxInitialLineLength(q);
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (InvocationException e) {
-      Assert.assertEquals(414, e.getStatusCode());
+      Assertions.assertEquals(Response.Status.REQUEST_URI_TOO_LONG.getStatusCode(), e.getStatusCode());
     }
   }
 
@@ -76,17 +77,19 @@ public class TestRestVertxTransportConfig {
   @Test
   public void testMaxResponseHeaderSize10000() {
     String response = consumers.getIntf().testClientReceiveHeaderSize(10000 - RESPONSE_HEADER.length());
-    Assert.assertEquals("OK", response);
+    Assertions.assertEquals("OK", response);
   }
 
   @Test
   public void testMaxResponseHeaderSize10001() {
     try {
       consumers.getIntf().testClientReceiveHeaderSize(100001 - RESPONSE_HEADER.length());
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (InvocationException e) {
-      Assert.assertEquals(TooLongFrameException.class, e.getCause().getClass());
-      Assert.assertEquals("HTTP header is larger than 10000 bytes.", e.getCause().getMessage());
+      // in slow environment, may cause connection close. 
+      MatcherAssert.assertThat(ExceptionUtils.getExceptionMessageWithoutTrace(e),
+          CoreMatchers.anyOf(CoreMatchers.containsString("HTTP header is larger than 10000 bytes"),
+              CoreMatchers.containsString("Connection was closed")));
     }
   }
 }

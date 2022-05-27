@@ -19,28 +19,23 @@ package org.apache.servicecomb.swagger.invocation.context;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
-import org.slf4j.Marker;
-
 /**
- * 设置特定的Cse Context数据
+ *  InvocationContext is used to pass data between microservices or in microservice different layer.
  */
 public class InvocationContext {
-  private static HttpStatusManager statusMgr = new HttpStatusManager();
+  private static final HttpStatusManager statusMgr = new HttpStatusManager();
 
   protected StatusType httpStatus;
 
-  // value只能是简单类型
-  protected Map<String, String> context = new HashMap<>();
+  protected final Map<String, String> context = new HashMap<>();
 
-  protected Map<String, Object> localContext = new HashMap<>();
+  protected final Map<String, Object> localContext = new HashMap<>();
 
-  // provide traceid-invocationId, so that can log them by %marker
-  protected Marker marker;
+  protected TransportContext transportContext;
 
   public InvocationContext() {
     httpStatus = Status.OK;
@@ -51,7 +46,8 @@ public class InvocationContext {
   }
 
   public void setContext(Map<String, String> context) {
-    this.context = context;
+    this.context.clear();
+    this.addContext(context);
   }
 
   public void addContext(String key, String value) {
@@ -82,13 +78,6 @@ public class InvocationContext {
     if (otherContext == null) {
       return;
     }
-    if (otherContext.size() > context.size()) {
-      for (Entry<String, String> entry : context.entrySet()) {
-        otherContext.putIfAbsent(entry.getKey(), entry.getValue());
-      }
-      this.context = otherContext;
-      return;
-    }
     context.putAll(otherContext);
   }
 
@@ -97,7 +86,8 @@ public class InvocationContext {
   }
 
   public void setLocalContext(Map<String, Object> localContext) {
-    this.localContext = localContext;
+    this.localContext.clear();
+    this.addLocalContext(localContext);
   }
 
   public void addLocalContext(String key, Object value) {
@@ -133,7 +123,12 @@ public class InvocationContext {
     this.httpStatus = statusMgr.getOrCreateByStatusCode(statusCode);
   }
 
-  public Marker getMarker() {
-    return marker;
+  @SuppressWarnings("unchecked")
+  public <T extends TransportContext> T getTransportContext() {
+    return (T) transportContext;
+  }
+
+  public void setTransportContext(TransportContext transportContext) {
+    this.transportContext = transportContext;
   }
 }

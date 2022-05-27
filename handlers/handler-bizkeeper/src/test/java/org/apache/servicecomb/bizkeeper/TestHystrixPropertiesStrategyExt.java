@@ -17,26 +17,21 @@
 
 package org.apache.servicecomb.bizkeeper;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 
-/**
- *
- */
 public class TestHystrixPropertiesStrategyExt {
 
   @Test
   public void testGetCommandPropertiesCacheKey() {
 
-    assertNotNull(HystrixPropertiesStrategyExt.getInstance());
+    Assertions.assertNotNull(HystrixPropertiesStrategyExt.getInstance());
 
     HystrixPropertiesStrategyExt hps = HystrixPropertiesStrategyExt.getInstance();
     HystrixCommandKey commandKey = Mockito.mock(HystrixCommandKey.class);
@@ -54,7 +49,7 @@ public class TestHystrixPropertiesStrategyExt {
                 invocation.getOperationMeta().getMicroserviceQualifiedName()));
 
     String str1 = hps.getCommandPropertiesCacheKey(commandKey, setter);
-    Assert.assertNull(str1);
+    Assertions.assertNull(str1);
   }
 
   @Test
@@ -64,20 +59,20 @@ public class TestHystrixPropertiesStrategyExt {
         .thenReturn("provider.HystrixPropertiesStrategyExtTest.testgetCommandProperties");
     HystrixCommandProperties commandPro = HystrixPropertiesStrategyExt.getInstance()
         .getCommandProperties(commandKey, HystrixCommandProperties.Setter());
-    Assert.assertTrue(commandPro.circuitBreakerEnabled().get());
-    Assert.assertEquals(Integer.valueOf(50), commandPro.circuitBreakerErrorThresholdPercentage().get());
-    Assert.assertFalse(commandPro.circuitBreakerForceClosed().get());
-    Assert.assertFalse(commandPro.circuitBreakerForceOpen().get());
-    Assert.assertEquals(Integer.valueOf(20), commandPro.circuitBreakerRequestVolumeThreshold().get());
-    Assert.assertEquals(Integer.valueOf(15000), commandPro.circuitBreakerSleepWindowInMilliseconds().get());
-    Assert.assertEquals(Integer.valueOf(1000), commandPro.executionIsolationSemaphoreMaxConcurrentRequests().get());
-    Assert.assertTrue(commandPro.executionIsolationThreadInterruptOnTimeout().get());
-    Assert.assertEquals(null, commandPro.executionIsolationThreadPoolKeyOverride().get());
-    Assert.assertEquals(Integer.valueOf(30000), commandPro.executionTimeoutInMilliseconds().get());
-    Assert.assertFalse(commandPro.executionTimeoutEnabled().get());
-    Assert.assertEquals(Integer.valueOf(10), commandPro.fallbackIsolationSemaphoreMaxConcurrentRequests().get());
-    Assert.assertTrue(commandPro.fallbackEnabled().get());
-    Assert.assertEquals(Integer.valueOf(100), commandPro.metricsRollingPercentileBucketSize().get());
-    Assert.assertFalse(commandPro.metricsRollingPercentileEnabled().get());
+    Assertions.assertTrue(commandPro.circuitBreakerEnabled().get());
+    Assertions.assertEquals(Integer.valueOf(50), commandPro.circuitBreakerErrorThresholdPercentage().get());
+    Assertions.assertFalse(commandPro.circuitBreakerForceClosed().get());
+    Assertions.assertFalse(commandPro.circuitBreakerForceOpen().get());
+    Assertions.assertEquals(Integer.valueOf(20), commandPro.circuitBreakerRequestVolumeThreshold().get());
+    Assertions.assertEquals(Integer.valueOf(15000), commandPro.circuitBreakerSleepWindowInMilliseconds().get());
+    Assertions.assertEquals(Integer.valueOf(1000), commandPro.executionIsolationSemaphoreMaxConcurrentRequests().get());
+    Assertions.assertTrue(commandPro.executionIsolationThreadInterruptOnTimeout().get());
+    Assertions.assertNull(commandPro.executionIsolationThreadPoolKeyOverride().get());
+    Assertions.assertEquals(Integer.valueOf(30000), commandPro.executionTimeoutInMilliseconds().get());
+    Assertions.assertFalse(commandPro.executionTimeoutEnabled().get());
+    Assertions.assertEquals(Integer.valueOf(10), commandPro.fallbackIsolationSemaphoreMaxConcurrentRequests().get());
+    Assertions.assertTrue(commandPro.fallbackEnabled().get());
+    Assertions.assertEquals(Integer.valueOf(100), commandPro.metricsRollingPercentileBucketSize().get());
+    Assertions.assertFalse(commandPro.metricsRollingPercentileEnabled().get());
   }
 }

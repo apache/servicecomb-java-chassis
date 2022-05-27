@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.server;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.Handler;
@@ -35,11 +35,7 @@ public class TcpParser implements Handler<Buffer> {
   public static final int TCP_HEADER_LENGTH = 23;
 
   static {
-    try {
-      TCP_MAGIC = "CSE.TCP".getBytes("UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
+    TCP_MAGIC = "CSE.TCP".getBytes(StandardCharsets.UTF_8);
   }
 
   enum ParseStatus {
@@ -47,7 +43,7 @@ public class TcpParser implements Handler<Buffer> {
     TCP_PAYLOAD
   }
 
-  private TcpBufferHandler outputHandler;
+  private final TcpBufferHandler outputHandler;
 
   private RecordParser parser;
 
@@ -100,6 +96,9 @@ public class TcpParser implements Handler<Buffer> {
         msgId = buf.readLong();
         totalLen = buf.readInt();
         headerLen = buf.readInt();
+        if (headerLen > totalLen || headerLen <= 0) {
+          throw new IllegalStateException("possibly attack.");
+        }
 
         if (totalLen == 0) {
           onReadOnePackage(null, null);

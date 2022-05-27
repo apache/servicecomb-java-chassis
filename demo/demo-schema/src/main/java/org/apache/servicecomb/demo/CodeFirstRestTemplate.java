@@ -23,14 +23,14 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.jaxbbean.JAXBJob;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.http.HttpEntity;
@@ -45,7 +45,7 @@ import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
   protected void changeTransport(String microserviceName, String transport) {
-    CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }
 
@@ -55,7 +55,7 @@ public class CodeFirstRestTemplate {
     testOnlyHighway(template, cseUrlPrefix);
 
     changeTransport(microserviceName, Const.RESTFUL);
-    testOnlyRest(template, cseUrlPrefix);
+    testOnlyRest(microserviceName, template, cseUrlPrefix);
 
     for (String transport : DemoConst.transports) {
       changeTransport(microserviceName, transport);
@@ -77,7 +77,6 @@ public class CodeFirstRestTemplate {
     testCodeFirstSayHi2(template, cseUrlPrefix);
     testCodeFirstSayHi(template, cseUrlPrefix);
     testCodeFirstSaySomething(template, cseUrlPrefix);
-    //            testCodeFirstRawJsonString(template, cseUrlPrefix);
     testCodeFirstSayHello(template, cseUrlPrefix);
     testCodeFirstReduce(template, cseUrlPrefix);
 
@@ -90,10 +89,18 @@ public class CodeFirstRestTemplate {
 
   }
 
-  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
-    // TODO: highway unsupported until JAV-394 completed
-    testModelFieldIgnore(template, cseUrlPrefix);
+  protected void testOnlyRest(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+    testCodeFirstUserMap(template, cseUrlPrefix);
+    testCodeFirstTextPlain(template, cseUrlPrefix);
+    testCodeFirstAppXml(template, cseUrlPrefix);
+    testCodeFirstBytes(template, cseUrlPrefix);
+    testCseResponse(microserviceName, template, cseUrlPrefix);
+    testCodeFirstAddDate(template, cseUrlPrefix);
+    testCodeFirstAdd(template, cseUrlPrefix);
+    testCodeFirstAddString(template, cseUrlPrefix);
 
+    testModelFieldIgnore(template, cseUrlPrefix);
+    testCodeFirstReduce(template, cseUrlPrefix);
     // only rest transport will set trace id
     testTraceIdOnNotSetBefore(template, cseUrlPrefix);
   }
@@ -139,7 +146,8 @@ public class CodeFirstRestTemplate {
         HttpMethod.POST,
         requestEntity,
         JAXBPerson.class);
-    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.ensureFindValue(MediaType.APPLICATION_XML_VALUE).getOrder());
+    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.findProcessor(MediaType.APPLICATION_XML_VALUE, null).getOrder());
+    // test case maybe fail in JDK 11
     TestMgr.check(person, resEntity.getBody());
   }
 
@@ -160,7 +168,7 @@ public class CodeFirstRestTemplate {
 
   private void testCseResponse(String targetMicroserviceName, RestTemplate template,
       String cseUrlPrefix) {
-    String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+    String srcMicroserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     ResponseEntity<User> responseEntity =
         template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);
@@ -183,7 +191,7 @@ public class CodeFirstRestTemplate {
     TestMgr.check(new Date(date.getTime() + seconds * 1000), result);
   }
 
-  protected void testCodeFirstAddString(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstAddString(RestTemplate template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "addstring?s=a&s=b",
             HttpMethod.DELETE,
@@ -192,25 +200,25 @@ public class CodeFirstRestTemplate {
     TestMgr.check("ab", responseEntity.getBody());
   }
 
-  protected void testCodeFirstIsTrue(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstIsTrue(RestTemplate template, String cseUrlPrefix) {
     boolean result = template.getForObject(cseUrlPrefix + "istrue", boolean.class);
     TestMgr.check(true, result);
   }
 
-  protected void testCodeFirstSayHi2(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstSayHi2(RestTemplate template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "sayhi/{name}/v2", HttpMethod.PUT, null, String.class, "world");
     TestMgr.check("world sayhi 2", responseEntity.getBody());
   }
 
-  protected void testCodeFirstSayHi(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstSayHi(RestTemplate template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "world");
-    TestMgr.check(202, responseEntity.getStatusCode());
+    TestMgr.check(202, responseEntity.getStatusCodeValue());
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 
-  protected void testCodeFirstSaySomething(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstSaySomething(RestTemplate template, String cseUrlPrefix) {
     Person person = new Person();
     person.setName("person name");
 
@@ -223,7 +231,7 @@ public class CodeFirstRestTemplate {
     TestMgr.check("prefix  prefix person name", result);
   }
 
-  protected void testCodeFirstSayHello(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstSayHello(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> persionFieldMap = new HashMap<>();
     persionFieldMap.put("name", "person name from map");
     Person result = template.postForObject(cseUrlPrefix + "sayhello", persionFieldMap, Person.class);
@@ -235,7 +243,7 @@ public class CodeFirstRestTemplate {
     TestMgr.check("hello person name from Object", result);
   }
 
-  protected void testCodeFirstAdd(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstAdd(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "3");
@@ -244,7 +252,7 @@ public class CodeFirstRestTemplate {
     TestMgr.check(8, result);
   }
 
-  protected void testCodeFirstReduce(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstReduce(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
 
@@ -257,10 +265,10 @@ public class CodeFirstRestTemplate {
     TestMgr.check(2, result.getBody());
   }
 
-  protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
+  private void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
     InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
         new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
-        });
+    });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 
@@ -277,19 +285,19 @@ public class CodeFirstRestTemplate {
     TestMgr.check(null, output.getOutputObject());
   }
 
-  protected void testRawJson(RestTemplate template, String cseUrlPrefix) {
+  private void testRawJson(RestTemplate template, String cseUrlPrefix) {
     String input = "{\"name\" : \"zyy\"}";
     String output = template.postForObject(cseUrlPrefix + "rawJsonAnnotation", input, String.class);
     TestMgr.check("hello zyy", output);
   }
 
-  protected void testTraceIdOnNotSetBefore(RestTemplate template, String cseUrlPrefix) {
+  private void testTraceIdOnNotSetBefore(RestTemplate template, String cseUrlPrefix) {
     String traceIdUrl = cseUrlPrefix + "traceId";
     String result = template.getForObject(traceIdUrl, String.class);
     TestMgr.checkNotEmpty(result);
   }
 
-  protected void testTraceIdOnContextContainsTraceId(RestTemplate template, String cseUrlPrefix) {
+  private void testTraceIdOnContextContainsTraceId(RestTemplate template, String cseUrlPrefix) {
     String traceIdUrl = cseUrlPrefix + "traceId";
     InvocationContext invocationContext = new InvocationContext();
     invocationContext.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));

@@ -17,8 +17,8 @@
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestOperationPerf {
   String op = "op";
@@ -27,21 +27,21 @@ public class TestOperationPerf {
 
   @Test
   public void add() {
-    Assert.assertTrue(opPerf.getStages().isEmpty());
+    Assertions.assertTrue(opPerf.getStages().isEmpty());
 
     OperationPerf otherOpPerf = Utils.createOperationPerf(op);
     opPerf.add(otherOpPerf);
 
-    Assert.assertEquals(op, otherOpPerf.getOperation());
+    Assertions.assertEquals(op, otherOpPerf.getOperation());
 
     PerfInfo perfInfo = opPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-    Assert.assertEquals(10, perfInfo.getTps());
-    Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
-    Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
+    Assertions.assertEquals(10, perfInfo.getTps(), 0);
+    Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
 
     perfInfo = opPerf.findStage(MeterInvocationConst.STAGE_EXECUTION);
-    Assert.assertEquals(10, perfInfo.getTps());
-    Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
-    Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
+    Assertions.assertEquals(10, perfInfo.getTps(), 0);
+    Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
   }
 }

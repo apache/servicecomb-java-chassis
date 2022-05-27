@@ -19,6 +19,7 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestConst;
@@ -28,19 +29,21 @@ import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AsyncClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.concurrent.CompletableToListenableFutureAdapter;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
 
-public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements AsyncClientHttpRequest {
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
+    org.springframework.http.client.AsyncClientHttpRequest {
 
   CseAsyncClientHttpRequest() {
   }
 
-  CseAsyncClientHttpRequest(URI uri, HttpMethod method) {
+  protected CseAsyncClientHttpRequest(URI uri, HttpMethod method) {
     this.setUri(uri);
     this.setMethod(method);
   }
@@ -50,17 +53,17 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements A
     return null;
   }
 
-  private ListenableFuture<ClientHttpResponse> invoke(Object[] args) {
-    Invocation invocation = prepareInvocation(args);
+  private ListenableFuture<ClientHttpResponse> invoke(Map<String, Object> swaggerArguments) {
+    Invocation invocation = prepareInvocation(swaggerArguments);
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, this.getHeaders());
     CompletableFuture<ClientHttpResponse> clientHttpResponseCompletableFuture = doAsyncInvoke(invocation);
-    return new CompletableToListenableFutureAdapter<ClientHttpResponse>(clientHttpResponseCompletableFuture);
+    return new CompletableToListenableFutureAdapter<>(clientHttpResponseCompletableFuture);
   }
 
   protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
     CompletableFuture<ClientHttpResponse> completableFuture = new CompletableFuture<>();
     InvokerUtils.reactiveInvoke(invocation, (Response response) -> {
-      if (response.isSuccessed()) {
+      if (response.isSucceed()) {
         completableFuture.complete(new CseClientHttpResponse(response));
       } else {
         completableFuture.completeExceptionally(response.getResult());
@@ -69,14 +72,13 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements A
     return completableFuture;
   }
 
-
   @Override
   public ListenableFuture<ClientHttpResponse> executeAsync() {
     this.setPath(findUriPath(this.getURI()));
     this.setRequestMeta(createRequestMeta(this.getMethod().name(), this.getURI()));
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(this.getURI().getRawSchemeSpecificPart());
     this.setQueryParams(queryStringDecoder.parameters());
-    Object[] args = this.collectArguments();
-    return this.invoke(args);
+    Map<String, Object> swaggerArguments = this.collectArguments();
+    return this.invoke(swaggerArguments);
   }
 }

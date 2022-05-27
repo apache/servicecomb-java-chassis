@@ -1,0 +1,77 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.Echo"
+  x-java-interface: "gen.cse.ms.ut.EchoIntf"
+basePath: "/Echo"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /aggregatedParam:
+    post:
+      operationId: "aggregatedParam"
+      parameters:
+      - name: "path0"
+        in: "path"
+        required: true
+        type: "string"
+        default: "pa"
+      - name: "query1"
+        in: "query"
+        required: false
+        type: "integer"
+        default: 0
+        format: "int32"
+      - name: "form3"
+        in: "formData"
+        required: false
+        type: "integer"
+        default: 12
+        format: "int64"
+      - name: "cookie4"
+        in: "cookie"
+        required: false
+        type: "integer"
+        default: 0
+        format: "int64"
+      - name: "header2"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "query-array"
+        in: "query"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "query-list"
+        in: "query"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "response of 200"

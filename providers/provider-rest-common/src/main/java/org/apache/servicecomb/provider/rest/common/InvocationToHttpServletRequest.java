@@ -31,19 +31,20 @@ import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.vertx.core.net.SocketAddress;
 
 /**
- * when transport is not over http, mock a HttpServletRequest from Invocation
+ * when transport is not over http, mock an HttpServletRequest from Invocation
  */
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
-  private RestOperationMeta swaggerOperation;
+  private final RestOperationMeta swaggerOperation;
 
-  private Object[] args;
-
-  private SocketAddress sockerAddress;
+  private final Invocation invocation;
 
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
-    this.args = invocation.getArgs();
-    this.sockerAddress = (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
+    this.invocation = invocation;
+  }
+
+  private SocketAddress getSockerAddress() {
+    return (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
   }
 
   @Override
@@ -53,7 +54,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
       return null;
     }
 
-    Object value = param.getValue(args);
+    Object value = param.getValue(invocation.getSwaggerArguments());
     if (value == null) {
       return null;
     }
@@ -68,14 +69,14 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
       return null;
     }
 
-    return param.getValueAsStrings(args);
+    return param.getValueAsStrings(invocation.getSwaggerArguments());
   }
 
   @Override
   public Map<String, String[]> getParameterMap() {
     Map<String, String[]> paramMap = new HashMap<>();
     for (RestParam param : swaggerOperation.getParamList()) {
-      String[] value = param.getValueAsStrings(args);
+      String[] value = param.getValueAsStrings(invocation.getSwaggerArguments());
       paramMap.put(param.getParamName(), value);
     }
     return paramMap;
@@ -104,7 +105,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   @Override
   public String getPathInfo() {
     try {
-      return this.swaggerOperation.getPathBuilder().createPathString(args);
+      return this.swaggerOperation.getPathBuilder().createPathString(invocation.getSwaggerArguments());
     } catch (Exception e) {
       throw new ServiceCombException("Failed to get path info.", e);
     }
@@ -112,17 +113,17 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
 
   @Override
   public String getRemoteAddr() {
-    return this.sockerAddress == null ? "" : this.sockerAddress.host();
+    return this.getSockerAddress() == null ? "" : this.getSockerAddress().host();
   }
 
   @Override
   public String getRemoteHost() {
-    return this.sockerAddress == null ? "" : this.sockerAddress.host();
+    return this.getSockerAddress() == null ? "" : this.getSockerAddress().host();
   }
 
   @Override
   public int getRemotePort() {
-    return this.sockerAddress == null ? 0 : this.sockerAddress.port();
+    return this.getSockerAddress() == null ? 0 : this.getSockerAddress().port();
   }
 
   @Override

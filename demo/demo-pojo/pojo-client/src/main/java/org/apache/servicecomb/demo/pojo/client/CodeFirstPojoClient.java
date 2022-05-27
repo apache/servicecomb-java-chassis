@@ -22,25 +22,28 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
-import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.mapnull.ParseRequest;
+import org.apache.servicecomb.demo.mapnull.ParseResponse;
+import org.apache.servicecomb.demo.server.MapModel;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.stereotype.Component;
 
 import io.vertx.core.Vertx;
 
-public class CodeFirstPojoClient {
+@Component
+public class CodeFirstPojoClient implements CategorizedTestCase {
   @RpcReference(microserviceName = "pojo", schemaId = "org.apache.servicecomb.demo.CodeFirstPojoIntf")
   public CodeFirstPojoClientIntf codeFirstAnnotation;
 
@@ -50,18 +53,26 @@ public class CodeFirstPojoClient {
   @Inject
   private CodeFirstPojoIntf codeFirstFromXml;
 
-  public void testCodeFirst(String microserviceName) {
-    for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
-      TestMgr.setMsg(microserviceName, transport);
-
-      testAll(codeFirstAnnotation, transport);
-      testAll(codeFirstAnnotationEmptySchemaId, transport);
-      testAll(codeFirstFromXml, transport);
-    }
+  @Override
+  public void testRestTransport() throws Exception {
+    testOnlyRest(codeFirstAnnotation);
   }
 
-  protected void testAll(CodeFirstPojoIntf codeFirst, String transport) {
+  @Override
+  public void testAllTransport() throws Exception {
+    testAll(codeFirstAnnotation);
+    testAll(codeFirstAnnotationEmptySchemaId);
+    testAll(codeFirstFromXml);
+  }
+
+  private void testOnlyRest(CodeFirstPojoIntf codeFirst) {
+    testCodeFirstStrings(codeFirst);
+  }
+
+  private void testAll(CodeFirstPojoIntf codeFirst) {
+    remoteCodeFirstPojo_testParseResponse(codeFirst);
+    remoteCodeFirstPojo_testMapModel(codeFirst);
+    remoteCodeFirstPojo_testMap(codeFirst);
     testCodeFirstUserMap(codeFirst);
     testCodeFirstUserArray(codeFirst);
     testCodeFirstStrings(codeFirst);
@@ -91,18 +102,19 @@ public class CodeFirstPojoClient {
       InvocationContext context = new InvocationContext();
       context.addContext("k", "v");
       ContextUtils.setInvocationContext(context);
-      CompletableFuture<String> future = ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone");
 
-      future.thenCompose(result -> {
-        TestMgr.check("someone sayhi, context k: v", result);
+      ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone")
+          .thenCompose(result -> {
+            TestMgr.check("someone sayhi, context k: v", result);
 
-        TestMgr.check(true, context == ContextUtils.getInvocationContext());
+            TestMgr.check(true, context == ContextUtils.getInvocationContext());
 
-        return ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone 1");
-      }).whenComplete((r, e) -> {
-        TestMgr.check("someone 1 sayhi, context k: v", r);
-        latch.countDown();
-      });
+            return ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone 1");
+          })
+          .whenComplete((r, e) -> {
+            TestMgr.check("someone 1 sayhi, context k: v", r);
+            latch.countDown();
+          });
 
       ContextUtils.removeInvocationContext();
     });
@@ -112,6 +124,82 @@ public class CodeFirstPojoClient {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  private void remoteCodeFirstPojo_testParseResponse(CodeFirstPojoIntf codeFirst) {
+    ParseResponse r = codeFirst.parse(new ParseRequest());
+    TestMgr.check("", r.getMsgHeader().get("K16"));
+    TestMgr.check("CMT", r.getMsgHeader().get("K14"));
+  }
+
+  private void remoteCodeFirstPojo_testMapModel(CodeFirstPojoIntf codeFirst) {
+    MapModel model = new MapModel();
+    model.setName("hello");
+    Map<String, String> userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", null);
+    model.setNames(userMap);
+    MapModel result = codeFirst.testMapModel(model);
+
+    TestMgr.check(result.getName(), "hello");
+    TestMgr.check(result.getNames().get("u1"), "u1");
+    TestMgr.check(result.getNames().get("u2"), null);
+
+    model = new MapModel();
+    model.setName(null);
+    userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", null);
+    model.setNames(userMap);
+    result = codeFirst.testMapModel(model);
+
+    TestMgr.check(result.getName(), null);
+    TestMgr.check(result.getNames().get("u1"), "u1");
+    TestMgr.check(result.getNames().get("u2"), null);
+
+    model = new MapModel();
+    model.setName(null);
+    userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", "");
+    model.setNames(userMap);
+    result = codeFirst.testMapModel(model);
+
+    TestMgr.check(result.getName(), null);
+    TestMgr.check(result.getNames().get("u1"), "u1");
+    TestMgr.check(result.getNames().get("u2"), "");
+  }
+
+  private void remoteCodeFirstPojo_testMap(CodeFirstPojoIntf codeFirst) {
+    Map<String, String> userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", null);
+    Map<String, String> result = codeFirst.testMap(userMap);
+
+    TestMgr.check(result.get("u1"), "u1");
+    TestMgr.check(result.get("u2"), null);
+
+    userMap = new HashMap<>();
+    userMap.put("u1", "u1");
+    userMap.put("u2", "u2");
+    result = codeFirst.testMap(userMap);
+
+    TestMgr.check(result.get("u1"), "u1");
+    TestMgr.check(result.get("u2"), "u2");
+
+    // test large data more than 20M
+    // can not run the test case in CI , because will cause heap size limit
+//    char[] data = new char[30 * 1024 * 1024];
+//    Arrays.fill(data, 'h');
+//    userMap = new HashMap<>();
+//    userMap.put("u1", "u1");
+//    userMap.put("u2", "u2");
+//    userMap.put("u3", new String(data));
+//    result = codeFirst.testMap(userMap);
+//
+//    TestMgr.check(result.get("u1"), "u1");
+//    TestMgr.check(result.get("u2"), "u2");
+//    TestMgr.check(result.get("u3"), new String(data));
   }
 
   private void testCodeFirstUserMap(CodeFirstPojoIntf codeFirst) {
@@ -130,6 +218,15 @@ public class CodeFirstPojoClient {
     TestMgr.check("u2", result.get("u1").getNames()[1]);
     TestMgr.check("u3", result.get("u2").getNames()[0]);
     TestMgr.check("u4", result.get("u2").getNames()[1]);
+
+    userMap = new HashMap<>();
+    userMap.put("u1", user1);
+    userMap.put("u2", null);
+    result = codeFirst.testUserMap(userMap);
+
+    TestMgr.check(result.get("u1").getNames()[0], "u1");
+    TestMgr.check(result.get("u1").getNames()[1], "u2");
+    TestMgr.check(result.get("u2"), null);
   }
 
   private void testCodeFirstUserArray(CodeFirstPojoIntf codeFirst) {
@@ -151,6 +248,10 @@ public class CodeFirstPojoClient {
     String[] result = codeFirst.testStrings(new String[] {"a", "b"});
     TestMgr.check("aa0", result[0]);
     TestMgr.check("b", result[1]);
+
+    result = codeFirst.testStrings(new String[] {"a", ""});
+    TestMgr.check("aa0", result[0]);
+    TestMgr.check("", result[1]);
   }
 
   private void testCodeFirstBytes(CodeFirstPojoIntf codeFirst) {
@@ -169,17 +270,17 @@ public class CodeFirstPojoClient {
     TestMgr.check(new Date(date.getTime() + seconds * 1000), result);
   }
 
-  protected void testCodeFirstAddString(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstAddString(CodeFirstPojoIntf codeFirst) {
     String result = codeFirst.addString(Arrays.asList("a", "b"));
     TestMgr.check("ab", result);
   }
 
-  protected void testCodeFirstIsTrue(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstIsTrue(CodeFirstPojoIntf codeFirst) {
     boolean result = codeFirst.isTrue();
     TestMgr.check(true, result);
   }
 
-  protected void testCodeFirstSayHi2(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstSayHi2(CodeFirstPojoIntf codeFirst) {
     if (!CodeFirstPojoClientIntf.class.isInstance(codeFirst)) {
       return;
     }
@@ -188,13 +289,13 @@ public class CodeFirstPojoClient {
     TestMgr.check("world sayhi 2", result);
   }
 
-  protected void testCodeFirstSayHi(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstSayHi(CodeFirstPojoIntf codeFirst) {
     String result = codeFirst.sayHi("world");
     TestMgr.check("world sayhi, context k: null", result);
     //        TestMgr.check(202, responseEntity.getStatusCode());
   }
 
-  protected void testCodeFirstSaySomething(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstSaySomething(CodeFirstPojoIntf codeFirst) {
     Person person = new Person();
     person.setName("person name");
 
@@ -202,15 +303,20 @@ public class CodeFirstPojoClient {
     TestMgr.check("prefix  prefix person name", result);
   }
 
-  protected void testCodeFirstSayHello(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstSayHello(CodeFirstPojoIntf codeFirst) {
     Person input = new Person();
     input.setName("person name");
 
     Person result = codeFirst.sayHello(input);
     TestMgr.check("hello person name", result.getName());
+
+    input.setName("");
+
+    result = codeFirst.sayHello(input);
+    TestMgr.check("hello ", result.getName());
   }
 
-  protected void testCodeFirstReduce(CodeFirstPojoIntf codeFirst) {
+  private void testCodeFirstReduce(CodeFirstPojoIntf codeFirst) {
     int result = codeFirst.reduce(5, 3);
     TestMgr.check(2, result);
   }

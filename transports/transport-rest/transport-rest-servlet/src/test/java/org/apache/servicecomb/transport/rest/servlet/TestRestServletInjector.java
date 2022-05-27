@@ -25,11 +25,11 @@ import java.net.UnknownHostException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration.Dynamic;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestServletInjector {
   @Test
@@ -41,7 +41,7 @@ public class TestRestServletInjector {
       }
     };
 
-    Assert.assertEquals(null, RestServletInjector.defaultInject(servletContext));
+    Assertions.assertNull(RestServletInjector.defaultInject(servletContext));
   }
 
   @Test
@@ -60,7 +60,7 @@ public class TestRestServletInjector {
       };
     }
 
-    Assert.assertEquals(null, RestServletInjector.defaultInject(servletContext));
+    Assertions.assertNull(RestServletInjector.defaultInject(servletContext));
   }
 
   @Test
@@ -78,7 +78,7 @@ public class TestRestServletInjector {
         }
       };
 
-      Assert.assertEquals(dynamic, RestServletInjector.defaultInject(servletContext));
+      Assertions.assertEquals(dynamic, RestServletInjector.defaultInject(servletContext));
     }
   }
 }

@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConnection.Status;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
-import io.vertx.core.impl.FutureFactoryImpl;
+import io.vertx.core.Promise;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 import mockit.Deencapsulation;
@@ -39,6 +39,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestTcpClientConnection {
   @Mocked
@@ -67,20 +68,20 @@ public class TestTcpClientConnection {
 
   @Test
   public void localSupportLogin() {
-    Assert.assertFalse(tcpClientConnection.isLocalSupportLogin());
+    Assertions.assertFalse(tcpClientConnection.isLocalSupportLogin());
 
     tcpClientConnection.setLocalSupportLogin(true);
-    Assert.assertTrue(tcpClientConnection.isLocalSupportLogin());
+    Assertions.assertTrue(tcpClientConnection.isLocalSupportLogin());
   }
 
   @Test
   public void createLogin() {
-    Assert.assertNull(tcpClientConnection.createLogin());
+    Assertions.assertNull(tcpClientConnection.createLogin());
   }
 
   @Test
   public void onLoginResponse_buffer() {
-    Assert.assertTrue(tcpClientConnection.onLoginResponse(null));
+    Assertions.assertTrue(tcpClientConnection.onLoginResponse(null));
   }
 
   @Test
@@ -109,9 +110,9 @@ public class TestTcpClientConnection {
     tcpClientConnection.send(tcpClientPackage, ar -> {
     });
 
-    Assert.assertSame(byteBuf, writeQueue.poll());
-    Assert.assertNull(writeQueue.poll());
-    Assert.assertEquals(Status.WORKING, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertSame(byteBuf, writeQueue.poll());
+    Assertions.assertNull(writeQueue.poll());
+    Assertions.assertEquals(Status.WORKING, Deencapsulation.getField(tcpClientConnection, "status"));
   }
 
   @Test
@@ -133,9 +134,9 @@ public class TestTcpClientConnection {
     tcpClientConnection.send(tcpClientPackage, ar -> {
     });
 
-    Assert.assertSame(tcpClientPackage, packageQueue.poll());
-    Assert.assertNull(packageQueue.poll());
-    Assert.assertEquals(Status.CONNECTING, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertSame(tcpClientPackage, packageQueue.poll());
+    Assertions.assertNull(packageQueue.poll());
+    Assertions.assertEquals(Status.CONNECTING, Deencapsulation.getField(tcpClientConnection, "status"));
   }
 
   @Test
@@ -158,9 +159,9 @@ public class TestTcpClientConnection {
     tcpClientConnection.send(tcpClientPackage, ar -> {
     });
 
-    Assert.assertSame(tcpClientPackage, packageQueue.poll());
-    Assert.assertNull(packageQueue.poll());
-    Assert.assertEquals(Status.TRY_LOGIN, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertSame(tcpClientPackage, packageQueue.poll());
+    Assertions.assertNull(packageQueue.poll());
+    Assertions.assertEquals(Status.TRY_LOGIN, Deencapsulation.getField(tcpClientConnection, "status"));
   }
 
   @Test
@@ -171,6 +172,7 @@ public class TestTcpClientConnection {
       {
         tcpClientPackage.getMsgId();
         result = msgId;
+        tcpClientConnection.write((ByteBuf) any);
       }
     };
     new MockUp<Context>(context) {
@@ -183,25 +185,26 @@ public class TestTcpClientConnection {
     tcpClientConnection.send(tcpClientPackage, ar -> {
     });
 
-    Assert.assertNull(writeQueue.poll());
-    Assert.assertNull(packageQueue.poll());
-    Assert.assertEquals(Status.WORKING, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertNull(writeQueue.poll());
+    Assertions.assertNull(packageQueue.poll());
+    Assertions.assertEquals(Status.WORKING, Deencapsulation.getField(tcpClientConnection, "status"));
   }
 
   @Test
   public void connect_success(@Mocked NetSocketImpl netSocket) {
-    FutureFactoryImpl futureFactory = new FutureFactoryImpl();
+    Promise<NetSocket> promise = Promise.promise();
     new MockUp<NetClientWrapper>(netClientWrapper) {
       @Mock
       void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        connectHandler.handle(futureFactory.succeededFuture(netSocket));
+        promise.complete(netSocket);
+        connectHandler.handle(promise.future());
       }
     };
 
     tcpClientConnection.connect();
 
-    Assert.assertSame(netSocket, tcpClientConnection.getNetSocket());
-    Assert.assertEquals(Status.WORKING, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertSame(netSocket, tcpClientConnection.getNetSocket());
+    Assertions.assertEquals(Status.WORKING, Deencapsulation.getField(tcpClientConnection, "status"));
   }
 
   @Test
@@ -209,19 +212,20 @@ public class TestTcpClientConnection {
     requestMap.put(10L, new TcpRequest(10, ar -> {
     }));
 
-    FutureFactoryImpl futureFactory = new FutureFactoryImpl();
-    Error error = new Error();
+    Promise<NetSocket> promise = Promise.promise();
+    RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     new MockUp<NetClientWrapper>(netClientWrapper) {
       @Mock
       void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        connectHandler.handle(futureFactory.failedFuture(error));
+        promise.fail(error);
+        connectHandler.handle(promise.future());
       }
     };
 
     tcpClientConnection.connect();
 
-    Assert.assertEquals(Status.DISCONNECTED, Deencapsulation.getField(tcpClientConnection, "status"));
-    Assert.assertEquals(0, requestMap.size());
+    Assertions.assertEquals(Status.DISCONNECTED, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertEquals(0, requestMap.size());
   }
 
   @Test
@@ -231,8 +235,8 @@ public class TestTcpClientConnection {
     tcpClientConnection.initNetSocket(netSocket);
 
     Deencapsulation.invoke(tcpClientConnection, "onClosed", new Class<?>[] {Void.class}, new Object[] {null});
-    Assert.assertEquals(Status.DISCONNECTED, Deencapsulation.getField(tcpClientConnection, "status"));
-    Assert.assertEquals(0, requestMap.size());
+    Assertions.assertEquals(Status.DISCONNECTED, Deencapsulation.getField(tcpClientConnection, "status"));
+    Assertions.assertEquals(0, requestMap.size());
   }
 
   @Test
@@ -250,6 +254,6 @@ public class TestTcpClientConnection {
     }));
 
     tcpClientConnection.onReply(msgId, null, null);
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 }

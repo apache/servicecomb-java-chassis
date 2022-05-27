@@ -18,13 +18,12 @@ package org.apache.servicecomb.config.inject;
 
 import java.util.Arrays;
 
+import org.apache.servicecomb.config.priority.TestPriorityPropertyBase;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class TestConfigObjectFactory {
+public class TestConfigObjectFactory extends TestPriorityPropertyBase {
   public static class ConfigNoAnnotation {
     public String strValue;
 
@@ -159,47 +158,37 @@ public class TestConfigObjectFactory {
     }
   }
 
-  @Before
-  public void setup() {
-    ArchaiusUtils.resetConfig();
-  }
-
-  @After
-  public void teardown() {
-    ArchaiusUtils.resetConfig();
-  }
-
   @Test
   public void noAnnotation_defaultValue() {
-    ConfigNoAnnotation config = new ConfigObjectFactory().create(ConfigNoAnnotation.class);
+    ConfigNoAnnotation config = priorityPropertyManager.createConfigObject(ConfigNoAnnotation.class);
 
-    Assert.assertNull(config.strValue);
-    Assert.assertNull(config.getStrValue1());
+    Assertions.assertNull(config.strValue);
+    Assertions.assertNull(config.getStrValue1());
 
-    Assert.assertEquals(0, config.intValue);
-    Assert.assertEquals(0, config.getIntValue1());
-    Assert.assertNull(config.intValueObj);
-    Assert.assertNull(config.getIntValueObj1());
+    Assertions.assertEquals(0, config.intValue);
+    Assertions.assertEquals(0, config.getIntValue1());
+    Assertions.assertNull(config.intValueObj);
+    Assertions.assertNull(config.getIntValueObj1());
 
-    Assert.assertEquals(0, config.longValue);
-    Assert.assertEquals(0, config.getLongValue1());
-    Assert.assertNull(config.longValueObj);
-    Assert.assertNull(config.getLongValueObj1());
+    Assertions.assertEquals(0, config.longValue);
+    Assertions.assertEquals(0, config.getLongValue1());
+    Assertions.assertNull(config.longValueObj);
+    Assertions.assertNull(config.getLongValueObj1());
 
-    Assert.assertEquals(0, config.floatValue, 0);
-    Assert.assertEquals(0, config.getFloatValue1(), 0);
-    Assert.assertNull(config.floatValueObj);
-    Assert.assertNull(config.getFloatValueObj1());
+    Assertions.assertEquals(0, config.floatValue, 0);
+    Assertions.assertEquals(0, config.getFloatValue1(), 0);
+    Assertions.assertNull(config.floatValueObj);
+    Assertions.assertNull(config.getFloatValueObj1());
 
-    Assert.assertEquals(0, config.doubleValue, 0);
-    Assert.assertEquals(0, config.getDoubleValue1(), 0);
-    Assert.assertNull(config.doubleValueObj);
-    Assert.assertNull(config.getDoubleValueObj1());
+    Assertions.assertEquals(0, config.doubleValue, 0);
+    Assertions.assertEquals(0, config.getDoubleValue1(), 0);
+    Assertions.assertNull(config.doubleValueObj);
+    Assertions.assertNull(config.getDoubleValueObj1());
 
-    Assert.assertFalse(config.booleanValue);
-    Assert.assertFalse(config.isBooleanValue1());
-    Assert.assertNull(config.booleanValueObj);
-    Assert.assertNull(config.getBooleanValueObj1());
+    Assertions.assertFalse(config.booleanValue);
+    Assertions.assertFalse(config.isBooleanValue1());
+    Assertions.assertNull(config.booleanValueObj);
+    Assertions.assertNull(config.getBooleanValueObj1());
   }
 
   @Test
@@ -232,40 +221,40 @@ public class TestConfigObjectFactory {
     ArchaiusUtils.setProperty("booleanValueObj", true);
     ArchaiusUtils.setProperty("booleanValueObj1", true);
 
-    ConfigNoAnnotation config = new ConfigObjectFactory().create(ConfigNoAnnotation.class);
+    ConfigNoAnnotation config = priorityPropertyManager.createConfigObject(ConfigNoAnnotation.class);
 
-    Assert.assertEquals("strValue", config.strValue);
-    Assert.assertEquals("strValue1", config.getStrValue1());
+    Assertions.assertEquals("strValue", config.strValue);
+    Assertions.assertEquals("strValue1", config.getStrValue1());
 
-    Assert.assertEquals(1, config.intValue);
-    Assert.assertEquals(2, config.getIntValue1());
-    Assert.assertEquals(3, (int) config.intValueObj);
-    Assert.assertEquals(4, (int) config.getIntValueObj1());
+    Assertions.assertEquals(1, config.intValue);
+    Assertions.assertEquals(2, config.getIntValue1());
+    Assertions.assertEquals(3, (int) config.intValueObj);
+    Assertions.assertEquals(4, (int) config.getIntValueObj1());
 
-    Assert.assertEquals(5, config.longValue);
-    Assert.assertEquals(6, config.getLongValue1());
-    Assert.assertEquals(7, (long) config.longValueObj);
-    Assert.assertEquals(8, (long) config.getLongValueObj1());
+    Assertions.assertEquals(5, config.longValue);
+    Assertions.assertEquals(6, config.getLongValue1());
+    Assertions.assertEquals(7, (long) config.longValueObj);
+    Assertions.assertEquals(8, (long) config.getLongValueObj1());
 
-    Assert.assertEquals(9, config.floatValue, 0);
-    Assert.assertEquals(10, config.getFloatValue1(), 0);
-    Assert.assertEquals(11, config.floatValueObj, 0);
-    Assert.assertEquals(12, config.getFloatValueObj1(), 0);
+    Assertions.assertEquals(9, config.floatValue, 0);
+    Assertions.assertEquals(10, config.getFloatValue1(), 0);
+    Assertions.assertEquals(11, config.floatValueObj, 0);
+    Assertions.assertEquals(12, config.getFloatValueObj1(), 0);
 
-    Assert.assertEquals(13, config.doubleValue, 0);
-    Assert.assertEquals(14, config.getDoubleValue1(), 0);
-    Assert.assertEquals(15, config.doubleValueObj, 0);
-    Assert.assertEquals(16, config.getDoubleValueObj1(), 0);
+    Assertions.assertEquals(13, config.doubleValue, 0);
+    Assertions.assertEquals(14, config.getDoubleValue1(), 0);
+    Assertions.assertEquals(15, config.doubleValueObj, 0);
+    Assertions.assertEquals(16, config.getDoubleValueObj1(), 0);
 
-    Assert.assertTrue(config.booleanValue);
-    Assert.assertTrue(config.isBooleanValue1());
-    Assert.assertTrue(config.booleanValueObj);
-    Assert.assertTrue(config.getBooleanValueObj1());
+    Assertions.assertTrue(config.booleanValue);
+    Assertions.assertTrue(config.isBooleanValue1());
+    Assertions.assertTrue(config.booleanValueObj);
+    Assertions.assertTrue(config.getBooleanValueObj1());
   }
 
   @Test
   public void noAnnotation_updateValue() {
-    ConfigNoAnnotation config = new ConfigObjectFactory().create(ConfigNoAnnotation.class);
+    ConfigNoAnnotation config = priorityPropertyManager.createConfigObject(ConfigNoAnnotation.class);
 
     ArchaiusUtils.setProperty("strValue", "strValue");
     ArchaiusUtils.setProperty("strValue1", "strValue1");
@@ -295,33 +284,33 @@ public class TestConfigObjectFactory {
     ArchaiusUtils.setProperty("booleanValueObj", true);
     ArchaiusUtils.setProperty("booleanValueObj1", true);
 
-    Assert.assertEquals("strValue", config.strValue);
-    Assert.assertEquals("strValue1", config.getStrValue1());
+    Assertions.assertEquals("strValue", config.strValue);
+    Assertions.assertEquals("strValue1", config.getStrValue1());
 
-    Assert.assertEquals(1, config.intValue);
-    Assert.assertEquals(2, config.getIntValue1());
-    Assert.assertEquals(3, (int) config.intValueObj);
-    Assert.assertEquals(4, (int) config.getIntValueObj1());
+    Assertions.assertEquals(1, config.intValue);
+    Assertions.assertEquals(2, config.getIntValue1());
+    Assertions.assertEquals(3, (int) config.intValueObj);
+    Assertions.assertEquals(4, (int) config.getIntValueObj1());
 
-    Assert.assertEquals(5, config.longValue);
-    Assert.assertEquals(6, config.getLongValue1());
-    Assert.assertEquals(7, (long) config.longValueObj);
-    Assert.assertEquals(8, (long) config.getLongValueObj1());
+    Assertions.assertEquals(5, config.longValue);
+    Assertions.assertEquals(6, config.getLongValue1());
+    Assertions.assertEquals(7, (long) config.longValueObj);
+    Assertions.assertEquals(8, (long) config.getLongValueObj1());
 
-    Assert.assertEquals(9, config.floatValue, 0);
-    Assert.assertEquals(10, config.getFloatValue1(), 0);
-    Assert.assertEquals(11, config.floatValueObj, 0);
-    Assert.assertEquals(12, config.getFloatValueObj1(), 0);
+    Assertions.assertEquals(9, config.floatValue, 0);
+    Assertions.assertEquals(10, config.getFloatValue1(), 0);
+    Assertions.assertEquals(11, config.floatValueObj, 0);
+    Assertions.assertEquals(12, config.getFloatValueObj1(), 0);
 
-    Assert.assertEquals(13, config.doubleValue, 0);
-    Assert.assertEquals(14, config.getDoubleValue1(), 0);
-    Assert.assertEquals(15, config.doubleValueObj, 0);
-    Assert.assertEquals(16, config.getDoubleValueObj1(), 0);
+    Assertions.assertEquals(13, config.doubleValue, 0);
+    Assertions.assertEquals(14, config.getDoubleValue1(), 0);
+    Assertions.assertEquals(15, config.doubleValueObj, 0);
+    Assertions.assertEquals(16, config.getDoubleValueObj1(), 0);
 
-    Assert.assertTrue(config.booleanValue);
-    Assert.assertTrue(config.isBooleanValue1());
-    Assert.assertTrue(config.booleanValueObj);
-    Assert.assertTrue(config.getBooleanValueObj1());
+    Assertions.assertTrue(config.booleanValue);
+    Assertions.assertTrue(config.isBooleanValue1());
+    Assertions.assertTrue(config.booleanValueObj);
+    Assertions.assertTrue(config.getBooleanValueObj1());
   }
 
   @InjectProperties(prefix = "root")
@@ -359,19 +348,19 @@ public class TestConfigObjectFactory {
 
   @Test
   public void annotationDefault() {
-    ConfigWithAnnotation config = new ConfigObjectFactory().create(ConfigWithAnnotation.class);
+    ConfigWithAnnotation config = priorityPropertyManager.createConfigObject(ConfigWithAnnotation.class);
 
-    Assert.assertEquals("abc", config.strDef);
-    Assert.assertEquals(1, config.intDef);
-    Assert.assertEquals(2, config.longDef);
-    Assert.assertEquals(3, config.floatDef, 0);
-    Assert.assertEquals(4, config.doubleDef, 0);
-    Assert.assertTrue(config.booleanDef);
+    Assertions.assertEquals("abc", config.strDef);
+    Assertions.assertEquals(1, config.intDef);
+    Assertions.assertEquals(2, config.longDef);
+    Assertions.assertEquals(3, config.floatDef, 0);
+    Assertions.assertEquals(4, config.doubleDef, 0);
+    Assertions.assertTrue(config.booleanDef);
   }
 
   @Test
   public void placeholder_multi_list() {
-    ConfigWithAnnotation config = new ConfigObjectFactory().create(ConfigWithAnnotation.class,
+    ConfigWithAnnotation config = priorityPropertyManager.createConfigObject(ConfigWithAnnotation.class,
         "low-list", Arrays.asList("low-1", "low-2"),
         "high-list", Arrays.asList("high-1", "high-2"));
     // low-1.a.high-1.b
@@ -379,59 +368,59 @@ public class TestConfigObjectFactory {
     // low-2.a.high-1.b
     // low-2.a.high-2.b
 
-    Assert.assertEquals(0, config.longValue);
+    Assertions.assertEquals(0, config.longValue);
 
     ArchaiusUtils.setProperty("root.low-2.a.high-2.b", Long.MAX_VALUE);
-    Assert.assertEquals(Long.MAX_VALUE, config.longValue);
+    Assertions.assertEquals(Long.MAX_VALUE, config.longValue);
 
     ArchaiusUtils.setProperty("root.low-2.a.high-1.b", Long.MAX_VALUE - 1);
-    Assert.assertEquals(Long.MAX_VALUE - 1, config.longValue);
+    Assertions.assertEquals(Long.MAX_VALUE - 1, config.longValue);
 
     ArchaiusUtils.setProperty("root.low-1.a.high-2.b", Long.MAX_VALUE - 2);
-    Assert.assertEquals(Long.MAX_VALUE - 2, config.longValue);
+    Assertions.assertEquals(Long.MAX_VALUE - 2, config.longValue);
 
     ArchaiusUtils.setProperty("root.low-1.a.high-1.b", Long.MAX_VALUE - 3);
-    Assert.assertEquals(Long.MAX_VALUE - 3, config.longValue);
+    Assertions.assertEquals(Long.MAX_VALUE - 3, config.longValue);
   }
 
   @Test
   public void placeholder_full_list() {
-    ConfigWithAnnotation config = new ConfigObjectFactory().create(ConfigWithAnnotation.class,
+    ConfigWithAnnotation config = priorityPropertyManager.createConfigObject(ConfigWithAnnotation.class,
         "full-list", Arrays.asList("l1-1", "l1-2"));
 
-    Assert.assertEquals(0, config.floatValue, 0);
+    Assertions.assertEquals(0, config.floatValue, 0);
 
-    ArchaiusUtils.setProperty("root.l1-1", String.valueOf(Float.MAX_VALUE));
-    Assert.assertEquals(Float.MAX_VALUE, config.floatValue, 0);
+    ArchaiusUtils.setProperty("root.l1-2", String.valueOf(1f));
+    Assertions.assertEquals(1f, config.floatValue, 0);
 
-    ArchaiusUtils.setProperty("root.l1-2", String.valueOf(Float.MAX_VALUE - 1));
-    Assert.assertEquals(Float.MAX_VALUE - 1, config.floatValue, 0);
+    ArchaiusUtils.setProperty("root.l1-1", String.valueOf(2f));
+    Assertions.assertEquals(2f, config.floatValue, 0);
   }
 
   @Test
   public void placeholder_normal() {
-    ConfigWithAnnotation config = new ConfigObjectFactory().create(ConfigWithAnnotation.class, "key", "k");
+    ConfigWithAnnotation config = priorityPropertyManager.createConfigObject(ConfigWithAnnotation.class, "key", "k");
 
-    Assert.assertEquals(0, config.intValue);
+    Assertions.assertEquals(0, config.intValue);
 
     ArchaiusUtils.setProperty("root.k.value", "1");
-    Assert.assertEquals(1, config.intValue);
+    Assertions.assertEquals(1, config.intValue);
   }
 
   @Test
   public void overridePrefix() {
-    ConfigWithAnnotation config = new ConfigObjectFactory().create(ConfigWithAnnotation.class);
+    ConfigWithAnnotation config = priorityPropertyManager.createConfigObject(ConfigWithAnnotation.class);
 
     ArchaiusUtils.setProperty("override.high", "high");
-    Assert.assertEquals("high", config.strValue);
+    Assertions.assertEquals("high", config.strValue);
 
-    ArchaiusUtils.updateProperty("override.high", null);
-    Assert.assertNull(config.strValue);
+    ArchaiusUtils.setProperty("override.high", null);
+    Assertions.assertNull(config.strValue);
 
     ArchaiusUtils.setProperty("override.low", "low");
-    Assert.assertEquals("low", config.strValue);
+    Assertions.assertEquals("low", config.strValue);
 
-    ArchaiusUtils.updateProperty("override.low", null);
-    Assert.assertNull(config.strValue);
+    ArchaiusUtils.setProperty("override.low", null);
+    Assertions.assertNull(config.strValue);
   }
 }

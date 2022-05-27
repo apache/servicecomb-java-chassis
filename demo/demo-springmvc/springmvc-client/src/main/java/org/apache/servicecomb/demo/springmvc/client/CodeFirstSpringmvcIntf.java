@@ -20,14 +20,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +35,8 @@ public interface CodeFirstSpringmvcIntf {
   ResponseEntity<Date> responseEntity(Date date);
 
   Response cseResponse();
+
+  Response cseResponseCorrect();
 
   Object testObject(Object input);
 

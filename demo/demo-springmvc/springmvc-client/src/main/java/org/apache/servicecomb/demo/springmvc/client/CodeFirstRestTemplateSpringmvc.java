@@ -35,9 +35,8 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,11 +51,11 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   interface UploadPartAndFile {
-    String fileUpload(Part file1, File file2);
+    String fileUpload(Part file1, File someFile);
   }
 
   interface UploadStreamAndResource {
-    String fileUpload(InputStream file1, Resource file2);
+    String fileUpload(InputStream file1, Resource someFile);
   }
 
   private UploadPartAndFile uploadPartAndFile = Invoker.createProxy("springmvc", "codeFirst", UploadPartAndFile.class);
@@ -77,12 +76,15 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private TestBizkeeper testBizkeeper = new TestBizkeeper();
 
   @Override
-  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyRest(String microservcieName, RestTemplate template, String cseUrlPrefix) {
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
+    testResponseEntity("springmvc", template, cseUrlPrefix);
+    testCodeFirstTestFormRest(template, cseUrlPrefix);
+    testFallback(template, cseUrlPrefix);
 
     testResponse.runRest();
     testObject.runRest();
@@ -90,7 +92,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testRestTemplate.runRest();
     testContentType.runAllTest();
 
-    super.testOnlyRest(template, cseUrlPrefix);
+    super.testOnlyRest(microservcieName, template, cseUrlPrefix);
   }
 
   @Override
@@ -98,7 +100,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testResponse.runHighway();
     testObject.runHighway();
     testGeneric.runHighway();
-
+    testCodeFirstTestFormHighway(template, cseUrlPrefix);
     super.testOnlyHighway(template, cseUrlPrefix);
   }
 
@@ -109,7 +111,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testGeneric.runAllTransport();
     testRestTemplate.runAllTest();
     testBizkeeper.runAllTest();
-
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);
     testFallback(template, cseUrlPrefix);
@@ -117,14 +118,16 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
+  @SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
     File file1 = File.createTempFile("测 试", ".txt");
-    FileUtils.writeStringToFile(file1, file1Content);
+    FileUtils.writeStringToFile(file1, file1Content, StandardCharsets.UTF_8, false);
 
     String file2Content = " bonjour";
     File someFile = File.createTempFile("upload2", ".txt");
-    FileUtils.writeStringToFile(someFile, file2Content);
+    FileUtils.writeStringToFile(someFile, file2Content, StandardCharsets.UTF_8, false);
 
     String expect = String.format("%s:%s:%s\n"
             + "%s:%s:%s",
@@ -138,15 +141,16 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     String result = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
     TestMgr.check(expect, result);
 
+    result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
+    TestMgr.check(expect, result);
+
+    expect = "hello world";
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     map.add("file1", new FileSystemResource(file1));
-
     result = template.postForObject(
         cseUrlPrefix + "/upload1",
         new HttpEntity<>(map),
         String.class);
-
-    result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
     TestMgr.check(expect, result);
 
     expect = String.format("null:%s:%s\n"
@@ -158,7 +162,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         file2Content);
     result = uploadStreamAndResource
         .fileUpload(new ByteArrayInputStream(file1Content.getBytes(StandardCharsets.UTF_8)),
-            new PathResource(someFile.getAbsolutePath()));
+            new org.springframework.core.io.PathResource(someFile.getAbsolutePath()));
     TestMgr.check(expect, result);
   }
 
@@ -215,7 +219,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
     httpEntity.addContext("contextKey", "contextValue");
 
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     ResponseEntity<Date> responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);
@@ -233,9 +237,11 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     int retryResult = template.getForObject(cseUrlPrefix + "retrySuccess?a=2&b=3", Integer.class);
     TestMgr.check(retryResult, 5);
+    retryResult = template.getForObject(cseUrlPrefix + "retrySuccess?a=2&b=3", Integer.class);
+    TestMgr.check(retryResult, 5);
   }
 
-  protected void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {
     HttpHeaders formHeaders = new HttpHeaders();
     formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     Map<String, String> map = new HashMap<>();
@@ -244,7 +250,39 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
     TestMgr.check(code + "null",
         template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    map.put("form2", "hello");
+    TestMgr
+        .check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+  }
+
+  private void testCodeFirstTestFormHighway(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders formHeaders = new HttpHeaders();
+    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    Map<String, String> map = new HashMap<>();
+    String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
     map.put("form2", "");
+    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+
+    map = new HashMap<>();
+    code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
+    map.put("form2", null);
+    formEntiry = new HttpEntity<>(map, formHeaders);
+    TestMgr.check(code + "null",
+        template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+  }
+
+  private void testCodeFirstTestFormRest(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders formHeaders = new HttpHeaders();
+    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    Map<String, String> map = new HashMap<>();
+    String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
+    map.put("form2", "");
+    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    // Rest will have empty string, but users will try to avoid depend on this, This is different from highway
     TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 }

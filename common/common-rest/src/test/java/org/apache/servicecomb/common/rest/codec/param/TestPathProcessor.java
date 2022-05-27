@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.PathProcessorCreator.PathProcessor;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -58,14 +58,14 @@ public class TestPathProcessor {
   public void testGetValueNoPathVars() throws Exception {
     createProcessor("name", String.class);
 
-    Assert.assertEquals(null, processor.getValue(request));
+    Assertions.assertNull(processor.getValue(request));
   }
 
   @Test
   public void testGetValuePathNotFound() throws Exception {
     prepareGetValue("name", String.class);
 
-    Assert.assertEquals(null, processor.getValue(request));
+    Assertions.assertNull(processor.getValue(request));
   }
 
   @Test
@@ -73,7 +73,7 @@ public class TestPathProcessor {
     prepareGetValue("name", String.class);
     pathVars.put("name", "value");
 
-    Assert.assertEquals("value", processor.getValue(request));
+    Assertions.assertEquals("value", processor.getValue(request));
   }
 
   @Test
@@ -81,7 +81,7 @@ public class TestPathProcessor {
     prepareGetValue("name", String.class);
     pathVars.put("name", "a%20b");
 
-    Assert.assertEquals("a b", processor.getValue(request));
+    Assertions.assertEquals("a b", processor.getValue(request));
   }
 
   @Test
@@ -89,7 +89,7 @@ public class TestPathProcessor {
     prepareGetValue("name", String.class);
     pathVars.put("name", "a+b");
 
-    Assert.assertEquals("a+b", processor.getValue(request));
+    Assertions.assertEquals("a+b", processor.getValue(request));
   }
 
   @Test
@@ -97,12 +97,19 @@ public class TestPathProcessor {
     prepareGetValue("name", String.class);
     pathVars.put("name", "%25%25");
 
-    Assert.assertEquals("%%", processor.getValue(request));
+    Assertions.assertEquals("%%", processor.getValue(request));
+  }
+
+  @Test
+  public void testGetColon() throws Exception {
+    prepareGetValue("name", String.class);
+    pathVars.put("name", "aa:bb");
+    Assertions.assertEquals("aa:bb", processor.getValue(request));
   }
 
   @Test
   public void testGetProcessorType() {
     createProcessor("name", String.class);
-    Assert.assertEquals("path", processor.getProcessorType());
+    Assertions.assertEquals("path", processor.getProcessorType());
   }
 }

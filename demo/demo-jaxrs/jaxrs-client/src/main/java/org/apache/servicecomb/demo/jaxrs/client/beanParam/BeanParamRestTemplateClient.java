@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -30,9 +31,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-public class BeanParamRestTemplateClient {
+@Component
+public class BeanParamRestTemplateClient implements CategorizedTestCase {
   RestTemplate restTemplate;
 
   public BeanParamRestTemplateClient() {
@@ -40,12 +43,23 @@ public class BeanParamRestTemplateClient {
   }
 
 
-  public void testAll() {
+  @Override
+  public void testRestTransport() throws Exception {
     testBeanParam();
     testUpload();
   }
 
-  public void testBeanParam() {
+  @Override
+  public void testHighwayTransport() throws Exception {
+
+  }
+
+  @Override
+  public void testAllTransport() throws Exception {
+    testBeanParam();
+  }
+
+  private void testBeanParam() {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "cookieSwaggerLong=11");
     headers.add("headerSwaggerInt", "2");
@@ -61,7 +75,7 @@ public class BeanParamRestTemplateClient {
         result.getBody());
   }
 
-  public void testUpload() {
+  private void testUpload() {
     BufferedInputStream bufferedInputStream0 = new BufferedInputStream(new ByteArrayInputStream("up0".getBytes()));
     BufferedInputStream bufferedInputStream1 = new BufferedInputStream(new ByteArrayInputStream("up1".getBytes()));
     BufferedInputStream bufferedInputStream2 = new BufferedInputStream(new ByteArrayInputStream("up2".getBytes()));

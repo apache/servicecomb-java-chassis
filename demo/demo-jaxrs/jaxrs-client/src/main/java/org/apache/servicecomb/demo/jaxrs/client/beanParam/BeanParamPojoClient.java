@@ -20,19 +20,33 @@ package org.apache.servicecomb.demo.jaxrs.client.beanParam;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
+import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.Invoker;
+import org.springframework.stereotype.Component;
 
-public class BeanParamPojoClient {
+@Component
+public class BeanParamPojoClient implements CategorizedTestCase {
   private BeanParamTestServiceIntf beanParamTestServiceIntf;
 
   public BeanParamPojoClient() {
     beanParamTestServiceIntf = Invoker.createProxy("jaxrs", "beanParamTest", BeanParamTestServiceIntf.class);
   }
 
-  public void testAll() {
+  @Override
+  public void testRestTransport() throws Exception {
     testBeanParam();
     testUpload();
+  }
+
+  @Override
+  public void testHighwayTransport() throws Exception {
+
+  }
+
+  @Override
+  public void testAllTransport() throws Exception {
+    testBeanParam();
   }
 
   private void testBeanParam() {

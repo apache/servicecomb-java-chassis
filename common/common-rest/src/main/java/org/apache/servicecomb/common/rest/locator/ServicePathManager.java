@@ -18,18 +18,18 @@
 package org.apache.servicecomb.common.rest.locator;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+
 
 /**
  * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位
@@ -49,39 +49,23 @@ public class ServicePathManager {
   // only valid for microservice of this process
   protected MicroservicePaths producerPaths;
 
-  // 已经有哪些schemaId的path信息加进来了
-  // 在producer场景中，业务before producer provider事件中将契约注册进来，此时会触发事件，携带注册范围的信息
-  // 启动流程的最后阶段，同样会触发一次事件，此时是全量的信息
-  // 所以，可能会重复
-  protected Set<String> schemaIdSet = new HashSet<>();
-
   public static ServicePathManager getServicePathManager(MicroserviceMeta microserviceMeta) {
     return microserviceMeta.getExtData(REST_PATH_MANAGER);
   }
 
-  public void saveToMicroserviceMeta() {
+  public ServicePathManager(MicroserviceMeta microserviceMeta) {
+    this.microserviceMeta = microserviceMeta;
+
+    for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
+      addSchema(schemaMeta);
+    }
+    sortPath();
+
     microserviceMeta.putExtData(REST_PATH_MANAGER, this);
   }
 
-  public ServicePathManager(MicroserviceMeta microserviceMeta) {
-    this.microserviceMeta = microserviceMeta;
-  }
-
-  public MicroserviceMeta getMicroserviceMeta() {
-    return microserviceMeta;
-  }
-
-  public boolean isSchemaExists(String schemaId) {
-    return schemaIdSet.contains(schemaId);
-  }
-
-  public void addSchema(SchemaMeta schemaMeta) {
-    if (isSchemaExists(schemaMeta.getSchemaId())) {
-      return;
-    }
-
-    schemaIdSet.add(schemaMeta.getSchemaId());
-    for (OperationMeta operationMeta : schemaMeta.getOperations()) {
+  private void addSchema(SchemaMeta schemaMeta) {
+    for (OperationMeta operationMeta : schemaMeta.getOperations().values()) {
       RestOperationMeta restOperationMeta = new RestOperationMeta();
       restOperationMeta.init(operationMeta);
       operationMeta.putExtData(RestConst.SWAGGER_REST_OPERATION, restOperationMeta);
@@ -89,22 +73,15 @@ public class ServicePathManager {
     }
 
     LOGGER.info("add schema to service paths. {}:{}:{}.",
-        schemaMeta.getMicroserviceMeta().getAppId(),
+        schemaMeta.getAppId(),
         schemaMeta.getMicroserviceName(),
         schemaMeta.getSchemaId());
-  }
-
-  public ServicePathManager cloneServicePathManager() {
-    ServicePathManager mgr = new ServicePathManager(microserviceMeta);
-    swaggerPaths.cloneTo(mgr.swaggerPaths);
-    mgr.schemaIdSet.addAll(schemaIdSet);
-    return mgr;
   }
 
   public OperationLocator consumerLocateOperation(String path, String httpMethod) {
     String standPath = OperationLocator.getStandardPath(path);
     OperationLocator locator = new OperationLocator();
-    locator.locate(microserviceMeta.getName(), standPath, httpMethod, swaggerPaths);
+    locator.locate(microserviceMeta.getMicroserviceName(), standPath, httpMethod, swaggerPaths);
 
     return locator;
   }
@@ -112,7 +89,7 @@ public class ServicePathManager {
   public OperationLocator producerLocateOperation(String path, String httpMethod) {
     String standPath = OperationLocator.getStandardPath(path);
     OperationLocator locator = new OperationLocator();
-    locator.locate(microserviceMeta.getName(), standPath, httpMethod, producerPaths);
+    locator.locate(microserviceMeta.getMicroserviceName(), standPath, httpMethod, producerPaths);
 
     return locator;
   }
@@ -126,7 +103,7 @@ public class ServicePathManager {
   }
 
   public void buildProducerPaths() {
-    String urlPrefix = System.getProperty(Const.URL_PREFIX);
+    String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (StringUtils.isEmpty(urlPrefix)) {
       producerPaths = swaggerPaths;
       producerPaths.printPaths();

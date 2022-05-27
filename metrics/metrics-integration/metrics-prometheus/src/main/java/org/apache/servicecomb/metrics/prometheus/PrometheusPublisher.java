@@ -25,6 +25,7 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
       }
     }
 
-    familySamples.add(new MetricFamilySamples("ServiceComb_Metrics", Type.UNTYPED, "ServiceComb Metrics", samples));
+    familySamples.add(new MetricFamilySamples("ServiceComb_Metrics", Type.UNKNOWN, "ServiceComb Metrics", samples));
 
     return familySamples;
   }
@@ -102,6 +103,9 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     String prometheusName = measurement.id().name().replace(".", "_");
     List<String> labelNames = new ArrayList<>();
     List<String> labelValues = new ArrayList<>();
+
+    labelNames.add("appId");
+    labelValues.add(RegistrationManager.INSTANCE.getAppId());
 
     for (Tag tag : measurement.id().tags()) {
       labelNames.add(tag.key());
@@ -122,7 +126,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
       return;
     }
 
-    httpServer.stop();
+    httpServer.close();
     httpServer = null;
     LOGGER.info("Prometheus httpServer stopped.");
   }

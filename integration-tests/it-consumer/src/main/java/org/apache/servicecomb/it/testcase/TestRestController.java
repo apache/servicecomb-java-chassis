@@ -20,8 +20,8 @@ package org.apache.servicecomb.it.testcase;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class TestRestController {
   private static ITSCBRestTemplate restControllerSchemaClient = new ITSCBRestTemplate
@@ -41,9 +41,9 @@ public class TestRestController {
 
   @Test
   public void restControllerSchemaClient() {
-    Assert.assertEquals("/", restControllerSchemaClient.getBasePath());
+    Assertions.assertEquals("/", restControllerSchemaClient.getBasePath());
     int result = restControllerSchemaClient.getForObject("/restControllerSchemaQuery?input=2", int.class);
-    Assert.assertEquals(2, result);
+    Assertions.assertEquals(2, result);
   }
 
   @Test
@@ -51,23 +51,31 @@ public class TestRestController {
     if ("rest".equals(ITJUnitUtils.getTransport())) {
       System.out.println("restControllerSchemaClientRestControllerSchemaQueries run with REST.");
       String result = restControllerSchemaClient.getForObject("/v1/restControllerSchemaQueries?a=2", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
       result = restControllerSchemaClient.getForObject("/v1/restControllerSchemaQueries?a=2&b=3", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3", result);
       result = restControllerSchemaClient.getForObject("/v1/restControllerSchemaQueries?a=2&b=3&c=4", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
       result = restControllerSchemaClient.getForObject("/v1/restControllerSchemaQueries?a=2&&&", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
 
       System.out.println("restControllerSchemaClientRestControllerSchemaQueries run with REST edge.");
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2", String.class);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?b=3", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?b=3", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?b=3", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?b=3", String.class);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?b=3", result);
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&b=3&c=4", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&b=3&c=4", String.class);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&&&", String.class);
-      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&&&", String.class);
+      Assertions.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
     } else {
       System.out.println("restControllerSchemaClientRestControllerSchemaQueries not run with." + ITJUnitUtils.getTransport());
     }
@@ -76,25 +84,25 @@ public class TestRestController {
   @Test
   public void restControllerEmptyMappingSchemaClient() {
     // empty path default to class name(@RequestMapping(path = "")). Shall we change this behavior in future?
-    Assert.assertEquals("/RestControllerEmptyMappingSchema", restControllerEmptyMappingSchemaClient.getBasePath());
+    Assertions.assertEquals("/RestControllerEmptyMappingSchema", restControllerEmptyMappingSchemaClient.getBasePath());
     int result = restControllerEmptyMappingSchemaClient
         .getForObject("/restControllerEmptyMappingSchemaQuery?input=2", int.class);
-    Assert.assertEquals(2, result);
+    Assertions.assertEquals(2, result);
   }
 
   @Test
   public void restControllerWithRequestMappingSchemaClient() {
-    Assert.assertEquals("/restControllerWithRequest", restControllerWithRequestMappingSchemaClient.getBasePath());
+    Assertions.assertEquals("/restControllerWithRequest", restControllerWithRequestMappingSchemaClient.getBasePath());
     int result = restControllerWithRequestMappingSchemaClient
         .getForObject("/restControllerWithRequestMappingSchemaQuery?input=2", int.class);
-    Assert.assertEquals(2, result);
+    Assertions.assertEquals(2, result);
   }
 
   @Test
   public void restControllerWithRestSchemaSchemaClient() {
-    Assert.assertEquals("/restControllerWithRestSchemaSchema", restControllerWithRestSchemaSchemaClient.getBasePath());
+    Assertions.assertEquals("/restControllerWithRestSchemaSchema", restControllerWithRestSchemaSchemaClient.getBasePath());
     int result = restControllerWithRestSchemaSchemaClient
         .getForObject("/restControllerWithRestSchemaSchemaQuery?input=2", int.class);
-    Assert.assertEquals(2, result);
+    Assertions.assertEquals(2, result);
   }
 }

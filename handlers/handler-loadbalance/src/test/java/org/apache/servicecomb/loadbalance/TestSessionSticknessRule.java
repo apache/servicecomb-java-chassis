@@ -26,10 +26,10 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
-import org.junit.Assert;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.netflix.loadbalancer.LoadBalancerStats;
@@ -50,7 +50,7 @@ public class TestSessionSticknessRule {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     ServiceCombServer mockedServer =
-        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
+        new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
     Invocation invocation = mock(Invocation.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);
@@ -62,10 +62,10 @@ public class TestSessionSticknessRule {
 
 
     Server s = rule.choose(allServers, invocation);
-    Assert.assertEquals(s, mockedServer);
+    Assertions.assertEquals(s, mockedServer);
 
     s = rule.choose(allServers, invocation);
-    Assert.assertEquals(s, mockedServer);
+    Assertions.assertEquals(s, mockedServer);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -134,7 +134,7 @@ public class TestSessionSticknessRule {
       status = false;
     }
 
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -164,7 +164,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertFalse(status);
+    Assertions.assertFalse(status);
   }
 
   @Test
@@ -210,7 +210,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -230,7 +230,7 @@ public class TestSessionSticknessRule {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -242,7 +242,7 @@ public class TestSessionSticknessRule {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     ServiceCombServer mockedServer =
-        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+        new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
     mockedServer.setAlive(true);
     mockedServer.setReadyToServe(true);
     mockedServer.setId("mockedServer");
@@ -250,7 +250,7 @@ public class TestSessionSticknessRule {
     LoadBalancer lb = new LoadBalancer(rule, "mockedServer");
     when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(allServers);
     rule.setLoadBalancer(lb);
-    ServiceCombServer server = new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+    ServiceCombServer server = new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
     Deencapsulation.setField(rule, "lastServer", server);
 
     new MockUp<SessionStickinessRule>(rule) {
@@ -265,6 +265,6 @@ public class TestSessionSticknessRule {
       }
     };
     Server s = rule.choose(allServers, invocation);
-    Assert.assertEquals(mockedServer, s);
+    Assertions.assertEquals(mockedServer, s);
   }
 }

@@ -23,13 +23,12 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
-  private ProducerResponseMapper realMapper;
+  private final ProducerResponseMapper realMapper;
 
   public SpringmvcProducerResponseMapper(ProducerResponseMapper realMapper) {
     this.realMapper = realMapper;
@@ -52,14 +51,13 @@ public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
     }
 
     HttpHeaders headers = springmvcResponse.getHeaders();
-    Headers cseHeaders = cseResponse.getHeaders();
     for (Entry<String, List<String>> entry : headers.entrySet()) {
-      if (entry.getValue() == null || entry.getValue().isEmpty()) {
+      if (entry.getValue() == null) {
         continue;
       }
 
       for (String value : entry.getValue()) {
-        cseHeaders.addHeader(entry.getKey(), value);
+        cseResponse.addHeader(entry.getKey(), value);
       }
     }
     return cseResponse;

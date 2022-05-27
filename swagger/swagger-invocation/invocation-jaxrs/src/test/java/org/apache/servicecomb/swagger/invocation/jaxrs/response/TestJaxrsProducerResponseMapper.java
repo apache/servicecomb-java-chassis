@@ -21,12 +21,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestJaxrsProducerResponseMapper {
   JaxrsProducerResponseMapper mapper = new JaxrsProducerResponseMapper();
@@ -45,9 +46,9 @@ public class TestJaxrsProducerResponseMapper {
       }
     };
     Response response = mapper.mapResponse(null, jaxrsResponse);
-    Assert.assertEquals(Status.OK, response.getStatus());
-    Assert.assertEquals("result", response.getResult());
-    Assert.assertNull(response.getHeaders().getHeaderMap());
+    Assertions.assertEquals(Status.OK, response.getStatus());
+    Assertions.assertEquals("result", response.getResult());
+    Assertions.assertNull(response.getHeaders());
   }
 
   @Test
@@ -66,9 +67,9 @@ public class TestJaxrsProducerResponseMapper {
       }
     };
     Response response = mapper.mapResponse(null, jaxrsResponse);
-    Assert.assertEquals(Status.OK, response.getStatus());
-    Assert.assertEquals("result", response.getResult());
-    Assert.assertEquals(1, response.getHeaders().getHeaderMap().size());
-    Assert.assertThat(response.getHeaders().getHeader("h"), Matchers.contains("v"));
+    Assertions.assertEquals(Status.OK, response.getStatus());
+    Assertions.assertEquals("result", response.getResult());
+    Assertions.assertEquals(1, response.getHeaders().size());
+    MatcherAssert.assertThat(response.getHeaders("h"), Matchers.contains("v"));
   }
 }

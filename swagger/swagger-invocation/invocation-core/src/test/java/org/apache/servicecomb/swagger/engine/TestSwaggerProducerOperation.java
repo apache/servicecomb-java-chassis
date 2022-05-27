@@ -14,38 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.swagger.engine;
 
-import java.lang.reflect.InvocationTargetException;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.junit.Assert;
-import org.junit.Test;
-
-import mockit.Mocked;
+import org.apache.servicecomb.swagger.invocation.models.PojoImpl;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 public class TestSwaggerProducerOperation {
-  SwaggerProducerOperation swaggerProducerOperation = new SwaggerProducerOperation();
+  private static final SwaggerEnvironment env = new SwaggerEnvironment();
+
+  private static SwaggerProducer producer;
 
   @Test
-  public void processException_normal(@Mocked SwaggerInvocation invocation) {
-    Error error = new Error("abc");
+  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
+  public void testGetParameterType() {
+    PojoImpl pojo = new PojoImpl();
+    producer = env.createProducer(pojo, null);
 
-    Response response = swaggerProducerOperation.processException(invocation, error);
-    Assert.assertSame(Status.OK, response.getStatus());
-    Assert.assertEquals("response from error: abc", response.getResult());
-  }
+    SwaggerProducerOperation swaggerProducerOperation = producer.findOperation("testBytes");
+    Assertions.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
+    Assertions.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType("bytes"));
 
-  @Test
-  public void processException_InvocationTargetException(@Mocked SwaggerInvocation invocation) {
-    Error error = new Error("abc");
-    InvocationTargetException targetException = new InvocationTargetException(error);
-
-    Response response = swaggerProducerOperation.processException(invocation, targetException);
-    Assert.assertSame(Status.OK, response.getStatus());
-    Assert.assertEquals("response from error: abc", response.getResult());
+    swaggerProducerOperation = producer.findOperation("testSimple");
+    Assertions.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
+    Assertions.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType(
+        swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().get(0).getName()));
   }
 }

@@ -22,23 +22,22 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestEnumSchema extends TestSchemaBase {
   @Test
   public void empty() throws Throwable {
     // null
     scbMap = new HashMap<>();
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // empty string[]
     scbMap.put("color", new String[] {});
-    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+    Assertions.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
-  private static class EnumRoot {
+  public static class EnumRoot {
     private int color;
 
     public int getColor() {
@@ -57,19 +56,19 @@ public class TestEnumSchema extends TestSchemaBase {
 
     Map<String, Object> map = new HashMap<>();
     map.put("color", Color.BLUE);
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
 
     map.put("color", 2);
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
 
     map.put("color", new String[] {"BLUE"});
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
 
     map.put("color", "BLUE");
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
 
     EnumRoot enumRoot = protoMapper.<EnumRoot>createRootDeserializer("Root", EnumRoot.class).deserialize(protobufBytes);
-    Assert.assertEquals(2, enumRoot.color);
+    Assertions.assertEquals(2, enumRoot.color);
   }
 
   enum Sharp {
@@ -78,34 +77,32 @@ public class TestEnumSchema extends TestSchemaBase {
 
   @Test
   public void fromInvalidEnum() throws Throwable {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("invalid enum name ROUND for proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color"));
-
-    scbMap = new HashMap<>();
-    scbMap.put("color", Sharp.ROUND);
-    rootSerializer.serialize(scbMap);
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put("color", Sharp.ROUND);
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("invalid enum name ROUND for proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color", exception.getMessage());
   }
 
   @Test
-  public void fromInvalidNumber() throws Throwable {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("invalid enum value 3 for proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color"));
-
-    scbMap = new HashMap<>();
-    scbMap.put("color", 3);
-    rootSerializer.serialize(scbMap);
+  public void fromInvalidNumber() {
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put("color", 3);
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("invalid enum value 3 for proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color", exception.getMessage());
   }
 
   @Test
-  public void type_invalid() throws Throwable {
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color"));
-
-    scbMap = new HashMap<>();
-    scbMap.put("color", new User());
-    rootSerializer.serialize(scbMap);
+  public void type_invalid() {
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+      scbMap = new HashMap<>();
+      scbMap.put("color", new User());
+      rootSerializer.serialize(scbMap);
+    });
+    Assertions.assertEquals("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color",
+            exception.getMessage());
   }
 }

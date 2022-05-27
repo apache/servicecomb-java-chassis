@@ -20,9 +20,7 @@ package org.apache.servicecomb.demo.crossapp;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 
 @RpcSchema(schemaId = "helloworld")
-public class HelloWorldImpl implements HelloWorld {
-
-  @Override
+public class HelloWorldImpl {
   public String sayHello() {
     return "hello world";
   }

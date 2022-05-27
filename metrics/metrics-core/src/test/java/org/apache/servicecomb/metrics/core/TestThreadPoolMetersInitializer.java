@@ -28,15 +28,14 @@ import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
@@ -105,7 +104,7 @@ public class TestThreadPoolMetersInitializer {
     };
 
     Mockito.when(threadPoolExecutor.getQueue()).thenReturn(queue);
-    new Expectations(CseContext.getInstance()) {
+    new Expectations() {
       {
         microserviceMeta.getOperations();
         result = Arrays.asList(operationMetaExecutor, operationMetaSameExecutor, operationMetaFixedThreadExecutor);
@@ -140,8 +139,9 @@ public class TestThreadPoolMetersInitializer {
       result.add(meter.measure().toString());
     });
 
-    Assert.assertThat(result,
+    MatcherAssert.assertThat(result,
         Matchers.containsInAnyOrder("[Measurement(threadpool.maxThreads:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.rejectedTaskCount:id=groupExecutor-group0,0,0.0)]",
             "[Measurement(threadpool.completedTaskCount:id=groupExecutor-group0,0,0.0)]",
             "[Measurement(threadpool.currentThreadsBusy:id=groupExecutor-group0,0,0.0)]",
             "[Measurement(threadpool.corePoolSize:id=groupExecutor-group0,0,0.0)]",

@@ -214,4 +214,9 @@ public class DataTypeSpringmvcSchema {
   public String queryArrMULTI(@ApiParam(collectionFormat = "multi") @RequestParam("queryArr") String[] queryArr) {
     return Arrays.toString(queryArr) + queryArr.length;
   }
+
+  @GetMapping("queryArrJSON")
+  public String queryArrJSON(@ApiParam(collectionFormat = "json") @RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
 }

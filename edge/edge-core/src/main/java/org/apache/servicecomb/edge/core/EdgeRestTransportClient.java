@@ -17,7 +17,11 @@
 package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
+import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOptionsSPI;
+import org.apache.servicecomb.transport.rest.client.HttpTransportHttpClientOptionsSPI;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 
 import io.vertx.core.Context;
@@ -26,6 +30,11 @@ public class EdgeRestTransportClient extends RestTransportClient {
   @Override
   protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
     Context invocationContext = (Context) invocation.getHandlerContext().get(EdgeInvocation.EDGE_INVOCATION_CONTEXT);
-    return clientMgr.findClientPool(invocation.isSync(), invocationContext);
+
+    URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    String clientName = endpoint.isHttp2Enabled() ?
+        Http2TransportHttpClientOptionsSPI.CLIENT_NAME :
+        HttpTransportHttpClientOptionsSPI.CLIENT_NAME;
+    return HttpClients.getClient(clientName, invocation.isSync(), invocationContext);
   }
 }

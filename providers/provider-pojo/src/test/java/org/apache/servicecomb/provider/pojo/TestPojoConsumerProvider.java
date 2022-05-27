@@ -19,14 +19,14 @@ package org.apache.servicecomb.provider.pojo;
 
 import static org.apache.servicecomb.provider.pojo.PojoConst.POJO;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class TestPojoConsumerProvider {
   @Test
-  public void providerNameIsPojo() throws Exception {
+  public void providerNameIsPojo() {
     PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider();
-    assertThat(pojoConsumerProvider.getName(), is(POJO));
+    MatcherAssert.assertThat(pojoConsumerProvider.getName(), is(POJO));
   }
 }

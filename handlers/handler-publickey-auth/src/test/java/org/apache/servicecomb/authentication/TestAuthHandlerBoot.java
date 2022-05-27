@@ -17,38 +17,59 @@
 package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.AuthHandlerBoot;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.junit.Assert;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import mockit.Expectations;
+import org.junit.jupiter.api.Assertions;
 
 public class TestAuthHandlerBoot {
+  private SCBEngine engine;
 
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+    engine = SCBBootstrap.createSCBEngineForTest().run();
+  }
+
+  @After
+  public void teardown() {
+    engine.destroy();
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testGenerateRSAKey() {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     Microservice microservice = new Microservice();
     microservice.setInstance(microserviceInstance);
-    new Expectations(RegistryUtils.class) {
-      {
-
-        RegistryUtils.getMicroserviceInstance();
-        result = microserviceInstance;
-      }
-    };
 
     AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
     authHandlerBoot.onBootEvent(bootEvent);
-    Assert.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
-    Assert.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
+    Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
+    Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
+  }
+
+  @Test
+  public void testMicroserviceInstancePublicKey() {
+    AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
+    BootEvent bootEvent = new BootEvent();
+    bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
+    authHandlerBoot.onBootEvent(bootEvent);
+    String publicKey = RegistrationManager.INSTANCE.getMicroserviceInstance().
+        getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
+    Assertions.assertNotNull(publicKey);
   }
 }

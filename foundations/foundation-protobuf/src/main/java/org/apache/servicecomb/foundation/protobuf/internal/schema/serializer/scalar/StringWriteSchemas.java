@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.CharGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -28,11 +29,15 @@ import io.protostuff.runtime.FieldSchema;
 
 public class StringWriteSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
+    if (char.class.equals(propertyDescriptor.getJavaType().getRawClass())) {
+      return new CharFieldStringSchema<>(protoField, propertyDescriptor);
+    }
+
     if (String.class.equals(propertyDescriptor.getJavaType().getRawClass())) {
       return new StringSchema<>(protoField, propertyDescriptor);
     }
 
-    return new StringDynamicSchema<>(protoField, propertyDescriptor);
+    return new StringSchema<>(protoField, propertyDescriptor);
   }
 
   private static class StringDynamicSchema<T> extends FieldSchema<T> {
@@ -55,25 +60,46 @@ public class StringWriteSchemas {
         return;
       }
 
+      if (value instanceof Character) {
+        output.writeScalarString(tag, tagSize, String.valueOf((char) value));
+        return;
+      }
+
       ProtoUtils.throwNotSupportWrite(protoField, value);
     }
   }
 
   private static class StringSchema<T> extends StringDynamicSchema<T> {
-    protected final Getter<T, String> getter;
+    protected final Getter<T, Object> getter;
 
     public StringSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      String value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarString(tag, tagSize, value);
+        writeTo(output, value);
       }
+    }
+  }
+
+  private static class CharFieldStringSchema<T> extends StringDynamicSchema<T> {
+    protected final CharGetter<T> getter;
+
+    public CharFieldStringSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor);
+
+      this.getter = propertyDescriptor.getGetter();
+    }
+
+    @Override
+    public final void getAndWriteTo(OutputEx output, T message) throws IOException {
+      char value = getter.get(message);
+      writeTo(output, value);
     }
   }
 }

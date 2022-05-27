@@ -63,7 +63,7 @@ public class SerializableParameterAdapter implements SwaggerTypeAdapter {
   }
 
   @Override
-  public boolean isObject() {
+  public boolean isJavaLangObject() {
     return false;
   }
 }

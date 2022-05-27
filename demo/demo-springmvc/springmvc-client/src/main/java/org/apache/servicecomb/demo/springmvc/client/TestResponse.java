@@ -23,7 +23,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.ResponseEntity;
@@ -43,38 +43,52 @@ public class TestResponse {
     testDelay();
     testAbort();
     testDecodeResponseError();
+    checkQueryObject();
+    testCseResponse();
+    testResponseEntity();
+    testCseResponseCorrect();
   }
 
   public void runHighway() {
   }
 
   public void runAllTransport() {
-    testResponseEntity();
-    testCseResponse();
     testvoidResponse();
     testVoidResponse();
     checkQueryObject();
+    testCseResponse();
+    testResponseEntity();
   }
 
   private void testCseResponse() {
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
     Response cseResponse = intf.cseResponse();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-    TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
+    TestMgr.check("h2v " + srcName, cseResponse.getHeader("h2"));
+    TestMgr.check(cseResponse.getStatusCode(), 202);
+  }
+
+  private void testCseResponseCorrect() {
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    Response cseResponse = intf.cseResponseCorrect();
+    TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
+    TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
+    TestMgr.check("h2v " + srcName, cseResponse.getHeader("h2"));
+    TestMgr.check(cseResponse.getStatusCode(), 202);
   }
 
   private void testResponseEntity() {
     Date date = new Date();
 
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     ResponseEntity<Date> responseEntity = intf.responseEntity(date);
     TestMgr.check(date, responseEntity.getBody());
     TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
     TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
 
-    TestMgr.check(202, responseEntity.getStatusCode());
+    TestMgr.check(202, responseEntity.getStatusCodeValue());
   }
 
   private void testvoidResponse() {
@@ -92,8 +106,8 @@ public class TestResponse {
   }
 
   private void checkQueryGenericObject() {
-    final GenericParam<Person> requestBody = new GenericParam<>();
-    requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
+    GenericParam<Person> requestBody = new GenericParam<>();
+    requestBody.num(1).str("str1").setData(new Person("bodyPerson"));
     String result = intf.checkQueryGenericObject(requestBody, "str2", 2);
     TestMgr.check(
         "str=str2,generic=GenericParamWithJsonIgnore{str='str2', num=2, data=null},requestBody=GenericParam{str='str1', num=1, data=bodyPerson}",
@@ -101,8 +115,8 @@ public class TestResponse {
   }
 
   private void checkQueryGenericString() {
-    final GenericParam<Person> requestBody = new GenericParam<>();
-    requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
+    GenericParam<Person> requestBody = new GenericParam<>();
+    requestBody.num(1).str("str1").setData(new Person("bodyPerson"));
     String result = intf.checkQueryGenericString("str2", requestBody, 2, "dataTest", "strInSubclass", 33);
     TestMgr.check(
         "str=str2,generic=GenericParamExtended{strExtended='strInSubclass', intExtended=33, super="
@@ -148,10 +162,7 @@ public class TestResponse {
     Throwable cause = exception.getCause();
     TestMgr.check(InvalidFormatException.class, cause.getClass());
     TestMgr.check(
-        "Cannot deserialize value of type `java.util.Date` from String \"returnOK\": not a valid representation "
-            + "(error: Failed to parse Date value 'returnOK': Failed to parse date \"returnOK\": Invalid number: retu)\n"
-            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 12] "
-            + "(through reference chain: org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse[\"content\"])",
-        ((InvalidFormatException) cause).getMessage());
+        ((InvalidFormatException) cause).getMessage().contains("Cannot deserialize value of type `java.util.Date`"),
+        true);
   }
 }

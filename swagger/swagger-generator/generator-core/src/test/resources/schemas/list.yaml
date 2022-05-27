@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/testListBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
 definitions:
   User:
@@ -57,4 +57,3 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/User"
-

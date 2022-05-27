@@ -14,130 +14,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.core.definition;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.servicecomb.foundation.common.RegisterManager;
-import org.apache.servicecomb.foundation.common.utils.JvmUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.core.Handler;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+
+import io.swagger.models.Swagger;
 
 /**
- * 微服务名为microserviceName(app内部)或者appId:microserviceName(跨app)
- * operation的查询key为operation的qualifiedName
+ * should named MicroserviceVersionMeta<br>
+ * but for compatible reason, keep the old name
  */
-public class MicroserviceMeta extends CommonService<OperationMeta> {
-  private String appId;
+public class MicroserviceMeta {
+  private final SCBEngine scbEngine;
 
-  // 不包括appId的名字
-  private String shortName;
+  private MicroserviceVersionsMeta microserviceVersionsMeta;
 
-  // 如果要生成class，在这个loader中创建
-  private ClassLoader classLoader;
+  private final String appId;
 
-  // key为schema id
-  private RegisterManager<String, SchemaMeta> idSchemaMetaMgr;
+  // always not include appId
+  private final String shortName;
 
-  // key为schema interface
-  // 只有一个interface对应一个schemaMeta时，才允许根据接口查询schema
-  // 否则直接抛异常，只能显式地指定schemaId来使用
-  private Map<Class<?>, List<SchemaMeta>> intfSchemaMetaMgr = new ConcurrentHashMap<>();
+  // inside app: equals to shortName
+  // cross app: appId:shortName
+  private final String microserviceName;
 
-  private final Object intfSchemaLock = new Object();
+  // key is schemaId, this is all schemas
+  private final Map<String, SchemaMeta> schemaMetas = new HashMap<>();
 
-  private Map<String, Object> extData = new ConcurrentHashMap<>();
+  // key is schema interface
+  // only when list have only one element, then allow query by interface
+  // otherwise must query by schemaId
+  //
+  // value is synchronizedList, only for low frequency query
+  private final Map<Class<?>, List<SchemaMeta>> intfSchemaMetas = new HashMap<>();
 
-  private boolean consumer = true;
+  // key is OperationMeta.getMicroserviceQualifiedName()
+  private final Map<String, OperationMeta> operationMetas = new HashMap<>();
 
-  public MicroserviceMeta(String microserviceName) {
-    classLoader = JvmUtils.findClassLoader();
-    parseMicroserviceName(microserviceName);
-    createOperationMgr("Operation meta mgr for microservice " + microserviceName);
-    idSchemaMetaMgr = new RegisterManager<>("Schema meta id mgr for microservice " + microserviceName);
+  private final boolean consumer;
+
+  private List<Handler> handlerChain = Collections.singletonList((invocation, ar) -> ar.success(null));
+
+  private FilterNode filterChain = FilterNode.EMPTY;
+
+  // providerQpsFlowControlHandler is a temporary field, only for internal usage
+  private Handler providerQpsFlowControlHandler;
+
+  // providerQpsFlowControlHandlerSearched is a temporary field, only for internal usage
+  private boolean providerQpsFlowControlHandlerSearched;
+
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
+
+  public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, boolean consumer) {
+    this.scbEngine = scbEngine;
+    MicroserviceNameParser parser = scbEngine.parseMicroserviceName(microserviceName);
+    this.appId = parser.getAppId();
+    this.shortName = parser.getShortName();
+    this.microserviceName = parser.getMicroserviceName();
+    this.consumer = consumer;
+  }
+
+  public MicroserviceConfig getMicroserviceConfig() {
+    return microserviceVersionsMeta.getMicroserviceConfig();
+  }
+
+  public MicroserviceVersionsMeta getMicroserviceVersionsMeta() {
+    return microserviceVersionsMeta;
+  }
+
+  public void setMicroserviceVersionsMeta(MicroserviceVersionsMeta microserviceVersionsMeta) {
+    this.microserviceVersionsMeta = microserviceVersionsMeta;
+  }
+
+  public SCBEngine getScbEngine() {
+    return scbEngine;
   }
 
   public boolean isConsumer() {
     return consumer;
   }
 
-  public MicroserviceMeta setConsumer(boolean consumer) {
-    this.consumer = consumer;
-
-    return this;
-  }
-
-  public void regSchemaMeta(SchemaMeta schemaMeta) {
-    idSchemaMetaMgr.register(schemaMeta.getSchemaId(), schemaMeta);
-    regSchemaAndInterface(schemaMeta);
-
-    for (OperationMeta operationMeta : schemaMeta.getOperations()) {
-      regOperation(operationMeta.getSchemaQualifiedName(), operationMeta);
-    }
-  }
-
-  private void regSchemaAndInterface(SchemaMeta schemaMeta) {
-    Class<?> intf = schemaMeta.getSwaggerIntf();
-    synchronized (intfSchemaLock) {
-      List<SchemaMeta> schemaList = intfSchemaMetaMgr.computeIfAbsent(intf, k -> new ArrayList<>());
-
-      schemaList.add(schemaMeta);
-    }
-  }
-
-  public SchemaMeta ensureFindSchemaMeta(String schemaId) {
-    return idSchemaMetaMgr.ensureFindValue(schemaId);
-  }
-
-  public SchemaMeta findSchemaMeta(String schemaId) {
-    return idSchemaMetaMgr.findValue(schemaId);
-  }
-
-  public SchemaMeta ensureFindSchemaMeta(Class<?> schemaIntf) {
-    SchemaMeta schemaMeta = findSchemaMeta(schemaIntf);
-    if (schemaMeta == null) {
-      String msg =
-          String.format("No schema interface is %s.", schemaIntf.getName());
-      throw new Error(msg);
-    }
-
-    return schemaMeta;
-  }
-
-  public SchemaMeta findSchemaMeta(Class<?> schemaIntf) {
-    List<SchemaMeta> schemaList = intfSchemaMetaMgr.get(schemaIntf);
-    if (schemaList == null) {
-      return null;
-    }
-
-    if (schemaList.size() > 1) {
-      String msg =
-          String.format("More than one schema interface is %s, please use schemaId to choose a schema.",
-              schemaIntf.getName());
-      throw new Error(msg);
-    }
-
-    synchronized (intfSchemaLock) {
-      return schemaList.get(0);
-    }
-  }
-
-  public Collection<SchemaMeta> getSchemaMetas() {
-    return idSchemaMetaMgr.values();
-  }
-
-  public void putExtData(String key, Object data) {
-    extData.put(key, data);
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getExtData(String key) {
-    return (T) extData.get(key);
+  public String getMicroserviceName() {
+    return microserviceName;
   }
 
   public String getAppId() {
@@ -148,25 +118,113 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
     return shortName;
   }
 
-  public ClassLoader getClassLoader() {
-    return classLoader;
-  }
+  public SchemaMeta registerSchemaMeta(String schemaId, Swagger swagger) {
+    SchemaMeta schemaMeta = new SchemaMeta(this, schemaId, swagger);
 
-  public void setClassLoader(ClassLoader classLoader) {
-    this.classLoader = classLoader;
-  }
-
-  protected void parseMicroserviceName(String microserviceName) {
-    int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
-    if (idxAt == -1) {
-      appId = RegistryUtils.getAppId();
-      name = microserviceName;
-      shortName = name;
-      return;
+    if (schemaMetas.putIfAbsent(schemaMeta.getSchemaId(), schemaMeta) != null) {
+      throw new IllegalStateException(String.format(
+          "failed to register SchemaMeta caused by duplicated schemaId, appId=%s, microserviceName=%s, schemaId=%s.",
+          appId, microserviceName, schemaMeta.getSchemaId()));
     }
 
-    appId = microserviceName.substring(0, idxAt);
-    name = microserviceName;
-    shortName = microserviceName.substring(idxAt + 1);
+    Class<?> intf = SwaggerUtils.getInterface(schemaMeta.getSwagger());
+    if (intf != null) {
+      intfSchemaMetas
+          .computeIfAbsent(intf, k -> Collections.synchronizedList(new ArrayList<>()))
+          .add(schemaMeta);
+    }
+
+    schemaMeta.getOperations().values().stream()
+        .forEach(operationMeta -> operationMetas.put(operationMeta.getMicroserviceQualifiedName(), operationMeta));
+
+    return schemaMeta;
+  }
+
+  public Map<String, OperationMeta> operationMetas() {
+    return operationMetas;
+  }
+
+  public Collection<OperationMeta> getOperations() {
+    return operationMetas.values();
+  }
+
+  public SchemaMeta ensureFindSchemaMeta(String schemaId) {
+    SchemaMeta schemaMeta = schemaMetas.get(schemaId);
+    if (schemaMeta == null) {
+      throw new IllegalStateException(String.format(
+          "failed to find SchemaMeta by schemaId, appId=%s, microserviceName=%s, schemaId=%s.",
+          appId, microserviceName, schemaId));
+    }
+
+    return schemaMeta;
+  }
+
+  public SchemaMeta findSchemaMeta(String schemaId) {
+    return schemaMetas.get(schemaId);
+  }
+
+  public SchemaMeta findSchemaMeta(Class<?> schemaIntf) {
+    List<SchemaMeta> schemaList = intfSchemaMetas.get(schemaIntf);
+    if (schemaList == null) {
+      return null;
+    }
+
+    if (schemaList.size() > 1) {
+      throw new IllegalStateException(String.format(
+          "failed to find SchemaMeta by interface cause there are multiple SchemaMeta relate to the interface, "
+              + "please use schemaId to choose a SchemaMeta, "
+              + "appId=%s, microserviceName=%s, interface=%s.",
+          appId, microserviceName, schemaIntf.getName()));
+    }
+
+    return schemaList.get(0);
+  }
+
+  public Map<String, SchemaMeta> getSchemaMetas() {
+    return schemaMetas;
+  }
+
+  public void putExtData(String key, Object data) {
+    vendorExtensions.put(key, data);
+  }
+
+  public <T> T getExtData(String key) {
+    return vendorExtensions.get(key);
+  }
+
+  public List<Handler> getHandlerChain() {
+    return handlerChain;
+  }
+
+  public void setHandlerChain(List<Handler> handlerChain) {
+    this.handlerChain = handlerChain;
+  }
+
+  public FilterNode getFilterChain() {
+    return filterChain;
+  }
+
+  public void setFilterChain(FilterNode filterChain) {
+    this.filterChain = filterChain;
+  }
+
+  /**
+   * Only for JavaChassis internal usage.
+   */
+  @Deprecated
+  public Handler getProviderQpsFlowControlHandler() {
+    if (providerQpsFlowControlHandlerSearched) {
+      return providerQpsFlowControlHandler;
+    }
+
+    for (Handler handler : handlerChain) {
+      // matching by class name is more or less better than importing an extra maven dependency
+      if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
+        providerQpsFlowControlHandler = handler;
+        break;
+      }
+    }
+    providerQpsFlowControlHandlerSearched = true;
+    return providerQpsFlowControlHandler;
   }
 }

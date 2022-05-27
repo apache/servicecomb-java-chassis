@@ -26,13 +26,13 @@ import io.vertx.core.net.NetSocket;
 // can not support normal and ssl by the same instance
 // so we do this wrap
 public class NetClientWrapper {
-  private TcpClientConfig normalClientConfig;
+  private final TcpClientConfig normalClientConfig;
 
-  private NetClient normalNetClient;
+  private final NetClient normalNetClient;
 
-  private TcpClientConfig sslClientConfig;
+  private final TcpClientConfig sslClientConfig;
 
-  private NetClient sslNetClient;
+  private final NetClient sslNetClient;
 
   public NetClientWrapper(Vertx vertx, TcpClientConfig normalClientConfig, TcpClientConfig sslClientConfig) {
     this.normalClientConfig = normalClientConfig;

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
 public class HighwayServerVerticle extends AbstractVerticle {
@@ -48,10 +48,10 @@ public class HighwayServerVerticle extends AbstractVerticle {
   }
 
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
+  public void start(Promise<Void> startPromise) throws Exception {
     try {
       super.start();
-      startListen(startFuture);
+      startListen(startPromise);
     } catch (Throwable e) {
       // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
       LOGGER.error("", e);
@@ -59,11 +59,11 @@ public class HighwayServerVerticle extends AbstractVerticle {
     }
   }
 
-  protected void startListen(Future<Void> startFuture) {
-    // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
+  protected void startListen(Promise<Void> startPromise) {
+    // if listen address is not provided, do not fail and maybe a consumer service.
     if (endpointObject == null) {
       LOGGER.warn("highway listen address is not configured, will not listen.");
-      startFuture.complete();
+      startPromise.complete();
       return;
     }
 
@@ -74,12 +74,12 @@ public class HighwayServerVerticle extends AbstractVerticle {
         LOGGER.info("highway listen success. address={}:{}",
             socketAddress.getHostString(),
             socketAddress.getPort());
-        startFuture.complete();
+        startPromise.complete();
         return;
       }
 
       LOGGER.error(Const.HIGHWAY, ar.cause());
-      startFuture.fail(ar.cause());
+      startPromise.fail(ar.cause());
     });
   }
 }

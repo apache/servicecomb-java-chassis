@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 
 public abstract class AbstractTcpClientPackage {
-  private static AtomicLong reqId = new AtomicLong();
+  private static final AtomicLong reqId = new AtomicLong();
 
   public static long getAndIncRequestId() {
     return reqId.getAndIncrement();

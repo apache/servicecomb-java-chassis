@@ -18,14 +18,17 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.util.Arrays;
 
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -68,8 +71,8 @@ public class GateRestTemplate extends RestTemplate {
   }
 
   private String getUrlPrefix(String gateName, String producerName, String schemaId) {
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), gateName,
+    MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE.getAppManager()
+        .getOrCreateMicroserviceVersionRule(RegistrationManager.INSTANCE.getMicroservice().getAppId(), gateName,
             DefinitionConst.VERSION_RULE_ALL);
     MicroserviceInstance microserviceInstance = microserviceVersionRule.getInstances().values().stream().findFirst()
         .get();
@@ -80,11 +83,10 @@ public class GateRestTemplate extends RestTemplate {
       urlSchema = "https";
     }
 
-    microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,
-            DefinitionConst.VERSION_RULE_ALL);
-    MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
-    SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
+        .createMicroserviceReferenceConfig(producerName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     return String
         .format("%s://%s:%d/rest/%s%s", urlSchema, edgeAddress.getHostOrIp(), edgeAddress.getPort(), producerName,
             schemaMeta.getSwagger().getBasePath());

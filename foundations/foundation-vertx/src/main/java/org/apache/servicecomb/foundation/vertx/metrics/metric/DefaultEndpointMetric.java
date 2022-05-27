@@ -18,31 +18,33 @@ package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.concurrent.atomic.LongAdder;
 
-import io.vertx.core.net.SocketAddress;
-
 /**
  * for one listen address, include multiple httpClient or httpServer
  */
 public class DefaultEndpointMetric {
-  private SocketAddress address;
+  private final String address;
 
   // summary of connect times from boot
   // by this, we can know how many new connections connected recently
-  private LongAdder connectCount = new LongAdder();
+  private final LongAdder connectCount = new LongAdder();
 
   // summary of disconnect times from boot
   // by this, we can know how many connections disconnected recently
-  private LongAdder disconnectCount = new LongAdder();
+  private final LongAdder disconnectCount = new LongAdder();
 
-  private LongAdder bytesRead = new LongAdder();
+  private final LongAdder bytesRead = new LongAdder();
 
-  private LongAdder bytesWritten = new LongAdder();
+  private final LongAdder bytesWritten = new LongAdder();
 
-  public DefaultEndpointMetric(SocketAddress address) {
+  private final LongAdder requests = new LongAdder();
+
+  private final LongAdder latency = new LongAdder();
+
+  public DefaultEndpointMetric(String address) {
     this.address = address;
   }
 
-  public SocketAddress getAddress() {
+  public String getAddress() {
     return address;
   }
 
@@ -80,5 +82,21 @@ public class DefaultEndpointMetric {
 
   public void addBytesWritten(long bytes) {
     bytesWritten.add(bytes);
+  }
+
+  public void incrementRequests() {
+    requests.increment();
+  }
+
+  public long getRequests() {
+    return requests.longValue();
+  }
+
+  public void addLatency(long delta) {
+    latency.add(delta);
+  }
+
+  public long getLatency() {
+    return latency.longValue();
   }
 }

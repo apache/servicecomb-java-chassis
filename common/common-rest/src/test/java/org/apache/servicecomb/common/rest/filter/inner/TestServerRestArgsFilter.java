@@ -21,11 +21,18 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
+import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Assert;
+import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -45,18 +52,27 @@ public class TestServerRestArgsFilter {
   @Mocked
   Part part;
 
+  @Mocked
+  OperationMeta operationMeta;
+
   boolean invokedSendPart;
 
   ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
-  public void asyncBeforeSendResponse_part() {
-    new Expectations() {
+  public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) {
+    ResponsesMeta responsesMeta = new ResponsesMeta();
+    responsesMeta.getResponseMap().put(202, RestObjectMapperFactory.getRestObjectMapper().constructType(Part.class));
+    new Expectations(RestMetaUtils.class) {
       {
         responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
         result = response;
         response.getResult();
         result = part;
+        response.getStatusCode();
+        result = 202;
+        invocation.findResponseType(202);
+        result = TypeFactory.defaultInstance().constructType(Part.class);
       }
     };
     new MockUp<HttpServletResponseEx>(responseEx) {
@@ -67,7 +83,7 @@ public class TestServerRestArgsFilter {
       }
     };
 
-    Assert.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
-    Assert.assertTrue(invokedSendPart);
+    Assertions.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
+    Assertions.assertTrue(invokedSendPart);
   }
 }

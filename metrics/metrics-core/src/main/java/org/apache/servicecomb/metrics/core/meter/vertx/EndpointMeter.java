@@ -17,6 +17,7 @@
 package org.apache.servicecomb.metrics.core.meter.vertx;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
@@ -24,6 +25,8 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
 public class EndpointMeter {
+  private static final double SNV_MILLI_SECONDS = 1.0 / TimeUnit.MILLISECONDS.toNanos(1L);
+
   public static final String ADDRESS = "address";
 
   public static final String STATISTIC = "statistic";
@@ -38,17 +41,25 @@ public class EndpointMeter {
 
   public static final String BYTES_WRITTEN = "bytesWritten";
 
+  public static final String REQUESTS = "requests";
+
+  public static final String LATENCY = "latency";
+
   protected Id id;
 
-  private Id idConnect;
+  private final Id idConnect;
 
-  private Id idDisconnect;
+  private final Id idDisconnect;
 
-  private Id idConnections;
+  private final Id idConnections;
 
-  private Id idBytesRead;
+  private final Id idBytesRead;
 
-  private Id idBytesWritten;
+  private final Id idBytesWritten;
+
+  private final Id idRequests;
+
+  private final Id idLatency;
 
   protected DefaultEndpointMetric metric;
 
@@ -60,14 +71,20 @@ public class EndpointMeter {
 
   private long lastBytesWritten;
 
+  private long lastRequests;
+
+  private long lastLatency;
+
   public EndpointMeter(Id id, DefaultEndpointMetric metric) {
-    id = id.withTag(ADDRESS, metric.getAddress().toString());
+    id = id.withTag(ADDRESS, metric.getAddress());
     this.id = id;
     idConnect = id.withTag(STATISTIC, CONNECT_COUNT);
     idDisconnect = id.withTag(STATISTIC, DISCONNECT_COUNT);
     idConnections = id.withTag(STATISTIC, CONNECTIONS);
     idBytesRead = id.withTag(STATISTIC, BYTES_READ);
     idBytesWritten = id.withTag(STATISTIC, BYTES_WRITTEN);
+    idRequests = id.withTag(STATISTIC, REQUESTS);
+    idLatency = id.withTag(STATISTIC, LATENCY);
     this.metric = metric;
   }
 
@@ -84,16 +101,23 @@ public class EndpointMeter {
     long disconnectCount = metric.getDisconnectCount();
     long bytesRead = metric.getBytesRead();
     long bytesWritten = metric.getBytesWritten();
+    long requests = metric.getRequests();
+    long latency = metric.getLatency();
 
     measurements.add(newMeasurement(idConnect, msNow, connectCount - lastConnectCount));
     measurements.add(newMeasurement(idDisconnect, msNow, disconnectCount - lastDisconnectCount));
     measurements.add(newMeasurement(idConnections, msNow, connectCount - disconnectCount));
     measurements.add(newMeasurement(idBytesRead, msNow, (bytesRead - lastBytesRead) / secondInterval));
     measurements.add(newMeasurement(idBytesWritten, msNow, (bytesWritten - lastBytesWritten) / secondInterval));
+    measurements.add(newMeasurement(idRequests, msNow, requests - lastRequests));
+    measurements.add(newMeasurement(idLatency, msNow,
+        requests - lastRequests == 0 ? 0 : (latency - lastLatency) / (requests - lastRequests) * SNV_MILLI_SECONDS));
 
     this.lastConnectCount = connectCount;
     this.lastDisconnectCount = disconnectCount;
     this.lastBytesRead = bytesRead;
     this.lastBytesWritten = bytesWritten;
+    this.lastRequests = requests;
+    this.lastLatency = latency;
   }
 }

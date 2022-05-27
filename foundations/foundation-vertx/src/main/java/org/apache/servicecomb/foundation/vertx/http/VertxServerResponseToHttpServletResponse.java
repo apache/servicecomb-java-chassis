@@ -33,9 +33,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
-  private Context context;
+  private final Context context;
 
-  private HttpServerResponse serverResponse;
+  private final HttpServerResponse serverResponse;
 
   private StatusType statusType;
 
@@ -58,6 +58,11 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
     serverResponse.setStatusMessage(sm);
   }
 
+  @Override
+  public void setStatus(int sc) {
+    serverResponse.setStatusCode(sc);
+  }
+  
   @Override
   public StatusType getStatusType() {
     if (statusType == null) {
@@ -108,9 +113,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
       return;
     }
 
-    context.runOnContext(V -> {
-      internalFlushBuffer();
-    });
+    context.runOnContext(V -> internalFlushBuffer());
   }
 
   public void internalFlushBuffer() {
@@ -125,8 +128,10 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
     DownloadUtils.prepareDownloadHeader(this, part);
-
-    return new PumpFromPart(context, part).toWriteStream(serverResponse);
+    if (part == null) {
+      return CompletableFuture.completedFuture(null);
+    }
+    return new PumpFromPart(context, part).toWriteStream(serverResponse, null);
   }
 
   @Override

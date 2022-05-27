@@ -17,306 +17,262 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import java.io.IOException;
-
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractHttpServletResponse {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   HttpServletResponseEx response = new AbstractHttpServletResponse() {
   };
 
-  private void setExceptionExpected() {
-    expectedException.expect(Error.class);
-    expectedException.expectMessage(Matchers.is("not supported method"));
+  private void checkError(Error error) {
+    Assertions.assertEquals("not supported method", error.getMessage());
   }
 
   @Test
   public void testGetCharacterEncoding() {
-    setExceptionExpected();
-
-    response.getCharacterEncoding();
+    Error error = Assertions.assertThrows(Error.class, () -> response.getCharacterEncoding());
+    checkError(error);
   }
 
   @Test
   public void testGetContentType() {
-    setExceptionExpected();
-
-    response.getContentType();
+    Error error = Assertions.assertThrows(Error.class, () -> response.getContentType());
+    checkError(error);
   }
 
   @Test
-  public void testGetOutputStream() throws IOException {
-    setExceptionExpected();
-
-    response.getOutputStream();
+  public void testGetOutputStream() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.getOutputStream());
+    checkError(error);
   }
 
   @Test
-  public void testGetWriter() throws IOException {
-    setExceptionExpected();
-
-    response.getWriter();
+  public void testGetWriter() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.getWriter());
+    checkError(error);
   }
 
   @Test
   public void testSetCharacterEncoding() {
-    setExceptionExpected();
-
-    response.setCharacterEncoding("");
+    Error error = Assertions.assertThrows(Error.class, () -> response.setCharacterEncoding(""));
+    checkError(error);
   }
 
   @Test
   public void testSetContentLength() {
-    setExceptionExpected();
-
-    response.setContentLength(0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setContentLength(0));
+    checkError(error);
   }
 
   @Test
   public void testSetContentLengthLong() {
-    setExceptionExpected();
-
-    response.setContentLengthLong(0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setContentLengthLong(0));
+    checkError(error);
   }
 
   @Test
   public void testSetContentType() {
-    setExceptionExpected();
-
-    response.setContentType("");
+    Error error = Assertions.assertThrows(Error.class, () -> response.setContentType(""));
+    checkError(error);
   }
 
   @Test
   public void testSetBufferSize() {
-    setExceptionExpected();
-
-    response.setBufferSize(0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setBufferSize(0));
+    checkError(error);
   }
 
   @Test
   public void testGetBufferSize() {
-    setExceptionExpected();
-
-    response.getBufferSize();
+    Error error = Assertions.assertThrows(Error.class, () -> response.getBufferSize());
+    checkError(error);
   }
 
   @Test
-  public void testFlushBuffer() throws IOException {
-    setExceptionExpected();
-
-    response.flushBuffer();
+  public void testFlushBuffer() {
+    Error error = Assertions.assertThrows(Error.class, () -> {
+      response.flushBuffer();
+    });
+    checkError(error);
   }
 
   @Test
   public void testResetBuffer() {
-    setExceptionExpected();
-
-    response.resetBuffer();
+    Error error = Assertions.assertThrows(Error.class, () -> response.resetBuffer());
+    checkError(error);
   }
 
   @Test
   public void testIsCommitted() {
-    setExceptionExpected();
-
-    response.isCommitted();
+    Error error = Assertions.assertThrows(Error.class, () -> response.isCommitted());
+    checkError(error);
   }
 
   @Test
   public void testReset() {
-    setExceptionExpected();
-
-    response.reset();
+    Error error = Assertions.assertThrows(Error.class, () -> response.reset());
+    checkError(error);
   }
 
   @Test
   public void testSetLocale() {
-    setExceptionExpected();
-
-    response.setLocale(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setLocale(null));
+    checkError(error);
   }
 
   @Test
   public void testGetLocale() {
-    setExceptionExpected();
-
-    response.getLocale();
+    Error error = Assertions.assertThrows(Error.class, () -> {
+      response.getLocale();
+    });
+    checkError(error);
   }
 
   @Test
   public void testAddCookie() {
-    setExceptionExpected();
-
-    response.addCookie(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.addCookie(null));
+    checkError(error);
   }
 
   @Test
   public void testContainsHeader() {
-    setExceptionExpected();
-
-    response.containsHeader(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.containsHeader(null));
+    checkError(error);
   }
 
   @Test
   public void testEncodeURL() {
-    setExceptionExpected();
-
-    response.encodeURL(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.encodeURL(null));
+    checkError(error);
   }
 
   @Test
   public void testEncodeRedirectURL() {
-    setExceptionExpected();
-
-    response.encodeRedirectURL(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.encodeRedirectURL(null));
+    checkError(error);
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testEncodeUrl() {
-    setExceptionExpected();
-
-    response.encodeUrl(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.encodeUrl(null));
+    checkError(error);
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testEncodeRedirectUrl() {
-    setExceptionExpected();
-
-    response.encodeRedirectUrl(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.encodeRedirectUrl(null));
+    checkError(error);
   }
 
   @Test
-  public void testSendErrorScAndMsg() throws IOException {
-    setExceptionExpected();
-
-    response.sendError(0, null);
+  public void testSendErrorScAndMsg() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendError(0, null));
+    checkError(error);
   }
 
   @Test
-  public void testSendErrorSc() throws IOException {
-    setExceptionExpected();
-
-    response.sendError(0);
+  public void testSendErrorSc() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendError(0));
+    checkError(error);
   }
 
   @Test
-  public void testSendRedirect() throws IOException {
-    setExceptionExpected();
-
-    response.sendRedirect(null);
+  public void testSendRedirect() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendRedirect(null));
+    checkError(error);
   }
 
   @Test
   public void testSetDateHeader() {
-    setExceptionExpected();
-
-    response.setDateHeader(null, 0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setDateHeader(null, 0));
+    checkError(error);
   }
 
   @Test
   public void testAddDateHeader() {
-    setExceptionExpected();
-
-    response.addDateHeader(null, 0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.addDateHeader(null, 0));
+    checkError(error);
   }
 
   @Test
   public void testSetHeader() {
-    setExceptionExpected();
-
-    response.setHeader(null, null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setHeader(null, null));
+    checkError(error);
   }
 
   @Test
   public void testAddHeader() {
-    setExceptionExpected();
-
-    response.addHeader(null, null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.addHeader(null, null));
+    checkError(error);
   }
 
   @Test
   public void testSetIntHeader() {
-    setExceptionExpected();
-
-    response.setIntHeader(null, 0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setIntHeader(null, 0));
+    checkError(error);
   }
 
   @Test
   public void testAddIntHeader() {
-    setExceptionExpected();
-
-    response.addIntHeader(null, 0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.addIntHeader(null, 0));
+    checkError(error);
   }
 
   @Test
   public void testSetStatusSc() {
-    setExceptionExpected();
-
-    response.setStatus(0);
+    Error error = Assertions.assertThrows(Error.class, () -> response.setStatus(0));
+    checkError(error);
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testSetStatusScAndSm() {
-    setExceptionExpected();
-
-    response.setStatus(0, "");
+    Error error = Assertions.assertThrows(Error.class, () -> response.setStatus(0, ""));
+    checkError(error);
   }
 
   @Test
   public void testGetStatus() {
-    setExceptionExpected();
-
-    response.getStatus();
+    Error error = Assertions.assertThrows(Error.class, () -> response.getStatus());
+    checkError(error);
   }
 
   @Test
   public void testGetHeader() {
-    setExceptionExpected();
-
-    response.getHeader("");
+    Error error = Assertions.assertThrows(Error.class, () -> response.getHeader(""));
+    checkError(error);
   }
 
   @Test
   public void testGetHeaders() {
-    setExceptionExpected();
-
-    response.getHeaders("");
+    Error error = Assertions.assertThrows(Error.class, () -> response.getHeaders(""));
+    checkError(error);
   }
 
   @Test
   public void testGetHeaderNames() {
-    setExceptionExpected();
-
-    response.getHeaderNames();
+    Error error = Assertions.assertThrows(Error.class, () -> response.getHeaderNames());
+    checkError(error);
   }
 
   @Test
   public void testGetStatusType() {
-    setExceptionExpected();
-
-    response.getStatusType();
+    Error error = Assertions.assertThrows(Error.class, () -> response.getStatusType());
+    checkError(error);
   }
 
   @Test
   public void attribute() {
     response.setAttribute("k", "v");
-    Assert.assertEquals("v", response.getAttribute("k"));
+    Assertions.assertEquals("v", response.getAttribute("k"));
   }
 
   @Test
   public void sendPart() {
-    setExceptionExpected();
-
-    response.sendPart(null);
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendPart(null));
+    checkError(error);
   }
 }

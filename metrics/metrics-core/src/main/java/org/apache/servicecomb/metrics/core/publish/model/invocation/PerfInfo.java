@@ -17,17 +17,17 @@
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 public class PerfInfo {
-  private int tps;
+  private double tps;
 
   private double msTotalTime;
 
   private double msMaxLatency;
 
-  public int getTps() {
+  public double getTps() {
     return tps;
   }
 
-  public void setTps(int tps) {
+  public void setTps(double tps) {
     this.tps = tps;
   }
 

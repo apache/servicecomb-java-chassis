@@ -17,3 +17,19 @@
 
 server:
   port: 8999
+
+# java-chassis configuration
+
+servicecomb-config-order: 1
+APPLICATION_ID: spring-boot-jaxrstest
+service_description:
+  name: jaxrsClient
+  version: 0.0.1
+servicecomb:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  handler:
+    chain:
+      Consumer:
+        default: bizkeeper-consumer,loadbalance

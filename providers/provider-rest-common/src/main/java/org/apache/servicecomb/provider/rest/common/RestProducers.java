@@ -16,25 +16,30 @@
  */
 package org.apache.servicecomb.provider.rest.common;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class RestProducers implements BeanPostProcessor {
-  private List<ProducerMeta> producerMetaList = new ArrayList<>();
+  private final List<ProducerMeta> producerMetaList = new ArrayList<>();
 
-  private boolean scanRestController = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true).get();
+  @SuppressWarnings("unchecked")
+  private final Class<? extends Annotation> restControllerCls = (Class<? extends Annotation>) ReflectUtils
+      .getClassByName("org.springframework.web.bind.annotation.RestController");
+
+  private final boolean scanRestController = restControllerCls != null &&
+      DynamicPropertyFactory.getInstance().getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true).get();
 
   public List<ProducerMeta> getProducerMetaList() {
     return producerMetaList;
@@ -60,20 +65,16 @@ public class RestProducers implements BeanPostProcessor {
       return;
     }
     RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
-    ProducerMeta producerMeta;
-    if (restSchema == null) {
-      if (!scanRestController) {
-        return;
-      }
-      RestController controller = beanCls.getAnnotation(RestController.class);
-      if (controller == null) {
-        return;
-      }
-      producerMeta = new ProducerMeta(beanCls.getName(), bean, beanCls);
-    } else {
-      producerMeta = new ProducerMeta(restSchema.schemaId(), bean, beanCls);
+    if (restSchema != null) {
+      ProducerMeta producerMeta = new ProducerMeta(restSchema.schemaId(), bean);
+      producerMeta.setSchemaInterface(restSchema.schemaInterface());
+      producerMetaList.add(producerMeta);
+      return;
     }
 
-    producerMetaList.add(producerMeta);
+    if (scanRestController && beanCls.getAnnotation(restControllerCls) != null) {
+      ProducerMeta producerMeta = new ProducerMeta(beanCls.getName(), bean);
+      producerMetaList.add(producerMeta);
+    }
   }
 }

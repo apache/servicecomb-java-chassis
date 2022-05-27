@@ -28,11 +28,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.hash.Hashing;
 
@@ -49,6 +52,8 @@ import io.swagger.models.properties.Property;
 import io.vertx.core.json.Json;
 
 public class SwaggerToProtoGenerator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerToProtoGenerator.class);
+
   private final String protoPackage;
 
   private final Swagger swagger;
@@ -66,7 +71,7 @@ public class SwaggerToProtoGenerator {
   // not java package
   // better to be: app_${app}.mid_{microservice}.sid_{schemaId}
   public SwaggerToProtoGenerator(String protoPackage, Swagger swagger) {
-    this.protoPackage = protoPackage;
+    this.protoPackage = escapePackageName(protoPackage);
     this.swagger = swagger;
   }
 
@@ -85,6 +90,21 @@ public class SwaggerToProtoGenerator {
     }
 
     return createProto();
+  }
+
+  public static String escapePackageName(String name) {
+    return name.replaceAll("[\\-\\:]", "_");
+  }
+
+  public static String escapeMessageName(String name) {
+    return name.replaceAll("\\.", "_");
+  }
+
+  public static boolean isValidEnum(String name) {
+    if (name.contains(".") || name.contains("-")) {
+      return false;
+    }
+    return true;
   }
 
   private void convertDefinitions() {
@@ -170,7 +190,7 @@ public class SwaggerToProtoGenerator {
       return String.format("map<string, %s>", convertArrayOrMapItem(itemProperty));
     }
 
-    if (adapter.isObject()) {
+    if (adapter.isJavaLangObject()) {
       addImports(ProtoConst.ANY_PROTO);
       return ProtoConst.ANY.getCanonicalName();
     }
@@ -211,10 +231,11 @@ public class SwaggerToProtoGenerator {
       return generateWrapPropertyName(prefix + Map.class.getSimpleName(), adapter.getMapItem());
     }
 
-    return prefix + StringUtils.capitalize(convertSwaggerType(adapter));
+    // message name cannot have . (package separator)
+    return prefix + StringUtils.capitalize(escapeMessageName(convertSwaggerType(adapter)));
   }
 
-  private void wrapPropertyToMessage(String protoName, Property property) {
+  private void wrapPropertyToMessage(String protoName, Object property) {
     createMessage(protoName, Collections.singletonMap("value", property), ProtoConst.ANNOTATION_WRAP_PROPERTY);
   }
 
@@ -236,7 +257,12 @@ public class SwaggerToProtoGenerator {
 
     appendLine(msgStringBuilder, "enum %s {", enumName);
     for (int idx = 0; idx < enums.size(); idx++) {
-      appendLine(msgStringBuilder, "  %s =%d;", enums.get(idx), idx);
+      if (isValidEnum(enums.get(idx))) {
+        appendLine(msgStringBuilder, "  %s =%d;", enums.get(idx), idx);
+      } else {
+        throw new IllegalStateException(
+            String.format("enum class [%s] name [%s] not supported by protobuffer.", enumName, enums.get(idx)));
+      }
     }
     appendLine(msgStringBuilder, "}");
   }
@@ -283,11 +309,43 @@ public class SwaggerToProtoGenerator {
     appendLine(serviceBuilder, "service MainService {");
     for (Path path : paths.values()) {
       for (Operation operation : path.getOperationMap().values()) {
-        convertOperation(operation);
+        if (isUpload(operation)) {
+          LOGGER.warn("Not support operation for highway {}.{}, {}", this.protoPackage, operation.getOperationId(),
+              "file upload not supported");
+          continue;
+        } else if (isDownload(operation)) {
+          LOGGER.warn("Not support operation for highway {}.{}, {}", this.protoPackage, operation.getOperationId(),
+              "file download not supported");
+          continue;
+        }
+        try {
+          convertOperation(operation);
+        } catch (Exception e) {
+          LOGGER.error("Not support operation for highway {}.{}", this.protoPackage, operation.getOperationId(), e);
+        }
       }
     }
+
     serviceBuilder.setLength(serviceBuilder.length() - 1);
+
     appendLine(serviceBuilder, "}");
+  }
+
+  private boolean isUpload(Operation operation) {
+    if (operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA)) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isDownload(Operation operation) {
+    if (operation.getResponses().get("200").getResponseSchema() instanceof ModelImpl) {
+      ModelImpl model = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
+      if ("file".equals(model.getType())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void convertOperation(Operation operation) {
@@ -325,7 +383,7 @@ public class SwaggerToProtoGenerator {
 
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
-      String type = convertSwaggerType(entry.getValue().getSchema());
+      String type = convertSwaggerType(entry.getValue().getResponseSchema());
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
@@ -333,7 +391,7 @@ public class SwaggerToProtoGenerator {
 
       if (wrapped) {
         String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
-        wrapPropertyToMessage(wrapName, entry.getValue().getSchema());
+        wrapPropertyToMessage(wrapName, entry.getValue().getResponseSchema());
 
         protoResponse.setTypeName(wrapName);
       }

@@ -16,7 +16,8 @@
  */
 package org.apache.servicecomb.swagger.invocation.response;
 
-import java.lang.reflect.Type;
+import static io.swagger.util.ReflectionUtils.isVoid;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,18 +25,43 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
+import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
+import io.swagger.models.Swagger;
 
+/**
+ * <pre>
+ * two Scenes:
+ * 1.consumer interface + swagger
+ *   interface declare success response type
+ *   and can declare exceptions response type by annotations
+ *   consumer interface meta never changed and has high priority
+ *
+ *   so, merge them to be one ResponsesMeta
+ *
+ * 2.restTemplate + swagger
+ *   can only declare success response type
+ *   and not stable
+ *
+ *   so, will wrap swagger meta
+ *
+ *   note:
+ *   old version support: List&lt;User&gt; users = restTemplate.postForObject(...., List.class)
+ *     in fact, in this time, type is determined by swagger meta
+ *   new version:
+ *     1) if request response type is List/Set/Map, and there is element type defined, then use swagger type,
+ *     2) other times use request response type
+ *     3) compare to old version, add support of ParameterizedTypeReference
+ * </pre>
+ */
 public class ResponsesMeta {
   private static final JavaType COMMON_EXCEPTION_JAVA_TYPE = SimpleType.constructUnsafe(CommonExceptionData.class);
 
@@ -44,65 +70,64 @@ public class ResponsesMeta {
   private static final ResponseMetaMapper GLOBAL_DEFAULT_MAPPER = SPIServiceUtils
       .getPriorityHighestService(ResponseMetaMapper.class);
 
-  private Map<Integer, ResponseMeta> responseMap = new HashMap<>();
+  private final Map<Integer, JavaType> responseMap = new HashMap<>();
 
-  private ResponseMeta defaultResponse;
+  private JavaType defaultResponse;
 
-  // 最后一个参数returnType用于兼容场景
-  // 历史版本中swagger中定义的return可能没定义class名，此时consumer与swagger接口是一致的
-  // 如果不传return类型进来，完全以swagger为标准，会导致生成的class不等于return
-  public void init(SwaggerToClassGenerator swaggerToClassGenerator, Operation operation, Type returnType) {
-    initSuccessResponse(returnType);
-    initGlobalDefaultMapper();
+  public void init(Swagger swagger, Operation operation) {
+    if (responseMap.isEmpty()) {
+      responseMap.put(Status.OK.getStatusCode(), OBJECT_JAVA_TYPE);
+      initGlobalDefaultMapper();
+    }
 
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
+      JavaType javaType = ConverterMgr.findJavaType(swagger, entry.getValue().getResponseSchema());
+
       if ("default".equals(entry.getKey())) {
-        defaultResponse = new ResponseMeta();
-        defaultResponse.init(swaggerToClassGenerator, entry.getValue());
+        defaultResponse = javaType;
         continue;
       }
 
       Integer statusCode = Integer.parseInt(entry.getKey());
-      ResponseMeta responseMeta = responseMap.computeIfAbsent(statusCode, k -> new ResponseMeta());
-      responseMeta.init(swaggerToClassGenerator, entry.getValue());
+      JavaType existing = responseMap.get(statusCode);
+      if (existing == null || !isVoid(javaType)) {
+        responseMap.put(statusCode, javaType);
+      }
     }
 
-    initInternalErrorResponse();
+    responseMap.putIfAbsent(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(Status.TOO_MANY_REQUESTS.getStatusCode(), COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(Status.REQUEST_TIMEOUT.getStatusCode(), COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(Status.SERVICE_UNAVAILABLE.getStatusCode(), COMMON_EXCEPTION_JAVA_TYPE);
 
     if (defaultResponse == null) {
       // swagger中没有定义default，加上default专用于处理exception
-      ResponseMeta responseMeta = new ResponseMeta();
-      responseMeta.setJavaType(OBJECT_JAVA_TYPE);
-
-      defaultResponse = responseMeta;
+      defaultResponse = OBJECT_JAVA_TYPE;
     }
   }
 
-  protected void initSuccessResponse(Type returnType) {
-    ResponseMeta successResponse = new ResponseMeta();
-    successResponse.setJavaType(TypeFactory.defaultInstance().constructType(returnType));
-    responseMap.put(Status.OK.getStatusCode(), successResponse);
-  }
-
-  protected void initInternalErrorResponse() {
-    ResponseMeta internalErrorResponse = new ResponseMeta();
-    internalErrorResponse.setJavaType(COMMON_EXCEPTION_JAVA_TYPE);
-    responseMap.putIfAbsent(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, internalErrorResponse);
-    responseMap.putIfAbsent(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, internalErrorResponse);
+  public void cloneTo(ResponsesMeta target) {
+    target.defaultResponse = defaultResponse;
+    target.responseMap.putAll(responseMap);
   }
 
   protected void initGlobalDefaultMapper() {
     if (GLOBAL_DEFAULT_MAPPER != null) {
-      Map<Integer, ResponseMeta> mappers = GLOBAL_DEFAULT_MAPPER.getMapper();
+      Map<Integer, JavaType> mappers = GLOBAL_DEFAULT_MAPPER.getMapper();
       if (mappers != null) {
         responseMap.putAll(mappers);
       }
     }
   }
 
-  public ResponseMeta findResponseMeta(int statusCode) {
-    ResponseMeta responseMeta = responseMap.get(statusCode);
-    if (responseMeta == null) {
+  public Map<Integer, JavaType> getResponseMap() {
+    return responseMap;
+  }
+
+  public JavaType findResponseType(int statusCode) {
+    JavaType responseType = responseMap.get(statusCode);
+    if (responseType == null) {
       if (HttpStatus.isSuccess(statusCode)) {
         return responseMap.get(Status.OK.getStatusCode());
       }
@@ -110,6 +135,10 @@ public class ResponsesMeta {
       return defaultResponse;
     }
 
-    return responseMeta;
+    return responseType;
+  }
+
+  public void setResponseType(int statusCode, JavaType javaType) {
+    this.responseMap.put(statusCode, javaType);
   }
 }

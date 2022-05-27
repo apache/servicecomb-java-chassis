@@ -17,13 +17,36 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import java.util.List;
+
+import org.apache.servicecomb.foundation.common.utils.AbstractRestObjectMapper;
+import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Manage RestObjectMapper instances. Give users an option to specify custom mappers.
  */
 public class RestObjectMapperFactory {
   private static AbstractRestObjectMapper defaultMapper = new RestObjectMapper();
 
+  private static final AbstractRestObjectMapper viewMapper = new RestObjectMapper();
+
   private static AbstractRestObjectMapper consumerWriterMapper = defaultMapper;
+
+  static {
+    registerModules(defaultMapper);
+    registerModules(viewMapper);
+  }
+
+  private static void registerModules(ObjectMapper mapper) {
+    // not use mapper.findAndRegisterModules()
+    // because we need to sort modules, so that customers can override our default module
+    List<Module> modules = SPIServiceUtils.getOrLoadSortedService(Module.class);
+    mapper.registerModules(modules.toArray(new Module[modules.size()]));
+  }
 
   public static AbstractRestObjectMapper getConsumerWriterMapper() {
     return consumerWriterMapper;
@@ -33,11 +56,17 @@ public class RestObjectMapperFactory {
     return defaultMapper;
   }
 
+  public static AbstractRestObjectMapper getRestViewMapper() {
+    return viewMapper;
+  }
+
   public static void setConsumerWriterMapper(AbstractRestObjectMapper customMapper) {
+    registerModules(customMapper);
     consumerWriterMapper = customMapper;
   }
 
   public static void setDefaultRestObjectMapper(AbstractRestObjectMapper customMapper) {
+    registerModules(customMapper);
     defaultMapper = customMapper;
   }
 }

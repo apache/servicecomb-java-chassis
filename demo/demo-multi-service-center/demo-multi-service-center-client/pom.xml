@@ -1,0 +1,228 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>demo-multi-service-center-client</artifactId>
+  <name>Java Chassis::Demo::Multi Service Centers::Client</name>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-multi-service-center</artifactId>
+    <version>2.8.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.multiServiceCenterClient.Application</demo.main>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-center-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <properties>
+        <demo.service.name>demo-multi-registries-server</demo.service.name>
+      </properties>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>servicecomb/service-center</name>
+                    <alias>service30100</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>30100</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>30100:30100</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>servicecomb/service-center</name>
+                    <alias>service40100</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>30100</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>40100:30100</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>demo-multi-service-center-servera:${project.version}</name>
+                    <alias>demo-multi-service-center-servera</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://service30100:30100
+                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/demo-multi-service-center-servera-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service30100:service30100</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>8080</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8080:8080</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>demo-multi-service-center-serverb:${project.version}</name>
+                    <alias>demo-multi-service-center-serverb</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://service40100:30100
+                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/demo-multi-service-center-serverb-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service40100:service40100</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>8082</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8082:8082</port>
+                      </ports>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.gmaven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-default-properties</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    project.properties.setProperty('docker.hostname', 'localhost')
+                    log.info("Docker hostname is " + project.properties['docker.hostname'])
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <servicecomb.service.registry.address>http://${docker.hostname}:30100
+                </servicecomb.service.registry.address>
+              </systemPropertyVariables>
+              <argLine>${jacoco.failsafe.argLine}</argLine>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

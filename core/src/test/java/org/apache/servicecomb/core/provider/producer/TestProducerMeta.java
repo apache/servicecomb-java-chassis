@@ -16,29 +16,25 @@
  */
 package org.apache.servicecomb.core.provider.producer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestProducerMeta {
   @Test
   public void test1() {
     Object instance = new Object();
-    ProducerMeta meta = new ProducerMeta("id", instance, instance.getClass());
-    Assert.assertEquals("id", meta.getSchemaId());
-    Assert.assertEquals(instance, meta.getInstance());
-    Assert.assertEquals(Object.class, meta.getInstanceClass());
+    ProducerMeta meta = new ProducerMeta("id", instance);
+    Assertions.assertEquals("id", meta.getSchemaId());
+    Assertions.assertEquals(instance, meta.getInstance());
   }
 
   @Test
   public void test2() {
     ProducerMeta meta = new ProducerMeta();
     meta.setSchemaId("id1");
-    Assert.assertEquals("id1", meta.getSchemaId());
+    Assertions.assertEquals("id1", meta.getSchemaId());
 
     meta.setInstance(1);
-    Assert.assertEquals(1, meta.getInstance());
-
-    meta.setInstanceClass(Integer.class);
-    Assert.assertEquals(Integer.class, meta.getInstanceClass());
+    Assertions.assertEquals(1, meta.getInstance());
   }
 }

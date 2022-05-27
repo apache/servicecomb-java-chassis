@@ -16,12 +16,16 @@
  */
 package org.apache.servicecomb.swagger.generator.springmvc.processor.response;
 
-import org.apache.servicecomb.swagger.generator.core.processor.response.AbstractOneGenericResponseProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import org.springframework.http.ResponseEntity;
 
-public class ResponseEntityProcessor extends AbstractOneGenericResponseProcessor {
+public class ResponseEntityProcessor extends DefaultResponseTypeProcessor {
+  public ResponseEntityProcessor() {
+    extractActualType = true;
+  }
+
   @Override
-  public Class<?> getResponseType() {
+  public Class<?> getProcessType() {
     return ResponseEntity.class;
   }
 }

@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.swagger.invocation;
 
+import java.util.List;
+
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
@@ -23,7 +25,8 @@ import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
+
+import io.vertx.core.MultiMap;
 
 /**
  * 用jaxrs的Response能表达所有概念
@@ -34,17 +37,22 @@ import org.apache.servicecomb.swagger.invocation.response.Headers;
 public class Response {
   private StatusType status;
 
-  private Headers headers = new Headers();
+  private MultiMap headers;
 
   // 失败场景中，result是Throwable
   private Object result;
 
-  public boolean isSuccessed() {
+  public boolean isSucceed() {
     return HttpStatus.isSuccess(status);
   }
 
+  @Deprecated
+  public boolean isSuccessed() {
+    return isSucceed();
+  }
+
   public boolean isFailed() {
-    return !isSuccessed();
+    return !isSucceed();
   }
 
   public int getStatusCode() {
@@ -63,12 +71,53 @@ public class Response {
     this.status = status;
   }
 
-  public Headers getHeaders() {
+  public String getHeader(String name) {
+    if (headers == null) {
+      return null;
+    }
+
+    return headers.get(name);
+  }
+
+  public List<String> getHeaders(String name) {
+    if (headers == null) {
+      return null;
+    }
+
+    return headers.getAll(name);
+  }
+
+  public MultiMap getHeaders() {
     return headers;
   }
 
-  public void setHeaders(Headers headers) {
+  public Response setHeaders(MultiMap headers) {
     this.headers = headers;
+    return this;
+  }
+
+  public Response addHeader(String name, String value) {
+    if (value == null) {
+      return this;
+    }
+    if (headers == null) {
+      headers = MultiMap.caseInsensitiveMultiMap();
+    }
+
+    headers.add(name, value);
+    return this;
+  }
+
+  public Response setHeader(String name, String value) {
+    if (value == null) {
+      return this;
+    }
+    if (headers == null) {
+      headers = MultiMap.caseInsensitiveMultiMap();
+    }
+
+    headers.set(name, value);
+    return this;
   }
 
   @SuppressWarnings("unchecked")
@@ -127,6 +176,11 @@ public class Response {
 
   public static Response createConsumerFail(Throwable throwable) {
     InvocationException exception = ExceptionFactory.convertConsumerException(throwable);
+    return createFail(exception);
+  }
+
+  public static Response createConsumerFail(Throwable throwable, String message) {
+    InvocationException exception = ExceptionFactory.convertConsumerException(throwable, message);
     return createFail(exception);
   }
 

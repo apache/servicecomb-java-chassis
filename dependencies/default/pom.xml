@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>java-chassis-dependencies-parent</artifactId>
+    <version>2.8.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>java-chassis-dependencies</artifactId>
+  <name>Java Chassis::Dependencies::Default</name>
+  <packaging>pom</packaging>
+
+  <properties>
+    <!-- Dependency versions -->
+    <activation.version>1.2.2</activation.version>
+    <archaius.version>0.7.7</archaius.version>
+    <asciidoctorj.version>1.6.2</asciidoctorj.version>
+    <aspectj.version>1.9.9.1</aspectj.version>
+    <awaitility.version>4.2.0</awaitility.version>
+    <assertj.version>3.22.0</assertj.version>
+    <brave.version>5.6.11</brave.version>
+    <classmate.version>1.5.1</classmate.version>
+    <commons-beanutils.version>1.9.4</commons-beanutils.version>
+    <commons-configuration.version>1.10</commons-configuration.version>
+    <commons-io.version>2.11.0</commons-io.version>
+    <commons-lang.version>2.6</commons-lang.version>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <commons-logging.version>1.2</commons-logging.version>
+    <esotericsoftware.version>4.0.2</esotericsoftware.version>
+    <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
+    <governator-annotations.version>1.17.12</governator-annotations.version>
+    <governator-api.version>1.17.12</governator-api.version>
+    <guava.version>31.1-jre</guava.version>
+    <failureaccess.version>1.0.1</failureaccess.version>
+    <guice.version>4.2.0</guice.version>
+    <hamcrest.version>1.3</hamcrest.version>
+    <hdr-histogram.version>2.1.12</hdr-histogram.version>
+    <hibernate-validator.version>6.2.3.Final</hibernate-validator.version>
+    <httpcomponents.version>4.5.13</httpcomponents.version>
+    <hystrix.version>1.5.18</hystrix.version>
+    <jackson.version>2.13.3</jackson.version>
+    <java-websocket.version>1.5.3</java-websocket.version>
+    <javax-annotation.version>1.3.2</javax-annotation.version>
+    <javax-inject.version>1</javax-inject.version>
+    <javax-resource.version>1.5</javax-resource.version>
+    <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
+    <jersey.version>2.35</jersey.version>
+    <jmockit.version>1.30</jmockit.version>
+    <junit.version>4.13.2</junit.version>
+    <junit5.version>5.8.2</junit5.version>
+    <log4j.version>1.2.17</log4j.version>
+    <log4j2.version>2.17.2</log4j2.version>
+    <logback.version>1.2.11</logback.version>
+    <mockito.version>3.3.3</mockito.version>
+    <mock-server.version>5.13.2</mock-server.version>
+    <netflix-commons.version>0.3.0</netflix-commons.version>
+    <netty.version>4.1.77.Final</netty.version>
+    <okhttp3.version>3.14.2</okhttp3.version>
+    <powermock.version>2.0.9</powermock.version>
+    <maven-model.version>3.8.5</maven-model.version>
+    <micrometer.version>1.9.0</micrometer.version>
+    <nacos-client.version>2.1.0</nacos-client.version>
+    <prometheus.version>0.15.0</prometheus.version>
+    <protobuf.version>3.20.1</protobuf.version>
+    <protostuff.version>1.8.0</protostuff.version>
+    <protostuff-parser.version>2.2.27</protostuff-parser.version>
+    <resilience4j.versioin>1.7.0</resilience4j.versioin>
+    <ribbon.version>2.7.18</ribbon.version>
+    <rxjava.version>1.3.8</rxjava.version>
+    <rxnetty.version>0.5.1</rxnetty.version>
+    <seanyinx.version>1.0.0</seanyinx.version>
+    <servo.version>0.13.2</servo.version>
+    <servlet-api.version>4.0.4</servlet-api.version>
+    <slf4j.version>1.7.36</slf4j.version>
+    <snakeyaml.version>1.30</snakeyaml.version>
+    <spectator.version>1.3.4</spectator.version>
+    <spring.version>5.3.20</spring.version>
+    <spring-boot.version>2.6.7</spring-boot.version>
+    <swagger.version>1.6.6</swagger.version>
+    <swagger2markup.version>1.3.3</swagger2markup.version>
+    <tcnetty.version>2.0.52.Final</tcnetty.version>
+    <vertx.version>4.2.7</vertx.version>
+    <zipkin.version>2.23.16</zipkin.version>
+    <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
+    <!-- Base dir of main -->
+    <main.basedir>${basedir}/../..</main.basedir>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Third Party -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.esotericsoftware</groupId>
+        <artifactId>kryo-shaded</artifactId>
+        <version>${esotericsoftware.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml</groupId>
+        <artifactId>classmate</artifactId>
+        <version>${classmate.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.seanyinx</groupId>
+        <artifactId>unit-scaffolding</artifactId>
+        <version>${seanyinx.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>${findbugs-jsr305.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>failureaccess</artifactId>
+        <version>${failureaccess.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>${guice.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.archaius</groupId>
+        <artifactId>archaius-core</artifactId>
+        <version>${archaius.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.governator</groupId>
+        <artifactId>governator-annotations</artifactId>
+        <version>${governator-annotations.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.governator</groupId>
+        <artifactId>governator-api</artifactId>
+        <version>${governator-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.hystrix</groupId>
+        <artifactId>hystrix-core</artifactId>
+        <version>${hystrix.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.netflix-commons</groupId>
+        <artifactId>netflix-eventbus</artifactId>
+        <version>${netflix-commons.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.netflix-commons</groupId>
+        <artifactId>netflix-eventbus-rx</artifactId>
+        <version>${netflix-commons.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.ribbon</groupId>
+        <artifactId>ribbon</artifactId>
+        <version>${ribbon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.ribbon</groupId>
+        <artifactId>ribbon-archaius</artifactId>
+        <version>${ribbon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.ribbon</groupId>
+        <artifactId>ribbon-core</artifactId>
+        <version>${ribbon.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.netflix.ribbon</groupId>
+        <artifactId>ribbon-loadbalancer</artifactId>
+        <version>${ribbon.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.servo</groupId>
+        <artifactId>servo-core</artifactId>
+        <version>${servo.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.netflix.spectator</groupId>
+        <artifactId>spectator-reg-servo</artifactId>
+        <version>${spectator.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${okhttp3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>${commons-beanutils.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>${commons-configuration.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${commons-lang.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>${commons-logging.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.github.swagger2markup</groupId>
+        <artifactId>swagger2markup</artifactId>
+        <version>${swagger2markup.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-compat-spec-parser</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <scope>import</scope>
+        <version>${netty.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-tcnative-boringssl-static</artifactId>
+        <version>${tcnetty.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.reactivex</groupId>
+        <artifactId>rxjava</artifactId>
+        <version>${rxjava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.reactivex</groupId>
+        <artifactId>rxnetty</artifactId>
+        <version>${rxnetty.version}</version>
+        <exclusions>
+          <!-- already in io.netty-all -->
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven-model.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-bom</artifactId>
+        <version>${micrometer.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.prometheus</groupId>
+        <artifactId>simpleclient_bom</artifactId>
+        <version>${prometheus.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.protostuff</groupId>
+        <artifactId>protostuff-core</artifactId>
+        <version>${protostuff.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.protostuff</groupId>
+        <artifactId>protostuff-parser</artifactId>
+        <version>${protostuff-parser.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.abego.treelayout</groupId>
+            <artifactId>org.abego.treelayout.core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.protostuff</groupId>
+        <artifactId>protostuff-runtime</artifactId>
+        <version>${protostuff.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>${swagger.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-codegen</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-core</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-web</artifactId>
+        <version>${vertx.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave-context-slf4j</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave-instrumentation-jaxrs2</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave-instrumentation-servlet</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave-instrumentation-spring-web</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave-instrumentation-spring-webmvc</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.brave</groupId>
+        <artifactId>brave-spring-beans</artifactId>
+        <version>${brave.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.zipkin.reporter2</groupId>
+        <artifactId>zipkin-reporter</artifactId>
+        <version>${zipkin-reporter.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.reporter2</groupId>
+        <artifactId>zipkin-sender-okhttp3</artifactId>
+        <version>${zipkin-reporter.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.zipkin.zipkin2</groupId>
+        <artifactId>zipkin</artifactId>
+        <version>${zipkin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zipkin.zipkin2</groupId>
+        <artifactId>zipkin-junit</artifactId>
+        <version>${zipkin.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${servlet-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>${activation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${javax-annotation.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>${javax-inject.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.resource</groupId>
+        <artifactId>connector-api</artifactId>
+        <version>${javax-resource.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakarta.ws.rs.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit5.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${httpcomponents.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctorj</artifactId>
+        <version>${asciidoctorj.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jzlib</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>${aspectj.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>${awaitility.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-common</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-client</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>${hamcrest.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>${hamcrest.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator-annotation-processor</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hdrhistogram</groupId>
+        <artifactId>HdrHistogram</artifactId>
+        <version>${hdr-histogram.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jmockit</groupId>
+        <artifactId>jmockit</artifactId>
+        <version>${jmockit.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mock-server</groupId>
+        <artifactId>mockserver-netty</artifactId>
+        <version>${mock-server.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito2</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-junit4</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-test-mockito-junit4-delegate</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${snakeyaml.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alibaba.nacos</groupId>
+        <artifactId>nacos-client</artifactId>
+        <version>${nacos-client.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-bom</artifactId>
+        <version>${resilience4j.versioin}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.java-websocket</groupId>
+        <artifactId>Java-WebSocket</artifactId>
+        <version>${java-websocket.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

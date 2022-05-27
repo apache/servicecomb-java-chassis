@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.it.edge.handler;
 
-import java.util.concurrent.TimeoutException;
-
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Handler;
@@ -33,10 +31,11 @@ public class ExceptionConvertHandler implements Handler {
     invocation.next(response -> {
       if (response.isFailed()) {
         Throwable e = response.getResult();
-        if (response.getResult() instanceof TimeoutException) {
+        if (e instanceof InvocationException && ((InvocationException)e).getStatusCode() == 408) {
           CustomException customException = new CustomException("change the response", 777);
           InvocationException stt = new InvocationException(Status.EXPECTATION_FAILED, customException);
           response.setResult(stt);
+          response.setStatus(stt.getStatus());
         }
       }
       asyncResp.complete(response);

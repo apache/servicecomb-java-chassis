@@ -1,0 +1,97 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.servicecomb.huaweicloud.dashboard.monitor;
+
+import io.netty.util.concurrent.DefaultThreadFactory;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+
+public class DataFactory {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DataFactory.class);
+
+  private static final int CORE_SIZE = 1;
+
+  private boolean hasStart = false;
+
+  @Inject
+  private List<MonitorDaraProvider> dataProviders;
+
+  @Inject
+  private MonitorDataPublisher publisher;
+
+  private ScheduledExecutorService executorService = null;
+
+
+  public DataFactory() {
+    ThreadFactory threadFactory = new DefaultThreadFactory("monitor-datafactory");
+    executorService = Executors.newScheduledThreadPool(CORE_SIZE, threadFactory);
+  }
+
+  public void setMonitorDataProviders(List<MonitorDaraProvider> dataProviders) {
+    this.dataProviders = dataProviders;
+  }
+
+  public void setMonitorDataPublisher(MonitorDataPublisher publisher) {
+    this.publisher = publisher;
+  }
+
+  void start() {
+    if (!hasStart) {
+      publisher.init();
+
+      StringBuilder sb = new StringBuilder();
+      sb.append("Monitor data sender started. Configured data providers is {");
+      for (MonitorDaraProvider provider : dataProviders) {
+        sb.append(provider.getClass().getName());
+        sb.append(",");
+      }
+      sb.append("}");
+      LOGGER.info(sb.toString());
+
+      executorService.scheduleWithFixedDelay(() -> {
+        try {
+          sendData();
+        } catch (Throwable e) {
+          LOGGER.error("send monitor data error.", e);
+        }
+      }, MonitorConstant.getInterval(), MonitorConstant.getInterval(), TimeUnit.MILLISECONDS);
+      hasStart = true;
+    }
+  }
+
+  void sendData() {
+    if (!MonitorConstant.isMonitorEnabled()) {
+      return;
+    }
+
+    for (MonitorDaraProvider provider : this.dataProviders) {
+      this.publisher.publish(provider);
+    }
+  }
+
+}

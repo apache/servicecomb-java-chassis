@@ -51,9 +51,9 @@ import io.vertx.core.streams.WriteStream;
 public class ReadStreamPart extends AbstractPart {
   private static final Logger LOGGER = LoggerFactory.getLogger(ReadStreamPart.class);
 
-  private Context context;
+  private final Context context;
 
-  private ReadStream<Buffer> readStream;
+  private final ReadStream<Buffer> readStream;
 
   public ReadStreamPart(Context context, HttpClientResponse httpClientResponse) {
     this(context, (ReadStream<Buffer>) httpClientResponse);
@@ -91,7 +91,7 @@ public class ReadStreamPart extends AbstractPart {
    * so the return future only means finished read from readStream.
    */
   public CompletableFuture<Void> saveToWriteStream(WriteStream<Buffer> writeStream) {
-    return new PumpCommon().pump(context, readStream, writeStream);
+    return new PumpCommon().pump(context, readStream, writeStream, null);
   }
 
   public CompletableFuture<byte[]> saveAsBytes() {

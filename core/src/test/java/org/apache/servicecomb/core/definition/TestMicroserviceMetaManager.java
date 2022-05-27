@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.core.definition;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestMicroserviceMetaManager {
@@ -28,6 +28,6 @@ public class TestMicroserviceMetaManager {
     SchemaMeta meta = Mockito.mock(SchemaMeta.class);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     Mockito.when(microserviceMeta.ensureFindSchemaMeta("yhfghj")).thenReturn(meta);
-    Assert.assertEquals(meta, microserviceMeta.ensureFindSchemaMeta("yhfghj"));
+    Assertions.assertEquals(meta, microserviceMeta.ensureFindSchemaMeta("yhfghj"));
   }
 }

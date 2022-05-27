@@ -14,37 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.core.definition;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.config.inject.ConfigObjectFactory;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
-import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
+import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Operation;
 
 public class OperationMeta {
   private SchemaMeta schemaMeta;
 
-  // schemaId:operation
+  // schemaId.operation
   private String schemaQualifiedName;
 
-  // microserviceName:schemaId:operation
+  // microserviceName.schemaId.operation
   private String microserviceQualifiedName;
-
-  // 契约对应的method，与consumer、producer的method没有必然关系
-  private Method method;
 
   private String httpMethod;
 
@@ -52,77 +42,44 @@ public class OperationMeta {
 
   private Operation swaggerOperation;
 
-  // 在哪个executor上执行
+  // run in this executor
   private Executor executor;
 
-  private ResponsesMeta responsesMeta = new ResponsesMeta();
-
-  // transport、provider、consumer端都可能需要扩展数据
-  // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
-  private Map<String, Object> extData = new ConcurrentHashMapEx<>();
-
-  // providerQpsFlowControlHandler is a temporary filed, only for internal usage
-  private Handler providerQpsFlowControlHandler;
-
-  // providerQpsFlowControlHandlerSearched is a temporary filed, only for internal usage
-  private boolean providerQpsFlowControlHandlerSearched;
-
-  private String transport = null;
+  private final ResponsesMeta responsesMeta = new ResponsesMeta();
 
   private OperationConfig config;
 
-  public void init(SchemaMeta schemaMeta, Method method, String operationPath, String httpMethod,
-      Operation swaggerOperation) {
+  private final VendorExtensions vendorExtensions = new VendorExtensions();
+
+  public OperationMeta init(SchemaMeta schemaMeta, SwaggerOperation swaggerOperation) {
     this.schemaMeta = schemaMeta;
-    schemaQualifiedName = schemaMeta.getSchemaId() + "." + method.getName();
-    microserviceQualifiedName = schemaMeta.getMicroserviceName() + "." + schemaQualifiedName;
-    this.operationPath = operationPath;
-    this.method = method;
-    this.httpMethod = httpMethod.toUpperCase(Locale.US);
-    this.swaggerOperation = swaggerOperation;
-    this.config = new ConfigObjectFactory().create(OperationConfig.class,
-        "op-any-priority", schemaMeta.getMicroserviceMeta().isConsumer() ?
-            OperationConfig.CONSUMER_OP_ANY_PRIORITY : OperationConfig.PRODUCER_OP_ANY_PRIORITY,
-        "consumer-op-any_priority", OperationConfig.CONSUMER_OP_ANY_PRIORITY,
-        "producer-op-any_priority", OperationConfig.PRODUCER_OP_ANY_PRIORITY,
+    this.schemaQualifiedName = schemaMeta.getSchemaId() + "." + swaggerOperation.getOperationId();
+    this.microserviceQualifiedName =
+        schemaMeta.getMicroserviceQualifiedName() + "." + swaggerOperation.getOperationId();
+    this.httpMethod = swaggerOperation.getHttpMethod().name();
+    this.operationPath = swaggerOperation.getPath();
+    this.swaggerOperation = swaggerOperation.getOperation();
+    this.executor = schemaMeta.getMicroserviceMeta().getScbEngine().getExecutorManager().findExecutor(this);
+    this.config = schemaMeta.getMicroserviceMeta().getMicroserviceVersionsMeta().getOrCreateOperationConfig(this);
+    this.responsesMeta.init(schemaMeta.getSwagger(), swaggerOperation.getOperation());
 
-        "op-priority", schemaMeta.getMicroserviceMeta().isConsumer() ?
-            OperationConfig.CONSUMER_OP_PRIORITY : OperationConfig.PRODUCER_OP_PRIORITY,
-        "consumer-op-priority", OperationConfig.CONSUMER_OP_PRIORITY,
-        "producer-op-priority", OperationConfig.PRODUCER_OP_PRIORITY,
+    return this;
+  }
 
-        "consumer-producer", schemaMeta.getMicroserviceMeta().isConsumer() ? "Consumer" : "Provider",
-        "consumer-provider", schemaMeta.getMicroserviceMeta().isConsumer() ? "Consumer" : "Provider",
+  public void setSwaggerProducerOperation(SwaggerProducerOperation swaggerProducerOperation) {
+    this.putExtData(Const.PRODUCER_OPERATION, swaggerProducerOperation);
+  }
 
-        "service", schemaMeta.getMicroserviceName(),
-        "schema", schemaMeta.getSchemaId(),
-        "operation", swaggerOperation.getOperationId());
-
-    executor = ExecutorManager.findExecutor(this);
-
-    responsesMeta.init(schemaMeta.getSwaggerToClassGenerator(),
-        swaggerOperation,
-        method.getGenericReturnType());
-
-    transport = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.operation."
-            + microserviceQualifiedName + ".transport", null).get();
+  public SwaggerProducerOperation getSwaggerProducerOperation() {
+    return (SwaggerProducerOperation) this.getExtData(Const.PRODUCER_OPERATION);
   }
 
   public OperationConfig getConfig() {
     return config;
   }
 
-  public String getTransport() {
-    return transport;
-  }
-
   public String getHttpMethod() {
     return httpMethod;
-  }
-
-  public void setHttpMethod(String httpMethod) {
-    this.httpMethod = httpMethod;
   }
 
   public String getOperationPath() {
@@ -133,8 +90,16 @@ public class OperationMeta {
     return swaggerOperation;
   }
 
-  public ResponseMeta findResponseMeta(int statusCode) {
-    return responsesMeta.findResponseMeta(statusCode);
+  public ResponsesMeta getResponsesMeta() {
+    // TODO : this method now called by highway, and highway always use swagger type
+    // in the future improvement , highway can use runtime type and this method can be removed
+    return responsesMeta;
+  }
+
+  private ResponsesMeta cloneResponseMeta() {
+    ResponsesMeta result = new ResponsesMeta();
+    this.responsesMeta.cloneTo(result);
+    return result;
   }
 
   public MicroserviceMeta getMicroserviceMeta() {
@@ -157,30 +122,29 @@ public class OperationMeta {
     return schemaMeta.getMicroserviceName();
   }
 
-  public Method getMethod() {
-    return method;
+  public String getSchemaId() {
+    return schemaMeta.getSchemaId();
   }
 
   public String getOperationId() {
     return swaggerOperation.getOperationId();
   }
 
-  // 调用者保证参数正确性
+  // invoker make sure idx is valid
   public String getParamName(int idx) {
     return swaggerOperation.getParameters().get(idx).getName();
   }
 
   public void putExtData(String key, Object data) {
-    extData.put(key, data);
+    vendorExtensions.put(key, data);
   }
 
-  @SuppressWarnings("unchecked")
   public <T> T getExtData(String key) {
-    return (T) extData.get(key);
+    return vendorExtensions.get(key);
   }
 
-  public Map<String, Object> getExtData() {
-    return extData;
+  public VendorExtensions getVendorExtensions() {
+    return vendorExtensions;
   }
 
   public Executor getExecutor() {
@@ -191,28 +155,22 @@ public class OperationMeta {
     this.executor = executor;
   }
 
-  public int getParamSize() {
-    return swaggerOperation.getParameters().size();
-  }
-
   /**
    * Only for JavaChassis internal usage.
    */
   @Deprecated
   public Handler getProviderQpsFlowControlHandler() {
-    if (providerQpsFlowControlHandlerSearched) {
-      return providerQpsFlowControlHandler;
-    }
+    return getMicroserviceMeta().getProviderQpsFlowControlHandler();
+  }
 
-    final List<Handler> providerHandlerChain = getSchemaMeta().getProviderHandlerChain();
-    for (Handler handler : providerHandlerChain) {
-      // matching by class name is more or less better than importing an extra maven dependency
-      if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
-        providerQpsFlowControlHandler = handler;
-        break;
-      }
-    }
-    providerQpsFlowControlHandlerSearched = true;
-    return providerQpsFlowControlHandler;
+  public InvocationRuntimeType buildBaseProviderRuntimeType() {
+    SwaggerProducerOperation swaggerProducerOperation = this.getSwaggerProducerOperation();
+    return new InvocationRuntimeType(swaggerProducerOperation.getProducerClass(),
+        swaggerProducerOperation.getProducerMethod(), this.cloneResponseMeta(),
+        swaggerProducerOperation.getArgumentsMapper());
+  }
+
+  public InvocationRuntimeType buildBaseConsumerRuntimeType() {
+    return new InvocationRuntimeType(this.cloneResponseMeta());
   }
 }

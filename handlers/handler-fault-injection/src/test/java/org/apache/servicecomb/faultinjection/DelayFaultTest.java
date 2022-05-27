@@ -17,25 +17,22 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import com.netflix.config.DynamicProperty;
@@ -71,7 +68,7 @@ public class DelayFaultTest {
 
   @AfterClass
   public static void classTeardown() {
-    VertxUtils.closeVertxByName("faultinjectionTest");
+    VertxUtils.blockCloseVertxByName("faultinjectionTest");
   }
 
   @Test
@@ -81,10 +78,10 @@ public class DelayFaultTest {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
 
-    assertEquals("10", DynamicProperty
+    Assertions.assertEquals("10", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
         .getString());
-    assertEquals("100", DynamicProperty
+    Assertions.assertEquals("100", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
@@ -102,8 +99,8 @@ public class DelayFaultTest {
 
     latch.await(10, TimeUnit.SECONDS);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 
   @Test
@@ -113,10 +110,10 @@ public class DelayFaultTest {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
 
-    assertEquals("10", DynamicProperty
+    Assertions.assertEquals("10", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
         .getString());
-    assertEquals("100", DynamicProperty
+    Assertions.assertEquals("100", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
@@ -132,8 +129,8 @@ public class DelayFaultTest {
 
     latch.await(10, TimeUnit.SECONDS);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 
   @Test
@@ -142,10 +139,10 @@ public class DelayFaultTest {
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
     ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "0");
 
-    assertEquals("10", DynamicProperty
+    Assertions.assertEquals("10", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
         .getString());
-    assertEquals("0", DynamicProperty
+    Assertions.assertEquals("0", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
@@ -163,16 +160,16 @@ public class DelayFaultTest {
 
     latch.await(3, TimeUnit.SECONDS);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 
   @Test
   public void injectFaultNoPercentageConfig() {
     ArchaiusUtils
-        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
 
-    assertNull(DynamicProperty
+    Assertions.assertNull(DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
@@ -185,8 +182,8 @@ public class DelayFaultTest {
     delayFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 
   @Test
@@ -194,7 +191,7 @@ public class DelayFaultTest {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
 
-    assertEquals("10", DynamicProperty
+    Assertions.assertEquals("10", DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
@@ -207,7 +204,7 @@ public class DelayFaultTest {
     delayFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals(1, count.get());
-    assertEquals("success", resultHolder.value);
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals("success", resultHolder.value);
   }
 }

@@ -19,11 +19,12 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
 
 import mockit.Deencapsulation;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestMeasurementGroupConfig {
   MeasurementGroupConfig config = new MeasurementGroupConfig();
@@ -32,7 +33,7 @@ public class TestMeasurementGroupConfig {
 
   @Test
   public void defaultConstruct() {
-    Assert.assertTrue(groups.isEmpty());
+    Assertions.assertTrue(groups.isEmpty());
   }
 
   @Test
@@ -40,10 +41,9 @@ public class TestMeasurementGroupConfig {
     config = new MeasurementGroupConfig("id", "tag1");
     groups = Deencapsulation.getField(config, "groups");
 
-    Assert.assertThat(groups.keySet(), Matchers.contains("id"));
-    Assert.assertThat(groups.get("id").stream().map(e -> {
-      return e.getTagKey();
-    }).toArray(), Matchers.arrayContaining("tag1"));
+    MatcherAssert.assertThat(groups.keySet(), Matchers.contains("id"));
+    MatcherAssert.assertThat(groups.get("id").stream().map(TagFinder::getTagKey).toArray(),
+            Matchers.arrayContaining("tag1"));
   }
 
   @Test
@@ -51,13 +51,9 @@ public class TestMeasurementGroupConfig {
     config.addGroup("id1", "tag1.1", "tag1.2");
     config.addGroup("id2", "tag2.1", "tag2.2");
 
-    Assert.assertThat(groups.keySet(), Matchers.contains("id2", "id1"));
-    Assert.assertThat(groups.get("id1").stream().map(e -> {
-      return e.getTagKey();
-    }).toArray(), Matchers.arrayContaining("tag1.1", "tag1.2"));
-    Assert.assertThat(groups.get("id2").stream().map(e -> {
-      return e.getTagKey();
-    }).toArray(), Matchers.arrayContaining("tag2.1", "tag2.2"));
+    MatcherAssert.assertThat(groups.keySet(), Matchers.contains("id2", "id1"));
+    MatcherAssert.assertThat(groups.get("id1").stream().map(TagFinder::getTagKey).toArray(), Matchers.arrayContaining("tag1.1", "tag1.2"));
+    MatcherAssert.assertThat(groups.get("id2").stream().map(TagFinder::getTagKey).toArray(), Matchers.arrayContaining("tag2.1", "tag2.2"));
   }
 
   @Test
@@ -65,8 +61,7 @@ public class TestMeasurementGroupConfig {
     config.addGroup("id1", "tag1.1", "tag1.2");
     config.addGroup("id2", "tag2.1", "tag2.2");
 
-    Assert.assertThat(config.findTagFinders("id2").stream().map(e -> {
-      return e.getTagKey();
-    }).toArray(), Matchers.arrayContaining("tag2.1", "tag2.2"));
+    MatcherAssert.assertThat(config.findTagFinders("id2").stream().map(TagFinder::getTagKey).toArray(),
+            Matchers.arrayContaining("tag2.1", "tag2.2"));
   }
 }

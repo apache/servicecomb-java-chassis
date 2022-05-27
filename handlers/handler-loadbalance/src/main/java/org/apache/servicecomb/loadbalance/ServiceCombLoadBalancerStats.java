@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,8 +25,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
@@ -48,14 +46,16 @@ public class ServiceCombLoadBalancerStats {
   private final Map<ServiceCombServer, ServiceCombServerStats> pingView = new ConcurrentHashMap<>();
 
   private int serverExpireInSeconds = DynamicPropertyFactory.getInstance()
-      .getIntProperty(Configuration.RPOP_SERVER_EXPIRED_IN_SECONDS, 300).get();
+      .getIntProperty(Configuration.SERVER_EXPIRED_IN_SECONDS, 300).get();
 
-  private long timerIntervalInMilis = DynamicPropertyFactory.getInstance()
-      .getLongProperty(Configuration.RPOP_TIMER_INTERVAL_IN_MINIS, 10000).get();
+  private long timerIntervalInMillis = DynamicPropertyFactory.getInstance()
+      .getLongProperty(Configuration.TIMER_INTERVAL_IN_MILLIS, 10000).get();
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
-  public static final ServiceCombLoadBalancerStats INSTANCE;
+  private final Map<String, ServiceCombServer> serviceCombServers = new ConcurrentHashMap<>();
+
+  public static ServiceCombLoadBalancerStats INSTANCE;
 
   private Timer timer;
 
@@ -104,12 +104,7 @@ public class ServiceCombLoadBalancerStats {
   }
 
   public ServiceCombServer getServiceCombServer(MicroserviceInstance instance) {
-    for (ServiceCombServer server : serverStatsCache.asMap().keySet()) {
-      if (server.getInstance().equals(instance)) {
-        return server;
-      }
-    }
-    return null;
+    return serviceCombServers.get(instance.getInstanceId());
   }
 
   @VisibleForTesting
@@ -118,8 +113,8 @@ public class ServiceCombLoadBalancerStats {
   }
 
   @VisibleForTesting
-  void setTimerIntervalInMilis(int milis) {
-    this.timerIntervalInMilis = milis;
+  void setTimerIntervalInMillis(int millis) {
+    this.timerIntervalInMillis = millis;
   }
 
   @VisibleForTesting
@@ -136,49 +131,50 @@ public class ServiceCombLoadBalancerStats {
       serverStatsCache.cleanUp();
     }
 
+    pingView.clear();
+
     serverStatsCache =
         CacheBuilder.newBuilder()
             .expireAfterAccess(serverExpireInSeconds, TimeUnit.SECONDS)
-            .removalListener(new RemovalListener<ServiceCombServer, ServiceCombServerStats>() {
-              @Override
-              public void onRemoval(RemovalNotification<ServiceCombServer, ServiceCombServerStats> notification) {
-                LOGGER.info("stats of instance {} removed.", notification.getKey().getInstance().getInstanceId());
-                pingView.remove(notification.getKey());
-              }
-            })
+            .removalListener(
+                (RemovalListener<ServiceCombServer, ServiceCombServerStats>) notification -> {
+                  ServiceCombServer server = notification.getKey();
+                  LOGGER.info("stats of instance {} removed, host is {}",
+                      server.getInstance().getInstanceId(), server.getHost());
+                  pingView.remove(notification.getKey());
+                  serviceCombServers.remove(notification.getKey());
+                })
             .build(
                 new CacheLoader<ServiceCombServer, ServiceCombServerStats>() {
                   public ServiceCombServerStats load(ServiceCombServer server) {
-                    ServiceCombServerStats stats = new ServiceCombServerStats();
+                    ServiceCombServerStats stats = new ServiceCombServerStats(server.getMicroserviceName());
                     pingView.put(server, stats);
+                    serviceCombServers.put(server.getInstance().getInstanceId(), server);
                     return stats;
                   }
                 });
 
     timer = new Timer("LoadBalancerStatsTimer", true);
     timer.schedule(new TimerTask() {
-      private MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
+      private final MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
 
       @Override
       public void run() {
         try {
           Map<ServiceCombServer, ServiceCombServerStats> allServers = pingView;
-          Iterator<ServiceCombServer> instances = allServers.keySet().iterator();
-          while (instances.hasNext()) {
-            ServiceCombServer server = instances.next();
-            ServiceCombServerStats stats = allServers.get(server);
-            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
+          allServers.forEach((server, stats) -> {
+            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
                 .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               stats.markFailure();
             }
-          }
+          });
           serverStatsCache.cleanUp();
         } catch (Throwable e) {
           LOGGER.warn("LoadBalancerStatsTimer error.", e);
         }
       }
-    }, timerIntervalInMilis, timerIntervalInMilis);
+    }, timerIntervalInMillis, timerIntervalInMillis);
   }
 }
 

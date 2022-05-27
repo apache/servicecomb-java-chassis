@@ -16,33 +16,39 @@
  */
 package io.vertx.core.impl;
 
-import java.util.concurrent.Executor;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.spi.metrics.PoolMetrics;
+import io.vertx.core.Promise;
 
 public class SyncContext extends EventLoopContext {
+  protected VertxInternal owner;
+
   public SyncContext() {
     this(null);
   }
 
   public SyncContext(VertxInternal vertx) {
-    super(vertx, null, null, null, null, null, null);
-    if (SyncVertx.class.isInstance(vertx)) {
-      ((SyncVertx) vertx).setContext(this);
-    }
+    super(vertx, null, null, null, null, null, null, false);
   }
 
   @Override
-  public void runOnContext(Handler<Void> task) {
-    task.handle(null);
+  public VertxInternal owner() {
+    return owner;
   }
 
-  public static <T> void syncExecuteBlocking(Handler<Future<T>> blockingCodeHandler,
+  public void setOwner(VertxInternal owner) {
+    this.owner = owner;
+  }
+
+  @Override
+  public void runOnContext(AbstractContext ctx, Handler<Void> action) {
+    action.handle(null);
+  }
+
+  public static <T> void syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> asyncResultHandler) {
-    Future<T> res = Future.future();
+    Promise<T> res = Promise.promise();
 
     try {
       blockingCodeHandler.handle(res);
@@ -51,30 +57,31 @@ public class SyncContext extends EventLoopContext {
       return;
     }
 
-    res.setHandler(asyncResultHandler);
+    res.future().onComplete(asyncResultHandler);
+  }
+
+  private static <T> Future<T> syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler) {
+    Promise<T> res = Promise.promise();
+
+    try {
+      blockingCodeHandler.handle(res);
+    } catch (Throwable e) {
+      res.fail(e);
+      return res.future();
+    }
+
+    res.complete();
+    return res.future();
   }
 
   @Override
-  public <T> void executeBlockingInternal(Handler<Future<T>> action, Handler<AsyncResult<T>> resultHandler) {
-    syncExecuteBlocking((future) -> {
-      try {
-        action.handle(future);
-      } catch (Throwable e) {
-        future.fail(e);
-      }
-    }, resultHandler);
+  public <T> Future<T> executeBlockingInternal(Handler<Promise<T>> action) {
+    return syncExecuteBlocking(action);
   }
 
   @Override
-  public <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
+  public <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, boolean ordered,
       Handler<AsyncResult<T>> asyncResultHandler) {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
-  }
-
-  @Override
-  <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler,
-      Handler<AsyncResult<T>> resultHandler,
-      Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
-    syncExecuteBlocking(blockingCodeHandler, resultHandler);
   }
 }

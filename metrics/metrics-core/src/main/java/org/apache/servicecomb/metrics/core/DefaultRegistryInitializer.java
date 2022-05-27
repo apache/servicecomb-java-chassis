@@ -24,14 +24,14 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.servo.DefaultMonitorRegistry;
-import com.netflix.spectator.servo.ServoRegistry;
 
 public class DefaultRegistryInitializer implements MetricsInitializer {
   public static final String SERVO_POLLERS = "servo.pollers";
 
   private GlobalRegistry globalRegistry;
 
-  private ServoRegistry registry;
+  @SuppressWarnings("deprecation")
+  private com.netflix.spectator.servo.ServoRegistry registry;
 
   // create registry before init meters
   @Override
@@ -40,6 +40,7 @@ public class DefaultRegistryInitializer implements MetricsInitializer {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     this.globalRegistry = globalRegistry;
 
@@ -48,7 +49,7 @@ public class DefaultRegistryInitializer implements MetricsInitializer {
     System.setProperty("spectator.api.gaugePollingFrequency", Duration.ofMillis(config.getMsPollInterval()).toString());
 
     System.setProperty(SERVO_POLLERS, String.valueOf(config.getMsPollInterval()));
-    registry = new ServoRegistry();
+    registry = new com.netflix.spectator.servo.ServoRegistry();
     globalRegistry.add(registry);
   }
 

@@ -22,7 +22,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -45,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
@@ -60,7 +60,7 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 public class TestRestTemplateWrapper {
@@ -109,17 +109,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.headForHeaders(url, param1, param2)).thenReturn(expected);
     actual = wrapper.headForHeaders(url, param1, param2);
-    assertThat(actual, is(expected));
+    MatcherAssert.assertThat(actual, is(expected));
     verify(underlying).headForHeaders(url, param1, param2);
 
     when(underlying.headForHeaders(url, paramsMap)).thenReturn(expected);
     actual = wrapper.headForHeaders(url, paramsMap);
-    assertThat(actual, is(expected));
+    MatcherAssert.assertThat(actual, is(expected));
     verify(underlying).headForHeaders(url, paramsMap);
 
     when(underlying.headForHeaders(uri)).thenReturn(expected);
     actual = wrapper.headForHeaders(uri);
-    assertThat(actual, is(expected));
+    MatcherAssert.assertThat(actual, is(expected));
     verify(underlying).headForHeaders(uri);
   }
 
@@ -130,17 +130,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.optionsForAllow(url, param1, param2)).thenReturn(expected);
     actual = wrapper.optionsForAllow(url, param1, param2);
-    assertThat(actual, is(expected));
+    MatcherAssert.assertThat(actual, is(expected));
     verify(underlying).optionsForAllow(url, param1, param2);
 
     when(underlying.optionsForAllow(url, paramsMap)).thenReturn(expected);
     actual = wrapper.optionsForAllow(url, paramsMap);
-    assertThat(actual, is(expected));
+    MatcherAssert.assertThat(actual, is(expected));
     verify(underlying).optionsForAllow(url, paramsMap);
 
     when(underlying.optionsForAllow(uri)).thenReturn(expected);
     actual = wrapper.optionsForAllow(uri);
-    assertThat(actual, is(expected));
+    MatcherAssert.assertThat(actual, is(expected));
     verify(underlying).optionsForAllow(uri);
   }
 
@@ -150,17 +150,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.getForObject(url, String.class, param1, param2)).thenReturn(response);
     actual = wrapper.getForObject(url, String.class, param1, param2);
-    assertThat(actual, is(response));
+    MatcherAssert.assertThat(actual, is(response));
     verify(underlying).getForObject(url, String.class, param1, param2);
 
     when(underlying.getForObject(url, String.class, paramsMap)).thenReturn(response);
     actual = wrapper.getForObject(url, String.class, paramsMap);
-    assertThat(actual, is(response));
+    MatcherAssert.assertThat(actual, is(response));
     verify(underlying).getForObject(url, String.class, paramsMap);
 
     when(underlying.getForObject(uri, String.class)).thenReturn(response);
     actual = wrapper.getForObject(uri, String.class);
-    assertThat(actual, is(response));
+    MatcherAssert.assertThat(actual, is(response));
     verify(underlying).getForObject(uri, String.class);
   }
 
@@ -170,17 +170,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.getForEntity(url, String.class, param1, param2)).thenReturn(responseEntity);
     actual = wrapper.getForEntity(url, String.class, param1, param2);
-    assertThat(actual, is(responseEntity));
+    MatcherAssert.assertThat(actual, is(responseEntity));
     verify(underlying).getForEntity(url, String.class, param1, param2);
 
     when(underlying.getForEntity(url, String.class, paramsMap)).thenReturn(responseEntity);
     actual = wrapper.getForEntity(url, String.class, paramsMap);
-    assertThat(actual, is(responseEntity));
+    MatcherAssert.assertThat(actual, is(responseEntity));
     verify(underlying).getForEntity(url, String.class, paramsMap);
 
     when(underlying.getForEntity(uri, String.class)).thenReturn(responseEntity);
     actual = wrapper.getForEntity(uri, String.class);
-    assertThat(actual, is(responseEntity));
+    MatcherAssert.assertThat(actual, is(responseEntity));
     verify(underlying).getForEntity(uri, String.class);
   }
 
@@ -190,17 +190,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.postForObject(url, requestEntity, String.class, param1, param2)).thenReturn(response);
     actual = wrapper.postForObject(url, requestEntity, String.class, param1, param2);
-    assertThat(actual, is(response));
+    MatcherAssert.assertThat(actual, is(response));
     verify(underlying).postForObject(url, requestEntity, String.class, param1, param2);
 
     when(underlying.postForObject(url, requestEntity, String.class, paramsMap)).thenReturn(response);
     actual = wrapper.postForObject(url, requestEntity, String.class, paramsMap);
-    assertThat(actual, is(response));
+    MatcherAssert.assertThat(actual, is(response));
     verify(underlying).postForObject(url, requestEntity, String.class, paramsMap);
 
     when(underlying.postForObject(uri, requestEntity, String.class)).thenReturn(response);
     actual = wrapper.postForObject(uri, requestEntity, String.class);
-    assertThat(actual, is(response));
+    MatcherAssert.assertThat(actual, is(response));
     verify(underlying).postForObject(uri, requestEntity, String.class);
   }
 
@@ -210,17 +210,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.postForEntity(url, requestEntity, String.class, param1, param2)).thenReturn(responseEntity);
     actual = wrapper.postForEntity(url, requestEntity, String.class, param1, param2);
-    assertThat(actual, is(responseEntity));
+    MatcherAssert.assertThat(actual, is(responseEntity));
     verify(underlying).postForEntity(url, requestEntity, String.class, param1, param2);
 
     when(underlying.postForEntity(url, requestEntity, String.class, paramsMap)).thenReturn(responseEntity);
     actual = wrapper.postForEntity(url, requestEntity, String.class, paramsMap);
-    assertThat(actual, is(responseEntity));
+    MatcherAssert.assertThat(actual, is(responseEntity));
     verify(underlying).postForEntity(url, requestEntity, String.class, paramsMap);
 
     when(underlying.postForEntity(uri, requestEntity, String.class)).thenReturn(responseEntity);
     actual = wrapper.postForEntity(uri, requestEntity, String.class);
-    assertThat(actual, is(responseEntity));
+    MatcherAssert.assertThat(actual, is(responseEntity));
     verify(underlying).postForEntity(uri, requestEntity, String.class);
   }
 
@@ -230,17 +230,17 @@ public class TestRestTemplateWrapper {
 
     when(underlying.postForLocation(url, requestEntity, param1, param2)).thenReturn(uri);
     actual = wrapper.postForLocation(url, requestEntity, param1, param2);
-    assertThat(actual, is(uri));
+    MatcherAssert.assertThat(actual, is(uri));
     verify(underlying).postForLocation(url, requestEntity, param1, param2);
 
     when(underlying.postForLocation(url, requestEntity, paramsMap)).thenReturn(uri);
     actual = wrapper.postForLocation(url, requestEntity, paramsMap);
-    assertThat(actual, is(uri));
+    MatcherAssert.assertThat(actual, is(uri));
     verify(underlying).postForLocation(url, requestEntity, paramsMap);
 
     when(underlying.postForLocation(uri, requestEntity)).thenReturn(uri);
     actual = wrapper.postForLocation(uri, requestEntity);
-    assertThat(actual, is(uri));
+    MatcherAssert.assertThat(actual, is(uri));
     verify(underlying).postForLocation(uri, requestEntity);
   }
 
@@ -256,17 +256,17 @@ public class TestRestTemplateWrapper {
       when(underlying.execute(url, method, requestCallback, responseExtractor, param1, param2))
           .thenReturn(responseEntity);
       actual = wrapper.execute(url, method, requestCallback, responseExtractor, param1, param2);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).execute(url, method, requestCallback, responseExtractor, param1, param2);
 
       when(underlying.execute(url, method, requestCallback, responseExtractor, paramsMap)).thenReturn(responseEntity);
       actual = wrapper.execute(url, method, requestCallback, responseExtractor, paramsMap);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).execute(url, method, requestCallback, responseExtractor, paramsMap);
 
       when(underlying.execute(uri, method, requestCallback, responseExtractor)).thenReturn(responseEntity);
       actual = wrapper.execute(uri, method, requestCallback, responseExtractor);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).execute(uri, method, requestCallback, responseExtractor);
     }
   }
@@ -278,23 +278,23 @@ public class TestRestTemplateWrapper {
     for (HttpMethod method : httpMethods) {
       when(underlying.exchange(url, method, requestEntity, String.class, param1, param2)).thenReturn(responseEntity);
       actual = wrapper.exchange(url, method, requestEntity, String.class, param1, param2);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).exchange(url, method, requestEntity, String.class, param1, param2);
 
       when(underlying.exchange(url, method, requestEntity, String.class, paramsMap)).thenReturn(responseEntity);
       actual = wrapper.exchange(url, method, requestEntity, String.class, paramsMap);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).exchange(url, method, requestEntity, String.class, paramsMap);
 
       when(underlying.exchange(uri, method, requestEntity, String.class)).thenReturn(responseEntity);
       actual = wrapper.exchange(uri, method, requestEntity, String.class);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).exchange(uri, method, requestEntity, String.class);
 
       RequestEntity<String> request = new RequestEntity<>(method, uri);
       when(underlying.exchange(request, String.class)).thenReturn(responseEntity);
       actual = wrapper.exchange(request, String.class);
-      assertThat(actual, is(responseEntity));
+      MatcherAssert.assertThat(actual, is(responseEntity));
       verify(underlying).exchange(request, String.class);
     }
   }
@@ -308,23 +308,23 @@ public class TestRestTemplateWrapper {
     for (HttpMethod method : httpMethods) {
       when(underlying.exchange(url, method, requestEntity, typeReference, param1, param2)).thenReturn(typedResponse);
       actual = wrapper.exchange(url, method, requestEntity, typeReference, param1, param2);
-      assertThat(actual, is(typedResponse));
+      MatcherAssert.assertThat(actual, is(typedResponse));
       verify(underlying).exchange(url, method, requestEntity, typeReference, param1, param2);
 
       when(underlying.exchange(url, method, requestEntity, typeReference, paramsMap)).thenReturn(typedResponse);
       actual = wrapper.exchange(url, method, requestEntity, typeReference, paramsMap);
-      assertThat(actual, is(typedResponse));
+      MatcherAssert.assertThat(actual, is(typedResponse));
       verify(underlying).exchange(url, method, requestEntity, typeReference, paramsMap);
 
       when(underlying.exchange(uri, method, requestEntity, typeReference)).thenReturn(typedResponse);
       actual = wrapper.exchange(uri, method, requestEntity, typeReference);
-      assertThat(actual, is(typedResponse));
+      MatcherAssert.assertThat(actual, is(typedResponse));
       verify(underlying).exchange(uri, method, requestEntity, typeReference);
 
       RequestEntity<String> request = new RequestEntity<>(method, uri);
       when(underlying.exchange(request, typeReference)).thenReturn(typedResponse);
       actual = wrapper.exchange(request, typeReference);
-      assertThat(actual, is(typedResponse));
+      MatcherAssert.assertThat(actual, is(typedResponse));
       verify(underlying).exchange(request, typeReference);
     }
   }
@@ -361,8 +361,8 @@ public class TestRestTemplateWrapper {
 
     wrapper.setInterceptors(interceptors);
 
-    assertThat(wrapper.getInterceptors(), contains(interceptor1, interceptor2));
-    assertThat(wrapper.defaultRestTemplate.getInterceptors(), contains(interceptor1, interceptor2));
+    MatcherAssert.assertThat(wrapper.getInterceptors(), contains(interceptor1, interceptor2));
+    MatcherAssert.assertThat(wrapper.defaultRestTemplate.getInterceptors(), contains(interceptor1, interceptor2));
     verify(underlying, never()).setInterceptors(interceptors);
   }
 
@@ -372,8 +372,8 @@ public class TestRestTemplateWrapper {
 
     wrapper.setRequestFactory(requestFactory);
 
-    assertThat(wrapper.getRequestFactory(), is(requestFactory));
-    assertThat(wrapper.defaultRestTemplate.getRequestFactory(), is(requestFactory));
+    MatcherAssert.assertThat(wrapper.getRequestFactory(), is(requestFactory));
+    MatcherAssert.assertThat(wrapper.defaultRestTemplate.getRequestFactory(), is(requestFactory));
 
     verify(underlying, never()).setRequestFactory(requestFactory);
   }
@@ -384,8 +384,8 @@ public class TestRestTemplateWrapper {
 
     wrapper.setErrorHandler(errorHandler);
 
-    assertThat(wrapper.getErrorHandler(), is(errorHandler));
-    assertThat(wrapper.defaultRestTemplate.getErrorHandler(), is(errorHandler));
+    MatcherAssert.assertThat(wrapper.getErrorHandler(), is(errorHandler));
+    MatcherAssert.assertThat(wrapper.defaultRestTemplate.getErrorHandler(), is(errorHandler));
 
     verify(underlying).setErrorHandler(errorHandler);
   }
@@ -396,8 +396,8 @@ public class TestRestTemplateWrapper {
 
     wrapper.setDefaultUriVariables(uriVariables);
 
-    assertThat(defaultUriVariablesOf(wrapper), is(uriVariables));
-    assertThat(defaultUriVariablesOf(wrapper.defaultRestTemplate), is(uriVariables));
+    MatcherAssert.assertThat(defaultUriVariablesOf(wrapper), is(uriVariables));
+    MatcherAssert.assertThat(defaultUriVariablesOf(wrapper.defaultRestTemplate), is(uriVariables));
 
     verify(underlying).setDefaultUriVariables(uriVariables);
   }
@@ -408,8 +408,8 @@ public class TestRestTemplateWrapper {
 
     wrapper.setUriTemplateHandler(uriTemplateHandler);
 
-    assertThat(wrapper.getUriTemplateHandler(), is(uriTemplateHandler));
-    assertThat(wrapper.defaultRestTemplate.getUriTemplateHandler(), is(uriTemplateHandler));
+    MatcherAssert.assertThat(wrapper.getUriTemplateHandler(), is(uriTemplateHandler));
+    MatcherAssert.assertThat(wrapper.defaultRestTemplate.getUriTemplateHandler(), is(uriTemplateHandler));
 
     verify(underlying, never()).setUriTemplateHandler(uriTemplateHandler);
   }
@@ -421,26 +421,28 @@ public class TestRestTemplateWrapper {
 
     wrapper.setMessageConverters(singletonList(messageConverter));
 
-    assertThat(wrapper.getMessageConverters(), contains(messageConverter));
-    assertThat(wrapper.defaultRestTemplate.getMessageConverters(), contains(messageConverter));
+    MatcherAssert.assertThat(wrapper.getMessageConverters(), contains(messageConverter));
+    MatcherAssert.assertThat(wrapper.defaultRestTemplate.getMessageConverters(), contains(messageConverter));
 
     verify(underlying, never()).setMessageConverters(singletonList(messageConverter));
   }
 
   @Test
   public void getsAcceptableRestTemplate() {
-    assertThat(wrapper.getRestTemplate(uri), is(underlying));
-    assertThat(wrapper.getRestTemplate(url), is(underlying));
+    MatcherAssert.assertThat(wrapper.getRestTemplate(uri), is(underlying));
+    MatcherAssert.assertThat(wrapper.getRestTemplate(url), is(underlying));
   }
 
   @Test
   public void getsDefaultRestTemplate() {
     reset(underlying);
-    assertThat(wrapper.getRestTemplate(uri), is(wrapper.defaultRestTemplate));
-    assertThat(wrapper.getRestTemplate(url), is(wrapper.defaultRestTemplate));
+    MatcherAssert.assertThat(wrapper.getRestTemplate(uri), is(wrapper.defaultRestTemplate));
+    MatcherAssert.assertThat(wrapper.getRestTemplate(url), is(wrapper.defaultRestTemplate));
   }
 
+  @SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
   private Map<String, ?> defaultUriVariablesOf(RestTemplate wrapper1) {
-    return ((DefaultUriTemplateHandler) wrapper1.getUriTemplateHandler()).getDefaultUriVariables();
+    return ((DefaultUriBuilderFactory) wrapper1.getUriTemplateHandler()).getDefaultUriVariables();
   }
 }

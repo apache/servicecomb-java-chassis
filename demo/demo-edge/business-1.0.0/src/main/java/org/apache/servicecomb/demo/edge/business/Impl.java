@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.demo.edge.business;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
@@ -32,7 +31,7 @@ public class Impl {
   @RequestMapping(path = "/channel/news/subscribe", method = RequestMethod.POST)
   public AppClientDataRsp subscribeNewsColumn(@RequestBody ChannelRequestBase request) {
     AppClientDataRsp response = new AppClientDataRsp();
-    String rsp = StringUtils.rightPad("edge test", 1024, "*");
+    String rsp = "result from 1.0.0";
     response.setRsp(rsp);
     return response;
   }

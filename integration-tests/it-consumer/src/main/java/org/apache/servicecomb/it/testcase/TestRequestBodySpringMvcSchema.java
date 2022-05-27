@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,13 +38,13 @@ public class TestRequestBodySpringMvcSchema {
   }
 
   @Test
-  public void testDefaultForPremitive() {
-    testDefaultForPremitiveImpl();
-    testDefaultForPremitiveImpl();
-    testDefaultForPremitiveImpl();
+  public void testDefaultForPrimitive() {
+    testDefaultForPrimitiveImpl();
+    testDefaultForPrimitiveImpl();
+    testDefaultForPrimitiveImpl();
   }
 
-  private void testDefaultForPremitiveImpl() {
+  private void testDefaultForPrimitiveImpl() {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     Map<String, Object> request = new HashMap<>();
@@ -55,15 +55,14 @@ public class TestRequestBodySpringMvcSchema {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
     @SuppressWarnings("unchecked")
-    Map<String, Object> result =
-        edgeClient.postForObject("/base", entity, Map.class);
-    Assert.assertEquals(result.size(), 6);
-    Assert.assertEquals(result.get("type"), 0);
-    Assert.assertEquals(result.get("integerType"), request.get("integerType"));
-    Assert.assertEquals(result.get("message"), request.get("message"));
-    Assert.assertEquals(result.get("catalog"), request.get("catalog"));
-    Assert.assertEquals(result.get("integerCatalog"), null);
-    Assert.assertEquals(result.get("extendedMessage"), request.get("extendedMessage"));
+    Map<String, Object> result = edgeClient.postForObject("/base", entity, Map.class);
+    Assertions.assertEquals(result.size(), 6);
+    Assertions.assertEquals(result.get("type"), 0);
+    Assertions.assertEquals(result.get("integerType"), request.get("integerType"));
+    Assertions.assertEquals(result.get("message"), request.get("message"));
+    Assertions.assertEquals(result.get("catalog"), request.get("catalog"));
+    Assertions.assertNull(result.get("integerCatalog"));
+    Assertions.assertEquals(result.get("extendedMessage"), request.get("extendedMessage"));
   }
 
   private void basicRequestResponseImpl() {
@@ -81,12 +80,12 @@ public class TestRequestBodySpringMvcSchema {
     @SuppressWarnings("unchecked")
     Map<String, Object> result =
         edgeClient.postForObject("/base", entity, Map.class);
-    Assert.assertEquals(result.size(), request.size());
-    Assert.assertEquals(result.get("type"), request.get("type"));
-    Assert.assertEquals(result.get("integerType"), request.get("integerType"));
-    Assert.assertEquals(result.get("message"), request.get("message"));
-    Assert.assertEquals(result.get("catalog"), request.get("catalog"));
-    Assert.assertEquals(result.get("integerCatalog"), request.get("integerCatalog"));
-    Assert.assertEquals(result.get("extendedMessage"), request.get("extendedMessage"));
+    Assertions.assertEquals(result.size(), request.size());
+    Assertions.assertEquals(result.get("type"), request.get("type"));
+    Assertions.assertEquals(result.get("integerType"), request.get("integerType"));
+    Assertions.assertEquals(result.get("message"), request.get("message"));
+    Assertions.assertEquals(result.get("catalog"), request.get("catalog"));
+    Assertions.assertEquals(result.get("integerCatalog"), request.get("integerCatalog"));
+    Assertions.assertEquals(result.get("extendedMessage"), request.get("extendedMessage"));
   }
 }

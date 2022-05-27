@@ -37,28 +37,26 @@ import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
-import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultHttpClientFilter {
-  private DefaultHttpClientFilter filter = new DefaultHttpClientFilter();
+  private final DefaultHttpClientFilter filter = new DefaultHttpClientFilter();
 
   @Test
   public void testOrder() {
-    Assert.assertEquals(Integer.MAX_VALUE, filter.getOrder());
+    Assertions.assertEquals(10000, filter.getOrder());
   }
 
   @Test
@@ -71,7 +69,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertNull(filter.findProduceProcessor(restOperation, responseEx));
+    Assertions.assertNull(filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
@@ -86,7 +84,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
+    Assertions.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
@@ -101,7 +99,7 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
+    Assertions.assertSame(produceProcessor, filter.findProduceProcessor(restOperation, responseEx));
   }
 
   @Test
@@ -119,13 +117,13 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertSame(part, response.getResult());
-    Assert.assertEquals(Status.OK, response.getStatus());
+    Assertions.assertSame(part, response.getResult());
+    Assertions.assertEquals(Status.OK, response.getStatus());
   }
 
   @Test
   public void extractResult_decodeError(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
-      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked OperationMeta operationMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked HttpServletResponseEx responseEx) {
     Map<String, Object> handlerContext = new HashMap<>();
@@ -135,12 +133,10 @@ public class TestDefaultHttpClientFilter {
         result = handlerContext;
         invocation.getOperationMeta();
         result = operationMeta;
-        operationMeta.findResponseMeta(400);
-        result = responseMeta;
+        invocation.findResponseType(400);
+        result = SimpleType.constructUnsafe(Date.class);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
-        responseMeta.getJavaType();
-        result = SimpleType.constructUnsafe(Date.class);
         responseEx.getStatus();
         result = 400;
         responseEx.getBodyBuffer();
@@ -155,25 +151,26 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertEquals(400, response.getStatusCode());
-    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    Assertions.assertEquals(400, response.getStatusCode());
+    Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
-    Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
-            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+    Assertions.assertEquals(
+        "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 4]",
         invocationException.getCause().getMessage());
-    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    Assertions.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported",
         commonExceptionData.getMessage());
   }
 
   @Test
   public void extractResult_decodeError200(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
-      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked OperationMeta operationMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked HttpServletResponseEx responseEx) {
     Map<String, Object> handlerContext = new HashMap<>();
@@ -183,12 +180,10 @@ public class TestDefaultHttpClientFilter {
         result = handlerContext;
         invocation.getOperationMeta();
         result = operationMeta;
-        operationMeta.findResponseMeta(200);
-        result = responseMeta;
+        invocation.findResponseType(200);
+        result = SimpleType.constructUnsafe(Date.class);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
-        responseMeta.getJavaType();
-        result = SimpleType.constructUnsafe(Date.class);
         responseEx.getStatus();
         result = 200;
         responseEx.getBodyBuffer();
@@ -203,18 +198,19 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertEquals(400, response.getStatusCode());
-    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    Assertions.assertEquals(400, response.getStatusCode());
+    Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
-    Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
-            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+    Assertions.assertEquals(
+        "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 4]",
         invocationException.getCause().getMessage());
-    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    Assertions.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported",
         commonExceptionData.getMessage());
   }
@@ -223,8 +219,7 @@ public class TestDefaultHttpClientFilter {
   public void testAfterReceiveResponseNullProduceProcessor(@Mocked Invocation invocation,
       @Mocked HttpServletResponseEx responseEx,
       @Mocked OperationMeta operationMeta,
-      @Mocked RestOperationMeta swaggerRestOperation,
-      @Injectable ResponseMeta responseMeta) throws Exception {
+      @Mocked RestOperationMeta swaggerRestOperation) throws Exception {
     CommonExceptionData data = new CommonExceptionData("abcd");
     new Expectations() {
       {
@@ -232,9 +227,7 @@ public class TestDefaultHttpClientFilter {
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
-        operationMeta.findResponseMeta(403);
-        result = responseMeta;
-        responseMeta.getJavaType();
+        invocation.findResponseType(403);
         result = SimpleType.constructUnsafe(CommonExceptionData.class);
         responseEx.getStatus();
         result = 403;
@@ -246,14 +239,14 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    Assert.assertEquals(403, response.getStatusCode());
-    Assert.assertEquals("Forbidden", response.getReasonPhrase());
-    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    Assertions.assertEquals(403, response.getStatusCode());
+    Assertions.assertEquals("Forbidden", response.getReasonPhrase());
+    Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         403,
         invocationException.getStatusCode());
-    Assert.assertEquals(
+    Assertions.assertEquals(
         "CommonExceptionData [message=abcd]",
         invocationException.getErrorData().toString());
   }
@@ -263,10 +256,9 @@ public class TestDefaultHttpClientFilter {
       @Mocked HttpServletResponseEx responseEx,
       @Mocked Buffer bodyBuffer,
       @Mocked OperationMeta operationMeta,
-      @Mocked ResponseMeta responseMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked ProduceProcessor produceProcessor) throws Exception {
-    MultiMap responseHeader = new CaseInsensitiveHeaders();
+    MultiMap responseHeader = MultiMap.caseInsensitiveMultiMap();
     responseHeader.add("b", "bValue");
 
     Object decodedResult = new Object();
@@ -280,7 +272,7 @@ public class TestDefaultHttpClientFilter {
         result = responseHeader.getAll("b");
         swaggerRestOperation.findProduceProcessor("json");
         result = produceProcessor;
-        produceProcessor.decodeResponse(bodyBuffer, responseMeta.getJavaType());
+        produceProcessor.decodeResponse(bodyBuffer, (JavaType) any);
         result = decodedResult;
 
         invocation.getOperationMeta();
@@ -294,8 +286,8 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    Assert.assertSame(decodedResult, response.getResult());
-    Assert.assertEquals(1, response.getHeaders().getHeaderMap().size());
-    Assert.assertEquals(response.getHeaders().getHeader("b"), Arrays.asList("bValue"));
+    Assertions.assertSame(decodedResult, response.getResult());
+    Assertions.assertEquals(1, response.getHeaders().size());
+    Assertions.assertEquals(response.getHeaders("b"), Arrays.asList("bValue"));
   }
 }

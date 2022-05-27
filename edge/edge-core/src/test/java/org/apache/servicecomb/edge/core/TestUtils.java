@@ -17,17 +17,17 @@
 
 package org.apache.servicecomb.edge.core;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestUtils {
   @Test
-  public void testUtisl() {
-    Assert.assertEquals(Utils.findActualPath("/a/b/c", -1), "/a/b/c");
-    Assert.assertEquals(Utils.findActualPath("/a/b/c", 0), "/a/b/c");
-    Assert.assertEquals(Utils.findActualPath("/a/b/c", 1), "/b/c");
-    Assert.assertEquals(Utils.findActualPath("/a/b/c", 2), "/c");
-    Assert.assertEquals(Utils.findActualPath("/a/b/c", 3), "");
-    Assert.assertEquals(Utils.findActualPath("/a/b/c", 100), "");
+  public void testUtils() {
+    Assertions.assertEquals("/a/b/c", Utils.findActualPath("/a/b/c", -1));
+    Assertions.assertEquals("/a/b/c", Utils.findActualPath("/a/b/c", 0));
+    Assertions.assertEquals("/b/c", Utils.findActualPath("/a/b/c", 1));
+    Assertions.assertEquals("/c", Utils.findActualPath("/a/b/c", 2));
+    Assertions.assertEquals("", Utils.findActualPath("/a/b/c", 3));
+    Assertions.assertEquals("", Utils.findActualPath("/a/b/c", 100));
   }
 }

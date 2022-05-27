@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,28 +25,36 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.MimeTypesUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
+import io.swagger.models.Response;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
-import io.vertx.ext.web.impl.MimeTypesUtils;
+import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
 
 public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
@@ -68,7 +76,7 @@ public class RestOperationMeta {
   protected List<String> fileKeys = new ArrayList<>();
 
   // key为数据类型，比如json之类
-  private Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
+  private final Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
 
   // 不一定等于mgr中的default，因为本operation可能不支持mgr中的default
   private ProduceProcessor defaultProcessor;
@@ -93,35 +101,59 @@ public class RestOperationMeta {
     this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
 
-    Method method = operationMeta.getMethod();
-    Type[] genericParamTypes = method.getGenericParameterTypes();
-    if (genericParamTypes.length != operation.getParameters().size()) {
-      throw new Error("Param count is not equal between swagger and method, path=" + absolutePath
-          + ";operation=" + operationMeta.getMicroserviceQualifiedName());
-    }
-
     // 初始化所有rest param
-    for (int idx = 0; idx < genericParamTypes.length; idx++) {
-      Parameter parameter = operation.getParameters().get(idx);
-      Type genericParamType = genericParamTypes[idx];
+    for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
+      Parameter parameter = operation.getParameters().get(swaggerParameterIdx);
 
       if ("formData".equals(parameter.getIn())) {
         formData = true;
       }
 
-      RestParam param = new RestParam(idx, parameter, genericParamType);
+      Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
+          .getSwaggerParameterTypes().get(parameter.getName()) : null;
+      type = correctFormBodyType(parameter, type);
+      RestParam param = new RestParam(parameter, type);
       addParam(param);
     }
 
     setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
   }
 
-  private boolean checkDownloadFileFlag() {
-    ResponseMeta responseMeta = operationMeta.findResponseMeta(200);
-    if (responseMeta != null) {
-      JavaType javaType = responseMeta.getJavaType();
-      return javaType.getRawClass().equals(Part.class);
+  /**
+   * EdgeService cannot recognize the map type form body whose value type is String,
+   * so there should be this additional setting.
+   * @param parameter the swagger information of the parameter
+   * @param type the resolved param type
+   * @return the corrected param type
+   */
+  private Type correctFormBodyType(Parameter parameter, Type type) {
+    if (null != type || !(parameter instanceof BodyParameter)) {
+      return type;
     }
+    final BodyParameter bodyParameter = (BodyParameter) parameter;
+    if (!(bodyParameter.getSchema() instanceof ModelImpl)) {
+      return type;
+    }
+    final Property additionalProperties = ((ModelImpl) bodyParameter.getSchema()).getAdditionalProperties();
+    if (additionalProperties instanceof StringProperty) {
+      type = RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
+          .constructMapType(Map.class, String.class, String.class);
+    }
+    return type;
+  }
+
+  public boolean isDownloadFile() {
+    return downloadFile;
+  }
+
+  private boolean checkDownloadFileFlag() {
+    Response response = operationMeta.getSwaggerOperation().getResponses().get("200");
+    if (response != null) {
+      Model model = response.getResponseSchema();
+      return model instanceof ModelImpl &&
+          FileProperty.isType(((ModelImpl) model).getType(), ((ModelImpl) model).getFormat());
+    }
+
     return false;
   }
 
@@ -185,27 +217,57 @@ public class RestOperationMeta {
     return operationMeta;
   }
 
-  // 为operation创建支持的多种produce processor
   protected void createProduceProcessors() {
-    if (null == produces || produces.isEmpty()) {
-      for (ProduceProcessor processor : ProduceProcessorManager.INSTANCE.values()) {
-        this.produceProcessorMap.put(processor.getName(), processor);
+    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    if (producerOperation != null && producerOperation.getProducerMethod() != null) {
+      createProduceProcessors(producerOperation.getProducerMethod().getDeclaredAnnotations());
+      return;
+    }
+    createProduceProcessors(null);
+  }
+
+  // serialViewClass is deterministic for each operation
+  protected void createProduceProcessors(Annotation[] annotations) {
+    if (annotations == null || annotations.length < 1) {
+      doCreateProduceProcessors(null);
+      return;
+    }
+    for (Annotation annotation : annotations) {
+      if (annotation.annotationType() == JsonView.class) {
+        Class<?>[] value = ((JsonView) annotation).value();
+        if (value.length != 1) {
+          throw new IllegalArgumentException(
+              "@JsonView only supported for exactly 1 class argument ");
+        }
+        doCreateProduceProcessors(value[0]);
+        return;
       }
+    }
+    doCreateProduceProcessors(null);
+  }
+
+  // 为operation创建支持的多种produce processor
+  protected void doCreateProduceProcessors(Class<?> serialViewClass) {
+    if (null == produces || produces.isEmpty()) {
+      produceProcessorMap.putAll(
+          ProduceProcessorManager.INSTANCE.getOrCreateAcceptMap(serialViewClass));
     } else {
       for (String produce : produces) {
         if (produce.contains(";")) {
           produce = produce.substring(0, produce.indexOf(";"));
         }
-        ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findValue(produce);
+        ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findProcessor(produce, serialViewClass);
         if (processor == null) {
-          LOGGER.error("produce {} is not supported", produce);
+          LOGGER.error("produce {} is not supported, operation={}.", produce,
+              operationMeta.getMicroserviceQualifiedName());
           continue;
         }
         this.produceProcessorMap.put(produce, processor);
       }
 
       if (produceProcessorMap.isEmpty()) {
-        produceProcessorMap.put(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
+        produceProcessorMap.put(ProduceProcessorManager.DEFAULT_TYPE,
+            ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(serialViewClass));
       }
     }
 

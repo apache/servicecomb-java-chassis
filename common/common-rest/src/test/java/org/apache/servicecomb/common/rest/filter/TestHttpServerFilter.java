@@ -20,23 +20,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
 
 public class TestHttpServerFilter {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void asyncSucc() throws InterruptedException, ExecutionException {
     HttpServerFilter filter = new HttpServerFilterBaseForTest();
 
     CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
-    Assert.assertNull(future.get());
+    Assertions.assertNull(future.get());
   }
 
   @Test
@@ -44,14 +40,15 @@ public class TestHttpServerFilter {
     HttpServerFilter filter = new HttpServerFilterBaseForTest() {
       @Override
       public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-        throw new Error("");
+        throw new RuntimeExceptionWithoutStackTrace();
       }
     };
 
-    expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.instanceOf(Error.class));
-
-    CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
-    future.get();
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class,
+            () -> {
+              CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
+              future.get();
+            });
+    Assertions.assertTrue(exception.getCause() instanceof RuntimeExceptionWithoutStackTrace);
   }
 }

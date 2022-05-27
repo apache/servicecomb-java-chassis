@@ -20,17 +20,17 @@ package org.apache.servicecomb.config;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringValueResolver;
 
 public class TestLastPropertyPlaceholderConfigurer {
   @Component
-  static class Bean extends PropertyPlaceholderConfigurer implements EmbeddedValueResolverAware {
+  static class Bean extends PropertySourcesPlaceholderConfigurer implements EmbeddedValueResolverAware {
     StringValueResolver resolver;
 
     public Bean() {
@@ -56,12 +56,12 @@ public class TestLastPropertyPlaceholderConfigurer {
         new AnnotationConfigApplicationContext(this.getClass().getPackage().getName());
     Bean bean = context.getBean(Bean.class);
 
-    Assert.assertEquals("aValue", bean.resolver.resolveStringValue("${a}"));
+    Assertions.assertEquals("aValue", bean.resolver.resolveStringValue("${a}"));
     try {
       bean.resolver.resolveStringValue("${b}");
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (IllegalArgumentException e) {
-      Assert.assertEquals("Could not resolve placeholder 'b' in value \"${b}\"", e.getMessage());
+      Assertions.assertEquals("Could not resolve placeholder 'b' in value \"${b}\"", e.getMessage());
     }
 
     context.close();

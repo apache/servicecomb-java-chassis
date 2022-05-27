@@ -24,10 +24,10 @@ import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
-import org.junit.Assert;
-import org.junit.Test;
 
 import com.google.protobuf.ByteString;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRepeatedSchema extends TestSchemaBase {
   public static class RootWithArray {
@@ -213,8 +213,8 @@ public class TestRepeatedSchema extends TestSchemaBase {
     check();
 
     RootWithArray rootWithArray = new RootWithArray();
-    rootWithArray.bytess = (byte[][]) sList.toArray();
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
+    rootWithArray.bytess = sList.toArray(new byte[0][]);
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
   }
 
   @Test
@@ -224,8 +224,8 @@ public class TestRepeatedSchema extends TestSchemaBase {
     check();
 
     RootWithArray rootWithArray = new RootWithArray();
-    rootWithArray.strings = (String[]) sList.toArray();
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
+    rootWithArray.strings = sList.toArray(new String[0]);
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
   }
 
   @Test
@@ -237,6 +237,6 @@ public class TestRepeatedSchema extends TestSchemaBase {
 
     RootWithArray rootWithArray = new RootWithArray();
     rootWithArray.users = new User[] {new User("name1"), new User("name2")};
-    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
+    Assertions.assertArrayEquals(protobufBytes, rootSerializer.serialize(rootWithArray));
   }
 }

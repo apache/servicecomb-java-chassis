@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,8 +32,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,6 +41,7 @@ import io.vertx.core.buffer.Buffer;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestStandardHttpServletRequestEx {
   @Mocked
@@ -58,15 +60,15 @@ public class TestStandardHttpServletRequestEx {
     bodyBuffer.appendString("abc");
 
     requestEx.setBodyBuffer(bodyBuffer);
-    Assert.assertSame(bodyBuffer, requestEx.getBodyBuffer());
-    Assert.assertArrayEquals("abc".getBytes(), Arrays.copyOf(requestEx.getBodyBytes(), requestEx.getBodyBytesLength()));
+    Assertions.assertSame(bodyBuffer, requestEx.getBodyBuffer());
+    Assertions.assertArrayEquals("abc".getBytes(), Arrays.copyOf(requestEx.getBodyBytes(), requestEx.getBodyBytesLength()));
   }
 
   @Test
   public void getInputStreamNotCache() throws IOException {
     ServletInputStream inputStream = request.getInputStream();
 
-    Assert.assertSame(inputStream, requestEx.getInputStream());
+    Assertions.assertSame(inputStream, requestEx.getInputStream());
   }
 
   @Test
@@ -82,10 +84,10 @@ public class TestStandardHttpServletRequestEx {
     };
 
     ServletInputStream cachedInputStream = requestEx.getInputStream();
-    Assert.assertEquals("abc", IOUtils.toString(cachedInputStream));
-    Assert.assertEquals("abc", requestEx.getBodyBuffer().toString());
+    Assertions.assertEquals("abc", IOUtils.toString(cachedInputStream, StandardCharsets.UTF_8));
+    Assertions.assertEquals("abc", requestEx.getBodyBuffer().toString());
     // do not create another one
-    Assert.assertSame(cachedInputStream, requestEx.getInputStream());
+    Assertions.assertSame(cachedInputStream, requestEx.getInputStream());
   }
 
   @Test
@@ -102,10 +104,10 @@ public class TestStandardHttpServletRequestEx {
       }
     };
 
-    Assert.assertSame(inherited, requestEx.getParameterMap());
-    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1"));
-    Assert.assertSame(v1, requestEx.getParameterValues("p1"));
-    Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
+    Assertions.assertSame(inherited, requestEx.getParameterMap());
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1"));
+    Assertions.assertSame(v1, requestEx.getParameterValues("p1"));
+    Assertions.assertEquals("v1-1", requestEx.getParameter("p1"));
   }
 
   @Test
@@ -129,9 +131,9 @@ public class TestStandardHttpServletRequestEx {
       }
     };
 
-    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
-    Assert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
-    Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
+    MatcherAssert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
+    Assertions.assertEquals("v1-1", requestEx.getParameter("p1"));
   }
 
   @Test
@@ -142,11 +144,11 @@ public class TestStandardHttpServletRequestEx {
     requestEx.setParameter("k1", "v1");
     requestEx.setParameter("k2", "v2");
 
-    Assert.assertEquals("v1", requestEx.getParameter("k1"));
-    Assert.assertEquals("v2", requestEx.getParameter("k2"));
+    Assertions.assertEquals("v1", requestEx.getParameter("k1"));
+    Assertions.assertEquals("v2", requestEx.getParameter("k2"));
 
-    Assert.assertSame(parameterMap, requestEx.getParameterMap());
+    Assertions.assertSame(parameterMap, requestEx.getParameterMap());
 
-    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("k1", "k2"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("k1", "k2"));
   }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
@@ -48,13 +51,13 @@ import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -66,9 +69,6 @@ import io.vertx.core.json.JsonObject;
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
-  //    public Response getUserResponse() {
-  //
-  //    }
   @ApiResponse(code = 200, response = User.class, message = "")
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
       @ResponseHeader(name = "h2", response = String.class)})
@@ -76,11 +76,10 @@ public class CodeFirstJaxrs {
   @GET
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
+    response.setHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
+    response.setHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
 
     return response;
   }
@@ -232,8 +231,8 @@ public class CodeFirstJaxrs {
       return "null file";
     }
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
-      String content1 = IOUtils.toString(is1);
-      String content2 = IOUtils.toString(is2);
+      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
+      String content2 = IOUtils.toString(is2, StandardCharsets.UTF_8);
       return String.format("%s:%s:%s\n" + "%s:%s:%s",
           file1.getSubmittedFileName(),
           file1.getContentType(),
@@ -244,17 +243,42 @@ public class CodeFirstJaxrs {
     }
   }
 
+  @GET
+  @Path("/responseLong")
+  @ApiResponse(code = 200, response = Object.class, message = "")
+  public Response responseLong() {
+    return Response.createSuccess(Long.MAX_VALUE);
+  }
+
   @Path("/upload2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
   public String fileUpload2(@FormParam("file1") Part file1, @FormParam("message") String message) throws IOException {
     try (InputStream is1 = file1.getInputStream()) {
-      String content1 = IOUtils.toString(is1);
+      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
       return String.format("%s:%s:%s:%s",
           file1.getSubmittedFileName(),
           file1.getContentType(),
           content1,
           message);
     }
+  }
+
+  @Path("/download/testDeleteAfterFinished")
+  @GET
+  public Part testDeleteAfterFinished(@QueryParam("name") String name, @QueryParam("content") String content)
+      throws IOException {
+    File file = createTempFile(name, content);
+
+    return new FilePart(null, file)
+        .setDeleteAfterFinished(true)
+        .setSubmittedFileName(name);
+  }
+
+  private File createTempFile(String name, String content) throws IOException {
+    File systemTempFile = new File(System.getProperty("java.io.tmpdir"));
+    File file = new File(systemTempFile, name);
+    FileUtils.write(file, content, StandardCharsets.UTF_8, false);
+    return file;
   }
 }

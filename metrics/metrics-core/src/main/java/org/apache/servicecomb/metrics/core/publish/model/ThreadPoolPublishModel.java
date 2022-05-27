@@ -31,6 +31,8 @@ public class ThreadPoolPublishModel {
 
   private int queueSize;
 
+  private double rejected = Double.NaN;
+
   public double getAvgTaskCount() {
     return avgTaskCount;
   }
@@ -85,5 +87,13 @@ public class ThreadPoolPublishModel {
 
   public void setQueueSize(int queueSize) {
     this.queueSize = queueSize;
+  }
+
+  public double getRejected() {
+    return rejected;
+  }
+
+  public void setRejected(double rejected) {
+    this.rejected = rejected;
   }
 }

@@ -21,13 +21,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
 
@@ -108,6 +113,10 @@ public class Schema {
 
   }
 
+  public void testOneEnum(Color color) {
+
+  }
+
   public void testEnum(Color color, Color color1) {
 
   }
@@ -144,6 +153,10 @@ public class Schema {
 
   }
 
+  public List<List<String>> nestedListString(List<List<String>> param) {
+    return param;
+  }
+
   public void testList(List<User> value) {
 
   }
@@ -161,6 +174,14 @@ public class Schema {
   }
 
   public CompletableFuture<String> testCompletableFuture() {
+    return null;
+  }
+
+  public Optional<String> testOptional() {
+    return null;
+  }
+
+  public CompletableFuture<Optional<String>> testCompletableFutureOptional() {
     return null;
   }
 
@@ -184,5 +205,25 @@ public class Schema {
       List<User> list,
       Map<String, User> map) {
     return Collections.emptyList();
+  }
+
+  public void part(Part part) {
+
+  }
+
+  public void partArray(Part[] part) {
+
+  }
+
+  public void partList(List<Part> part) {
+
+  }
+
+  public void wrapToBodyWithDesc(@ApiParam(value = "desc") int value) {
+
+  }
+
+  public void ignoreRequest(HttpServletRequest request, int value) {
+
   }
 }

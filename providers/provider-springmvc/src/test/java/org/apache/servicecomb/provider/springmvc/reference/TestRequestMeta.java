@@ -23,8 +23,8 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestRequestMeta {
@@ -41,30 +41,30 @@ public class TestRequestMeta {
   @Test
   public void testGetReferenceConfig() {
     ReferenceConfig value = requestmeta.getReferenceConfig();
-    Assert.assertNotNull(value);
+    Assertions.assertNotNull(value);
   }
 
   @Test
   public void testGetPathParams() {
     Map<String, String> value = requestmeta.getPathParams();
-    Assert.assertNotNull(value);
+    Assertions.assertNotNull(value);
   }
 
   @Test
   public void testGetSwaggerRestOperation() {
     RestOperationMeta value = requestmeta.getSwaggerRestOperation();
-    Assert.assertNotNull(value);
+    Assertions.assertNotNull(value);
   }
 
   @Test
   public void testGetOperationMeta() {
-    Assert.assertNull(requestmeta.getOperationMeta());
+    Assertions.assertNull(requestmeta.getOperationMeta());
   }
 
   @Test
   public void testGetOperationQualifiedName() {
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("value");
     String qualifiedName = operationMeta.getSchemaQualifiedName();
-    Assert.assertEquals("value", qualifiedName);
+    Assertions.assertEquals("value", qualifiedName);
   }
 }

@@ -18,25 +18,45 @@
 package org.apache.servicecomb.provider.pojo.reference;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
-import org.junit.Assert;
+import org.hamcrest.MatcherAssert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class PojoReferenceMetaTest {
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @After
+  public void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testHasConsumerInterface() {
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+
     PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
     pojoReferenceMeta.setMicroserviceName("test");
     pojoReferenceMeta.setSchemaId("schemaId");
     pojoReferenceMeta.setConsumerIntf(IPerson.class);
     pojoReferenceMeta.afterPropertiesSet();
 
-    Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
-    assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
-    Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
+    Assertions.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
+    MatcherAssert.assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
+    Assertions.assertTrue(pojoReferenceMeta.isSingleton());
+
+    scbEngine.destroy();
   }
 
   @Test
@@ -47,9 +67,9 @@ public class PojoReferenceMetaTest {
 
     try {
       pojoReferenceMeta.afterPropertiesSet();
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           "microserviceName=test, schemaid=schemaId, \n"
               + "do not support implicit interface anymore, \n"
               + "because that caused problems:\n"

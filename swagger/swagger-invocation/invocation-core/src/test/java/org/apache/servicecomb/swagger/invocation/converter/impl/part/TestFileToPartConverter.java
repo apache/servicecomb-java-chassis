@@ -21,27 +21,28 @@ import java.io.File;
 
 import javax.servlet.http.Part;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestFileToPartConverter {
   FileToPartConverter converter = new FileToPartConverter();
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(File.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(File.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test
   public void convert() {
     File file = new File("abc");
     Object part = converter.convert(file);
-    Assert.assertThat(part, Matchers.instanceOf(Part.class));
+    MatcherAssert.assertThat(part, Matchers.instanceOf(Part.class));
   }
 }

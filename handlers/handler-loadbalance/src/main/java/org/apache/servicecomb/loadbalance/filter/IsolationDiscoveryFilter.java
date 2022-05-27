@@ -28,14 +28,15 @@ import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
+import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
@@ -43,9 +44,16 @@ import com.netflix.config.DynamicPropertyFactory;
  */
 public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
+  public static final String TRYING_INSTANCES_EXISTING = "scb-hasTryingInstances";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
-  public class Settings {
+  private static final String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
+
+  private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
+
+  public static class Settings {
     public int errorThresholdPercentage;
 
     public long singleTestTime;
@@ -62,6 +70,13 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   @Override
   public int getOrder() {
     return 500;
+  }
+
+  public IsolationDiscoveryFilter() {
+    emptyProtection.addCallback(() -> {
+      boolean newValue = emptyProtection.get();
+      LOGGER.info("{} changed from {} to {}", EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);
+    });
   }
 
   @Override
@@ -84,22 +99,21 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     }
 
     Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    for (String key : instances.keySet()) {
-      MicroserviceInstance instance = instances.get(key);
+    instances.forEach((key, instance) -> {
       if (allowVisit(invocation, instance)) {
         filteredServers.put(key, instance);
       }
-    }
+    });
 
-    DiscoveryTreeNode child = new DiscoveryTreeNode();
-    if (filteredServers.isEmpty() && DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", false).get()) {
+    DiscoveryTreeNode child = parent.children().computeIfAbsent("filterred", etn -> new DiscoveryTreeNode());
+    if (ZoneAwareDiscoveryFilter.GROUP_Instances_All
+        .equals(context.getContextParameter(ZoneAwareDiscoveryFilter.KEY_ZONE_AWARE_STEP)) && filteredServers.isEmpty()
+        && emptyProtection.get()) {
       LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
       child.data(instances);
     } else {
       child.data(filteredServers);
     }
-    parent.child("filterred", child);
     return child;
   }
 
@@ -128,17 +142,14 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
           && (System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
-        // [1]we can implement better recovery based on several attempts, but here we do not know if this attempt is success
-        LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
-            invocation.getMicroserviceName(),
-            instance.getInstanceId());
-        return true;
+        return ServiceCombServerStats.applyForTryingChance(invocation);
       }
       if (!serverStats.isIsolated()) {
-        ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
+        // checkThresholdAllowed is not concurrent control, may print several logs/events in current access.
+        serverStats.markIsolated(true);
         eventBus.post(
             new IsolationServerEvent(invocation, instance, serverStats,
-                settings, Type.OPEN));
+                settings, Type.OPEN, server.getEndpoint()));
         LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
             instance.getInstanceId());
       }
@@ -147,12 +158,12 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (serverStats.isIsolated()) {
       // [2] so that we add a feature to isolate for at least a minimal time, and we can avoid
       // high volume of concurrent requests with a percentage of error(e.g. 50%) scenario with no isolation
-      if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) <= settings.minIsolationTime) {
+      if ((System.currentTimeMillis() - serverStats.getIsolatedTime()) <= settings.minIsolationTime) {
         return false;
       }
-      ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
+      serverStats.markIsolated(false);
       eventBus.post(new IsolationServerEvent(invocation, instance, serverStats,
-          settings, Type.CLOSE));
+          settings, Type.CLOSE, server.getEndpoint()));
       LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
           instance.getInstanceId());
     }
@@ -166,7 +177,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
     if (settings.continuousFailureThreshold > 0) {
       // continuousFailureThreshold has higher priority to decide the result
-      if (serverStats.getCountinuousFailureCount() >= settings.continuousFailureThreshold) {
+      if (serverStats.getContinuousFailureCount() >= settings.continuousFailureThreshold) {
         return false;
       }
     }
@@ -174,9 +185,6 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (settings.errorThresholdPercentage == 0) {
       return true;
     }
-    if (serverStats.getFailedRate() >= settings.errorThresholdPercentage) {
-      return false;
-    }
-    return true;
+    return serverStats.getFailedRate() < settings.errorThresholdPercentage;
   }
 }

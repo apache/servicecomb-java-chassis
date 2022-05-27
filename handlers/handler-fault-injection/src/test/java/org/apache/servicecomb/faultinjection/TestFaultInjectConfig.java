@@ -17,12 +17,10 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Tests the fault injection configuration.
@@ -31,8 +29,6 @@ public class TestFaultInjectConfig {
   FaultInjectionConfig faultCfg;
 
   FaultInjectionConst faultConst;
-
-  FaultInjectionUtil faultUtil;
 
   FaultParam faultParam;
 
@@ -44,7 +40,6 @@ public class TestFaultInjectConfig {
   public void setUp() throws Exception {
     faultCfg = new FaultInjectionConfig();
     faultConst = new FaultInjectionConst();
-    faultUtil = new FaultInjectionUtil();
     faultParam = new FaultParam(10);
     abortFault = new AbortFault();
     delayFault = new DelayFault();
@@ -54,36 +49,35 @@ public class TestFaultInjectConfig {
   public void tearDown() throws Exception {
     faultCfg = null;
     faultConst = null;
-    faultUtil = null;
     faultParam = null;
   }
 
   @Test
   public void testFaultInjectConfig() throws Exception {
     int val = FaultInjectionConfig.getConfigVal("servicecomb.servicecomb.handler.consumer.faultinject.config", 0);
-    Assert.assertEquals(0, val);
+    Assertions.assertEquals(0, val);
   }
 
   @Test
   public void testConstants() {
-    assertEquals("servicecomb.governance.Consumer.", FaultInjectionConst.CONSUMER_FAULTINJECTION);
-    assertEquals("policy.fault.protocols.", FaultInjectionConst.CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS);
-    assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE);
-    assertEquals("servicecomb.governance.Consumer._global.", FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
-    assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_ERROR);
+    Assertions.assertEquals("servicecomb.governance.Consumer.", FaultInjectionConst.CONSUMER_FAULTINJECTION);
+    Assertions.assertEquals("policy.fault.protocols.", FaultInjectionConst.CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS);
+    Assertions.assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE);
+    Assertions.assertEquals("servicecomb.governance.Consumer._global.", FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
+    Assertions.assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_ERROR);
   }
 
   @Test
   public void testFaultParam() {
     faultParam.setReqCount(100);
     faultParam.setVertx(null);
-    assertEquals(100, faultParam.getReqCount());
-    assertEquals(null, faultParam.getVertx());
+    Assertions.assertEquals(100, faultParam.getReqCount());
+    Assertions.assertNull(faultParam.getVertx());
   }
 
   @Test
   public void testFaultPriority() {
-    assertEquals(200, abortFault.getOrder());
-    assertEquals(100, delayFault.getOrder());
+    Assertions.assertEquals(200, abortFault.getOrder());
+    Assertions.assertEquals(100, delayFault.getOrder());
   }
 }

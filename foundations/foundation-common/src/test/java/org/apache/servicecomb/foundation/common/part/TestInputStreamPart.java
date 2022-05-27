@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestInputStreamPart {
   String name = "paramName";
@@ -36,14 +36,14 @@ public class TestInputStreamPart {
 
   @Test
   public void getName() {
-    Assert.assertEquals(name, part.getName());
+    Assertions.assertEquals(name, part.getName());
   }
 
   @Test
   public void test() throws IOException {
     try (InputStream is = part.getInputStream()) {
       byte[] content = IOUtils.toByteArray(is);
-      Assert.assertArrayEquals(bytes, content);
+      Assertions.assertArrayEquals(bytes, content);
     }
   }
 }

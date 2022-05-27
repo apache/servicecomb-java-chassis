@@ -17,31 +17,25 @@
 
 package org.apache.servicecomb.provider.pojo;
 
-import javax.inject.Inject;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.provider.producer.AbstractProducerProvider;
-import org.apache.servicecomb.foundation.common.RegisterManager;
+import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.pojo.instance.PojoInstanceFactory;
 import org.apache.servicecomb.provider.pojo.instance.SpringInstanceFactory;
 import org.apache.servicecomb.provider.pojo.schema.PojoProducerMeta;
 import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PojoProducerProvider extends AbstractProducerProvider {
-  private RegisterManager<String, InstanceFactory> instanceFactoryMgr =
-      new RegisterManager<>("pojo instance factory manager");
+  private final Map<String, InstanceFactory> instanceFactoryMgr = new HashMap<>();
 
-  @Inject
-  private ProducerSchemaFactory producerSchemaFactory;
-
-  @Inject
-  private PojoProducers pojoProducers;
-
-  public void registerInstanceFactory(InstanceFactory instanceFactory) {
-    instanceFactoryMgr.register(instanceFactory.getImplName(), instanceFactory);
+  private void registerInstanceFactory(InstanceFactory instanceFactory) {
+    instanceFactoryMgr.put(instanceFactory.getImplName(), instanceFactory);
   }
 
   public PojoProducerProvider() {
@@ -50,20 +44,19 @@ public class PojoProducerProvider extends AbstractProducerProvider {
   }
 
   @Override
-  public void init() throws Exception {
-    for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProducers()) {
-      initPojoProducerMeta(pojoProducerMeta);
-
-      try {
-        producerSchemaFactory.getOrCreateProducerSchema(
-            pojoProducerMeta.getSchemaId(),
-            pojoProducerMeta.getInstanceClass(),
-            pojoProducerMeta.getInstance());
-      } catch (Throwable e) {
-        throw new IllegalArgumentException(
-            "create producer schema failed, class=" + pojoProducerMeta.getInstanceClass().getName(), e);
-      }
+  public List<ProducerMeta> init() {
+    // for some test cases, there is no spring context
+    if (BeanUtils.getContext() == null) {
+      return Collections.emptyList();
     }
+
+    PojoProducers pojoProducers = BeanUtils.getContext().getBean(PojoProducers.class);
+    for (ProducerMeta producerMeta : pojoProducers.getProducerMetas()) {
+      PojoProducerMeta pojoProducerMeta = (PojoProducerMeta) producerMeta;
+      initPojoProducerMeta(pojoProducerMeta);
+    }
+
+    return pojoProducers.getProducerMetas();
   }
 
   @Override
@@ -72,29 +65,44 @@ public class PojoProducerProvider extends AbstractProducerProvider {
   }
 
   private void initPojoProducerMeta(PojoProducerMeta pojoProducerMeta) {
+    parseSchemaInterface(pojoProducerMeta);
+    parseImplementation(pojoProducerMeta);
+  }
+
+  private void parseImplementation(PojoProducerMeta pojoProducerMeta) {
     if (pojoProducerMeta.getInstance() != null) {
       return;
     }
 
-    String[] nameAndValue = parseImplementation(pojoProducerMeta.getImplementation());
-
-    InstanceFactory factory = instanceFactoryMgr.ensureFindValue(nameAndValue[0]);
-    Object instance = factory.create(nameAndValue[1]);
-    Class<?> instanceClass = BeanUtils.getImplClassFromBean(instance);
-
-    pojoProducerMeta.setInstance(instance);
-    pojoProducerMeta.setInstanceClass(instanceClass);
-  }
-
-  private String[] parseImplementation(String implementation) {
+    String implementation = pojoProducerMeta.getImplementation();
     String implName = PojoConst.POJO;
-    String implValue = implementation;
+    String implValue = pojoProducerMeta.getImplementation();
     int idx = implementation.indexOf(':');
     if (idx != -1) {
       implName = implementation.substring(0, idx);
       implValue = implementation.substring(idx + 1);
     }
 
-    return new String[] {implName, implValue};
+    InstanceFactory factory = instanceFactoryMgr.get(implName);
+    if (factory == null) {
+      throw new IllegalStateException("failed to find instance factory, name=" + implName);
+    }
+
+    Object instance = factory.create(implValue);
+    pojoProducerMeta.setInstance(instance);
+  }
+
+  private void parseSchemaInterface(PojoProducerMeta pojoProducerMeta) {
+    if (pojoProducerMeta.getSchemaInterface() != null || StringUtils
+        .isEmpty(pojoProducerMeta.getSchemaInterfaceName())) {
+      return;
+    }
+
+    try {
+      Class<?> si = Class.forName(pojoProducerMeta.getSchemaInterfaceName());
+      pojoProducerMeta.setSchemaInterface(si);
+    } catch (Exception e) {
+      throw new Error("can not find schema interface " + pojoProducerMeta.getSchemaInterfaceName(), e);
+    }
   }
 }

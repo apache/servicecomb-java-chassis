@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-edge</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>2.8.0-SNAPSHOT</version>
   </parent>
   <artifactId>authentication</artifactId>
   <name>Java Chassis::Demo::Edge::Authentication</name>
@@ -35,4 +35,46 @@
       <artifactId>transport-rest-vertx</artifactId>
     </dependency>
   </dependencies>
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.edge.authentication.AuthMain</demo.main>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.github.odavid.maven.plugins</groupId>
+        <artifactId>mixin-maven-plugin</artifactId>
+        <configuration>
+          <mixins>
+            <mixin>
+              <groupId>org.apache.servicecomb.demo</groupId>
+              <artifactId>docker-build-config</artifactId>
+              <version>${project.version}</version>
+            </mixin>
+          </mixins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.commonjava.maven.plugins</groupId>
+            <artifactId>directory-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

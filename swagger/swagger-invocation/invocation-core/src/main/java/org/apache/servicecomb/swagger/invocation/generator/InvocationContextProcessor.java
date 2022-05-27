@@ -19,20 +19,12 @@ package org.apache.servicecomb.swagger.invocation.generator;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.extend.parameter.InvocationContextParameter;
-import org.apache.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerContextRegister;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
-public class InvocationContextProcessor implements CommonParameterTypeProcessor {
+public class InvocationContextProcessor implements SwaggerContextRegister {
   @Override
-  public Type getParameterType() {
+  public Type getContextType() {
     return InvocationContext.class;
-  }
-
-  @Override
-  public void process(OperationGenerator operationGenerator, int paramIdx) {
-    InvocationContextParameter parameter = new InvocationContextParameter();
-    operationGenerator.addProviderParameter(parameter);
   }
 }

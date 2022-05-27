@@ -16,15 +16,14 @@
  */
 package org.apache.servicecomb.it.schema;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultJsonValueRequest {
   private int type;
 
-  private Integer defaultValue = 30;
+  private Integer defaultValue;
 
-  private List<String> items = new ArrayList<>();
+  private List<String> items;
 
   public int getType() {
     return type;

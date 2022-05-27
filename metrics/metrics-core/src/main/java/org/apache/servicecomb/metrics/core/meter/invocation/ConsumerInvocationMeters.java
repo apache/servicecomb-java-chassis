@@ -26,6 +26,6 @@ public class ConsumerInvocationMeters extends AbstractInvocationMeters {
 
   @Override
   protected AbstractInvocationMeter createMeter(Id id) {
-    return new ConsumerInvocationMeter(registry, id);
+    return new ConsumerInvocationMeter(id);
   }
 }

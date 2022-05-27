@@ -31,7 +31,11 @@ public class GenericParamWithJsonIgnore<T> {
     return str;
   }
 
-  public GenericParamWithJsonIgnore<T> setStr(String str) {
+  public void setStr(String str) {
+    this.str = str;
+  }
+
+  public GenericParamWithJsonIgnore<T> str(String str) {
     this.str = str;
     return this;
   }
@@ -40,7 +44,11 @@ public class GenericParamWithJsonIgnore<T> {
     return num;
   }
 
-  public GenericParamWithJsonIgnore<T> setNum(long num) {
+  public void setNum(long num) {
+    this.num = num;
+  }
+
+  public GenericParamWithJsonIgnore<T> num(long num) {
     this.num = num;
     return this;
   }
@@ -49,14 +57,18 @@ public class GenericParamWithJsonIgnore<T> {
     return data;
   }
 
-  public GenericParamWithJsonIgnore<T> setData(T data) {
+  public void setData(T data) {
+    this.data = data;
+  }
+
+  public GenericParamWithJsonIgnore<T> data(T data) {
     this.data = data;
     return this;
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("GenericParamWithJsonIgnore{");
+    StringBuilder sb = new StringBuilder("GenericParamWithJsonIgnore{");
     sb.append("str='").append(str).append('\'');
     sb.append(", num=").append(num);
     sb.append(", data=").append(data);

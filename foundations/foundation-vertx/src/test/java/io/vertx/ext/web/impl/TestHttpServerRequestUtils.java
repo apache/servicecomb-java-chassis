@@ -18,35 +18,31 @@
 package io.vertx.ext.web.impl;
 
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-import org.junit.Assert;
 import org.junit.Test;
 
-import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.impl.HttpServerRequestInternal;
+import io.vertx.ext.web.AllowForwardHeaders;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
+// HttpServerRequestWrapper is a package visible class, so put this test in package io.vertx.ext.web.impl
 public class TestHttpServerRequestUtils {
   @Test
-  public void setPath(@Mocked HttpServerRequest request) {
-    HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request);
-    HttpServerRequestUtils.setPath(wrapper, "abc");
-
-    Assert.assertEquals("abc", wrapper.path());
-  }
-
-  @Test
-  public void VertxServerRequestToHttpServletRequest(@Mocked RoutingContext context,
-      @Mocked HttpServerRequest request) {
-    HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request);
+  public void testVertxServerRequestToHttpServletRequest(@Mocked RoutingContext context,
+      @Mocked HttpServerRequestInternal request) {
+    HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request, AllowForwardHeaders.NONE);
     new Expectations() {
       {
+        request.scheme();
+        result = "http";
         context.request();
         result = wrapper;
       }
     };
 
     VertxServerRequestToHttpServletRequest reqEx = new VertxServerRequestToHttpServletRequest(context, "abc");
-    Assert.assertEquals("abc", reqEx.getRequestURI());
+    Assertions.assertEquals("abc", reqEx.getRequestURI());
   }
 }

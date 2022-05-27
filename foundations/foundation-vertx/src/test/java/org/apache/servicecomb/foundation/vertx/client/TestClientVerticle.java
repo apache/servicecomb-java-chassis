@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.Context;
@@ -29,6 +28,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestClientVerticle {
   ClientVerticle<HttpClientWithContext> clientVerticle = new ClientVerticle<>();
@@ -56,6 +56,6 @@ public class TestClientVerticle {
 
     clientVerticle.start();
 
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 }

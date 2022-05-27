@@ -17,6 +17,7 @@
 package org.apache.servicecomb.foundation.common.event;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
@@ -28,9 +29,13 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 public class SimpleSubscriber {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSubscriber.class);
 
-  private Object instance;
+  private final Object instance;
 
-  private Method method;
+  private final Method method;
+
+  private int order;
+
+  private final boolean enableExceptionPropagation;
 
   // generated from method
   private Consumer<Object> lambda;
@@ -41,18 +46,26 @@ public class SimpleSubscriber {
     this.instance = instance;
     this.method = method;
 
-    method.setAccessible(true);
+    enableExceptionPropagation = method.getAnnotation(EnableExceptionPropagation.class) != null;
+    SubscriberOrder subscriberOrder = method.getAnnotation(SubscriberOrder.class);
+    if (subscriberOrder != null) {
+      order = subscriberOrder.value();
+    }
+
     try {
       lambda = LambdaMetafactoryUtils.createLambda(instance, method, Consumer.class);
     } catch (Throwable throwable) {
       // because enhance LambdaMetafactoryUtils to support ALL_MODES by reflect
       // never run into this branch.
       // otherwise create a listener instance of anonymous class will run into this branch
-      LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method);
+      LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method, throwable);
+
+      checkAccess(method);
       lambda = event -> {
         try {
           method.invoke(instance, event);
         } catch (Throwable e) {
+          LOGGER.warn("Failed to call event listener {}.", method.getName());
           throw new IllegalStateException(e);
         }
       };
@@ -64,6 +77,19 @@ public class SimpleSubscriber {
     }
   }
 
+  private static void checkAccess(Method method) {
+    // This check is not accurate. Most of time package visible and protected access can be ignored, so simply do this.
+    if (!Modifier.isPublic(method.getModifiers()) || !Modifier.isPublic(method.getDeclaringClass().getModifiers())) {
+      throw new IllegalStateException(
+          String.format(
+              "The event handler must be a public accessible method. NOTICE: "
+                  + "this is change from 2.0 and using higher version of JDK. "
+                  + "Declaring class is %s, method is %s",
+              method.getDeclaringClass().getName(),
+              method.getName()));
+    }
+  }
+
   public Object getInstance() {
     return instance;
   }
@@ -72,11 +98,18 @@ public class SimpleSubscriber {
     return method;
   }
 
+  public int getOrder() {
+    return order;
+  }
+
   public void dispatchEvent(Object event) {
     try {
       dispatcher.accept(event);
     } catch (Throwable e) {
-      LOGGER.error("event process should not throw error. ", e);
+      if (enableExceptionPropagation) {
+        throw e;
+      }
+      LOGGER.error("Event process should not throw exception when @EnableExceptionPropagation not set. ", e);
     }
   }
 

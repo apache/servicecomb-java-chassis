@@ -21,9 +21,10 @@ import java.io.ByteArrayInputStream;
 
 import javax.servlet.http.Part;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -32,17 +33,17 @@ public class TestResourceToPartConverter {
 
   @Test
   public void getSrcType() {
-    Assert.assertEquals(Resource.class.getName(), converter.getSrcType().getTypeName());
+    Assertions.assertEquals(Resource.class.getName(), converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+    Assertions.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
   }
 
   @Test
   public void convert() {
     Object part = converter.convert(new InputStreamResource(new ByteArrayInputStream(new byte[] {})));
-    Assert.assertThat(part, Matchers.instanceOf(Part.class));
+    MatcherAssert.assertThat(part, Matchers.instanceOf(Part.class));
   }
 }

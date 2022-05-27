@@ -24,12 +24,14 @@ import org.antlr.v4.runtime.CharStreams;
 import io.protostuff.compiler.parser.FileReader;
 
 public class ContentFileReader implements FileReader {
-  private FileReader importReader;
+  private final FileReader importReader;
+  private final String content;
 
   private boolean contentReaded;
 
-  public ContentFileReader(FileReader importReader) {
+  public ContentFileReader(FileReader importReader, String content) {
     this.importReader = importReader;
+    this.content = content;
   }
 
   @Nullable
@@ -37,7 +39,7 @@ public class ContentFileReader implements FileReader {
   public CharStream read(String contentOrName) {
     if (!contentReaded) {
       contentReaded = true;
-      return CharStreams.fromString(contentOrName);
+      return CharStreams.fromString(this.content);
     }
 
     return importReader.read(contentOrName);

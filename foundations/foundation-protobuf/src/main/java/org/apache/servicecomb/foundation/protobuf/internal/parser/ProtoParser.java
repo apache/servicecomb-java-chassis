@@ -32,21 +32,43 @@ import io.protostuff.compiler.parser.ProtoContext;
  * can be reused
  */
 public class ProtoParser {
-  private Injector injector = Guice.createInjector(new ParserModule());
+  private static final String DEFAULT_PROTO_NAME = "default.proto";
 
-  private FileReaderFactory fileReaderFactory = injector.getInstance(FileReaderFactory.class);
+  private final Injector injector = Guice.createInjector(new ParserModule());
 
-  private FileReader defaultReader = fileReaderFactory.create(Collections.emptyList());
+  private final FileReaderFactory fileReaderFactory = injector.getInstance(FileReaderFactory.class);
 
-  private FileDescriptorLoader loader = injector.getInstance(FileDescriptorLoader.class);
+  private final FileReader defaultReader = fileReaderFactory.create(Collections.emptyList());
+
+  private final FileDescriptorLoader loader = injector.getInstance(FileDescriptorLoader.class);
 
   public Proto parseFromContent(String content) {
-    ProtoContext context = loader.load(new ContentFileReader(defaultReader), content);
-    return context.getProto();
+    // io.protostuff.compiler.parser.ClasspathFileReader will use ContextClassLoader load resource, but in some environment,
+    // ContextClassLoader is null, and we use class loader instead.
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    try {
+      if (classLoader == null) {
+        Thread.currentThread().setContextClassLoader(ProtoParser.class.getClassLoader());
+      }
+      ProtoContext context = loader.load(new ContentFileReader(defaultReader, content), DEFAULT_PROTO_NAME);
+      return context.getProto();
+    } finally {
+      Thread.currentThread().setContextClassLoader(classLoader);
+    }
   }
 
   public Proto parse(String name) {
-    ProtoContext context = loader.load(defaultReader, name);
-    return context.getProto();
+    // io.protostuff.compiler.parser.ClasspathFileReader will use ContextClassLoader load resource, but in some environment,
+    // ContextClassLoader is null, and we use class loader instead.
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    try {
+      if (classLoader == null) {
+        Thread.currentThread().setContextClassLoader(ProtoParser.class.getClassLoader());
+      }
+      ProtoContext context = loader.load(defaultReader, name);
+      return context.getProto();
+    } finally {
+      Thread.currentThread().setContextClassLoader(classLoader);
+    }
   }
 }

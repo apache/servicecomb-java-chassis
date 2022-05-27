@@ -16,36 +16,45 @@
  */
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
-import java.io.IOException;
-import java.net.URL;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
-import org.junit.Assert;
-import org.junit.Test;
-
 import io.protostuff.compiler.model.Proto;
 import io.swagger.models.Swagger;
+import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
+import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class TestSwaggerToProtoGenerator {
   @Test
   public void convert() throws IOException {
     URL url = TestSwaggerToProtoGenerator.class.getClassLoader().getResource("ProtoSchema.proto");
-    String protoContent = IOUtils.toString(url);
+    String protoContent = IOUtils.toString(url, StandardCharsets.UTF_8);
     int idx = protoContent.indexOf("syntax = ");
     protoContent = protoContent.substring(idx);
 
-    SwaggerGeneratorContext context = new SpringmvcSwaggerGeneratorContext();
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, ProtoSchema.class);
+    SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
     Swagger swagger = swaggerGenerator.generate();
 
     SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator("a.b", swagger);
     Proto proto = generator.convert();
 
-    Assert.assertEquals(protoContent.replaceAll("\r\n", "\n"),
+    Assertions.assertEquals(protoContent.replaceAll("\r\n", "\n"),
         new ProtoToStringGenerator(proto).protoToString().replaceAll("\r\n", "\n"));
+  }
+
+  @Test
+  public void testEscape() {
+    Assertions.assertEquals("hello_my_service", SwaggerToProtoGenerator.escapeMessageName("hello.my.service"));
+    Assertions.assertEquals("hello_my_service", SwaggerToProtoGenerator.escapeMessageName("hello_my_service"));
+    Assertions.assertEquals("hello.my_service", SwaggerToProtoGenerator.escapePackageName("hello.my-service"));
+    Assertions.assertEquals("hello.test.test", SwaggerToProtoGenerator.escapePackageName("hello.test.test"));
+    Assertions.assertEquals("hello_my.test.test", SwaggerToProtoGenerator.escapePackageName("hello:my.test.test"));
+    Assertions.assertFalse(SwaggerToProtoGenerator.isValidEnum("hello.test.test"));
+    Assertions.assertFalse(SwaggerToProtoGenerator.isValidEnum("hello.my-service"));
+    Assertions.assertTrue(SwaggerToProtoGenerator.isValidEnum("My_ENum"));
   }
 }

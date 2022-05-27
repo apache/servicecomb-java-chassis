@@ -38,14 +38,14 @@ public class AnySchema<T> extends FieldSchema<T> {
   public AnySchema(ProtoMapper protoMapper, Field protoField, PropertyDescriptor propertyDescriptor) {
     super(protoField, propertyDescriptor.getJavaType());
 
-    this.anyEntrySchema = new AnyEntrySchema(protoMapper);
+    this.anyEntrySchema = new AnyEntrySchema(protoMapper, null);
     this.getter = propertyDescriptor.getGetter();
     this.setter = propertyDescriptor.getSetter();
   }
 
   @Override
   public final int mergeFrom(InputEx input, T message) throws IOException {
-    Object anyValue = anyEntrySchema.deseriaze(input);
+    Object anyValue = anyEntrySchema.deserialize(input);
     setter.set(message, anyValue);
 
     return input.readFieldNumber();

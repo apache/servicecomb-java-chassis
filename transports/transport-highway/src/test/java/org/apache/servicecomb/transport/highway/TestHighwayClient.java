@@ -18,39 +18,31 @@
 package org.apache.servicecomb.transport.highway;
 
 import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
-import org.apache.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
-import org.apache.servicecomb.foundation.vertx.server.TcpParser;
-import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.transport.highway.message.LoginRequest;
-import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import io.netty.buffer.ByteBuf;
-import io.protostuff.runtime.ProtobufCompatibleUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -98,7 +90,7 @@ public class TestHighwayClient {
   @Test
   public void testLoginTimeout(@Mocked Vertx vertx) {
     TcpClientConfig tcpClientConfig = Deencapsulation.invoke(client, "createTcpClientConfig");
-    Assert.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
+    Assertions.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
   }
 
   @Test
@@ -115,7 +107,7 @@ public class TestHighwayClient {
     client.init(vertx);
 
     ClientPoolManager<HighwayClientConnectionPool> clientMgr = Deencapsulation.getField(client, "clientMgr");
-    Assert.assertSame(vertx, Deencapsulation.getField(clientMgr, "vertx"));
+    Assertions.assertSame(vertx, Deencapsulation.getField(clientMgr, "vertx"));
   }
 
   private Object doTestSend(Vertx vertx, HighwayClientConnectionPool pool, HighwayClientConnection tcpClient,
@@ -138,7 +130,7 @@ public class TestHighwayClient {
 
     new MockUp<ProtobufManager>() {
       @Mock
-      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) {
+      public OperationProtobuf getOrCreateOperation(Invocation operationMeta) {
         return operationProtobuf;
       }
     };
@@ -202,15 +194,13 @@ public class TestHighwayClient {
     };
     Object result = doTestSend(vertx, pool, tcpClient, Response.ok("ok"));
 
-    Assert.assertEquals("ok", result);
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals("ok", result);
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
 
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartSend());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishGetConnection());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishWriteToBuffer());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishReceiveResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishGetConnection());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishWriteToBuffer());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishReceiveResponse());
   }
 
   @Test
@@ -225,10 +215,9 @@ public class TestHighwayClient {
 
     Object result = doTestSend(vertx, pool, tcpClient, new InvocationException(Status.BAD_REQUEST, (Object) "failed"));
 
-    Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+    Assertions.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test
@@ -246,39 +235,8 @@ public class TestHighwayClient {
         tcpClient,
         null);
 
-    Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
-    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
-  }
-
-  @Test
-  public void testCreateLogin(@Mocked NetClientWrapper netClientWrapper) throws Exception {
-    ProtobufCompatibleUtils.init();
-
-    HighwayClientConnection connection =
-        new HighwayClientConnection(null, netClientWrapper, "highway://127.0.0.1:7890");
-    TcpOutputStream os = connection.createLogin();
-    ByteBuf buf = os.getBuffer().getByteBuf();
-
-    byte[] magic = new byte[TcpParser.TCP_MAGIC.length];
-    buf.readBytes(magic);
-    Assert.assertArrayEquals(TcpParser.TCP_MAGIC, magic);
-    Assert.assertEquals(os.getMsgId(), buf.readLong());
-
-    int start = TcpParser.TCP_HEADER_LENGTH;
-    int totalLen = buf.readInt();
-    int headerLen = buf.readInt();
-    Buffer headerBuffer =
-        os.getBuffer().slice(start, start + headerLen);
-    int end = start + totalLen;
-    start += headerLen;
-    Buffer bodyBuffer = os.getBuffer().slice(start, end);
-
-    RequestHeader header = RequestHeader.readObject(headerBuffer);
-    Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
-
-    LoginRequest login = LoginRequest.readObject(bodyBuffer);
-    Assert.assertEquals(Const.HIGHWAY, login.getProtocol());
+    Assertions.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assertions.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 }

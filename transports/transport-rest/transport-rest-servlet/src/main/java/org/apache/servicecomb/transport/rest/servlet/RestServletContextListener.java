@@ -17,12 +17,9 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import static java.lang.Boolean.FALSE;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.springframework.context.support.AbstractApplicationContext;
 
 public class RestServletContextListener implements ServletContextListener {
@@ -31,17 +28,9 @@ public class RestServletContextListener implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     try {
-      initLog(sce);
       initSpring(sce);
     } catch (Exception e) {
       throw new Error(e);
-    }
-  }
-
-  public void initLog(ServletContextEvent sce) throws Exception {
-    String logMerged = sce.getServletContext().getInitParameter("servicecomb.logging.merged");
-    if (!FALSE.toString().equalsIgnoreCase(logMerged)) {
-      Log4jUtils.init();
     }
   }
 

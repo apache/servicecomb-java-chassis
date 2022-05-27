@@ -21,28 +21,27 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.filter.OperationInstancesDiscoveryFilter;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestSimpleLoadBalanceHandler {
   SimpleLoadBalanceHandler handler;
@@ -50,43 +49,35 @@ public class TestSimpleLoadBalanceHandler {
   Map<String, AtomicInteger> indexMap;
 
   @Mocked
-  OperationInstancesDiscoveryFilter operationInstancesDiscoveryFilter;
-
-  @Mocked
   Invocation invocation;
-
-  @Mocked
-  ServiceRegistry serviceRegistry;
-
-  @Mocked
-  InstanceCacheManager instanceCacheManager;
-
-  @Mocked
-  TransportManager transportManager;
 
   VersionedCache instanceVersionedCache = new VersionedCache().data(Collections.emptyMap()).name("parent");
 
   Response response;
 
-  AsyncResponse ar = resp -> {
-    response = resp;
-  };
+  AsyncResponse ar = resp -> response = resp;
+
+  SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
 
   @Before
   public void setUp() throws Exception {
-    CseContext.getInstance().setTransportManager(transportManager);
-
-    RegistryUtils.setServiceRegistry(serviceRegistry);
+    ConfigUtil.installDynamicConfig();
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getSortedService(DiscoveryFilter.class);
         result = Collections.emptyList();
-        serviceRegistry.getInstanceCacheManager();
-        result = instanceCacheManager;
-        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
-        result = instanceVersionedCache;
         invocation.getConfigTransportName();
         result = "";
+        invocation.getEndpoint();
+        result = null;
+      }
+    };
+
+    new Expectations(DiscoveryManager.INSTANCE.getInstanceCacheManager()) {
+      {
+        DiscoveryManager.INSTANCE.getInstanceCacheManager()
+            .getOrCreateVersionedCache(anyString, anyString, anyString);
+        result = instanceVersionedCache;
       }
     };
 
@@ -95,9 +86,9 @@ public class TestSimpleLoadBalanceHandler {
   }
 
   @After
-  public void tearDown() throws Exception {
-    CseContext.getInstance().setTransportManager(null);
-    RegistryUtils.setServiceRegistry(null);
+  public void teardown() {
+    scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -105,9 +96,10 @@ public class TestSimpleLoadBalanceHandler {
     handler.handle(invocation, ar);
 
     Throwable result = response.getResult();
-    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+    Assertions.assertEquals(
+        "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
         result.getMessage());
-    Assert.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
+    Assertions.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
         result.getCause().getMessage());
   }
 
@@ -119,9 +111,9 @@ public class TestSimpleLoadBalanceHandler {
     instance.getEndpoints().add("highway://localhost:8081");
     instanceVersionedCache.data(Collections.singletonMap("id", instance)).autoCacheVersion().name("vr");
 
-    new Expectations() {
+    new Expectations(scbEngine.getTransportManager()) {
       {
-        transportManager.findTransport(anyString);
+        SCBEngine.getInstance().getTransportManager().findTransport(anyString);
         result = transport;
         invocation.getConfigTransportName();
         result = "";
@@ -130,9 +122,9 @@ public class TestSimpleLoadBalanceHandler {
 
     handler.handle(invocation, ar);
     AtomicInteger idx = indexMap.values().iterator().next();
-    Assert.assertEquals(1, idx.get());
+    Assertions.assertEquals(1, idx.get());
 
     handler.handle(invocation, ar);
-    Assert.assertEquals(2, idx.get());
+    Assertions.assertEquals(2, idx.get());
   }
 }

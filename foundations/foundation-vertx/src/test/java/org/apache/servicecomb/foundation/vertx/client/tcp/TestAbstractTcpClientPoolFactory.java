@@ -16,17 +16,17 @@
  */
 package org.apache.servicecomb.foundation.vertx.client.tcp;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestAbstractTcpClientPoolFactory {
-  private TcpClientConfig normalClientConfig = new TcpClientConfig();
+  private final TcpClientConfig normalClientConfig = new TcpClientConfig();
 
-  private TcpClientConfig sslClientConfig = new TcpClientConfig();
+  private final TcpClientConfig sslClientConfig = new TcpClientConfig();
 
   TcpClientPoolFactory factory = new TcpClientPoolFactory(normalClientConfig, sslClientConfig);
 
@@ -37,7 +37,7 @@ public class TestAbstractTcpClientPoolFactory {
     Mockito.when(context.owner()).thenReturn(vertx);
     TcpClientConnectionPool pool = factory.createClientPool(context);
 
-    Assert.assertSame(normalClientConfig, pool.netClientWrapper.getClientConfig(false));
-    Assert.assertSame(sslClientConfig, pool.netClientWrapper.getClientConfig(true));
+    Assertions.assertSame(normalClientConfig, pool.netClientWrapper.getClientConfig(false));
+    Assertions.assertSame(sslClientConfig, pool.netClientWrapper.getClientConfig(true));
   }
 }

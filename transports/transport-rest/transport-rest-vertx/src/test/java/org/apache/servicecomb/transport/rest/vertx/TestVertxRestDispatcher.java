@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -29,28 +30,34 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.Router;
@@ -60,6 +67,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestVertxRestDispatcher {
   @Mocked
@@ -76,6 +84,7 @@ public class TestVertxRestDispatcher {
 
   @Before
   public void setUp() {
+    ConfigUtil.installDynamicConfig();
     dispatcher = new VertxRestDispatcher();
     dispatcher.init(mainRouter);
 
@@ -92,17 +101,18 @@ public class TestVertxRestDispatcher {
       }
     };
 
-    CseContext.getInstance().setTransportManager(transportManager);
+    SCBBootstrap.createSCBEngineForTest().setTransportManager(transportManager);
   }
 
   @After
   public void teardown() {
-    CseContext.getInstance().setTransportManager(null);
+    SCBEngine.getInstance().destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void getOrder() {
-    Assert.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
+    Assertions.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
   }
 
   @Test
@@ -124,8 +134,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertSame(e, this.throwable);
-    Assert.assertTrue(response.responseClosed);
+    Assertions.assertSame(e, this.throwable);
+    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -147,8 +157,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertSame(e, this.throwable);
-    Assert.assertTrue(response.responseClosed);
+    Assertions.assertSame(e, this.throwable);
+    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -171,8 +181,8 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertSame(edde, this.throwable);
-    Assert.assertTrue(response.responseClosed);
+    Assertions.assertSame(edde, this.throwable);
+    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test
@@ -193,17 +203,17 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
-    Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
-    Assert.assertThat(response.responseChunk,
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
+    MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
+    MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\"}"));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
   public void failureHandlerWithNoRestProducerInvocationAndOtherException(@Mocked RoutingContext context) {
-    String exceptionMessage = "test exception message";
+    String exceptionMessage = "Internal Server Error";
     Exception exception = new Exception(exceptionMessage);
     MockHttpServerResponse response = new MockHttpServerResponse();
     new Expectations() {
@@ -219,11 +229,11 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
-    Assert.assertThat(response.responseChunk,
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+    MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + exceptionMessage + "\"}"));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -244,9 +254,9 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
-    Assert.assertTrue(response.responseEnded);
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
@@ -267,16 +277,16 @@ public class TestVertxRestDispatcher {
 
     Deencapsulation.invoke(dispatcher, "failureHandler", context);
 
-    Assert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
-    Assert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
-    Assert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    Assert.assertThat(response.responseChunk,
+    MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
+    MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+    MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\"}"));
-    Assert.assertTrue(response.responseEnded);
+    Assertions.assertTrue(response.responseEnded);
   }
 
   @Test
-  public void onRequest(@Mocked Context context, @Mocked HttpServerRequest request,
+  public void onRequest(@Mocked Vertx vertx, @Mocked Context context, @Mocked HttpServerRequest request,
       @Mocked SocketAddress socketAdrress) {
     Map<String, Object> map = new HashMap<>();
     RoutingContext routingContext = new MockUp<RoutingContext>() {
@@ -292,16 +302,17 @@ public class TestVertxRestDispatcher {
       }
     }.getMockInstance();
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = context;
       }
     };
+
     Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 
-    Assert.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
-    Assert.assertTrue(invoked);
+    Assertions.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
+    Assertions.assertTrue(invoked);
   }
 
   @Test
@@ -309,33 +320,33 @@ public class TestVertxRestDispatcher {
     VertxRestDispatcher vertxRestDispatcher = new VertxRestDispatcher();
     String message = "abcd";
     String bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"abcd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"abcd\"}", bodyString);
 
     message = "\"abcd\"";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"\\\"abcd\\\"\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"\\\"abcd\\\"\"}", bodyString);
 
     message = ".01ab\"!@#$%^&*()'\\cd";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\".01ab\\\"!@#$%^&*()'\\\\cd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\".01ab\\\"!@#$%^&*()'\\\\cd\"}", bodyString);
 
     message = new JsonObject().put("key", new JsonObject().put("k2", "value")).toString();
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"key\":{\"k2\":\"value\"}}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"key\":{\"k2\":\"value\"}}", bodyString);
 
     message = "ab\"23\n@!#cd";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"ab\\\"23\\n@!#cd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"ab\\\"23\\n@!#cd\"}", bodyString);
 
     message = "ab\"23\r\n@!#cd";
     bodyString = vertxRestDispatcher.wrapResponseBody(message);
-    Assert.assertNotNull(bodyString);
-    Assert.assertEquals("{\"message\":\"ab\\\"23\\r\\n@!#cd\"}", bodyString);
+    Assertions.assertNotNull(bodyString);
+    Assertions.assertEquals("{\"message\":\"ab\\\"23\\r\\n@!#cd\"}", bodyString);
   }
 }
 
@@ -376,14 +387,26 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public void end() {
+  public Future<Void> end() {
     responseEnded = true;
+    return Future.succeededFuture();
   }
 
   @Override
-  public void end(String chunk) {
+  public void end(Handler<AsyncResult<Void>> handler) {
+
+  }
+
+  @Override
+  public Future<Void> end(String chunk) {
     responseEnded = true;
     responseChunk = chunk;
+    return Future.succeededFuture();
+  }
+
+  @Override
+  public void end(String s, Handler<AsyncResult<Void>> handler) {
+
   }
 
   @Override
@@ -392,8 +415,12 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public HttpServerResponse write(Buffer data) {
-    return null;
+  public Future<Void> write(Buffer data) {
+    return Future.succeededFuture();
+  }
+
+  @Override
+  public void write(Buffer buffer, Handler<AsyncResult<Void>> handler) {
   }
 
   @Override
@@ -487,13 +514,22 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public HttpServerResponse write(String chunk, String enc) {
-    return null;
+  public Future<Void> write(String chunk, String enc) {
+    return Future.succeededFuture();
   }
 
   @Override
-  public HttpServerResponse write(String chunk) {
-    return null;
+  public void write(String s, String s1, Handler<AsyncResult<Void>> handler) {
+  }
+
+  @Override
+  public Future<Void> write(String chunk) {
+    return Future.succeededFuture();
+  }
+
+  @Override
+  public void write(String s, Handler<AsyncResult<Void>> handler) {
+
   }
 
   @Override
@@ -502,18 +538,28 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public void end(String chunk, String enc) {
+  public Future<Void> end(String chunk, String enc) {
+    return Future.succeededFuture();
+  }
+
+  @Override
+  public void end(String s, String s1, Handler<AsyncResult<Void>> handler) {
 
   }
 
   @Override
-  public void end(Buffer chunk) {
+  public Future<Void> end(Buffer chunk) {
+    return Future.succeededFuture();
+  }
+
+  @Override
+  public void end(Buffer buffer, Handler<AsyncResult<Void>> handler) {
 
   }
 
   @Override
-  public HttpServerResponse sendFile(String filename, long offset, long length) {
-    return null;
+  public Future<Void> sendFile(String filename, long offset, long length) {
+    return Future.succeededFuture();
   }
 
   @Override
@@ -581,12 +627,37 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public void reset(long code) {
+  public Future<HttpServerResponse> push(HttpMethod method, String host, String path, MultiMap headers) {
+    return Future.succeededFuture();
+  }
 
+  @Override
+  public boolean reset(long code) {
+    return false;
   }
 
   @Override
   public HttpServerResponse writeCustomFrame(int type, int flags, Buffer payload) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse addCookie(Cookie cookie) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Cookie removeCookie(String name, boolean invalidate) {
+    return null;
+  }
+
+  @Override
+  public Set<Cookie> removeCookies(String name, boolean invalidate) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Cookie removeCookie(String name, String domain, String path, boolean invalidate) {
     return null;
   }
 }

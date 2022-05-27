@@ -37,7 +37,7 @@ public class Fixed64WriteSchemas {
       return new Fixed64Schema<>(protoField, propertyDescriptor);
     }
 
-    return new Fixed64DynamicSchema<>(protoField, propertyDescriptor);
+    return new Fixed64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class Fixed64DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +72,7 @@ public class Fixed64WriteSchemas {
   }
 
   private static class Fixed64Schema<T> extends Fixed64DynamicSchema<T> {
-    protected final Getter<T, Long> getter;
+    protected final Getter<T, Object> getter;
 
     public Fixed64Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,9 +82,9 @@ public class Fixed64WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Long value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarFixed64(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

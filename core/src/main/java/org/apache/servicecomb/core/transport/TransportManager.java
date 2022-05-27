@@ -24,31 +24,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class TransportManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(TransportManager.class);
 
-  @Inject
-  private List<Transport> transports;
+  private final List<Transport> transports = new ArrayList<>(SPIServiceUtils.getOrLoadSortedService(Transport.class));
 
-  private Map<String, Transport> transportMap = new HashMap<>();
+  private final Map<String, Transport> transportMap = new HashMap<>();
 
-  public void setTransports(List<Transport> transports) {
-    this.transports = transports;
+  public void clearTransportBeforeInit() {
+    transports.clear();
   }
 
-  public void init() throws Exception {
+  public void addTransportBeforeInit(Transport transport) {
+    this.transports.add(transport);
+  }
+
+  public void addTransportsBeforeInit(List<Transport> transports) {
+    this.transports.addAll(transports);
+  }
+
+  public void init(SCBEngine scbEngine) throws Exception {
     buildTransportMap();
 
     for (Transport transport : transportMap.values()) {
@@ -56,8 +60,7 @@ public class TransportManager {
         Endpoint endpoint = transport.getPublishEndpoint();
         if (endpoint != null && endpoint.getEndpoint() != null) {
           LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
-          Microservice microservice = RegistryUtils.getMicroservice();
-          microservice.getInstance().getEndpoints().add(endpoint.getEndpoint());
+          RegistrationManager.INSTANCE.addEndpoint(endpoint.getEndpoint());
         }
         continue;
       }
@@ -107,9 +110,7 @@ public class TransportManager {
   protected Map<String, List<Transport>> groupByName() {
     Map<String, List<Transport>> groups = new HashMap<>();
     for (Transport transport : transports) {
-      List<Transport> list = groups.computeIfAbsent(transport.getName(), name -> {
-        return new ArrayList<>();
-      });
+      List<Transport> list = groups.computeIfAbsent(transport.getName(), name -> new ArrayList<>());
       list.add(transport);
     }
     return groups;

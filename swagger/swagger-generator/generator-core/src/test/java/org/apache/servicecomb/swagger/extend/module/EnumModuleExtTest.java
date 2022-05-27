@@ -17,16 +17,15 @@
 
 package org.apache.servicecomb.swagger.extend.module;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.servicecomb.swagger.extend.introspector.JsonPropertyIntrospectorTest.TestEnum;
-import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import io.swagger.util.Json;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EnumModuleExtTest {
   @Test
@@ -35,12 +34,12 @@ public class EnumModuleExtTest {
     mapper.registerModule(new SimpleModule());
 
     String serializeValue = mapper.writeValueAsString(TestEnum.AB);
-    assertEquals("\"AB\"", serializeValue);
+    Assertions.assertEquals("\"AB\"", serializeValue);
     serializeValue = mapper.writeValueAsString(TestEnum.C_D);
-    assertEquals("\"C-D\"", serializeValue);
+    Assertions.assertEquals("\"C-D\"", serializeValue);
     serializeValue = mapper.writeValueAsString(TestEnum.E_F);
-    assertEquals("\"E.F\"", serializeValue);
+    Assertions.assertEquals("\"E.F\"", serializeValue);
     serializeValue = mapper.writeValueAsString(TestEnum.HI);
-    assertEquals("\"HI\"", serializeValue);
+    Assertions.assertEquals("\"HI\"", serializeValue);
   }
 }

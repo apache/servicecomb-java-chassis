@@ -17,8 +17,8 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCseHttpEntity {
   @Test
@@ -26,14 +26,14 @@ public class TestCseHttpEntity {
     CseHttpEntity<String> entity = new CseHttpEntity<>(null, null);
     entity.addContext("c1", "c1v");
 
-    Assert.assertEquals(1, entity.getContext().getContext().size());
-    Assert.assertEquals("c1v", entity.getContext().getContext("c1"));
+    Assertions.assertEquals(1, entity.getContext().getContext().size());
+    Assertions.assertEquals("c1v", entity.getContext().getContext("c1"));
 
     InvocationContext context = new InvocationContext();
     context.addContext("c2", "c2v");
     entity.setContext(context);
 
-    Assert.assertEquals(1, entity.getContext().getContext().size());
-    Assert.assertEquals("c2v", entity.getContext().getContext("c2"));
+    Assertions.assertEquals(1, entity.getContext().getContext().size());
+    Assertions.assertEquals("c2v", entity.getContext().getContext("c2"));
   }
 }

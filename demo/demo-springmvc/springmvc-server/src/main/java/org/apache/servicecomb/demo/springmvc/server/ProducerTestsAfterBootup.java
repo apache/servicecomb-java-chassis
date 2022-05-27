@@ -18,15 +18,15 @@
 package org.apache.servicecomb.demo.springmvc.server;
 
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -42,24 +42,59 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   private ObjectWriter writer = Yaml.pretty();
 
-  @Autowired
-  private ProducerSchemaFactory factory;
+  private static final String EXPECTED_DATA = "---\n"
+      + "swagger: \"2.0\"\n"
+      + "info:\n"
+      + "  version: \"1.0.0\"\n"
+      + "  title: \"swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\"\n"
+      + "  x-java-interface: \"gen.swagger.CodeFirstSpringmvcForSchemaIntf\"\n"
+      + "basePath: \"/forScheam\"\n"
+      + "consumes:\n"
+      + "- \"application/json\"\n"
+      + "produces:\n"
+      + "- \"application/json\"\n"
+      + "paths:\n"
+      + "  /uploadFile:\n"
+      + "    post:\n"
+      + "      operationId: \"uploadAwardFile\"\n"
+      + "      consumes:\n"
+      + "      - \"multipart/form-data\"\n"
+      + "      produces:\n"
+      + "      - \"application/json\"\n"
+      + "      parameters:\n"
+      + "      - name: \"fileType\"\n"
+      + "        in: \"query\"\n"
+      + "        required: true\n"
+      + "        type: \"string\"\n"
+      + "      - name: \"zoneId\"\n"
+      + "        in: \"query\"\n"
+      + "        required: true\n"
+      + "        type: \"string\"\n"
+      + "      - name: \"file\"\n"
+      + "        in: \"formData\"\n"
+      + "        required: true\n"
+      + "        type: \"file\"\n"
+      + "      responses:\n"
+      + "        \"200\":\n"
+      + "          description: \"response of 200\"\n"
+      + "          schema:\n"
+      + "            type: \"boolean\"\n";
 
-  public void testSchemaNotChange() {
+  public void testSchemaNotChange(SCBEngine scbEngine) {
     LOGGER.info("ProducerTestsAfterBootup testing start");
     //we can not set microserviceName any more
-    SchemaMeta meta =
-        factory.getOrCreateProducerSchema("test1",
-            CodeFirstSpringmvcForSchema.class,
-            new CodeFirstSpringmvcForSchema());
+    SchemaMeta meta = scbEngine.getProducerProviderManager().registerSchema("test1", new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
-    TestMgr.check("2986daa46b229ec125443122dd7b51ee9a64879f1750d0996f948ce0718685c7",
-        RegistryUtils.calcSchemaSummary(codeFirst));
-    TestMgr.check(codeFirst.length(), 889);
+    TestMgr.check(EXPECTED_DATA,
+        codeFirst);
   }
 
   public void testRegisteredBasePath() {
-    TestMgr.check(12, RegistryUtils.getMicroservice().getPaths().size());
+    if (DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      TestMgr.check(21, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+    } else {	
+      TestMgr.check(22, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+    }	
   }
 
   private String getSwaggerContent(Swagger swagger) {
@@ -73,7 +108,7 @@ public class ProducerTestsAfterBootup implements BootListener {
   @Override
   public void onBootEvent(BootEvent event) {
     if (event.getEventType() == BootListener.EventType.AFTER_REGISTRY) {
-      testSchemaNotChange();
+      testSchemaNotChange(event.getScbEngine());
       testRegisteredBasePath();
       if (!TestMgr.isSuccess()) {
         TestMgr.summary();

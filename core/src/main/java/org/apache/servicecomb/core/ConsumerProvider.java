@@ -24,5 +24,5 @@ package org.apache.servicecomb.core;
 public interface ConsumerProvider {
   String getName();
 
-  void init() throws Exception;
+  void init();
 }

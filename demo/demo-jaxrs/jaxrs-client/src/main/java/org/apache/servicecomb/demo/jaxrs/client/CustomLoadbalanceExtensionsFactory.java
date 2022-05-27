@@ -23,7 +23,6 @@ import org.apache.servicecomb.loadbalance.RuleExt;
 import org.springframework.stereotype.Component;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
-import com.netflix.client.RetryHandler;
 import com.netflix.client.Utils;
 
 @Component
@@ -49,19 +48,12 @@ public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
 
   @Override
   public boolean isSupport(String key, String value) {
-    return (Configuration.PROP_RULE_STRATEGY_NAME.equals(key) &&
-        "mycustomrule".equals(value))
-        || (Configuration.PROP_RETRY_HANDLER.equals(key) &&
-        "mycustomhandler".equals(value));
+    return (Configuration.RULE_STRATEGY_NAME.equals(key) &&
+        "mycustomrule".equals(value));
   }
 
   @Override
   public RuleExt createLoadBalancerRule(String ruleName) {
     return new MyCustomRule();
-  }
-
-  @Override
-  public RetryHandler createRetryHandler(String retryName, String microservice) {
-    return new MyCustomHandler(1, 1, true);
   }
 }

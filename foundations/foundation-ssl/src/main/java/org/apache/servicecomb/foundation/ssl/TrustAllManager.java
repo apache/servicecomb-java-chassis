@@ -24,6 +24,7 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedTrustManager;
 
+/** it is not secure */
 public class TrustAllManager extends X509ExtendedTrustManager {
 
   @Override

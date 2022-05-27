@@ -19,11 +19,13 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema;
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isAnyField;
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.bean.MapGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.MapSetter;
@@ -68,6 +70,8 @@ public abstract class SchemaManager {
 
   protected abstract <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType);
 
+  protected abstract <T> SchemaEx<T> newMessageSchema(Message message, Map<String, Type> types);
+
   /**
    *
    * @param protoField
@@ -75,6 +79,17 @@ public abstract class SchemaManager {
    * @return
    */
   protected abstract <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor);
+
+  @SuppressWarnings("unchecked")
+  protected <T> SchemaEx<T> getOrCreateMessageSchema(Message message, Map<String, Type> types) {
+    String cacheKey = generateCacheKey(message, ProtoConst.MAP_TYPE);
+    SchemaEx<T> messageSchema = (SchemaEx<T>) canonicalSchemas.get(cacheKey);
+    if (messageSchema == null) {
+      // messageSchema already put into canonicalSchemas inside createMessageSchema
+      messageSchema = createMessageSchema(message, types);
+    }
+    return messageSchema;
+  }
 
   @SuppressWarnings("unchecked")
   protected <T> SchemaEx<T> getOrCreateMessageSchema(Message message, JavaType javaType) {
@@ -90,6 +105,20 @@ public abstract class SchemaManager {
   @SuppressWarnings("unchecked")
   protected <T> SchemaEx<T> findSchema(String key) {
     return (SchemaEx<T>) canonicalSchemas.get(key);
+  }
+
+  protected <T> SchemaEx<T> createMessageSchema(Message message, Map<String, Type> types) {
+    String cacheKey = generateCacheKey(message, ProtoConst.MAP_TYPE);
+    SchemaEx<T> schema = findSchema(cacheKey);
+    if (schema != null) {
+      return schema;
+    }
+
+    schema = newMessageSchema(message, types);
+    canonicalSchemas.put(cacheKey, schema);
+
+    schema.init();
+    return schema;
   }
 
   protected <T> SchemaEx<T> createMessageSchema(Message message, JavaType javaType) {
@@ -134,6 +163,36 @@ public abstract class SchemaManager {
     }
 
     return FieldMapEx.createFieldMap(fieldSchemas);
+  }
+
+  public FieldMapEx<Map<Object, Object>> createMapFields(Message message, Map<String, Type> types) {
+    List<FieldSchema<Map<Object, Object>>> fieldSchemas = new ArrayList<>();
+    for (Field protoField : message.getFields()) {
+      PropertyDescriptor propertyDescriptor = new PropertyDescriptor();
+
+      JavaType javaType = getParameterType(types, protoField.getName());
+      if (javaType.isPrimitive()) {
+        javaType = TypeFactory.defaultInstance().constructType(ClassUtils.primitiveToWrapper(javaType.getRawClass()));
+      }
+      propertyDescriptor.setJavaType(javaType);
+      propertyDescriptor.setGetter(new MapGetter<>(protoField.getName()));
+      propertyDescriptor.setSetter(new MapSetter<>(protoField.getName()));
+
+      FieldSchema<Map<Object, Object>> fieldSchema = createSchemaField(protoField, propertyDescriptor);
+      fieldSchemas.add(fieldSchema);
+    }
+
+    return FieldMapEx.createFieldMap(fieldSchemas);
+  }
+
+  private JavaType getParameterType(Map<String, Type> types, String perameterName) {
+
+    if (types.get(perameterName) != null) {
+      return TypeFactory.defaultInstance().constructType(types.get(perameterName));
+    }
+
+    throw new IllegalArgumentException(
+        String.format("not found type info for parameter name [%s]", perameterName));
   }
 
   public <T> FieldSchema<T> createSchemaField(Field protoField, PropertyDescriptor propertyDescriptor) {

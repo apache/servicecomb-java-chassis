@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +35,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.jupiter.api.Assertions;
 
 public class TestClientPoolManager {
   @Mocked
@@ -49,7 +50,7 @@ public class TestClientPoolManager {
 
   List<HttpClientWithContext> pools;
 
-  Map<String, Object> contextMap = new HashMap<>();
+  Map<Object, Object> contextMap = new HashMap<>();
 
   @Mocked
   Context context;
@@ -61,13 +62,13 @@ public class TestClientPoolManager {
     pools = Deencapsulation.getField(poolMgr, "pools");
     new MockUp<Context>(context) {
       @Mock
-      void put(String key, Object value) {
+      void put(Object key, Object value) {
         contextMap.put(key, value);
       }
 
       @SuppressWarnings("unchecked")
       @Mock
-      <T> T get(String key) {
+      <T> T get(Object key) {
         return (T) contextMap.get(key);
       }
 
@@ -92,9 +93,9 @@ public class TestClientPoolManager {
       }
     };
 
-    Assert.assertSame(pool, poolMgr.createClientPool(context));
-    Assert.assertSame(pool, context.get(id));
-    Assert.assertThat(pools, Matchers.contains(pool));
+    Assertions.assertSame(pool, poolMgr.createClientPool(context));
+    Assertions.assertSame(pool, context.get(id));
+    MatcherAssert.assertThat(pools, Matchers.contains(pool));
   }
 
   @Test
@@ -108,8 +109,8 @@ public class TestClientPoolManager {
       }
     };
 
-    Assert.assertSame(pool1, poolMgr.findClientPool(true));
-    Assert.assertSame(pool2, poolMgr.findClientPool(false));
+    Assertions.assertSame(pool1, poolMgr.findClientPool(true));
+    Assertions.assertSame(pool2, poolMgr.findClientPool(false));
   }
 
   @Test
@@ -124,9 +125,9 @@ public class TestClientPoolManager {
       }
     };
 
-    Assert.assertSame(pool1, poolMgr.findThreadBindClientPool());
+    Assertions.assertSame(pool1, poolMgr.findThreadBindClientPool());
     // find again, get the same result
-    Assert.assertSame(pool1, poolMgr.findThreadBindClientPool());
+    Assertions.assertSame(pool1, poolMgr.findThreadBindClientPool());
 
     new MockUp<Thread>() {
       @Mock
@@ -135,9 +136,9 @@ public class TestClientPoolManager {
       }
     };
 
-    Assert.assertSame(pool2, poolMgr.findThreadBindClientPool());
+    Assertions.assertSame(pool2, poolMgr.findThreadBindClientPool());
     // find again, get the same result
-    Assert.assertSame(pool2, poolMgr.findThreadBindClientPool());
+    Assertions.assertSame(pool2, poolMgr.findThreadBindClientPool());
   }
 
   @Test
@@ -145,19 +146,19 @@ public class TestClientPoolManager {
     HttpClientWithContext notMatchPool = new HttpClientWithContext(null, null);
     pools.add(notMatchPool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
         factory.createClientPool(context);
         result = new HttpClientWithContext(null, null);
-        VertxImpl.context();
+        Vertx.currentContext();
         result = context;
       }
     };
 
     HttpClientWithContext result = poolMgr.findByContext();
-    Assert.assertNotSame(notMatchPool, result);
+    Assertions.assertNotSame(notMatchPool, result);
     // find again, get the same result
-    Assert.assertSame(result, poolMgr.findByContext());
+    Assertions.assertSame(result, poolMgr.findByContext());
   }
 
   @Test
@@ -167,9 +168,9 @@ public class TestClientPoolManager {
     pools.add(pool1);
     pools.add(pool2);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
@@ -177,10 +178,10 @@ public class TestClientPoolManager {
     AtomicInteger reactiveNextIndex = Deencapsulation.getField(poolMgr, "reactiveNextIndex");
     reactiveNextIndex.set(Integer.MAX_VALUE);
     // each time invoke find, reactiveNextIndex will inc 1
-    Assert.assertSame(pool2, poolMgr.findByContext());
-    Assert.assertSame(pool1, poolMgr.findByContext());
-    Assert.assertSame(pool2, poolMgr.findByContext());
-    Assert.assertSame(pool1, poolMgr.findByContext());
+    Assertions.assertSame(pool2, poolMgr.findByContext());
+    Assertions.assertSame(pool1, poolMgr.findByContext());
+    Assertions.assertSame(pool2, poolMgr.findByContext());
+    Assertions.assertSame(pool1, poolMgr.findByContext());
   }
 
   @Test
@@ -188,14 +189,14 @@ public class TestClientPoolManager {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
 
-    Assert.assertSame(pool, poolMgr.findByContext());
+    Assertions.assertSame(pool, poolMgr.findByContext());
   }
 
   @Test
@@ -203,16 +204,16 @@ public class TestClientPoolManager {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = otherContext;
         otherContext.owner();
         result = otherVertx;
       }
     };
 
-    Assert.assertSame(pool, poolMgr.findByContext());
+    Assertions.assertSame(pool, poolMgr.findByContext());
   }
 
   @Test
@@ -220,9 +221,9 @@ public class TestClientPoolManager {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = workerContext;
         workerContext.owner();
         result = vertx;
@@ -231,6 +232,6 @@ public class TestClientPoolManager {
       }
     };
 
-    Assert.assertSame(pool, poolMgr.findByContext());
+    Assertions.assertSame(pool, poolMgr.findByContext());
   }
 }

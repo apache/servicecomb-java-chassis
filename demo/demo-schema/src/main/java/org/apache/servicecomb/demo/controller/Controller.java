@@ -27,4 +27,6 @@ public interface Controller {
   String sayHi(String name);
 
   String sayHei(String name);
+
+  String sayHello1(String name);
 }

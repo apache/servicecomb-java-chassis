@@ -19,9 +19,13 @@ package org.apache.servicecomb.swagger.generator.core.processor.response;
 
 import java.util.concurrent.CompletableFuture;
 
-public class CompletableFutureProcessor extends AbstractOneGenericResponseProcessor {
+public class CompletableFutureProcessor extends DefaultResponseTypeProcessor {
+  public CompletableFutureProcessor() {
+    extractActualType = true;
+  }
+
   @Override
-  public Class<?> getResponseType() {
+  public Class<?> getProcessType() {
     return CompletableFuture.class;
   }
 }

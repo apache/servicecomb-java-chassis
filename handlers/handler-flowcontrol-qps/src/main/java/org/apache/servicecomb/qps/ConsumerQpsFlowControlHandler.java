@@ -28,8 +28,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  * Support 3 levels of microservice/schema/operation.
  */
 public class ConsumerQpsFlowControlHandler implements Handler {
-  static final QpsControllerManager qpsControllerMgr = new QpsControllerManager()
-      .setConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
+
+  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -38,10 +38,11 @@ public class ConsumerQpsFlowControlHandler implements Handler {
       return;
     }
 
-    QpsController qpsController = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
-    if (qpsController.isLimitNewRequest()) {
+    QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
+    if (qpsStrategy.isLimitNewRequest()) {
       // return http status 429
-      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
+      CommonExceptionData errorData = new CommonExceptionData(
+          "consumer request rejected by qps flowcontrol");
       asyncResp.consumerFail(
           new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
       return;

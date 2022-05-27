@@ -18,284 +18,455 @@
 package org.apache.servicecomb.common.rest.definition;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.junit.Assert;
-import org.junit.Before;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.hamcrest.MatcherAssert;
+import org.junit.AfterClass;
+import org.junit.jupiter.api.Assertions;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import io.swagger.models.Operation;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
 import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestRestOperationMeta {
+  @Path("/")
+  static class RestOperationMetaSchema {
+    @Path("/emptyProduces")
+    @GET
+    @Produces("")
+    public String emptyProduces() {
+      return null;
+    }
 
-  private final Swagger swagger = Mockito.mock(Swagger.class);
+    @Path("/emptyProducesWithView")
+    @GET
+    @Produces("")
+    @JsonView(Object.class)
+    public String emptyProducesWithView() {
+      return null;
+    }
 
-  private final SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+    @Path("/notSupport")
+    @GET
+    @Produces("notSupport")
+    public void notSupport() {
 
-  private final Operation operation = Mockito.mock(Operation.class);
+    }
 
-  private final OperationMeta meta = mock(OperationMeta.class);
+    @Path("/notSupportWithView")
+    @GET
+    @Produces("notSupport")
+    @JsonView(Object.class)
+    public void notSupportWithView() {
 
-  @Before
-  public void setUp() throws Exception {
-    when(meta.getSchemaMeta()).thenReturn(schemaMeta);
-    when(meta.getSwaggerOperation()).thenReturn(operation);
-    when(meta.getMethod()).thenReturn(SomeRestController.class.getMethod("sayHi"));
+    }
 
-    when(schemaMeta.getSwagger()).thenReturn(swagger);
+    @Path("/textPlain")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String textPlain() {
+      return null;
+    }
+
+    @Path("/textPlainWithView")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @JsonView(Object.class)
+    public String textPlainWithView() {
+      return null;
+    }
+
+    @Path("/json")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String json() {
+      return null;
+    }
+
+    @Path("/jsonWithView")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(Object.class)
+    public String jsonWithView() {
+      return null;
+    }
+
+    @Path("/textCharJsonChar")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON + ";charset=UTF-8", MediaType.TEXT_PLAIN + ";charset=UTF-8"})
+    public void textCharJsonChar() {
+
+    }
+
+    @Path("/textCharJsonCharWithView")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON + ";charset=UTF-8", MediaType.TEXT_PLAIN + ";charset=UTF-8"})
+    @JsonView(Object.class)
+    public void textCharJsonCharWithView() {
+
+    }
+
+    @Path("/download")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public File download() {
+      return null;
+    }
+
+    @Path("/downloadWithView")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(Object.class)
+    public File downloadWithView() {
+      return null;
+    }
+
+    @Path("/form")
+    @POST
+    public void form(@FormParam("form") String form) {
+    }
+
+    @Path("/formWithView")
+    @POST
+    public void formWithView(@FormParam("form") String form) {
+    }
+  }
+
+  static SCBEngine scbEngine;
+
+  static Swagger swagger;
+
+  OperationMeta meta;
+
+  RestOperationMeta operationMeta;
+
+  @BeforeClass
+  public static void classSetup() {
+    ConfigUtil.installDynamicConfig();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
+        .addProducerMeta("sid1", new RestOperationMetaSchema())
+        .run();
+    swagger = scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
+  }
+
+  private void findOperation(String operationId) {
+    meta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1." + operationId);
+    operationMeta = RestMetaUtils.getRestOperationMeta(meta);
   }
 
   @Test
   public void testCreateProduceProcessorsNull() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
+    findOperation("emptyProduces");
+    operationMeta.produces = null;
     operationMeta.createProduceProcessors();
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
-      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce);
-      Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, null);
+      Assertions.assertSame(expected, operationMeta.findProduceProcessor(produce));
+    }
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNullWithView() {
+    findOperation("emptyProducesWithView");
+    operationMeta.produces = null;
+    operationMeta.createProduceProcessors();
+
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, Object.class);
+      Assertions.assertSame(expected, operationMeta.findProduceProcessor(produce));
     }
   }
 
   @Test
   public void testCreateProduceProcessorsEmpty() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
+    findOperation("emptyProduces");
     operationMeta.produces = Arrays.asList();
     operationMeta.createProduceProcessors();
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
-      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce);
-      Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, null);
+      Assertions.assertSame(expected, operationMeta.findProduceProcessor(produce));
+    }
+  }
+
+  @Test
+  public void testCreateProduceProcessorsEmptyWithView() {
+    findOperation("emptyProducesWithView");
+    operationMeta.produces = Arrays.asList();
+    operationMeta.createProduceProcessors();
+
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, Object.class);
+      Assertions.assertSame(expected, operationMeta.findProduceProcessor(produce));
     }
   }
 
   @Test
   public void testCreateProduceProcessorsNormal() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON);
-    operationMeta.createProduceProcessors();
+    findOperation("json");
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
-    Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNormalWithView() {
+    findOperation("jsonWithView");
+
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
+    Assertions.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
 
   @Test
   public void testCreateProduceProcessorsNotSupported() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays.asList("notSupport");
-    operationMeta.createProduceProcessors();
+    findOperation("notSupport");
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
-    Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNotSupportedWithView() {
+    findOperation("notSupportWithView");
+
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
+    Assertions.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
 
   @Test
   public void testCreateProduceProcessorsTextAndWildcard() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays.asList(MediaType.TEXT_PLAIN);
-    operationMeta.createProduceProcessors();
+    findOperation("textPlain");
 
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
-    Assert.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assertions.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
+        operationMeta.ensureFindProduceProcessor(
+            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsTextAndWildcardWithView() {
+    findOperation("textPlainWithView");
+
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
         operationMeta.ensureFindProduceProcessor(
             MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
   }
 
   @Test
   public void testCreateProduceProcessorsWithSemicolon() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays
-        .asList(MediaType.TEXT_PLAIN + ";charset=UTF-8", MediaType.APPLICATION_JSON + ";charset=UTF-8");
-    operationMeta.createProduceProcessors();
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    findOperation("textCharJsonChar");
+
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
   }
 
   @Test
-  public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx) {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    new Expectations() {
-      {
-        requestEx.getHeader(HttpHeaders.ACCEPT);
-        result = null;
-      }
-    };
-    operationMeta.createProduceProcessors();
+  public void testCreateProduceProcessorsWithSemicolonWithView() {
+    findOperation("textCharJsonCharWithView");
 
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR, operationMeta.ensureFindProduceProcessor(requestEx));
-  }
-
-  @Test
-  public void testEnsureFindProduceProcessorAcceptFound() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);
-    operationMeta.createProduceProcessors();
-
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
-        operationMeta.ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8"));
-  }
-
-  @Test
-  public void testEnsureFindProduceProcessorWithDownload() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON);
-    operationMeta.downloadFile = true;
-    operationMeta.createProduceProcessors();
-
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
-        operationMeta.ensureFindProduceProcessor("text/plain"));
-
-    operationMeta.downloadFile = false;
-    Assert.assertNull(operationMeta.ensureFindProduceProcessor("text/plain"));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void testEnsureFindProduceProcessorAcceptNotFound() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);
-    operationMeta.createProduceProcessors();
+    findOperation("textCharJsonChar");
+    Assertions.assertNull(operationMeta.ensureFindProduceProcessor("notSupport"));
+  }
 
-    Assert.assertNull(operationMeta.ensureFindProduceProcessor("notSupport"));
+  @Test
+  public void testEnsureFindProduceProcessorAcceptNotFoundWithView() {
+    findOperation("textCharJsonCharWithView");
+    Assertions.assertNull(operationMeta.ensureFindProduceProcessor("notSupport"));
   }
 
   @Test
   public void generatesAbsolutePathWithRootBasePath() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(swagger.getBasePath()).thenReturn("/");
-    when(meta.getOperationPath()).thenReturn("/sayHi/");
+    findOperation("textCharJsonChar");
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.getAbsolutePath(), is("/sayHi/"));
+    MatcherAssert.assertThat(operationMeta.getAbsolutePath(), is("/textCharJsonChar/"));
   }
 
   @Test
   public void generatesAbsolutePathWithNonRootBasePath() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(swagger.getBasePath()).thenReturn("/rest");
-    when(meta.getOperationPath()).thenReturn("/sayHi");
+    findOperation("textCharJsonChar");
+    new Expectations(swagger) {
+      {
+        swagger.getBasePath();
+        result = "/rest";
+      }
+    };
+    RestOperationMeta restOperationMeta = new RestOperationMeta();
+    restOperationMeta.init(operationMeta.getOperationMeta());
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.getAbsolutePath(), is("/rest/sayHi/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/textCharJsonChar/"));
   }
 
   @Test
   public void generatesAbsolutePathWithNullPath() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(swagger.getBasePath()).thenReturn(null);
-    when(meta.getOperationPath()).thenReturn(null);
+    findOperation("textCharJsonChar");
+    new Expectations(swagger) {
+      {
+        swagger.getBasePath();
+        result = null;
+      }
+    };
+    new Expectations(meta) {
+      {
+        meta.getOperationPath();
+        result = null;
+      }
+    };
+    RestOperationMeta restOperationMeta = new RestOperationMeta();
+    restOperationMeta.init(operationMeta.getOperationMeta());
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.getAbsolutePath(), is("/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/"));
   }
 
   @Test
   public void generatesAbsolutePathWithEmptyPath() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(swagger.getBasePath()).thenReturn("");
-    when(meta.getOperationPath()).thenReturn("");
+    findOperation("textCharJsonChar");
+    new Expectations(swagger) {
+      {
+        swagger.getBasePath();
+        result = "";
+      }
+    };
+    new Expectations(meta) {
+      {
+        meta.getOperationPath();
+        result = "";
+      }
+    };
+    RestOperationMeta restOperationMeta = new RestOperationMeta();
+    restOperationMeta.init(operationMeta.getOperationMeta());
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.getAbsolutePath(), is("/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/"));
   }
 
   @Test
   public void consecutiveSlashesAreRemoved() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(swagger.getBasePath()).thenReturn("//rest//");
-    when(meta.getOperationPath()).thenReturn("//sayHi//");
+    findOperation("textCharJsonChar");
+    new Expectations(swagger) {
+      {
+        swagger.getBasePath();
+        result = "//rest//";
+      }
+    };
+    new Expectations(meta) {
+      {
+        meta.getOperationPath();
+        result = "//sayHi//";
+      }
+    };
+    RestOperationMeta restOperationMeta = new RestOperationMeta();
+    restOperationMeta.init(operationMeta.getOperationMeta());
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.getAbsolutePath(), is("/rest/sayHi/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/sayHi/"));
   }
 
   @Test
   public void testFormDataFlagTrue() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(meta.getMethod()).thenReturn(ReflectUtils.findMethod(SomeRestController.class, "form"));
-    when(meta.getSwaggerOperation()).thenReturn(operation);
-    List<Parameter> params = Arrays.asList(new FormParameter());
-    when(operation.getParameters()).thenReturn(params);
+    findOperation("form");
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.isFormData(), is(true));
+    MatcherAssert.assertThat(operationMeta.isFormData(), is(true));
   }
 
   @Test
   public void testFormDataFlagFalse() {
-    RestOperationMeta operationMeta = new RestOperationMeta();
-    when(meta.getMethod()).thenReturn(ReflectUtils.findMethod(SomeRestController.class, "form"));
-    when(meta.getSwaggerOperation()).thenReturn(operation);
-    List<Parameter> params = Arrays.asList(new QueryParameter());
-    when(operation.getParameters()).thenReturn(params);
+    findOperation("json");
 
-    operationMeta.init(meta);
-
-    assertThat(operationMeta.isFormData(), is(false));
-  }
-
-  private static class SomeRestController {
-    @SuppressWarnings("unused")
-    public String sayHi() {
-      return "Hi";
-    }
-
-    @SuppressWarnings("unused")
-    public String form(String param) {
-      return "";
-    }
+    MatcherAssert.assertThat(operationMeta.isFormData(), is(false));
   }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.edge.model;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 
 public class ResultWithInstance {
   private int result;
@@ -31,9 +31,9 @@ public class ResultWithInstance {
   public static ResultWithInstance create(int value) {
     ResultWithInstance result = new ResultWithInstance();
     result.setResult(value);
-    result.setInstanceId(RegistryUtils.getMicroserviceInstance().getInstanceId());
-    result.setServiceId(RegistryUtils.getMicroservice().getServiceId());
-    result.setVersion(RegistryUtils.getMicroservice().getVersion());
+    result.setInstanceId(RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId());
+    result.setServiceId(RegistrationManager.INSTANCE.getMicroservice().getServiceId());
+    result.setVersion(RegistrationManager.INSTANCE.getMicroservice().getVersion());
 
     return result;
   }

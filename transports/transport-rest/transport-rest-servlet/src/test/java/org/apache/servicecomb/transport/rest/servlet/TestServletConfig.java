@@ -20,11 +20,11 @@ package org.apache.servicecomb.transport.rest.servlet;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.netflix.config.DynamicPropertyFactory;
+import org.junit.jupiter.api.Assertions;
 
 public class TestServletConfig {
   @BeforeClass
@@ -39,12 +39,12 @@ public class TestServletConfig {
 
   @Test
   public void testGetLocalServerAddress() {
-    Assert.assertNull(ServletConfig.getLocalServerAddress());
+    Assertions.assertNull(ServletConfig.getLocalServerAddress());
   }
 
   @Test
   public void testGetServerTimeout() {
-    Assert.assertEquals(ServletConfig.DEFAULT_ASYN_SERVLET_TIMEOUT, ServletConfig.getAsyncServletTimeout());
+    Assertions.assertEquals(ServletConfig.DEFAULT_ASYN_SERVLET_TIMEOUT, ServletConfig.getAsyncServletTimeout());
   }
 
   @Test
@@ -52,6 +52,6 @@ public class TestServletConfig {
     DynamicPropertyFactory.getInstance();
     Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
     configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, "/*");
-    Assert.assertEquals("/*", ServletConfig.getServletUrlPattern());
+    Assertions.assertEquals("/*", ServletConfig.getServletUrlPattern());
   }
 }

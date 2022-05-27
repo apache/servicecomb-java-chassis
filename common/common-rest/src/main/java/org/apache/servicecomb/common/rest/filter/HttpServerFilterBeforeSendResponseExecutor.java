@@ -23,15 +23,15 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 
 public class HttpServerFilterBeforeSendResponseExecutor {
-  private List<HttpServerFilter> httpServerFilters;
+  private final List<HttpServerFilter> httpServerFilters;
 
-  private Invocation invocation;
+  private final Invocation invocation;
 
-  private HttpServletResponseEx responseEx;
+  private final HttpServletResponseEx responseEx;
 
   private int currentIndex;
 
-  private CompletableFuture<Void> future = new CompletableFuture<Void>();
+  private final CompletableFuture<Void> future = new CompletableFuture<Void>();
 
   public HttpServerFilterBeforeSendResponseExecutor(List<HttpServerFilter> httpServerFilters, Invocation invocation,
       HttpServletResponseEx responseEx) {
@@ -49,14 +49,22 @@ public class HttpServerFilterBeforeSendResponseExecutor {
   protected CompletableFuture<Void> safeInvoke(HttpServerFilter httpServerFilter) {
     try {
       if (httpServerFilter.enabled()) {
-        return httpServerFilter.beforeSendResponseAsync(invocation, responseEx);
+        CompletableFuture<Void> future = httpServerFilter.beforeSendResponseAsync(invocation, responseEx);
+        if (future == null) {
+          future = new CompletableFuture<>();
+          future.completeExceptionally(new IllegalStateException(
+              "HttpServerFilter beforeSendResponseAsync can not return null, do not override it. Class="
+                  + httpServerFilter.getClass()
+                  .getName()));
+        }
+        return future;
       } else {
-        CompletableFuture<Void> eFuture = new CompletableFuture<Void>();
+        CompletableFuture<Void> eFuture = new CompletableFuture<>();
         eFuture.complete(null);
         return eFuture;
       }
     } catch (Throwable e) {
-      CompletableFuture<Void> eFuture = new CompletableFuture<Void>();
+      CompletableFuture<Void> eFuture = new CompletableFuture<>();
       eFuture.completeExceptionally(e);
       return eFuture;
     }

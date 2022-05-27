@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class DefaultTcpSocketMetric {
   protected DefaultEndpointMetric endpointMetric;
 
@@ -27,13 +29,18 @@ public class DefaultTcpSocketMetric {
     this.endpointMetric = endpointMetric;
   }
 
-  @SuppressWarnings("unchecked")
-  public <T extends DefaultEndpointMetric> T getEndpointMetric() {
-    return (T) endpointMetric;
+  public DefaultEndpointMetric getEndpointMetric() {
+    return endpointMetric;
   }
 
+  @VisibleForTesting
   public boolean isConnected() {
     return connected;
+  }
+
+  public void onConnect() {
+    endpointMetric.onConnect();
+    this.connected = true;
   }
 
   public void onDisconnect() {
@@ -41,6 +48,7 @@ public class DefaultTcpSocketMetric {
     this.connected = false;
   }
 
+  @VisibleForTesting
   public long getConnectedTime() {
     return connectedTime;
   }

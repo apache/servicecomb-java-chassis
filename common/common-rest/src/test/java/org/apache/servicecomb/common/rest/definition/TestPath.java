@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +26,7 @@ import org.apache.servicecomb.common.rest.definition.path.QueryVarParamWriter;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,48 +49,48 @@ public class TestPath {
   @Test
   public void testPathRegExp() throws Exception {
     PathRegExp oPathRegExp = new PathRegExp("//{test}//");
-    Assert.assertEquals(1, oPathRegExp.getGroupCount());
-    Assert.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
+    Assertions.assertEquals(1, oPathRegExp.getGroupCount());
+    Assertions.assertEquals(0, oPathRegExp.getGroupWithRegExpCount());
     PathRegExp oSecondPathRegExp = new PathRegExp("{[^/:]+?}");
-    Assert.assertEquals(1, oSecondPathRegExp.getGroupCount());
-    Assert.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
-    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
-    Assert.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
-    Assert.assertEquals(null, oSecondPathRegExp.match("{test/test}", null));
-    Assert.assertEquals("(]+?)/(.*)", (oSecondPathRegExp.toString()));
-    Assert.assertEquals(false, oSecondPathRegExp.isStaticPath());
-    Assert.assertEquals(0, oSecondPathRegExp.getStaticCharCount());
-    Assert.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<>())));
+    Assertions.assertEquals(1, oSecondPathRegExp.getGroupCount());
+    Assertions.assertEquals(1, oSecondPathRegExp.getGroupWithRegExpCount());
+    Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test/"));
+    Assertions.assertEquals("test/", PathRegExp.ensureEndWithSlash("test"));
+    Assertions.assertNull(oSecondPathRegExp.match("{test/test}", null));
+    Assertions.assertEquals("(]+?)/(.*)", (oSecondPathRegExp.toString()));
+    Assertions.assertFalse(oSecondPathRegExp.isStaticPath());
+    Assertions.assertEquals(0, oSecondPathRegExp.getStaticCharCount());
+    Assertions.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<>())));
     // Error Scenarios
     new PathRegExp("//{test \t}//");
     // Error Scenarios for double {{
     try {
       new PathRegExp("//{test{");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("A variable must not contain an extra"));
+      Assertions.assertTrue(e.getMessage().contains("A variable must not contain an extra"));
     }
     // Error Scenarios for illegal }}
     try {
       new PathRegExp("//}");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("is only allowed as"));
+      Assertions.assertTrue(e.getMessage().contains("is only allowed as"));
     }
     // Error Scenarios for illegal ;
     try {
       new PathRegExp("//;");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("matrix parameters are not allowed in"));
+      Assertions.assertTrue(e.getMessage().contains("matrix parameters are not allowed in"));
     }
 
     // Error Scenarios for NO } ;
     try {
       new PathRegExp("//{test");
-      fail("an exception is expected!");
+      Assertions.fail("an exception is expected!");
     } catch (Exception e) {
-      Assert.assertEquals(true, e.getMessage().contains("No '}' found after"));
+      Assertions.assertTrue(e.getMessage().contains("No '}' found after"));
     }
   }
 
@@ -102,18 +100,20 @@ public class TestPath {
 
     Parameter pathParameter = new PathParameter();
     pathParameter.setName("id");
-    RestParam oRestParam = new RestParam(0, pathParameter, int.class);
+    RestParam oRestParam = new RestParam(pathParameter, int.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     Parameter queryParameter = new QueryParameter();
     queryParameter.setName("q");
-    oRestParam = new RestParam(1, queryParameter, String.class);
+    oRestParam = new RestParam(queryParameter, String.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     URLPathBuilder oURLPathBuilder = new URLPathBuilder("/root/{id}", paramMap);
-    Object[] args = new Object[] {100, "query"};
-    Assert.assertEquals("/root/100?q=query", oURLPathBuilder.createRequestPath(args));
-    Assert.assertEquals("/root/100", oURLPathBuilder.createPathString(args));
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("id", 100);
+    parameters.put("q", "query");
+    Assertions.assertEquals("/root/100?q=query", oURLPathBuilder.createRequestPath(parameters));
+    Assertions.assertEquals("/root/100", oURLPathBuilder.createPathString(parameters));
   }
 
   @Test
@@ -127,32 +127,40 @@ public class TestPath {
     };
     new MockUp<QueryVarParamWriter>() {
       @Mock
-      protected Object getParamValue(Object[] args) {
+      private Object getParamValue(Object[] args) {
         return args[0];
       }
     };
 
     Parameter parameter = new QueryParameter();
-    QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(0, parameter, String.class));
+    QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(parameter, String.class));
     try {
-      verify(writer, "T", "&queryVar=T");
-      verify(writer, null, "&");
-      verify(writer, new String[] {"a", "b"}, "&queryVar=a&queryVar=b");
-      verify(writer, new String[] {"a", null, "b"}, "&queryVar=a&queryVar=&queryVar=b");
-      verify(writer, Arrays.asList("Lars", "Simon"), "&queryVar=Lars&queryVar=Simon");
-      verify(writer, "测试", "&queryVar=%E6%B5%8B%E8%AF%95");
-      verify(writer, "a b", "&queryVar=a+b");
-      verify(writer, "a+b", "&queryVar=a%2Bb");
+      Map<String, Object> parameters = new HashMap<>();
+      parameters.put("queryVar", "T");
+      verify(writer, parameters, "?queryVar=T");
+      parameters.put("queryVar", null);
+      verify(writer, parameters, "");
+      parameters.put("queryVar", new String[] {"a", "b"});
+      verify(writer, parameters, "?queryVar=a&queryVar=b");
+      parameters.put("queryVar", new String[] {"a", null, "b"});
+      verify(writer, parameters, "?queryVar=a&queryVar=b");
+      parameters.put("queryVar", Arrays.asList("Lars", "Simon"));
+      verify(writer, parameters, "?queryVar=Lars&queryVar=Simon");
+      parameters.put("queryVar", "测试");
+      verify(writer, parameters, "?queryVar=%E6%B5%8B%E8%AF%95");
+      parameters.put("queryVar", "a b");
+      verify(writer, parameters, "?queryVar=a+b");
+      parameters.put("queryVar", "a+b");
+      verify(writer, parameters, "?queryVar=a%2Bb");
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+    Assertions.assertTrue(status);
   }
 
-  // TODO expect not used?
-  private void verify(QueryVarParamWriter writer, Object arg, String expect) throws Exception {
+  private void verify(QueryVarParamWriter writer, Map<String, Object> args, String expect) throws Exception {
     URLPathStringBuilder sb = new URLPathStringBuilder();
-    Object[] args = new Object[] {arg};
     writer.write(sb, args);
+    Assertions.assertEquals(expect, sb.build());
   }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.config.archaius.sources;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,8 +25,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestMicroserviceConfigLoader {
 
@@ -49,7 +47,7 @@ public class TestMicroserviceConfigLoader {
 
     loader.sort();
 
-    assertEquals(urls("jar:c", "jar:b", "jar:a"), urlsOf(loader.getConfigModels()));
+    Assertions.assertEquals(urls("jar:c", "jar:b", "jar:a"), urlsOf(loader.getConfigModels()));
   }
 
   @Test
@@ -60,7 +58,7 @@ public class TestMicroserviceConfigLoader {
 
     loader.sort();
 
-    assertEquals(urls("jar:c", "jar:b", "jar:a"), urlsOf(loader.getConfigModels()));
+    Assertions.assertEquals(urls("jar:c", "jar:b", "jar:a"), urlsOf(loader.getConfigModels()));
   }
 
   @Test
@@ -71,7 +69,7 @@ public class TestMicroserviceConfigLoader {
 
     loader.sort();
 
-    assertEquals(urls("jar:j1", "file:f2", "file:f1"), urlsOf(loader.getConfigModels()));
+    Assertions.assertEquals(urls("jar:j1", "file:f2", "file:f1"), urlsOf(loader.getConfigModels()));
   }
 
   private String urlsOf(List<ConfigModel> configModels) {
@@ -89,7 +87,7 @@ public class TestMicroserviceConfigLoader {
   @Test
   public void testLoadEmptyYaml() throws IOException {
     loader.load("empty.yaml");
-    Assert.assertTrue(loader.getConfigModels().get(0).getConfig().isEmpty());
+    Assertions.assertTrue(loader.getConfigModels().get(0).getConfig().isEmpty());
   }
 
   @Test
@@ -97,9 +95,9 @@ public class TestMicroserviceConfigLoader {
     URL url = URI.create("file:/notExist.yaml").toURL();
     try {
       loader.load(url);
-      Assert.fail("must throw exception");
+      Assertions.fail("must throw exception");
     } catch (FileNotFoundException e) {
-      Assert.assertTrue(true);
+      Assertions.assertTrue(true);
     }
   }
 }

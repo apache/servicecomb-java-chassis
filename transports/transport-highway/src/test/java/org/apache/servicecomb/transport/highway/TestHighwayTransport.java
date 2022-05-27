@@ -17,29 +17,46 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.Assert;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestHighwayTransport {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestHighwayTransport.class);
 
-  private HighwayTransport transport = new HighwayTransport();
+  private final HighwayTransport transport = new HighwayTransport();
+
+  @BeforeClass
+  public static void setup() {
+    VertxUtils.blockCloseVertxByName("transport");
+    Thread.getAllStackTraces().keySet().forEach(t -> LOGGER.info("before: {}", t.getName()));
+  }
+
+  @AfterClass
+  public static void teardown() {
+    VertxUtils.blockCloseVertxByName("transport");
+    Thread.getAllStackTraces().keySet().forEach(t -> LOGGER.info("after: {}", t.getName()));
+  }
 
   @Test
   public void testGetInstance() {
-    Assert.assertNotNull(transport);
+    Assertions.assertNotNull(transport);
   }
 
   @Test
@@ -50,7 +67,8 @@ public class TestHighwayTransport {
     } catch (Exception e) {
       status = false;
     }
-    Assert.assertTrue(status);
+
+    Assertions.assertTrue(status);
   }
 
   @Test
@@ -67,14 +85,14 @@ public class TestHighwayTransport {
       }
     };
     transport.send(invocation, asyncResp);
-    Assert.assertTrue(sended.value);
+    Assertions.assertTrue(sended.value);
   }
 
   @Test
   public void testHighway() {
     Invocation invocation = Mockito.mock(Invocation.class);
     commonHighwayMock(invocation);
-    Assert.assertEquals("highway", transport.getName());
+    Assertions.assertEquals("highway", transport.getName());
   }
 
   private void commonHighwayMock(Invocation invocation) {
@@ -84,8 +102,8 @@ public class TestHighwayTransport {
     Mockito.when(operationMeta.getExtData("protobuf")).thenReturn(operationProtobuf);
     Endpoint lEndpoint = Mockito.mock(Endpoint.class);
     Mockito.when(invocation.getEndpoint()).thenReturn(lEndpoint);
-    WrapSchema lWrapSchema = Mockito.mock(WrapSchema.class);
-    Mockito.when(operationProtobuf.getRequestSchema()).thenReturn(lWrapSchema);
+    RequestRootSerializer lWrapSchema = Mockito.mock(RequestRootSerializer.class);
+    Mockito.when(operationProtobuf.getRequestRootSerializer()).thenReturn(lWrapSchema);
     URIEndpointObject ep = Mockito.mock(URIEndpointObject.class);
     Mockito.when(lEndpoint.getAddress()).thenReturn(ep);
     Mockito.when(ep.getHostOrIp()).thenReturn("127.0.0.1");

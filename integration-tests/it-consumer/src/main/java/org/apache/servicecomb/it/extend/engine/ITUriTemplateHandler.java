@@ -19,10 +19,10 @@ package org.apache.servicecomb.it.extend.engine;
 import java.net.URI;
 import java.util.Map;
 
-import org.springframework.web.util.DefaultUriTemplateHandler;
-
-public class ITUriTemplateHandler extends DefaultUriTemplateHandler {
-  private String urlPrefix;
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+public class ITUriTemplateHandler extends org.springframework.web.util.DefaultUriTemplateHandler {
+  private final String urlPrefix;
 
   public ITUriTemplateHandler(String urlPrefix) {
     this.urlPrefix = urlPrefix;

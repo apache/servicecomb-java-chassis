@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.swagger.models.ArrayModel;
@@ -66,7 +67,7 @@ public class BodyParameterAdapter implements SwaggerTypeAdapter {
       return ((ModelImpl) model).getEnum();
     }
 
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -88,7 +89,7 @@ public class BodyParameterAdapter implements SwaggerTypeAdapter {
   }
 
   @Override
-  public boolean isObject() {
+  public boolean isJavaLangObject() {
     if (model instanceof ModelImpl) {
       ModelImpl modelImpl = (ModelImpl) model;
       return (ObjectProperty.TYPE.equals(modelImpl.getType())

@@ -23,13 +23,13 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>18</version>
+    <version>21</version>
   </parent>
 
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>2.8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
@@ -38,7 +38,37 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
+    <werror.properties>-Werror</werror.properties>
+    <test.additional.args/>
+    <!-- plugin version start -->
+    <!-- sort by alpha -->
+    <checkstyle-maven-plugin.version>3.1.2</checkstyle-maven-plugin.version>
+    <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+    <dependency-check-maven-plugin.version>7.1.0</dependency-check-maven-plugin.version>
+    <docker-maven-plugin.version>0.39.1</docker-maven-plugin.version>
+    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+    <gmaven-plugin.version>1.5</gmaven-plugin.version>
+    <gpg-maven-plugin.version>3.0.1</gpg-maven-plugin.version>
+    <lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
+    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+    <javadoc-maven-plugin.version>3.4.0</javadoc-maven-plugin.version>
+    <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M6</maven-failsafe-plugin.version>
+    <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+    <maven-project-info-reports-plugin.version>3.3.0</maven-project-info-reports-plugin.version>
+    <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
+    <puppycrawl-checkstyle.version>10.2</puppycrawl-checkstyle.version>
+    <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
+    <site-maven-plugin.version>3.12.0</site-maven-plugin.version>
+    <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
+    <spotbug-maven-plugin.version>4.7.0.0</spotbug-maven-plugin.version>
+    <spring-boot-maven-plugin.version>2.7.0</spring-boot-maven-plugin.version>
+    <surefire-maven-plugin.version>3.0.0-M6</surefire-maven-plugin.version>
+    <!-- plugin version end -->
   </properties>
 
   <licenses>
@@ -104,8 +134,8 @@
   </distributionManagement>
 
   <modules>
-    <module>parent</module>
-    <module>java-chassis-dependencies</module>
+    <module>dependencies</module>
+    <module>parents</module>
     <module>common</module>
     <module>foundations</module>
     <module>deployment</module>
@@ -120,8 +150,12 @@
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>archetypes</module>
-    <module>java-chassis-dependencies-springboot2</module>
-    <module>java-chassis-spring-boot</module>
+    <module>spring-boot</module>
+    <module>inspector</module>
+    <module>solutions</module>
+    <module>clients</module>
+    <module>governance</module>
+    <module>huawei-cloud</module>
   </modules>
 
   <reporting>
@@ -129,7 +163,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
+        <version>${maven-jxr-plugin.version}</version>
       </plugin>
     </plugins>
   </reporting>
@@ -140,8 +174,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
-          <configLocation>../etc/checkstyle.xml</configLocation>
-          <excludes>**/demo/**</excludes>
+          <configLocation>ci/checkstyle/checkstyle.xml</configLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
         </configuration>
       </plugin>
       <plugin>
@@ -169,7 +203,34 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.16</version>
+        <version>2.0.0</version>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <configuration>
+              <!-- Accept the pom module -->
+              <acceptPomPackaging>true</acceptPomPackaging>
+              <!-- Using the template which is grouped by License file -->
+              <fileTemplate>/org/codehaus/mojo/license/third-party-file-groupByMultiLicense.ftl</fileTemplate>
+              <licenseMerges>
+                <licenseMerge>The Apache Software License, Version 2.0|The Apache License, Version 2.0</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache License, Version 2.0</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache Public License 2.0</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache 2</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache 2.0</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache-2.0</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache License 2.0</licenseMerge>
+                <licenseMerge>The Apache Software License, Version 2.0|Apache License, version 2.0</licenseMerge>
+                <licenseMerge>3-Clause BSD License|BSD 3-clause</licenseMerge>
+                <licenseMerge>3-Clause BSD License|BSD 3-Clause</licenseMerge>
+                <licenseMerge>Eclipse Public License v1.0|Eclipse Public License 1.0</licenseMerge>
+                <licenseMerge>Eclipse Public License v1.0|Eclipse Public License - v 1.0</licenseMerge>
+                <licenseMerge>The MIT License|MIT License</licenseMerge>
+              </licenseMerges>
+              <excludedGroups>org.apache.servicecomb*</excludedGroups>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.rat</groupId>
@@ -180,7 +241,8 @@
             <exclude>.travis.yml</exclude>
             <exclude>**/*.md</exclude>
             <excldue>**/*.MD</excldue>
-            <exclude>**/target/*</exclude>
+            <excldue>**/*.iml</excldue>
+            <excldue>.github/**</excldue>
             <!-- Skip the code style configuration file -->
             <exclude>**/etc/eclipse-java-google-style.xml</exclude>
             <exclude>**/etc/intellij-java-google-style.xml</exclude>
@@ -193,11 +255,12 @@
             <exclude>**/**.log</exclude>
             <!-- Skip the target files -->
             <exclude>**/target/**</exclude>
+            <!-- Skip web resource files -->
+            <exclude>**/resources/webroot/images/*.png</exclude>
+            <exclude>**/resources/webroot/images/*.jpg</exclude>
             <!-- Skip the source files which are forked from vertx -->
-            <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
-            <exclude>**/io/vertx/core/impl/VertxImpl.java</exclude>
+            <exclude>**/org/apache/servicecomb/foundation/common/utils/MimeTypesUtils.java</exclude>
             <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
-            <exclude>**/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java</exclude>
             <!--Skip protobuf generated file-->
             <exclude>**/java/org/apache/servicecomb/foundation/protobuf/internal/model/ProtobufRoot.java</exclude>
           </excludes>
@@ -206,7 +269,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
+        <version>${exec-maven-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -218,7 +281,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-maven-plugin.version}</version>
         <configuration>
+          <argLine>${test.additional.args}</argLine>
           <skip>${maven.test.skip}</skip>
           <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
           <excludes>
@@ -230,19 +295,14 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
-        <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <xmlOutput>true</xmlOutput>
-          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
         <configuration>
           <archive>
             <manifest>
@@ -252,13 +312,30 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <failOnError>true</failOnError>
+          <threshold>Medium</threshold>
+          <excludeFilterFile>ci/spotbugs/exclude.xml</excludeFilterFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.eluder.coveralls</groupId>
           <artifactId>coveralls-maven-plugin</artifactId>
-          <version>4.3.0</version>
+          <version>${coveralls-maven-plugin.version}</version>
           <configuration>
             <jacocoReports>
               <jacocoReport>${project.basedir}/coverage-reports/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
@@ -267,22 +344,22 @@
         </plugin>
         <plugin>
           <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>1.5</version>
+          <version>${maven-remote-resources-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.20.0</version>
+          <version>${docker-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.gmaven</groupId>
           <artifactId>gmaven-plugin</artifactId>
-          <version>1.5</version>
+          <version>${gmaven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.8</version>
+          <version>${jacoco-maven-plugin.version}</version>
           <configuration>
             <excludes>
               <exclude>*$Impl_*</exclude>
@@ -326,24 +403,27 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
+            <compilerArgument>-parameters</compilerArgument>
             <source>1.8</source>
             <target>1.8</target>
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
             <compilerArgs>
-              <arg>-Werror</arg>
+              <arg>${werror.properties}</arg>
               <arg>-Xlint:all</arg>
               <!--not care for jdk8/jdk7 compatible problem-->
               <arg>-Xlint:-classfile</arg>
+              <!--not care for annotations not processed-->
+              <arg>-Xlint:-processing</arg>
             </compilerArgs>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
+          <version>${lifecycle-mapping-plugin.version}</version>
           <configuration>
             <lifecycleMappingMetadata>
               <pluginExecutions>
@@ -367,25 +447,45 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>2.4</version>
+          <version>${maven-project-info-reports-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.4</version>
+          <version>${site-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.17</version>
+          <version>${checkstyle-maven-plugin.version}</version>
           <inherited>true</inherited>
           <dependencies>
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>7.6</version>
+              <version>${puppycrawl-checkstyle.version}</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+              <configuration>
+                <mainClass>${main.class}</mainClass>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${spotbug-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -406,7 +506,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>${gpg-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -420,7 +520,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
+            <version>${source-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -433,7 +533,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9.1</version>
+            <version>${javadoc-maven-plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -451,12 +551,13 @@
                   <head>Date created:</head>
                 </tag>
               </tags>
+              <additionalparam>-Xdoclint:none</additionalparam>
             </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>2.5.3</version>
+            <version>${release-maven-plugin.version}</version>
             <configuration>
               <autoVersionSubmodules>true</autoVersionSubmodules>
               <useReleaseProfile>false</useReleaseProfile>
@@ -480,19 +581,13 @@
         <skip-remote-resource>false</skip-remote-resource>
       </properties>
       <modules>
-        <module>java-chassis-distribution</module>
+        <module>distribution</module>
       </modules>
     </profile>
     <profile>
       <id>coverage</id>
       <modules>
         <module>coverage-reports</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>samples</id>
-      <modules>
-        <module>samples</module>
       </modules>
     </profile>
     <profile>
@@ -524,6 +619,104 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>owasp-dependency-check</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>${dependency-check-maven-plugin.version}</version>
+            <configuration>
+              <suppressionFiles>
+                <suppressionFile>src/owasp-dependency-check-suppressions.xml</suppressionFile>
+              </suppressionFiles>
+              <failBuildOnCVSS>7</failBuildOnCVSS>
+              <msbuildAnalyzerEnabled>false</msbuildAnalyzerEnabled>
+              <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+              <yarnAuditAnalyzerEnabled>false</yarnAuditAnalyzerEnabled>
+              <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+              <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+              <pipAnalyzerEnabled>false</pipAnalyzerEnabled>
+              <pipfileAnalyzerEnabled>false</pipfileAnalyzerEnabled>
+              <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+              <msbuildAnalyzerEnabled>false</msbuildAnalyzerEnabled>
+              <mixAuditAnalyzerEnabled>false</mixAuditAnalyzerEnabled>
+              <nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
+              <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>${dependency-check-maven-plugin.version}</version>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>aggregate</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+        </plugins>
+      </reporting>
+    </profile>
+    <profile>
+      <id>jdk11</id>
+      <activation>
+        <jdk>[11,17)</jdk>
+      </activation>
+      <properties>
+        <werror.properties/>
+        <test.additional.args>
+          -Djdk.attach.allowAttachSelf
+          --add-opens java.base/java.lang=ALL-UNNAMED
+          --add-reads java.base=java.desktop
+        </test.additional.args>
+      </properties>
+    </profile>
+    <profile>
+      <id>jdk17</id>
+      <activation>
+        <jdk>[17,)</jdk>
+      </activation>
+      <properties>
+        <werror.properties/>
+        <test.additional.args>
+          -Djdk.attach.allowAttachSelf
+          --add-opens java.base/java.io=ALL-UNNAMED
+          --add-opens java.base/java.lang=ALL-UNNAMED
+          --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+          --add-opens java.base/java.net=ALL-UNNAMED
+          --add-opens java.base/java.nio=ALL-UNNAMED
+          --add-opens java.base/java.nio.channels.spi=ALL-UNNAMED
+          --add-opens java.base/java.nio.file=ALL-UNNAMED
+          --add-opens java.base/java.util=ALL-UNNAMED
+          --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+          --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
+          --add-opens java.base/java.util.jar=ALL-UNNAMED
+          --add-opens java.base/java.util.stream=ALL-UNNAMED
+          --add-opens java.base/java.time=ALL-UNNAMED
+          --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+          --add-opens java.base/sun.net.dns=ALL-UNNAMED
+          --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+          --add-opens java.base/sun.security.jca=ALL-UNNAMED
+          --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED
+          --add-reads java.base=java.desktop
+        </test.additional.args>
+      </properties>
     </profile>
   </profiles>
 

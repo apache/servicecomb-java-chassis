@@ -17,22 +17,26 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.Assert;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
 import io.swagger.models.properties.Property;
+import org.junit.jupiter.api.Assertions;
 
 public class TestApiResponse {
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
+
+  @AfterClass
+  public static void teardown() {
+    swaggerOperations = null;
+  }
 
   interface ApiResponseAnnotation {
     @ApiResponse(
@@ -57,80 +61,63 @@ public class TestApiResponse {
   }
 
   @Test
-  public void testBody() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, ApiResponseAnnotation.class);
-    swaggerGenerator.generate();
+  public void checkResponseHeader() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testResponseHeader");
+    Assertions.assertEquals("/testResponseHeader", swaggerOperation.getPath());
 
-    checkResponseDesc(swaggerGenerator);
-    checkApiResponseHeader(swaggerGenerator);
-    checkResponseHeader(swaggerGenerator);
-    checkSingle(swaggerGenerator);
-    checkMulti(swaggerGenerator);
-  }
-
-  private void checkResponseHeader(SwaggerGenerator generator) {
-    Swagger swagger = generator.getSwagger();
-
-    Path path = swagger.getPaths().get("/testResponseHeader");
-    Operation operation = path.getOperations().get(0);
-    Assert.assertEquals("testResponseHeader", operation.getOperationId());
-
-    Response response = operation.getResponses().get("200");
+    Response response = swaggerOperation.getOperation().getResponses().get("200");
     Property property = response.getHeaders().get("k1");
-    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, property).getRawClass());
+    Assertions.assertEquals("integer", property.getType());
+    Assertions.assertEquals("int32", property.getFormat());
   }
 
-  private void checkResponseDesc(SwaggerGenerator generator) {
-    Swagger swagger = generator.getSwagger();
+  @Test
+  public void checkResponseDesc() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMulti");
+    Assertions.assertEquals("/testMulti", swaggerOperation.getPath());
 
-    Path path = swagger.getPaths().get("/testMulti");
-    Operation operation = path.getOperations().get(0);
-
-    Response response1 = operation.getResponses().get("200");
-    Response response2 = operation.getResponses().get("301");
-    Assert.assertEquals("msg1", response1.getDescription());
-    Assert.assertEquals("msg2", response2.getDescription());
+    Response response1 = swaggerOperation.getOperation().getResponses().get("200");
+    Response response2 = swaggerOperation.getOperation().getResponses().get("301");
+    Assertions.assertEquals("msg1", response1.getDescription());
+    Assertions.assertEquals("msg2", response2.getDescription());
   }
 
-  private void checkApiResponseHeader(SwaggerGenerator generator) {
-    Swagger swagger = generator.getSwagger();
+  @Test
+  public void checkApiResponseHeader() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testApiResponseHeader");
+    Assertions.assertEquals("/testApiResponseHeader", swaggerOperation.getPath());
 
-    Path path = swagger.getPaths().get("/testApiResponseHeader");
-    Operation operation = path.getOperations().get(0);
-    Assert.assertEquals("testApiResponseHeader", operation.getOperationId());
-
-    Response response = operation.getResponses().get("200");
+    Response response = swaggerOperation.getOperation().getResponses().get("200");
     Property property = response.getHeaders().get("k1");
-    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, property).getRawClass());
+    Assertions.assertEquals("integer", property.getType());
+    Assertions.assertEquals("int32", property.getFormat());
 
     property = response.getHeaders().get("k2");
-    Assert.assertEquals(String.class, ClassUtilsForTest.findJavaType(generator, property).getRawClass());
+    Assertions.assertEquals("string", property.getType());
+    Assertions.assertNull(property.getFormat());
   }
 
-  public void checkSingle(SwaggerGenerator generator) {
-    Swagger swagger = generator.getSwagger();
+  @Test
+  public void checkSingle() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingle");
+    Assertions.assertEquals("/testSingle", swaggerOperation.getPath());
 
-    Path path = swagger.getPaths().get("/testSingle");
-    Operation operation = path.getOperations().get(0);
-    Assert.assertEquals("testSingle", operation.getOperationId());
-
-    Response response = operation.getResponses().get("200");
-    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
+    Response response = swaggerOperation.getOperation().getResponses().get("200");
+    Assertions.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
+    Assertions.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
   }
 
-  public void checkMulti(SwaggerGenerator generator) {
-    Swagger swagger = generator.getSwagger();
+  @Test
+  public void checkMulti() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMulti");
+    Assertions.assertEquals("/testMulti", swaggerOperation.getPath());
 
-    Path path = swagger.getPaths().get("/testMulti");
+    Response response = swaggerOperation.getOperation().getResponses().get("200");
+    Assertions.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
+    Assertions.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
 
-    Operation operation = path.getOperations().get(0);
-    Assert.assertEquals("testMulti", operation.getOperationId());
-
-    Response response = operation.getResponses().get("200");
-    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
-
-    response = operation.getResponses().get("301");
-    Assert.assertEquals(String.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
+    response = swaggerOperation.getOperation().getResponses().get("301");
+    Assertions.assertEquals("string", ((ModelImpl) response.getResponseSchema()).getType());
+    Assertions.assertNull(((ModelImpl) response.getResponseSchema()).getFormat());
   }
 }

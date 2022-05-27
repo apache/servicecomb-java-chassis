@@ -28,20 +28,19 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.LoadBalancerStats;
 
-
 /**
  *  A load balancer with RuleExt and ServerListFilterExt
  */
 public class LoadBalancer {
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalancer.class);
 
-  private static AtomicInteger id = new AtomicInteger(0);
+  private static final AtomicInteger id = new AtomicInteger(0);
 
-  private RuleExt rule;
+  private final RuleExt rule;
 
-  private LoadBalancerStats lbStats;
+  private final LoadBalancerStats lbStats;
 
-  private String microServiceName;
+  private final String microServiceName;
 
   private List<ServerListFilterExt> filters;
 
@@ -59,13 +58,28 @@ public class LoadBalancer {
     List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
     int serversCount = servers.size();
     for (ServerListFilterExt filterExt : filters) {
+      if (!filterExt.enabled()) {
+        continue;
+      }
       servers = filterExt.getFilteredListOfServers(servers, invocation);
       if (servers.isEmpty() && serversCount > 0) {
         LOGGER.warn("There are not servers exist after filtered by {}.", filterExt.getClass());
         break;
       }
     }
-    return rule.choose(servers, invocation);
+    ServiceCombServer server = rule.choose(servers, invocation);
+    if (null == server) {
+      return null;
+    }
+    ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
+    if (serverStats.isIsolated()) {
+      LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
+          invocation.getMicroserviceName(),
+          server.getInstance().getInstanceId());
+      LOGGER.info("stats: {}-{}-{}-{}", serverStats.getTotalRequests(), serverStats.getSuccessRequests(),
+          serverStats.getFailedRequests(), serverStats.getContinuousFailureCount());
+    }
+    return server;
   }
 
   public LoadBalancerStats getLoadBalancerStats() {

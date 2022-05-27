@@ -26,19 +26,18 @@ import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.DeploymentOptions;
 
-@Component
 public class HighwayTransport extends AbstractTransport {
-  private HighwayClient highwayClient = new HighwayClient();
+  private final HighwayClient highwayClient = new HighwayClient();
 
   @Override
   public String getName() {
     return Const.HIGHWAY;
   }
 
+  @Override
   public boolean init() throws Exception {
     highwayClient.init(transportVertx);
 
@@ -47,11 +46,16 @@ public class HighwayTransport extends AbstractTransport {
     SimpleJsonObject json = new SimpleJsonObject();
     json.put(ENDPOINT_KEY, getEndpoint());
     deployOptions.setConfig(json);
+    deployOptions.setWorkerPoolName("pool-worker-transport-highway");
     return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
   }
 
   @Override
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     highwayClient.send(invocation, asyncResp);
+  }
+
+  public HighwayClient getHighwayClient() {
+    return highwayClient;
   }
 }

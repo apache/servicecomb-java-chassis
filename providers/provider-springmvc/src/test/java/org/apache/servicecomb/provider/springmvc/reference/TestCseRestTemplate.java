@@ -17,13 +17,13 @@
 
 package org.apache.servicecomb.provider.springmvc.reference;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCseRestTemplate {
 
-  @Test
-  public void testCseRestTemplate() {
-    Assert.assertEquals(CseRestTemplate.class, new CseRestTemplate().getClass());
-  }
+    @Test
+    public void testCseRestTemplate() {
+        Assertions.assertEquals(CseRestTemplate.class, new CseRestTemplate().getClass());
+    }
 }

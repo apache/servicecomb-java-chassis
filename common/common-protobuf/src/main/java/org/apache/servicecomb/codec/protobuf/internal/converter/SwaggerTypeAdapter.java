@@ -18,6 +18,7 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.util.List;
 
+import io.swagger.models.Model;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.SerializableParameter;
 import io.swagger.models.properties.Property;
@@ -26,6 +27,10 @@ public interface SwaggerTypeAdapter {
   static SwaggerTypeAdapter create(Object swaggerType) {
     if (swaggerType instanceof SwaggerTypeAdapter) {
       return (SwaggerTypeAdapter) swaggerType;
+    }
+
+    if (swaggerType instanceof Model) {
+      return new ModelAdapter((Model) swaggerType);
     }
 
     if (swaggerType instanceof Property) {
@@ -55,5 +60,5 @@ public interface SwaggerTypeAdapter {
 
   String getFormat();
 
-  boolean isObject();
+  boolean isJavaLangObject();
 }

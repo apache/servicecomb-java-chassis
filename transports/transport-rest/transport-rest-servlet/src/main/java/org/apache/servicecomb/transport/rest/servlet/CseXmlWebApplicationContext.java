@@ -35,7 +35,7 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
 
   static final String KEY_LOCATION = "contextConfigLocation";
 
-  private String defaultBeanResource = BeanUtils.DEFAULT_BEAN_RESOURCE;
+  private String[] defaultBeanResource = BeanUtils.DEFAULT_BEAN_RESOURCE;
 
   public CseXmlWebApplicationContext() {
   }
@@ -44,7 +44,11 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
     setServletContext(servletContext);
   }
 
-  public void setDefaultBeanResource(String defaultBeanResource) {
+  public void setDefaultBeanResource(String[] defaultBeanResource) {
+    if (defaultBeanResource == null) {
+      return;
+    }
+
     this.defaultBeanResource = defaultBeanResource;
   }
 
@@ -67,19 +71,13 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
 
   private String[] splitLocations(String locations) {
     Set<String> locationSet = new LinkedHashSet<>();
-    if (!StringUtils.isEmpty(locations)) {
+    BeanUtils.addBeanLocation(locationSet, BeanUtils.DEFAULT_BEAN_RESOURCE);
+    BeanUtils.addBeanLocation(locationSet, defaultBeanResource);
+
+    if (StringUtils.isNotEmpty(locations)) {
       for (String location : locations.split("[,\n]")) {
-        location = location.trim();
-        if (StringUtils.isEmpty(location)) {
-          continue;
-        }
-
-        locationSet.add(location);
+        BeanUtils.addBeanLocation(locationSet, location);
       }
-    }
-
-    if (!StringUtils.isEmpty(defaultBeanResource)) {
-      locationSet.add(defaultBeanResource);
     }
 
     return locationSet.toArray(new String[locationSet.size()]);

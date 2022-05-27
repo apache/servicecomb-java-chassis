@@ -37,3 +37,4 @@ ssl.keyStoreType: PKCS12
 ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
 ssl.sslCustomClass: org.apache.servicecomb.it.DemoSSLCustom
+ssl.engine: openssl

@@ -16,54 +16,42 @@
  */
 package org.apache.servicecomb.it.extend.engine;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.pojo.Invoker;
+import org.apache.servicecomb.provider.pojo.PojoConsumerMetaRefresher;
+import org.apache.servicecomb.provider.pojo.PojoInvocation;
+import org.apache.servicecomb.provider.pojo.PojoInvocationCreator;
 
 /**
  * allow set transport, that makes integration test easier
  */
 public class ITInvoker extends Invoker {
+  @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, String transport, Class<?> consumerIntf) {
     ITInvoker invoker = new ITInvoker(microserviceName, schemaId, transport, consumerIntf);
-    return invoker.getProxy();
+    return (T) Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
   }
 
-  private String transport;
+  class ITPojoInvocationCreator extends PojoInvocationCreator {
+    @Override
+    public PojoInvocation create(Method method, PojoConsumerMetaRefresher metaRefresher, Object[] args) {
+      PojoInvocation invocation = super.create(method, metaRefresher, args);
+      invocation.getReferenceConfig().setTransport(transport);
+      return invocation;
+    }
+  }
 
-  private Object proxy;
+  private final String transport;
 
   public ITInvoker(String microserviceName, String schemaId, String transport, Class<?> consumerIntf) {
     super(microserviceName, schemaId, consumerIntf);
     this.transport = transport;
-    this.proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, this);
-  }
-
-  public String getMicroserviceName() {
-    return microserviceName;
-  }
-
-  public String getSchemaId() {
-    return schemaId;
-  }
-
-  public String getTransport() {
-    return transport;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getProxy() {
-    return (T) proxy;
   }
 
   @Override
-  protected ReferenceConfig findReferenceConfig() {
-    ReferenceConfig referenceConfig = CseContext.getInstance()
-        .getConsumerProviderManager()
-        .createReferenceConfig(microserviceName);
-    referenceConfig.setTransport(transport);
-    return referenceConfig;
+  public PojoInvocationCreator createInvocationCreator() {
+    return new ITPojoInvocationCreator();
   }
 }

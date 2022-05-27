@@ -20,7 +20,10 @@ package org.apache.servicecomb.config.archaius.sources;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.IOUtils;
+
 public class ConfigModel {
+
   private URL url;
 
   private int order;
@@ -50,4 +53,10 @@ public class ConfigModel {
   public void setConfig(Map<String, Object> config) {
     this.config = config;
   }
+
+  @Override
+  public String toString() {
+    return url == null ? "" : IOUtils.anonymousPath(url.toString());
+  }
+
 }

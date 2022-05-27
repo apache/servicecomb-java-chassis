@@ -18,70 +18,59 @@
 package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.serviceregistry.version.VersionRule;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.apache.servicecomb.registry.version.VersionRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCompatiblePathVersionMapper {
   CompatiblePathVersionMapper mapper = new CompatiblePathVersionMapper();
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void getOrCreate() {
     VersionRule versionRule = mapper.getOrCreate("v1");
 
-    Assert.assertEquals("1.0.0.0-2.0.0.0", versionRule.getVersionRule());
+    Assertions.assertEquals("1.0.0.0-2.0.0.0", versionRule.getVersionRule());
   }
 
   @Test
   public void createVersionRule_empty() {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is("pathVersion \"\" is invalid, format must be v+number or V+number."));
-
-    mapper.getOrCreate("");
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> mapper.getOrCreate(""));
+    Assertions.assertEquals("pathVersion \"\" is invalid, format must be v+number or V+number.", exception.getMessage());
   }
 
   @Test
   public void createVersionRule_invalidFormat() {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is("pathVersion \"a1\" is invalid, format must be v+number or V+number."));
-
-    mapper.getOrCreate("a1");
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> mapper.getOrCreate("a1"));
+    Assertions.assertEquals("pathVersion \"a1\" is invalid, format must be v+number or V+number.", exception.getMessage());
   }
 
   @Test
   public void createVersionRule_invalidNumber() {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is("pathVersion \"va\" is invalid, format must be v+number or V+number."));
-
-    mapper.getOrCreate("va");
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> mapper.getOrCreate("va"));
+    Assertions.assertEquals("pathVersion \"va\" is invalid, format must be v+number or V+number.", exception.getMessage());
   }
 
   @Test
   public void createVersionRule_tooSmall() {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is("pathVersion \"v-1\" is invalid, version range is [0, 32767]."));
-
-    mapper.getOrCreate("v-1");
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> mapper.getOrCreate("v-1"));
+    Assertions.assertEquals("pathVersion \"v-1\" is invalid, version range is [0, 32767].", exception.getMessage());
   }
 
   @Test
   public void createVersionRule_tooBig() {
-    expectedException.expect(ServiceCombException.class);
-    expectedException.expectMessage(Matchers.is("pathVersion \"v32768\" is invalid, version range is [0, 32767]."));
-
-    mapper.getOrCreate("v32768");
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> mapper.getOrCreate("v32768"));
+    Assertions.assertEquals("pathVersion \"v32768\" is invalid, version range is [0, 32767].", exception.getMessage());
   }
 
   @Test
   public void createVersionRule_32767() {
     VersionRule versionRule = mapper.getOrCreate("v32767");
 
-    Assert.assertEquals("32767.0.0.0+", versionRule.getVersionRule());
+    Assertions.assertEquals("32767.0.0.0+", versionRule.getVersionRule());
   }
 }

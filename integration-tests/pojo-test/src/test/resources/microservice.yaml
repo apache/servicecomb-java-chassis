@@ -22,6 +22,6 @@ service_description:
 servicecomb:
   service:
     registry:
-      address: http://127.0.0.1:30100
-  highway:
+      enabled: false
+  rest:
     address: 0.0.0.0:7070

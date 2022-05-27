@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.provider.rest.common;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -30,8 +31,10 @@ import org.springframework.stereotype.Component;
 @Inherited
 @Documented
 @Retention(RUNTIME)
-@Target(TYPE)
+@Target({TYPE, ANNOTATION_TYPE})
 @Component
 public @interface RestSchema {
   String schemaId();
+
+  Class<?> schemaInterface() default Object.class;
 }

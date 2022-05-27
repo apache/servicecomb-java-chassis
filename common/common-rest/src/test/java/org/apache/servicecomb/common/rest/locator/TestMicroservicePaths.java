@@ -17,123 +17,92 @@
 
 package org.apache.servicecomb.common.rest.locator;
 
-import java.io.StringWriter;
-import java.io.Writer;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.WriterAppender;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.common.rest.definition.UnitTestRestUtils;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.junit.Assert;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestMicroservicePaths {
-  @Test
-  public void testAddResourceStaticNewGroup() {
-    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
+  static SCBEngine scbEngine;
 
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(staticRes);
+  static MicroservicePaths paths;
 
-    Assert.assertSame(staticRes, paths.getStaticPathOperationMap().get("/static").findValue("POST"));
+  @BeforeClass
+  public static void setup() {
+    ConfigUtil.installDynamicConfig();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
+        .addProducerMeta("sid1", new TestPathSchema())
+        .run();
+
+    ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
+    paths = Deencapsulation.getField(spm, "producerPaths");
+  }
+
+  @AfterClass
+  public static void teardown() {
+    scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
-  public void testAddResourceStaticAddToGroup() {
-    RestOperationMeta staticResPost = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
-    RestOperationMeta staticResGet = UnitTestRestUtils.createRestOperationMeta("GET", "/static");
+  public void staticGroup() {
+    RestOperationMeta meta = paths.getStaticPathOperationMap().get("/static/").findValue("POST");
+    Assertions.assertSame("postStatic", meta.getOperationMeta().getOperationId());
 
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(staticResPost);
-    paths.addResource(staticResGet);
-
-    Assert.assertSame(staticResPost, paths.getStaticPathOperationMap().get("/static").findValue("POST"));
-    Assert.assertSame(staticResGet, paths.getStaticPathOperationMap().get("/static").findValue("GET"));
+    meta = paths.getStaticPathOperationMap().get("/static/").findValue("GET");
+    Assertions.assertSame("getStatic", meta.getOperationMeta().getOperationId());
   }
 
   @Test
-  public void testAddResourceStaticDuplicatedHttpMethod() {
-    RestOperationMeta staticResPost = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
+  public void testAddResourceStaticDuplicatedHttpMethod(@Mocked RestOperationMeta staticResPost) {
+    new Expectations() {
+      {
+        staticResPost.getHttpMethod();
+        result = "POST";
+        staticResPost.getAbsolutePath();
+        result = "/static/";
+        staticResPost.isAbsoluteStaticPath();
+        result = true;
+      }
+    };
 
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(staticResPost);
-
-    try {
-      paths.addResource(staticResPost);
-      Assert.fail("must throw exception");
-    } catch (ServiceCombException e) {
-      Assert.assertEquals("operation with url /static, method POST is duplicated.", e.getMessage());
-    }
+    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+            () -> paths.addResource(staticResPost));
+    Assertions.assertEquals("operation with url /static/, method POST is duplicated.", exception.getMessage());
   }
 
   @Test
-  public void testAddResourceDynamic() {
-    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperationMeta("POST", "/dynamic/{id}");
-
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(dynamicRes);
-
-    Assert.assertSame(dynamicRes, paths.getDynamicPathOperationList().get(0));
-  }
-
-  @Test
-  public void testCloneTo() {
-    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
-    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperationMeta("POST", "/dynamic/{id}");
-
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(staticRes);
-    paths.addResource(dynamicRes);
-
-    MicroservicePaths other = new MicroservicePaths();
-    paths.cloneTo(other);
-
-    Assert.assertEquals(paths.getStaticPathOperationMap(), other.getStaticPathOperationMap());
-    Assert.assertEquals(paths.getDynamicPathOperationList(), other.getDynamicPathOperationList());
-  }
-
-  @Test
-  public void testSortPath() {
-    // only test base rule
-    // completely rule test by TestRestOperationComparator
-    RestOperationMeta dynamicResLessStatic = UnitTestRestUtils.createRestOperationMeta("POST", "/a/{id}");
-    RestOperationMeta dynamicResMoreStatic = UnitTestRestUtils.createRestOperationMeta("POST", "/abc/{id}");
-
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(dynamicResLessStatic);
-    paths.addResource(dynamicResMoreStatic);
-    paths.sortPath();
-
-    Assert.assertSame(dynamicResMoreStatic, paths.getDynamicPathOperationList().get(0));
-    Assert.assertSame(dynamicResLessStatic, paths.getDynamicPathOperationList().get(1));
+  public void dynamicPath() {
+    Assertions.assertEquals("dynamicExId", paths.getDynamicPathOperationList().get(0).getOperationMeta().getOperationId());
+    Assertions.assertEquals("dynamicId", paths.getDynamicPathOperationList().get(1).getOperationMeta().getOperationId());
   }
 
   @Test
   public void testPrintPaths() {
-    RestOperationMeta staticRes = UnitTestRestUtils.createRestOperationMeta("POST", "/static");
-    RestOperationMeta dynamicRes = UnitTestRestUtils.createRestOperationMeta("POST", "/dynamic/{id}");
+    try (LogCollector collector = new LogCollector()) {
+      paths.printPaths();
 
-    MicroservicePaths paths = new MicroservicePaths();
-    paths.addResource(staticRes);
-    paths.addResource(dynamicRes);
-
-    WriterAppender appender = new WriterAppender();
-    Writer writer = new StringWriter();
-    appender.setWriter(writer);
-    appender.setLayout(new SimpleLayout());
-    Logger.getRootLogger().addAppender(appender);
-
-    paths.printPaths();
-
-    String[] lines = writer.toString().split("\n");
-    Assert.assertEquals("INFO - Swagger mapped \"{[/static], method=[POST], produces=[application/json]}\" onto null",
-        lines[0].trim());
-    Assert.assertEquals(
-        "INFO - Swagger mapped \"{[/dynamic/{id}], method=[POST], produces=[application/json]}\" onto null",
-        lines[1].trim());
-
-    Logger.getRootLogger().removeAppender(appender);
+      StringBuilder sb = new StringBuilder();
+      collector.getEvents().stream()
+          .forEach(e -> sb.append(e.getMessage()).append("\n"));
+      Assertions.assertEquals(
+          "Swagger mapped \"{[/static/], method=[POST], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.postStatic()\n"
+              + "Swagger mapped \"{[/static/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStatic()\n"
+              + "Swagger mapped \"{[/staticEx/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStaticEx()\n"
+              + "Swagger mapped \"{[/dynamicEx/{id}/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicExId(java.lang.String)\n"
+              + "Swagger mapped \"{[/dynamic/{id}/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicId(java.lang.String)\n",
+          sb.toString());
+    }
   }
 }
