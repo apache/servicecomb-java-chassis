@@ -277,7 +277,7 @@ public class TestRestClientInvocation {
 
     new Expectations(JsonUtils.class) {
       {
-        JsonUtils.writeValueAsString(any);
+        JsonUtils.writeUnicodeValueAsString(any);
         result = new RuntimeExceptionWithoutStackTrace();
       }
     };
