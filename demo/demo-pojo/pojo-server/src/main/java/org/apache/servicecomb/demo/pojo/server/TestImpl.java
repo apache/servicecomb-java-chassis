@@ -37,7 +37,7 @@ public class TestImpl implements Test {
 
   @Override
   public String getTestString(String code) {
-    return String.format("code is '%s'", String.valueOf(code));
+    return String.format("code is '%s'", code);
   }
 
   @Override

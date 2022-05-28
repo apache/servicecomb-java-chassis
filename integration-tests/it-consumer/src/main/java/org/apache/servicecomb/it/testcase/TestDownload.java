@@ -65,7 +65,7 @@ public class TestDownload {
 
   private CompletableFuture<File> checkFile(ReadStreamPart part) {
     CompletableFuture<File> future = part.saveToFile("target/download/"
-        + UUID.randomUUID().toString()
+        + UUID.randomUUID()
         + "-"
         + part.getSubmittedFileName());
     return checkFuture(future);

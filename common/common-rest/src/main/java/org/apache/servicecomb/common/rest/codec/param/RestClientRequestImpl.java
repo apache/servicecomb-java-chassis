@@ -134,7 +134,7 @@ public class RestClientRequestImpl implements RestClientRequest {
   protected Future<Void> doEndWithUpload() {
     request.setChunked(true);
 
-    String boundary = "boundary" + UUID.randomUUID().toString();
+    String boundary = "boundary" + UUID.randomUUID();
     putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
 
     return genBodyForm(boundary).onSuccess(v -> attachFiles(boundary)).onFailure(e -> asyncResp.consumerFail(e));

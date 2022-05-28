@@ -60,6 +60,6 @@ public class ResultPrinter {
         ITJUnitUtils.getRunCount(),
         ITJUnitUtils.getFailures().size(),
         totalTime));
-    System.out.println(sb.toString());
+    System.out.println(sb);
   }
 }

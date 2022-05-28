@@ -144,7 +144,7 @@ final class RestClientUtil {
       }).onFailure(failure -> {
         LOGGER.error("{} {} fail, endpoint is {}:{}, message: {}",
             httpMethod,
-            url.toString(),
+                url,
             ipPort.getHostOrIp(),
             ipPort.getPort(),
             failure.getMessage());
@@ -176,7 +176,7 @@ final class RestClientUtil {
     try {
       signReq.setEndpoint(new URI(endpoint.toString()));
     } catch (URISyntaxException e) {
-      LOGGER.error("set uri failed, uri is {}, message: {}", endpoint.toString(), e.getMessage());
+      LOGGER.error("set uri failed, uri is {}, message: {}", endpoint, e.getMessage());
     }
     signReq.setContent((requestParam.getBody() != null && requestParam.getBody().length > 0)
         ? new ByteArrayInputStream(requestParam.getBody())

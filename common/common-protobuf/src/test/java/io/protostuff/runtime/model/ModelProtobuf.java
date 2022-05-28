@@ -2167,8 +2167,8 @@ io.protostuff.runtime.model.ModelProtobuf.User defaultValue);
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
       internalGetMutableCseContext() {
-        onChanged();;
-        if (cseContext_ == null) {
+        onChanged();
+          if (cseContext_ == null) {
           cseContext_ = com.google.protobuf.MapField.newMapField(
               CseContextDefaultEntryHolder.defaultEntry);
         }
@@ -2298,8 +2298,8 @@ io.protostuff.runtime.model.ModelProtobuf.User defaultValue);
       }
       private com.google.protobuf.MapField<java.lang.String, io.protostuff.runtime.model.ModelProtobuf.User>
       internalGetMutableUserMap() {
-        onChanged();;
-        if (userMap_ == null) {
+        onChanged();
+          if (userMap_ == null) {
           userMap_ = com.google.protobuf.MapField.newMapField(
               UserMapDefaultEntryHolder.defaultEntry);
         }

@@ -175,7 +175,7 @@ public class TestReadStreamPart {
 
   @Test
   public void saveToFile() throws InterruptedException, ExecutionException, IOException {
-    File dir = new File("target/notExist-" + UUID.randomUUID().toString());
+    File dir = new File("target/notExist-" + UUID.randomUUID());
     File file = new File(dir, "a.txt");
 
     Assertions.assertFalse(dir.exists());
@@ -190,7 +190,7 @@ public class TestReadStreamPart {
 
   @Test
   public void saveToFile_notExist_notCreate() throws InterruptedException, ExecutionException, IOException {
-    File dir = new File("target/notExist-" + UUID.randomUUID().toString());
+    File dir = new File("target/notExist-" + UUID.randomUUID());
     File file = new File(dir, "a.txt");
 
     Assertions.assertFalse(dir.exists());

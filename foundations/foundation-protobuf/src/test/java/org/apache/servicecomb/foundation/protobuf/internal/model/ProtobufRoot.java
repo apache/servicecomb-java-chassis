@@ -7609,8 +7609,8 @@ org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defa
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
       internalGetMutableSsMap() {
-        onChanged();;
-        if (ssMap_ == null) {
+        onChanged();
+          if (ssMap_ == null) {
           ssMap_ = com.google.protobuf.MapField.newMapField(
               SsMapDefaultEntryHolder.defaultEntry);
         }
@@ -7740,8 +7740,8 @@ org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defa
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.Integer>
       internalGetMutableSint32Map() {
-        onChanged();;
-        if (sint32Map_ == null) {
+        onChanged();
+          if (sint32Map_ == null) {
           sint32Map_ = com.google.protobuf.MapField.newMapField(
               Sint32MapDefaultEntryHolder.defaultEntry);
         }
@@ -7868,8 +7868,8 @@ org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defa
       }
       private com.google.protobuf.MapField<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
       internalGetMutableSpMap() {
-        onChanged();;
-        if (spMap_ == null) {
+        onChanged();
+          if (spMap_ == null) {
           spMap_ = com.google.protobuf.MapField.newMapField(
               SpMapDefaultEntryHolder.defaultEntry);
         }

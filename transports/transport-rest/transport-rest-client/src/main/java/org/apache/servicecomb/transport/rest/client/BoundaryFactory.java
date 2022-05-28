@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 public interface BoundaryFactory {
-  String BOUNDARY_PREFIX = "boundary-" + UUID.randomUUID().toString() + "-";
+  String BOUNDARY_PREFIX = "boundary-" + UUID.randomUUID() + "-";
 
   AtomicLong BOUNDARY_INDEX = new AtomicLong();
 

@@ -194,9 +194,9 @@ public class TrustManagerExt extends X509ExtendedTrustManager {
       } else if (cnValid(cns, ipTmp)) {
         return;
       }
-      LOG.error("CN does not match IP: e=" + cns.toString()
+      LOG.error("CN does not match IP: e=" + cns
           + ",t=" + ip);
-      throw new CertificateException("CN does not match IP: e=" + cns.toString()
+      throw new CertificateException("CN does not match IP: e=" + cns
           + ",t=" + ip);
     }
   }

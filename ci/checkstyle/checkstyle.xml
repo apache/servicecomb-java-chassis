@@ -26,6 +26,8 @@
     Description: none
 -->
 <module name="Checker">
+  <module name="NewlineAtEndOfFile">
+  </module>
   <module name="TreeWalker">
     <module name="AvoidStarImport"/>
     <module name="RedundantImport"/>
