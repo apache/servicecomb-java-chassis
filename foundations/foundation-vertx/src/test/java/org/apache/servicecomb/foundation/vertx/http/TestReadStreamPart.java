@@ -63,7 +63,7 @@ public class TestReadStreamPart {
 
   @Before
   public void setup() throws IOException {
-    context.setOwner((VertxInternal)vertx);
+    context.setOwner((VertxInternal) vertx);
     inputStream.reset();
   }
 

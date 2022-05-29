@@ -117,7 +117,7 @@ public class TestJaxrsV1V1 {
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
     Assertions.assertEquals(1, result.size());
-    result = (Map<String, Object>)result.get("addBody");
+    result = (Map<String, Object>) result.get("addBody");
     Assertions.assertEquals(2, result.size());
     Assertions.assertEquals(1, (int) result.get("x"));
     Assertions.assertEquals(2, (int) result.get("y"));
