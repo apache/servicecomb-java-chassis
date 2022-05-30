@@ -101,7 +101,10 @@ public class SwaggerToProtoGenerator {
   }
 
   public static boolean isValidEnum(String name) {
-    return !name.contains(".") && !name.contains("-");
+    if (name.contains(".") || name.contains("-")) {
+      return false;
+    }
+    return true;
   }
 
   private void convertDefinitions() {
