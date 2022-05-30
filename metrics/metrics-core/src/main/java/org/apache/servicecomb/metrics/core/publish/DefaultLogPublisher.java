@@ -197,7 +197,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
           interfaceNode.getName());
     }
     if (tmpSb.length() != 0) {
-      sb.append(tmpSb.toString());
+      sb.append(tmpSb);
     }
   }
 

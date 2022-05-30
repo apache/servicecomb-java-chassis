@@ -60,7 +60,7 @@ public class EdgeSignatureRequestFilter implements HttpServerFilter {
       hasher.putString(name, StandardCharsets.UTF_8);
       hasher.putString(requestEx.getParameter(name), StandardCharsets.UTF_8);
     }
-    LOGGER.info("afterReceiveRequest signature: {}", hasher.hash().toString());
+    LOGGER.info("afterReceiveRequest signature: {}", hasher.hash());
 
     return null;
   }

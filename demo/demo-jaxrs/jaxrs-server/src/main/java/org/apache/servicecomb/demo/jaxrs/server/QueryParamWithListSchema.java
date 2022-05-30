@@ -33,30 +33,30 @@ public class QueryParamWithListSchema {
   @Path("queryListCSV")
   @GET
   public String queryListCSV(@ApiParam(collectionFormat = "csv") @QueryParam("queryList") List<String> queryList) {
-    return queryList == null ? "null" : queryList.size() + ":" + queryList.toString();
+    return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListSSV")
   @GET
   public String queryListSSV(@ApiParam(collectionFormat = "ssv") @QueryParam("queryList") List<String> queryList) {
-    return queryList == null ? "null" : queryList.size() + ":" + queryList.toString();
+    return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListTSV")
   @GET
   public String queryListTSV(@ApiParam(collectionFormat = "tsv") @QueryParam("queryList") List<String> queryList) {
-    return queryList == null ? "null" : queryList.size() + ":" + queryList.toString();
+    return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListPIPES")
   @GET
   public String queryListPIPES(@ApiParam(collectionFormat = "pipes") @QueryParam("queryList") List<String> queryList) {
-    return queryList == null ? "null" : queryList.size() + ":" + queryList.toString();
+    return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListMULTI")
   @GET
   public String queryListMULTI(@ApiParam(collectionFormat = "multi") @QueryParam("queryList") List<String> queryList) {
-    return queryList == null ? "null" : queryList.size() + ":" + queryList.toString();
+    return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 }

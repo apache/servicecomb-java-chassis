@@ -65,7 +65,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Asciidoctor.Factory;
 import org.asciidoctor.Attributes;
-import org.asciidoctor.AttributesBuilder;
+import org.asciidoctor.Options;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.SafeMode;
 import org.slf4j.Logger;
@@ -244,20 +244,20 @@ public class InspectorImpl {
     String markup = markupBuilder.withConfig(markupConfig).build().toString();
 
     // markup to html
-    OptionsBuilder builder = OptionsBuilder.options();
+    OptionsBuilder builder = Options.builder();
     builder.docType("book")
         .backend("html5")
         .headerFooter(true)
         .safe(SafeMode.UNSAFE)
-        .attributes(AttributesBuilder.attributes()
+        .attributes(Attributes.builder()
             .attribute("toclevels", 3)
             .attribute(Attributes.TOC_2, true)
             .attribute(Attributes.TOC_POSITION, "left")
             .attribute(Attributes.LINK_CSS, true)
             .attribute(Attributes.STYLESHEET_NAME, inspectorConfig.getAsciidoctorCss())
             .attribute(Attributes.SECTION_NUMBERS, true)
-            .attribute(Attributes.SECT_NUM_LEVELS, 4));
-    return asciidoctor.convert(markup, builder.asMap());
+            .attribute(Attributes.SECT_NUM_LEVELS, 4).build());
+    return asciidoctor.convert(markup, builder.build());
   }
 
   @Path("/{path : .+}")

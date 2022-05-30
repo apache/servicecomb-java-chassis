@@ -31,5 +31,5 @@ public class AlarmEvent {
   public enum Type {
     OPEN,
     CLOSE
-  };
+  }
 }

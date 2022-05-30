@@ -92,7 +92,7 @@ public class DownloadSchema implements BootListener {
 
   protected File createTempFile(String name, String content) throws IOException {
     if (name == null) {
-      name = "download-" + UUID.randomUUID().toString() + ".txt";
+      name = "download-" + UUID.randomUUID() + ".txt";
     }
     File file = new File(tempDir, name);
     FileUtils.write(file, content, StandardCharsets.UTF_8, false);

@@ -121,7 +121,7 @@ public class InstanceCacheChecker {
               + "current cache: {}\n",
           microserviceVersions.getAppId(),
           microserviceVersions.getMicroserviceName(),
-          remoteInstances.toString());
+              remoteInstances);
       instanceCacheResult.setStatus(Status.NORMAL);
       return instanceCacheResult;
     }
@@ -132,7 +132,7 @@ public class InstanceCacheChecker {
         microserviceVersions.getAppId(),
         microserviceVersions.getMicroserviceName(),
         microserviceVersions.getPulledInstances().toString(),
-        remoteInstances.toString());
+            remoteInstances);
     instanceCacheResult.setStatus(Status.ABNORMAL);
     instanceCacheResult.setDetail("instance cache not match");
 

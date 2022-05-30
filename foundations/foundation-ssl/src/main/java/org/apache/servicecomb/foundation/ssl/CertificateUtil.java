@@ -126,7 +126,7 @@ public final class CertificateUtil {
             Object key = list.get(0);
             Object value = list.get(1);
             if (key instanceof Integer && value instanceof String) {
-              int intKey = ((Integer) key).intValue();
+              int intKey = (Integer) key;
               String strValue = (String) value;
               if (intKey == SUBALTNAME_DNSNAME || intKey == SUBALTNAME_IPADDRESS) {
                 names.add(strValue);

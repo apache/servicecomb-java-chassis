@@ -18,7 +18,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.demo.TestMgr;
@@ -49,7 +49,7 @@ public class ConsumerTestsAfterBootup implements BootListener {
       int len = inputStream.read(buffer);
       TestMgr.check(2048 * 10 > len, true);
       inputStream.close();
-      return new String(buffer, 0, len, Charset.forName("UTF-8"));
+      return new String(buffer, 0, len, StandardCharsets.UTF_8);
     } catch (IOException e) {
       TestMgr.failed(e.getMessage(), e);
       return null;

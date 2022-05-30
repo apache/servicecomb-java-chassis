@@ -89,7 +89,7 @@ public class TcpServer {
       }
 
       // 监听失败
-      String msg = String.format("listen failed, address=%s", socketAddress.toString());
+      String msg = String.format("listen failed, address=%s", socketAddress);
       callback.fail(new Exception(msg, ar.cause()));
     });
   }

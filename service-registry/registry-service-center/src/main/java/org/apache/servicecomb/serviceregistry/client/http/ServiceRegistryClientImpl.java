@@ -178,7 +178,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                   }
                 }
               } catch (IOException e) {
-                LOGGER.warn("read value failed from buffer {}", bodyBuffer.toString());
+                LOGGER.warn("read value failed from buffer {}", bodyBuffer);
               }
             }
 
@@ -287,7 +287,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                     mInstances.setMicroserviceNotExist(true);
                     mInstances.setNeedRefresh(false);
                   }
-                  LOGGER.warn("failed to findInstances: " + bodyBuffer.toString());
+                  LOGGER.warn("failed to findInstances: " + bodyBuffer);
                 }
                 break;
                 default:
