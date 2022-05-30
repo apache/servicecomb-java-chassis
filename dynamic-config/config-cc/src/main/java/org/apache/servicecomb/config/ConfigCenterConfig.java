@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,7 +76,12 @@ public final class ConfigCenterConfig {
     Object property = finalConfig.getProperty(FILE_SOURCE);
     if (property instanceof String) {
       List<String> result = new ArrayList<>();
-      result.add((String) property);
+      if (((String) property).contains(",")) {
+        String[] fileSourceNames = ((String) property).split(",");
+        result.addAll(Arrays.asList(fileSourceNames));
+      } else {
+        result.add((String) property);
+      }
       return result;
     }
     if (property instanceof List) {
