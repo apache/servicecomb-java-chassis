@@ -61,6 +61,10 @@
     <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
     <maven-project-info-reports-plugin.version>3.3.0</maven-project-info-reports-plugin.version>
     <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
+    <os-maven-plugin.version>1.4.1.Final</os-maven-plugin.version>
+    <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
+    <protoc3-maven-plugin.version>3.19.2</protoc3-maven-plugin.version>
+    <protoc-gen-grpc-java-plugin.version>1.46.0</protoc-gen-grpc-java-plugin.version>
     <puppycrawl-checkstyle.version>10.3</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
     <site-maven-plugin.version>3.12.0</site-maven-plugin.version>
@@ -169,6 +173,13 @@
   </reporting>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${os-maven-plugin.version}</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
