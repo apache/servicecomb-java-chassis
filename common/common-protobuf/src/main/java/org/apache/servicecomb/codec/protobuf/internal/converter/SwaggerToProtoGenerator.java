@@ -332,10 +332,7 @@ public class SwaggerToProtoGenerator {
   }
 
   private boolean isUpload(Operation operation) {
-    if (operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA)) {
-      return true;
-    }
-    return false;
+    return operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA);
   }
 
   private boolean isDownload(Operation operation) {
