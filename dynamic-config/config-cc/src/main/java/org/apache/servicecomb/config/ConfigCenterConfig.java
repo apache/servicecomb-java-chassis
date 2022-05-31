@@ -75,14 +75,7 @@ public final class ConfigCenterConfig {
   public List<String> getFileSources() {
     Object property = finalConfig.getProperty(FILE_SOURCE);
     if (property instanceof String) {
-      List<String> result = new ArrayList<>();
-      if (((String) property).contains(",")) {
-        String[] fileSourceNames = ((String) property).split(",");
-        result.addAll(Arrays.asList(fileSourceNames));
-      } else {
-        result.add((String) property);
-      }
-      return result;
+      return new ArrayList<>(Arrays.asList(((String) property).split(",")));
     }
     if (property instanceof List) {
       return (List<String>) property;
