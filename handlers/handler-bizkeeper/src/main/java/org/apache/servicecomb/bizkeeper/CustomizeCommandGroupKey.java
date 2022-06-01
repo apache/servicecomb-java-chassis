@@ -35,7 +35,7 @@ public class CustomizeCommandGroupKey extends HystrixKey.HystrixKeyDefault imple
   }
 
   private static final InternMap<String, CustomizeCommandGroupKey> intern =
-      new InternMap<String, CustomizeCommandGroupKey>(
+      new InternMap<>(
           new InternMap.ValueConstructor<String, CustomizeCommandGroupKey>() {
             @Override
             public CustomizeCommandGroupKey create(String key) {

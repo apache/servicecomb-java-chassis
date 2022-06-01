@@ -31,7 +31,7 @@ public class HttpServerFilterBeforeSendResponseExecutor {
 
   private int currentIndex;
 
-  private final CompletableFuture<Void> future = new CompletableFuture<Void>();
+  private final CompletableFuture<Void> future = new CompletableFuture<>();
 
   public HttpServerFilterBeforeSendResponseExecutor(List<HttpServerFilter> httpServerFilters, Invocation invocation,
       HttpServletResponseEx responseEx) {
