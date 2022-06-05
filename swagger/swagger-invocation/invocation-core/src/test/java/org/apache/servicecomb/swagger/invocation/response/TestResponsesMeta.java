@@ -29,7 +29,7 @@ import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;
 
 public class TestResponsesMeta {
-  class ResponseMetaImpl {
+  static class ResponseMetaImpl {
     @ApiResponses({@ApiResponse(code = 400, response = String.class, message = ""),
         @ApiResponse(
             code = 401,

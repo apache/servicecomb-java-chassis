@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Assertions;
 
 public class TestRestProducers {
   @RestSchema(schemaId = "test")
-  public class RestSchemaForTest {
+  public static class RestSchemaForTest {
   }
 
   RestProducers producer = new RestProducers();

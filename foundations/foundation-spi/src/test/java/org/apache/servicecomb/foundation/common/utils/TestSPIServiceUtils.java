@@ -106,7 +106,7 @@ public class TestSPIServiceUtils {
     int getOrder();
   }
 
-  public class PriorityImpl implements PriorityIntf {
+  public static class PriorityImpl implements PriorityIntf {
     private final String name;
 
     private final int order;

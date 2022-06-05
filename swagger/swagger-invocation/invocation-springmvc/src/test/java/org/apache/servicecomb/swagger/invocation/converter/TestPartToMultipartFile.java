@@ -120,7 +120,7 @@ public class TestPartToMultipartFile {
     Assertions.assertEquals(size, multipartFile.getSize());
   }
 
-  class ByteArrayInputStreamForTest extends ByteArrayInputStream {
+  static class ByteArrayInputStreamForTest extends ByteArrayInputStream {
     boolean closed;
 
     public ByteArrayInputStreamForTest(byte[] buf) {

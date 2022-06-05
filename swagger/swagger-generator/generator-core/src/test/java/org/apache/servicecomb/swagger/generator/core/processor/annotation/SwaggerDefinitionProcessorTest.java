@@ -56,16 +56,16 @@ public class SwaggerDefinitionProcessorTest {
           license = @License(name = "licenseName")),
       consumes = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN},
       produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-  private class SwaggerTestTarget {
+  private static class SwaggerTestTarget {
   }
 
   @Api(consumes = MediaType.APPLICATION_XML, produces = MediaType.TEXT_PLAIN)
   @SwaggerDefinition(consumes = "", produces = "")
-  private class SwaggerTestTarget_EmptyMediaType {
+  private static class SwaggerTestTarget_EmptyMediaType {
   }
 
   @SwaggerDefinition()
-  private class EmptySwaggerDefinition {
+  private static class EmptySwaggerDefinition {
   }
 
   @SwaggerDefinition(securityDefinition = @SecurityDefinition(
@@ -84,7 +84,7 @@ public class SwaggerDefinitionProcessorTest {
               }),
       })
   )
-  private class SecurityOAuth2 {
+  private static class SecurityOAuth2 {
   }
 
   @SwaggerDefinition(securityDefinition = @SecurityDefinition(
@@ -95,7 +95,7 @@ public class SwaggerDefinitionProcessorTest {
           @ApiKeyAuthDefinition(key = "apikey-desc", description = "desc", in = ApiKeyLocation.QUERY, name = "q2")
       }
   ))
-  private class SecurityApiKey {
+  private static class SecurityApiKey {
   }
 
   @SwaggerDefinition(securityDefinition = @SecurityDefinition(
@@ -105,7 +105,7 @@ public class SwaggerDefinitionProcessorTest {
           @BasicAuthDefinition(key = "basic-desc", description = "desc")
       }
   ))
-  private class SecurityBasic {
+  private static class SecurityBasic {
   }
 
   @Test

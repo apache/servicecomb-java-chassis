@@ -38,9 +38,6 @@ public class TracedJaxrsController {
 
   private final Random random = new Random();
 
-  //@Autowired
-  //private RestTemplate template;
-
   private TracedPojo tracedPojo;
 
   @Autowired

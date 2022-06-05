@@ -237,7 +237,7 @@ public class TestLoadBalanceHandler2 {
     Assertions.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
   }
 
-  public class IsolationEndpointListener {
+  public static class IsolationEndpointListener {
     Holder<Integer> count;
 
     public IsolationEndpointListener(Holder<Integer> count) {

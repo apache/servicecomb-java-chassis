@@ -116,7 +116,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     return new InstancePropertyDiscoveryFilter().getOrder() + 1;
   }
 
-  class PriorityInstanceProperty {
+  static class PriorityInstanceProperty {
     private static final int MAX_LENGTH = 10000;
 
     private static final String SEPARATOR = ".";

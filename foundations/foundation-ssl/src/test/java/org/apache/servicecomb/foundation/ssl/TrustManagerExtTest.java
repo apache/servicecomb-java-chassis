@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Assertions;
 public class TrustManagerExtTest {
   final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
-  class MyX509ExtendedTrustManager extends X509ExtendedTrustManager {
+  static class MyX509ExtendedTrustManager extends X509ExtendedTrustManager {
     public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate, String paramString,
         Socket paramSocket) throws CertificateException {
     }
@@ -83,7 +83,7 @@ public class TrustManagerExtTest {
     }
   }
 
-  class MyX509Certificate extends X509Certificate {
+  static class MyX509Certificate extends X509Certificate {
     private static final long serialVersionUID = -3585440601605666276L;
 
     public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {

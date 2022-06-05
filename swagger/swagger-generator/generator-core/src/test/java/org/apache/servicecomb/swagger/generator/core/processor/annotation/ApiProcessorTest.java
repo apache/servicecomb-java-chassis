@@ -35,14 +35,14 @@ import org.junit.jupiter.api.Assertions;
 
 public class ApiProcessorTest {
   @Api(tags = {"tag1", "tag2", "", "tag1"})
-  private class SwaggerTestTarget {
+  private static class SwaggerTestTarget {
     public void op() {
 
     }
   }
 
   @Api
-  private class SwaggerTestTargetWithNoTag {
+  private static class SwaggerTestTargetWithNoTag {
     public void op() {
 
     }
@@ -51,18 +51,18 @@ public class ApiProcessorTest {
   @SwaggerDefinition(consumes = {"", " "}, produces = {"", " "})
   @Api(consumes = MediaType.TEXT_PLAIN + " , " + MediaType.APPLICATION_JSON,
       produces = MediaType.APPLICATION_XML + "," + MediaType.APPLICATION_JSON)
-  private class OverrideEmptyConsumesAndProduces {
+  private static class OverrideEmptyConsumesAndProduces {
   }
 
   @SwaggerDefinition(consumes = MediaType.MULTIPART_FORM_DATA, produces = MediaType.MULTIPART_FORM_DATA)
   @Api(consumes = MediaType.TEXT_PLAIN + " , " + MediaType.APPLICATION_JSON,
       produces = MediaType.APPLICATION_XML + "," + MediaType.APPLICATION_JSON)
-  private class OverWriteValidConsumesAndProduces {
+  private static class OverWriteValidConsumesAndProduces {
   }
 
   @Api(consumes = MediaType.TEXT_PLAIN + " , " + MediaType.APPLICATION_JSON,
       produces = MediaType.APPLICATION_XML + "," + MediaType.APPLICATION_JSON)
-  private class pureApi {
+  private static class pureApi {
   }
 
   @Test
