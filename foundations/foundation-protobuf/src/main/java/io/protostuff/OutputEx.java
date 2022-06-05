@@ -154,7 +154,7 @@ public interface OutputEx {
 
   void writeScalarUInt64(int tag, int tagSize, long value) throws IOException;
 
-  void writePackedSInt32(final int value) throws IOException;
+  void writePackedSInt32(int value) throws IOException;
 
   void writeScalarSInt32(int tag, int tagSize, int value) throws IOException;
 

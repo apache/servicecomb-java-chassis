@@ -189,9 +189,7 @@ public class AnyEntrySchema implements SchemaEx<Object> {
     // standard pack
     RootSerializer valueSerializer = protoMapper.createRootSerializer(message, _value.getClass());
     String valueCanonicalName = message.getCanonicalName();
-    return (output, value) -> {
-      standardPack(output, value, valueCanonicalName, valueSerializer);
-    };
+    return (output, value) -> standardPack(output, value, valueCanonicalName, valueSerializer);
   }
 
   protected void standardPack(OutputEx output, Object message, String canonicalName, RootSerializer valueSerializer)

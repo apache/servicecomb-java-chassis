@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class InvalidType {
-  public static interface InvalidIntf {
+  public interface InvalidIntf {
 
   }
 

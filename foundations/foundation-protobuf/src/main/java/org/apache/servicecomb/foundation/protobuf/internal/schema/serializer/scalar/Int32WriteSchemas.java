@@ -108,7 +108,7 @@ public final class Int32WriteSchemas {
     }
 
     @Override
-    public final void getAndWriteTo(OutputEx output, T message) throws IOException {
+    public void getAndWriteTo(OutputEx output, T message) throws IOException {
       int value = primitiveGetter.get(message);
       output.writeScalarInt32(tag, tagSize, value);
     }
@@ -124,7 +124,7 @@ public final class Int32WriteSchemas {
     }
 
     @Override
-    public final void getAndWriteTo(OutputEx output, T message) throws IOException {
+    public void getAndWriteTo(OutputEx output, T message) throws IOException {
       short value = primitiveGetter.get(message);
       output.writeScalarInt32(tag, tagSize, value);
     }
@@ -140,7 +140,7 @@ public final class Int32WriteSchemas {
     }
 
     @Override
-    public final void getAndWriteTo(OutputEx output, T message) throws IOException {
+    public void getAndWriteTo(OutputEx output, T message) throws IOException {
       byte value = primitiveGetter.get(message);
       output.writeScalarInt32(tag, tagSize, value);
     }

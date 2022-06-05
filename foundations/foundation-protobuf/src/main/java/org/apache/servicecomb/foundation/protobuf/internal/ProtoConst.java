@@ -31,31 +31,31 @@ public final class ProtoConst {
   private ProtoConst() {
   }
 
-  public static String ANNOTATION_WRAP_ARGUMENTS = "@WrapArguments";
+  public static final String ANNOTATION_WRAP_ARGUMENTS = "@WrapArguments";
 
-  public static String ANNOTATION_WRAP_PROPERTY = "@WrapProperty";
+  public static final String ANNOTATION_WRAP_PROPERTY = "@WrapProperty";
 
   public static String ANNOTATION_RPC = "@Rpc";
 
-  public static String PACK_SCHEMA = "type.googleapis.com/";
+  public static final String PACK_SCHEMA = "type.googleapis.com/";
 
-  public static String JSON_SCHEMA = "json/";
+  public static final String JSON_SCHEMA = "json/";
 
-  public static String JSON_ID_NAME = "@type";
+  public static final String JSON_ID_NAME = "@type";
 
-  public static JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
+  public static final JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
 
-  public static JavaType LIST_TYPE = TypeFactory.defaultInstance().constructType(ArrayList.class);
+  public static final JavaType LIST_TYPE = TypeFactory.defaultInstance().constructType(ArrayList.class);
 
-  public static JavaType OBJECT_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
+  public static final JavaType OBJECT_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
 
-  public static Proto ANY_PROTO;
+  public static final Proto ANY_PROTO;
 
-  public static Message ANY;
+  public static final Message ANY;
 
-  public static Proto EMPTY_PROTO;
+  public static final Proto EMPTY_PROTO;
 
-  public static Message EMPTY;
+  public static final Message EMPTY;
 
   static {
     ProtoParser protoParser = new ProtoParser();

@@ -52,9 +52,9 @@ import io.protostuff.runtime.RuntimeEnv.Instantiator;
 public class MessageReadSchema<T> implements SchemaEx<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(MessageReadSchema.class);
 
-  protected ProtoMapper protoMapper;
+  protected final ProtoMapper protoMapper;
 
-  protected Message message;
+  protected final Message message;
 
   private FieldMapEx<T> fieldMap;
 

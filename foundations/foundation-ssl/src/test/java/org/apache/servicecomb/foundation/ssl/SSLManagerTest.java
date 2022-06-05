@@ -278,7 +278,7 @@ public class SSLManagerTest {
 
     new MockUp<SSLContext>() {
       @Mock
-      public final SSLContext getInstance(String type) throws NoSuchAlgorithmException {
+      public SSLContext getInstance(String type) throws NoSuchAlgorithmException {
         throw new NoSuchAlgorithmException();
       }
     };
@@ -309,7 +309,7 @@ public class SSLManagerTest {
 
     new MockUp<SSLContext>() {
       @Mock
-      public final SSLContext getInstance(String type) throws KeyManagementException {
+      public SSLContext getInstance(String type) throws KeyManagementException {
         throw new KeyManagementException();
       }
     };
@@ -340,7 +340,7 @@ public class SSLManagerTest {
 
     new MockUp<SSLContext>() {
       @Mock
-      public final SSLContext getInstance(String type) throws UnknownHostException {
+      public SSLContext getInstance(String type) throws UnknownHostException {
         throw new UnknownHostException();
       }
     };
@@ -372,7 +372,7 @@ public class SSLManagerTest {
 
     new MockUp<SSLContext>() {
       @Mock
-      public final SSLContext getInstance(String type) throws IOException {
+      public SSLContext getInstance(String type) throws IOException {
         throw new IOException();
       }
     };
@@ -403,7 +403,7 @@ public class SSLManagerTest {
 
     new MockUp<SSLContext>() {
       @Mock
-      public final SSLContext getInstance(String type) throws UnknownHostException {
+      public SSLContext getInstance(String type) throws UnknownHostException {
         throw new UnknownHostException();
       }
     };
@@ -434,7 +434,7 @@ public class SSLManagerTest {
 
     new MockUp<SSLContext>() {
       @Mock
-      public final SSLContext getInstance(String type) throws IOException {
+      public SSLContext getInstance(String type) throws IOException {
         throw new IOException();
       }
     };

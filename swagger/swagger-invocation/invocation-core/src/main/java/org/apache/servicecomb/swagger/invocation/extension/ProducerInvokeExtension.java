@@ -24,7 +24,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
  */
 public interface ProducerInvokeExtension {
 
-  public int getOrder();
+  int getOrder();
 
   ///Invoked before the method execution to handle the required checks before method invocation.
   <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,

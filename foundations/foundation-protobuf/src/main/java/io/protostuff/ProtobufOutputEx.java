@@ -54,7 +54,7 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeInt32(int tag, int tagSize, int value) {
+  public void writeInt32(int tag, int tagSize, int value) {
     if (value < 0) {
       tail = writeTagAndRawVarInt64(tag, tagSize, value, this, tail);
       return;
@@ -64,72 +64,72 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeUInt32(int tag, int tagSize, int value) {
+  public void writeUInt32(int tag, int tagSize, int value) {
     tail = writeTagAndRawVarInt32(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeSInt32(int tag, int tagSize, int value) {
+  public void writeSInt32(int tag, int tagSize, int value) {
     tail = writeTagAndRawVarInt32(tag, tagSize, encodeZigZag32(value), this, tail);
   }
 
   @Override
-  public final void writeFixed32(int tag, int tagSize, int value) {
+  public void writeFixed32(int tag, int tagSize, int value) {
     tail = writeTagAndRawLittleEndian32(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeSFixed32(int tag, int tagSize, int value) {
+  public void writeSFixed32(int tag, int tagSize, int value) {
     tail = writeTagAndRawLittleEndian32(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeInt64(int tag, int tagSize, long value) {
+  public void writeInt64(int tag, int tagSize, long value) {
     tail = writeTagAndRawVarInt64(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeUInt64(int tag, int tagSize, long value) {
+  public void writeUInt64(int tag, int tagSize, long value) {
     tail = writeTagAndRawVarInt64(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeSInt64(int tag, int tagSize, long value) {
+  public void writeSInt64(int tag, int tagSize, long value) {
     tail = writeTagAndRawVarInt64(tag, tagSize, encodeZigZag64(value), this, tail);
   }
 
   @Override
-  public final void writeFixed64(int tag, int tagSize, long value) {
+  public void writeFixed64(int tag, int tagSize, long value) {
     tail = writeTagAndRawLittleEndian64(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeSFixed64(int tag, int tagSize, long value) {
+  public void writeSFixed64(int tag, int tagSize, long value) {
     tail = writeTagAndRawLittleEndian64(tag, tagSize, value, this, tail);
   }
 
   @Override
-  public final void writeFloat(int tag, int tagSize, float value) {
+  public void writeFloat(int tag, int tagSize, float value) {
     tail = writeTagAndRawLittleEndian32(tag, tagSize, Float.floatToRawIntBits(value), this, tail);
   }
 
   @Override
-  public final void writeDouble(int tag, int tagSize, double value) {
+  public void writeDouble(int tag, int tagSize, double value) {
     tail = writeTagAndRawLittleEndian64(tag, tagSize, Double.doubleToRawLongBits(value), this, tail);
   }
 
   @Override
-  public final void writeBool(int tag, int tagSize, boolean value) {
+  public void writeBool(int tag, int tagSize, boolean value) {
     tail = writeTagAndRawVarInt32(tag, tagSize, value ? 1 : 0, this, tail);
   }
 
   @Override
-  public final void writeEnum(int tag, int tagSize, int number) {
+  public void writeEnum(int tag, int tagSize, int number) {
     writeInt32(tag, tagSize, number);
   }
 
   @Override
-  public final void writeString(int tag, int tagSize, String value) {
+  public void writeString(int tag, int tagSize, String value) {
     tail = writeUTF8VarDelimited(
         value,
         this,
@@ -137,12 +137,12 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeBytes(int tag, int tagSize, ByteString value) {
+  public void writeBytes(int tag, int tagSize, ByteString value) {
     writeByteArray(tag, tagSize, value.getBytes());
   }
 
   @Override
-  public final void writeByteArray(int tag, int tagSize, byte[] bytes) {
+  public void writeByteArray(int tag, int tagSize, byte[] bytes) {
     tail = writeTagAndByteArray(
         tag, tagSize,
         bytes, 0, bytes.length,
@@ -151,7 +151,7 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeByteRange(boolean utf8String, int tag, int tagSize, byte[] value, int offset, int length) {
+  public void writeByteRange(boolean utf8String, int tag, int tagSize, byte[] value, int offset, int length) {
     tail = writeTagAndByteArray(
         tag, tagSize,
         value, offset, length,
@@ -160,7 +160,7 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final <T> void writeObject(final int tag, int tagSize, final T value, final SchemaWriter<T> schemaWriter)
+  public <T> void writeObject(final int tag, int tagSize, final T value, final SchemaWriter<T> schemaWriter)
       throws IOException {
     final LinkedBuffer lastBuffer;
 
@@ -642,7 +642,7 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
    * Writes a ByteBuffer field.
    */
   @Override
-  public final void writeBytes(int tag, int tagSize, ByteBuffer value) {
+  public void writeBytes(int tag, int tagSize, ByteBuffer value) {
     writeByteRange(false, tag, tagSize, value.array(), value.arrayOffset() + value.position(), value.remaining());
   }
 
@@ -651,7 +651,7 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writePackedInt32(int value) {
+  public void writePackedInt32(int value) {
     if (value >= 0) {
       tail = writeRawVarInt32(value, this, tail);
       return;
@@ -661,33 +661,33 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeScalarInt32(int tag, int tagSize, int value) {
+  public void writeScalarInt32(int tag, int tagSize, int value) {
     if (value != 0) {
       writeInt32(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarInt64(int tag, int tagSize, long value) {
+  public void writeScalarInt64(int tag, int tagSize, long value) {
     if (value != 0) {
       writeInt64(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writePackedUInt32(int value) {
+  public void writePackedUInt32(int value) {
     tail = writeRawVarInt32(value, this, tail);
   }
 
   @Override
-  public final void writeScalarUInt32(int tag, int tagSize, int value) {
+  public void writeScalarUInt32(int tag, int tagSize, int value) {
     if (value != 0) {
       writeUInt32(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writePackedUInt64(long value) {
+  public void writePackedUInt64(long value) {
     final int size = computeRawVarint64Size(value);
 
     if (tail.offset + size > tail.buffer.length) {
@@ -711,33 +711,33 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeScalarUInt64(int tag, int tagSize, long value) {
+  public void writeScalarUInt64(int tag, int tagSize, long value) {
     if (value != 0) {
       writeUInt64(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writePackedSInt32(int value) {
+  public void writePackedSInt32(int value) {
     tail = writeRawVarInt32(encodeZigZag32(value), this, tail);
   }
 
   @Override
-  public final void writeScalarSInt32(int tag, int tagSize, int value) {
+  public void writeScalarSInt32(int tag, int tagSize, int value) {
     if (value != 0) {
       writeSInt32(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarSInt64(int tag, int tagSize, long value) {
+  public void writeScalarSInt64(int tag, int tagSize, long value) {
     if (value != 0) {
       writeSInt64(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writePackedFixed32(int value) {
+  public void writePackedFixed32(int value) {
     final int size = LITTLE_ENDIAN_32_SIZE;
 
     if (tail.offset + size > tail.buffer.length) {
@@ -756,14 +756,14 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeScalarFixed32(int tag, int tagSize, int value) {
+  public void writeScalarFixed32(int tag, int tagSize, int value) {
     if (value != 0) {
       writeFixed32(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writePackedFixed64(long value) {
+  public void writePackedFixed64(long value) {
     final int size = LITTLE_ENDIAN_64_SIZE;
 
     if (tail.offset + size > tail.buffer.length) {
@@ -786,42 +786,42 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeScalarFixed64(int tag, int tagSize, long value) {
+  public void writeScalarFixed64(int tag, int tagSize, long value) {
     if (value != 0) {
       writeFixed64(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarSFixed32(int tag, int tagSize, int value) {
+  public void writeScalarSFixed32(int tag, int tagSize, int value) {
     if (value != 0) {
       writeSFixed32(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarSFixed64(int tag, int tagSize, long value) {
+  public void writeScalarSFixed64(int tag, int tagSize, long value) {
     if (value != 0) {
       writeSFixed64(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarFloat(int tag, int tagSize, float value) {
+  public void writeScalarFloat(int tag, int tagSize, float value) {
     if (value != 0) {
       writeFloat(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarDouble(int tag, int tagSize, double value) {
+  public void writeScalarDouble(int tag, int tagSize, double value) {
     if (value != 0) {
       writeDouble(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writePackedBool(boolean value) {
+  public void writePackedBool(boolean value) {
     final int size = 1;
 
     if (tail.offset + size > tail.buffer.length) {
@@ -837,18 +837,18 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   }
 
   @Override
-  public final void writeScalarBool(int tag, int tagSize, boolean value) {
+  public void writeScalarBool(int tag, int tagSize, boolean value) {
     if (value) {
       writeBool(tag, tagSize, value);
     }
   }
 
   @Override
-  public final void writeScalarEnum(int tag, int tagSize, int value) {
+  public void writeScalarEnum(int tag, int tagSize, int value) {
     writeScalarInt32(tag, tagSize, value);
   }
 
-  public final void writeScalarString(int tag, int tagSize, String value) {
+  public void writeScalarString(int tag, int tagSize, String value) {
     writeString(tag, tagSize, value);
   }
 }

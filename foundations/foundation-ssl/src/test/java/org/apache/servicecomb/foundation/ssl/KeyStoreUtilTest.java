@@ -110,7 +110,7 @@ public class KeyStoreUtilTest {
     try {
       new MockUp<CertificateFactory>() {
         @Mock
-        public final CertificateFactory getInstance(String type) throws CertificateException {
+        public CertificateFactory getInstance(String type) throws CertificateException {
           throw new CertificateException();
         }
       };
@@ -129,7 +129,7 @@ public class KeyStoreUtilTest {
     try {
       new MockUp<CertificateFactory>() {
         @Mock
-        public final CertificateFactory getInstance(
+        public CertificateFactory getInstance(
             String type) throws CertificateException, FileNotFoundException {
           throw new FileNotFoundException();
         }
@@ -149,7 +149,7 @@ public class KeyStoreUtilTest {
     try {
       new MockUp<CertificateFactory>() {
         @Mock
-        public final CertificateFactory getInstance(String type) throws CertificateException, CRLException {
+        public CertificateFactory getInstance(String type) throws CertificateException, CRLException {
           throw new CRLException();
         }
       };
@@ -165,7 +165,7 @@ public class KeyStoreUtilTest {
     new MockUp<CertificateFactory>() {
       @SuppressWarnings("unchecked")
       @Mock
-      public final Collection<? extends CRL> generateCRLs(InputStream inStream) throws CRLException {
+      public Collection<? extends CRL> generateCRLs(InputStream inStream) throws CRLException {
         return Mockito.mock(Collection.class);
       }
     };
