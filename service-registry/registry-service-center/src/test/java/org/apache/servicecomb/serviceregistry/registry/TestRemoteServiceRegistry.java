@@ -40,7 +40,7 @@ import mockit.MockUp;
 import org.junit.jupiter.api.Assertions;
 
 public class TestRemoteServiceRegistry {
-  class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
+  static class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
     public TestingRemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
         Configuration configuration) {
       super(eventBus, serviceRegistryConfig, configuration);

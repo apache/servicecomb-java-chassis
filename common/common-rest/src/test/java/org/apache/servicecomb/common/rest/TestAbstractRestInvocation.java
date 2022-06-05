@@ -111,7 +111,7 @@ public class TestAbstractRestInvocation {
 
   static RestOperationMeta restOperation;
 
-  class AbstractHttpServletRequestForTest extends AbstractHttpServletRequest {
+  static class AbstractHttpServletRequestForTest extends AbstractHttpServletRequest {
     @Override
     public String getHeader(String name) {
       return null;

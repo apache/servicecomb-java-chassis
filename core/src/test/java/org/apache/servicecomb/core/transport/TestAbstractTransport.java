@@ -47,7 +47,7 @@ public class TestAbstractTransport {
     ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
   }
 
-  class MyAbstractTransport extends AbstractTransport {
+  static class MyAbstractTransport extends AbstractTransport {
 
     @Override
     public String getName() {

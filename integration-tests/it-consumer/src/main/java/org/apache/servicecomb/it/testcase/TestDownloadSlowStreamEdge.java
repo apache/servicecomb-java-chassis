@@ -30,11 +30,6 @@ public class TestDownloadSlowStreamEdge {
 
   @Test
   public void clearInputStreamAfterDisconnect() throws IOException {
-//    URL url = new URL(client.getUrlPrefix() + "/slowInputStream");
-//    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//    conn.getInputStream().close();
-//    conn.disconnect();
-
     OkHttpClient httpClient = new OkHttpClient();
     Request request = new Request.Builder().url(client.getUrlPrefix() + "/slowInputStream")
         .build();

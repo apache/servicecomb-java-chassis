@@ -44,9 +44,7 @@ public class ResponseSizeAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    /**
-     * client do not know how to calculate is right, maybe Object#toString().length
-     */
+    // client do not know how to calculate is right, maybe Object#toString().length
     builder.append(zeroBytes);
   }
 

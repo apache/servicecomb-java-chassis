@@ -41,7 +41,7 @@ import mockit.Mocked;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestAbstractVertxHttpDispatcher {
-  class AbstractVertxHttpDispatcherForTest extends AbstractVertxHttpDispatcher {
+  static class AbstractVertxHttpDispatcherForTest extends AbstractVertxHttpDispatcher {
     @Override
     public int getOrder() {
       return 0;

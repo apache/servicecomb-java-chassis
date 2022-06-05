@@ -53,16 +53,12 @@ public class RouterFilter {
     if (StringUtils.isEmpty(targetServiceName)) {
       return list;
     }
-    /**
-     * 1.init and cache
-     */
+    // 1.init and cache
     if (!routerRuleCache.doInit(targetServiceName)) {
       LOGGER.debug("route management init failed");
       return list;
     }
-    /**
-     * 2.match rule
-     */
+    // 2.match rule
     PolicyRuleItem invokeRule = routerRuleMatcher.match(targetServiceName, headers);
 
     if (invokeRule == null) {
@@ -72,9 +68,7 @@ public class RouterFilter {
 
     LOGGER.debug("route management match rule success: {}", invokeRule);
 
-    /**
-     * 3.distribute select endpoint
-     */
+    // 3.distribute select endpoint
     List<T> resultList = distributer.distribute(targetServiceName, list, invokeRule);
 
     LOGGER.debug("route management distribute rule success: {}", resultList);

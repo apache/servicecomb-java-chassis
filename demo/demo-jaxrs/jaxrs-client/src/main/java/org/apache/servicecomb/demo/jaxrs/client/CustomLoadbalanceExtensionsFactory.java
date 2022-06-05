@@ -28,11 +28,11 @@ import com.netflix.client.Utils;
 @Component
 public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
 
-  class MyCustomRule extends RoundRobinRuleExt {
+  static class MyCustomRule extends RoundRobinRuleExt {
 
   }
 
-  class MyCustomHandler extends DefaultLoadBalancerRetryHandler {
+  static class MyCustomHandler extends DefaultLoadBalancerRetryHandler {
     @Override
     public boolean isRetriableException(Throwable e, boolean sameServer) {
       if (retryEnabled) {
