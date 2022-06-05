@@ -35,7 +35,7 @@ public class ServiceCenterExample {
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add("X-Tenant-Name", "default");
 
-    RequestEntity<String> requestEntity = new RequestEntity<String>(headers, HttpMethod.GET,
+    RequestEntity<String> requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
         new URI("http://127.0.0.1:9980/registry/v3/microservices"));
     ResponseEntity<String> stringResponseEntity = template.exchange(requestEntity, String.class);
     System.out.println(stringResponseEntity.getBody());
@@ -46,7 +46,7 @@ public class ServiceCenterExample {
 
     // instance
     headers.add("X-ConsumerId", microserives.getServices().get(1).getServiceId());
-    requestEntity = new RequestEntity<String>(headers, HttpMethod.GET,
+    requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
         new URI("http://127.0.0.1:9980/registry/v3/microservices/" + microserives.getServices().get(1).getServiceId()
             + "/instances"));
     ResponseEntity<String> microserviceInstanceResponseEntity = template.exchange(requestEntity, String.class);

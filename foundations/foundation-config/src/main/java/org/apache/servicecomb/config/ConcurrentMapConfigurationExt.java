@@ -38,7 +38,7 @@ public class ConcurrentMapConfigurationExt extends ConcurrentMapConfiguration {
   public ConcurrentMapConfigurationExt(Map<String, Object> mapToCopy) {
     super();
     setDelimiterParsingDisabled(true);
-    map = new ConcurrentHashMap<String, Object>(mapToCopy);
+    map = new ConcurrentHashMap<>(mapToCopy);
   }
 
   public ConcurrentMapConfigurationExt(AbstractConfiguration config) {

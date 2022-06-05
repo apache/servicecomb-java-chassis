@@ -193,7 +193,7 @@ public class ServiceCenterClientTest {
     httpResponse.setMessage("ok");
 
     MicroservicesResponse microservicesResponse = new MicroservicesResponse();
-    List<Microservice> microserviceList = new ArrayList<Microservice>();
+    List<Microservice> microserviceList = new ArrayList<>();
     microserviceList.add(new Microservice("Test1"));
     microserviceList.add(new Microservice("Test2"));
     microserviceList.add(new Microservice("Test3"));

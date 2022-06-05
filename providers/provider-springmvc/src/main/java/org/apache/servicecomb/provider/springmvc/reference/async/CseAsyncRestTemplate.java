@@ -51,12 +51,12 @@ public class CseAsyncRestTemplate extends org.springframework.web.client.AsyncRe
 
   @Override
   protected <T> org.springframework.web.client.AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody) {
-    return new CseAsyncRequestCallback<T>(requestBody);
+    return new CseAsyncRequestCallback<>(requestBody);
   }
 
   @Override
   protected <T> org.springframework.web.client.AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody,
       Type responseType) {
-    return new CseAsyncRequestCallback<T>(requestBody);
+    return new CseAsyncRequestCallback<>(requestBody);
   }
 }
