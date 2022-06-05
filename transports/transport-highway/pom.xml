@@ -68,4 +68,31 @@
       <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.splunk.lightproto</groupId>
+        <artifactId>lightproto-maven-plugin</artifactId>
+        <version>${lightproto-maven-plugin.version}</version>
+        <configuration>
+          <sources>
+            <source>src/main/resources/LoginRequest.proto</source>
+            <source>src/main/resources/LoginResponse.proto</source>
+            <source>src/main/resources/RequestHeader.proto</source>
+            <source>src/main/resources/ResponseHeader.proto</source>
+          </sources>
+          <targetSourcesSubDir>generated-sources/lightproto/java</targetSourcesSubDir>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

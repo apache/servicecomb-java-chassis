@@ -15,14 +15,15 @@
   limitations under the License.
  */
 
-syntax = "proto3";
+syntax = "proto2";
 package org.apache.servicecomb.transport.highway.message;
+option java_package = "org.apache.servicecomb.transport.highway.message";
 
 message RequestHeader {
-  string destMicroservice = 1;
-  int32 msgType = 2;
-  int32 flags = 3;
-  string schemaId = 4;
-  string operationName = 5;
+  optional string destMicroservice = 1;
+  optional int32 msgType = 2;
+  optional int32 flags = 3;
+  optional string schemaId = 4;
+  optional string operationName = 5;
   map<string,string> context = 6;
 }
