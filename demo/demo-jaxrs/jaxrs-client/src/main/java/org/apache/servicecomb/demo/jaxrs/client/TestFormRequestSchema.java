@@ -53,7 +53,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-      StringBuffer stringBuffer = new StringBuffer();
+      StringBuilder stringBuffer = new StringBuilder();
       for (int i = 0; i < 512; i++) {
         stringBuffer.append("a");
       }
@@ -73,7 +73,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-    StringBuffer stringBuffer = new StringBuffer();
+    StringBuilder stringBuffer = new StringBuilder();
     for (int i = 0; i < 1688; i++) {
       stringBuffer.append("a");
     }

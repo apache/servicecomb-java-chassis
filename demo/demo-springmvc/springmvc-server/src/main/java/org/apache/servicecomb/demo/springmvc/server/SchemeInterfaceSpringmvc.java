@@ -27,5 +27,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(path = "/springmvc/schemaInterface", produces = MediaType.APPLICATION_JSON)
 public interface SchemeInterfaceSpringmvc {
   @GetMapping(path = "/add")
-  public int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
+  int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
 }

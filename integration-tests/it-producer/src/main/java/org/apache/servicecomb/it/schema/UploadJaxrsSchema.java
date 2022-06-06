@@ -66,9 +66,7 @@ public class UploadJaxrsSchema {
   public String uploadList1(@FormParam("file1") List<Part> file1, @FormParam("file2") Part file2)
       throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
+    file1.forEach(part -> stringBuilder.append(getStrFromPart(part)));
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
 
@@ -78,9 +76,7 @@ public class UploadJaxrsSchema {
   public String uploadArrayList1(@FormParam("file1") ArrayList<Part> file1, @FormParam("file2") Part file2)
       throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
+    file1.forEach(part -> stringBuilder.append(getStrFromPart(part)));
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
 
@@ -112,26 +108,13 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(message).toString();
   }
 
-//  @Path("/uploadArrayList2")
-//  @POST
-//  @Produces(MediaType.TEXT_PLAIN)
-//  public String uploadArrayList2(@FormParam("file1") ArrayList<Part> file1, @FormParam("message") String message) {
-//    StringBuilder stringBuilder = new StringBuilder();
-//    file1.forEach(part -> {
-//      stringBuilder.append(getStrFromPart(part));
-//    });
-//    return stringBuilder.append(message).toString();
-//  }
-
   @Path("/uploadMix")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
   public String uploadMix(@FormParam("file1") List<Part> file1, @FormParam("file2") Part[] file2,
       @FormParam("message") String message) {
     StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
+    file1.forEach(part -> stringBuilder.append(getStrFromPart(part)));
     for (int i = 0; i < file2.length; i++) {
       stringBuilder.append(getStrFromPart(file2[i]));
     }
@@ -141,7 +124,7 @@ public class UploadJaxrsSchema {
   private static String getStrFromPart(Part file1) {
     String result;
     try (InputStream is1 = file1.getInputStream()) {
-      result = IOUtils.toString(is1, "utf-8");
+      result = IOUtils.toString(is1, StandardCharsets.UTF_8);
       LOGGER.info("get str from part {}={}={}", result, file1.getSubmittedFileName(), file1.getName());
     } catch (IOException e) {
       result = "e:" + e.getMessage();

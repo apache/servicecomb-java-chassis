@@ -21,5 +21,5 @@ import io.swagger.annotations.SwaggerDefinition;
 
 @SwaggerDefinition(basePath = "/SameInterface1")
 public interface SameInterface {
-  public String sayHello(String name);
+  String sayHello(String name);
 }

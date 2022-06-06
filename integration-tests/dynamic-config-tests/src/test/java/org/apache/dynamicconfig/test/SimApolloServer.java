@@ -36,10 +36,8 @@ public class SimApolloServer extends AbstractVerticle {
         + "  \"dataChangeLastModifiedTime\": \"2018-07-03T15:17:32.000+0800\"\n"
         + "}";
 
-    vertx.createHttpServer().requestHandler(req -> {
-      req.response()
-          .putHeader("content-type", "application/json")
-          .end(response);
-    }).listen(23334);
+    vertx.createHttpServer().requestHandler(req -> req.response()
+        .putHeader("content-type", "application/json")
+        .end(response)).listen(23334);
   }
 }

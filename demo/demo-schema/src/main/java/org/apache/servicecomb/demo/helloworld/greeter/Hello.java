@@ -18,7 +18,7 @@
 package org.apache.servicecomb.demo.helloworld.greeter;
 
 public interface Hello {
-  public String SayHello(String name);
+  String SayHello(String name);
 
-  public String SayHelloAgain(String name);
+  String SayHelloAgain(String name);
 }
