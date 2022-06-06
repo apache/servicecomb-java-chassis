@@ -44,9 +44,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
 
   protected MicroserviceReferenceConfig microserviceReferenceConfig;
 
-  protected ReferenceConfig referenceConfig;
-
-  protected String versionRule = null;//DefinitionConst.VERSION_RULE_ALL;
+  protected String versionRule = null;
 
   protected RoutingContext routingContext;
 
