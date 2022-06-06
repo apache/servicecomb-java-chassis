@@ -28,22 +28,22 @@ import io.swagger.annotations.SwaggerDefinition;
 public class TestSameService implements CategorizedTestCase {
   @SwaggerDefinition(basePath = "/SameInterface1")
   public interface SameInterface1 {
-    public String sayHello(String name);
+    String sayHello(String name);
   }
 
   @SwaggerDefinition(basePath = "/SameInterface2")
   public interface SameInterface2 {
-    public String sayHello(String name);
+    String sayHello(String name);
   }
 
   @SwaggerDefinition(basePath = "/SameService1")
   public interface SameService1 {
-    public String sayHello(String name);
+    String sayHello(String name);
   }
 
   @SwaggerDefinition(basePath = "/SameService2")
   public interface SameService2 {
-    public String sayHello(String name);
+    String sayHello(String name);
   }
 
   @RpcReference(microserviceName = "pojo", schemaId = "SameService1")

@@ -19,5 +19,5 @@ package org.apache.servicecomb.registry.api;
 import java.util.Map;
 
 public interface Versions {
-  public Map<String, String> loadVersion();
+  Map<String, String> loadVersion();
 }

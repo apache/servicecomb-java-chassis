@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,26 +16,10 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
-<!--
-    This configuration file was written by the eclipse-cs plugin configuration editor
--->
-<!--
-    Checkstyle-Configuration: paas
-    Description: none
--->
-<module name="Checker">
-  <module name="NewlineAtEndOfFile">
-  </module>
-  <module name="TreeWalker">
-    <module name="AvoidStarImport"/>
-    <module name="RedundantImport"/>
-    <module name="RedundantModifier">
-      <property name="tokens" value="METHOD_DEF, VARIABLE_DEF, ANNOTATION_FIELD_DEF, INTERFACE_DEF, CLASS_DEF, ENUM_DEF"/>
-    </module>
-    <module name="UnusedImports">
-      <property name="processJavadoc" value="true"/>
-    </module>
-  </module>
-</module>
+<suppressions>
+    <suppress files="[/\\]target[/\\]" checks=".*" />
+</suppressions>

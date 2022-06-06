@@ -31,7 +31,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestBeanUtils {
-  static interface Intf {
+  interface Intf {
 
   }
 

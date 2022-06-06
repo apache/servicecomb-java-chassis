@@ -186,6 +186,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <configLocation>ci/checkstyle/checkstyle.xml</configLocation>
+          <suppressionsLocation>ci/checkstyle/suppressions.xml</suppressionsLocation>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
         </configuration>
       </plugin>

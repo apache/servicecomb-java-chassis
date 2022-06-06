@@ -53,7 +53,7 @@ public abstract class SchemaManager {
   protected final Proto proto;
 
   // key is canonical message name + ":" + canonical type name
-  protected Map<String, SchemaEx<?>> canonicalSchemas = new ConcurrentHashMapEx<>();
+  protected final Map<String, SchemaEx<?>> canonicalSchemas = new ConcurrentHashMapEx<>();
 
   public SchemaManager(ProtoMapper protoMapper) {
     this.protoMapper = protoMapper;

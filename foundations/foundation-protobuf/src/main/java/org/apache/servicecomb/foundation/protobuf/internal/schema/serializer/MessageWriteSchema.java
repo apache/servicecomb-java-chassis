@@ -49,9 +49,9 @@ import io.protostuff.runtime.FieldSchema;
  * </pre>
  */
 public class MessageWriteSchema<T> implements SchemaEx<T> {
-  protected ProtoMapper protoMapper;
+  protected final ProtoMapper protoMapper;
 
-  protected Message message;
+  protected final Message message;
 
   private final JavaType javaType;
 

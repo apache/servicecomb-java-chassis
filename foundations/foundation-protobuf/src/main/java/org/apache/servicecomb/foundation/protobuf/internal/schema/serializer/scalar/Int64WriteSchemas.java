@@ -118,7 +118,7 @@ public class Int64WriteSchemas {
     }
 
     @Override
-    public final void getAndWriteTo(OutputEx output, T message) throws IOException {
+    public void getAndWriteTo(OutputEx output, T message) throws IOException {
       long value = primitiveGetter.get(message);
       output.writeScalarInt64(tag, tagSize, value);
     }

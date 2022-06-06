@@ -48,7 +48,7 @@ public class UploadSchema {
         file.transferTo(tempFile);
         index++;
       }
-      savedFiles.forEach(file -> file.delete());
+      savedFiles.forEach(File::delete);
       return "success";
     } catch (IOException e) {
       return "failed";

@@ -152,7 +152,7 @@ public final class ITJUnitUtils {
     try {
       return ClassPath.from(classLoader)
           .getTopLevelClassesRecursive(packageName).stream()
-          .map(clsInfo -> clsInfo.load())
+          .map(ClassPath.ClassInfo::load)
           .toArray(Class[]::new);
     } catch (IOException e) {
       throw new IllegalStateException("failed to find all classes in package " + packageName, e);

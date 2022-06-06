@@ -18,5 +18,5 @@
 package org.apache.servicecomb.demo.registry;
 
 public interface IServerEndpoint {
-  public String getName(String name);
+  String getName(String name);
 }

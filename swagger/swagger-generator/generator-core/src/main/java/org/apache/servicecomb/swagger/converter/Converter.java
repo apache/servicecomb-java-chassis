@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.models.Swagger;
 
 public interface Converter {
-  static final JavaType OBJECT_JAVA_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
+  JavaType OBJECT_JAVA_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
 
-  static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
+  JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
 
   // def can be property or model
   // def can not be null
