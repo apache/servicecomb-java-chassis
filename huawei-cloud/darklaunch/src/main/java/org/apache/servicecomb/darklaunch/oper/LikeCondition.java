@@ -46,9 +46,9 @@ public class LikeCondition extends AbstractCondition {
   @Override
   public boolean match() {
     SupportedType type = this.getType();
-    if(type == SupportedType.STRING) {
+    if (type == SupportedType.STRING) {
       return  this.pattern.matcher((String) this.getActual()).matches();
-    } else{
+    } else {
       return false;
     }
   }

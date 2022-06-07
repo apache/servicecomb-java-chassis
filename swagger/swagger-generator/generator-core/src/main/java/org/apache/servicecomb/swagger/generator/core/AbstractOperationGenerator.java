@@ -439,7 +439,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
                 anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
         if (requireItem) {
           Property property = properties.get(field.getName());
-          if(property != null){
+          if (property != null) {
             property.setRequired(true);
           }
         }

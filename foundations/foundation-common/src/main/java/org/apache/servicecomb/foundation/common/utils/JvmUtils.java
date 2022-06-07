@@ -54,7 +54,7 @@ public final class JvmUtils {
         }
       }
     }
-    if(StringUtils.isEmpty(mainClass)){
+    if (StringUtils.isEmpty(mainClass)) {
       LOGGER.info("Can't found main class by stackTrace.");
       return null;
     }
@@ -85,7 +85,7 @@ public final class JvmUtils {
       String mainClassOrJar = command.trim().split(" ")[0];
       mainClass = readFromJar(mainClassOrJar);
     }
-    if(StringUtils.isEmpty(mainClass)){
+    if (StringUtils.isEmpty(mainClass)) {
       LOGGER.info("Can't found main class by manifest.");
       return null;
     }
