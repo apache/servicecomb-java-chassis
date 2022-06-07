@@ -439,7 +439,7 @@ public class TestVertxServerRequestToHttpServletRequest {
     Assertions.assertEquals(1, value);
     Assertions.assertSame(is1, request.getInputStream());
 
-    request.setBodyBuffer(Buffer.buffer().appendByte((byte)2));
+    request.setBodyBuffer(Buffer.buffer().appendByte((byte) 2));
     ServletInputStream is2 = request.getInputStream();
     Assertions.assertNotSame(is1, is2);
   }

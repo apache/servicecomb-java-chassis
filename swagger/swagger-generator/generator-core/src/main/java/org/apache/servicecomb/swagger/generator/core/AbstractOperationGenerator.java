@@ -412,11 +412,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     // swagger 2.0 do not support NotBlank and NotEmpty annotations, fix it
-    if (((JavaType)type).getBindings().getTypeParameters().isEmpty()){
-      convertAnnotationProperty(((JavaType)type).getRawClass());
+    if (((JavaType) type).getBindings().getTypeParameters().isEmpty()) {
+      convertAnnotationProperty(((JavaType) type).getRawClass());
     } else {
-      ((JavaType)type).getBindings().getTypeParameters().stream().
-          forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
+      ((JavaType) type).getBindings().getTypeParameters().
+              forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
     }
 
     mergeBodyParameter((BodyParameter) parameter, newBodyParameter);
@@ -429,7 +429,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
     Field[] fields = beanClass.getDeclaredFields();
     Model model = definitions.get(beanClass.getSimpleName());
-    if (fields == null || model == null) {
+    if (model == null) {
       return;
     }
     Map<String, Property> properties = model.getProperties();

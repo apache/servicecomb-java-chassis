@@ -54,7 +54,7 @@ public class Consumers<INTF> {
     intf = ITInvoker.createProxy(producerName, schemaId, transport, intfCls);
     scbRestTemplate = new ITSCBRestTemplate(schemaId).init();
     edgeRestTemplate = GateRestTemplate.createEdgeRestTemplate(schemaId).init();
-    zuulRestTemplate = null;// GateRestTemplate.createZuulRestTemplate(schemaId).init();
+    zuulRestTemplate = null;
     this.cseAsyncRestTemplate = new ITSCBAsyncRestTemplate(schemaId).init();
   }
 

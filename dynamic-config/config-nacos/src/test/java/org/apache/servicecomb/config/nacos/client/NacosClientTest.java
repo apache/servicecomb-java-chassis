@@ -44,7 +44,7 @@ public class NacosClientTest {
     //and make sure the address is 127.0.0.1:8848
     //nacosClient.refreshNacosConfig();
     Map<String, Object> originMap = Deencapsulation.getField(nacosClient, "originalConfigMap");
-    originMap.put("nacos","12345");
+    originMap.put("nacos", "12345");
     Assertions.assertEquals(1, originMap.size());
   }
 
