@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -47,6 +48,7 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
   private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
 
   public RestObjectMapper() {
+    super();
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
     // Enable features that can tolerance errors and not enable those make more constraints for compatible reasons.
     // Developers can use validation api to do more checks.
@@ -64,6 +66,15 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
     module.addSerializer(JsonObject.class, new JsonObjectSerializer());
     registerModule(module);
     registerModule(new JavaTimeModule());
+  }
+
+  public RestObjectMapper(RestObjectMapper src) {
+    super(src);
+  }
+  @Override
+  public RestObjectMapper copy() {
+    this._checkInvalidCopy(RestObjectMapper.class);
+    return new RestObjectMapper(this);
   }
 
   @Override

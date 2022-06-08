@@ -22,5 +22,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class AbstractRestObjectMapper extends ObjectMapper {
   private static final long serialVersionUID = 189026839992490564L;
 
+  public AbstractRestObjectMapper() {
+    super();
+  }
+
+  public AbstractRestObjectMapper(RestObjectMapper src) {
+    super(src);
+  }
+
   abstract public String convertToString(Object value) throws Exception;
 }

@@ -27,8 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
@@ -44,6 +47,7 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -273,6 +277,75 @@ public class TestRestClientInvocation {
         logCollector.getEvents().get(0).getMessage());
     logCollector.teardown();
   }
+
+  @Test
+  public void testSetCseContext_enable_unicode() {
+    Map<String, String> contextMap = new HashMap<String, String>();
+    contextMap.put("key", "测试");
+    contextMap.put("encodedKey", StringEscapeUtils.escapeJson("测试"));
+    when(invocation.getContext()).thenReturn(contextMap);
+    restClientInvocation.setCseContext();
+
+    String context =  headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT);
+    HttpServletRequestEx requestEx = new MockUp<HttpServletRequestEx>(){
+      @Mock
+      public String getHeader(String name){
+        if (StringUtils.equals(name, org.apache.servicecomb.core.Const.CSE_CONTEXT)){
+          return context;
+        } else {
+          return null;
+        }
+      }
+    }.getMockInstance();
+
+    VertxRestInvocation vertxRestInvocation = new VertxRestInvocation();
+    Deencapsulation.setField(vertxRestInvocation, "requestEx", requestEx);
+    Deencapsulation.setField(vertxRestInvocation, "invocation", invocation);
+
+    Deencapsulation.invoke(vertxRestInvocation, "setContext");
+
+    Assertions.assertEquals("测试", invocation.getContext().get("key"));
+    Assertions.assertEquals(StringEscapeUtils.escapeJson("测试"), invocation.getContext().get("encodedKey"));
+  }
+
+
+  @Test
+  public void testSetCseContext_disable_unicode() throws JsonProcessingException {
+    Map<String, String> contextMap = new HashMap<String, String>();
+    contextMap.put("key", "测试");
+    contextMap.put("encodedKey", StringEscapeUtils.escapeJson("测试"));
+    when(invocation.getContext()).thenReturn(contextMap);
+
+    new MockUp<JsonUtils>() {
+      @Mock
+      public String writeUnicodeValueAsString(Object value) throws JsonProcessingException {
+        return JsonUtils.writeValueAsString(value);
+      }
+    };
+
+    restClientInvocation.setCseContext();
+    String context =  headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT);
+    HttpServletRequestEx requestEx = new MockUp<HttpServletRequestEx>(){
+      @Mock
+      public String getHeader(String name){
+        if (StringUtils.equals(name, org.apache.servicecomb.core.Const.CSE_CONTEXT)){
+          return context;
+        } else {
+          return null;
+        }
+      }
+    }.getMockInstance();
+
+    VertxRestInvocation vertxRestInvocation = new VertxRestInvocation();
+    Deencapsulation.setField(vertxRestInvocation, "requestEx", requestEx);
+    Deencapsulation.setField(vertxRestInvocation, "invocation", invocation);
+
+    Deencapsulation.invoke(vertxRestInvocation, "setContext");
+
+    Assertions.assertEquals("测试", invocation.getContext().get("key"));
+    Assertions.assertEquals(StringEscapeUtils.escapeJson("测试"), invocation.getContext().get("encodedKey"));
+  }
+
 
   @SuppressWarnings("unchecked")
   @Test
