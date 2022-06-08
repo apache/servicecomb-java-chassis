@@ -178,7 +178,7 @@ public class Schema {
   }
 
   public Optional<String> testOptional() {
-    return null;
+    return Optional.empty();
   }
 
   public CompletableFuture<Optional<String>> testCompletableFutureOptional() {
