@@ -57,7 +57,6 @@ public class TestJaxrsConsumerResponseMapper {
     swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void jaxrsResponse() {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("jaxrsResponse");

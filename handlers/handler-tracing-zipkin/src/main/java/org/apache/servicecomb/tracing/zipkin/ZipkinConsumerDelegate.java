@@ -35,7 +35,6 @@ class ZipkinConsumerDelegate implements ZipkinTracingDelegate {
 
   private final Injector<Invocation> injector;
 
-  @SuppressWarnings("unchecked")
   ZipkinConsumerDelegate(HttpTracing httpTracing) {
     this.httpTracing = httpTracing;
     this.injector = httpTracing.tracing().propagation().injector(injector());

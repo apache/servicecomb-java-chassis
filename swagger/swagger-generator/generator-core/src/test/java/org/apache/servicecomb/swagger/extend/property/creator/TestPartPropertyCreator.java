@@ -29,7 +29,6 @@ import io.swagger.models.properties.FileProperty;
 public class TestPartPropertyCreator {
   PartPropertyCreator creator = new PartPropertyCreator();
 
-  @SuppressWarnings("unchecked")
   @Test
   public void classes() {
     MatcherAssert.assertThat(creator.classes(), Matchers.arrayContaining(Part.class));

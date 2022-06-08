@@ -62,7 +62,6 @@ public class ConsumerConfigController {
   }
 
   @GetMapping("/dynamicArray")
-  @SuppressWarnings("unchecked")
   public List<String> dynamicArray() {
     return consumerConfigurationProperties.getDynamicArray();
 //     DynamicPropertyFactory & Environment do not support arrays like:

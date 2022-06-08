@@ -34,7 +34,6 @@ import com.netflix.config.WatchedUpdateResult;
  *
  * @see DynamicWatchedConfiguration
  */
-@SuppressWarnings("unchecked")
 public class DynamicWatchedConfigurationExt extends ConcurrentMapConfiguration implements WatchedUpdateListener {
 
   private final boolean ignoreDeletesFromSource;

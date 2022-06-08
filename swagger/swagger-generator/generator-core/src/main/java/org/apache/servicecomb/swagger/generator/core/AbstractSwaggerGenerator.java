@@ -81,7 +81,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   protected String httpMethod;
 
-  @SuppressWarnings("unchecked")
   public AbstractSwaggerGenerator(Class<?> cls) {
     this.swagger = new Swagger();
     this.cls = cls;

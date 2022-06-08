@@ -66,7 +66,6 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
     this.httpHeaders = httpHeaders;
   }
 
-  @SuppressWarnings("unchecked")
   public CommonToHttpServletRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
       Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData) {
     this(pathParams, queryParams, httpHeaders, bodyObject, isFormData, null);

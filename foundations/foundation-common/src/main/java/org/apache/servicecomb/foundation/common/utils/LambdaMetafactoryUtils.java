@@ -150,7 +150,6 @@ public final class LambdaMetafactoryUtils {
     return createLambda(getMethod, getterCls);
   }
 
-  @SuppressWarnings("unchecked")
   public static Getter<Object, Object> createObjectGetter(Method getMethod) {
     return createLambda(getMethod, Getter.class);
   }

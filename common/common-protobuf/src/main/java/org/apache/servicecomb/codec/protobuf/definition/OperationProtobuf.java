@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.protostuff.compiler.model.Message;
 
-@SuppressWarnings("rawtypes")
 public class OperationProtobuf {
   private RequestRootSerializer requestRootSerializer;
 

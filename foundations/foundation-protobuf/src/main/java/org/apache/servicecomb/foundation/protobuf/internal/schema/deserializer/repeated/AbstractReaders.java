@@ -31,7 +31,6 @@ public abstract class AbstractReaders<T> {
 
   public final Class<T[]> arrayClass;
 
-  @SuppressWarnings("unchecked")
   public AbstractReaders(Field protoField) {
     this(protoField, null);
   }

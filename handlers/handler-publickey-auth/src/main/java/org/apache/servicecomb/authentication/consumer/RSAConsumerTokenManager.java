@@ -55,7 +55,6 @@ public class RSAConsumerTokenManager {
       return null;
     }
 
-    @SuppressWarnings("deprecation")
     String randomCode = org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(128);
     long generateTime = System.currentTimeMillis();
     try {

@@ -414,7 +414,6 @@ public class TestRestTemplateWrapper {
     verify(underlying, never()).setUriTemplateHandler(uriTemplateHandler);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void setMessageConvertersWithUnderlying() {
     ByteArrayHttpMessageConverter messageConverter = mock(ByteArrayHttpMessageConverter.class);
@@ -440,8 +439,7 @@ public class TestRestTemplateWrapper {
     MatcherAssert.assertThat(wrapper.getRestTemplate(url), is(wrapper.defaultRestTemplate));
   }
 
-  @SuppressWarnings("deprecation")
-// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+  // TODO : upgrade to spring 5 will having warning's , we'll fix it later
   private Map<String, ?> defaultUriVariablesOf(RestTemplate wrapper1) {
     return ((DefaultUriBuilderFactory) wrapper1.getUriTemplateHandler()).getDefaultUriVariables();
   }

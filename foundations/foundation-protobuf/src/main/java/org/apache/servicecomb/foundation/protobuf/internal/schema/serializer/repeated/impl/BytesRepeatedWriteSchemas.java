@@ -53,7 +53,6 @@ public class BytesRepeatedWriteSchemas {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     return RepeatedWriteSchemas.create(protoField, propertyDescriptor, new BytesWriters(protoField));
   }

@@ -29,7 +29,6 @@ import com.google.common.eventbus.Subscribe;
 
 @Component
 //@Conditional(ConditionOnMulticast.class)
-@SuppressWarnings("UnstableApiUsage")
 public class MulticastRegistration extends AbstractZeroConfigRegistration implements InitializingBean {
   private static final String NAME = "zero-config-multicast";
 

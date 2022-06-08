@@ -67,7 +67,6 @@ public class TestRSAProviderTokenManager {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void testTokenExpiredRemoveInstance() throws Exception {
 
     String tokenStr =

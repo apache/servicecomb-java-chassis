@@ -75,7 +75,6 @@ public class TestYAMLUtil {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   public void testListValue() {
     Map<String, Object> result = YAMLUtil.yaml2Properties("hello: a,b");
     Assertions.assertEquals(result.size(), 1);

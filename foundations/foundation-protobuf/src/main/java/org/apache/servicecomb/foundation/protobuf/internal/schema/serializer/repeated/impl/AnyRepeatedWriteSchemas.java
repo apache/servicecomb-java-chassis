@@ -53,7 +53,6 @@ public class AnyRepeatedWriteSchemas {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor,
       FieldSchema<T> anySchema) {
     return RepeatedWriteSchemas.create(protoField, propertyDescriptor, new AnyWriters<>(protoField, anySchema));

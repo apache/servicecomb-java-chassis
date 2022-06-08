@@ -22,7 +22,6 @@ public abstract class AbstractPrimitiveReaders<PRIMITIVE_ARRAY, PRIMITIVE_WRAPPE
     AbstractReaders<PRIMITIVE_WRAPPER> {
   public RepeatedReader<PrimitiveArrayBuilderWrapper<PRIMITIVE_ARRAY>> primitiveArrayReader;
 
-  @SuppressWarnings("unchecked")
   public AbstractPrimitiveReaders(Field protoField) {
     super(protoField);
   }

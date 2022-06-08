@@ -60,7 +60,6 @@ public class MessagesRepeatedWriteSchemas {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor,
       SchemaWriter<Object> elementSchema) {
     return RepeatedWriteSchemas.create(protoField, propertyDescriptor, new MessageWriters(protoField, elementSchema));

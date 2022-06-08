@@ -33,7 +33,6 @@ public abstract class AbstractPrimitiveWriters<PRIMITIVE_ARRAY, PRIMITIVE_WRAPPE
 
   public final Class<PRIMITIVE_ARRAY> primitiveArrayClass;
 
-  @SuppressWarnings("unchecked")
   public AbstractPrimitiveWriters(Field protoField) {
     super(protoField);
 

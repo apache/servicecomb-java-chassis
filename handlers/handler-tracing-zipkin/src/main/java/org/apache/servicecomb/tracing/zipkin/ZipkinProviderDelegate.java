@@ -54,7 +54,6 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
     return extracted;
   };
 
-  @SuppressWarnings("unchecked")
   ZipkinProviderDelegate(HttpTracing httpTracing) {
     this.httpTracing = httpTracing;
     this.extractor = httpTracing.tracing().propagation().extractor(extractor());

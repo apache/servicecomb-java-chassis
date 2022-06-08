@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-@SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractLightweightDiscovery implements Discovery, InitializingBean {
   protected EventBus eventBus;
 

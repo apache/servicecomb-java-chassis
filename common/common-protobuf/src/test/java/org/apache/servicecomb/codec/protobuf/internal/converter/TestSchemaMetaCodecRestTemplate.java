@@ -178,7 +178,6 @@ public class TestSchemaMetaCodecRestTemplate {
   }
 
   @Test
-  @SuppressWarnings({"rawtypes", "unchecked"})
   public void testProtoSchemaOperationBase() throws Exception {
     Invocation consumerInvocation = mockInvocation("base", InvocationType.CONSUMER);
     Invocation providerInvocation = mockInvocation("base", InvocationType.PRODUCER);

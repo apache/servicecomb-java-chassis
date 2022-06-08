@@ -400,7 +400,6 @@ public class TestRestClientInvocation {
     Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void processResponseBody_throw() {
     HttpClientResponse httpClientResponse = mock(HttpClientResponse.class);

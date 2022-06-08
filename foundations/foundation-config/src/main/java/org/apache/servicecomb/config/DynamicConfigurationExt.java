@@ -24,7 +24,6 @@ import com.netflix.config.PolledConfigurationSource;
 /**
  * Disable delimiter parsing for string
  */
-@SuppressWarnings("unchecked")
 public class DynamicConfigurationExt extends DynamicConfiguration {
   public DynamicConfigurationExt(PolledConfigurationSource source, AbstractPollingScheduler scheduler) {
     super();

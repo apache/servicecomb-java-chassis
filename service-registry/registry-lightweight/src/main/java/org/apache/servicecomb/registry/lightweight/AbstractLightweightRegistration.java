@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.EventBus;
 
-@SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractLightweightRegistration implements Registration {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLightweightRegistration.class);
 

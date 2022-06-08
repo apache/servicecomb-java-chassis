@@ -45,7 +45,6 @@ public abstract class AbstractWriters<T> {
 
   public final Class<T[]> arrayClass;
 
-  @SuppressWarnings("unchecked")
   public AbstractWriters(Field protoField) {
     this(protoField, null);
   }

@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-@SuppressWarnings({"UnstableApiUsage", "unused"})
+@SuppressWarnings({"unused"})
 @Component
 public class InvocationTimeoutBootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvocationTimeoutBootListener.class);

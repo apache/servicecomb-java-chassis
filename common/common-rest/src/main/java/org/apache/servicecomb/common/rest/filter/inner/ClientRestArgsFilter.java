@@ -37,7 +37,6 @@ public class ClientRestArgsFilter implements HttpClientFilter {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     RestClientRequestImpl restClientRequest = (RestClientRequestImpl) invocation.getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);

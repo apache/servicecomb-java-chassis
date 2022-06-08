@@ -33,7 +33,6 @@ public class TestDefaultVertxMetricsFactory {
 
   DefaultVertxMetricsFactory factory = new DefaultVertxMetricsFactory();
 
-  @SuppressWarnings("deprecation")
   @Test
   public void metrics() {
     MetricsOptions metricsOptions = factory.newOptions();

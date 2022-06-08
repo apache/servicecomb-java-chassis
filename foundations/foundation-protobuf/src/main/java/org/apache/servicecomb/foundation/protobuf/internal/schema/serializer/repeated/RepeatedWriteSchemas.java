@@ -35,7 +35,6 @@ public class RepeatedWriteSchemas {
   static class DynamicSchema<T, ELE_TYPE> extends FieldSchema<T> {
     protected final AbstractWriters<ELE_TYPE> writers;
 
-    @SuppressWarnings("unchecked")
     public DynamicSchema(Field protoField, PropertyDescriptor propertyDescriptor,
         AbstractWriters<ELE_TYPE> writers) {
       super(protoField, propertyDescriptor.getJavaType());
@@ -43,7 +42,6 @@ public class RepeatedWriteSchemas {
       this.writers = writers;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public final void writeTo(OutputEx output, Object value) throws IOException {
       writers.dynamicWriteTo(output, value);

@@ -21,7 +21,6 @@ import java.io.Closeable;
 import org.apache.commons.lang3.StringUtils;
 
 public class IOUtils {
-  @SuppressWarnings("deprecation")
   public static void closeQuietly(final Closeable closeable) {
     org.apache.commons.io.IOUtils.closeQuietly(closeable);
   }

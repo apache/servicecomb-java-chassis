@@ -28,7 +28,6 @@ import com.netflix.config.ConcurrentMapConfiguration;
 /**
  * Disable delimiter parsing for string
  */
-@SuppressWarnings("unchecked")
 public class ConcurrentMapConfigurationExt extends ConcurrentMapConfiguration {
   public ConcurrentMapConfigurationExt() {
     super();

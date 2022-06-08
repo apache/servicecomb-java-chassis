@@ -118,8 +118,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
-  @SuppressWarnings("deprecation")
-// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+  // TODO : upgrade to spring 5 will having warning's , we'll fix it later
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
     File file1 = File.createTempFile("测 试", ".txt");

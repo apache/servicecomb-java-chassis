@@ -33,7 +33,7 @@ class Model {
 
 }
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class TestResponseRootDeserializer {
   @Test
   public void testNeedConvert() {

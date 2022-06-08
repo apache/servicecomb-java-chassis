@@ -37,7 +37,6 @@ public class RootDeserializer<T> {
     this.schema = schema;
   }
 
-  @SuppressWarnings("unchecked")
   public T deserialize(byte[] bytes) throws IOException {
     InputEx input = new ByteArrayInputEx(bytes);
     T instance = schema.newMessage();

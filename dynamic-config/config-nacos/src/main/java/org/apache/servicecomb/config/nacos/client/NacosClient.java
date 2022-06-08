@@ -62,7 +62,6 @@ public class NacosClient {
     ConfigRefresh() {
     }
 
-    @SuppressWarnings("unchecked")
     void refreshConfig() {
       Properties properties = new Properties();
       properties.put("serverAddr", NacosConfig.INSTANCE.getServerAddr());

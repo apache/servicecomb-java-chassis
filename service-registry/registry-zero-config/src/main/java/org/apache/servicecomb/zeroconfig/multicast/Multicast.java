@@ -79,7 +79,6 @@ public class Multicast {
     return this;
   }
 
-  @SuppressWarnings("UnstableApiUsage")
   private InetSocketAddress initBindAddress(Config config) {
     HostAndPort hostAndPort = HostAndPort.fromString(config.getMulticastAddress());
     return new InetSocketAddress(hostAndPort.getHost(), hostAndPort.getPort());
