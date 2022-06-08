@@ -298,7 +298,7 @@ public class RestClientInvocation {
 
   protected void setCseContext() {
     try {
-      clientRequest.putHeader(Const.CSE_CONTEXT, JsonUtils.writeValueAsString(invocation.getContext()));
+      clientRequest.putHeader(Const.CSE_CONTEXT, JsonUtils.writeUnicodeValueAsString(invocation.getContext()));
     } catch (Throwable e) {
       invocation.getTraceIdLogger().error(LOGGER, "Failed to encode and set cseContext, message={}."
           , ExceptionUtils.getExceptionMessageWithoutTrace(e));
