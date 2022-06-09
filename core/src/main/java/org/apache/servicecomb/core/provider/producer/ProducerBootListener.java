@@ -54,6 +54,7 @@ public class ProducerBootListener implements BootListener {
     for (String endpoint : microservice.getInstance().getEndpoints()) {
       if (endpoint.startsWith("rest://") && endpoint.indexOf("sslEnabled=true") > 0) {
         swaggerSchema = "https";
+        break;
       }
     }
 

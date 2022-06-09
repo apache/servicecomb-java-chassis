@@ -50,8 +50,7 @@ public class CseHttpMessageConverter implements GenericHttpMessageConverter<Obje
   }
 
   @Override
-  public Object read(Class<? extends Object> clazz,
-      HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+  public Object read(Class<?> clazz, HttpInputMessage inputMessage) throws HttpMessageNotReadableException {
     throw new IllegalStateException("not supported");
   }
 
