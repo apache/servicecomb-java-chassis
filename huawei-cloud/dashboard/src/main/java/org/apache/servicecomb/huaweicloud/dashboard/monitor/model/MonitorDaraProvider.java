@@ -17,8 +17,10 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor.model;
 
+import org.apache.servicecomb.dashboard.client.model.MonitorData;
+
 public interface MonitorDaraProvider {
   String getURL();
 
-  Object getData();
+  MonitorData getData();
 }

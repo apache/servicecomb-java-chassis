@@ -37,6 +37,7 @@
     <module>config-common</module>
     <module>config-kie-client</module>
     <module>config-center-client</module>
+    <module>dashboard-client</module>
   </modules>
 
 </project>

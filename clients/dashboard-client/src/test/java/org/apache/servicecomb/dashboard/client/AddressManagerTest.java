@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.huaweicloud.dashboard.monitor;
+package org.apache.servicecomb.dashboard.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,13 +34,13 @@ class AddressManagerTest {
 
   private static final List<String> addresses = new ArrayList<>();
 
-  private static AddressManager addressManager1;
+  private static DashboardAddressManager addressManager1;
 
   @Test
   public void kieAddressManagerTest() {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
-    addressManager1 = new AddressManager(addresses, new EventBus());
+    addressManager1 = new DashboardAddressManager(addresses, new EventBus());
 
     Assertions.assertNotNull(addressManager1);
 
@@ -62,7 +62,7 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new AddressManager(addresses, new EventBus());
+    addressManager1 = new DashboardAddressManager(addresses, new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseMonitoring");
     addressManager1.refreshEndpoint(event, "CseMonitoring");
 

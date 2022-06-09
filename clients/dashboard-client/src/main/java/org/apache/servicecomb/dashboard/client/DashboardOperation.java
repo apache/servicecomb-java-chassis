@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.huaweicloud.dashboard.monitor.data;
+package org.apache.servicecomb.dashboard.client;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.servicecomb.serviceregistry.diagnosis.instance.InstanceCacheSummary;
+import org.apache.servicecomb.dashboard.client.model.MonitorData;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Diagnosis {
-
-  private InstanceCacheSummary instanceCache;
-
-  public InstanceCacheSummary getInstanceCache() {
-    return instanceCache;
-  }
-
-  public void setInstanceCache(InstanceCacheSummary instanceCache) {
-    this.instanceCache = instanceCache;
-  }
+public interface DashboardOperation {
+  void sendData(String url, MonitorData monitorData);
 }
