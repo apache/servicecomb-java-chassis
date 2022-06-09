@@ -274,7 +274,7 @@ public class RestClientInvocation {
 
   protected void setCseContext() {
     try {
-      String cseContext = JsonUtils.writeValueAsString(invocation.getContext());
+      String cseContext = JsonUtils.writeUnicodeValueAsString(invocation.getContext());
       clientRequest.putHeader(org.apache.servicecomb.core.Const.CSE_CONTEXT, cseContext);
     } catch (Throwable e) {
       LOGGER.debug(invocation.getMarker(), "Failed to encode and set cseContext.", e);

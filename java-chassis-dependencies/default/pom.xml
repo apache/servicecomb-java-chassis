@@ -43,6 +43,7 @@
     <commons-io.version>2.6</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.9</commons-lang3.version>
+    <commons-text.version>1.9</commons-text.version>
     <commons-logging.version>1.2</commons-logging.version>
     <cxf.version>3.3.1</cxf.version>
     <dyuproject-protostuff.version>1.0.7.fixed.3500</dyuproject-protostuff.version>
@@ -722,6 +723,12 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commons-text.version}</version>
       </dependency>
 
       <dependency>

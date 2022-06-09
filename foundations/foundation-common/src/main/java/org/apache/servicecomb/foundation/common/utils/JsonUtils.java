@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.common.utils.json.JavaxServletPartSeria
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public final class JsonUtils {
   public static final ObjectMapper OBJ_MAPPER;
+  private static final ObjectMapper UNICODE_OBJ_MAPPER;
 
   static {
     OBJ_MAPPER = new ObjectMapper();
@@ -48,6 +50,9 @@ public final class JsonUtils {
     partDeserializeModule.addSerializer(Part.class, new JavaxServletPartSerializer());
     partDeserializeModule.addDeserializer(Part.class, new JavaxServletPartDeserializer());
     OBJ_MAPPER.registerModule(partDeserializeModule);
+
+    UNICODE_OBJ_MAPPER = OBJ_MAPPER.copy();
+    UNICODE_OBJ_MAPPER.enable(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature());
   }
 
   private JsonUtils() {
@@ -71,6 +76,10 @@ public final class JsonUtils {
 
   public static String writeValueAsString(Object value) throws JsonProcessingException {
     return OBJ_MAPPER.writeValueAsString(value);
+  }
+
+  public static String writeUnicodeValueAsString(Object value) throws JsonProcessingException {
+    return UNICODE_OBJ_MAPPER.writeValueAsString(value);
   }
 
   public static <T> T convertValue(Object fromValue, Class<T> toValueType) {
