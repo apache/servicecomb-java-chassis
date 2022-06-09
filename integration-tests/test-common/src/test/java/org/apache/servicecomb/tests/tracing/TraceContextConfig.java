@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import brave.internal.HexCodec;
+import brave.internal.codec.HexCodec;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.TraceContext;
 

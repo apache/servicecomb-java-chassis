@@ -47,6 +47,7 @@ import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import zipkin2.Span;
+import zipkin2.reporter.brave.ZipkinSpanHandler;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ZipkinSpanTestApplication.class, TracingConfig.class})
@@ -129,7 +130,7 @@ public class ZipkinSpanAspectTest {
       return Tracing.newBuilder()
           .currentTraceContext(
               ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(StrictScopeDecorator.create()).build())
-          .spanReporter(spans::add)
+          .addSpanHandler(ZipkinSpanHandler.create(spans::add))
           .build();
     }
   }

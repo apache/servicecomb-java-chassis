@@ -47,7 +47,10 @@ import brave.Tracer.SpanInScope;
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
+
 import org.junit.jupiter.api.Assertions;
+
+import zipkin2.reporter.brave.ZipkinSpanHandler;
 
 public class ZipkinTracingAdviserTest {
   private static final int nThreads = 10;
@@ -66,10 +69,10 @@ public class ZipkinTracingAdviserTest {
 
   private final Tracing tracing = Tracing.newBuilder()
       .currentTraceContext(
-          ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(StrictScopeDecorator.create()).build()).
-          spanReporter(e -> traces.computeIfAbsent(e.traceId(), id -> new ConcurrentLinkedDeque<>()).
-              add(e)).
-          build();
+          ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(StrictScopeDecorator.create()).build())
+      .addSpanHandler(ZipkinSpanHandler.create(
+          e -> traces.computeIfAbsent(e.traceId(), id -> new ConcurrentLinkedDeque<>()).add(e)))
+      .build();
 
   private final ZipkinTracingAdviser tracingAdviser = new ZipkinTracingAdviser(tracing.tracer());
 
@@ -105,7 +108,8 @@ public class ZipkinTracingAdviserTest {
 
     zipkin2.Span span = traces.values().iterator().next().poll();
     Assertions.assertEquals(spanName, span.name());
-    MatcherAssert.assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
+    MatcherAssert.assertThat(tracedValues(span),
+        containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
   }
 
   @SuppressWarnings({"unused", "try"})

@@ -41,6 +41,7 @@ import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.Sender;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Configuration
@@ -59,8 +60,8 @@ class TracingConfiguration {
     String path = MessageFormat.format(CONFIG_TRACING_COLLECTOR_PATH, apiVersion);
     return OkHttpSender.create(
         dynamicProperties.getStringProperty(
-            CONFIG_TRACING_COLLECTOR_ADDRESS,
-            DEFAULT_TRACING_COLLECTOR_ADDRESS)
+                CONFIG_TRACING_COLLECTOR_ADDRESS,
+                DEFAULT_TRACING_COLLECTOR_ADDRESS)
             .trim()
             .replaceAll("/+$", "")
             .concat(path));
@@ -77,18 +78,19 @@ class TracingConfiguration {
 
 
   @Bean
-  Tracing tracing(Reporter<Span> reporter, DynamicProperties dynamicProperties,
+  Tracing tracing(Sender sender, DynamicProperties dynamicProperties,
       CurrentTraceContext currentTraceContext) {
     return Tracing.newBuilder()
         .localServiceName(BootStrapProperties.readServiceName())
         .currentTraceContext(currentTraceContext) // puts trace IDs into logs
-        .spanReporter(reporter)
+        .addSpanHandler(AsyncZipkinSpanHandler.create(sender))
         .build();
   }
 
   @Bean
   CurrentTraceContext currentTraceContext() {
-    return ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(MDCScopeDecorator.create()).build();
+    return ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(MDCScopeDecorator.newBuilder().build())
+        .build();
   }
 
   @Bean

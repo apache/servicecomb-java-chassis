@@ -17,43 +17,62 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import javax.annotation.Nonnull;
+import brave.http.HttpClientRequest;
+import brave.http.HttpClientResponse;
+import brave.internal.Nullable;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-import brave.http.HttpClientAdapter;
-import zipkin2.internal.Nullable;
-
-class ConsumerInvocationAdapter extends HttpClientAdapter<Invocation, Response> {
+class HttpClientResponseWrapper extends HttpClientResponse {
+  @Nullable
+  HttpClientRequest request;
 
   @Nullable
-  @Override
-  public String method(@Nonnull Invocation invocation) {
-    return invocation.getOperationMeta().getHttpMethod();
+  Response response;
+
+  @Nullable
+  Throwable error;
+
+  HttpClientResponseWrapper() {
   }
 
-  @Nullable
-  @Override
-  public String url(@Nonnull Invocation invocation) {
-    return invocation.getEndpoint().getEndpoint();
+  HttpClientResponseWrapper(@Nullable Response response, @Nullable Throwable error) {
+    this.response = response;
+    this.error = error;
   }
 
-  @Nullable
-  @Override
-  public String path(@Nonnull Invocation request) {
-    return request.getOperationMeta().getOperationPath();
+  HttpClientResponseWrapper response(Response response) {
+    this.response = response;
+    return this;
   }
 
-  @Nullable
-  @Override
-  public String requestHeader(@Nonnull Invocation invocation, @Nonnull String key) {
-    return invocation.getContext().get(key);
+  HttpClientResponseWrapper throwable(Throwable error) {
+    this.error = error;
+    return this;
   }
 
-  @Nullable
+  HttpClientResponseWrapper request(HttpClientRequest request) {
+    this.request = request;
+    return this;
+  }
+
   @Override
-  public Integer statusCode(@Nonnull Response response) {
+  public int statusCode() {
     return response.getStatusCode();
+  }
+
+  @Override
+  public Object unwrap() {
+    return response;
+  }
+
+  @Override
+  public HttpClientRequest request() {
+    return request;
+  }
+
+  @Override
+  public Throwable error() {
+    return error;
   }
 }

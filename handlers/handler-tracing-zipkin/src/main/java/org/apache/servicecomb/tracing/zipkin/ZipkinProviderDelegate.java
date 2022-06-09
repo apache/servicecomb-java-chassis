@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import brave.Span;
 import brave.Tracing;
+import brave.http.HttpServerRequest;
+import brave.http.HttpServerResponse;
 import brave.http.HttpServerHandler;
 import brave.http.HttpTracing;
 import brave.propagation.Propagation.Getter;
@@ -34,11 +36,15 @@ import brave.propagation.TraceContext.Extractor;
 class ZipkinProviderDelegate implements ZipkinTracingDelegate {
   private static final Logger LOG = LoggerFactory.getLogger(ZipkinProviderDelegate.class);
 
-  private final HttpServerHandler<Invocation, Response> handler;
+  private final HttpServerHandler<HttpServerRequest, HttpServerResponse> handler;
 
   private final HttpTracing httpTracing;
 
   private final Extractor<Invocation> extractor;
+
+  private final HttpServeRequestWrapper requestWrapper;
+
+  private final HttpServerResponseWrapper responseWrapper;
 
   public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId";
 
@@ -54,11 +60,12 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
     return extracted;
   };
 
-  @SuppressWarnings("unchecked")
   ZipkinProviderDelegate(HttpTracing httpTracing) {
     this.httpTracing = httpTracing;
     this.extractor = httpTracing.tracing().propagation().extractor(extractor());
-    this.handler = HttpServerHandler.create(httpTracing, new ProviderInvocationAdapter());
+    this.handler = HttpServerHandler.create(httpTracing);
+    this.requestWrapper = new HttpServeRequestWrapper();
+    this.responseWrapper = new HttpServerResponseWrapper();
   }
 
   @Override
@@ -68,12 +75,12 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
 
   @Override
   public Span createSpan(Invocation invocation) {
-    return handler.handleReceive(extractor, invocation);
+    return handler.handleReceive(requestWrapper.invocation(invocation));
   }
 
   @Override
   public void onResponse(Span span, Response response, Throwable error) {
-    handler.handleSend(response, error, span);
+    handler.handleSend(responseWrapper.response(response).error(error).request(requestWrapper), span);
   }
 
   @Override
