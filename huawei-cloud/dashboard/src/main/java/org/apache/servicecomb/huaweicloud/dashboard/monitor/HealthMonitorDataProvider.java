@@ -29,29 +29,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.CPUMonitorCalc;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.diagnosis.instance.InstanceCacheSummary;
 
-import com.google.common.eventbus.Subscribe;
 import com.netflix.hystrix.HystrixCircuitBreaker;
 import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixEventType;
 
 public class HealthMonitorDataProvider implements MonitorDaraProvider {
-  private InstanceCacheSummary instanceCacheSummary;
-
-  private final Object lock = new Object();
-
   @Override
   public String getURL() {
     return String.format(MonitorConstant.MONITORS_URI, RegistryUtils.getMicroservice().getServiceName());
@@ -60,18 +51,6 @@ public class HealthMonitorDataProvider implements MonitorDaraProvider {
   @Override
   public MonitorData getData() {
     return getMonitorData();
-  }
-
-  @PostConstruct
-  public void init() {
-    EventManager.register(this);
-  }
-
-  @Subscribe
-  public void subCacheCheck(InstanceCacheSummary instanceCacheSummary) {
-    synchronized (lock) {
-      this.instanceCacheSummary = instanceCacheSummary;
-    }
   }
 
   private MonitorData getMonitorData() {
@@ -121,9 +100,10 @@ public class HealthMonitorDataProvider implements MonitorDaraProvider {
     monitorData.setMemory(memoryInfo);
   }
 
-  public void appendInterfaceInfo(MonitorData monitorData, HystrixCommandMetrics metrics) {
+  private void appendInterfaceInfo(MonitorData monitorData, HystrixCommandMetrics metrics) {
     InterfaceInfo interfaceInfo = new InterfaceInfo();
-    int windowTime = metrics.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / MonitorData.CONVERSION;
+    int windowTime =
+        metrics.getProperties().metricsRollingStatisticalWindowInMilliseconds().get() / MonitorData.CONVERSION;
     long successCount = metrics.getRollingCount(HystrixEventType.SUCCESS);
     long failureCount = metrics.getRollingCount(HystrixEventType.FAILURE);
     long semRejectCount = metrics.getRollingCount(HystrixEventType.SEMAPHORE_REJECTED);
