@@ -26,6 +26,9 @@
     Description: none
 -->
 <module name="Checker">
+  <module name="FileTabCharacter">
+    <!-- Checks that there are no tab characters in the file. -->
+  </module>
   <module name="NewlineAtEndOfFile">
   </module>
   <module name="TreeWalker">
