@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.huaweicloud.dashboard.monitor.event;
+package org.apache.servicecomb.dashboard.client;
 
-public class MonitorFailEvent {
 
-  private String msg;
+import java.util.List;
 
-  public MonitorFailEvent(String msg) {
-    this.msg = msg;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
+
+public class DashboardAddressManager extends AbstractAddressManager {
+
+  public DashboardAddressManager(List<String> addresses, EventBus eventBus) {
+    super(addresses);
+    eventBus.register(this);
   }
 
-  public String getMsg() {
-    return msg;
-  }
-
-  public void setMsg(String msg) {
-    this.msg = msg;
+  @Subscribe
+  public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
+    refreshEndpoint(event, RefreshEndpointEvent.CSE_MONITORING_NAME);
   }
 }

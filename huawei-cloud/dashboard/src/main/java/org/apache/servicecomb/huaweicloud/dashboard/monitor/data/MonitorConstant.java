@@ -97,12 +97,6 @@ public class MonitorConstant {
     return property.getValue();
   }
 
-  public static boolean insCacheEnabled() {
-    DynamicBooleanProperty property = DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.monitor.client.pushInsCache", false);
-    return property.getValue();
-  }
-
   public static boolean sslEnabled() {
     DynamicBooleanProperty property = DynamicPropertyFactory.getInstance().
         getBooleanProperty("servicecomb.monitor.client.sslEnabled", true);

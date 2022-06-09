@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.huaweicloud.dashboard.monitor.data;
+package org.apache.servicecomb.dashboard.client.model;
 
 public class InterfaceInfo {
   private String name;

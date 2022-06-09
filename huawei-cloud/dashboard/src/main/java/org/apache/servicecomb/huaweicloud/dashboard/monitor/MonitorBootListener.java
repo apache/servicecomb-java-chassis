@@ -17,9 +17,10 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import org.apache.servicecomb.core.BootListener;
-
 import javax.inject.Inject;
+
+import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 
 public class MonitorBootListener implements BootListener {
 
@@ -28,6 +29,10 @@ public class MonitorBootListener implements BootListener {
 
   @Override
   public void onBootEvent(BootEvent event) {
+    if (!MonitorConstant.isMonitorEnabled()) {
+      return;
+    }
+
     if (EventType.AFTER_REGISTRY == event.getEventType()) {
       dataFactory.start();
     }

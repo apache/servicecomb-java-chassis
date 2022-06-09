@@ -62,6 +62,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>dashboard-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>http-client-common</artifactId>
     </dependency>
     <dependency>
