@@ -24,7 +24,7 @@ package org.apache.servicecomb.authentication;
  */
 public class RSAAuthenticationToken {
 
-  public final static long TOKEN_ACTIVE_TIME = 24 * 60 * 60 * 1000;
+  public static final long TOKEN_ACTIVE_TIME = 24 * 60 * 60 * 1000;
 
   private final String instanceId;
 

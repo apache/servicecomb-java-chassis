@@ -41,7 +41,7 @@ import com.netflix.config.DynamicPropertyFactory;
  *  Add special stats that com.netflix.loadbalancer.LoadBalancerStats not provided
  */
 public class ServiceCombLoadBalancerStats {
-  private final static Logger LOGGER = LoggerFactory.getLogger(ServiceCombLoadBalancerStats.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCombLoadBalancerStats.class);
 
   private final Map<ServiceCombServer, ServiceCombServerStats> pingView = new ConcurrentHashMap<>();
 

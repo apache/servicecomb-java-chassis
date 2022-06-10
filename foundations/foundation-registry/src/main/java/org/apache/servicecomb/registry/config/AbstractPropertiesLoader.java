@@ -40,9 +40,9 @@ public abstract class AbstractPropertiesLoader {
     return propertiesMap;
   }
 
-  abstract protected Map<String, String> readProperties(Configuration configuration);
+  protected abstract Map<String, String> readProperties(Configuration configuration);
 
-  abstract protected String readPropertiesExtendedClass(Configuration configuration);
+  protected abstract String readPropertiesExtendedClass(Configuration configuration);
 
   private void loadPropertiesFromConfigMap(Configuration configuration, Map<String, String> propertiesMap) {
     propertiesMap.putAll(readProperties(configuration));

@@ -23,7 +23,7 @@ import io.protostuff.compiler.model.Field;
 import io.protostuff.runtime.FieldSchema;
 
 public class AbstractScalarReadSchemas {
-  static abstract class AbstractIntSchema<T> extends FieldSchema<T> {
+  abstract static class AbstractIntSchema<T> extends FieldSchema<T> {
     protected final Setter<T, Object> setter;
 
     public AbstractIntSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
@@ -32,7 +32,7 @@ public class AbstractScalarReadSchemas {
     }
   }
 
-  static abstract class AbstractLongSchema<T> extends FieldSchema<T> {
+  abstract static class AbstractLongSchema<T> extends FieldSchema<T> {
     protected final Setter<T, Object> setter;
 
     public AbstractLongSchema(Field protoField, PropertyDescriptor propertyDescriptor) {

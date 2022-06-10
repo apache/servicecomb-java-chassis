@@ -30,5 +30,5 @@ public abstract class AbstractRestObjectMapper extends ObjectMapper {
     super(src);
   }
 
-  abstract public String convertToString(Object value) throws Exception;
+  public abstract String convertToString(Object value) throws Exception;
 }
