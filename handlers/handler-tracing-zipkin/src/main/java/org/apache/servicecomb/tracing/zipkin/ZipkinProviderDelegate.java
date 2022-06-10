@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
@@ -59,6 +60,11 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
     }
     return extracted;
   };
+
+  @VisibleForTesting
+  static Getter<Invocation, String> getInvocationStringGetter() {
+    return INVOCATION_STRING_GETTER;
+  }
 
   ZipkinProviderDelegate(HttpTracing httpTracing) {
     this.httpTracing = httpTracing;

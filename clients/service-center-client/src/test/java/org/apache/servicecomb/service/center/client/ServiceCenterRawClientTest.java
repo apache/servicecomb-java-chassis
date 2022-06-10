@@ -33,10 +33,6 @@ import com.google.common.eventbus.EventBus;
  */
 public class ServiceCenterRawClientTest {
 
-  private static final String DEFAULT_HOST = "localhost";
-
-  private static final int DEFAULT_PORT = 30100;
-
   private static final String PROJECT_NAME = "default";
 
   private static final String TENANT_NAME = "default";

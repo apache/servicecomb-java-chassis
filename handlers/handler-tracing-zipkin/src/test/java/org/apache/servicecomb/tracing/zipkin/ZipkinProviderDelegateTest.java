@@ -26,13 +26,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import brave.propagation.Propagation.Getter;
-import mockit.Deencapsulation;
 
 public class ZipkinProviderDelegateTest {
   @Test
   public void testGetterOnGetSpanId() {
-    Getter<Invocation, String> getter = Deencapsulation
-        .getField(ZipkinProviderDelegate.class, "INVOCATION_STRING_GETTER");
+    Getter<Invocation, String> getter = ZipkinProviderDelegate.getInvocationStringGetter();
 
     Invocation invocation = Mockito.mock(Invocation.class);
     Map<String, String> context = new HashMap<>();
@@ -58,8 +56,7 @@ public class ZipkinProviderDelegateTest {
 
   @Test
   public void testGetterOnGetOtherContent() {
-    Getter<Invocation, String> getter = Deencapsulation
-        .getField(ZipkinProviderDelegate.class, "INVOCATION_STRING_GETTER");
+    Getter<Invocation, String> getter = ZipkinProviderDelegate.getInvocationStringGetter();
 
     Invocation invocation = Mockito.mock(Invocation.class);
     Map<String, String> context = new HashMap<>();
