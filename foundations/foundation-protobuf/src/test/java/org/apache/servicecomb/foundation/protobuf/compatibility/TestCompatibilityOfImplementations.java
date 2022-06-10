@@ -30,9 +30,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestCompatibilityOfImplementations {
-  static ProtubufCodecEngine scbWeak = new ScbWeak();
+  static final ProtubufCodecEngine scbWeak = new ScbWeak();
 
-  static ProtubufCodecEngine protobuf = new Protobuf();
+  static final ProtubufCodecEngine protobuf = new Protobuf();
 
   @Test
   @SuppressWarnings("unchecked")

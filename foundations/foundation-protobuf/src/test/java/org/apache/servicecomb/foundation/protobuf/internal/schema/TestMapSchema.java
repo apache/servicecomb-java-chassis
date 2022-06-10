@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestMapSchema extends TestSchemaBase {
   @Test
