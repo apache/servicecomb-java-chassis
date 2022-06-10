@@ -33,7 +33,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.dashboard.client.DashboardAddressManager;
 import org.apache.servicecomb.dashboard.client.DashboardClient;
-import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
@@ -120,10 +119,6 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
 
   @Override
   public void publish(MonitorDaraProvider provider) {
-    MonitorData data = provider.getData();
-    if (data == null) {
-      return;
-    }
-    dashboardClient.sendData(provider.getURL(), data);
+    dashboardClient.sendData(provider.getURL(), provider.getData());
   }
 }
