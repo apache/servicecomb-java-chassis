@@ -88,7 +88,9 @@ public class DataFactory {
 
   void sendData() {
     for (MonitorDaraProvider provider : this.dataProviders) {
-      this.publisher.publish(provider);
+      if (provider.enabled()) {
+        this.publisher.publish(provider);
+      }
     }
   }
 }

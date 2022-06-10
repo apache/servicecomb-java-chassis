@@ -45,12 +45,8 @@ import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMonitorDataPublisher.class);
-
   private static final String SSL_KEY = "mc.consumer";
 
   private DashboardClient dashboardClient;

@@ -44,12 +44,21 @@
             <artifactId>registry-service-center</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.netflix.hystrix</groupId>
-            <artifactId>hystrix-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.servicecomb</groupId>
             <artifactId>dashboard-client</artifactId>
         </dependency>
+
+        <!-- optional dependencies -->
+        <dependency>
+            <groupId>org.apache.servicecomb</groupId>
+            <artifactId>handler-bizkeeper</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicecomb</groupId>
+            <artifactId>metrics-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- optional dependencies -->
     </dependencies>
 </project>
