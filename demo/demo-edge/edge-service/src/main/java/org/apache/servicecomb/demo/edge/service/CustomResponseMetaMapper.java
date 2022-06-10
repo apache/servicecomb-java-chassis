@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 public class CustomResponseMetaMapper implements ResponseMetaMapper {
-  private final static Map<Integer, JavaType> CODES = new HashMap<>(1);
+  private static final Map<Integer, JavaType> CODES = new HashMap<>(1);
 
   static {
     CODES.put(500, SimpleType.constructUnsafe(IllegalStateErrorData.class));

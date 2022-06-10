@@ -148,7 +148,7 @@ public class TestServiceRegistryClientImpl {
     ArchaiusUtils.resetConfig();
   }
 
-  static abstract class RegisterSchemaTester {
+  abstract static class RegisterSchemaTester {
     void run() {
       Logger rootLogger = Logger.getRootLogger();
 

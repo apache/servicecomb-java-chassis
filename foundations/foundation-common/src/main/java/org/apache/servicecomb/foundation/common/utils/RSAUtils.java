@@ -36,13 +36,13 @@ import org.slf4j.LoggerFactory;
 
 public class RSAUtils {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(RSAUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RSAUtils.class);
 
-  private final static String RSA_ALG = "RSA";
+  private static final String RSA_ALG = "RSA";
 
-  private final static String SIGN_ALG = "SHA256withRSA";
+  private static final String SIGN_ALG = "SHA256withRSA";
 
-  private final static int KEY_SIZE = 2048;
+  private static final int KEY_SIZE = 2048;
 
   private static final Base64.Encoder encoder = Base64.getEncoder();
 

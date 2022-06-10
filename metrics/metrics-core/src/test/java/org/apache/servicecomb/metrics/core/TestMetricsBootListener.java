@@ -50,7 +50,7 @@ public class TestMetricsBootListener {
     final BootEvent event = new BootEvent();
     final ProducerMeta producerMeta = new ProducerMeta();
     final SCBEngine scbEngine = new SCBEngine() {
-      final public ProducerProviderManager producerProviderManager = new ProducerProviderManager(this) {
+      public final ProducerProviderManager producerProviderManager = new ProducerProviderManager(this) {
 
         @Override
         public void addProducerMeta(String schemaId, Object instance) {
@@ -81,7 +81,7 @@ public class TestMetricsBootListener {
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
     final SCBEngine scbEngine = new SCBEngine() {
-      final public ProducerProviderManager producerProviderManager = new ProducerProviderManager(this) {
+      public final ProducerProviderManager producerProviderManager = new ProducerProviderManager(this) {
 
         @Override
         public void addProducerMeta(String schemaId, Object instance) {

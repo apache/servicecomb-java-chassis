@@ -36,7 +36,7 @@ import com.google.common.cache.CacheBuilder;
 
 public class RSAProviderTokenManager {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
   private final Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)

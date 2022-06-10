@@ -87,7 +87,7 @@ public class SCBEngine {
 
   private static final Object initializationLock = new Object();
 
-  private volatile static SCBEngine INSTANCE;
+  private static volatile SCBEngine INSTANCE;
 
   private ApplicationContext applicationContext;
 

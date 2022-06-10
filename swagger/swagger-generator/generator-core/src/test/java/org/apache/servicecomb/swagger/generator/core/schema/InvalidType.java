@@ -25,7 +25,7 @@ public class InvalidType {
 
   }
 
-  public static abstract class InvalidClass {
+  public abstract static class InvalidClass {
 
   }
 

@@ -65,11 +65,11 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     return processor;
   }
 
-  abstract protected String createKey(GovernanceRequest governanceRequest, POLICY policy);
+  protected abstract String createKey(GovernanceRequest governanceRequest, POLICY policy);
 
-  abstract protected POLICY matchPolicy(GovernanceRequest governanceRequest);
+  protected abstract POLICY matchPolicy(GovernanceRequest governanceRequest);
 
-  abstract protected PROCESSOR createProcessor(GovernanceRequest governanceRequest, POLICY policy);
+  protected abstract PROCESSOR createProcessor(GovernanceRequest governanceRequest, POLICY policy);
 
   protected void onConfigurationChanged(String key) {
     processors.remove(key);

@@ -34,6 +34,7 @@
   <module name="TreeWalker">
     <module name="AvoidStarImport"/>
     <module name="EmptyStatement"/>
+    <module name="ModifierOrder"/>
     <module name="NoWhitespaceAfter">
       <!-- Checks that there is no whitespace after various unary operators.
            Linebreaks are allowed.
