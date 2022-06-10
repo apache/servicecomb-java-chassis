@@ -24,6 +24,10 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 20
     ignore:
+      - dependency-name: "asciidoctorj"
+        versions:
+          - "2.x"
+      # asciidoctorj new version needs higher swagger2markup, which will need java11
       - dependency-name: "jakarta.activation"
         versions:
           - "2.x"
