@@ -22,6 +22,8 @@ import org.apache.servicecomb.swagger.invocation.Response;
 
 import brave.Span;
 import brave.Tracing;
+import brave.http.HttpClientRequest;
+import brave.http.HttpClientResponse;
 import brave.http.HttpClientHandler;
 import brave.http.HttpTracing;
 import brave.propagation.Propagation.Setter;
@@ -29,27 +31,32 @@ import brave.propagation.TraceContext.Injector;
 
 class ZipkinConsumerDelegate implements ZipkinTracingDelegate {
 
-  private final HttpClientHandler<Invocation, Response> handler;
+  private final HttpClientHandler<HttpClientRequest, HttpClientResponse> handler;
 
   private final HttpTracing httpTracing;
 
   private final Injector<Invocation> injector;
 
-  @SuppressWarnings("unchecked")
+  private final HttpClientResponseWrapper responseWrapper;
+
+  private final HttpClientRequestWrapper requestWrapper;
+
   ZipkinConsumerDelegate(HttpTracing httpTracing) {
     this.httpTracing = httpTracing;
     this.injector = httpTracing.tracing().propagation().injector(injector());
-    this.handler = HttpClientHandler.create(httpTracing, new ConsumerInvocationAdapter());
+    this.handler = HttpClientHandler.create(httpTracing);
+    this.responseWrapper = new HttpClientResponseWrapper();
+    this.requestWrapper = new HttpClientRequestWrapper();
   }
 
   @Override
   public Span createSpan(Invocation invocation) {
-    return handler.handleSend(injector, invocation);
+    return handler.handleSend(requestWrapper.invocation(invocation));
   }
 
   @Override
   public void onResponse(Span span, Response response, Throwable error) {
-    handler.handleReceive(response, error, span);
+    handler.handleReceive(responseWrapper.response(response).throwable(error).request(requestWrapper), span);
   }
 
   @Override

@@ -17,43 +17,47 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import javax.annotation.Nonnull;
+import brave.http.HttpServerRequest;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.Response;
 
-import brave.http.HttpServerAdapter;
-import zipkin2.internal.Nullable;
+class HttpServeRequestWrapper extends HttpServerRequest {
+  private Invocation invocation;
 
-class ProviderInvocationAdapter extends HttpServerAdapter<Invocation, Response> {
+  HttpServeRequestWrapper() {
+  }
 
-  @Nullable
+  HttpServeRequestWrapper(Invocation invocation) {
+    this.invocation = invocation;
+  }
+
+  HttpServeRequestWrapper invocation(Invocation invocation) {
+    this.invocation = invocation;
+    return this;
+  }
+
   @Override
-  public String method(@Nonnull Invocation invocation) {
+  public String method() {
     return invocation.getOperationMeta().getHttpMethod();
   }
 
-  @Nullable
   @Override
-  public String url(@Nonnull Invocation invocation) {
+  public String path() {
+    return invocation.getOperationMeta().getOperationPath();
+  }
+
+  @Override
+  public String url() {
     return invocation.getEndpoint().getEndpoint();
   }
 
-  @Nullable
   @Override
-  public String path(@Nonnull Invocation request) {
-    return request.getOperationMeta().getOperationPath();
-  }
-
-  @Nullable
-  @Override
-  public String requestHeader(@Nonnull Invocation invocation, @Nonnull String key) {
+  public String header(String key) {
     return invocation.getContext().get(key);
   }
 
-  @Nullable
   @Override
-  public Integer statusCode(@Nonnull Response response) {
-    return response.getStatusCode();
+  public Object unwrap() {
+    return invocation;
   }
 }
