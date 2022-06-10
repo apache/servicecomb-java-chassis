@@ -31,18 +31,16 @@ import org.mockito.Mockito;
 
 import com.netflix.config.WatchedUpdateListener;
 
-import mockit.Deencapsulation;
-
 public class ApolloConfigurationSourceImplTest {
   @Test
   public void testCreate() throws Exception {
 
     ApolloConfigurationSourceImpl apolloConfigurationSource = new ApolloConfigurationSourceImpl();
     apolloConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getAdded().isEmpty()));
-    UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
+    UpdateHandler updateHandler = apolloConfigurationSource.getUpdateHandler();
     Map<String, Object> createItems = new HashMap<>();
     createItems.put("testKey", "testValue");
-    udateHandler.handle(CREATE, createItems);
+    updateHandler.handle(CREATE, createItems);
   }
 
   @Test
@@ -50,17 +48,17 @@ public class ApolloConfigurationSourceImplTest {
 
     ApolloConfigurationSourceImpl apolloConfigurationSource = new ApolloConfigurationSourceImpl();
     apolloConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getChanged().isEmpty()));
-    UpdateHandler udateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
+    UpdateHandler updateHandler = apolloConfigurationSource.getUpdateHandler();
     Map<String, Object> updateItems = new HashMap<>();
     updateItems.put("testKey", "testValue");
-    udateHandler.handle(SET, updateItems);
+    updateHandler.handle(SET, updateItems);
   }
 
   @Test
   public void testDelete() throws Exception {
     ApolloConfigurationSourceImpl apolloConfigurationSource = new ApolloConfigurationSourceImpl();
     apolloConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getDeleted().isEmpty()));
-    UpdateHandler updateHandler = Deencapsulation.getField(apolloConfigurationSource, UpdateHandler.class);
+    UpdateHandler updateHandler = apolloConfigurationSource.getUpdateHandler();
     Map<String, Object> deleteItems = new HashMap<>();
     deleteItems.put("testKey", "testValue");
 

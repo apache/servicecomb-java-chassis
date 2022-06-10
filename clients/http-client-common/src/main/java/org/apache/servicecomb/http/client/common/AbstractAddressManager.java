@@ -100,6 +100,21 @@ public class AbstractAddressManager {
   }
 
   @VisibleForTesting
+  public List<String> getAddresses() {
+    return addresses;
+  }
+
+  @VisibleForTesting
+  public List<String> getAvailableZone() {
+    return availableZone;
+  }
+
+  @VisibleForTesting
+  public List<String> getAvailableRegion() {
+    return availableRegion;
+  }
+
+  @VisibleForTesting
   protected void setAddressRefresh(boolean addressRefresh) {
     isAddressRefresh = addressRefresh;
   }
