@@ -33,7 +33,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.dashboard.client.DashboardAddressManager;
 import org.apache.servicecomb.dashboard.client.DashboardClient;
-import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
@@ -45,12 +44,8 @@ import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMonitorDataPublisher.class);
-
   private static final String SSL_KEY = "mc.consumer";
 
   private DashboardClient dashboardClient;
@@ -124,10 +119,6 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
 
   @Override
   public void publish(MonitorDaraProvider provider) {
-    MonitorData data = provider.getData();
-    if (data == null) {
-      return;
-    }
-    dashboardClient.sendData(provider.getURL(), data);
+    dashboardClient.sendData(provider.getURL(), provider.getData());
   }
 }

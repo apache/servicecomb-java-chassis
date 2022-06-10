@@ -20,6 +20,7 @@
 
     <bean id="monitorStarterListener" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.MonitorBootListener"></bean>
     <bean id="dataFactory" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.DataFactory"></bean>
-    <bean id="healthmonitorDataProvider" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.HealthMonitorDataProvider"></bean>
+    <bean id="healthMonitorDataProvider" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.HealthMonitorDataProvider"></bean>
+    <bean id="metricsMonitorDataProvider" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.MetricsMonitorDataProvider"></bean>
     <bean id="defaultMonitorDataPublisher" class="org.apache.servicecomb.huaweicloud.dashboard.monitor.DefaultMonitorDataPublisher"></bean>
 </beans>

@@ -14,21 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-package org.apache.servicecomb.huaweicloud.dashboard.monitor.event;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ConsoleMonitorDataEvent {
-  private String jsonData;
-
-  public ConsoleMonitorDataEvent(String jsonData) {
-    this.setJsonData(jsonData);
-  }
-
-  public String getJsonData() {
-    return jsonData;
-  }
-
-  public void setJsonData(String jsonData) {
-    this.jsonData = jsonData;
+public class MetricsMonitorDaraProviderTest {
+  @Test
+  public void testCodeMatch() {
+    Assertions.assertTrue("200".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
+    Assertions.assertTrue("202".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
+    Assertions.assertFalse("2002".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
+    Assertions.assertFalse("400".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
   }
 }

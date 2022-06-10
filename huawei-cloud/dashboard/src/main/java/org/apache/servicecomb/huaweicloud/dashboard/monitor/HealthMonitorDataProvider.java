@@ -17,87 +17,40 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.lang.management.OperatingSystemMXBean;
-import java.lang.management.RuntimeMXBean;
-import java.lang.management.ThreadMXBean;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.CPUMonitorCalc;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.hystrix.HystrixCircuitBreaker;
 import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixEventType;
 
+/**
+ * This provider depends on bizkeeper. Because Bizkeeper depends on Hystrix
+ * and it is not in maintainence, will keep it here for compatible reason.
+ */
 public class HealthMonitorDataProvider implements MonitorDaraProvider {
   @Override
-  public String getURL() {
-    return String.format(MonitorConstant.MONITORS_URI, RegistryUtils.getMicroservice().getServiceName());
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.monitor.provider.bizkeeper.enabled", false)
+        .get();
   }
 
   @Override
-  public MonitorData getData() {
-    return getMonitorData();
-  }
-
-  private MonitorData getMonitorData() {
+  public void extractInterfaceInfo(MonitorData monitorData) {
     Collection<HystrixCommandMetrics> instances = HystrixCommandMetrics.getInstances();
-    MonitorData monitorData = new MonitorData();
-    Microservice microservice = RegistryUtils.getMicroservice();
-    MicroserviceInstance microserviceInstance = RegistryUtils.getMicroserviceInstance();
-    monitorData.setAppId(microservice.getAppId());
-    monitorData.setName(microservice.getServiceName());
-    monitorData.setVersion(microservice.getVersion());
-    monitorData.setServiceId(microservice.getServiceId());
-    monitorData.setInstance(microserviceInstance.getHostName());
-    monitorData.setInstanceId(microserviceInstance.getInstanceId());
-    exactProcessInfo(monitorData);
     if (instances.isEmpty()) {
-      return monitorData;
+      return;
     }
     for (HystrixCommandMetrics instance : instances) {
       appendInterfaceInfo(monitorData, instance);
     }
-    return monitorData;
-  }
-
-  private void exactProcessInfo(MonitorData monitorData) {
-    MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-    MemoryUsage memoryHeapUsage = memoryMXBean.getHeapMemoryUsage();
-    MemoryUsage memoryNonHeapUsage = memoryMXBean.getNonHeapMemoryUsage();
-    ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-    int threadCount = threadMXBean.getThreadCount();
-    OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-
-    double cpu = operatingSystemMXBean.getSystemLoadAverage();
-    monitorData.setCpu(CPUMonitorCalc.getInstance().getProcessCpu());
-    monitorData.setLoadAverage(cpu);
-    monitorData.setThreadCount(threadCount);
-    monitorData.setUptime(runtimeMXBean.getUptime());
-
-    Map<String, Long> memoryInfo = new HashMap<>();
-    memoryInfo.put("heapInit", memoryHeapUsage.getInit());
-    memoryInfo.put("headMax", memoryHeapUsage.getMax());
-    memoryInfo.put("heapCommit", memoryHeapUsage.getCommitted());
-    memoryInfo.put("heapUsed", memoryHeapUsage.getUsed());
-    memoryInfo.put("nonHeapInit", memoryNonHeapUsage.getInit());
-    memoryInfo.put("nonHeapCommit", memoryNonHeapUsage.getCommitted());
-    memoryInfo.put("nonHeapUsed", memoryNonHeapUsage.getUsed());
-    monitorData.setMemory(memoryInfo);
   }
 
   private void appendInterfaceInfo(MonitorData monitorData, HystrixCommandMetrics metrics) {
