@@ -340,7 +340,7 @@ public final class NetUtils {
       return String.valueOf(bytes);
     }
     int exp = (int) (Math.log(bytes) / Math.log(unit));
-    char pre = "KMGTPE" .charAt(exp - 1);
+    char pre = "KMGTPE".charAt(exp - 1);
     return String.format("%.3f%c", bytes / Math.pow(unit, exp), pre);
   }
 }
