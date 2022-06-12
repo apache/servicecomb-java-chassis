@@ -40,7 +40,6 @@ import org.mockito.Mockito;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
 
 public class AccessLogGeneratorTest {
 
@@ -51,7 +50,7 @@ public class AccessLogGeneratorTest {
 
   @Test
   public void testConstructor() {
-    AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(LOG_GENERATOR, "accessLogItems");
+    AccessLogItem<RoutingContext>[] elements = LOG_GENERATOR.getAccessLogItems();
     Assertions.assertEquals(3, elements.length);
     Assertions.assertEquals(HttpMethodAccessItem.class, elements[0].getClass());
     Assertions.assertEquals(PlainTextAccessItem.class, elements[1].getClass());
@@ -100,7 +99,7 @@ public class AccessLogGeneratorTest {
 
   @Test
   public void testUserDefinedLogGenerator() {
-    AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(USER_DEFINED_LOG_GENERATOR, "accessLogItems");
+    AccessLogItem<RoutingContext>[] elements = USER_DEFINED_LOG_GENERATOR.getAccessLogItems();
     Assertions.assertEquals(3, elements.length);
     Assertions.assertEquals(RemoteHostAccessItem.class, elements[0].getClass());
     Assertions.assertEquals(PlainTextAccessItem.class, elements[1].getClass());

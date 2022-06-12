@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.accessLog.core.element.impl.PlainTextAccessItem;
 import org.apache.servicecomb.common.accessLog.core.parser.AccessLogItemMeta;
@@ -78,7 +79,13 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     sortAccessLogItemMeta(this.metaList);
   }
 
-  private List<VertxRestAccessLogItemMeta> loadVertxRestLogItemMeta() {
+  @VisibleForTesting
+  List<VertxRestAccessLogItemMeta> getMetaList() {
+    return metaList;
+  }
+
+  @VisibleForTesting
+  List<VertxRestAccessLogItemMeta> loadVertxRestLogItemMeta() {
     return SPIServiceUtils.getOrLoadSortedService(VertxRestAccessLogItemMeta.class);
   }
 

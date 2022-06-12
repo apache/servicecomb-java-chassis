@@ -53,7 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -338,8 +337,7 @@ public class VertxRestAccessLogPatternParserTest {
 
     VertxRestAccessLogPatternParser parser = new VertxRestAccessLogPatternParser();
 
-    List<VertxRestAccessLogItemMeta> accessLogItemMetaList =
-        Deencapsulation.getField(parser, "metaList");
+    List<VertxRestAccessLogItemMeta> accessLogItemMetaList = parser.getMetaList();
 
     Assertions.assertEquals(7, accessLogItemMetaList.size());
     Assertions.assertEquals("%_", accessLogItemMetaList.get(0).getPrefix());
