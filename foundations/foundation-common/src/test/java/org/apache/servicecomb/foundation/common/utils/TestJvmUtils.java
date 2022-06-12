@@ -17,36 +17,36 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.jar.JarFile;
 
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
 
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JvmUtils.class})
-@PowerMockIgnore("jdk.internal.reflect.*")
 public class TestJvmUtils {
   static String orgCmd = System.getProperty(JvmUtils.SUN_JAVA_COMMAND);
 
-  @Before
+  @BeforeEach
   public void setup() {
     System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
   }
 
-  @AfterClass
+  @BeforeAll
+  public static void before() {
+    // make sure jvmUtils is loaded first
+    JvmUtils.findMainClass();
+  }
+
+  @AfterAll
   public static void tearDown() {
     if (orgCmd == null) {
       System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
@@ -62,12 +62,17 @@ public class TestJvmUtils {
   }
 
   @Test
+  @DisabledOnJre(JRE.JAVA_8)
   public void findMainClass_existButEmpty() {
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, "");
     Assertions.assertNull(JvmUtils.findMainClass());
   }
 
+  /**
+   * will fix when mockito support
+   */
   @Test
+  @DisabledOnJre(JRE.JAVA_8)
   public void findMainClass_invalid() {
     LogCollector logCollector = new LogCollector();
 
@@ -79,120 +84,115 @@ public class TestJvmUtils {
   }
 
   @Test
+  @DisabledOnJre(JRE.JAVA_8)
   public void findMainClass_class_normal() {
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, TestJvmUtils.class.getName() + " arg");
 
     Assertions.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
   }
 
+  @SuppressWarnings("try")
   @Test
+  @DisabledOnJre(JRE.JAVA_8)
   public void findMainClass_jar_normal() throws Exception {
-
-    URL url = PowerMockito.mock(URL.class);
-
-    String command = "a.jar";
-    String manifestUri = "jar:file:" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
-    PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
-        .withArguments(manifestUri).thenReturn(url);
-
     String content = String.format("Manifest-Version: 1.0\nMain-Class: %s\n", TestJvmUtils.class.getName());
     InputStream inputStream = new ByteArrayInputStream(content.getBytes());
-    PowerMockito.when(url.openStream()).thenAnswer(invocation -> inputStream);
-
-    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
-
-    Assertions.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+    try (MockedConstruction<URL> mocked = Mockito.mockConstruction(URL.class, (mock, context) -> {
+      Mockito.when(mock.openStream()).thenAnswer(invocation -> inputStream);
+    })) {
+      String command = "a.jar";
+      System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
+      Assertions.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+    }
   }
 
+  @SuppressWarnings("try")
   @Test
+  @DisabledOnJre(JRE.JAVA_8)
   public void findMainClass_jar_null() throws Exception {
     String content = "Manifest-Version: 1.0\n";
     InputStream inputStream = new ByteArrayInputStream(content.getBytes());
-
-    URL url = PowerMockito.mock(URL.class);
-
-    String command = "a.jar";
-    String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
-
-    PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
-            .withArguments(manifestUri).thenAnswer(invocation -> url);
-    PowerMockito.when(url.openStream()).thenAnswer(invocation -> inputStream);
-
-    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
-
-    Assertions.assertNull(JvmUtils.findMainClass());
+    try (MockedConstruction<URL> mocked = Mockito.mockConstruction(URL.class, (mock, context) -> {
+      Mockito.when(mock.openStream()).thenAnswer(invocation -> inputStream);
+    })) {
+      String command = "a.jar";
+      System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
+      Assertions.assertNull(JvmUtils.findMainClass());
+    }
   }
 
+  @SuppressWarnings("try")
   @Test
+  @DisabledOnJre(JRE.JAVA_8)
   public void findMainClass_jar_readFailed() throws Exception {
-    URL url = PowerMockito.mock(URL.class);
-    String command = "a.jar";
-
-    String manifestUri = "jar:file:" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
-
-    PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
-        .withArguments(manifestUri).thenReturn(url);
-    PowerMockito.when(url.openStream()).thenThrow(new RuntimeExceptionWithoutStackTrace());
-
-    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
-
-    Assertions.assertNull(JvmUtils.findMainClass());
+    try (MockedConstruction<URL> mocked = Mockito.mockConstruction(URL.class, (mock, context) -> {
+      Mockito.when(mock.openStream()).thenThrow(new RuntimeExceptionWithoutStackTrace());
+    })) {
+      String command = "a.jar";
+      System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
+      Assertions.assertNull(JvmUtils.findMainClass());
+    }
   }
 
 
+  @SuppressWarnings("try")
   @Test
   public void findMainClassByStackTrace_normal() throws Exception{
-    RuntimeException re = PowerMockito.mock(RuntimeException.class);
-    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{
-        new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
-        new StackTraceElement("java.lang.String", "main", "fileName", 120)
-    });
-    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
-
-    Assertions.assertEquals(String.class, JvmUtils.findMainClassByStackTrace());
+    try (MockedConstruction<RuntimeException> mocked = Mockito.mockConstruction(RuntimeException.class, (mock, context) -> {
+      Mockito.when(mock.getStackTrace()).thenReturn(new StackTraceElement[]{
+              new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
+              new StackTraceElement("java.lang.String", "main", "fileName", 120)
+      });
+    })) {
+      Assertions.assertEquals(String.class, JvmUtils.findMainClassByStackTrace());
+    }
   }
 
+  @SuppressWarnings("try")
   @Test
   public void findMainClassByStackTrace_invalidClass() throws Exception{
-    RuntimeException re = PowerMockito.mock(RuntimeException.class);
-    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{
-        new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
-        new StackTraceElement("InvalidClass", "main", "fileName", 120)
-    });
-    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
-
-    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    try (MockedConstruction<RuntimeException> mocked = Mockito.mockConstruction(RuntimeException.class, (mock, context) -> {
+      Mockito.when(mock.getStackTrace()).thenReturn(new StackTraceElement[]{
+              new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
+              new StackTraceElement("InvalidClass", "main", "fileName", 120)
+      });
+    })) {
+      Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    }
   }
 
 
+  @SuppressWarnings("try")
   @Test
   public void findMainClassByStackTrace_withoutMainMethod() throws Exception{
-    RuntimeException re = PowerMockito.mock(RuntimeException.class);
-    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{
-        new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
-        new StackTraceElement("InvalidClass", "methodName", "fileName", 120)
-    });
-    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
-
-    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    try (MockedConstruction<RuntimeException> mocked = Mockito.mockConstruction(RuntimeException.class, (mock, context) -> {
+      Mockito.when(mock.getStackTrace()).thenReturn(new StackTraceElement[]{
+              new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
+              new StackTraceElement("InvalidClass", "methodName", "fileName", 120)
+      });
+    })) {
+      Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    }
   }
 
+  @SuppressWarnings("try")
   @Test
   public void findMainClassByStackTrace_emptyStackTrace() throws Exception{
-    RuntimeException re = PowerMockito.mock(RuntimeException.class);
-    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{});
-    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
-
-    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    try (MockedConstruction<RuntimeException> mocked = Mockito.mockConstruction(RuntimeException.class, (mock, context) -> {
+      Mockito.when(mock.getStackTrace()).thenReturn(new StackTraceElement[]{});
+    })) {
+      Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    }
   }
 
+  @SuppressWarnings("try")
   @Test
   public void findMainClassByStackTrace_nullStackTrace() throws Exception{
-    RuntimeException re = PowerMockito.mock(RuntimeException.class);
-    PowerMockito.when(re.getStackTrace()).thenReturn(null);
-    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
-
-    Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    try (MockedConstruction<RuntimeException> mocked = Mockito.mockConstruction(RuntimeException.class, (mock, context) -> {
+      Mockito.when(mock.getStackTrace()).thenReturn(null);
+    })) {
+      Assertions.assertNull(JvmUtils.findMainClassByStackTrace());
+    }
   }
 
 }
