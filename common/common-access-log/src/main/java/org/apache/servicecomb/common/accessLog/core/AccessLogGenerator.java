@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.accessLog.core;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.accessLog.core.parser.AccessLogPatternParser;
 import org.apache.servicecomb.common.accessLog.core.parser.impl.VertxRestAccessLogPatternParser;
@@ -64,7 +65,8 @@ public class AccessLogGenerator {
     return log.toString();
   }
 
-  private AccessLogItem<RoutingContext>[] getAccessLogItems() {
+  @VisibleForTesting
+  AccessLogItem<RoutingContext>[] getAccessLogItems() {
     return accessLogItems;
   }
 }
