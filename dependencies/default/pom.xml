@@ -75,7 +75,7 @@
     <mock-server.version>5.13.2</mock-server.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.77.Final</netty.version>
-    <okhttp3.version>4.9.3</okhttp3.version>
+    <okhttp3.version>4.10.0</okhttp3.version>
     <powermock.version>2.0.9</powermock.version>
     <maven-model.version>3.8.5</maven-model.version>
     <micrometer.version>1.9.0</micrometer.version>
