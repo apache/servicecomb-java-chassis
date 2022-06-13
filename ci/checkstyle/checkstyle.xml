@@ -44,6 +44,11 @@
       <property name="allowLineBreaks" value="true"/>
       <property name="severity" value="error"/>
     </module>
+    <!-- Checks for braces around if and else blocks -->
+    <module name="NeedBraces">
+      <property name="severity" value="error"/>
+      <property name="tokens" value="LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO"/>
+    </module>
     <module name="NoWhitespaceBefore">
       <!-- Checks that there is no whitespace before various unary operators.
            Linebreaks are allowed.
