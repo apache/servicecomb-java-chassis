@@ -18,7 +18,6 @@
 package org.apache.servicecomb.tracing.zipkin;
 
 import static com.seanyinx.github.unit.scaffolding.AssertUtils.expectFailing;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,9 +25,9 @@ import static org.mockito.Mockito.when;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -54,7 +53,7 @@ public class ZipkinTracingHandlerTest {
 
   private ZipkinTracingHandler tracingHandler;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     when(delegate.tracer()).thenReturn(tracing);
     when(delegate.createSpan(invocation)).thenReturn(span);
@@ -102,7 +101,7 @@ public class ZipkinTracingHandlerTest {
       tracingHandler.handle(invocation, asyncResponse);
       expectFailing(RuntimeException.class);
     } catch (Exception e) {
-      MatcherAssert.assertThat(e, is(exception));
+      Assertions.assertEquals(exception, e);
     }
 
     verify(delegate).onResponse(span, null, exception);
