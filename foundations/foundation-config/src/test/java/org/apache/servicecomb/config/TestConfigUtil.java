@@ -342,7 +342,7 @@ public class TestConfigUtil {
     Class<?>[] classes = Collections.class.getDeclaredClasses();
     Map<String, String> env = System.getenv();
     for (Class<?> cl : classes) {
-      if ("java.util.Collections$UnmodifiableMap" .equals(cl.getName())) {
+      if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
         Field field = cl.getDeclaredField("m");
         field.setAccessible(true);
         Object obj = field.get(env);
