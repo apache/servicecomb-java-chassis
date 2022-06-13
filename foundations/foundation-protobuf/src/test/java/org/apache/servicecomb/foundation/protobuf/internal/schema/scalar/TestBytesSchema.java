@@ -20,10 +20,10 @@ import java.util.HashMap;
 
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
-import org.junit.Test;
 
 import com.google.protobuf.ByteString;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBytesSchema extends TestSchemaBase {
   public TestBytesSchema() {

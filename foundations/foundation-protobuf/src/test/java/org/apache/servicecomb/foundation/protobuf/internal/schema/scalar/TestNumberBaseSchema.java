@@ -25,14 +25,14 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import io.protostuff.compiler.model.Field;
 import io.protostuff.compiler.model.Type;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore
+@Disabled
 public abstract class TestNumberBaseSchema extends TestSchemaBase {
   protected Object minValue;
 
