@@ -34,6 +34,10 @@
   <module name="TreeWalker">
     <module name="AvoidStarImport"/>
     <module name="EmptyStatement"/>
+    <module name="LeftCurly">
+      <!-- Checks for placement of the left curly brace ('{'). -->
+      <property name="severity" value="error"/>
+    </module>
     <module name="ModifierOrder"/>
     <module name="NoWhitespaceAfter">
       <!-- Checks that there is no whitespace after various unary operators.

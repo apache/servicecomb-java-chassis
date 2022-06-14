@@ -40,8 +40,7 @@ public class UInt32PackedWriteSchemas {
         });
       };
 
-      arrayWriter = (o, value) ->
-      {
+      arrayWriter = (o, value) -> {
         if (value.length == 0) {
           return;
         }
@@ -57,8 +56,7 @@ public class UInt32PackedWriteSchemas {
         });
       };
 
-      collectionWriter = (o, value) ->
-      {
+      collectionWriter = (o, value) -> {
         if (value.isEmpty()) {
           return;
         }
