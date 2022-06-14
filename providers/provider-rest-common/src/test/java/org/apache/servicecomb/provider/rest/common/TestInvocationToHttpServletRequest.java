@@ -41,6 +41,7 @@ import io.vertx.core.net.SocketAddress;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestInvocationToHttpServletRequest {
   @Mocked
@@ -300,18 +301,14 @@ public class TestInvocationToHttpServletRequest {
   }
 
   @Test
-  public void testGetRemoteAddressEmpty(@Mocked Invocation invocation) throws Exception {
+  public void testGetRemoteAddressEmpty() throws Exception {
+    Invocation invocation = Mockito.mock(Invocation.class);
+
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerOperation);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
     handlerContext.remove(Const.REMOTE_ADDRESS);
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = swaggerOperation;
-        invocation.getHandlerContext();
-        result = handlerContext;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(handlerContext);
     InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
     String addr = request.getRemoteAddr();
     String host = request.getRemoteHost();
