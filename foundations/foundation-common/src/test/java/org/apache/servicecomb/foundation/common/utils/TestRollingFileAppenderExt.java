@@ -23,20 +23,15 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Injectable;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestRollingFileAppenderExt {
   @Test
-  public void testRollingFileAppenderExt(@Injectable LoggingEvent event,
-      @Injectable Layout layout) throws Exception {
-    new Expectations() {
-      {
-        layout.format(event);
-        result = "test";
-      }
-    };
+  public void testRollingFileAppenderExt() throws Exception {
+    Layout layout = Mockito.mock(Layout.class);
+    LoggingEvent event = Mockito.mock(LoggingEvent.class);
+    Mockito.when(layout.format(event)).thenReturn("test");
     File cur = new File(System.getProperty("user.dir"));
     File temp = new File(cur, "temptestfile.log");
     if (temp.exists()) {
