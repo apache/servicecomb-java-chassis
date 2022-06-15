@@ -26,12 +26,12 @@ import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJaxrsConsumerResponseMapper {
   @Path("/")
@@ -51,7 +51,7 @@ public class TestJaxrsConsumerResponseMapper {
   org.apache.servicecomb.swagger.invocation.Response response = org.apache.servicecomb.swagger.invocation.Response
       .ok(result);
 
-  @Before
+  @BeforeEach
   public void setup() {
     Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
     swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
