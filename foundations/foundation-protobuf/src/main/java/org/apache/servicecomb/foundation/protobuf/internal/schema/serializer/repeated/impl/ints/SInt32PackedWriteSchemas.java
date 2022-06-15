@@ -56,8 +56,7 @@ public class SInt32PackedWriteSchemas {
         });
       };
 
-      collectionWriter = (o, value) ->
-      {
+      collectionWriter = (o, value) -> {
         if (value.isEmpty()) {
           return;
         }
