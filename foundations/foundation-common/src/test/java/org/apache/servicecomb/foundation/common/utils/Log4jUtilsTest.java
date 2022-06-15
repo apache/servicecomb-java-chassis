@@ -24,9 +24,9 @@ import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 
 import mockit.Deencapsulation;
@@ -35,7 +35,7 @@ import mockit.MockUp;
 
 public class Log4jUtilsTest {
 
-  @Before
+  @BeforeEach
   public void before() {
     Deencapsulation.setField(Log4jUtils.class, "inited", false);
   }

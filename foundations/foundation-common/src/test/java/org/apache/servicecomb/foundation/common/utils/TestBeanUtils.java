@@ -19,10 +19,10 @@ package org.apache.servicecomb.foundation.common.utils;
 import java.math.BigDecimal;
 
 import org.aspectj.lang.annotation.Aspect;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -53,12 +53,12 @@ public class TestBeanUtils {
   static class MyAspect {
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
   }

@@ -24,10 +24,10 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestFilePart {
   static File file = new File("testFilePart.txt");
@@ -38,13 +38,13 @@ public class TestFilePart {
 
   FilePart part = new FilePart(name, file.getAbsolutePath());
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() throws IOException {
     file.delete();
     FileUtils.write(file, content, StandardCharsets.UTF_8);
   }
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     file.delete();
   }

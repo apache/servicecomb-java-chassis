@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.junit.jupiter.api.Test;
 
 public class TestEventBus {
   private final EventBus eventBus = new SimpleEventBus();
