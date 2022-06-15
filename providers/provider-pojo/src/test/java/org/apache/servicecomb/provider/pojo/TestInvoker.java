@@ -24,10 +24,10 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.http.Part;
 import java.io.File;
@@ -44,13 +44,13 @@ public class TestInvoker {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
     DiscoveryManager.renewInstance();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     ArchaiusUtils.resetConfig();
   }

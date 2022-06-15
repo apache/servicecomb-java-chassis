@@ -19,8 +19,8 @@ package org.apache.servicecomb.provider.pojo.instance;
 
 import org.apache.servicecomb.provider.common.MockUtil;
 import org.apache.servicecomb.provider.pojo.PojoConst;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSpringInstanceFactory {
 
