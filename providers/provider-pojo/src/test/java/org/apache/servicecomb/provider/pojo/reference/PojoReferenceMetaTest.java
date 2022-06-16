@@ -26,18 +26,18 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
 import org.hamcrest.MatcherAssert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PojoReferenceMetaTest {
-  @Before
+  @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     ArchaiusUtils.resetConfig();
   }

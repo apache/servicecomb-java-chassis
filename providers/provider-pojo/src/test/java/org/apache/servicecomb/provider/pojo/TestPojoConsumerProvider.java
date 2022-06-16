@@ -21,7 +21,7 @@ import static org.apache.servicecomb.provider.pojo.PojoConst.POJO;
 import static org.hamcrest.core.Is.is;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPojoConsumerProvider {
   @Test
