@@ -20,21 +20,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTransportConfigUtils {
-  @Before
+  @BeforeEach
   public void setup() {
     ArchaiusUtils.resetConfig();
   }
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     ArchaiusUtils.resetConfig();
   }
