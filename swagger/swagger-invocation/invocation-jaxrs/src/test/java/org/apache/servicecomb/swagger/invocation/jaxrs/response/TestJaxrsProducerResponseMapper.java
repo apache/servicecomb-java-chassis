@@ -23,28 +23,21 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestJaxrsProducerResponseMapper {
   JaxrsProducerResponseMapper mapper = new JaxrsProducerResponseMapper();
 
-  @Mocked
-  javax.ws.rs.core.Response jaxrsResponse;
-
   @Test
   public void mapResponse_withoutHeaders() {
-    new Expectations() {
-      {
-        jaxrsResponse.getStatusInfo();
-        result = Status.OK;
-        jaxrsResponse.getEntity();
-        result = "result";
-      }
-    };
+    javax.ws.rs.core.Response jaxrsResponse = Mockito.mock(javax.ws.rs.core.Response.class);
+    Mockito.when(jaxrsResponse.getStatusInfo()).thenReturn(Status.OK);
+    Mockito.when(jaxrsResponse.getEntity()).thenReturn("result");
+    Mockito.when(jaxrsResponse.getHeaders()).thenReturn(new MultivaluedHashMap<>());
+
     Response response = mapper.mapResponse(null, jaxrsResponse);
     Assertions.assertEquals(Status.OK, response.getStatus());
     Assertions.assertEquals("result", response.getResult());
@@ -53,19 +46,14 @@ public class TestJaxrsProducerResponseMapper {
 
   @Test
   public void mapResponse_withHeaders() {
+    javax.ws.rs.core.Response jaxrsResponse = Mockito.mock(javax.ws.rs.core.Response.class);
+    Mockito.when(jaxrsResponse.getStatusInfo()).thenReturn(Status.OK);
+    Mockito.when(jaxrsResponse.getEntity()).thenReturn("result");
+
     MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
     headers.add("h", "v");
+    Mockito.when(jaxrsResponse.getHeaders()).thenReturn(headers);
 
-    new Expectations() {
-      {
-        jaxrsResponse.getStatusInfo();
-        result = Status.OK;
-        jaxrsResponse.getEntity();
-        result = "result";
-        jaxrsResponse.getHeaders();
-        result = headers;
-      }
-    };
     Response response = mapper.mapResponse(null, jaxrsResponse);
     Assertions.assertEquals(Status.OK, response.getStatus());
     Assertions.assertEquals("result", response.getResult());

@@ -20,8 +20,8 @@ import javax.ws.rs.core.Response;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestJaxrsProducerResponseMapperFactory {
   JaxrsProducerResponseMapperFactory factory = new JaxrsProducerResponseMapperFactory();
