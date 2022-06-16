@@ -18,19 +18,19 @@
 package org.apache.servicecomb.transport.rest.client;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTransportClientConfig {
 
-  @Before
+  @BeforeEach
   public void before() {
     ArchaiusUtils.resetConfig();
   }
 
-  @After
+  @AfterEach
   public void after() {
     ArchaiusUtils.resetConfig();
   }
