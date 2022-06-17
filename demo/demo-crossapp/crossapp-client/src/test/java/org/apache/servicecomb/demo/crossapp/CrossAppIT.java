@@ -17,16 +17,14 @@
 
 package org.apache.servicecomb.demo.crossapp;
 
-import static org.hamcrest.core.Is.is;
-
 import org.apache.servicecomb.demo.TestMgr;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CrossAppIT {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     TestMgr.errors().clear();
   }
@@ -35,6 +33,6 @@ public class CrossAppIT {
   public void clientGetsNoError() throws Exception {
     CrossappClient.main(new String[0]);
 
-    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

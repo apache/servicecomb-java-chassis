@@ -19,13 +19,13 @@ package org.apache.servicecomb.springboot.jaxrs;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SpringBootJaxrsIT {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     TestMgr.errors().clear();
   }
