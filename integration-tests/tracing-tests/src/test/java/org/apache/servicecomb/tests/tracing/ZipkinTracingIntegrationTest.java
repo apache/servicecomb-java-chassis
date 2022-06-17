@@ -18,18 +18,18 @@
 package org.apache.servicecomb.tests.tracing;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.core.Is.is;
-import static org.springframework.http.HttpStatus.OK;
 
 import java.util.Collection;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ZipkinTracingIntegrationTest extends TracingTestBase {
-  @Before
+  @BeforeEach
   public void setUp() {
     TracingTestMain.main(new String[0]);
   }
@@ -38,8 +38,8 @@ public class ZipkinTracingIntegrationTest extends TracingTestBase {
   public void sendsTracingToConfiguredAddress() throws NoSuchMethodException {
     ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/hello", String.class);
 
-    MatcherAssert.assertThat(entity.getStatusCode(), is(OK));
-    MatcherAssert.assertThat(entity.getBody(), is("hello world, bonjour le monde, hi pojo"));
+    Assertions.assertEquals(HttpStatus.OK, entity.getStatusCode());
+    Assertions.assertEquals("hello world, bonjour le monde, hi pojo", entity.getBody());
 
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*in /.*");
     MatcherAssert.assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
