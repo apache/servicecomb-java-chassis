@@ -29,8 +29,7 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 
 import com.netflix.spectator.api.Counter;
@@ -41,6 +40,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import io.prometheus.client.exporter.HTTPServer;
 import mockit.Expectations;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("restriction")
 public class TestPrometheusPublisher {
@@ -48,7 +48,7 @@ public class TestPrometheusPublisher {
 
   PrometheusPublisher publisher = new PrometheusPublisher();
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     ArchaiusUtils.resetConfig();
   }
