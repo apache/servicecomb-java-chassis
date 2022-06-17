@@ -21,10 +21,10 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestRestTransportClient {
@@ -38,12 +38,12 @@ public class TestRestTransportClient {
   OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     instance = new RestTransportClient();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     instance = null;
   }
