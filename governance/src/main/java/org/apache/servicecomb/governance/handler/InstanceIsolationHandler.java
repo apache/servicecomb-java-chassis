@@ -34,7 +34,7 @@ import io.github.resilience4j.micrometer.tagged.TaggedCircuitBreakerMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 
 public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstanceIsolationHandler.class);
 
   private static final String DEFAULT_SERVICE_NAME = "default";
 

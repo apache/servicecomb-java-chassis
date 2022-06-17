@@ -45,6 +45,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private static final String ALL_VERSION = "0+";
 
+  private static volatile boolean pullInstanceTaskOnceInProgress = false;
+
   public static class SubscriptionKey {
     final String appId;
 
@@ -144,7 +146,12 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   @Subscribe
   public void onPullInstanceEvent(PullInstanceEvent event) {
-    pullAllInstance();
+    // to avoid too many pulls queued.
+    if (pullInstanceTaskOnceInProgress) {
+      return;
+    }
+    pullInstanceTaskOnceInProgress = true;
+    startTask(new PullInstanceOnceTask());
   }
 
   private void pullInstance(SubscriptionKey k, SubscriptionValue v) {
@@ -202,6 +209,17 @@ public class ServiceCenterDiscovery extends AbstractTask {
       pullAllInstance();
 
       startTask(new BackOffSleepTask(pollInterval, new PullInstanceTask()));
+    }
+  }
+
+  class PullInstanceOnceTask implements Task {
+    @Override
+    public void execute() {
+      try {
+        pullAllInstance();
+      } finally {
+        pullInstanceTaskOnceInProgress = false;
+      }
     }
   }
 
