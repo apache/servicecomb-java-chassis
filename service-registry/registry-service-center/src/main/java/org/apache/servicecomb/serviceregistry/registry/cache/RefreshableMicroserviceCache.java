@@ -226,10 +226,8 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
 
   private boolean microserviceMatched(MicroserviceInstanceChangedEvent event) {
     return (key.getAppId().equals(event.getKey().getAppId())) // appId matched
-        && ( // microserviceName matched
-        key.getServiceName().equals(event.getKey().getServiceName())
-            || key.getServiceName().equals(
-            event.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + event.getKey().getServiceName()
-        ));
+            && (key.getServiceName().equals(event.getKey().getServiceName()) // microserviceName matched
+            || key.getServiceName().equals(event.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + event.getKey().getServiceName()
+    ));
   }
 }

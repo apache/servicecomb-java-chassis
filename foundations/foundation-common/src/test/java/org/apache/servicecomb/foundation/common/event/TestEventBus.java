@@ -35,7 +35,7 @@ public class TestEventBus {
   public static class SubscriberForTest {
     private final List<Object> events;
 
-    public SubscriberForTest( List<Object> events) {
+    public SubscriberForTest(List<Object> events) {
       this.events = events;
     }
     @Subscribe
@@ -53,7 +53,7 @@ public class TestEventBus {
   public static class SubscriberWithOrderForTest {
     private final List<Object> events;
 
-    public SubscriberWithOrderForTest( List<Object> events) {
+    public SubscriberWithOrderForTest(List<Object> events) {
       this.events = events;
     }
 

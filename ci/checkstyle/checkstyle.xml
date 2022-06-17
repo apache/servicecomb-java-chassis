@@ -61,6 +61,12 @@
       <property name="allowLineBreaks" value="true"/>
       <property name="severity" value="error"/>
     </module>
+    <module name="ParenPad">
+      <!-- Checks that there is no whitespace before close parens or after
+           open parens.
+      -->
+      <property name="severity" value="error"/>
+    </module>
     <!-- Checks for over-complicated boolean expressions. -->
     <module name="SimplifyBooleanExpression"/>
     <module name="RedundantImport"/>
