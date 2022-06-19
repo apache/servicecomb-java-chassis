@@ -24,15 +24,27 @@ public class TestNullFieldAndDefaultValueParam {
 
   private int i1;
 
-  private String s2 = "defaultS2";
+  private String s2;
 
-  private int i2 = 22;
+  private int i2;
 
   private String s3;
 
   private int i3;
 
   private String rawRequest;
+
+  public TestNullFieldAndDefaultValueParam(String s1, int i1, String s2, int i2, String s3, int i3) {
+    this.s1 = s1;
+    this.i1 = i1;
+    this.s2 = s2;
+    this.i2 = i2;
+    this.s3 = s3;
+    this.i3 = i3;
+  }
+
+  public TestNullFieldAndDefaultValueParam() {
+  }
 
   public String getRawRequest() {
     return rawRequest;
@@ -115,15 +127,13 @@ public class TestNullFieldAndDefaultValueParam {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("TestNullFieldAndDefaultValueParam{");
-    sb.append("s1='").append(s1).append('\'');
-    sb.append(", i1=").append(i1);
-    sb.append(", s2='").append(s2).append('\'');
-    sb.append(", i2=").append(i2);
-    sb.append(", s3='").append(s3).append('\'');
-    sb.append(", i3=").append(i3);
-    sb.append(", rawRequest='").append(rawRequest).append('\'');
-    sb.append('}');
-    return sb.toString();
+    return "TestNullFieldAndDefaultValueParam{" + "s1='" + s1 + '\'' +
+            ", i1=" + i1 +
+            ", s2='" + s2 + '\'' +
+            ", i2=" + i2 +
+            ", s3='" + s3 + '\'' +
+            ", i3=" + i3 +
+            ", rawRequest='" + rawRequest + '\'' +
+            '}';
   }
 }

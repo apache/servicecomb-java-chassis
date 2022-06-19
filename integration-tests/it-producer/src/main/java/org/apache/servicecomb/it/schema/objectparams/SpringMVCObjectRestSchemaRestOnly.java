@@ -43,8 +43,8 @@ public class SpringMVCObjectRestSchemaRestOnly {
    *
    */
   @PostMapping("testNullFieldAndDefaultValue")
-  public TestNullFieldAndDefaultValueParam testNullFieldAndDefaultValue(
-      @RequestBody TestNullFieldAndDefaultValueParam request) {
+  public TestNullFieldAndDefaultValueParamProducer testNullFieldAndDefaultValue(
+      @RequestBody TestNullFieldAndDefaultValueParamProducer request) {
     String jsonRequest = Json.encode(request);
     request.setRawRequest(jsonRequest);
     LOGGER.info("return testNullFieldAndDefaultValue response: {}", request);

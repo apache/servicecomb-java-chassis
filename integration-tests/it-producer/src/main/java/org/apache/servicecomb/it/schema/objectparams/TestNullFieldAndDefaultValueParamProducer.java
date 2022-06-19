@@ -19,7 +19,7 @@ package org.apache.servicecomb.it.schema.objectparams;
 
 import java.util.Objects;
 
-public class TestNullFieldAndDefaultValueParam {
+public class TestNullFieldAndDefaultValueParamProducer {
   private String s1;
 
   private int i1;
@@ -98,7 +98,7 @@ public class TestNullFieldAndDefaultValueParam {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    TestNullFieldAndDefaultValueParam that = (TestNullFieldAndDefaultValueParam) o;
+    TestNullFieldAndDefaultValueParamProducer that = (TestNullFieldAndDefaultValueParamProducer) o;
     return i1 == that.i1 &&
         i2 == that.i2 &&
         i3 == that.i3 &&
@@ -115,15 +115,13 @@ public class TestNullFieldAndDefaultValueParam {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("TestNullFieldAndDefaultValueParam{");
-    sb.append("s1='").append(s1).append('\'');
-    sb.append(", i1=").append(i1);
-    sb.append(", s2='").append(s2).append('\'');
-    sb.append(", i2=").append(i2);
-    sb.append(", s3='").append(s3).append('\'');
-    sb.append(", i3=").append(i3);
-    sb.append(", rawRequest='").append(rawRequest).append('\'');
-    sb.append('}');
-    return sb.toString();
+    return "TestNullFieldAndDefaultValueParam{" + "s1='" + s1 + '\'' +
+            ", i1=" + i1 +
+            ", s2='" + s2 + '\'' +
+            ", i2=" + i2 +
+            ", s3='" + s3 + '\'' +
+            ", i3=" + i3 +
+            ", rawRequest='" + rawRequest + '\'' +
+            '}';
   }
 }
