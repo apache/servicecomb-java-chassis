@@ -19,9 +19,9 @@ package org.apache.dynamicconfig.test;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Assertions;
 public class DynamicConfigurationIT {
   private static Vertx vertx = null;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     vertx = Vertx.vertx();
     vertx.deployVerticle(new SimApolloServer());
@@ -40,7 +40,7 @@ public class DynamicConfigurationIT {
     BeanUtils.init();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     vertx.close();
   }

@@ -19,9 +19,9 @@ package org.apache.servicecomb.demo.springmvc.tests;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,7 +33,7 @@ public class RawSpringMvcIntegrationTest {
 
   private final String controllerUrl = baseUrl + "springmvc/controller/";
 
-  @BeforeClass
+  @BeforeAll
   public static void init() throws Exception {
     System.setProperty("servicecomb.uploads.directory", "/tmp");
     SpringMvcTestMain.main(new String[0]);
@@ -49,7 +49,7 @@ public class RawSpringMvcIntegrationTest {
     }
   }
 
-  @AfterClass
+  @AfterAll
   public static void shutdown() {
     SCBEngine.getInstance().destroy();
   }

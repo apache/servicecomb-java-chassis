@@ -16,22 +16,42 @@
  */
 package org.apache.servicecomb.it.junit;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
-import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-
-public class SCBFailure extends Failure {
-  private static final long serialVersionUID = 6467681668616080232L;
+public class SCBFailure {
 
   private final List<String> parents;
 
-  public SCBFailure(Description description, Throwable thrownException) {
-    super(description, thrownException);
+  private final String displayName;
+
+  private final Throwable exception;
+
+  public SCBFailure(String displayName, Throwable thrownException) {
+    this.displayName = displayName;
+    exception = thrownException;
+
     parents = ITJUnitUtils.cloneParents();
   }
 
   public List<String> getParents() {
     return parents;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public String getStacktrace() {
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    exception.printStackTrace(writer);
+    return stringWriter.toString();
+  }
+
+  @Override
+  public String toString() {
+    return "" + displayName + ":" + exception.getMessage();
   }
 }

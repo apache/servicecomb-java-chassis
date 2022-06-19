@@ -29,7 +29,7 @@ import org.apache.servicecomb.it.schema.DefaultJsonValueResponse;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.concurrent.ListenableFuture;

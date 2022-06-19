@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.objectparams.ObjectParamTypeSchema;
 import org.apache.servicecomb.it.schema.objectparams.TestNullFieldAndDefaultValueParam;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 

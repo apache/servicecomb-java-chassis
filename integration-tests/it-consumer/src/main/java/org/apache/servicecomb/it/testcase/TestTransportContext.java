@@ -19,7 +19,7 @@ package org.apache.servicecomb.it.testcase;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestTransportContext {
   interface TransportContextIntf {

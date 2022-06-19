@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

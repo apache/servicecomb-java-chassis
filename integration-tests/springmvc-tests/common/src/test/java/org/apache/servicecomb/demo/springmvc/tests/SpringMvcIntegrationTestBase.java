@@ -29,17 +29,19 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
@@ -47,11 +49,10 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -69,12 +70,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@Ignore
+@Disabled
 @SuppressWarnings("deprecation")
 // TODO : upgrade to spring 5 will having warning's , we'll fix it later
 public class SpringMvcIntegrationTestBase {
-  @ClassRule
-  public static final TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  public static Path folder;
 
   private final String baseUrl = "http://127.0.0.1:8080/";
 
@@ -690,10 +691,9 @@ public class SpringMvcIntegrationTestBase {
   }
 
   private File newFile(String fileContent) throws IOException {
-    File file = folder.newFile();
-    try (FileOutputStream output = new FileOutputStream(file)) {
-      IOUtils.write(fileContent, output, StandardCharsets.UTF_8);
-    }
-    return file;
+    Path file = folder;
+    Path tempFile = Files.createFile(file.resolve("scb-" + UUID.randomUUID()));
+    Files.write(tempFile, fileContent.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
+    return tempFile.toFile();
   }
 }

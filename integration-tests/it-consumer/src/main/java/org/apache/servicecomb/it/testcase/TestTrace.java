@@ -23,9 +23,9 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 public class TestTrace {
@@ -35,14 +35,14 @@ public class TestTrace {
 
   static Consumers<TraceSchemaIntf> consumers = new Consumers<>("trace", TraceSchemaIntf.class);
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     InvocationContext context = new InvocationContext();
     context.addContext(Const.TRACE_ID_NAME, "testId");
     ContextUtils.setInvocationContext(context);
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     ContextUtils.removeInvocationContext();
   }

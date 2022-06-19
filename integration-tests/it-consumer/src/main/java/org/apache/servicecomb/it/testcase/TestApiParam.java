@@ -21,7 +21,7 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.parameters.BodyParameter;

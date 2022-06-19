@@ -43,8 +43,8 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -66,7 +66,7 @@ public class Test3rdPartyInvocation {
 
   private static DataTypeJaxrsSchemaAsyncIntf dataTypeJaxrsSchemaAsync;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     String endpoint =
         ((ITSCBRestTemplate) consumersJaxrs.getSCBRestTemplate()).getAddress(Const.RESTFUL);

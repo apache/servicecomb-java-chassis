@@ -32,7 +32,7 @@ import org.apache.servicecomb.it.schema.Generic;
 import org.apache.servicecomb.it.schema.User;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 

@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.demo.pojo.test;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PojoSpringConnectionLimitIntegrationTest {
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() throws Exception {
     PojoTestMain.main(null);
   }

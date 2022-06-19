@@ -18,17 +18,17 @@
 package org.apache.servicecomb.demo.springmvc.tests;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
-  @BeforeClass
+  @BeforeAll
   public static void init() throws Exception {
     System.setProperty("servicecomb.uploads.directory", "target");
     SpringMvcTestMain.main(new String[0]);
   }
 
-  @AfterClass
+  @AfterAll
   public static void shutdown() {
     SCBEngine.getInstance().destroy();
   }

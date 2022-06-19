@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
