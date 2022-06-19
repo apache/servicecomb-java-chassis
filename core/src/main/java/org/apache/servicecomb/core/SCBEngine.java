@@ -631,7 +631,7 @@ public class SCBEngine {
         engine.setStatus(SCBStatus.UP);
         engine.triggerEvent(EventType.AFTER_REGISTRY);
         EventManager.unregister(this);
-        // keep this message to be WARN, used to detect service ready. 
+        // keep this message to be WARN, used to detect service ready.
         LOGGER.warn("ServiceComb is ready.");
       }
     }

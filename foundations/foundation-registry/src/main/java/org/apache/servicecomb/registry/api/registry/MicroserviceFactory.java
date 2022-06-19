@@ -86,7 +86,7 @@ public class MicroserviceFactory {
 
     microservice.setFramework(createFramework());
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
-    
+
     return microservice;
   }
 

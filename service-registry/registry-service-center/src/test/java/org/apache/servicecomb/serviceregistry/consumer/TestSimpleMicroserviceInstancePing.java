@@ -44,7 +44,7 @@ public class TestSimpleMicroserviceInstancePing {
     ss.close();
     Assertions.assertFalse(ping.ping(instance));
   }
-  
+
   @Test
   public void testPing_more_endpoin() throws IOException {
     SimpleMicroserviceInstancePing ping = new SimpleMicroserviceInstancePing();
@@ -58,5 +58,5 @@ public class TestSimpleMicroserviceInstancePing {
     ss.close();
     Assertions.assertFalse(ping.ping(instance));
   }
-    
+
 }

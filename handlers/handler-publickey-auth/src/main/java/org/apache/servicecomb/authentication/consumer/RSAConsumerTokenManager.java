@@ -71,7 +71,7 @@ public class RSAConsumerTokenManager {
 
   /**
    * the TTL of Token is  24 hours
-   * client token will expired 15 minutes early 
+   * client token will expired 15 minutes early
    */
   public boolean isExpired(RSAAuthenticationToken token) {
     if (null == token) {

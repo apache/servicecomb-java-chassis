@@ -45,7 +45,7 @@ import io.vertx.core.streams.WriteStream;
  * 1.getContentType<br>
  * 2.getSubmittedFileName<br>
  * extend from AbstractPart just because want to make it be Part type,
- * so that can be sent by 
+ * so that can be sent by
  * {@link org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse#sendPart(Part) VertxServerResponseToHttpServletResponse.sendPart}
  */
 public class ReadStreamPart extends AbstractPart {
