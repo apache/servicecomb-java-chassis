@@ -17,16 +17,14 @@
 
 package org.apache.servicecomb.demo.prefix;
 
-import static org.hamcrest.core.Is.is;
-
 import org.apache.servicecomb.demo.TestMgr;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 
 public class RegisterUrlPrefixIT {
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     TestMgr.errors().clear();
   }
@@ -37,6 +35,6 @@ public class RegisterUrlPrefixIT {
 
     Application.runTest();
 
-    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

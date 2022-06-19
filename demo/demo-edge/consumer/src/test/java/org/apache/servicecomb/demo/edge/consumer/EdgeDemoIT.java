@@ -17,15 +17,13 @@
 
 package org.apache.servicecomb.demo.edge.consumer;
 
-import static org.hamcrest.core.Is.is;
-
 import org.apache.servicecomb.demo.TestMgr;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EdgeDemoIT {
-  @Before
+  @BeforeEach
   public void setUp() {
     TestMgr.errors().clear();
   }
@@ -34,6 +32,6 @@ public class EdgeDemoIT {
   public void clientGetsNoError() throws Exception {
     ConsumerMain.main(new String[0]);
 
-    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

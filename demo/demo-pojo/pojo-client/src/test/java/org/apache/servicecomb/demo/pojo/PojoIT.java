@@ -17,17 +17,15 @@
 
 package org.apache.servicecomb.demo.pojo;
 
-import static org.hamcrest.core.Is.is;
-
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.pojo.client.PojoClient;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PojoIT {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     TestMgr.errors().clear();
   }
@@ -36,6 +34,6 @@ public class PojoIT {
   public void clientGetsNoError() throws Exception {
     PojoClient.main(new String[0]);
 
-    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

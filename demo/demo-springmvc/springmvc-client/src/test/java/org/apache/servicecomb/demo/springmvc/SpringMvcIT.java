@@ -17,16 +17,14 @@
 
 package org.apache.servicecomb.demo.springmvc;
 
-import static org.hamcrest.core.Is.is;
-
 import org.apache.servicecomb.demo.TestMgr;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SpringMvcIT {
 
-  @Before
+  @BeforeEach
   public void setUp() {
     TestMgr.errors().clear();
   }
@@ -35,6 +33,6 @@ public class SpringMvcIT {
   public void clientGetsNoError() throws Exception {
     SpringmvcClient.main(new String[0]);
 
-    MatcherAssert.assertThat(TestMgr.errors().isEmpty(), is(true));
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }
