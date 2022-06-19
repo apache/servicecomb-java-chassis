@@ -33,7 +33,7 @@ public abstract class AbstractInvocationMeters {
 
   private final Map<String, AbstractInvocationMeter> metersMap = new ConcurrentHashMapEx<>();
 
-  // not care for concurrency, just for make build key faster 
+  // not care for concurrency, just for make build key faster
   private int maxKeyLen = 64;
 
   public AbstractInvocationMeters(Registry registry) {

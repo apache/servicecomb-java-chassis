@@ -54,20 +54,20 @@ public class MimeTypesUtils {
   }
 
   public static List<String> getSortedAcceptableMimeTypes(String acceptHeader) {
-    // accept anything when accept is not present       
+    // accept anything when accept is not present
     if (acceptHeader == null) {
       return Collections.emptyList();
     }
 
-    // parse      
+    // parse
     String[] items = COMMA_SPLITTER.split(acceptHeader);
-    // sort on quality        
+    // sort on quality
     Arrays.sort(items, ACCEPT_X_COMPARATOR);
 
     List<String> list = new ArrayList<>(items.length);
 
     for (String item : items) {
-      // find any ; e.g.: "application/json;q=0.8"        
+      // find any ; e.g.: "application/json;q=0.8"
       int space = item.indexOf(';');
 
       if (space != -1) {

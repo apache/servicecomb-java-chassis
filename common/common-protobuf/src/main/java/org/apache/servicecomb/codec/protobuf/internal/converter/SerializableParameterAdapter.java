@@ -38,7 +38,7 @@ public class SerializableParameterAdapter implements SwaggerTypeAdapter {
     if ("array".equals(parameter.getType())) {
       return parameter.getItems();
     }
-    
+
     return null;
   }
 

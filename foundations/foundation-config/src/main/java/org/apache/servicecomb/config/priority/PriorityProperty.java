@@ -192,7 +192,7 @@ public class PriorityProperty<T> {
         return true;
       }
     }
-    
+
     return false;
   }
 }

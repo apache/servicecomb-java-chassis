@@ -134,7 +134,7 @@ public class CseUriTemplateHandler extends org.springframework.web.util.DefaultU
       throw new IllegalArgumentException("[" + uri + "] is not a valid URI");
     }
   }
-  
+
   private URI createUri(String uriTemplate, UriComponents uriComponents) {
     String strUri = uriComponents.toUriString();
 

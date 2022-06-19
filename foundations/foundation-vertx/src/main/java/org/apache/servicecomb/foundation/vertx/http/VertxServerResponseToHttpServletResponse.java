@@ -62,7 +62,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   public void setStatus(int sc) {
     serverResponse.setStatusCode(sc);
   }
-  
+
   @Override
   public StatusType getStatusType() {
     if (statusType == null) {

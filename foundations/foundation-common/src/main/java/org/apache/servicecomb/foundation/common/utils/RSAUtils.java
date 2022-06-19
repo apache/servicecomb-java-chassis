@@ -74,7 +74,7 @@ public class RSAUtils {
   }
 
   /**
-   * if has performance problem ,change Signature to ThreadLocal instance 
+   * if has performance problem ,change Signature to ThreadLocal instance
    */
   public static String sign(String content, PrivateKey privateKey)
       throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
@@ -87,10 +87,10 @@ public class RSAUtils {
 
   /**
    *
-   * if has performance problem ,change Signature to ThreadLocal instance  
-   * @param publicKey public key after base64 encode 
+   * if has performance problem ,change Signature to ThreadLocal instance
+   * @param publicKey public key after base64 encode
    * @param sign 签名
-   * @param content original content 
+   * @param content original content
    * @return verify result
    * @throws NoSuchAlgorithmException
    * @throws InvalidKeySpecException
