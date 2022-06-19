@@ -16,12 +16,12 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import java.time.Duration;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
-
-import java.time.Duration;
 
 public class CircuitBreakerPolicy extends AbstractPolicy {
 
@@ -136,10 +136,12 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     if (StringUtils.isEmpty(slidingWindowType)) {
       return SlidingWindowType.TIME_BASED;
     }
-    if (SlidingWindowType.COUNT_BASED.equals(slidingWindowType)) {
-      return SlidingWindowType.COUNT_BASED;
+
+    try {
+      return SlidingWindowType.valueOf(slidingWindowType);
+    } catch (Exception e) {
+      return SlidingWindowType.TIME_BASED;
     }
-    return SlidingWindowType.TIME_BASED;
   }
 
   public String getSlidingWindowType() {
