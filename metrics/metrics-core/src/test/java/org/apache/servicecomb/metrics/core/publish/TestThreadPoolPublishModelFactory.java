@@ -17,8 +17,6 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.RunnableScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -28,9 +26,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
@@ -38,24 +34,18 @@ import com.netflix.spectator.api.patterns.PolledMeter;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
 
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
+import mockit.Injectable;
 import mockit.Mocked;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestThreadPoolPublishModelFactory {
-  protected EventBus eventBus = new EventBus();
-
   protected Registry registry = new DefaultRegistry(new ManualClock());
-
-  @Mocked
-  ThreadPoolExecutor threadPoolExecutor;
 
   @Mocked
   BlockingQueue<Runnable> queue;
 
   @Test
-  public void createDefaultPublishModel() throws JsonProcessingException {
+  public void createDefaultPublishModel(@Injectable ThreadPoolExecutor threadPoolExecutor) throws Exception {
     new Expectations() {
       {
         threadPoolExecutor.getQueue();
@@ -64,25 +54,15 @@ public class TestThreadPoolPublishModelFactory {
         result = 10d;
       }
     };
-    new MockUp<ScheduledThreadPoolExecutor>() {
-      @Mock
-      void delayedExecute(RunnableScheduledFuture<?> task) {
 
-      }
-    };
-    try {
-      ThreadPoolMonitor.attach(registry, threadPoolExecutor, "test");
+    ThreadPoolMonitor.attach(registry, threadPoolExecutor, "test");
 
-      PolledMeter.update(registry);
-      PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
-      DefaultPublishModel model = factory.createDefaultPublishModel();
+    PolledMeter.update(registry);
+    PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
+    DefaultPublishModel model = factory.createDefaultPublishModel();
 
-      Assertions.assertEquals(
-          "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10,\"rejected\":\"NaN\"}}",
-          JsonUtils.writeValueAsString(model.getThreadPools()));
-    } catch (Throwable e) {
-      e.printStackTrace();
-      Assertions.fail("unexpected error happen. " + e.getMessage());
-    }
+    Assertions.assertEquals(
+        "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10,\"rejected\":\"NaN\"}}",
+        JsonUtils.writeValueAsString(model.getThreadPools()));
   }
 }

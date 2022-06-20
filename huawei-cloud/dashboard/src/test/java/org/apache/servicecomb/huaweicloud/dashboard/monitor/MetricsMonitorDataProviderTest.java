@@ -19,7 +19,7 @@ package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class MetricsMonitorDaraProviderTest {
+public class MetricsMonitorDataProviderTest {
   @Test
   public void testCodeMatch() {
     Assertions.assertTrue("200".matches(MetricsMonitorDataProvider.CODE_SUCCESS));

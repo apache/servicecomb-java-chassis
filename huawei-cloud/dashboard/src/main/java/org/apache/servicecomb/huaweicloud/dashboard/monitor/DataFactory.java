@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class DataFactory {
   private boolean hasStart = false;
 
   @Inject
-  private List<MonitorDaraProvider> dataProviders;
+  private List<MonitorDataProvider> dataProviders;
 
   @Inject
   private MonitorDataPublisher publisher;
@@ -54,7 +54,7 @@ public class DataFactory {
     executorService = Executors.newScheduledThreadPool(CORE_SIZE, threadFactory);
   }
 
-  public void setMonitorDataProviders(List<MonitorDaraProvider> dataProviders) {
+  public void setMonitorDataProviders(List<MonitorDataProvider> dataProviders) {
     this.dataProviders = dataProviders;
   }
 
@@ -68,7 +68,7 @@ public class DataFactory {
 
       StringBuilder sb = new StringBuilder();
       sb.append("Monitor data sender started. Configured data providers is {");
-      for (MonitorDaraProvider provider : dataProviders) {
+      for (MonitorDataProvider provider : dataProviders) {
         sb.append(provider.getClass().getName());
         sb.append(",");
       }
@@ -87,7 +87,7 @@ public class DataFactory {
   }
 
   void sendData() {
-    for (MonitorDaraProvider provider : this.dataProviders) {
+    for (MonitorDataProvider provider : this.dataProviders) {
       if (provider.enabled()) {
         this.publisher.publish(provider);
       }

@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.hystrix.HystrixCircuitBreaker;
@@ -34,7 +34,7 @@ import com.netflix.hystrix.HystrixEventType;
  * This provider depends on bizkeeper. Because Bizkeeper depends on Hystrix
  * and it is not in maintainence, will keep it here for compatible reason.
  */
-public class HealthMonitorDataProvider implements MonitorDaraProvider {
+public class HealthMonitorDataProvider implements MonitorDataProvider {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()

@@ -18,7 +18,7 @@
 package org.apache.servicecomb.huaweicloud.dashboard.monitor.model;
 
 public interface MonitorDataPublisher {
-  void publish(MonitorDaraProvider provider);
+  void publish(MonitorDataProvider provider);
 
   default void init() {
 
