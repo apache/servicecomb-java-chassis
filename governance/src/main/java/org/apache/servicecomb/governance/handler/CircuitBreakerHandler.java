@@ -78,6 +78,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
           .ofCircuitBreakerRegistry(circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
-    return circuitBreakerRegistry.circuitBreaker(policy.getName(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(
+        CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + "." + policy.getName(), circuitBreakerConfig);
   }
 }

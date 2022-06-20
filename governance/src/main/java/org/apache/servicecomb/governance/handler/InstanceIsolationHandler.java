@@ -106,6 +106,8 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
           .ofCircuitBreakerRegistry(circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
-    return circuitBreakerRegistry.circuitBreaker(governanceRequest.getInstanceId(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
+        + "." + governanceRequest.getServiceName()
+        + "." + governanceRequest.getInstanceId(), circuitBreakerConfig);
   }
 }

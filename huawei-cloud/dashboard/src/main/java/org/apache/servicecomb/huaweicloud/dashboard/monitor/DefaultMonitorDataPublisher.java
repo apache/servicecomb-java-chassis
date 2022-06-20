@@ -42,7 +42,7 @@ import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
 
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
@@ -118,7 +118,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   }
 
   @Override
-  public void publish(MonitorDaraProvider provider) {
+  public void publish(MonitorDataProvider provider) {
     dashboardClient.sendData(provider.getURL(), provider.getData());
   }
 }

@@ -24,7 +24,7 @@ import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDaraProvider;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishModelFactory;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
@@ -40,7 +40,7 @@ import com.netflix.spectator.api.Meter;
 /**
  * Monitor data based on metrics-core module.
  */
-public class MetricsMonitorDataProvider implements MonitorDaraProvider {
+public class MetricsMonitorDataProvider implements MonitorDataProvider {
 
   public static final String CODE_SUCCESS = "2[0-9]{2}";
 

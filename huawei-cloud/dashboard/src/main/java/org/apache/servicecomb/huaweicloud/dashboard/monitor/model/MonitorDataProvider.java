@@ -33,7 +33,7 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
-public interface MonitorDaraProvider {
+public interface MonitorDataProvider {
   boolean enabled();
 
   default String getURL() {
