@@ -105,7 +105,7 @@ public class MonitorConstant {
 
   public static boolean isMonitorEnabled() {
     DynamicBooleanProperty property = DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.monitor.client.enabled", true);
+        getBooleanProperty("servicecomb.monitor.client.enabled", false);
     return property.getValue();
   }
 
