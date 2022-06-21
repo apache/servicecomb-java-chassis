@@ -62,7 +62,11 @@ public class TracingTestBase {
         .map(this::extractIds)
         .collect(Collectors.toList());
 
-    List<Span> spans = zipkin.getTrace(traceId(loggedIds));
+    List<Span> spans;
+    do {
+      spans = zipkin.getTrace(traceId(loggedIds));
+    } while (spans == null);
+
     List<String> tracedValues = tracedValues(spans);
     int times = 100;
     while (tracedValues.size() < values.length && times > 0) {
