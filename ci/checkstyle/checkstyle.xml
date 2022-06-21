@@ -48,6 +48,11 @@
       <!-- Checks for placement of the left curly brace ('{'). -->
       <property name="severity" value="error"/>
     </module>
+    <module name="LocalVariableName">
+      <!-- Validates identifiers for local variables against the
+        expression "^[a-z][a-zA-Z0-9]*$". -->
+      <property name="severity" value="error"/>
+    </module>
     <module name="ModifierOrder"/>
     <module name="NoWhitespaceAfter">
       <!-- Checks that there is no whitespace after various unary operators.

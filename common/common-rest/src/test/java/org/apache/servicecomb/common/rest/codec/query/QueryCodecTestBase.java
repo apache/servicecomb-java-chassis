@@ -42,25 +42,25 @@ public class QueryCodecTestBase {
   }
 
   void should_decode(String value, Object decodedValue) {
-    HttpServletRequest Request = new AbstractHttpServletRequest() {
+    HttpServletRequest request = new AbstractHttpServletRequest() {
       @Override
       public String getParameter(String name) {
         return value;
       }
     };
 
-    should_decode(Request, decodedValue);
+    should_decode(request, decodedValue);
   }
 
   void should_decode(String[] value, Object decodedValue) {
-    HttpServletRequest Request = new AbstractHttpServletRequest() {
+    HttpServletRequest request = new AbstractHttpServletRequest() {
       @Override
       public String[] getParameterValues(String name) {
         return value;
       }
     };
 
-    should_decode(Request, decodedValue);
+    should_decode(request, decodedValue);
   }
 
   private void should_decode(HttpServletRequest request, Object decodedValue) {

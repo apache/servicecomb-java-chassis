@@ -269,9 +269,9 @@ public class TrustManagerExtTest {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
-    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-    MyX509CertificateArray[0] = myX509Certificate1;
-    MyX509CertificateArray[1] = myX509Certificate2;
+    MyX509Certificate[] myX509CertificateArray = new MyX509Certificate[2];
+    myX509CertificateArray[0] = myX509Certificate1;
+    myX509CertificateArray[1] = myX509Certificate2;
 
     new Expectations(CertificateUtil.class) {
       {
@@ -289,8 +289,8 @@ public class TrustManagerExtTest {
     Assertions.assertNotNull(trustManagerExt);
     boolean validAssert = true;
     try {
-      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
-      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks");
+      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks");
+      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks");
       trustManagerExt.getAcceptedIssuers();
     } catch (Exception e) {
       validAssert = false;
@@ -303,9 +303,9 @@ public class TrustManagerExtTest {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
-    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-    MyX509CertificateArray[0] = myX509Certificate1;
-    MyX509CertificateArray[1] = myX509Certificate2;
+    MyX509Certificate[] myX509CertificateArray = new MyX509Certificate[2];
+    myX509CertificateArray[0] = myX509Certificate1;
+    myX509CertificateArray[1] = myX509Certificate2;
 
     new Expectations() {
       {
@@ -324,10 +324,10 @@ public class TrustManagerExtTest {
     SSLEngine sslengine = null;
     boolean validAssert = true;
     try {
-      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", socket);
-      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", sslengine);
-      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
-      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
+      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", socket);
+      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", sslengine);
+      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", socket);
+      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", sslengine);
     } catch (Exception e) {
       validAssert = false;
     }
@@ -339,9 +339,9 @@ public class TrustManagerExtTest {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
-    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-    MyX509CertificateArray[0] = myX509Certificate1;
-    MyX509CertificateArray[1] = myX509Certificate2;
+    MyX509Certificate[] myX509CertificateArray = new MyX509Certificate[2];
+    myX509CertificateArray[0] = myX509Certificate1;
+    myX509CertificateArray[1] = myX509Certificate2;
 
     new Expectations() {
       {
@@ -357,7 +357,7 @@ public class TrustManagerExtTest {
     TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
     boolean validAssert = true;
     try {
-      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks");
+      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks");
     } catch (CertificateException e) {
       Assertions.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
       validAssert = false;
@@ -366,13 +366,13 @@ public class TrustManagerExtTest {
   }
 
   @Test
-  public void testCheckClientTrustedExecption(@Mocked CertificateUtil certificateUtil) {
+  public void testCheckClientTrustedException(@Mocked CertificateUtil certificateUtil) {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
-    MyX509Certificate[] MyX509CertificateArray = new MyX509Certificate[2];
-    MyX509CertificateArray[0] = myX509Certificate1;
-    MyX509CertificateArray[1] = myX509Certificate2;
+    MyX509Certificate[] myX509CertificateArray = new MyX509Certificate[2];
+    myX509CertificateArray[0] = myX509Certificate1;
+    myX509CertificateArray[1] = myX509Certificate2;
 
     new Expectations() {
       {
@@ -398,10 +398,10 @@ public class TrustManagerExtTest {
     };
     boolean validAssert = true;
     try {
-      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", socket);
-      trustManagerExt.checkClientTrusted(MyX509CertificateArray, "pks", sslengine);
-      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", socket);
-      trustManagerExt.checkServerTrusted(MyX509CertificateArray, "pks", sslengine);
+      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", socket);
+      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", sslengine);
+      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", socket);
+      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", sslengine);
     } catch (Exception e) {
       Assertions.assertEquals("java.security.cert.CertificateException", e.getClass().getName());
       validAssert = false;

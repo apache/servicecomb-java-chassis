@@ -51,9 +51,8 @@ public class PropertyModelConverterExt extends PropertyModelConverter {
       return;
     }
 
-    List<String> _enum = intEnum.stream()
-        .map(value -> value.toString())
-        .collect(Collectors.toList());
-    ((ModelImpl) model).setEnum(_enum);
+    ((ModelImpl) model).setEnum(intEnum.stream()
+        .map(Object::toString)
+        .collect(Collectors.toList()));
   }
 }

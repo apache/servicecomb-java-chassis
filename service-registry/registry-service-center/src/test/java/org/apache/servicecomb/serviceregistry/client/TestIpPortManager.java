@@ -103,12 +103,11 @@ public class TestIpPortManager {
     // mock endpoint list
     Map<String, List<CacheEndpoint>> addresses = new HashMap<>();
     List<CacheEndpoint> cacheEndpoints = new ArrayList<>();
-    MicroserviceInstance Instance = new MicroserviceInstance();
-    Instance.setDataCenterInfo(null);
-    cacheEndpoints.add(new CacheEndpoint("http://127.0.0.1:9982", Instance));
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setDataCenterInfo(null);
+    cacheEndpoints.add(new CacheEndpoint("http://127.0.0.1:9982", instance));
     addresses.put("rest", cacheEndpoints);
-    ClassificationAddress classificationAddres = new ClassificationAddress(config, cacheManager);
-    manager.classificationAddress = classificationAddres;
+    manager.classificationAddress = new ClassificationAddress(config, cacheManager);
     new Expectations() {
       {
         cacheManager.getOrCreate("default", "SERVICECENTER", "latest");
