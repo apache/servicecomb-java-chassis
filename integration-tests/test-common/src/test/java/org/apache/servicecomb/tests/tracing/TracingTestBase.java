@@ -24,10 +24,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.tests.EmbeddedAppender;
 import org.apache.servicecomb.tests.Log4jConfig;
+import org.awaitility.Awaitility;
 import org.hamcrest.MatcherAssert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -62,10 +64,8 @@ public class TracingTestBase {
         .map(this::extractIds)
         .collect(Collectors.toList());
 
-    List<Span> spans;
-    do {
-      spans = zipkin.getTrace(traceId(loggedIds));
-    } while (spans == null);
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> zipkin.getTrace(traceId(loggedIds)) != null);
+    List<Span> spans = zipkin.getTrace(traceId(loggedIds));
 
     List<String> tracedValues = tracedValues(spans);
     int times = 100;
