@@ -142,24 +142,24 @@ public class ClassificationAddress {
   }
 
   private Map<String, List<String>> generateZoneAndRegionAddress(String key) {
-    InstanceCache KieCaches = instanceCacheManager
+    InstanceCache kieCaches = instanceCacheManager
         .getOrCreate(REGISTRY_APP_ID, key, DefinitionConst.VERSION_RULE_LATEST);
-    List<CacheEndpoint> CacheEndpoints;
+    List<CacheEndpoint> cacheEndpoints;
     if (REGISTRY_SERVICE_NAME.equals(key)) {
-      CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
-      maxRetryTimes = CacheEndpoints.size();
+      cacheEndpoints = kieCaches.getOrCreateTransportMap().get(defaultTransport);
+      maxRetryTimes = cacheEndpoints.size();
     } else {
-      if (KieCaches.getInstanceMap().size() <= 0) {
+      if (kieCaches.getInstanceMap().size() <= 0) {
         return null;
       }
-      CacheEndpoints = KieCaches.getOrCreateTransportMap().get(defaultTransport);
+      cacheEndpoints = kieCaches.getOrCreateTransportMap().get(defaultTransport);
     }
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
-    dataCenterInfo = findRegion(CacheEndpoints);
+    dataCenterInfo = findRegion(cacheEndpoints);
 
     Set<String> sameZone = new HashSet<>();
     Set<String> sameRegion = new HashSet<>();
-    for (CacheEndpoint cacheEndpoint : CacheEndpoints) {
+    for (CacheEndpoint cacheEndpoint : cacheEndpoints) {
       if (regionAndAZMatch(dataCenterInfo, cacheEndpoint.getInstance())) {
         sameZone.add(cacheEndpoint.getEndpoint());
       } else {
