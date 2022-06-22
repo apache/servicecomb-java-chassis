@@ -280,7 +280,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void testSetCseContext_enable_unicode() {
-    Map<String, String> contextMap = new HashMap<String, String>();
+    Map<String, String> contextMap = new HashMap<>();
     contextMap.put("key", "测试");
     contextMap.put("encodedKey", StringEscapeUtils.escapeJson("测试"));
     when(invocation.getContext()).thenReturn(contextMap);
@@ -311,7 +311,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void testSetCseContext_disable_unicode() throws JsonProcessingException {
-    Map<String, String> contextMap = new HashMap<String, String>();
+    Map<String, String> contextMap = new HashMap<>();
     contextMap.put("key", "测试");
     contextMap.put("encodedKey", StringEscapeUtils.escapeJson("测试"));
     when(invocation.getContext()).thenReturn(contextMap);

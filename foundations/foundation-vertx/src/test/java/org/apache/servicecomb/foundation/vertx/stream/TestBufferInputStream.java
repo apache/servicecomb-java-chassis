@@ -65,7 +65,7 @@ public class TestBufferInputStream {
     out.close();
     BufferInputStream bufferInputStream = new BufferInputStream(buffer);
     GZIPInputStream gzipInputStream = new GZIPInputStream(bufferInputStream);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     byte[] bufferByte = new byte[256];
     int n;
     while ((n = gzipInputStream.read(bufferByte)) >= 0) {
