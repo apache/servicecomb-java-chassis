@@ -17,7 +17,6 @@
 package org.apache.servicecomb.swagger.generator.springdata;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
