@@ -485,22 +485,22 @@ public class QpsControllerManagerTest {
   @Test
   public void testDeleteQpsController() {
 
-    final String MICROSERVICE_NAME = "springmvcClient";
-    final String SCHEMA_ID = "controller";
-    final String OPERATION_ID = "add";
-    final String CONFIG_KEY = "springmvcClient.controller.add";
+    final String microserviceName = "springmvcClient";
+    final String schemaId = "controller";
+    final String operationId = "add";
+    final String configKey = "springmvcClient.controller.add";
 
     QpsControllerManager testManager = new QpsControllerManager(true);
-    Invocation testInvocation = getMockInvocation(MICROSERVICE_NAME, SCHEMA_ID, OPERATION_ID);
-    Mockito.when(testInvocation.getSchemaId()).thenReturn(SCHEMA_ID);
+    Invocation testInvocation = getMockInvocation(microserviceName, schemaId, operationId);
+    Mockito.when(testInvocation.getSchemaId()).thenReturn(schemaId);
 
-    QpsStrategy strategy1 = testManager.getOrCreate(MICROSERVICE_NAME, testInvocation);
+    QpsStrategy strategy1 = testManager.getOrCreate(microserviceName, testInvocation);
 
-    setConfigWithDefaultPrefix(true, CONFIG_KEY, 1);
+    setConfigWithDefaultPrefix(true, configKey, 1);
 
-    deleteConfigWithDefaultPrefix(true, CONFIG_KEY);
+    deleteConfigWithDefaultPrefix(true, configKey);
 
-    QpsStrategy strategy2 = testManager.getOrCreate(MICROSERVICE_NAME, testInvocation);
+    QpsStrategy strategy2 = testManager.getOrCreate(microserviceName, testInvocation);
 
     Assertions.assertEquals(strategy1, strategy2);
   }
