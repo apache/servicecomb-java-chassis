@@ -39,15 +39,11 @@ public final class ConfigCenterConfig {
 
   private static final String DOMAIN_NAME = "servicecomb.config.client.domainName";
 
-  private static final String REFRESH_INTERVAL = "servicecomb.config.client.refresh_interval";
-
   private static final String FIRST_REFRESH_INTERVAL = "servicecomb.config.client.first_refresh_interval";
 
   private static final String FIRST_PULL_REQUIRED = "servicecomb.config.client.firstPullRequired";
 
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
-
-  private static final int DEFAULT_REFRESH_INTERVAL = 30000;
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
@@ -81,10 +77,6 @@ public final class ConfigCenterConfig {
       return (List<String>) property;
     }
     return Collections.EMPTY_LIST;
-  }
-
-  public int getRefreshInterval() {
-    return finalConfig.getInt(REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
   }
 
   public int getFirstRefreshInterval() {

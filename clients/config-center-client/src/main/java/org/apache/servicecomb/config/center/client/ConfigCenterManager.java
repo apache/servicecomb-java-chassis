@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.center.client;
 
 import java.util.Map;
 
+import com.netflix.config.DynamicPropertyFactory;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
@@ -60,6 +61,11 @@ public class ConfigCenterManager extends AbstractTask {
     this.startTask(new PollConfigurationTask(0));
   }
 
+  public long getConfigCenterRefreshInterval() {
+    return DynamicPropertyFactory.getInstance().getLongProperty("servicecomb.config.client.refresh_interval",
+                    POLL_INTERVAL).get();
+  }
+
   class PollConfigurationTask implements Task {
     int failCount;
 
@@ -78,7 +84,7 @@ public class ConfigCenterManager extends AbstractTask {
               .createIncremental(configConverter.getCurrentData(), lastData);
           eventBus.post(event);
         }
-        startTask(new BackOffSleepTask(POLL_INTERVAL, new PollConfigurationTask(0)));
+        startTask(new BackOffSleepTask(getConfigCenterRefreshInterval(), new PollConfigurationTask(0)));
       } catch (Exception e) {
         LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
