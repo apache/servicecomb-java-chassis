@@ -81,9 +81,8 @@ public class SpringDataModule extends SimpleModule implements SPIOrder {
     @Override
     public SortMixin convert(Sort value) {
       List<String> properties = new ArrayList<>();
-      Iterator<Order> iterator = value.iterator();
-      while (iterator.hasNext()) {
-        properties.add(iterator.next().getProperty());
+      for (Order order : value) {
+        properties.add(order.getProperty());
       }
       SortMixin result = new SortMixin();
       result.setProperties(properties.toArray(new String[0]));

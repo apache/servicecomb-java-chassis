@@ -54,8 +54,8 @@ public class UploadJaxrsSchema {
   @Produces(MediaType.TEXT_PLAIN)
   public String uploadArray1(@FormParam("file1") Part[] file1, @FormParam("file2") Part file2) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    for (int i = 0; i < file1.length; i++) {
-      stringBuilder.append(getStrFromPart(file1[i]));
+    for (Part part : file1) {
+      stringBuilder.append(getStrFromPart(part));
     }
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
@@ -93,8 +93,8 @@ public class UploadJaxrsSchema {
   public String uploadArray2(@FormParam("file1") Part[] file1, @FormParam("message") String message)
       throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    for (int i = 0; i < file1.length; i++) {
-      stringBuilder.append(getStrFromPart(file1[i]));
+    for (Part part : file1) {
+      stringBuilder.append(getStrFromPart(part));
     }
     return stringBuilder.append(message).toString();
   }
@@ -115,8 +115,8 @@ public class UploadJaxrsSchema {
       @FormParam("message") String message) {
     StringBuilder stringBuilder = new StringBuilder();
     file1.forEach(part -> stringBuilder.append(getStrFromPart(part)));
-    for (int i = 0; i < file2.length; i++) {
-      stringBuilder.append(getStrFromPart(file2[i]));
+    for (Part part : file2) {
+      stringBuilder.append(getStrFromPart(part));
     }
     return stringBuilder.append(message).toString();
   }

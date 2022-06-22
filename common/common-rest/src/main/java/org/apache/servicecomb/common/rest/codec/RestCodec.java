@@ -57,19 +57,18 @@ public final class RestCodec {
     List<RestParam> paramList = restOperation.getParamList();
 
     Map<String, Object> paramValues = new HashMap<>();
-    for (int idx = 0; idx < paramList.size(); idx++) {
-      RestParam param = paramList.get(idx);
+    for (RestParam param : paramList) {
       try {
         paramValues.put(param.getParamName(), param.getParamProcessor().getValue(request));
       } catch (Exception e) {
         // Avoid information leak of user input, and add option for debug use.
         String message = String
-            .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
-                restOperation.getOperationMeta().getMicroserviceQualifiedName(),
-                param.getParamName(),
-                param.getParamProcessor().getProcessorType());
+                .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+                        restOperation.getOperationMeta().getMicroserviceQualifiedName(),
+                        param.getParamName(),
+                        param.getParamProcessor().getProcessorType());
         if (DynamicPropertyFactory.getInstance().getBooleanProperty(
-            RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
+                RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
           LOG.error(message, e);
         } else {
           LOG.error("{} Add {}=true to print the details.", message, RestConst.PRINT_CODEC_ERROR_MESSGAGE);

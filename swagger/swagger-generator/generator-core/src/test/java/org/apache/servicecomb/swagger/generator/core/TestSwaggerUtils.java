@@ -336,13 +336,13 @@ public class TestSwaggerUtils {
   public void testAddDefinitions() {
     Field[] fields1 = AllTypeTest1.class.getDeclaredFields();
     Field[] fields2 = AllTypeTest2.class.getDeclaredFields();
-    for (int i = 0; i < fields1.length; i++) {
-      for (int j = 0; j < fields2.length; j++) {
-        if (fields1[i].isSynthetic() || fields2[j].isSynthetic()) {
+    for (Field value : fields1) {
+      for (Field field : fields2) {
+        if (value.isSynthetic() || field.isSynthetic()) {
           continue;
         }
         try {
-          testExcep(fields1[i].getGenericType(), fields2[j].getGenericType());
+          testExcep(value.getGenericType(), field.getGenericType());
           fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
           MatcherAssert.assertThat(e.getMessage(), containsString("duplicate param model:"));
