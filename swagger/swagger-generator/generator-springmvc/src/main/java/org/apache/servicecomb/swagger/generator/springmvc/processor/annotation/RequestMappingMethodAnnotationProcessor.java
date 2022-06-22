@@ -19,9 +19,11 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 public class RequestMappingMethodAnnotationProcessor extends
     AbstractHttpMethodMappingAnnotationProcessor<RequestMapping> {
@@ -39,7 +41,9 @@ public class RequestMappingMethodAnnotationProcessor extends
 
     doProcess(operationGenerator,
         requestMapping.path(), requestMapping.value(),
-        requestMapping.method().length == 0 ? null : requestMapping.method()[0],
+        requestMapping.method().length == 0 ?
+            (StringUtils.isEmpty(operationGenerator.getHttpMethod()) ? RequestMethod.GET : null) :
+            requestMapping.method()[0],
         requestMapping.consumes(), requestMapping.produces());
   }
 }

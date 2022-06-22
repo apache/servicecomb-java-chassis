@@ -78,9 +78,8 @@ public class TestSpringmvc {
 
   @Test
   public void testClassMethodNoHttpMetod() {
-    UnitTestSwaggerUtils.testException(
-        "HttpMethod must not both be empty in class and method, method=org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoHttpMethod:noHttpMethod.",
-        ClassMethodNoHttpMethod.class);
+    UnitTestSwaggerUtils
+        .testSwagger("schemas/requestMappingHttpMethod.yaml", ClassMethodNoHttpMethod.class, "noHttpMethod");
   }
 
   @Test
