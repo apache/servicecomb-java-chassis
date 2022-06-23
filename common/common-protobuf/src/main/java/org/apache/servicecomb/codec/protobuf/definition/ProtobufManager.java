@@ -19,6 +19,7 @@ package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -68,8 +69,7 @@ public final class ProtobufManager {
       if (!uniqueOperationId.equals(that.uniqueOperationId)) {
         return false;
       }
-      return responseType != null ? responseType.equals(that.responseType)
-          : that.responseType == null;
+      return Objects.equals(responseType, that.responseType);
     }
 
     @Override

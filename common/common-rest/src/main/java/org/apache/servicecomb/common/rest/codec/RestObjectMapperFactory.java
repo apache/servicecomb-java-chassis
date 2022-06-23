@@ -45,7 +45,7 @@ public class RestObjectMapperFactory {
     // not use mapper.findAndRegisterModules()
     // because we need to sort modules, so that customers can override our default module
     List<Module> modules = SPIServiceUtils.getOrLoadSortedService(Module.class);
-    mapper.registerModules(modules.toArray(new Module[modules.size()]));
+    mapper.registerModules(modules.toArray(new Module[0]));
   }
 
   public static AbstractRestObjectMapper getConsumerWriterMapper() {

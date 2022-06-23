@@ -80,6 +80,6 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
       }
     }
 
-    return locationSet.toArray(new String[locationSet.size()]);
+    return locationSet.toArray(new String[0]);
   }
 }

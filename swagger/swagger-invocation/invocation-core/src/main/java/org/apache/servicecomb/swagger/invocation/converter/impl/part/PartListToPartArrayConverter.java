@@ -44,6 +44,6 @@ public class PartListToPartArrayConverter implements Converter {
 
     @SuppressWarnings("unchecked")
     List<Part> partList = (List<Part>) value;
-    return partList.toArray(new Part[partList.size()]);
+    return partList.toArray(new Part[0]);
   }
 }

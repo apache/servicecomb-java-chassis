@@ -89,7 +89,7 @@ public class JaxrsImpl {
   @Path("/testListArray")
   @POST
   public String[] testListArray(List<String> s) {
-    return s.toArray(new String[s.size()]);
+    return s.toArray(new String[0]);
   }
 
   @Path("/testListList")
@@ -113,7 +113,7 @@ public class JaxrsImpl {
   @Path("/testObjectListArray")
   @POST
   public Person[] testObjectListArray(List<Person> s) {
-    return s.toArray(new Person[s.size()]);
+    return s.toArray(new Person[0]);
   }
 
   @Path("/testObjectListList")

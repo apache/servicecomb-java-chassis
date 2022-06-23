@@ -134,7 +134,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     }
 
     List<String> paramList = this.vertxRequest.params().getAll(name);
-    return paramList.toArray(new String[paramList.size()]);
+    return paramList.toArray(new String[0]);
   }
 
   @Override

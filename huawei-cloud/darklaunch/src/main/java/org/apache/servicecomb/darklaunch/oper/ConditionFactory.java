@@ -18,7 +18,6 @@
 package org.apache.servicecomb.darklaunch.oper;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.darklaunch.DarklaunchRule;
@@ -47,9 +46,7 @@ public class ConditionFactory {
 
   private static String[] split(String str, String sep) {
     return Arrays.stream(str.split(sep))
-        .filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList())
-        .toArray(new String[0]);
+            .filter(s -> !StringUtils.isEmpty(s)).toArray(String[]::new);
   }
 
   public static Condition buildRateCondition(String strCondition) {

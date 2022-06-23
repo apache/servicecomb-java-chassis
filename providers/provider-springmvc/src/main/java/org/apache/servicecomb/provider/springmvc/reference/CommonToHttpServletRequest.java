@@ -96,7 +96,7 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       return new String[0];
     }
 
-    return queryValues.toArray(new String[queryValues.size()]);
+    return queryValues.toArray(new String[0]);
   }
 
   @Override
@@ -148,7 +148,7 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       }
     }
 
-    return result.toArray(new Cookie[result.size()]);
+    return result.toArray(new Cookie[0]);
   }
 
   @Override

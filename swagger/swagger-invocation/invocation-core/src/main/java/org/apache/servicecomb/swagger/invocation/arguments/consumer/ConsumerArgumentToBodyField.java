@@ -48,9 +48,7 @@ public final class ConsumerArgumentToBodyField extends ConsumerArgumentMapper {
       Map<String, Object> swaggerArguments,
       Map<String, Object> invocationArguments) {
     Object consumerArgument = invocationArguments.get(invocationArgumentName);
-    if (swaggerArguments.get(swaggerArgumentName) == null) {
-      swaggerArguments.put(swaggerArgumentName, new LinkedHashMap<String, Object>());
-    }
+    swaggerArguments.computeIfAbsent(swaggerArgumentName, k -> new LinkedHashMap<String, Object>());
     if (consumerArgument != null) {
       ((Map<String, Object>) swaggerArguments.get(swaggerArgumentName)).put(parameterName, consumerArgument);
     }

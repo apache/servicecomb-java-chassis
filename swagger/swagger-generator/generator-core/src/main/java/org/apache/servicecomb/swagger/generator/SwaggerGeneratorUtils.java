@@ -103,7 +103,7 @@ public final class SwaggerGeneratorUtils {
     }
 
     List<Module> modules = SPIServiceUtils.getOrLoadSortedService(Module.class);
-    Json.mapper().registerModules(modules.toArray(new Module[modules.size()]));
+    Json.mapper().registerModules(modules.toArray(new Module[0]));
   }
 
   private SwaggerGeneratorUtils() {
@@ -163,7 +163,7 @@ public final class SwaggerGeneratorUtils {
     if (propertyDefinition.getSetter() != null) {
       Collections.addAll(annotations, propertyDefinition.getSetter().getAnnotated().getAnnotations());
     }
-    return annotations.toArray(new Annotation[annotations.size()]);
+    return annotations.toArray(new Annotation[0]);
   }
 
   public static String collectParameterName(java.lang.reflect.Parameter methodParameter) {
