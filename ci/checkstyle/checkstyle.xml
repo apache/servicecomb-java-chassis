@@ -59,6 +59,10 @@
       <property name="severity" value="error"/>
     </module>
     <module name="ModifierOrder"/>
+
+    <!--　check if a switch statement has a default clause -->
+    <module name="MissingSwitchDefault"/>
+
     <module name="NoWhitespaceAfter">
       <!-- Checks that there is no whitespace after various unary operators.
            Linebreaks are allowed.

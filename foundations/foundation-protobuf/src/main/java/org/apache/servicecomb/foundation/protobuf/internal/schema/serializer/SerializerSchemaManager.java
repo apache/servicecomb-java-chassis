@@ -211,6 +211,8 @@ public class SerializerSchemaManager extends SchemaManager {
           return StringsRepeatedWriteSchemas.create(protoField, propertyDescriptor);
         case BYTES:
           return BytesRepeatedWriteSchemas.create(protoField, propertyDescriptor);
+        default:
+          ProtoUtils.throwNotSupportWrite(protoField, propertyDescriptor.getJavaType().getRawClass());
       }
     }
 

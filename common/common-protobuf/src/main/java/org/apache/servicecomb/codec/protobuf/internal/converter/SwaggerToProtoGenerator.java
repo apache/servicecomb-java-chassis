@@ -296,8 +296,9 @@ public class SwaggerToProtoGenerator {
         return "int64";
       case "file:null":
         throw new IllegalStateException("not support swagger type: " + swaggerType);
+      default:
+        return null;
     }
-    return null;
   }
 
   private void convertOperations() {
