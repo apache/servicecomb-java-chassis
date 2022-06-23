@@ -27,8 +27,8 @@ import java.util.UUID;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractTransportDiscoveryFilter {
   class AbstractEndpointDiscoveryFilterForTest extends AbstractEndpointDiscoveryFilter {
@@ -115,8 +115,7 @@ public class TestAbstractTransportDiscoveryFilter {
     return instance;
   }
 
-  private Map<String, MicroserviceInstance> createMicroserviceInstances(String name,
-      MicroserviceInstance... instances) {
+  private Map<String, MicroserviceInstance> createMicroserviceInstances(MicroserviceInstance... instances) {
     Map<String, MicroserviceInstance> map = new LinkedHashMap<>();
     for (MicroserviceInstance instance : instances) {
       map.put(instance.getInstanceId(), instance);
@@ -128,7 +127,7 @@ public class TestAbstractTransportDiscoveryFilter {
   public void createDiscoveryTree_oneTransport() {
     MicroserviceInstance instance1 = createInstance("a", "b");
     MicroserviceInstance instance2 = createInstance("b");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances("name", instance1, instance2);
+    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1, instance2);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("a", context, parent);
@@ -141,7 +140,7 @@ public class TestAbstractTransportDiscoveryFilter {
   public void createDiscoveryTree_allTransport() {
     MicroserviceInstance instance1 = createInstance("a", "b");
     MicroserviceInstance instance2 = createInstance("b");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances("name", instance1, instance2);
+    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1, instance2);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("", context, parent);
@@ -158,7 +157,7 @@ public class TestAbstractTransportDiscoveryFilter {
   public void createDiscoveryTree_ignoreInvalid() {
     MicroserviceInstance instance1 = createInstance("a", "b");
     MicroserviceInstance instance2 = createInstance("");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances("name", instance1, instance2);
+    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1, instance2);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("", context, parent);
@@ -171,7 +170,7 @@ public class TestAbstractTransportDiscoveryFilter {
   public void createEndpointNull() {
     disableCreate = true;
     MicroserviceInstance instance1 = createInstance("a", "b");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances("name", instance1);
+    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("", context, parent);
