@@ -159,7 +159,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_successfully_loaded() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(6, markers.size());
+    Assertions.assertEquals(7, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -177,17 +177,17 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_delete() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(6, markers.size());
+    Assertions.assertEquals(7, markers.size());
     dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(7, markers.size());
+    Assertions.assertEquals(8, markers.size());
     tearDown();
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(6, markers.size());
+    Assertions.assertEquals(7, markers.size());
   }
 
   @Test
@@ -204,7 +204,7 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(7, markers.size());
+    Assertions.assertEquals(8, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -384,7 +384,7 @@ public class GovernancePropertiesTest {
   public void test_instance_isolation_properties_successfully_loaded() {
     Map<String, CircuitBreakerPolicy> policies = instanceIsolationProperties.getParsedEntity();
     Assertions.assertEquals(1, policies.size());
-    CircuitBreakerPolicy policy = policies.get("default");
+    CircuitBreakerPolicy policy = policies.get("demo-allOperation");
     Assertions.assertEquals(2, policy.getMinimumNumberOfCalls());
     Assertions.assertEquals("2", policy.getSlidingWindowSize());
   }

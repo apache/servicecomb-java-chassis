@@ -17,6 +17,10 @@
 
 servicecomb:
   matchGroup:
+    demo-allOperation: |
+      matches:
+        - apiPath:
+            prefix: "/"
     demo-rateLimiting: |
       matches:
         - apiPath:
@@ -96,7 +100,7 @@ servicecomb:
         match: demo-bulkhead.xx
       maxWaitDuration: -1
   instanceIsolation:
-    default: |
+    demo-allOperation: |
       minimumNumberOfCalls: 2
       slidingWindowSize: 2
       slidingWindowType: count

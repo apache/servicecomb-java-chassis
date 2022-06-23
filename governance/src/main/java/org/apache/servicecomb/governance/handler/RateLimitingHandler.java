@@ -48,12 +48,12 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
   }
 
   @Override
-  public RateLimiter createProcessor(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
-    return getRateLimiter(policy);
+  public RateLimiter createProcessor(String key, GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
+    return getRateLimiter(key, policy);
   }
 
-  private RateLimiter getRateLimiter(RateLimitingPolicy policy) {
-    LOGGER.info("applying new policy: {}", policy.toString());
+  private RateLimiter getRateLimiter(String key, RateLimitingPolicy policy) {
+    LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     RateLimiterConfig config;
     config = RateLimiterConfig.custom()
@@ -62,6 +62,6 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
         .timeoutDuration(Duration.parse(policy.getTimeoutDuration()))
         .build();
     RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.of(config);
-    return rateLimiterRegistry.rateLimiter(policy.getName());
+    return rateLimiterRegistry.rateLimiter(key);
   }
 }
