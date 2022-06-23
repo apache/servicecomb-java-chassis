@@ -83,7 +83,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   }
 
   @Override
-  protected CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+  public CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
     return getCircuitBreaker(governanceRequest, policy);
   }
 
