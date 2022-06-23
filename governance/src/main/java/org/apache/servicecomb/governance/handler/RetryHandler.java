@@ -55,7 +55,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
   }
 
   @Override
-  protected Retry createProcessor(GovernanceRequest governanceRequest, RetryPolicy policy) {
+  public Retry createProcessor(GovernanceRequest governanceRequest, RetryPolicy policy) {
     return getRetry(policy);
   }
 
@@ -67,6 +67,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
         .retryOnResult(response -> retryExtension.isRetry(retryPolicy.getRetryOnResponseStatus(), response))
         .retryOnException(e -> retryExtension.isRetry(e))
         .intervalFunction(getIntervalFunction(retryPolicy))
+        .failAfterMaxAttempts(retryPolicy.isFailAfterMaxAttempts())
         .build();
 
     RetryRegistry registry = RetryRegistry.of(config);

@@ -48,7 +48,7 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
   }
 
   @Override
-  protected RateLimiter createProcessor(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
+  public RateLimiter createProcessor(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
     return getRateLimiter(policy);
   }
 

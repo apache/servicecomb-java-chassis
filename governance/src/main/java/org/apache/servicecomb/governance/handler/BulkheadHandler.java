@@ -49,7 +49,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
   }
 
   @Override
-  protected Bulkhead createProcessor(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  public Bulkhead createProcessor(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
     return getBulkhead(policy);
   }
 

@@ -16,12 +16,12 @@
  */
 package org.apache.servicecomb.governance.policy;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 public class RetryPolicy extends AbstractPolicy {
 
@@ -39,22 +39,28 @@ public class RetryPolicy extends AbstractPolicy {
 
   private static final String DEFAULT_RETRY_STRATEGY = "FixedInterval";
 
-  //最多尝试次数
+  //max retry attempts
   private int maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
-  //每次重试尝试等待的时间。
+  //wait duration for each retry
   private String waitDuration = DEFAULT_WAIT_DURATION.toString();
 
-  //需要重试的http status, 逗号分隔
+  //status code that need retry
   private List<String> retryOnResponseStatus = new ArrayList<>();
 
+  //retry strategy
   private String retryStrategy = DEFAULT_RETRY_STRATEGY;
 
+  // initial interval for backoff retry
   private String initialInterval = INITIAL_INTERVAL.toString();
 
+  // multiplier for backoff retry
   private float multiplier = MULTIPLIER;
 
+  // randomization factor for backoff retry
   private double randomizationFactor = RANDOMIZATION_FACTOR;
+
+  private boolean failAfterMaxAttempts = false;
 
   public List<String> getRetryOnResponseStatus() {
     if (CollectionUtils.isEmpty(retryOnResponseStatus)) {
@@ -116,6 +122,15 @@ public class RetryPolicy extends AbstractPolicy {
 
   public void setRandomizationFactor(double randomizationFactor) {
     this.randomizationFactor = randomizationFactor;
+  }
+
+  public boolean isFailAfterMaxAttempts() {
+    return failAfterMaxAttempts;
+  }
+
+  public RetryPolicy setFailAfterMaxAttempts(boolean failAfterMaxAttempts) {
+    this.failAfterMaxAttempts = failAfterMaxAttempts;
+    return this;
   }
 
   @Override

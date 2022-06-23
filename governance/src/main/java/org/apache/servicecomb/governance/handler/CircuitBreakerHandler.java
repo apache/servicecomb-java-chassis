@@ -55,7 +55,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
   }
 
   @Override
-  protected CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+  public CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
     return getCircuitBreaker(policy);
   }
 
