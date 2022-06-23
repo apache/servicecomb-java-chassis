@@ -45,6 +45,10 @@ servicecomb:
           headers:
             x-token:
               exact: token
+    demo-bulkhead-priority: |
+      matches:
+        - apiPath:
+          exact: "/bulkhead"
     demo-bulkhead-other: |
       matches:
         - apiPath:
@@ -74,6 +78,12 @@ servicecomb:
       minimumNumberOfCalls: -1
   bulkhead:
     demo-bulkhead: |
+      order: 1
+      maxConcurrentCalls: 1
+      maxWaitDuration: 3000
+      services: myself:1.0
+    demo-bulkhead-priority: |
+      order: 0
       maxConcurrentCalls: 1
       maxWaitDuration: 3000
       services: myself:1.0

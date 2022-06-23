@@ -159,7 +159,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_successfully_loaded() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(5, markers.size());
+    Assertions.assertEquals(6, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -177,17 +177,17 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_delete() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(5, markers.size());
+    Assertions.assertEquals(6, markers.size());
     dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(6, markers.size());
+    Assertions.assertEquals(7, markers.size());
     tearDown();
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(5, markers.size());
+    Assertions.assertEquals(6, markers.size());
   }
 
   @Test
@@ -204,7 +204,7 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(6, markers.size());
+    Assertions.assertEquals(7, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -230,13 +230,13 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
-    Assertions.assertEquals(2, policies.size());
+    Assertions.assertEquals(3, policies.size());
     BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assertions.assertEquals(2, policy.getMaxConcurrentCalls());
     Assertions.assertEquals(2000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
 
     policies = bulkheadProperties.getParsedEntity();
-    Assertions.assertEquals(2, policies.size());
+    Assertions.assertEquals(3, policies.size());
     policy = policies.get("bulkhead1");
     Assertions.assertEquals(3, policy.getMaxConcurrentCalls());
     Assertions.assertEquals(3000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
@@ -258,7 +258,7 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
-    Assertions.assertEquals(4, policies.size());
+    Assertions.assertEquals(5, policies.size());
     BulkheadPolicy policy = policies.get("test-bulkhead1");
     Assertions.assertEquals(0, policy.getMaxConcurrentCalls());
     Assertions.assertEquals(2000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
@@ -277,7 +277,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_bulkhead_properties_successfully_loaded() {
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
-    Assertions.assertEquals(1, policies.size());
+    Assertions.assertEquals(2, policies.size());
     BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assertions.assertEquals(1, policy.getMaxConcurrentCalls());
     Assertions.assertEquals(3000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
@@ -370,12 +370,12 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, BulkheadPolicy> policies = bulkheadProperties.getParsedEntity();
-    Assertions.assertEquals(3, policies.size());
+    Assertions.assertEquals(4, policies.size());
     BulkheadPolicy policy = policies.get("test1");
     Assertions.assertEquals(2000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
 
     policies = bulkheadProperties.getParsedEntity();
-    Assertions.assertEquals(3, policies.size());
+    Assertions.assertEquals(4, policies.size());
     policy = policies.get("test2");
     Assertions.assertEquals(60000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
   }

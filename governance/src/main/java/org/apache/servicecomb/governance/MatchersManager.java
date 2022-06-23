@@ -16,8 +16,9 @@
  */
 package org.apache.servicecomb.governance;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
@@ -36,15 +37,17 @@ public class MatchersManager {
   public <T extends AbstractPolicy> T match(GovernanceRequest request, Map<String, T> policies) {
     Map<String, Boolean> calculatedMatches = invocationContext.getCalculatedMatches();
 
-    for (Entry<String, T> entry : policies.entrySet()) {
-      T policy = entry.getValue();
+    List<T> sortPolicies = new ArrayList<>(policies.size());
+    sortPolicies.addAll(policies.values());
+    sortPolicies.sort(T::compareTo);
 
-      if (calculatedMatches.containsKey(entry.getKey())) {
+    for (T policy : sortPolicies) {
+      if (calculatedMatches.containsKey(policy.getName())) {
         return policy;
       }
 
-      boolean keyMatch = matchersService.checkMatch(request, entry.getKey());
-      invocationContext.addMatch(entry.getKey(), keyMatch);
+      boolean keyMatch = matchersService.checkMatch(request, policy.getName());
+      invocationContext.addMatch(policy.getName(), keyMatch);
       if (keyMatch) {
         return policy;
       }

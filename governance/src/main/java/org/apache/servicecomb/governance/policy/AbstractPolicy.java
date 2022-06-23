@@ -16,17 +16,31 @@
  */
 package org.apache.servicecomb.governance.policy;
 
+import java.time.Duration;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.entity.Configurable;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
 
-import java.time.Duration;
-
-public abstract class AbstractPolicy extends Configurable {
+public abstract class AbstractPolicy extends Configurable implements Comparable<AbstractPolicy> {
+  protected int order = 0;
 
   @Override
   public boolean isValid() {
     return !StringUtils.isEmpty(name);
+  }
+
+  @Override
+  public int compareTo(AbstractPolicy o) {
+    return this.order - o.order;
+  }
+
+  public int getOrder() {
+    return order;
+  }
+
+  public void setOrder(int order) {
+    this.order = order;
   }
 
   private Duration parseToDuration(String time, Duration defaultValue) {
