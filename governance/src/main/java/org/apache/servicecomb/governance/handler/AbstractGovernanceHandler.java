@@ -45,7 +45,7 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     GovernanceEventManager.register(this);
   }
 
-  public <R> PROCESSOR getActuator(GovernanceRequest governanceRequest) {
+  public PROCESSOR getActuator(GovernanceRequest governanceRequest) {
     POLICY policy = matchPolicy(governanceRequest);
     if (policy == null) {
       return null;
