@@ -211,6 +211,8 @@ public class SerializerSchemaManager extends SchemaManager {
           return StringsRepeatedWriteSchemas.create(protoField, propertyDescriptor);
         case BYTES:
           return BytesRepeatedWriteSchemas.create(protoField, propertyDescriptor);
+        default:
+          throw new IllegalStateException("unknown proto field type: " + protoField.getType());
       }
     }
 

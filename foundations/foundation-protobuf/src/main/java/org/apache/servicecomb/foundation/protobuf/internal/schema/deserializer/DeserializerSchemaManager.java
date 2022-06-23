@@ -234,6 +234,8 @@ public class DeserializerSchemaManager extends SchemaManager {
           return StringRepeatedReadSchemas.create(protoField, propertyDescriptor);
         case BYTES:
           return BytesRepeatedReadSchemas.create(protoField, propertyDescriptor);
+        default:
+          throw new IllegalStateException("unknown proto field type: " + protoField.getType());
       }
     }
 
