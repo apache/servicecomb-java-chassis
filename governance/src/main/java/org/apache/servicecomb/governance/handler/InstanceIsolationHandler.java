@@ -85,7 +85,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
     return getCircuitBreaker(key, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(String key,CircuitBreakerPolicy policy) {
+  private CircuitBreaker getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
