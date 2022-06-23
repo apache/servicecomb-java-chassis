@@ -41,7 +41,7 @@ public class RetryHandlerTest {
     retryPolicy.setFailAfterMaxAttempts(false);
     RetryHandler retryHandler = new RetryHandler(retryProperties, retryExtension);
 
-    Retry retry = retryHandler.createProcessor(governanceRequest, retryPolicy);
+    Retry retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
     Assertions.assertThrows(IllegalStateException.class, () -> retry.<Integer>executeCheckedSupplier(() -> {
       throw new IllegalStateException();
     }));
@@ -59,7 +59,7 @@ public class RetryHandlerTest {
     retryPolicy.setFailAfterMaxAttempts(true);
     RetryHandler retryHandler = new RetryHandler(retryProperties, retryExtension);
 
-    Retry retry = retryHandler.createProcessor(governanceRequest, retryPolicy);
+    Retry retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
     Assertions.assertThrows(IllegalStateException.class, () -> retry.<Integer>executeCheckedSupplier(() -> {
       throw new IllegalStateException();
     }));
@@ -77,7 +77,7 @@ public class RetryHandlerTest {
     retryPolicy.setFailAfterMaxAttempts(true);
     RetryHandler retryHandler = new RetryHandler(retryProperties, retryExtension);
 
-    Retry retry = retryHandler.createProcessor(governanceRequest, retryPolicy);
+    Retry retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
     Assertions.assertThrows(MaxRetriesExceededException.class, () -> retry.<Integer>executeCheckedSupplier(() -> -1));
   }
 }

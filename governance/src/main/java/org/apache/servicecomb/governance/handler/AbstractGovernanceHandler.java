@@ -57,7 +57,7 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
       synchronized (lock) {
         processor = processors.get(key);
         if (processor == null) {
-          processor = createProcessor(governanceRequest, policy);
+          processor = createProcessor(key, governanceRequest, policy);
           processors.put(key, processor);
         }
       }
@@ -69,7 +69,7 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
 
   protected abstract POLICY matchPolicy(GovernanceRequest governanceRequest);
 
-  protected abstract PROCESSOR createProcessor(GovernanceRequest governanceRequest, POLICY policy);
+  protected abstract PROCESSOR createProcessor(String key, GovernanceRequest governanceRequest, POLICY policy);
 
   protected void onConfigurationChanged(String key) {
     processors.remove(key);

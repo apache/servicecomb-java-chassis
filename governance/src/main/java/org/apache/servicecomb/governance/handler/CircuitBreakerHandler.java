@@ -55,12 +55,12 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
   }
 
   @Override
-  public CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return getCircuitBreaker(policy);
+  public CircuitBreaker createProcessor(String key, GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+    return getCircuitBreaker(key, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(CircuitBreakerPolicy policy) {
-    LOGGER.info("applying new policy: {}", policy);
+  private CircuitBreaker getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
+    LOGGER.info("applying new policy {} for {}", key, policy);
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
         .failureRateThreshold(policy.getFailureRateThreshold())
@@ -78,7 +78,6 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
           .ofCircuitBreakerRegistry(circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
-    return circuitBreakerRegistry.circuitBreaker(
-        CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + "." + policy.getName(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(key, circuitBreakerConfig);
   }
 }

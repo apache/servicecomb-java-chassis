@@ -52,6 +52,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
     return InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
         + "." + governanceRequest.getServiceName()
+        + "." + policy.getName()
         + "." + governanceRequest.getInstanceId();
   }
 
@@ -73,22 +74,17 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
       LOGGER.info("Isolation is not properly configured, service id or instance id is empty.");
       return null;
     }
-    CircuitBreakerPolicy circuitBreakerPolicy =
-        instanceIsolationProperties.getParsedEntity().get(governanceRequest.getServiceName());
-
-    if (circuitBreakerPolicy == null) {
-      return instanceIsolationProperties.getParsedEntity().get(DEFAULT_SERVICE_NAME);
-    }
-    return circuitBreakerPolicy;
+    return matchersManager.match(governanceRequest, instanceIsolationProperties.getParsedEntity());
   }
 
   @Override
-  public CircuitBreaker createProcessor(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return getCircuitBreaker(governanceRequest, policy);
+  public CircuitBreaker createProcessor(String key, GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+    return getCircuitBreaker(key, governanceRequest, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    LOGGER.info("applying new policy: {}", policy.toString());
+  private CircuitBreaker getCircuitBreaker(String key, GovernanceRequest governanceRequest,
+      CircuitBreakerPolicy policy) {
+    LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
         .failureRateThreshold(policy.getFailureRateThreshold())
@@ -106,8 +102,6 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
           .ofCircuitBreakerRegistry(circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
-    return circuitBreakerRegistry.circuitBreaker(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
-        + "." + governanceRequest.getServiceName()
-        + "." + governanceRequest.getInstanceId(), circuitBreakerConfig);
+    return circuitBreakerRegistry.circuitBreaker(key, circuitBreakerConfig);
   }
 }

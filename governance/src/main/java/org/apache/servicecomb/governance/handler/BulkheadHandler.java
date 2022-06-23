@@ -49,12 +49,12 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
   }
 
   @Override
-  public Bulkhead createProcessor(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
-    return getBulkhead(policy);
+  public Bulkhead createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+    return getBulkhead(key, policy);
   }
 
-  private Bulkhead getBulkhead(BulkheadPolicy policy) {
-    LOGGER.info("applying new policy: {}", policy.toString());
+  private Bulkhead getBulkhead(String key, BulkheadPolicy policy) {
+    LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     BulkheadConfig config = BulkheadConfig.custom()
         .maxConcurrentCalls(policy.getMaxConcurrentCalls())
@@ -63,6 +63,6 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
 
-    return registry.bulkhead(policy.getName());
+    return registry.bulkhead(key);
   }
 }
