@@ -33,6 +33,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.center.client.AddressManager;
 import org.apache.servicecomb.config.center.client.ConfigCenterClient;
+import org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration;
 import org.apache.servicecomb.config.center.client.ConfigCenterManager;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
@@ -95,10 +96,12 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     ConfigCenterClient configCenterClient = new ConfigCenterClient(kieAddressManager, httpTransport);
     EventManager.register(this);
 
+    ConfigCenterConfiguration configCenterConfiguration = createConfigCenterConfiguration();
+
     QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterClient);
 
     configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
-        configConverter);
+        configConverter, configCenterConfiguration);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
   }
@@ -137,6 +140,10 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     // 需要设置为 null， 并且 query 参数为 revision=null 才会返回 revision 信息。 revision = 是不行的。
     request.setRevision(null);
     return request;
+  }
+
+  private ConfigCenterConfiguration createConfigCenterConfiguration(){
+    return new ConfigCenterConfiguration().setRefreshInterval(ConfigCenterConfig.INSTANCE.getRefreshInterval());
   }
 
   private HttpTransport createHttpTransport(AddressManager kieAddressManager, RequestConfig requestConfig,

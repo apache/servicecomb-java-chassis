@@ -83,8 +83,8 @@ public final class ConfigCenterConfig {
     return Collections.EMPTY_LIST;
   }
 
-  public int getRefreshInterval() {
-    return finalConfig.getInt(REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+  public long getRefreshInterval() {
+    return finalConfig.getLong(REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
   }
 
   public int getFirstRefreshInterval() {
