@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import io.github.resilience4j.retry.MaxRetriesExceededException;
 import io.github.resilience4j.retry.Retry;
 
-public class CircuitBreakerHandlerTest {
+public class RetryHandlerTest {
   @Test
   public void testNotFailAfterMaxAttemptsWhenThrow() {
     RetryExtension retryExtension = Mockito.mock(RetryExtension.class);

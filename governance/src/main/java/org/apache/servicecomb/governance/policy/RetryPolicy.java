@@ -60,7 +60,12 @@ public class RetryPolicy extends AbstractPolicy {
   // randomization factor for backoff retry
   private double randomizationFactor = RANDOMIZATION_FACTOR;
 
+  // if throw an MaxRetriesExceededException if retry condition is based on result
   private boolean failAfterMaxAttempts = false;
+
+  // if retry on the same instance. This property is not directly used in
+  // RetryHandler, but used for loadbalancers
+  private int retryOnSame = 0;
 
   public List<String> getRetryOnResponseStatus() {
     if (CollectionUtils.isEmpty(retryOnResponseStatus)) {
@@ -128,9 +133,16 @@ public class RetryPolicy extends AbstractPolicy {
     return failAfterMaxAttempts;
   }
 
-  public RetryPolicy setFailAfterMaxAttempts(boolean failAfterMaxAttempts) {
+  public void setFailAfterMaxAttempts(boolean failAfterMaxAttempts) {
     this.failAfterMaxAttempts = failAfterMaxAttempts;
-    return this;
+  }
+
+  public int getRetryOnSame() {
+    return retryOnSame;
+  }
+
+  public void setRetryOnSame(int retryOnSame) {
+    this.retryOnSame = retryOnSame;
   }
 
   @Override
