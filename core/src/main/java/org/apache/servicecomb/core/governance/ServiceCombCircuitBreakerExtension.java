@@ -46,9 +46,11 @@ public class ServiceCombCircuitBreakerExtension extends AbstractCircuitBreakerEx
   public boolean isFailedResult(Throwable e) {
     if (e instanceof InvocationException) {
       InvocationException invocationException = (InvocationException) e;
-      return invocationException.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode() ||
+      if (invocationException.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode() ||
           invocationException.getStatusCode() == Status.BAD_GATEWAY.getStatusCode() ||
-          invocationException.getStatusCode() == ExceptionFactory.PRODUCER_INNER_STATUS_CODE;
+          invocationException.getStatusCode() == ExceptionFactory.PRODUCER_INNER_STATUS_CODE) {
+        return true;
+      }
     }
     return super.isFailedResult(e);
   }
