@@ -17,8 +17,11 @@
 
 package org.apache.servicecomb.demo.zeroconfig.client;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,7 +66,7 @@ public class GovernanceEndpoint {
     if (count % 3 == 0) {
       return "ok";
     }
-    throw new RuntimeException("test error");
+    throw new InvocationException(Status.SERVICE_UNAVAILABLE, "test error");
   }
 
   @GetMapping("/bulkhead")

@@ -74,7 +74,7 @@ servicecomb:
     demo-circuitBreaker: |
       minimumNumberOfCalls: 2
       slidingWindowSize: 2
-      slidingWindowType: count
+      slidingWindowType: COUNT_BASED
       services: myself:1.0,other
     wrongIngored: |
       rules:
@@ -103,5 +103,5 @@ servicecomb:
     demo-allOperation: |
       minimumNumberOfCalls: 2
       slidingWindowSize: 2
-      slidingWindowType: count
+      slidingWindowType: COUNT_BASED
       waitDurationInOpenState: 1000

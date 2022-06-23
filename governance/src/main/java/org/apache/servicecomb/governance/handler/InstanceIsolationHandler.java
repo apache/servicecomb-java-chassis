@@ -20,6 +20,8 @@ package org.apache.servicecomb.governance.handler;
 import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
+import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
@@ -36,15 +38,17 @@ import io.micrometer.core.instrument.MeterRegistry;
 public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceIsolationHandler.class);
 
-  private static final String DEFAULT_SERVICE_NAME = "default";
-
   private final InstanceIsolationProperties instanceIsolationProperties;
+
+  private final AbstractInstanceIsolationExtension isolationExtension;
 
   private final MeterRegistry meterRegistry;
 
   public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
+      AbstractInstanceIsolationExtension isolationExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
     this.instanceIsolationProperties = instanceIsolationProperties;
+    this.isolationExtension = isolationExtension;
     this.meterRegistry = meterRegistry.getIfAvailable();
   }
 
@@ -95,6 +99,8 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
         .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
+        .recordException(e -> isolationExtension.isFailedResult(e))
+        .recordResult(r -> isolationExtension.isFailedResult(policy.getRecordFailureStatus(), r))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     if (meterRegistry != null) {

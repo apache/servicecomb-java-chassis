@@ -19,14 +19,14 @@ package org.apache.servicecomb.core.governance;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
+import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ServiceCombRetryExtension extends AbstractRetryExtension {
+public class ServiceCombCircuitBreakerExtension extends AbstractCircuitBreakerExtension {
   @Override
   protected String extractStatusCode(Object result) {
     if (!(result instanceof Response)) {
@@ -46,11 +46,9 @@ public class ServiceCombRetryExtension extends AbstractRetryExtension {
   public boolean isFailedResult(Throwable e) {
     if (e instanceof InvocationException) {
       InvocationException invocationException = (InvocationException) e;
-      if (invocationException.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode() ||
+      return invocationException.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode() ||
           invocationException.getStatusCode() == Status.BAD_GATEWAY.getStatusCode() ||
-          invocationException.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE) {
-        return true;
-      }
+          invocationException.getStatusCode() == ExceptionFactory.PRODUCER_INNER_STATUS_CODE;
     }
     return super.isFailedResult(e);
   }

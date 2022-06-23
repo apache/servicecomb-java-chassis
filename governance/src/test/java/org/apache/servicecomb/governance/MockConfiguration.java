@@ -41,6 +41,16 @@ public class MockConfiguration {
   }
 
   @Bean
+  public MockCircuitBreakerExtension circuitBreakerExtension() {
+    return new MockCircuitBreakerExtension();
+  }
+
+  @Bean
+  public MockInstanceIsolationExtension instanceIsolationExtension() {
+    return new MockInstanceIsolationExtension();
+  }
+
+  @Bean
   public PrometheusMeterRegistry meterRegistry() {
     return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
   }

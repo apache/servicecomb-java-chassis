@@ -18,7 +18,7 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
-import org.apache.servicecomb.governance.handler.ext.RetryExtension;
+import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.apache.servicecomb.governance.properties.RetryProperties;
@@ -37,9 +37,9 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   private final RetryProperties retryProperties;
 
-  private final RetryExtension retryExtension;
+  private final AbstractRetryExtension retryExtension;
 
-  public RetryHandler(RetryProperties retryProperties, RetryExtension retryExtension) {
+  public RetryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
     this.retryProperties = retryProperties;
     this.retryExtension = retryExtension;
   }
@@ -64,8 +64,8 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
     RetryConfig config = RetryConfig.custom()
         .maxAttempts(retryPolicy.getMaxAttempts() + 1)
-        .retryOnResult(response -> retryExtension.isRetry(retryPolicy.getRetryOnResponseStatus(), response))
-        .retryOnException(e -> retryExtension.isRetry(e))
+        .retryOnResult(response -> retryExtension.isFailedResult(retryPolicy.getRetryOnResponseStatus(), response))
+        .retryOnException(e -> retryExtension.isFailedResult(e))
         .intervalFunction(getIntervalFunction(retryPolicy))
         .failAfterMaxAttempts(retryPolicy.isFailAfterMaxAttempts())
         .build();

@@ -24,7 +24,9 @@ import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
-import org.apache.servicecomb.governance.handler.ext.RetryExtension;
+import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
+import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
+import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
 import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.governance.marker.operator.CompareOperator;
 import org.apache.servicecomb.governance.marker.operator.ContainsOperator;
@@ -87,14 +89,16 @@ public class GovernanceConfiguration {
 
   @Bean
   public CircuitBreakerHandler circuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
+      AbstractCircuitBreakerExtension circuitBreakerExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
-    return new CircuitBreakerHandler(circuitBreakerProperties, meterRegistry);
+    return new CircuitBreakerHandler(circuitBreakerProperties, circuitBreakerExtension, meterRegistry);
   }
 
   @Bean
   public InstanceIsolationHandler instanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
+      AbstractInstanceIsolationExtension isolationExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
-    return new InstanceIsolationHandler(instanceIsolationProperties, meterRegistry);
+    return new InstanceIsolationHandler(instanceIsolationProperties, isolationExtension, meterRegistry);
   }
 
   @Bean
@@ -103,7 +107,7 @@ public class GovernanceConfiguration {
   }
 
   @Bean
-  public RetryHandler retryHandler(RetryProperties retryProperties, RetryExtension retryExtension) {
+  public RetryHandler retryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
     return new RetryHandler(retryProperties, retryExtension);
   }
 

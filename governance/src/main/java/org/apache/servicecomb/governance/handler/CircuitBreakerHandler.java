@@ -18,6 +18,7 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
@@ -36,11 +37,15 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
 
   private final CircuitBreakerProperties circuitBreakerProperties;
 
+  private final AbstractCircuitBreakerExtension circuitBreakerExtension;
+
   private final MeterRegistry meterRegistry;
 
   public CircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
+      AbstractCircuitBreakerExtension circuitBreakerExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
     this.circuitBreakerProperties = circuitBreakerProperties;
+    this.circuitBreakerExtension = circuitBreakerExtension;
     this.meterRegistry = meterRegistry.getIfAvailable();
   }
 
@@ -71,6 +76,8 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
         .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
+        .recordException(e -> circuitBreakerExtension.isFailedResult(e))
+        .recordResult(r -> circuitBreakerExtension.isFailedResult(policy.getRecordFailureStatus(), r))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     if (meterRegistry != null) {
