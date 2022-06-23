@@ -19,7 +19,7 @@ package org.apache.servicecomb.config.center.client;
 
 import java.util.Map;
 
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
@@ -35,8 +35,6 @@ public class ConfigCenterManager extends AbstractTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterManager.class);
 
-  private static final long POLL_INTERVAL = 15000;
-
   private final ConfigCenterClient configCenterClient;
 
   private final EventBus eventBus;
@@ -45,12 +43,15 @@ public class ConfigCenterManager extends AbstractTask {
 
   private final ConfigConverter configConverter;
 
+  private final ConfigCenterConfiguration configCenterConfiguration;
+
   public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus,
-      ConfigConverter configConverter) {
+      ConfigConverter configConverter, ConfigCenterConfiguration configCenterConfiguration) {
     super("config-center-configuration-task");
     this.configCenterClient = configCenterClient;
     this.eventBus = eventBus;
     this.configConverter = configConverter;
+    this.configCenterConfiguration = configCenterConfiguration;
   }
 
   public void setQueryConfigurationsRequest(QueryConfigurationsRequest queryConfigurationsRequest) {
@@ -59,11 +60,6 @@ public class ConfigCenterManager extends AbstractTask {
 
   public void startConfigCenterManager() {
     this.startTask(new PollConfigurationTask(0));
-  }
-
-  public long getConfigCenterRefreshInterval() {
-    return DynamicPropertyFactory.getInstance().getLongProperty("servicecomb.config.client.refresh_interval",
-                    POLL_INTERVAL).get();
   }
 
   class PollConfigurationTask implements Task {
@@ -84,7 +80,7 @@ public class ConfigCenterManager extends AbstractTask {
               .createIncremental(configConverter.getCurrentData(), lastData);
           eventBus.post(event);
         }
-        startTask(new BackOffSleepTask(getConfigCenterRefreshInterval(), new PollConfigurationTask(0)));
+        startTask(new BackOffSleepTask(configCenterConfiguration.getRefreshInterval(), new PollConfigurationTask(0)));
       } catch (Exception e) {
         LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
