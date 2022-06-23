@@ -197,8 +197,8 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       }
       if (value.getClass().isArray()) {
         Object[] params = (Object[]) value;
-        for (int i = 0; i < params.length; i++) {
-          partList.add(getSinglePart(key, params[i]));
+        for (Object param : params) {
+          partList.add(getSinglePart(key, param));
         }
         continue;
       }
