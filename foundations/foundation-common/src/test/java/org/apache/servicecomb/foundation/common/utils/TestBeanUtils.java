@@ -18,17 +18,17 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.math.BigDecimal;
 
+import mockit.MockUp;
 import org.aspectj.lang.annotation.Aspect;
-import org.junit.Test;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestBeanUtils {
   interface Intf {
@@ -144,7 +144,9 @@ public class TestBeanUtils {
   }
 
   @Test
-  public void init(@Mocked ClassPathXmlApplicationContext context) {
+  public void init() {
+    new MockUp<ClassPathXmlApplicationContext>() {
+    };
     System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
     new Expectations(JvmUtils.class) {
       {
