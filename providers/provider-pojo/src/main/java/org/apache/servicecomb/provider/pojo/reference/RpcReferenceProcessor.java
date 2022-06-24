@@ -33,11 +33,7 @@ public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueRe
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
     // 扫描所有field，处理扩展的field标注
-    ReflectionUtils.doWithFields(bean.getClass(), new ReflectionUtils.FieldCallback() {
-      public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-        processConsumerField(bean, field);
-      }
-    });
+    ReflectionUtils.doWithFields(bean.getClass(), field -> processConsumerField(bean, field));
 
     return bean;
   }

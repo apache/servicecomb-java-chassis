@@ -33,13 +33,10 @@ public class TestTcpParser {
 
   @Test
   public void test() throws UnsupportedEncodingException {
-    TcpBufferHandler output = new TcpBufferHandler() {
-      @Override
-      public void handle(long _msgId, Buffer _headerBuffer, Buffer _bodyBuffer) {
-        msgId = _msgId;
-        headerBuffer = _headerBuffer;
-        bodyBuffer = _bodyBuffer;
-      }
+    TcpBufferHandler output = (_msgId, _headerBuffer, _bodyBuffer) -> {
+      msgId = _msgId;
+      headerBuffer = _headerBuffer;
+      bodyBuffer = _bodyBuffer;
     };
 
     byte[] header = new byte[] {1, 2, 3};

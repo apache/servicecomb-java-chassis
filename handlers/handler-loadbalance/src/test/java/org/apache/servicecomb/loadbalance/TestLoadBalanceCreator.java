@@ -57,19 +57,15 @@ public class TestLoadBalanceCreator {
 
     List<ServerListFilterExt> filters = new ArrayList<>();
 
-    filters.add(new ServerListFilterExt() {
-      @Override
-      public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> serverList,
-          Invocation invocation) {
-        List<ServiceCombServer> filteredServers = new ArrayList<>();
-        for (ServiceCombServer server : servers) {
-          if (server.getHost().equals("host1")) {
-            continue;
-          }
-          filteredServers.add(server);
+    filters.add((serverList, invocation1) -> {
+      List<ServiceCombServer> filteredServers = new ArrayList<>();
+      for (ServiceCombServer server1 : servers) {
+        if (server1.getHost().equals("host1")) {
+          continue;
         }
-        return filteredServers;
+        filteredServers.add(server1);
       }
+      return filteredServers;
     });
     lb.setFilters(filters);
 
@@ -109,19 +105,15 @@ public class TestLoadBalanceCreator {
     servers.add(server2);
 
     List<ServerListFilterExt> filters = new ArrayList<>();
-    filters.add(new ServerListFilterExt() {
-      @Override
-      public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> serverList,
-          Invocation invocation) {
-        List<ServiceCombServer> filteredServers = new ArrayList<>();
-        for (ServiceCombServer server : servers) {
-          if (server.getHost().equals("host1")) {
-            continue;
-          }
-          filteredServers.add(server);
+    filters.add((serverList, invocation1) -> {
+      List<ServiceCombServer> filteredServers = new ArrayList<>();
+      for (ServiceCombServer server1 : servers) {
+        if (server1.getHost().equals("host1")) {
+          continue;
         }
-        return filteredServers;
+        filteredServers.add(server1);
       }
+      return filteredServers;
     });
     lb.setFilters(filters);
     new Expectations() {
@@ -165,19 +157,15 @@ public class TestLoadBalanceCreator {
     servers.add(server);
     servers.add(server2);
     List<ServerListFilterExt> filters = new ArrayList<>();
-    filters.add(new ServerListFilterExt() {
-      @Override
-      public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> serverList,
-          Invocation invocation) {
-        List<ServiceCombServer> filteredServers = new ArrayList<>();
-        for (ServiceCombServer server : servers) {
-          if (server.getHost().equals("host1")) {
-            continue;
-          }
-          filteredServers.add(server);
+    filters.add((serverList, invocation1) -> {
+      List<ServiceCombServer> filteredServers = new ArrayList<>();
+      for (ServiceCombServer server1 : servers) {
+        if (server1.getHost().equals("host1")) {
+          continue;
         }
-        return filteredServers;
+        filteredServers.add(server1);
       }
+      return filteredServers;
     });
     lb.setFilters(filters);
     new Expectations() {

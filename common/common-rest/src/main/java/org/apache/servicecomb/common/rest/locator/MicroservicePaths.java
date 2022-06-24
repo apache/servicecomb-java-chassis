@@ -19,7 +19,6 @@ package org.apache.servicecomb.common.rest.locator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class MicroservicePaths {
 
   public void sortPath() {
     RestOperationComparator comparator = new RestOperationComparator();
-    Collections.sort(this.dynamicPathOperationsList, comparator);
+    this.dynamicPathOperationsList.sort(comparator);
   }
 
   public void addResource(RestOperationMeta swaggerRestOperation) {

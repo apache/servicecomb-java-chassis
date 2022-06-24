@@ -27,8 +27,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLServerSocket;
@@ -151,25 +149,19 @@ public class SSLManagerTest {
     try {
       clientsocket.connect(new InetSocketAddress("127.0.0.1", 8886));
 
-      new Thread() {
-        public void run() {
+      new Thread(() -> {
 
-          try {
-            SSLSocket s = (SSLSocket) serverSocket.accept();
-            s.addHandshakeCompletedListener(new HandshakeCompletedListener() {
+        try {
+          SSLSocket s = (SSLSocket) serverSocket.accept();
+          s.addHandshakeCompletedListener(arg0 -> {
 
-              @Override
-              public void handshakeCompleted(HandshakeCompletedEvent arg0) {
-
-              }
-            });
-            s.getOutputStream().write(new byte[] {0, 1});
-          } catch (IOException e) {
-            e.printStackTrace();
-             Assertions.fail("this should not happen");
-          }
+          });
+          s.getOutputStream().write(new byte[] {0, 1});
+        } catch (IOException e) {
+          e.printStackTrace();
+           Assertions.fail("this should not happen");
         }
-      }.start();
+      }).start();
 
       clientsocket.startHandshake();
       clientsocket.close();

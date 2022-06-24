@@ -41,50 +41,44 @@ public class TestInvokeWhenServerNotReady {
   }
 
   private void startRestTemplateCall() {
-    new Thread() {
-      public void run() {
-        for (int i = 0; i < 100; i++) {
-          try {
-            RestTemplate template = RestTemplateBuilder.create();
-            template.getForObject("servicecomb://springmvc/upload/isServerStartUpSuccess", Boolean.class);
-          } catch (Throwable e) {
-            // ignore
-          }
+    new Thread(() -> {
+      for (int i = 0; i < 100; i++) {
+        try {
+          RestTemplate template = RestTemplateBuilder.create();
+          template.getForObject("servicecomb://springmvc/upload/isServerStartUpSuccess", Boolean.class);
+        } catch (Throwable e) {
+          // ignore
         }
       }
-    }.start();
+    }).start();
   }
 
   private void startRpcCall() {
-    new Thread() {
-      public void run() {
-        for (int i = 0; i < 100; i++) {
-          try {
-            InvocationContext context = new InvocationContext();
-            client.testInvocationTimeout(context, 1001, "customized");
-          } catch (Throwable e) {
-            // ignore
-          }
+    new Thread(() -> {
+      for (int i = 0; i < 100; i++) {
+        try {
+          InvocationContext context = new InvocationContext();
+          client.testInvocationTimeout(context, 1001, "customized");
+        } catch (Throwable e) {
+          // ignore
         }
       }
-    }.start();
+    }).start();
   }
 
   private void startInvokerUtilsCall() {
-    new Thread() {
-      public void run() {
-        for (int i = 0; i < 100; i++) {
-          try {
-            Map<String, Object> args = new HashMap<>();
-            args.put("timeout", 1);
-            args.put("name", "customized");
-            InvokerUtils
-                .syncInvoke("springmvc", "SpringMVCCommonSchemaInterface", "testInvocationTimeout", args, String.class);
-          } catch (Throwable e) {
-            // ignore
-          }
+    new Thread(() -> {
+      for (int i = 0; i < 100; i++) {
+        try {
+          Map<String, Object> args = new HashMap<>();
+          args.put("timeout", 1);
+          args.put("name", "customized");
+          InvokerUtils
+              .syncInvoke("springmvc", "SpringMVCCommonSchemaInterface", "testInvocationTimeout", args, String.class);
+        } catch (Throwable e) {
+          // ignore
         }
       }
-    }.start();
+    }).start();
   }
 }

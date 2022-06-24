@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.netflix.hystrix.HystrixCommandProperties;
@@ -162,13 +161,10 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .thenThrow(new RuntimeException());
     FallbackPolicyManager.addPolicy(policy);
     System.setProperty("servicecomb.fallbackpolicy.groupname.testHandleInError.policy", "throwException");
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) {
-        AsyncResponse asyncRsp = invocation.getArgument(0, AsyncResponse.class);
-        asyncRsp.fail(InvocationType.CONSUMER, new Exception("testHandleInError"));
-        return null;
-      }
+    Mockito.doAnswer((Answer<Void>) invocation -> {
+      AsyncResponse asyncRsp = invocation.getArgument(0, AsyncResponse.class);
+      asyncRsp.fail(InvocationType.CONSUMER, new Exception("testHandleInError"));
+      return null;
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
       Assertions.assertTrue(f.isFailed());
@@ -193,13 +189,10 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandleSuccess");
-    Mockito.doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) {
-        AsyncResponse asyncRsp = invocation.getArgument(0, AsyncResponse.class);
-        asyncRsp.success("");
-        return null;
-      }
+    Mockito.doAnswer((Answer<Void>) invocation -> {
+      AsyncResponse asyncRsp = invocation.getArgument(0, AsyncResponse.class);
+      asyncRsp.success("");
+      return null;
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
       Assertions.assertTrue(f.isSucceed());
