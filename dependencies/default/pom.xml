@@ -76,7 +76,6 @@
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.78.Final</netty.version>
     <okhttp3.version>4.10.0</okhttp3.version>
-    <powermock.version>2.0.9</powermock.version>
     <maven-model.version>3.8.6</maven-model.version>
     <micrometer.version>1.9.1</micrometer.version>
     <nacos-client.version>2.1.0</nacos-client.version>
@@ -706,25 +705,6 @@
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver-netty</artifactId>
         <version>${mock-server.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.powermock</groupId>
-        <artifactId>powermock-api-mockito2</artifactId>
-        <version>${powermock.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.powermock</groupId>
-        <artifactId>powermock-module-junit4</artifactId>
-        <version>${powermock.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.powermock</groupId>
-        <artifactId>powermock-module-test-mockito-junit4-delegate</artifactId>
-        <version>${powermock.version}</version>
         <scope>test</scope>
       </dependency>
 
