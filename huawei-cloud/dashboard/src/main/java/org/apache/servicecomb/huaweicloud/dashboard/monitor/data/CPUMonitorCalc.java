@@ -35,7 +35,7 @@ public class CPUMonitorCalc {
 
   private long preUsedTime = 0;
 
-  public CPUMonitorCalc() {
+  private CPUMonitorCalc() {
     osMxBean = ManagementFactory.getOperatingSystemMXBean();
     threadMXBean = ManagementFactory.getThreadMXBean();
   }

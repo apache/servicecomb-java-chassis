@@ -35,7 +35,7 @@ public class EnvAdapterManager extends RegisterManager<String, EnvAdapter> {
 
   public static final EnvAdapterManager INSTANCE = new EnvAdapterManager();
 
-  public EnvAdapterManager() {
+  private EnvAdapterManager() {
     super(NAME);
     ENV_ADAPTERS.forEach(envAdapter -> {
       if (envAdapter.enabled()) {

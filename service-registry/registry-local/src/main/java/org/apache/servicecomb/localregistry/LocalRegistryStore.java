@@ -60,7 +60,7 @@ public class LocalRegistryStore {
   // second key is instance id
   private final Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
 
-  public LocalRegistryStore() {
+  private LocalRegistryStore() {
 
   }
 
