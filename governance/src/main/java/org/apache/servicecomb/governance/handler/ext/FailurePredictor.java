@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.governance.handler.ext;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ import com.google.common.collect.ImmutableMap;
 
 import io.vertx.core.VertxException;
 
-public interface RetryExtension {
+public interface FailurePredictor {
   Map<Class<? extends Throwable>, List<String>> STRICT_RETRIABLE =
       ImmutableMap.<Class<? extends Throwable>, List<String>>builder()
           .put(ConnectException.class, Collections.emptyList())
@@ -43,9 +42,9 @@ public interface RetryExtension {
           .put(NoRouteToHostException.class, Collections.emptyList())
           .build();
 
-  boolean isRetry(List<String> statusList, Object result);
+  boolean isFailedResult(List<String> statusList, Object result);
 
-  default boolean isRetry(Throwable e) {
+  default boolean isFailedResult(Throwable e) {
     return canRetryForException(STRICT_RETRIABLE, e);
   }
 

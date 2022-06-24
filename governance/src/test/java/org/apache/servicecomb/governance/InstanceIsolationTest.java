@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.governance;
 
+import java.net.ConnectException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
@@ -57,7 +59,7 @@ public class InstanceIsolationTest {
         return "test";
       }
       if (run == 1) {
-        throw new RuntimeException("test exception");
+        throw new ConnectException("test exception");
       }
       return "test";
     });
@@ -74,14 +76,14 @@ public class InstanceIsolationTest {
 
     // isolation from error
     Assertions.assertEquals("test", ds.get());
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+    Assertions.assertThrows(ConnectException.class, () -> ds.get());
 
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
 
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
-    Assertions.assertThrows(RuntimeException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
 
     // isolation do not influence other instances
     GovernanceRequest request2 = new GovernanceRequest();

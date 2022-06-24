@@ -49,7 +49,7 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.RetryHandler;
-import org.apache.servicecomb.governance.handler.ext.RetryExtension;
+import org.apache.servicecomb.governance.handler.ext.FailurePredictor;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -468,7 +468,6 @@ public final class InvokerUtils {
 
       if (((InvocationException) ar.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
         AsyncUtils.rethrow(ar.getResult());
-        return;
       }
     }
   }
@@ -479,7 +478,7 @@ public final class InvokerUtils {
         .getStatusCode()) {
       return true;
     }
-    return RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, e);
+    return FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, e);
   }
 
   @VisibleForTesting

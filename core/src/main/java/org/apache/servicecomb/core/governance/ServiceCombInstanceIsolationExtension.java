@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.core.governance;
 
-import java.util.List;
+import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
+import org.springframework.stereotype.Component;
 
-import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
-
-
-public class MockRetryExtension extends AbstractRetryExtension {
-  @Override
-  public boolean isFailedResult(List<String> statusList, Object result) {
-    return false;
-  }
+@Component
+public class ServiceCombInstanceIsolationExtension extends AbstractInstanceIsolationExtension {
+  private ServiceCombRetryExtension retryExtension = new ServiceCombRetryExtension();
 
   @Override
   protected String extractStatusCode(Object result) {
-    return null;
+    return retryExtension.extractStatusCode(result);
   }
 
   @Override
   public boolean isFailedResult(Throwable e) {
-    return false;
+    return retryExtension.isFailedResult(e);
   }
 }

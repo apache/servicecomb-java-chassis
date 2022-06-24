@@ -17,9 +17,12 @@
 package org.apache.servicecomb.governance.policy;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
+import org.springframework.util.CollectionUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
 
@@ -41,6 +44,10 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final String DEFAULT_SLIDING_WINDOW_SIZE = "100";
 
+  public static final String DEFAULT_FAILURE_RESPONSE_STATUS_502 = "502";
+
+  public static final String DEFAULT_FAILURE_RESPONSE_STATUS_503 = "503";
+
   private float failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
 
   private float slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
@@ -56,6 +63,9 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   private String slidingWindowType;
 
   private String slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
+
+  //status code that need retry
+  private List<String> recordFailureStatus = new ArrayList<>();
 
   public CircuitBreakerPolicy() {
   }
@@ -173,6 +183,18 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     }
     Duration duration = Duration.parse(GovernanceUtils.DIGIT_PREFIX + slidingWindowSize);
     return String.valueOf(duration.getSeconds());
+  }
+
+  public List<String> getRecordFailureStatus() {
+    if (CollectionUtils.isEmpty(this.recordFailureStatus)) {
+      this.recordFailureStatus.add(DEFAULT_FAILURE_RESPONSE_STATUS_502);
+      this.recordFailureStatus.add(DEFAULT_FAILURE_RESPONSE_STATUS_503);
+    }
+    return this.recordFailureStatus;
+  }
+
+  public void setRRecordFailureStatus(List<String> recordFailureStatus) {
+    this.recordFailureStatus = recordFailureStatus;
   }
 
   @Override

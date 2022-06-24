@@ -29,7 +29,9 @@ public class RetryPolicy extends AbstractPolicy {
 
   public static final Duration DEFAULT_WAIT_DURATION = Duration.ofMillis(10);
 
-  public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS = "502";
+  public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS_502 = "502";
+
+  public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS_503 = "503";
 
   private static final Duration INITIAL_INTERVAL = Duration.ofMillis(1000);
 
@@ -69,7 +71,8 @@ public class RetryPolicy extends AbstractPolicy {
 
   public List<String> getRetryOnResponseStatus() {
     if (CollectionUtils.isEmpty(retryOnResponseStatus)) {
-      this.retryOnResponseStatus.add(DEFAULT_RETRY_ON_RESPONSE_STATUS);
+      this.retryOnResponseStatus.add(DEFAULT_RETRY_ON_RESPONSE_STATUS_502);
+      this.retryOnResponseStatus.add(DEFAULT_RETRY_ON_RESPONSE_STATUS_503);
     }
     return retryOnResponseStatus;
   }

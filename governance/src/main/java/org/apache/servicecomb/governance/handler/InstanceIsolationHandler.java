@@ -20,6 +20,7 @@ package org.apache.servicecomb.governance.handler;
 import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
@@ -36,15 +37,17 @@ import io.micrometer.core.instrument.MeterRegistry;
 public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceIsolationHandler.class);
 
-  private static final String DEFAULT_SERVICE_NAME = "default";
-
   private final InstanceIsolationProperties instanceIsolationProperties;
+
+  private final AbstractInstanceIsolationExtension isolationExtension;
 
   private final MeterRegistry meterRegistry;
 
   public InstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
+      AbstractInstanceIsolationExtension isolationExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
     this.instanceIsolationProperties = instanceIsolationProperties;
+    this.isolationExtension = isolationExtension;
     this.meterRegistry = meterRegistry.getIfAvailable();
   }
 
@@ -79,11 +82,10 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   @Override
   public CircuitBreaker createProcessor(String key, GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return getCircuitBreaker(key, governanceRequest, policy);
+    return getCircuitBreaker(key, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(String key, GovernanceRequest governanceRequest,
-      CircuitBreakerPolicy policy) {
+  private CircuitBreaker getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
@@ -95,6 +97,8 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
         .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
+        .recordException(isolationExtension::isFailedResult)
+        .recordResult(r -> isolationExtension.isFailedResult(policy.getRecordFailureStatus(), r))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     if (meterRegistry != null) {

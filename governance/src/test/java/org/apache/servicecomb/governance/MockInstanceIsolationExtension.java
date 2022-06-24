@@ -14,27 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.governance;
 
-import java.util.List;
+import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 
-import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
-
-
-public class MockRetryExtension extends AbstractRetryExtension {
-  @Override
-  public boolean isFailedResult(List<String> statusList, Object result) {
-    return false;
-  }
-
+public class MockInstanceIsolationExtension extends AbstractInstanceIsolationExtension {
   @Override
   protected String extractStatusCode(Object result) {
-    return null;
-  }
-
-  @Override
-  public boolean isFailedResult(Throwable e) {
-    return false;
+    return "200";
   }
 }

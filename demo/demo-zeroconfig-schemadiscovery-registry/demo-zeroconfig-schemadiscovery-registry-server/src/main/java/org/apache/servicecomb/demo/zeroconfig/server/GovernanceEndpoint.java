@@ -20,6 +20,8 @@ package org.apache.servicecomb.demo.zeroconfig.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -70,6 +72,6 @@ public class GovernanceEndpoint {
 
   @GetMapping("/circuitBreaker")
   public String circuitBreaker() {
-    throw new RuntimeException("circuitBreaker by provider.");
+    throw new InvocationException(Status.SERVICE_UNAVAILABLE, "");
   }
 }

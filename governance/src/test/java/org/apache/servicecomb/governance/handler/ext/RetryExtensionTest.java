@@ -81,7 +81,7 @@ public class RetryExtensionTest {
   public void testRetryWithConnectionException() {
     Exception target = new ConnectException("connection refused");
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
   }
 
@@ -89,7 +89,7 @@ public class RetryExtensionTest {
   public void testRetryWithSocketTimeout() {
     Exception target = new SocketTimeoutException("Read timed out");
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
   }
 
@@ -97,12 +97,12 @@ public class RetryExtensionTest {
   public void testRetryWithIOException() {
     Exception target = new IOException("Connection reset by peer");
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
 
     target = new IOException("Target not exist");
     root = new Exception(target);
-    canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertFalse(canRetry);
   }
 
@@ -110,12 +110,12 @@ public class RetryExtensionTest {
   public void testRetryVertxException() {
     Exception target = new VertxException("Connection was closed");
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
 
     target = new IOException("");
     root = new Exception(target);
-    canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertFalse(canRetry);
   }
 
@@ -123,12 +123,12 @@ public class RetryExtensionTest {
   public void testRetryNoRouteToHostException() {
     Exception target = new NoRouteToHostException("Host is unreachable");
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
 
     target = new NoRouteToHostException("No route to host");
     root = new Exception(target);
-    canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
   }
 
@@ -139,7 +139,7 @@ public class RetryExtensionTest {
       target = new Exception("Level" + i, target);
     }
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertTrue(canRetry);
   }
 
@@ -150,7 +150,7 @@ public class RetryExtensionTest {
       target = new Exception("Level" + i, target);
     }
     Exception root = new Exception(target);
-    boolean canRetry = RetryExtension.canRetryForException(RetryExtension.STRICT_RETRIABLE, root);
+    boolean canRetry = FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, root);
     Assertions.assertFalse(canRetry);
   }
 }

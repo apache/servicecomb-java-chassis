@@ -74,15 +74,14 @@ public class GovernanceTest implements CategorizedTestCase {
                 notExpectedFailed.set(true);
               }
             } catch (Exception e) {
-              if (!"InvocationException: code=429;msg=CommonExceptionData [message=circuitBreaker is open.]"
-                  .equals(e.getMessage())
-                  && !e.getMessage().equals(
-                  "InvocationException: code=500;msg={message=Unexpected exception when processing the request.}")) {
-                notExpectedFailed.set(true);
-              }
               if ("InvocationException: code=429;msg=CommonExceptionData [message=circuitBreaker is open.]"
                   .equals(e.getMessage())) {
                 expectedFailed.set(true);
+              } else if ("InvocationException: code=503;msg=CommonExceptionData [message=test error]"
+                  .equals(e.getMessage())) {
+                // by pass
+              } else {
+                notExpectedFailed.set(true);
               }
             }
             latch.countDown();

@@ -17,33 +17,6 @@
 
 package org.apache.servicecomb.governance.handler.ext;
 
-import org.apache.commons.lang3.StringUtils;
+public abstract class AbstractRetryExtension extends AbstractFailurePredictor {
 
-import java.util.List;
-import java.util.stream.IntStream;
-
-public abstract class AbstractRetryExtension implements RetryExtension {
-  public boolean isRetry(List<String> statusList, Object result) {
-    String statusCode = extractStatusCode(result);
-    if (StringUtils.isEmpty(statusCode)) {
-      return false;
-    }
-    return statusCodeContains(statusList, statusCode);
-  }
-
-  protected abstract String extractStatusCode(Object result);
-
-  protected static boolean statusCodeContains(List<String> statusList, String responseStatus) {
-    return statusList.stream().anyMatch(status -> statusCodeMatch(status, responseStatus));
-  }
-
-  private static boolean statusCodeMatch(String status, String responseStatus) {
-    if (3 != status.length()) {
-      return false;
-    }
-    char[] statusChar = status.toCharArray();
-    char[] responseChar = responseStatus.toCharArray();
-    return IntStream.range(0, 3).noneMatch(i ->
-        statusChar[i] != responseChar[i] && statusChar[i] != 'x');
-  }
 }

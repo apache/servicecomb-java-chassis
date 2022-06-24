@@ -15,26 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.handler.ext;
 
-import java.util.List;
+public abstract class AbstractInstanceIsolationExtension extends AbstractFailurePredictor {
 
-import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
-
-
-public class MockRetryExtension extends AbstractRetryExtension {
-  @Override
-  public boolean isFailedResult(List<String> statusList, Object result) {
-    return false;
-  }
-
-  @Override
-  protected String extractStatusCode(Object result) {
-    return null;
-  }
-
-  @Override
-  public boolean isFailedResult(Throwable e) {
-    return false;
-  }
 }
