@@ -248,7 +248,7 @@ public abstract class AbstractRestInvocation {
 
   protected void doInvoke() throws Throwable {
     invocation.onStartHandlersRequest();
-    invocation.next(resp -> sendResponseQuietly(resp));
+    invocation.next(this::sendResponseQuietly);
   }
 
   public void sendFailResponse(Throwable throwable) {

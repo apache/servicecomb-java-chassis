@@ -76,14 +76,14 @@ public class InstanceIsolationTest {
 
     // isolation from error
     Assertions.assertEquals("test", ds.get());
-    Assertions.assertThrows(ConnectException.class, () -> ds.get());
+    Assertions.assertThrows(ConnectException.class, ds::get);
 
-    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
-    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, ds::get);
+    Assertions.assertThrows(CallNotPermittedException.class, ds::get);
 
-    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
-    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
-    Assertions.assertThrows(CallNotPermittedException.class, () -> ds.get());
+    Assertions.assertThrows(CallNotPermittedException.class, ds::get);
+    Assertions.assertThrows(CallNotPermittedException.class, ds::get);
+    Assertions.assertThrows(CallNotPermittedException.class, ds::get);
 
     // isolation do not influence other instances
     GovernanceRequest request2 = new GovernanceRequest();

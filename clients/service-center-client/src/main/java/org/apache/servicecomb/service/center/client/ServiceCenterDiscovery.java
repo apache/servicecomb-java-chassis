@@ -224,13 +224,11 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private synchronized void pullAllInstance() {
-    instancesCache.forEach((k, v) -> {
-      pullInstance(k, v);
-    });
+    instancesCache.forEach(this::pullInstance);
     if (failedInstances.isEmpty()) {
       return;
     }
-    failedInstances.forEach(item -> instancesCache.remove(item));
+    failedInstances.forEach(instancesCache::remove);
     failedInstances.clear();
   }
 

@@ -65,7 +65,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
     RetryConfig config = RetryConfig.custom()
         .maxAttempts(retryPolicy.getMaxAttempts() + 1)
         .retryOnResult(response -> retryExtension.isFailedResult(retryPolicy.getRetryOnResponseStatus(), response))
-        .retryOnException(e -> retryExtension.isFailedResult(e))
+        .retryOnException(retryExtension::isFailedResult)
         .intervalFunction(getIntervalFunction(retryPolicy))
         .failAfterMaxAttempts(retryPolicy.isFailAfterMaxAttempts())
         .build();

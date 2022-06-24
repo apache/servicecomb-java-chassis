@@ -72,9 +72,7 @@ public final class WebsocketClientUtil {
               LOGGER.error("ws close error.", err);
             }
           });
-          asyncResult.result().closeHandler(v -> {
-            onClose.handle(v);
-          });
+          asyncResult.result().closeHandler(onClose::handle);
           asyncResult.result().pongHandler(pong -> {
             // ignore, just prevent NPE.
           });

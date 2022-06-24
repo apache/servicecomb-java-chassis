@@ -196,7 +196,7 @@ public class ProducerOperationFilterTest {
             .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
 
     InvocationException throwable = Exceptions
-        .convert(invocation, catchThrowable(() -> future.get()), INTERNAL_SERVER_ERROR);
+        .convert(invocation, catchThrowable(future::get), INTERNAL_SERVER_ERROR);
     assertThat(throwable).hasCauseInstanceOf(IllegalArgumentException.class);
     CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
     assertThat(data.getMessage()).isEqualTo("Parameters not valid or types not match.");
