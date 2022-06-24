@@ -126,6 +126,7 @@ public class TestJvmUtils {
 
 
   @Test
+  @Disabled
   public void findMainClassByStackTrace_normal() throws Exception{
     StackTraceElement[] stackTraceElements = {
             new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
