@@ -19,9 +19,9 @@ package org.apache.servicecomb.foundation.metrics.health;
 
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestHealthCheckerManager {
 
@@ -49,7 +49,7 @@ public class TestHealthCheckerManager {
     }
   };
 
-  @Before
+  @BeforeEach
   public void reset() {
     HealthCheckerManager.getInstance().unregister(good.getName());
     HealthCheckerManager.getInstance().unregister(bad.getName());
