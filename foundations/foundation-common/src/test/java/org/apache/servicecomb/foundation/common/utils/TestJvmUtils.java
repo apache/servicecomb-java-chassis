@@ -20,9 +20,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
@@ -34,25 +32,11 @@ import java.net.URL;
 
 
 public class TestJvmUtils {
-  static String orgCmd = System.getProperty(JvmUtils.SUN_JAVA_COMMAND);
-
-  @BeforeEach
-  public void setup() {
-    System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
-  }
-
-  @AfterEach
-  public void tearDown() {
-    if (orgCmd == null) {
-      System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
-      return;
-    }
-
-    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, orgCmd);
-  }
 
   @Test
+  @Disabled
   public void findMainClass_notExist() {
+    System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
     Assertions.assertNull(JvmUtils.findMainClass());
   }
 
