@@ -67,16 +67,12 @@ public class MicroserviceInstanceCache {
   public static MicroserviceInstance getOrCreate(String serviceId, String instanceId) {
     try {
       String key = String.format("%s@%s", serviceId, instanceId);
-      return instances.get(key, new Callable<MicroserviceInstance>() {
-
-        @Override
-        public MicroserviceInstance call() {
-          MicroserviceInstance instance = DiscoveryManager.INSTANCE.getMicroserviceInstance(serviceId, instanceId);
-          if (instance == null) {
-            throw new IllegalArgumentException("instance id not exists.");
-          }
-          return instance;
+      return instances.get(key, () -> {
+        MicroserviceInstance instance = DiscoveryManager.INSTANCE.getMicroserviceInstance(serviceId, instanceId);
+        if (instance == null) {
+          throw new IllegalArgumentException("instance id not exists.");
         }
+        return instance;
       });
     } catch (ExecutionException | UncheckedExecutionException e) {
       logger.error("get microservice instance from cache failed, {}, {}", String.format("%s@%s", serviceId, instanceId),

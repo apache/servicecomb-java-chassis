@@ -44,7 +44,7 @@ public class MicroservicePaths {
 
   public void sortPath() {
     RestOperationComparator comparator = new RestOperationComparator();
-    Collections.sort(this.dynamicPathOperationsList, comparator);
+    this.dynamicPathOperationsList.sort(comparator);
   }
 
   public void addResource(RestOperationMeta swaggerRestOperation) {

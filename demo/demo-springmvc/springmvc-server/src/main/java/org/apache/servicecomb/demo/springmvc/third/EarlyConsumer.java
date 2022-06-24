@@ -36,23 +36,21 @@ public class EarlyConsumer implements BootListener {
   private volatile boolean stopped = false;
 
   public EarlyConsumer() {
-    new Thread() {
-      public void run() {
-        while (!stopped) {
-          LOGGER.info("calling service");
-          try {
-            healthSchema.heartbeat();
-          } catch (Throwable e) {
-            // ignore error
-          }
-          try {
-            Thread.sleep(100);
-          } catch (Throwable e) {
-            // ignore error
-          }
+    new Thread(() -> {
+      while (!stopped) {
+        LOGGER.info("calling service");
+        try {
+          healthSchema.heartbeat();
+        } catch (Throwable e) {
+          // ignore error
+        }
+        try {
+          Thread.sleep(100);
+        } catch (Throwable e) {
+          // ignore error
         }
       }
-    }.start();
+    }).start();
   }
 
   @Override

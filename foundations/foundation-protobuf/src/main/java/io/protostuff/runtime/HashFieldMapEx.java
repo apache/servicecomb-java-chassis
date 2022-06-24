@@ -60,7 +60,7 @@ public final class HashFieldMapEx<T> implements FieldMapEx<T> {
 
     List<FieldSchema<T>> fieldList = new ArrayList<>(fields.size());
     fieldList.addAll(fields);
-    Collections.sort(fieldList, Comparator.comparingInt(FieldSchema::getFieldNumber));
+    fieldList.sort(Comparator.comparingInt(FieldSchema::getFieldNumber));
     this.fields = Collections.unmodifiableList(fieldList);
   }
 

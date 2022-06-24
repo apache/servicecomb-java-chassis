@@ -28,27 +28,25 @@ public class BeanRpcTest {
   }
 
   public void init() {
-    new Thread() {
-      public void run() {
-        while (true) {
+    new Thread(() -> {
+      while (true) {
+        try {
+          System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX" + test.getTestString(null));
+          break;
+        } catch (Exception e) {
+          e.printStackTrace();
           try {
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX" + test.getTestString(null));
-            break;
-          } catch (Exception e) {
-            e.printStackTrace();
-            try {
-              Thread.sleep(1000);
-            } catch (InterruptedException e1) {
-              e1.printStackTrace();
-            }
-            continue;
-          } catch (Throwable e) {
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX: teset case error");
-            e.printStackTrace();
-            System.exit(0);
+            Thread.sleep(1000);
+          } catch (InterruptedException e1) {
+            e1.printStackTrace();
           }
+          continue;
+        } catch (Throwable e) {
+          System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX: teset case error");
+          e.printStackTrace();
+          System.exit(0);
         }
       }
-    }.start();
+    }).start();
   }
 }

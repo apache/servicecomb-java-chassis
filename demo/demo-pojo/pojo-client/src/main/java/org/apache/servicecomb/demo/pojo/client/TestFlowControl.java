@@ -55,26 +55,24 @@ public class TestFlowControl implements CategorizedTestCase {
     AtomicBoolean failed = new AtomicBoolean(false);
     CountDownLatch countDownLatch = new CountDownLatch(10);
     for (int i = 0; i < 10; i++) {
-      new Thread() {
-        public void run() {
-          for (int i = 0; i < 10; i++) {
-            try {
-              int result = function.apply(10);
-              if (result != 10) {
-                TestMgr.failed("", new Exception("not expected"));
-              }
-            } catch (InvocationException e) {
-              TestMgr.check(e.getStatusCode(), 429);
-              TestMgr.check(e.getMessage(),
-                  "InvocationException: code=429;msg=CommonExceptionData [message=" + role
-                      + " request rejected by qps flowcontrol]");
-              failed.set(true);
-              break;
+      new Thread(() -> {
+        for (int i1 = 0; i1 < 10; i1++) {
+          try {
+            int result = function.apply(10);
+            if (result != 10) {
+              TestMgr.failed("", new Exception("not expected"));
             }
+          } catch (InvocationException e) {
+            TestMgr.check(e.getStatusCode(), 429);
+            TestMgr.check(e.getMessage(),
+                "InvocationException: code=429;msg=CommonExceptionData [message=" + role
+                    + " request rejected by qps flowcontrol]");
+            failed.set(true);
+            break;
           }
-          countDownLatch.countDown();
         }
-      }.start();
+        countDownLatch.countDown();
+      }).start();
     }
     countDownLatch.await(10, TimeUnit.SECONDS);
     TestMgr.check(expected, failed.get());
