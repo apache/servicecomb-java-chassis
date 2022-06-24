@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.registry.cache;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
