@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config.kie;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -87,9 +88,7 @@ public class KieConfig {
   public List<String> getFileSources() {
     Object property = finalConfig.getProperty(FILE_SOURCE);
     if (property instanceof String) {
-      List<String> result = new ArrayList<>();
-      result.add((String) property);
-      return result;
+      return new ArrayList<>(Arrays.asList(((String) property).split(",")));
     }
     if (property instanceof List) {
       return (List<String>) property;
