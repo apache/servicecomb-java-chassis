@@ -192,7 +192,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
         loader.getConfigModels()
             .forEach(configModel -> values.putAll(YAMLUtil.retrieveItems("", configModel.getConfig())));
 
-        propertyNames = values.keySet().toArray(new String[values.size()]);
+        propertyNames = values.keySet().toArray(new String[0]);
       }
 
       @Override

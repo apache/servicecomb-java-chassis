@@ -87,7 +87,7 @@ public final class KeyStoreUtil {
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
       is = new FileInputStream(crlfile);
       Collection c = cf.generateCRLs(is);
-      return (CRL[]) c.toArray(new CRL[c.size()]);
+      return (CRL[]) c.toArray(new CRL[0]);
     } catch (CertificateException e) {
       throw new IllegalArgumentException("bad cert file.");
     } catch (FileNotFoundException e) {

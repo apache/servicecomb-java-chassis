@@ -62,7 +62,7 @@ public final class BeanUtils {
     Set<String> locationSet = new LinkedHashSet<>();
     addBeanLocation(locationSet, DEFAULT_BEAN_RESOURCE);
     addBeanLocation(locationSet, configLocations);
-    context = new ClassPathXmlApplicationContext(locationSet.toArray(new String[locationSet.size()]));
+    context = new ClassPathXmlApplicationContext(locationSet.toArray(new String[0]));
   }
 
   public static void addBeanLocation(Set<String> locationSet, String... location) {

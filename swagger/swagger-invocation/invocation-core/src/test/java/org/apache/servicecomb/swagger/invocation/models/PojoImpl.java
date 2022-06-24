@@ -64,7 +64,7 @@ public class PojoImpl {
   }
 
   public String[] testListArray(List<String> s) {
-    return s.toArray(new String[s.size()]);
+    return s.toArray(new String[0]);
   }
 
   public List<String> testListList(List<String> s) {
@@ -80,7 +80,7 @@ public class PojoImpl {
   }
 
   public Person[] testObjectListArray(List<Person> s) {
-    return s.toArray(new Person[s.size()]);
+    return s.toArray(new Person[0]);
   }
 
   public List<Person> testObjectListList(List<Person> s) {

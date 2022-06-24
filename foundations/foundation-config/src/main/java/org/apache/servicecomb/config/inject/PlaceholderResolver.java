@@ -86,10 +86,7 @@ public class PlaceholderResolver {
       resolve(row, replaced);
     }
 
-    for (int idx = 0; idx < replaced.size(); idx++) {
-      String row = replaced.get(idx);
-      replaced.set(idx, row.replace("\\$", "$"));
-    }
+    replaced.replaceAll(s -> s.replace("\\$", "$"));
     return replaced;
   }
 

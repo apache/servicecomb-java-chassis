@@ -123,7 +123,7 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   private Map<String, String[]> convertListMapToArrayMap(Map<String, List<String>> listMap) {
     Map<String, String[]> arrayMap = new HashMap<>();
     for (Entry<String, List<String>> entry : listMap.entrySet()) {
-      arrayMap.put(entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
+      arrayMap.put(entry.getKey(), entry.getValue().toArray(new String[0]));
     }
     return arrayMap;
   }
