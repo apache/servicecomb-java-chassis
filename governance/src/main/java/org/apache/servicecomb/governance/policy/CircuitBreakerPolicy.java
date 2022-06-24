@@ -64,8 +64,14 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   private String slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
 
-  //status code that need retry
+  //status code that need record as a failure
   private List<String> recordFailureStatus = new ArrayList<>();
+
+  //force close this circuit breaker. This parameter is not used by circuit breaker directly
+  private boolean forceClosed = false;
+
+  //force open this circuit breaker. This parameter is not used by circuit breaker directly
+  private boolean forceOpen = false;
 
   public CircuitBreakerPolicy() {
   }
@@ -193,8 +199,24 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
     return this.recordFailureStatus;
   }
 
-  public void setRRecordFailureStatus(List<String> recordFailureStatus) {
+  public void setRecordFailureStatus(List<String> recordFailureStatus) {
     this.recordFailureStatus = recordFailureStatus;
+  }
+
+  public boolean isForceClosed() {
+    return forceClosed;
+  }
+
+  public void setForceClosed(boolean forceClosed) {
+    this.forceClosed = forceClosed;
+  }
+
+  public boolean isForceOpen() {
+    return forceOpen;
+  }
+
+  public void setForceOpen(boolean forceOpen) {
+    this.forceOpen = forceOpen;
   }
 
   @Override
