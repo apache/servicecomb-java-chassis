@@ -76,9 +76,7 @@ public class AggregateServiceRegistryCache implements ServiceRegistryCache {
         .collect(Collectors.toList());
 
     LOGGER.info("[{}] caches get refreshed", refreshedAggregateMicroserviceCaches.size());
-    refreshedAggregateMicroserviceCaches.forEach(cache -> {
-      LOGGER.info("[{}]: status={}, revisionId={}", cache.getKey(), cache.getStatus(), cache.getRevisionId());
-    });
+    refreshedAggregateMicroserviceCaches.forEach(cache -> LOGGER.info("[{}]: status={}, revisionId={}", cache.getKey(), cache.getStatus(), cache.getRevisionId()));
 
     if (null != cacheRefreshedWatcher) {
       cacheRefreshedWatcher.accept(refreshedAggregateMicroserviceCaches);

@@ -172,9 +172,7 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     };
 
-    NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> {
-      new VertxServerResponseToHttpServletResponse(serverResponse);
-    });
+    NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> new VertxServerResponseToHttpServletResponse(serverResponse));
     Assertions.assertEquals("must run in vertx context.", exception.getMessage());
   }
 

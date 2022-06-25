@@ -68,9 +68,7 @@ public class TestYAMLUtil {
 
   @Test
   public void testYamlConfig() {
-    RuntimeException runtimeException = Assertions.assertThrows(RuntimeException.class, () -> {
-      YAMLUtil.yaml2Properties("servicecomb.service.registry.enabled: {{true}}");
-    });
+    RuntimeException runtimeException = Assertions.assertThrows(RuntimeException.class, () -> YAMLUtil.yaml2Properties("servicecomb.service.registry.enabled: {{true}}"));
     Assertions.assertEquals("input cannot be convert to map", runtimeException.getMessage());
   }
 

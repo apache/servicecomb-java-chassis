@@ -68,9 +68,7 @@ public class TestVertxMetersInitializer {
     @Override
     public void start(Promise<Void> startPromise) {
       Router mainRouter = Router.router(vertx);
-      mainRouter.route("/").handler(context -> {
-        context.response().end(context.getBody());
-      });
+      mainRouter.route("/").handler(context -> context.response().end(context.getBody()));
 
       HttpServer server = vertx.createHttpServer();
       server.requestHandler(mainRouter);
@@ -95,9 +93,7 @@ public class TestVertxMetersInitializer {
           HttpClientRequest request = ar.result();
           request.send(body, resp -> {
             if (resp.succeeded()) {
-              resp.result().bodyHandler((buffer) -> {
-                startPromise.complete();
-              });
+              resp.result().bodyHandler((buffer) -> startPromise.complete());
             }
           });
         }

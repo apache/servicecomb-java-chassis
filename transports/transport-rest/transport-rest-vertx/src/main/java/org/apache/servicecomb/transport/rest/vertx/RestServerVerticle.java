@@ -115,9 +115,7 @@ public class RestServerVerticle extends AbstractVerticle {
         } else {
           LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         }
-        httpServerExceptionHandlers.forEach(httpServerExceptionHandler -> {
-          httpServerExceptionHandler.handle(e);
-        });
+        httpServerExceptionHandlers.forEach(httpServerExceptionHandler -> httpServerExceptionHandler.handle(e));
       });
       startListen(httpServer, startPromise);
     } catch (Throwable e) {

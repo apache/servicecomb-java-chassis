@@ -139,9 +139,7 @@ public class TestLoadbalanceHandler {
     };
 
     Holder<Throwable> result = new Holder<>();
-    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
-      result.value = (Throwable) resp.getResult();
-    }, loadBalancer);
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> result.value = (Throwable) resp.getResult(), loadBalancer);
 
     Assertions.assertEquals("InvocationException: code=500;msg=CommonExceptionData [message=No available address found.]",
         result.value.getMessage());
@@ -165,9 +163,7 @@ public class TestLoadbalanceHandler {
     sendResponse = Response.create(Status.BAD_REQUEST, "send failed");
 
     Holder<Throwable> result = new Holder<>();
-    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
-      result.value = resp.getResult();
-    }, loadBalancer);
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> result.value = resp.getResult(), loadBalancer);
 
     // InvocationException is not taken as a failure
     Assertions.assertEquals(0,
@@ -194,9 +190,7 @@ public class TestLoadbalanceHandler {
     sendResponse = Response.consumerFailResp(new SocketException());
 
     Holder<Throwable> result = new Holder<>();
-    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
-      result.value = (Throwable) resp.getResult();
-    }, loadBalancer);
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> result.value = (Throwable) resp.getResult(), loadBalancer);
 
     Assertions.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
@@ -223,9 +217,7 @@ public class TestLoadbalanceHandler {
     sendResponse = Response.ok("success");
 
     Holder<String> result = new Holder<>();
-    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
-      result.value = resp.getResult();
-    }, loadBalancer);
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> result.value = resp.getResult(), loadBalancer);
 
     Assertions.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getActiveRequestsCount());

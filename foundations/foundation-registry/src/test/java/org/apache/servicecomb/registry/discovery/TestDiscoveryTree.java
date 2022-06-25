@@ -215,9 +215,7 @@ public class TestDiscoveryTree {
     discoveryTree.addFilter(filter);
 
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> {
-              result = discoveryTree.discovery(context, null, null, null);
-            });
+            () -> result = discoveryTree.discovery(context, null, null, null));
     Assertions.assertEquals(filter.getClass().getName() + " discovery return null.", exception.getMessage());
   }
 

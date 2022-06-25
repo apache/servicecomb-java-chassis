@@ -88,9 +88,7 @@ public abstract class AbstractTransport implements Transport {
       addressWithoutSchema += "&";
     }
 
-    String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> {
-      return new BasicNameValuePair(entry.getKey(), entry.getValue());
-    }).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
+    String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> new BasicNameValuePair(entry.getKey(), entry.getValue())).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
 
     addressWithoutSchema += encodedQuery;
 

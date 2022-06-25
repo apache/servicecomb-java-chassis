@@ -45,9 +45,7 @@ public class PartListToMultipartListConverter implements Converter {
     @SuppressWarnings("unchecked")
     List<Part> partList = (List<Part>) value;
     List<PartToMultipartFile> fileList = new ArrayList<>();
-    partList.forEach(part -> {
-      fileList.add(new PartToMultipartFile(part));
-    });
+    partList.forEach(part -> fileList.add(new PartToMultipartFile(part)));
     return fileList;
   }
 }
