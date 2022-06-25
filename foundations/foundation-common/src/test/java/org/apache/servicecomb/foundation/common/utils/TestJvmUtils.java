@@ -143,6 +143,7 @@ public class TestJvmUtils {
   }
 
   @Test
+  @Disabled
   public void findMainClassByStackTrace_invalidClass() throws Exception{
     StackTraceElement[] stackTraceElements = {
             new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
@@ -160,6 +161,7 @@ public class TestJvmUtils {
 
 
   @Test
+  @Disabled
   public void findMainClassByStackTrace_withoutMainMethod() throws Exception{
     StackTraceElement[] stackTraceElements = {
             new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
@@ -176,6 +178,7 @@ public class TestJvmUtils {
   }
 
   @Test
+  @Disabled
   public void findMainClassByStackTrace_emptyStackTrace() throws Exception{
     new MockUp<RuntimeException>() {
       @Mock
@@ -188,6 +191,7 @@ public class TestJvmUtils {
   }
 
   @Test
+  @Disabled
   public void findMainClassByStackTrace_nullStackTrace() throws Exception{
     new MockUp<RuntimeException>() {
       @Mock
