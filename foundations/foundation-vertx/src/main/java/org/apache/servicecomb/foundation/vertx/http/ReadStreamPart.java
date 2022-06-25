@@ -95,11 +95,11 @@ public class ReadStreamPart extends AbstractPart {
   }
 
   public CompletableFuture<byte[]> saveAsBytes() {
-    return saveAs(buf -> buf.getBytes());
+    return saveAs(Buffer::getBytes);
   }
 
   public CompletableFuture<String> saveAsString() {
-    return saveAs(buf -> buf.toString());
+    return saveAs(Buffer::toString);
   }
 
   public <T> CompletableFuture<T> saveAs(Function<Buffer, T> converter) {

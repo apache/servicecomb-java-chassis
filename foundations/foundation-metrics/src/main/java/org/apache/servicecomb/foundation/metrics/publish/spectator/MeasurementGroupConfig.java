@@ -38,7 +38,7 @@ public class MeasurementGroupConfig {
         Arrays
             .asList(tagNameOrFinders)
             .stream()
-            .map(r -> TagFinder.build(r))
+            .map(TagFinder::build)
             .collect(Collectors.toList()));
   }
 

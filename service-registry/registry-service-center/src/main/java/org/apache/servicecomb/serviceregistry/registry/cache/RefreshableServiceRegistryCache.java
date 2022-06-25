@@ -74,7 +74,7 @@ public class RefreshableServiceRegistryCache implements ServiceRegistryCache {
 
   private List<MicroserviceCache> refreshInnerState() {
     return microserviceCache.values().stream()
-        .peek(cache -> cache.refresh())
+        .peek(RefreshableMicroserviceCache::refresh)
         .filter(this::isRefreshedMicroserviceCache)
         .peek(this::removeCacheIfServiceNotFound)
         .collect(Collectors.toList());
