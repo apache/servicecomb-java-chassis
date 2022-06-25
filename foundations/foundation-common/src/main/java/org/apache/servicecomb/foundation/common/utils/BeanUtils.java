@@ -90,30 +90,30 @@ public final class BeanUtils {
   }
 
   public static void prepareServiceCombScanPackage() {
-    Set<String> scanPackags = new LinkedHashSet<>();
+    Set<String> scanPackages = new LinkedHashSet<>();
     // add exists settings
     String exists = System.getProperty(SCB_SCAN_PACKAGE);
     if (exists != null) {
       for (String exist : exists.trim().split(",")) {
         if (!exist.isEmpty()) {
-          addItem(scanPackags, exist.trim());
+          addItem(scanPackages, exist.trim());
         }
       }
     }
 
     // ensure servicecomb package exist
-    addItem(scanPackags, SCB_PACKAGE);
+    addItem(scanPackages, SCB_PACKAGE);
 
     // add main class package
     for (Class<?> mainClass : new Class<?>[] {JvmUtils.findMainClass(), JvmUtils.findMainClassByStackTrace()}) {
       if (mainClass != null && mainClass.getPackage() != null) {
         String pkg = mainClass.getPackage().getName();
-        addItem(scanPackags, pkg);
+        addItem(scanPackages, pkg);
       }
     }
 
     // finish
-    String scbScanPackages = StringUtils.join(scanPackags, ",");
+    String scbScanPackages = StringUtils.join(scanPackages, ",");
     System.setProperty(SCB_SCAN_PACKAGE, scbScanPackages);
     LOGGER.info("Scb scan package list: " + scbScanPackages);
   }
