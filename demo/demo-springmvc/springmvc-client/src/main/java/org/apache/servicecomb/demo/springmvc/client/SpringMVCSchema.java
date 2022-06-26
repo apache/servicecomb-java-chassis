@@ -43,4 +43,16 @@ public class SpringMVCSchema {
   public String testApiExample(@RequestBody String name, HttpServletRequest request) {
     return null;
   }
+
+  @ApiResponses({
+      @ApiResponse(code = 200, response = String.class, message = "success",
+          examples = @Example({
+              @ExampleProperty(value = "wget http://localhost/springMvcSchema/testDefaultGetApiExample", mediaType = "text"),
+              @ExampleProperty(value = "{name:hello}", mediaType = "application/json"),
+              @ExampleProperty(value = "{name:hello}", mediaType = "json")})
+      )})
+  @RequestMapping(path = "/testDefaultGetApiExample")
+  public String testDefaultGetApiExample(@RequestBody String name, HttpServletRequest request) {
+    return null;
+  }
 }

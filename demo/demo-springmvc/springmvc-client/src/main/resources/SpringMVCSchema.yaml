@@ -52,3 +52,21 @@ paths:
             json: "{name:hello}"
           schema:
             type: "string"
+  /testDefaultGetApiExample:
+    get:
+      operationId: "testDefaultGetApiExample"
+      parameters:
+        - in: "body"
+          name: "name"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "success"
+          examples:
+            text: "wget http://localhost/springMvcSchema/testDefaultGetApiExample"
+            application/json: "{name:hello}"
+            json: "{name:hello}"
+          schema:
+            type: "string"
