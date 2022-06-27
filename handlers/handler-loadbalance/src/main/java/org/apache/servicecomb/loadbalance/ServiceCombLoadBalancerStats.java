@@ -122,7 +122,8 @@ public class ServiceCombLoadBalancerStats {
     return this.pingView;
   }
 
-  void init() {
+  @VisibleForTesting
+  public void init() {
     // for testing
     if (timer != null) {
       timer.cancel();

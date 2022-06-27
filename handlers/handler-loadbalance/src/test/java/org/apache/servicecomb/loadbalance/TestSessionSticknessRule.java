@@ -54,7 +54,7 @@ public class TestSessionSticknessRule {
     Invocation invocation = mock(Invocation.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);
-    Deencapsulation.invoke(rule, "chooseServerWhenTimeout", Arrays.asList(mockedServer), invocation);
+    rule.chooseServerWhenTimeout(Arrays.asList(mockedServer), invocation);
     mockedServer.setAlive(true);
     mockedServer.setReadyToServe(true);
     List<ServiceCombServer> allServers = Arrays.asList(mockedServer);

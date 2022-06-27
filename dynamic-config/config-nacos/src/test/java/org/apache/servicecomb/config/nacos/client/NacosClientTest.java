@@ -61,7 +61,7 @@ public class NacosClientTest {
     NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh();
 
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }
@@ -70,7 +70,7 @@ public class NacosClientTest {
     status = true;
     before.put("test", "testValue");
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }
@@ -79,7 +79,7 @@ public class NacosClientTest {
     status = true;
     after.put("test", "testValue2");
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }
@@ -87,7 +87,7 @@ public class NacosClientTest {
 
     status = true;
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }

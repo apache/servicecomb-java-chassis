@@ -50,7 +50,7 @@ public class VertxRestInvocationTest {
         vertxRestInvocation, "invocation", invocation);
     Mockito.when(requestEx.getContext()).thenReturn(routingContext);
 
-    Deencapsulation.invoke(vertxRestInvocation, "createInvocation");
+    vertxRestInvocation.createInvocation();
 
     Mockito.verify(routingContext, Mockito.times(1)).put(RestConst.REST_INVOCATION_CONTEXT, invocation);
   }

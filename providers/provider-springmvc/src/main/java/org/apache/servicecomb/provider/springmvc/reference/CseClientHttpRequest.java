@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -226,7 +227,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return invocation;
   }
 
-  private CseClientHttpResponse invoke(Map<String, Object> swaggerArguments) {
+  @VisibleForTesting
+  CseClientHttpResponse invoke(Map<String, Object> swaggerArguments) {
     Invocation invocation = prepareInvocation(swaggerArguments);
     Response response = doInvoke(invocation);
 
