@@ -234,7 +234,7 @@ public class TestTcpClientConnection {
     }));
     tcpClientConnection.initNetSocket(netSocket);
 
-    Deencapsulation.invoke(tcpClientConnection, "onClosed", new Class<?>[] {Void.class}, new Object[] {null});
+    tcpClientConnection.onClosed(null);
     Assertions.assertEquals(Status.DISCONNECTED, Deencapsulation.getField(tcpClientConnection, "status"));
     Assertions.assertEquals(0, requestMap.size());
   }

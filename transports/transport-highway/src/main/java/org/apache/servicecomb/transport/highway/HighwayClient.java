@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.Response.Status;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
@@ -65,7 +66,8 @@ public class HighwayClient {
     VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
   }
 
-  private TcpClientConfig createTcpClientConfig() {
+  @VisibleForTesting
+  TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
     // global request timeout to be login timeout
     tcpClientConfig.setMsLoginTimeout(DynamicPropertyFactory.getInstance()

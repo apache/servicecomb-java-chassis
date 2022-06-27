@@ -76,7 +76,7 @@ public class TestUrlWithProviderPrefixClientHttpRequestFactory {
     Deencapsulation.setField(request, "requestMeta", requestMeta);
     Deencapsulation.setField(request, "path", request.findUriPath(uri));
 
-    Deencapsulation.invoke(request, "invoke", new HashMap<>());
+    request.invoke(new HashMap<>());
 
     Assertions.assertEquals("/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
   }

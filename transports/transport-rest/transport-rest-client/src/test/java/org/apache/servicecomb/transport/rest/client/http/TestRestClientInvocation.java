@@ -279,7 +279,7 @@ public class TestRestClientInvocation {
   }
 
   @Test
-  public void testSetCseContext_enable_unicode() {
+  public void testSetCseContext_enable_unicode() throws Exception {
     Map<String, String> contextMap = new HashMap<>();
     contextMap.put("key", "测试");
     contextMap.put("encodedKey", StringEscapeUtils.escapeJson("测试"));
@@ -302,7 +302,7 @@ public class TestRestClientInvocation {
     Deencapsulation.setField(vertxRestInvocation, "requestEx", requestEx);
     Deencapsulation.setField(vertxRestInvocation, "invocation", invocation);
 
-    Deencapsulation.invoke(vertxRestInvocation, "setContext");
+    vertxRestInvocation.setContext();
 
     Assertions.assertEquals("测试", invocation.getContext().get("key"));
     Assertions.assertEquals(StringEscapeUtils.escapeJson("测试"), invocation.getContext().get("encodedKey"));
@@ -310,7 +310,7 @@ public class TestRestClientInvocation {
 
 
   @Test
-  public void testSetCseContext_disable_unicode() throws JsonProcessingException {
+  public void testSetCseContext_disable_unicode() throws Exception {
     Map<String, String> contextMap = new HashMap<>();
     contextMap.put("key", "测试");
     contextMap.put("encodedKey", StringEscapeUtils.escapeJson("测试"));
@@ -340,8 +340,7 @@ public class TestRestClientInvocation {
     Deencapsulation.setField(vertxRestInvocation, "requestEx", requestEx);
     Deencapsulation.setField(vertxRestInvocation, "invocation", invocation);
 
-    Deencapsulation.invoke(vertxRestInvocation, "setContext");
-
+    vertxRestInvocation.setContext();
     Assertions.assertEquals("测试", invocation.getContext().get("key"));
     Assertions.assertEquals(StringEscapeUtils.escapeJson("测试"), invocation.getContext().get("encodedKey"));
   }
