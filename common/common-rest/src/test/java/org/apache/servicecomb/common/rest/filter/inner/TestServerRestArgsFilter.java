@@ -17,6 +17,7 @@
 package org.apache.servicecomb.common.rest.filter.inner;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.Part;
 
@@ -60,7 +61,7 @@ public class TestServerRestArgsFilter {
   ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
-  public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) {
+  public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) throws ExecutionException, InterruptedException {
     ResponsesMeta responsesMeta = new ResponsesMeta();
     responsesMeta.getResponseMap().put(202, RestObjectMapperFactory.getRestObjectMapper().constructType(Part.class));
     new Expectations(RestMetaUtils.class) {
@@ -75,7 +76,7 @@ public class TestServerRestArgsFilter {
         result = TypeFactory.defaultInstance().constructType(Part.class);
       }
     };
-    new MockUp<HttpServletResponseEx>(responseEx) {
+    new MockUp<HttpServletResponseEx>(responseEx.getClass()) {
       @Mock
       CompletableFuture<Void> sendPart(Part body) {
         invokedSendPart = true;
@@ -83,7 +84,7 @@ public class TestServerRestArgsFilter {
       }
     };
 
-    Assertions.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
+    Assertions.assertNull(filter.beforeSendResponseAsync(invocation, responseEx).get());
     Assertions.assertTrue(invokedSendPart);
   }
 }

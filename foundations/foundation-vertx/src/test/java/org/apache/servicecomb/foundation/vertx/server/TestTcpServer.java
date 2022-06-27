@@ -101,14 +101,14 @@ public class TestTcpServer {
     DefaultServerEndpointMetric endpointMetric = new DefaultServerEndpointMetric(null);
     DefaultTcpServerMetrics tcpServerMetrics = new DefaultTcpServerMetrics(endpointMetric);
 
-    new MockUp<NetServer>(netServer) {
+    new MockUp<NetServer>(netServer.getClass()) {
       @Mock
       NetServer connectHandler(Handler<NetSocket> handler) {
         connectHandler = handler;
         return netServer;
       }
     };
-    new MockUp<NetSocketImpl>(netSocket) {
+    new MockUp<NetSocketImpl>(netSocket.getClass()) {
       @Mock
       void close() {
         netSocketClosed = true;

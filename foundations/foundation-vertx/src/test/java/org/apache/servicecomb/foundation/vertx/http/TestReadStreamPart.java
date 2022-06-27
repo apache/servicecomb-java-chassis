@@ -148,7 +148,7 @@ public class TestReadStreamPart {
   @Test
   public void saveToWrite_readException(@Mocked WriteStream<Buffer> writeStream) {
     RuntimeException error = new RuntimeExceptionWithoutStackTrace();
-    new MockUp<InputStream>(inputStream) {
+    new MockUp<InputStream>(inputStream.getClass()) {
       @Mock
       int read(byte[] b) throws IOException {
         throw error;

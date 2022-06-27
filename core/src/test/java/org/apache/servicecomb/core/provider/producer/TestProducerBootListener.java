@@ -61,7 +61,7 @@ public class TestProducerBootListener {
         count.incrementAndGet();
       }
     }.getMockInstance();
-    new MockUp<Closeable>(closeable) {
+    new MockUp<Closeable>(closeable.getClass()) {
       @Mock
       void close() {
         count.incrementAndGet();

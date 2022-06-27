@@ -49,7 +49,7 @@ public class TestSpringmvcProducerResponseMapper {
   public void setup() {
     mapper = new SpringmvcProducerResponseMapper(realMapper);
 
-    new MockUp<ProducerResponseMapper>(realMapper) {
+    new MockUp<ProducerResponseMapper>(realMapper.getClass()) {
       @Mock
       Response mapResponse(StatusType status, Object response) {
         if (HttpStatus.isSuccess(status.getStatusCode())) {

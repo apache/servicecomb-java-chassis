@@ -274,7 +274,7 @@ public class TestServletUtils {
     };
 
     List<MultipartConfigElement> multipartConfigs = new ArrayList<>();
-    new MockUp<Dynamic>(d1) {
+    new MockUp<Dynamic>(d1.getClass()) {
       @Mock
       void setMultipartConfig(MultipartConfigElement multipartConfig) {
         multipartConfigs.add(multipartConfig);

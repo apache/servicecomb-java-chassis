@@ -166,7 +166,7 @@ public class TestPartToMultipartFile {
   public void transferTo() throws IllegalStateException, IOException {
     File dest = new File("/dest");
     Holder<String> destName = new Holder<>();
-    new MockUp<Part>(part) {
+    new MockUp<Part>(part.getClass()) {
       @Mock
       void write(String fileName) throws IOException {
         destName.value = fileName;

@@ -102,7 +102,7 @@ public class TestTcpClientConnection {
       }
     };
 
-    new MockUp<Context>(context) {
+    new MockUp<Context>(context.getClass()) {
       @Mock
       void runOnContext(Handler<Void> action) {
       }
@@ -125,7 +125,7 @@ public class TestTcpClientConnection {
         result = msgId;
       }
     };
-    new MockUp<Context>(context) {
+    new MockUp<Context>(context.getClass()) {
       @Mock
       void runOnContext(Handler<Void> action) {
         action.handle(null);
@@ -149,7 +149,7 @@ public class TestTcpClientConnection {
         result = msgId;
       }
     };
-    new MockUp<Context>(context) {
+    new MockUp<Context>(context.getClass()) {
       @Mock
       void runOnContext(Handler<Void> action) {
         Deencapsulation.setField(tcpClientConnection, "status", Status.TRY_LOGIN);
@@ -175,7 +175,7 @@ public class TestTcpClientConnection {
         tcpClientConnection.write((ByteBuf) any);
       }
     };
-    new MockUp<Context>(context) {
+    new MockUp<Context>(context.getClass()) {
       @Mock
       void runOnContext(Handler<Void> action) {
         Deencapsulation.setField(tcpClientConnection, "status", Status.WORKING);
@@ -193,7 +193,7 @@ public class TestTcpClientConnection {
   @Test
   public void connect_success(@Mocked NetSocketImpl netSocket) {
     Promise<NetSocket> promise = Promise.promise();
-    new MockUp<NetClientWrapper>(netClientWrapper) {
+    new MockUp<NetClientWrapper>(netClientWrapper.getClass()) {
       @Mock
       void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
         promise.complete(netSocket);
@@ -214,7 +214,7 @@ public class TestTcpClientConnection {
 
     Promise<NetSocket> promise = Promise.promise();
     RuntimeException error = new RuntimeExceptionWithoutStackTrace();
-    new MockUp<NetClientWrapper>(netClientWrapper) {
+    new MockUp<NetClientWrapper>(netClientWrapper.getClass()) {
       @Mock
       void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
         promise.fail(error);

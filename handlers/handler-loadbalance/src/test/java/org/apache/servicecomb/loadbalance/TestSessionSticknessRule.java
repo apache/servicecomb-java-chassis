@@ -253,7 +253,7 @@ public class TestSessionSticknessRule {
     ServiceCombServer server = new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
     Deencapsulation.setField(rule, "lastServer", server);
 
-    new MockUp<SessionStickinessRule>(rule) {
+    new MockUp<SessionStickinessRule>(rule.getClass()) {
       @Mock
       private boolean isTimeOut() {
         return false;

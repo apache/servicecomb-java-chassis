@@ -356,7 +356,7 @@ public class TestRestClientInvocation {
     }).when(httpClientResponse).bodyHandler(ArgumentMatchers.any());
 
     Buffer buf = Buffer.buffer();
-    new MockUp<RestClientInvocation>(restClientInvocation) {
+    new MockUp<RestClientInvocation>(restClientInvocation.getClass()) {
       @Mock
       void processResponseBody(Buffer responseBuf) {
         asyncResp.success(buf);

@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 
 import io.vertx.ext.web.RoutingContext;

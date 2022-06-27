@@ -154,7 +154,7 @@ public class TestRestClientRequestImpl {
   @Test
   public void doEndWithUpload() {
     Map<String, String> headers = new HashMap<>();
-    new MockUp<HttpClientRequest>(request) {
+    new MockUp<HttpClientRequest>(request.getClass()) {
       @Mock
       HttpClientRequest putHeader(String name, String value) {
         headers.put(name, value);

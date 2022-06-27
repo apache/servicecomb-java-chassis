@@ -82,7 +82,7 @@ public class TestDefaultLogPublisher {
   @Test
   public void init_enabled_default() {
     Holder<Boolean> registered = new Holder<>(false);
-    new MockUp<EventBus>(eventBus) {
+    new MockUp<EventBus>(eventBus.getClass()) {
       @Mock
       void register(Object object) {
         registered.value = true;
@@ -96,7 +96,7 @@ public class TestDefaultLogPublisher {
   @Test
   public void init_enabled_true() {
     Holder<Boolean> registered = new Holder<>();
-    new MockUp<EventBus>(eventBus) {
+    new MockUp<EventBus>(eventBus.getClass()) {
       @Mock
       void register(Object object) {
         registered.value = true;
@@ -112,7 +112,7 @@ public class TestDefaultLogPublisher {
   @Test
   public void init_enabled_false() {
     Holder<Boolean> registered = new Holder<>();
-    new MockUp<EventBus>(eventBus) {
+    new MockUp<EventBus>(eventBus.getClass()) {
       @Mock
       void register(Object object) {
         registered.value = true;

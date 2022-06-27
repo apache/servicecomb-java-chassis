@@ -81,7 +81,7 @@ public class TestRestAsyncListener {
     event = new AsyncEvent(context, requestEx, response);
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
 
-    new MockUp<HttpServletResponse>(response) {
+    new MockUp<HttpServletResponse>(response.getClass()) {
       @Mock
       void setContentType(String type) {
         contentType = type;

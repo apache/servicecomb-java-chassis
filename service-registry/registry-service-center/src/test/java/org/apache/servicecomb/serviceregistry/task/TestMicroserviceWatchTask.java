@@ -63,7 +63,7 @@ public class TestMicroserviceWatchTask {
       @Mocked Microservice microservice) {
     initWatch(serviceRegistryConfig, srClient, microservice);
 
-    new MockUp<ServiceRegistryClient>(srClient) {
+    new MockUp<ServiceRegistryClient>(srClient.getClass()) {
       @Mock
       void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
           AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
@@ -89,7 +89,7 @@ public class TestMicroserviceWatchTask {
       @Mocked Microservice microservice) {
     initWatch(serviceRegistryConfig, srClient, microservice);
 
-    new MockUp<ServiceRegistryClient>(srClient) {
+    new MockUp<ServiceRegistryClient>(srClient.getClass()) {
       @Mock
       void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
           AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
@@ -123,7 +123,7 @@ public class TestMicroserviceWatchTask {
     changedEvent.setKey(key);
     changedEvent.setInstance(microservice.getInstance());
 
-    new MockUp<ServiceRegistryClient>(srClient) {
+    new MockUp<ServiceRegistryClient>(srClient.getClass()) {
       @Mock
       void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
           AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
@@ -162,7 +162,7 @@ public class TestMicroserviceWatchTask {
         new MicroserviceWatchTask(eventBus, serviceRegistryConfig, srClient, microservice);
     microserviceWatchTask.taskStatus = TaskStatus.READY;
 
-    new MockUp<ServiceRegistryClient>(srClient) {
+    new MockUp<ServiceRegistryClient>(srClient.getClass()) {
       @Mock
       void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
           AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {

@@ -278,7 +278,7 @@ public class TestServiceRegistryClientImpl {
     Handler<RestResponse> handler = oClient.syncHandler(countDownLatch, cls, holder);
 
     Holder<Handler<Buffer>> bodyHandlerHolder = new Holder<>();
-    new MockUp<HttpClientResponse>(response) {
+    new MockUp<HttpClientResponse>(response.getClass()) {
       @Mock
       HttpClientResponse bodyHandler(Handler<Buffer> bodyHandler) {
         bodyHandlerHolder.value = bodyHandler;

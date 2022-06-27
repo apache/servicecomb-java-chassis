@@ -36,6 +36,11 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestClientPoolManager {
   @Mocked
@@ -60,7 +65,7 @@ public class TestClientPoolManager {
     poolMgr = new ClientPoolManager<>(vertx, factory);
     id = Deencapsulation.getField(poolMgr, "id");
     pools = Deencapsulation.getField(poolMgr, "pools");
-    new MockUp<Context>(context) {
+    new MockUp<Context>(context.getClass()) {
       @Mock
       void put(Object key, Object value) {
         contextMap.put(key, value);
@@ -200,38 +205,30 @@ public class TestClientPoolManager {
   }
 
   @Test
-  public void findByContext_otherVertx(@Mocked VertxImpl otherVertx, @Mocked Context otherContext) {
+  public void findByContext_otherVertx() {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations() {
-      {
-        Vertx.currentContext();
-        result = otherContext;
-        otherContext.owner();
-        result = otherVertx;
-      }
-    };
-
-    Assertions.assertSame(pool, poolMgr.findByContext());
+    Context otherContext = mock(Context.class);
+    VertxImpl otherVertx = mock(VertxImpl.class);
+    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
+      vertxMockedStatic.when(Vertx::currentContext).thenReturn(otherContext);
+      when(otherContext.owner()).thenReturn(otherVertx);
+      Assertions.assertSame(pool, poolMgr.findByContext());
+    }
   }
 
   @Test
-  public void findByContext_worker(@Mocked Context workerContext) {
+  public void findByContext_worker() {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations() {
-      {
-        Vertx.currentContext();
-        result = workerContext;
-        workerContext.owner();
-        result = vertx;
-        workerContext.isEventLoopContext();
-        result = false;
-      }
-    };
-
-    Assertions.assertSame(pool, poolMgr.findByContext());
+    Context workerContext = mock(Context.class);
+    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
+      vertxMockedStatic.when(Vertx::currentContext).thenReturn(workerContext);
+      when(workerContext.owner()).thenReturn(vertx);
+      when(workerContext.isEventLoopContext()).thenReturn(false);
+      Assertions.assertSame(pool, poolMgr.findByContext());
+    }
   }
 }

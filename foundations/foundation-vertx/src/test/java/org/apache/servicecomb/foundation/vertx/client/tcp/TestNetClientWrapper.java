@@ -22,8 +22,7 @@ import java.util.List;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -31,77 +30,72 @@ import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 public class TestNetClientWrapper {
-  @Mocked
+
   Vertx vertx;
 
-  @Mocked
   TcpClientConfig normalClientConfig;
 
-  @Mocked
   NetClient normalNetClient;
 
-  @Mocked
   TcpClientConfig sslClientConfig;
 
-  @Mocked
   NetClient sslNetClient;
 
   NetClientWrapper netClientWrapper;
 
-  @Before
+  @Mock
+  NetSocket normalSocket;
+
+  @Mock
+  NetSocket sslSocket;
+
+  @BeforeEach
   public void setup() {
-    new Expectations() {
-      {
-        vertx.createNetClient(normalClientConfig);
-        result = normalNetClient;
-        vertx.createNetClient(sslClientConfig);
-        result = sslNetClient;
-      }
-    };
+    vertx = Mockito.mock(Vertx.class);
+    normalClientConfig = Mockito.mock(TcpClientConfig.class);
+    normalNetClient = Mockito.mock(NetClient.class);
+    sslClientConfig =Mockito.mock(TcpClientConfig.class);
+    sslNetClient = Mockito.mock(NetClient.class);
+    Mockito.when(vertx.createNetClient(normalClientConfig)).thenReturn(normalNetClient);
+    Mockito.when(vertx.createNetClient(sslClientConfig)).thenReturn(sslNetClient);
     netClientWrapper = new NetClientWrapper(vertx, normalClientConfig, sslClientConfig);
   }
 
-  @Test
+  @org.junit.jupiter.api.Test
   public void getClientConfig() {
     Assertions.assertSame(normalClientConfig, netClientWrapper.getClientConfig(false));
     Assertions.assertSame(sslClientConfig, netClientWrapper.getClientConfig(true));
   }
 
-  @Test
-  public void connect(@Mocked NetSocket normalSocket, @Mocked NetSocket sslSocket) {
+  @org.junit.jupiter.api.Test
+  public void connect() {
     int port = 8000;
     String host = "localhost";
 
-    Promise<NetSocket> promiseConnect = Promise.promise();
-    new MockUp<NetClient>(normalNetClient) {
-      @Mock
-      NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        promiseConnect.complete(normalSocket);
-        connectHandler.handle(promiseConnect.future());
-        return null;
-      }
-    };
-
-    Promise<NetSocket> sslPromiseConnect = Promise.promise();
-    new MockUp<NetClient>(sslNetClient) {
-      @Mock
-      NetClient connect(int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
-        sslPromiseConnect.complete(sslSocket);
-        connectHandler.handle(sslPromiseConnect.future());
-        return null;
-      }
-    };
-
     List<NetSocket> socks = new ArrayList<>();
-    netClientWrapper.connect(false, port, host, asyncSocket -> socks.add(asyncSocket.result()));
-    netClientWrapper.connect(true, port, host, asyncSocket -> socks.add(asyncSocket.result()));
+    Promise<NetSocket> promiseConnect = Promise.promise();
+    Promise<NetSocket> sslPromiseConnect = Promise.promise();
+    Handler<AsyncResult<NetSocket>> connectHandler = asyncSocket -> socks.add(asyncSocket.result());
+    Mockito.when(normalNetClient.connect(port, host, connectHandler)).thenAnswer(invocation -> {
+      promiseConnect.complete(normalSocket);
+      connectHandler.handle(promiseConnect.future());
+      return null;
+    });
+    Mockito.when(sslNetClient.connect(port, host, connectHandler)).thenAnswer(invocationOnMock -> {
+      sslPromiseConnect.complete(sslSocket);
+      connectHandler.handle(sslPromiseConnect.future());
+      return null;
+    });
+
+    netClientWrapper.connect(false, port, host, connectHandler);
+    netClientWrapper.connect(true, port, host, connectHandler);
 
     MatcherAssert.assertThat(socks, Matchers.contains(normalSocket, sslSocket));
   }

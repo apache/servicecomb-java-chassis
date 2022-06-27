@@ -141,7 +141,7 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     };
 
-    new MockUp<Context>(context) {
+    new MockUp<Context>(context.getClass()) {
       @Mock
       void runOnContext(Handler<Void> action) {
         runOnContextInvoked = true;

@@ -82,7 +82,7 @@ public class TestLoadbalanceHandler {
     scbEngine = SCBBootstrap.createSCBEngineForTest().run();
     transportManager = scbEngine.getTransportManager();
 
-    new MockUp<Invocation>(invocation) {
+    new MockUp<Invocation>(invocation.getClass()) {
       @Mock
       String getMicroserviceName() {
         return microserviceName;
@@ -99,7 +99,7 @@ public class TestLoadbalanceHandler {
       }
     };
 
-    new MockUp<TransportManager>(transportManager) {
+    new MockUp<TransportManager>(transportManager.getClass()) {
       @Mock
       Transport findTransport(String transportName) {
         return restTransport;
