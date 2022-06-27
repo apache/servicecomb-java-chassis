@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.center.client.exception;
+package org.apache.servicecomb.config.common.exception;
 
 public class OperationException extends RuntimeException {
   private static final long serialVersionUID = 1L;
