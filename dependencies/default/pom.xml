@@ -65,7 +65,7 @@
     <javax-resource.version>1.5</javax-resource.version>
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
     <jersey.version>2.36</jersey.version>
-    <jmockit.version>1.31</jmockit.version>
+    <jmockit.version>1.34</jmockit.version>
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.8.2</junit5.version>
     <log4j.version>1.2.17</log4j.version>
