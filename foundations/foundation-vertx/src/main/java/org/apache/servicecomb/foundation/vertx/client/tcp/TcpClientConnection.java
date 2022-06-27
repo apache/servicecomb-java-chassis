@@ -208,7 +208,8 @@ public class TcpClientConnection extends TcpConnection {
     tryLogin();
   }
 
-  private void onClosed(Void v) {
+  @VisibleForTesting
+  void onClosed(Void v) {
     onDisconnected(new IOException("socket closed"));
   }
 

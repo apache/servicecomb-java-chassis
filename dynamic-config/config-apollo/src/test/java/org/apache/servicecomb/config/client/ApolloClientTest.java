@@ -80,7 +80,7 @@ public class ApolloClientTest {
     ConfigRefresh cr = apolloClient.new ConfigRefresh("");
 
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }
@@ -88,7 +88,7 @@ public class ApolloClientTest {
 
     before.put("test", "testValue");
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }
@@ -96,14 +96,14 @@ public class ApolloClientTest {
 
     after.put("test", "testValue2");
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }
     Assertions.assertTrue(status);
 
     try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+      cr.compareChangedConfig(before, after);
     } catch (Exception e) {
       status = false;
     }

@@ -89,7 +89,7 @@ public class TestHighwayClient {
 
   @Test
   public void testLoginTimeout(@Mocked Vertx vertx) {
-    TcpClientConfig tcpClientConfig = Deencapsulation.invoke(client, "createTcpClientConfig");
+    TcpClientConfig tcpClientConfig = client.createTcpClientConfig();
     Assertions.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
   }
 

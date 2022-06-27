@@ -75,7 +75,7 @@ public class TestUrlWithServiceNameClientHttpRequestFactory {
     Deencapsulation.setField(request, "requestMeta", requestMeta);
     Deencapsulation.setField(request, "path", request.findUriPath(uri));
 
-    Deencapsulation.invoke(request, "invoke", new HashMap<>());
+    request.invoke(new HashMap<>());
 
     Assertions.assertEquals("/ms/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
   }

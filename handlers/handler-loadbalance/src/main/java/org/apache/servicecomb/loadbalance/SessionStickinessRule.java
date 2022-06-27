@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,8 @@ public class SessionStickinessRule implements RuleExt {
     return lastServer;
   }
 
-  private ServiceCombServer chooseServerWhenTimeout(List<ServiceCombServer> servers, Invocation invocation) {
+  @VisibleForTesting
+  ServiceCombServer chooseServerWhenTimeout(List<ServiceCombServer> servers, Invocation invocation) {
     synchronized (lock) {
       if (isTimeOut()) {
         chooseNextServer(servers, invocation);
