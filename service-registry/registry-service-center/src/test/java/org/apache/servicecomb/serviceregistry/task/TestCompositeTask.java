@@ -26,9 +26,7 @@ public class TestCompositeTask {
   public void testRun() {
     CompositeTask task = new CompositeTask();
     for (int idx = 0; idx < 3; idx++) {
-      task.addTask(() -> {
-        count++;
-      });
+      task.addTask(() -> count++);
     }
 
     task.run();

@@ -162,8 +162,6 @@ public class TestStandardHttpServletResponseEx {
       }
     };
 
-    Assertions.assertThrows(RuntimeException.class, () -> {
-      responseEx.sendPart(part).get();
-    });
+    Assertions.assertThrows(RuntimeException.class, () -> responseEx.sendPart(part).get());
   }
 }

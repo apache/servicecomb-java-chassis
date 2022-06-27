@@ -143,9 +143,7 @@ public class ReadStreamPart extends AbstractPart {
 
     context.runOnContext((v) -> {
       Vertx vertx = context.owner();
-      vertx.fileSystem().open(file.getAbsolutePath(), openOptions, ar -> {
-        onFileOpened(file, ar, future);
-      });
+      vertx.fileSystem().open(file.getAbsolutePath(), openOptions, ar -> onFileOpened(file, ar, future));
     });
 
     return future;
@@ -159,22 +157,20 @@ public class ReadStreamPart extends AbstractPart {
 
     AsyncFile asyncFile = ar.result();
     CompletableFuture<Void> saveFuture = saveToWriteStream(asyncFile);
-    saveFuture.whenComplete((v, saveException) -> {
-      asyncFile.close(closeAr -> {
-        if (closeAr.failed()) {
-          LOGGER.error("Failed to close file {}.", file);
-        }
+    saveFuture.whenComplete((v, saveException) -> asyncFile.close(closeAr -> {
+      if (closeAr.failed()) {
+        LOGGER.error("Failed to close file {}.", file);
+      }
 
-        // whatever close success or failed
-        // will not affect to result
-        // result just only related to write
-        if (saveException == null) {
-          future.complete(file);
-          return;
-        }
+      // whatever close success or failed
+      // will not affect to result
+      // result just only related to write
+      if (saveException == null) {
+        future.complete(file);
+        return;
+      }
 
-        future.completeExceptionally(saveException);
-      });
-    });
+      future.completeExceptionally(saveException);
+    }));
   }
 }

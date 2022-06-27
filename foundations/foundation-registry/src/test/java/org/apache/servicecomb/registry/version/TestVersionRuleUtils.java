@@ -57,9 +57,7 @@ public class TestVersionRuleUtils {
 
   @Test
   public void invalid() {
-    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-      VersionRuleUtils.getOrCreate("");
-    });
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> VersionRuleUtils.getOrCreate(""));
     Assertions.assertEquals("Invalid major \"\", version \"\".", exception.getMessage());
   }
 }

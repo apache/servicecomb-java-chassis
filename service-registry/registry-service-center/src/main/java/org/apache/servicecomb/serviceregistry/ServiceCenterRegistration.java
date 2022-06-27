@@ -86,9 +86,7 @@ public class ServiceCenterRegistration implements Registration {
 
   @Override
   public void addSchema(String schemaId, String content) {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> {
-      sr.getMicroservice().addSchema(schemaId, content);
-    });
+    RegistryUtils.executeOnEachServiceRegistry(sr -> sr.getMicroservice().addSchema(schemaId, content));
   }
 
   @Override
@@ -101,9 +99,7 @@ public class ServiceCenterRegistration implements Registration {
 
   @Override
   public void addBasePath(Collection<BasePath> basePaths) {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> {
-      sr.getMicroservice().getPaths().addAll(basePaths);
-    });
+    RegistryUtils.executeOnEachServiceRegistry(sr -> sr.getMicroservice().getPaths().addAll(basePaths));
   }
 
   @Override

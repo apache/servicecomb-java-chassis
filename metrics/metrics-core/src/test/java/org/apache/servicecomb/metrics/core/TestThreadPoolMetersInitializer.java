@@ -135,9 +135,7 @@ public class TestThreadPoolMetersInitializer {
 
     PolledMeter.update(registry);
     List<String> result = new ArrayList<>();
-    registry.iterator().forEachRemaining(meter -> {
-      result.add(meter.measure().toString());
-    });
+    registry.iterator().forEachRemaining(meter -> result.add(meter.measure().toString()));
 
     MatcherAssert.assertThat(result,
         Matchers.containsInAnyOrder("[Measurement(threadpool.maxThreads:id=groupExecutor-group0,0,0.0)]",

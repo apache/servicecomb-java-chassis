@@ -164,6 +164,7 @@ public class TestLoadbalanceHandler {
 
     Holder<Throwable> result = new Holder<>();
     handler.send(invocation, resp -> result.value = resp.getResult(), loadBalancer);
+
     // InvocationException is not taken as a failure
     Assertions.assertEquals(0,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());

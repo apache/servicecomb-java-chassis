@@ -91,9 +91,7 @@ public class TestAbstractHttpServletResponse {
 
   @Test
   public void testFlushBuffer() {
-    Error error = Assertions.assertThrows(Error.class, () -> {
-      response.flushBuffer();
-    });
+    Error error = Assertions.assertThrows(Error.class, () -> response.flushBuffer());
     checkError(error);
   }
 
@@ -123,9 +121,7 @@ public class TestAbstractHttpServletResponse {
 
   @Test
   public void testGetLocale() {
-    Error error = Assertions.assertThrows(Error.class, () -> {
-      response.getLocale();
-    });
+    Error error = Assertions.assertThrows(Error.class, () -> response.getLocale());
     checkError(error);
   }
 

@@ -75,9 +75,7 @@ public class HttpClients {
   public static void destroy() {
     httpClients.clear();
     List<HttpClientOptionsSPI> clientOptionsList = SPIServiceUtils.getOrLoadSortedService(HttpClientOptionsSPI.class);
-    clientOptionsList.forEach(option -> {
-      VertxUtils.blockCloseVertxByName(option.clientName());
-    });
+    clientOptionsList.forEach(option -> VertxUtils.blockCloseVertxByName(option.clientName()));
   }
 
   private static ClientPoolManager<HttpClientWithContext> createClientPoolManager(HttpClientOptionsSPI option) {

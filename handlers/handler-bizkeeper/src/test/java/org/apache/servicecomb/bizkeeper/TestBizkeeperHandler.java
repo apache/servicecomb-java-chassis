@@ -130,9 +130,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .thenReturn("testHandleForceThrowException");
     System.setProperty("servicecomb.fallback.Group_Name.testHandleForceThrowException.force", "true");
     System.setProperty("servicecomb.fallbackpolicy.Group_Name.testHandleForceThrowException.policy", "throwexception");
-    bizkeeperHandler.handle(invocation, f -> {
-      Assertions.assertTrue(f.isFailed());
-    });
+    bizkeeperHandler.handle(invocation, f -> Assertions.assertTrue(f.isFailed()));
   }
 
   @Test
@@ -166,9 +164,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       asyncRsp.fail(InvocationType.CONSUMER, new Exception("testHandleInError"));
       return null;
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
-    bizkeeperHandler.handle(invocation, f -> {
-      Assertions.assertTrue(f.isFailed());
-    });
+    bizkeeperHandler.handle(invocation, f -> Assertions.assertTrue(f.isFailed()));
   }
 
   @Test
@@ -178,9 +174,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandlNextException");
     Mockito.doThrow(new Exception("testHandlNextException")).when(invocation).next(Mockito.any(AsyncResponse.class));
-    bizkeeperHandler.handle(invocation, f -> {
-      Assertions.assertTrue(f.isFailed());
-    });
+    bizkeeperHandler.handle(invocation, f -> Assertions.assertTrue(f.isFailed()));
   }
 
   @Test
@@ -194,8 +188,6 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       asyncRsp.success("");
       return null;
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
-    bizkeeperHandler.handle(invocation, f -> {
-      Assertions.assertTrue(f.isSucceed());
-    });
+    bizkeeperHandler.handle(invocation, f -> Assertions.assertTrue(f.isSucceed()));
   }
 }

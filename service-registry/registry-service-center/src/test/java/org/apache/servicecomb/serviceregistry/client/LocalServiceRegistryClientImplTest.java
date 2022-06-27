@@ -153,9 +153,7 @@ public class LocalServiceRegistryClientImplTest {
   public void registerSchema_microserviceNotExist() {
     mockRegisterMicroservice(appId, microserviceName, "1.0.0");
 
-    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-      registryClient.registerSchema("notExist", "sid", "content");
-    });
+    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> registryClient.registerSchema("notExist", "sid", "content"));
     Assertions.assertEquals("Invalid serviceId, serviceId=notExist", exception.getMessage());
   }
 

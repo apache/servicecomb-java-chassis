@@ -249,9 +249,7 @@ public class TestTcpClientConnection {
   public void on_exist() {
     long msgId = 1L;
     AtomicInteger count = new AtomicInteger();
-    requestMap.put(msgId, new TcpRequest(10, ar -> {
-      count.incrementAndGet();
-    }));
+    requestMap.put(msgId, new TcpRequest(10, ar -> count.incrementAndGet()));
 
     tcpClientConnection.onReply(msgId, null, null);
     Assertions.assertEquals(1, count.get());
