@@ -30,7 +30,6 @@ import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.handler.governance.injection.FaultExecutor;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -68,7 +67,6 @@ public class ProviderGovernanceHandler implements Handler {
       addRateLimiting(dcs, request);
       addCircuitBreaker(dcs, request);
       addBulkhead(dcs, request);
-      addFaultInject(invocation, asyncResp, request);
     } finally {
       ServiceCombInvocationContext.removeInvocationContext();
     }
@@ -139,16 +137,5 @@ public class ProviderGovernanceHandler implements Handler {
       }
       return result;
     };
-  }
-
-  private void addFaultInject(Invocation invocation, AsyncResponse asyncResp, GovernanceRequest request) {
-    FaultExecutor executor = FaultExecutor.getFaultExecutor(invocation, request);
-    if (executor != null) {
-      executor.execute(response -> {
-        if (response.isFailed()) {
-          asyncResp.complete(response);
-        }
-      });
-    }
   }
 }
