@@ -36,6 +36,7 @@ import org.apache.servicecomb.governance.marker.operator.PrefixOperator;
 import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
@@ -79,6 +80,11 @@ public class GovernanceConfiguration {
   @Bean
   public RetryProperties retryProperties() {
     return new RetryProperties();
+  }
+
+  @Bean
+  public FaultInjectionProperties faultInjectionProperties() {
+    return new FaultInjectionProperties();
   }
 
   // handlers configuration

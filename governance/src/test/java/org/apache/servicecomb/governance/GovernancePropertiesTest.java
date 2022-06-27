@@ -31,10 +31,12 @@ import org.apache.servicecomb.governance.marker.TrafficMarker;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.governance.properties.GovernanceProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
@@ -67,6 +69,8 @@ public class GovernancePropertiesTest {
   private RateLimitProperties rateLimitProperties;
 
   private RetryProperties retryProperties;
+
+  private FaultInjectionProperties faultInjectionProperties;
 
   private Environment environment;
 
@@ -103,6 +107,12 @@ public class GovernancePropertiesTest {
   @Autowired
   public void setRetryProperties(RetryProperties retryProperties) {
     this.retryProperties = retryProperties;
+  }
+
+  @Autowired
+  public void setFaultInjectionProperties(
+      FaultInjectionProperties faultInjectionProperties) {
+    this.faultInjectionProperties = faultInjectionProperties;
   }
 
   @Autowired
@@ -153,13 +163,13 @@ public class GovernancePropertiesTest {
 
   @Test
   public void test_all_bean_is_loaded() {
-    Assertions.assertEquals(5, propertiesList.size());
+    Assertions.assertEquals(6, propertiesList.size());
   }
 
   @Test
   public void test_match_properties_successfully_loaded() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(7, markers.size());
+    Assertions.assertEquals(9, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -177,17 +187,17 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_delete() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(7, markers.size());
+    Assertions.assertEquals(9, markers.size());
     dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(8, markers.size());
+    Assertions.assertEquals(10, markers.size());
     tearDown();
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(7, markers.size());
+    Assertions.assertEquals(9, markers.size());
   }
 
   @Test
@@ -204,7 +214,7 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(8, markers.size());
+    Assertions.assertEquals(10, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -387,5 +397,20 @@ public class GovernancePropertiesTest {
     CircuitBreakerPolicy policy = policies.get("demo-allOperation");
     Assertions.assertEquals(2, policy.getMinimumNumberOfCalls());
     Assertions.assertEquals("2", policy.getSlidingWindowSize());
+  }
+
+  @Test
+  public void test_fault_injection_properties_successfully_loaded() {
+    Map<String, FaultInjectionPolicy> policies = faultInjectionProperties.getParsedEntity();
+    Assertions.assertEquals(2, policies.size());
+    FaultInjectionPolicy policy = policies.get("demo-faultInjectDelay");
+    Assertions.assertEquals("delay", policy.getType());
+    Assertions.assertEquals(2000, policy.getDelayTimeToMillis());
+    Assertions.assertEquals(100, policy.getPercentage());
+
+    policy = policies.get("demo-faultInjectAbort");
+    Assertions.assertEquals("abort", policy.getType());
+    Assertions.assertEquals(50, policy.getPercentage());
+    Assertions.assertEquals(500, policy.getErrorCode());
   }
 }
