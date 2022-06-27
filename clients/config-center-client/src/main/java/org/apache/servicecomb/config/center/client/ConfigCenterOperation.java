@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.config.center.client;
 
-import org.apache.servicecomb.config.center.client.exception.OperationException;
+import org.apache.servicecomb.config.common.exception.OperationException;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 

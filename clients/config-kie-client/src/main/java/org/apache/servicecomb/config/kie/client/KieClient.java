@@ -27,7 +27,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpStatus;
-import org.apache.servicecomb.config.kie.client.exception.OperationException;
+
+import org.apache.servicecomb.config.common.exception.OperationException;
 import org.apache.servicecomb.config.kie.client.model.ConfigConstants;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;

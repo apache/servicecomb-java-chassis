@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import org.apache.servicecomb.config.kie.client.exception.OperationException;
+import org.apache.servicecomb.config.common.exception.OperationException;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
 
