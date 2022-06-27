@@ -58,7 +58,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
   @Override
   protected boolean doRegister() {
     LOGGER.info("running microservice instance register task.");
-    String hostName = "";
+    String hostName;
     if (serviceRegistryConfig.isPreferIpAddress()) {
       hostName = RegistrationManager.getPublishAddress();
     } else {

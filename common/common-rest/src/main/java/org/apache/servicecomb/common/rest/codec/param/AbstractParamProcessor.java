@@ -28,7 +28,7 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
 
   protected Object defaultValue;
 
-  protected boolean required = false;
+  protected boolean required;
 
   public Object getDefaultValue() {
     return defaultValue;

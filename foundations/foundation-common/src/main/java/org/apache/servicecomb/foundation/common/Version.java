@@ -62,7 +62,7 @@ public class Version implements Comparable<Version> {
   }
 
   private short parseNumber(String name, String allVersion, String version) {
-    short value = 0;
+    short value;
     try {
       value = Short.parseShort(version);
     } catch (NumberFormatException e) {

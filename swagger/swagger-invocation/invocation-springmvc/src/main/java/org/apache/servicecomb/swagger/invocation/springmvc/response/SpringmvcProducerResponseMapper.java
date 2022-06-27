@@ -42,7 +42,7 @@ public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
     StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(),
         springmvcResponse.getStatusCode().getReasonPhrase());
 
-    Response cseResponse = null;
+    Response cseResponse;
     if (HttpStatus.isSuccess(responseStatus)) {
       cseResponse = realMapper.mapResponse(responseStatus, springmvcResponse.getBody());
     } else {

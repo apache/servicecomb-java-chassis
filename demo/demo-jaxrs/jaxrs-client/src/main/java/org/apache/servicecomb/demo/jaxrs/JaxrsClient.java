@@ -147,11 +147,10 @@ public class JaxrsClient {
     String result;
     String microserviceName = "jaxrs";
     String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
-    boolean failed = false;
+    boolean failed;
     try {
       result = template.getForObject(cseUrlPrefix + "/query2", String.class);
     } catch (InvocationException e) {
-      failed = true;
       TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
@@ -209,11 +208,10 @@ public class JaxrsClient {
 
       result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
       TestMgr.check("Hello 20bobo4010", result);
-      boolean failed = false;
+      boolean failed;
       try {
         result = template.getForObject(cseUrlPrefix + "/query2", String.class);
       } catch (InvocationException e) {
-        failed = true;
         TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
       }
 

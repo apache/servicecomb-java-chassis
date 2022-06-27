@@ -36,7 +36,7 @@ public class RefreshEndpointEvent {
 
   private static final String SAME_REGION = "sameRegion";
 
-  private Map<String, List<String>> zoneAndRegion = new HashMap<>();
+  private Map<String, List<String>> zoneAndRegion;
 
   private String name;
 

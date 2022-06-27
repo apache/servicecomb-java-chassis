@@ -175,9 +175,9 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
-    LoadBalancer loadBalancer = null;
-    ServiceCombServer server = null;
+    LoadbalanceHandler handler;
+    LoadBalancer loadBalancer;
+    ServiceCombServer server;
 
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
@@ -300,9 +300,9 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
-    LoadBalancer loadBalancer = null;
-    ServiceCombServer server = null;
+    LoadbalanceHandler handler;
+    LoadBalancer loadBalancer;
+    ServiceCombServer server;
 
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
@@ -409,9 +409,9 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
-    LoadBalancer loadBalancer = null;
-    ServiceCombServer server = null;
+    LoadbalanceHandler handler;
+    LoadBalancer loadBalancer;
+    ServiceCombServer server;
 
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
@@ -531,9 +531,9 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
-    LoadBalancer loadBalancer = null;
-    ServiceCombServer server = null;
+    LoadbalanceHandler handler;
+    LoadBalancer loadBalancer;
+    ServiceCombServer server;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
     discoveryTree.addFilter(new IsolationDiscoveryFilter());
@@ -664,9 +664,9 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
-    LoadBalancer loadBalancer = null;
-    ServiceCombServer server = null;
+    LoadbalanceHandler handler;
+    LoadBalancer loadBalancer;
+    ServiceCombServer server;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
     discoveryTree.addFilter(new IsolationDiscoveryFilter());

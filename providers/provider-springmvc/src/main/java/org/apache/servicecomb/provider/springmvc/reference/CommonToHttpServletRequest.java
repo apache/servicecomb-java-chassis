@@ -46,7 +46,7 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   private final Map<String, List<String>> httpHeaders;
 
   //contains all the file key in the parts
-  private List<String> fileKeys = new ArrayList<>();
+  private List<String> fileKeys;
 
   // gen by httpHeaders
   private Cookie[] cookies;

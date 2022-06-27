@@ -83,7 +83,7 @@ public class HttpRequest {
 
   public HttpUriRequest getRealRequest() {
 
-    HttpUriRequest httpUriRequest = null;
+    HttpUriRequest httpUriRequest;
 
     switch (method) {
       case GET: {

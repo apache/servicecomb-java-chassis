@@ -59,7 +59,7 @@ public class ClassificationAddress {
 
   private static final String MONITORING_KEY = "CseMonitoring@default@@0.0.0.0+";
 
-  private String defaultTransport = "rest";
+  private String defaultTransport;
 
   private final boolean isAutoRefresh;
 

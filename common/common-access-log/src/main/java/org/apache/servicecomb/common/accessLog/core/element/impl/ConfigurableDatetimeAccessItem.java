@@ -58,7 +58,7 @@ public class ConfigurableDatetimeAccessItem implements AccessLogItem<RoutingCont
    * @param config the format of configuration is "PATTERN|TIMEZONE|LOCALE" or "PATTERN". It depends on whether the config contains the separator "|"
    */
   public ConfigurableDatetimeAccessItem(String config) {
-    String[] configArr = null;
+    String[] configArr;
     if (config.contains("|")) {
       configArr = splitConfig(config);
     } else {

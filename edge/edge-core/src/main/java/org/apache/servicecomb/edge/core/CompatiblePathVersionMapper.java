@@ -41,7 +41,7 @@ public class CompatiblePathVersionMapper {
           String.format("pathVersion \"%s\" is invalid, format must be v+number or V+number.", pathVersion));
     }
 
-    int number = 0;
+    int number;
     try {
       number = Integer.parseInt(pathVersion.substring(1));
     } catch (NumberFormatException e) {

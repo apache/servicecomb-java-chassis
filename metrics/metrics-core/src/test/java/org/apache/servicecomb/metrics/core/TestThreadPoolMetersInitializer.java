@@ -116,7 +116,6 @@ public class TestThreadPoolMetersInitializer {
         result = groupExecutor;
 
         groupExecutor.getExecutorList();
-        result = Arrays.asList(threadPoolExecutor);
 
         queue.size();
         result = 10d;

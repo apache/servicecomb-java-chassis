@@ -46,7 +46,7 @@ public class DataFactory {
   @Inject
   private MonitorDataPublisher publisher;
 
-  private ScheduledExecutorService executorService = null;
+  private ScheduledExecutorService executorService;
 
 
   public DataFactory() {

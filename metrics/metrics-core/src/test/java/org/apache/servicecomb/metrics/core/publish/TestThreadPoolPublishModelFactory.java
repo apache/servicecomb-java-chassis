@@ -49,7 +49,6 @@ public class TestThreadPoolPublishModelFactory {
     new Expectations() {
       {
         threadPoolExecutor.getQueue();
-        result = queue;
         queue.size();
         result = 10d;
       }

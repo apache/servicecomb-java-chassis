@@ -80,7 +80,7 @@ public class FaultInjectionUtil {
    * @return configuration value
    */
   public static int getFaultInjectionConfig(Invocation invocation, String key) {
-    int value = 0;
+    int value;
     String config;
 
     // get the config base on priority. operationName-->schema-->service-->global
@@ -124,7 +124,7 @@ public class FaultInjectionUtil {
    * @return int value
    */
   private static int getConfigValue(String config) {
-    int value = 0;
+    int value;
     //first need to check in config center map which has high priority.
     Map<String, AtomicInteger> cfgMap = FaultInjectionUtil.getConfigCenterMap();
 

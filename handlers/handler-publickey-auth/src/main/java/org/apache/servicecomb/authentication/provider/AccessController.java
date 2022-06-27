@@ -109,7 +109,7 @@ public class AccessController {
   }
 
   private boolean matchMicroserviceField(Microservice microservice, ConfigurationItem item) {
-    Object fieldValue = null;
+    Object fieldValue;
     try {
       fieldValue = new PropertyDescriptor(item.propertyName, Microservice.class).getReadMethod().invoke(microservice);
     } catch (Exception e) {

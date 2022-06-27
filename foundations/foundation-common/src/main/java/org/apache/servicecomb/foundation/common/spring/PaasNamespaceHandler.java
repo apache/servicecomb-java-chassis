@@ -35,7 +35,7 @@ public class PaasNamespaceHandler extends NamespaceHandlerSupport {
 
   // @Override
   public void init() {
-    Properties properties = null;
+    Properties properties;
 
     try {
       properties = PaaSResourceUtils.loadMergedProperties(NAMESPACE_RES);

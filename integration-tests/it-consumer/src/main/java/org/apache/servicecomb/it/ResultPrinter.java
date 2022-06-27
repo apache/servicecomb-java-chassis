@@ -26,7 +26,7 @@ public class ResultPrinter {
     long totalTime = System.currentTimeMillis() - start;
     long hour = 0;
     long minute = 0;
-    long second = 0;
+    long second;
     second = totalTime / 1000;
     if (totalTime <= 1000 && totalTime > 0) {
       second = 1;
