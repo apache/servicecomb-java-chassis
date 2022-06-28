@@ -24,6 +24,8 @@ public interface OperationGenerator {
 
   void setHttpMethod(String httpMethod);
 
+  String getHttpMethod();
+
   void addMethodResponseHeader(String name, Property property);
 
   void addOperationToSwagger();

@@ -560,4 +560,9 @@ public class CodeFirstSpringmvc {
     response.setContent("returnOK");
     return response;
   }
+
+  @RequestMapping(path = "/testDefaultGetApiExample")
+  public void testDefaultGetApiExample() {
+    LOGGER.info("testDefaultGetApiExample() is called!");
+  }
 }
