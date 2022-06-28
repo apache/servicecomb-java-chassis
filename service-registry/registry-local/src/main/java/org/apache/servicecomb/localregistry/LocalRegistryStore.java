@@ -85,8 +85,7 @@ public class LocalRegistryStore {
     selfMicroserviceInstance.setServiceId(selfMicroservice.getServiceId());
 
     List<RegistryBean> beans = loadYamlBeans();
-    BeanUtils.getBeansOfType(RegistryBean.class).entrySet()
-        .forEach(entry -> beans.add(entry.getValue()));
+    BeanUtils.getBeansOfType(RegistryBean.class).forEach((key, value) -> beans.add(value));
 
     initRegistryFromBeans(beans);
 
