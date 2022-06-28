@@ -16,24 +16,23 @@
  */
 package org.apache.servicecomb.foundation.vertx.client.tcp;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import io.vertx.core.impl.ContextInternal;
-import mockit.Mocked;
+import io.vertx.core.impl.VertxInternal;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestTcpClientConnectionPool {
-  @Mocked
-  ContextInternal context;
-
-  @Mocked
-  NetClientWrapper netClientWrapper;
 
   TcpClientConnectionPool pool;
 
-  @Before
+  @BeforeEach
   public void setup() {
+    ContextInternal context = Mockito.mock(ContextInternal.class);
+    VertxInternal vertx = Mockito.mock(VertxInternal.class);
+    Mockito.when(context.owner()).thenReturn(vertx);
+    NetClientWrapper netClientWrapper = Mockito.mock(NetClientWrapper.class);
     pool = new TcpClientConnectionPool(context, netClientWrapper);
   }
 

@@ -16,16 +16,13 @@
  */
 package org.apache.servicecomb.foundation.vertx.client.http;
 
-import org.junit.Test;
-
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.impl.ContextInternal;
-import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.impl.VertxInternal;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestHttpClientPoolFactory {
   private final HttpClientOptions httpClientOptions = new HttpClientOptions();
@@ -33,16 +30,13 @@ public class TestHttpClientPoolFactory {
   HttpClientPoolFactory factory = new HttpClientPoolFactory(httpClientOptions);
 
   @Test
-  public void createClientPool(@Mocked VertxInternal vertx, @Mocked ContextInternal context,
-      @Mocked HttpClient httpClient) {
-    new Expectations(VertxImpl.class) {
-      {
-        context.owner();
-        result = vertx;
-        vertx.createHttpClient(httpClientOptions);
-        result = httpClient;
-      }
-    };
+  public void createClientPool() {
+    VertxInternal vertx = Mockito.mock(VertxInternal.class);
+    ContextInternal context = Mockito.mock(ContextInternal.class);
+    HttpClient httpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(context.owner()).thenReturn(vertx);
+    Mockito.when(vertx.createHttpClient(httpClientOptions)).thenReturn(httpClient);
+
     HttpClientWithContext pool = factory.createClientPool(context);
 
     Assertions.assertSame(context, pool.context());

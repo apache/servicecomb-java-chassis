@@ -18,7 +18,6 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import io.vertx.core.buffer.Buffer;
-import mockit.Deencapsulation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +26,8 @@ public class TestBodyBufferSupportImpl {
 
   @Test
   public void testSetBodyBuffer() {
-    Deencapsulation.setField(impl, "bodyBytes", new byte[] {});
-    Deencapsulation.setField(impl, "bodyLength", 10);
+    impl.setBodyBytes(new byte[] {});
+    impl.setBodyLength(10);
 
     Assertions.assertNotNull(impl.getBodyBytes());
     Assertions.assertEquals(10, impl.getBodyBytesLength());
