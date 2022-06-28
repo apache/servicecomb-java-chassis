@@ -56,11 +56,10 @@ paths:
     get:
       operationId: "testDefaultGetApiExample"
       parameters:
-        - in: "body"
-          name: "name"
+        - name: "name"
+          in: "query"
           required: true
-          schema:
-            type: "string"
+          type: "string"
       responses:
         "200":
           description: "success"

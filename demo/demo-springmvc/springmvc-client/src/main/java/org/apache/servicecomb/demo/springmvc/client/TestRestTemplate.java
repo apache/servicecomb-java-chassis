@@ -56,6 +56,9 @@ public class TestRestTemplate {
     resultEntity = restTemplate
         .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
     Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
+    resultEntity = restTemplate
+        .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/testDefaultGetApiExample", Void.class);
+    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
   }
 
   private void checkAllVoidTestResult() {
