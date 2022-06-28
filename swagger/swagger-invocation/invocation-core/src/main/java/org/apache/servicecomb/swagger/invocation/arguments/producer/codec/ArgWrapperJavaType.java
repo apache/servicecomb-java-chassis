@@ -18,7 +18,6 @@ package org.apache.servicecomb.swagger.invocation.arguments.producer.codec;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,8 +30,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapperUtils;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import io.swagger.util.Json;
 
 public class ArgWrapperJavaType extends SimpleType {
   private static final long serialVersionUID = 964882360361204479L;
@@ -79,20 +76,5 @@ public class ArgWrapperJavaType extends SimpleType {
     }
 
     return args;
-  }
-
-  public static void main(String[] _args) throws IOException {
-    Map<String, Object> map = new HashMap<>();
-    map.put("date", new Date());
-    map.put("num", 1L);
-
-    ArgWrapperJavaType argWrapperJavaType = new ArgWrapperJavaType();
-    argWrapperJavaType.addProperty("date", Date.class);
-    argWrapperJavaType.addProperty("num", Long.class);
-
-    String json = Json.pretty(map);
-
-    Map<String, Object> args = argWrapperJavaType.readValue(Json.mapper(), json);
-    System.out.println(args);
   }
 }
