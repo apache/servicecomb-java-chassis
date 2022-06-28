@@ -20,8 +20,6 @@ package org.apache.servicecomb.injection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vertx.core.Vertx;
-
 /**
  * Fault injection parameters which decides the fault injection condition.
  */

@@ -18,7 +18,6 @@
 package org.apache.servicecomb.governance.policy;
 
 import java.time.Duration;
-import java.util.List;
 
 public class FaultInjectionPolicy extends AbstractPolicy {
   public static final Duration DEFAULT_TIMEOUT_DURATION = Duration.ofMillis(0);

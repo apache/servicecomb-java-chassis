@@ -18,7 +18,6 @@
 package org.apache.servicecomb.governance.properties;
 
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
-import org.springframework.stereotype.Component;
 
 public class FaultInjectionProperties extends PolicyProperties<FaultInjectionPolicy> {
   public static final String MATCH_FAULT_INJECTION_KEY = "servicecomb.faultInjection";
