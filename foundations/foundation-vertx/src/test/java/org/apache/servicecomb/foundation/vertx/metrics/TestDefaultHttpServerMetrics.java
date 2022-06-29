@@ -24,29 +24,19 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMe
 import org.junit.Before;
 import org.junit.Test;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.SocketAddress;
 import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultHttpServerMetrics {
-  @Mocked
-  Vertx vertx;
 
   VertxOptions vertxOptions = new VertxOptions();
 
   MetricsOptionsEx metricsOptionsEx = new MetricsOptionsEx();
 
   DefaultVertxMetrics defaultVertxMetrics;
-
-  @Mocked
-  HttpServer listen1_server1;
-
-  @Mocked
-  HttpServer listen1_server2;
 
   @Mocked
   SocketAddress listen1_addr;
