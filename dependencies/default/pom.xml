@@ -37,7 +37,7 @@
     <aspectj.version>1.9.9.1</aspectj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <assertj.version>3.23.1</assertj.version>
-    <brave.version>5.13.9</brave.version>
+    <brave.version>5.13.10</brave.version>
     <classmate.version>1.5.1</classmate.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
