@@ -22,6 +22,8 @@ public class KieConfiguration {
 
   private int pollingWaitInSeconds;
 
+  private int refreshIntervallnMillis = 15000;
+
   private String project;
 
   private String appName;
@@ -147,6 +149,15 @@ public class KieConfiguration {
 
   public KieConfiguration setFirstPullRequired(boolean firstPullRequired) {
     this.firstPullRequired = firstPullRequired;
+    return this;
+  }
+
+  public int getRefreshIntervallnMillis() {
+    return refreshIntervallnMillis;
+  }
+
+  public KieConfiguration setRefreshIntervallnMillis(int refreshIntervallnMillis) {
+    this.refreshIntervallnMillis = refreshIntervallnMillis;
     return this;
   }
 }

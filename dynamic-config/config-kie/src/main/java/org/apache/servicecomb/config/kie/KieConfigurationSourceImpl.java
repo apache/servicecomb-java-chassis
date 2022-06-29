@@ -120,6 +120,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
         .setEnvironment(KieConfig.INSTANCE.getEnvironment())
         .setPollingWaitInSeconds(KieConfig.INSTANCE.getPollingWaitTime())
         .setProject(KieConfig.INSTANCE.getDomainName())
+        .setRefreshIntervallnMillis(KieConfig.INSTANCE.getRefreshInterval())
         .setServiceName(KieConfig.INSTANCE.getServiceName());
   }
 
