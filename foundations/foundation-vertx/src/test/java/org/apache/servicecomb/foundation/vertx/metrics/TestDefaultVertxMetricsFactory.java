@@ -18,16 +18,12 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 
 import org.junit.Test;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.core.spi.metrics.VertxMetrics;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultVertxMetricsFactory {
-  @Mocked
-  Vertx vertx;
 
   VertxOptions options = new VertxOptions();
 
