@@ -119,10 +119,7 @@ public class MonitorConstant {
     DynamicIntProperty property = DynamicPropertyFactory.getInstance().
         getIntProperty("servicecomb.monitor.client.interval", DEFAULT_INTERVAL);
     int val = property.getValue();
-    if (val < MIN_INTERVAL_MILLISECONDS) {
-      return MIN_INTERVAL_MILLISECONDS;
-    }
-    return val;
+    return Math.max(val, MIN_INTERVAL_MILLISECONDS);
   }
 
   public static Boolean isProxyEnable() {
