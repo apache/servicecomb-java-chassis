@@ -30,6 +30,10 @@ public class ConfigurationsRequestFactory {
 
   private static final String KEY_SERVICE = "service";
 
+  private static final String KEY_VERSION = "version";
+
+  private static final int VERSION_ORDER = 50;
+
   private static final int SERVICE_ORDER = 100;
 
   private static final int APP_ORDER = 200;
@@ -43,6 +47,9 @@ public class ConfigurationsRequestFactory {
     }
     if (configuration.isEnableServiceConfig()) {
       result.add(createServiceConfigurationsRequest(configuration));
+    }
+    if (configuration.isEnableVersionConfig()) {
+      result.add(createVersionConfigurationsRequest(configuration));
     }
     if (configuration.isEnableCustomConfig()) {
       result.add(createCustomConfigurationsRequest(configuration));
@@ -65,6 +72,16 @@ public class ConfigurationsRequestFactory {
         .setLabelsQuery(buildLabelQuery(buildLabelQueryItem(KEY_APP, configuration.getAppName()),
             buildLabelQueryItem(KEY_SERVICE, configuration.getServiceName()),
             buildLabelQueryItem(KEY_ENVIRONMENT, configuration.getEnvironment())));
+  }
+
+  private static ConfigurationsRequest createVersionConfigurationsRequest(KieConfiguration configuration) {
+    return new ConfigurationsRequest()
+        .setOrder(VERSION_ORDER)
+        .setWithExact(true)
+        .setLabelsQuery(buildLabelQuery(buildLabelQueryItem(KEY_APP, configuration.getAppName()),
+            buildLabelQueryItem(KEY_SERVICE, configuration.getServiceName()),
+            buildLabelQueryItem(KEY_ENVIRONMENT, configuration.getEnvironment()),
+            buildLabelQueryItem(KEY_VERSION, configuration.getVersion())));
   }
 
   private static ConfigurationsRequest createCustomConfigurationsRequest(KieConfiguration configuration) {
