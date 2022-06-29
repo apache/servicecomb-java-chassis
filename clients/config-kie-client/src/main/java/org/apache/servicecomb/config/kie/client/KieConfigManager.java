@@ -41,6 +41,8 @@ public class KieConfigManager extends AbstractTask {
 
   private static final long LONG_POLLING_INTERVAL = 1000;
 
+  private static final long POLLING_INTERVAL = 15000;
+
   private final KieConfigOperation configKieClient;
 
   private final EventBus eventBus;
@@ -130,7 +132,7 @@ public class KieConfigManager extends AbstractTask {
         if (KieConfigManager.this.kieConfiguration.isEnableLongPolling()) {
           startTask(new BackOffSleepTask(LONG_POLLING_INTERVAL, new PollConfigurationTask(0, this.configurationsRequest)));
         } else {
-          startTask(new BackOffSleepTask(kieConfiguration.getRefreshIntervalInMillis(), new PollConfigurationTask(0, this.configurationsRequest)));
+          startTask(new BackOffSleepTask(POLLING_INTERVAL, new PollConfigurationTask(0, this.configurationsRequest)));
         }
       } catch (Exception e) {
         LOGGER.error("get configurations from KieConfigCenter failed, and will try again.", e);
