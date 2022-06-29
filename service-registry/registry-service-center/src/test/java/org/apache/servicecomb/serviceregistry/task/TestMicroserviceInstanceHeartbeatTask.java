@@ -65,10 +65,6 @@ public class TestMicroserviceInstanceHeartbeatTask {
   @Test
   public void testNotRegistered(@Mocked ServiceRegistryClient srClient,
       @Mocked MicroserviceInstanceRegisterTask registerTask) {
-    new Expectations() {
-      {
-      }
-    };
 
     MicroserviceInstanceHeartbeatTask task =
         new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice);
