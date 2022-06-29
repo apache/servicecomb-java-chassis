@@ -29,7 +29,6 @@ import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.http.client.auth.DefaultRequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.service.center.client.AddressManager;
-import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceInstanceRegistrationEvent;
@@ -56,16 +55,13 @@ public class RegistryClientTest implements CategorizedTestCase {
 
   private CountDownLatch registrationCounter = new CountDownLatch(1);
 
-  private CountDownLatch discoveryCounter = new CountDownLatch(1);
-
-  private List<MicroserviceInstance> instances;
-
   // auto test only tests 'hasRegistered=false', can run this client many times to test 'hasRegistered=true'
   private boolean hasRegistered = true;
 
   @Override
   public void testRestTransport() throws Exception {
-    AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"), new EventBus());
+    AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"),
+        new EventBus());
     SSLProperties sslProperties = new SSLProperties();
     sslProperties.setEnabled(false);
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties,
@@ -133,8 +129,9 @@ public class RegistryClientTest implements CategorizedTestCase {
     ServiceCenterDiscovery discovery = new ServiceCenterDiscovery(serviceCenterClient, eventBus);
     discovery.updateMyselfServiceId(microservice.getServiceId());
     discovery.startDiscovery();
-    discovery.registerIfNotPresent(new SubscriptionKey(microservice.getAppId(), microservice.getServiceName()));
-    discoveryCounter.await(30000, TimeUnit.MILLISECONDS);
+    SubscriptionKey subscriptionKey = new SubscriptionKey(microservice.getAppId(), microservice.getServiceName());
+    discovery.registerIfNotPresent(subscriptionKey);
+    List<MicroserviceInstance> instances = discovery.getInstanceCache(subscriptionKey);
     TestMgr.check(instances != null, true);
     TestMgr.check(instances.size(), 1);
     discovery.stop();
@@ -162,11 +159,5 @@ public class RegistryClientTest implements CategorizedTestCase {
   public void onHeartBeatEvent(HeartBeatEvent event) {
     events.add(event);
     registrationCounter.countDown();
-  }
-
-  @Subscribe
-  public void onInstanceChangedEvent(InstanceChangedEvent event) {
-    instances = event.getInstances();
-    discoveryCounter.countDown();
   }
 }
