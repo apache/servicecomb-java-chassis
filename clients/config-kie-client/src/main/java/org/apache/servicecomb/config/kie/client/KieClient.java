@@ -138,7 +138,7 @@ public class KieClient implements KieConfigOperation {
     try {
       valueType = ValueType.valueOf(kvDoc.getValueType());
     } catch (IllegalArgumentException e) {
-      throw new OperationException("value type not support");
+      throw new OperationException("value type not support [" + kvDoc.getValue() + "]");
     }
     Properties properties = new Properties();
     Map<String, Object> kvMap = new HashMap<>();
@@ -159,7 +159,7 @@ public class KieClient implements KieConfigOperation {
           return kvMap;
       }
     } catch (Exception e) {
-      LOGGER.error("read config failed");
+      LOGGER.error("read config failed", e);
     }
     return Collections.emptyMap();
   }

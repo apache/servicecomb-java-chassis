@@ -24,9 +24,9 @@ import java.util.List;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +39,7 @@ public class RequestPartAnnotationProcessorTest {
 
   private static final RequestPartAnnotationProcessor requestPartAnnotationProcessor = new RequestPartAnnotationProcessor();
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     for (Method method : DemoRest.class.getDeclaredMethods()) {
       if (method.getName().equals("fun")) {

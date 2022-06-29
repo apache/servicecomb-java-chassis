@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the fault injection configuration.
@@ -36,16 +36,14 @@ public class TestFaultInjectConfig {
 
   DelayFault delayFault;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    faultCfg = new FaultInjectionConfig();
-    faultConst = new FaultInjectionConst();
     faultParam = new FaultParam(10);
     abortFault = new AbortFault();
     delayFault = new DelayFault();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     faultCfg = null;
     faultConst = null;

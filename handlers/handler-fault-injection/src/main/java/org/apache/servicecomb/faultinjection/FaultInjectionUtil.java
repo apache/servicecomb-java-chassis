@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
@@ -161,5 +162,15 @@ public class FaultInjectionUtil {
 
     // if both are not matching then delay/abort should be added.
     return (resultNew != resultOld);
+  }
+
+  @VisibleForTesting
+  static Map<String, AtomicLong> getRequestCount() {
+    return requestCount;
+  }
+
+  @VisibleForTesting
+  static Map<String, AtomicInteger> getConfigCenterValue() {
+    return configCenterValue;
   }
 }

@@ -24,50 +24,46 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import mockit.Expectations;
-import mockit.Mocked;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestVertxClientRequestToHttpServletRequest {
-  @Mocked
   HttpClientRequest clientRequest;
 
   Buffer bodyBuffer = Buffer.buffer();
 
   VertxClientRequestToHttpServletRequest request;
 
-  @Before
+  @BeforeEach
   public void setup() {
+    clientRequest = Mockito.mock(HttpClientRequest.class);
     request = new VertxClientRequestToHttpServletRequest(clientRequest, bodyBuffer);
+  }
+
+  @AfterEach
+  public void after() {
+    Mockito.reset(clientRequest);
   }
 
   @Test
   public void testGetRequestURI() {
-    new Expectations() {
-      {
-        clientRequest.path();
-        result = "/path";
-      }
-    };
+    Mockito.when(clientRequest.path()).thenReturn("/path");
 
     Assertions.assertEquals("/path", request.getRequestURI());
   }
 
   @Test
   public void testGetQueryString() {
-    new Expectations() {
-      {
-        clientRequest.query();
-        result = "a=1&b=2";
-      }
-    };
+    Mockito.when(clientRequest.query()).thenReturn("a=1&b=2");
 
     Assertions.assertEquals("a=1&b=2", request.getQueryString());
   }
@@ -76,12 +72,7 @@ public class TestVertxClientRequestToHttpServletRequest {
   public void testGetHeader() {
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.add("name", "value");
-    new Expectations() {
-      {
-        clientRequest.headers();
-        result = headers;
-      }
-    };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     Assertions.assertEquals("value", request.getHeader("name"));
   }
@@ -90,12 +81,7 @@ public class TestVertxClientRequestToHttpServletRequest {
   public void testGetHeaders() {
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.add("name", "value");
-    new Expectations() {
-      {
-        clientRequest.headers();
-        result = headers;
-      }
-    };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
   }
@@ -104,12 +90,7 @@ public class TestVertxClientRequestToHttpServletRequest {
   public void testGetHeaderNames() {
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.add("name", "value");
-    new Expectations() {
-      {
-        clientRequest.headers();
-        result = headers;
-      }
-    };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     MatcherAssert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
   }
@@ -117,12 +98,7 @@ public class TestVertxClientRequestToHttpServletRequest {
   @Test
   public void testSetHeader() {
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
-    new Expectations() {
-      {
-        clientRequest.headers();
-        result = headers;
-      }
-    };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     request.setHeader("name", "v1");
     request.setHeader("name", "v2");
@@ -132,12 +108,7 @@ public class TestVertxClientRequestToHttpServletRequest {
   @Test
   public void testAddHeader() {
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
-    new Expectations() {
-      {
-        clientRequest.headers();
-        result = headers;
-      }
-    };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     request.addHeader("name", "v1");
     request.addHeader("name", "v2");
@@ -151,12 +122,7 @@ public class TestVertxClientRequestToHttpServletRequest {
 
   @Test
   public void getMethod() {
-    new Expectations() {
-      {
-        clientRequest.getMethod();
-        result = HttpMethod.GET;
-      }
-    };
+    Mockito.when(clientRequest.getMethod()).thenReturn(HttpMethod.GET);
 
     Assertions.assertEquals("GET", request.getMethod());
   }
@@ -164,12 +130,7 @@ public class TestVertxClientRequestToHttpServletRequest {
   @Test
   public void getContentType() {
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
-    new Expectations() {
-      {
-        clientRequest.headers();
-        result = headers;
-      }
-    };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     request.addHeader(HttpHeaders.CONTENT_TYPE, "ct");
 
@@ -186,10 +147,9 @@ public class TestVertxClientRequestToHttpServletRequest {
       {
         HttpUtils.getCharsetFromContentType(contentType);
         result = characterEncoding;
-        clientRequest.headers();
-        result = headers;
       }
     };
+    Mockito.when(clientRequest.headers()).thenReturn(headers);
 
     request.addHeader(HttpHeaders.CONTENT_TYPE, contentType);
 

@@ -20,6 +20,7 @@ package org.apache.servicecomb.faultinjection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,4 +57,10 @@ public final class FaultInjectionConfig {
 
     return dynamicIntProperty.get();
   }
+
+  @VisibleForTesting
+  static Map<String, String> getCfgCallback() {
+    return cfgCallback;
+  }
+
 }

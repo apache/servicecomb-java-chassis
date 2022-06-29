@@ -20,9 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class BeansHolder {
   @Inject
   private List<ExtensionsFactory> extentionsFactories;

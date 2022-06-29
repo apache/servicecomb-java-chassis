@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.Invocation;
@@ -27,28 +25,27 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.config.DynamicProperty;
 
 import io.vertx.core.Vertx;
-import mockit.Deencapsulation;
 
 public class AbortFaultTest {
   private Invocation invocation;
 
   @SuppressWarnings("unchecked")
-  @Before
+  @BeforeEach
   public void before() {
     ArchaiusUtils.resetConfig();
-    ((Map<String, String>) Deencapsulation.getField(FaultInjectionConfig.class, "cfgCallback")).clear();
-    ((Map<String, AtomicLong>) Deencapsulation.getField(FaultInjectionUtil.class, "requestCount")).clear();
-    ((Map<String, AtomicInteger>) Deencapsulation.getField(FaultInjectionUtil.class, "configCenterValue")).clear();
+    FaultInjectionConfig.getCfgCallback().clear();
+    FaultInjectionUtil.getRequestCount().clear();
+    FaultInjectionUtil.getConfigCenterValue().clear();
 
     invocation = Mockito.mock(Invocation.class);
     Transport transport = Mockito.mock(Transport.class);
@@ -60,12 +57,12 @@ public class AbortFaultTest {
     Mockito.when(invocation.getMicroserviceName()).thenReturn("carts6");
   }
 
-  @After
+  @AfterEach
   public void after() {
     ArchaiusUtils.resetConfig();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     VertxUtils.blockCloseVertxByName("faultinjectionTest");
   }
