@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.provider.pojo.schema;
 
-import mockit.Expectations;
 import mockit.Injectable;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
@@ -58,10 +57,6 @@ public class TestPojoProducers {
   @Test
   public void testPojoProducersSchemaIdNull(@Injectable RpcSchema schema) {
     IPerson bean = new PersonEmptySchema();
-    new Expectations() {
-      {
-      }
-    };
     Assertions.assertSame(bean, producer.postProcessAfterInitialization(bean, "test"));
     Assertions.assertEquals(producer.getProducerMetas().size(), 1);
   }
