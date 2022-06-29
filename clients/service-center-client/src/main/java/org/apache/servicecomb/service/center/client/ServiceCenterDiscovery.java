@@ -82,7 +82,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
     List<MicroserviceInstance> instancesCache;
   }
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRegistration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterDiscovery.class);
 
   private final ServiceCenterClient serviceCenterClient;
 
@@ -91,8 +91,6 @@ public class ServiceCenterDiscovery extends AbstractTask {
   private String myselfServiceId;
 
   private final Map<SubscriptionKey, SubscriptionValue> instancesCache = new ConcurrentHashMap<>();
-
-  private final List<SubscriptionKey> failedInstances = new ArrayList<>();
 
   private final Map<String, Microservice> microserviceCache = new ConcurrentHashMap<>();
 
@@ -133,7 +131,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
       synchronized (lock) {
         if (this.instancesCache.get(subscriptionKey) == null) {
           SubscriptionValue value = new SubscriptionValue();
-          pullInstance(subscriptionKey, value);
+          pullInstance(subscriptionKey, value, false);
           this.instancesCache.put(subscriptionKey, value);
         }
       }
@@ -154,11 +152,13 @@ public class ServiceCenterDiscovery extends AbstractTask {
     startTask(new PullInstanceOnceTask());
   }
 
-  private void pullInstance(SubscriptionKey k, SubscriptionValue v) {
+  private List<SubscriptionKey> pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
     if (myselfServiceId == null) {
       // registration not ready
-      return;
+      return Collections.emptyList();
     }
+
+    List<SubscriptionKey> failedKeys = new ArrayList<>();
     try {
       FindMicroserviceInstancesResponse instancesResponse = serviceCenterClient
           .findMicroserviceInstance(myselfServiceId, k.appId, k.serviceName, ALL_VERSION, v.revision);
@@ -179,13 +179,16 @@ public class ServiceCenterDiscovery extends AbstractTask {
         );
         v.instancesCache = instances;
         v.revision = instancesResponse.getRevision();
-        eventBus.post(new InstanceChangedEvent(k.appId, k.serviceName,
-            v.instancesCache));
+        if (sendChangedEvent) {
+          eventBus.post(new InstanceChangedEvent(k.appId, k.serviceName,
+              v.instancesCache));
+        }
       }
     } catch (Exception e) {
       LOGGER.error("find service {}#{} instance failed.", k.appId, k.serviceName, e);
-      failedInstances.add(k);
+      failedKeys.add(k);
     }
+    return failedKeys;
   }
 
   private void setMicroserviceInfo(List<MicroserviceInstance> instances) {
@@ -224,7 +227,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private synchronized void pullAllInstance() {
-    instancesCache.forEach(this::pullInstance);
+    List<SubscriptionKey> failedInstances = new ArrayList<>();
+    instancesCache.forEach((k, v) -> failedInstances.addAll(pullInstance(k, v, true)));
     if (failedInstances.isEmpty()) {
       return;
     }
