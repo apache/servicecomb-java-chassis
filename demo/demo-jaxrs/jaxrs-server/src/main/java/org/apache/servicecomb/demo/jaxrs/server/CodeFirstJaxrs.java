@@ -150,7 +150,7 @@ public class CodeFirstJaxrs {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -187,11 +187,11 @@ public class CodeFirstJaxrs {
   @DELETE
   @Produces(MediaType.TEXT_PLAIN)
   public String addString(@QueryParam("s") List<String> s) {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (String x : s) {
-      result += x;
+      result.append(x);
     }
-    return result;
+    return result.toString();
   }
 
   @Path("/ignore")
@@ -209,7 +209,7 @@ public class CodeFirstJaxrs {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

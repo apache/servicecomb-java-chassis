@@ -53,9 +53,10 @@ public class TestNotRecommendedService implements CategorizedTestCase {
     data.put(100L, model);
 
     List<AbstractModel> data2 = new ArrayList<>();
+
     AbstractModel model2 = new DefaultAbstractModel();
     model2.setName("hello");
-    data2.add(model);
+    data2.add(model2);
 
     WrappedAbstractModel input = new WrappedAbstractModel();
     input.setMapModel(data);

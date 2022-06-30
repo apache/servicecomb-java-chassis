@@ -44,6 +44,10 @@
     </Match>
 
     <Match>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
+
+    <Match>
         <Bug pattern="EC_UNRELATED_TYPES"/>
     </Match>
 
@@ -153,6 +157,10 @@
 
     <Match>
         <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
     </Match>
 
     <Match>
