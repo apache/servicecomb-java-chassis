@@ -47,7 +47,7 @@ public final class ConfigCenterConfig {
 
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
 
-  private static final int DEFAULT_REFRESH_INTERVAL = 30000;
+  private static final int DEFAULT_REFRESH_INTERVAL = 15000;
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
