@@ -42,7 +42,7 @@ public final class TransportConfigUtils {
     }
 
     // default value
-    count = Runtime.getRuntime().availableProcessors() > 8 ? 8 : Runtime.getRuntime().availableProcessors();
+    count = Math.min(Runtime.getRuntime().availableProcessors(), 8);
     LOGGER.info("{} not defined, set to {}.", key, count);
     return count;
   }
