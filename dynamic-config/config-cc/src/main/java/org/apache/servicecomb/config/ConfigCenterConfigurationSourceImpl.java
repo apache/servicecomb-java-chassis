@@ -143,7 +143,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   }
 
   private ConfigCenterConfiguration createConfigCenterConfiguration(){
-    return new ConfigCenterConfiguration().setRefreshInterval(ConfigCenterConfig.INSTANCE.getRefreshInterval());
+    return new ConfigCenterConfiguration().setRefreshIntervalInMillis(ConfigCenterConfig.INSTANCE.getRefreshInterval());
   }
 
   private HttpTransport createHttpTransport(AddressManager kieAddressManager, RequestConfig requestConfig,

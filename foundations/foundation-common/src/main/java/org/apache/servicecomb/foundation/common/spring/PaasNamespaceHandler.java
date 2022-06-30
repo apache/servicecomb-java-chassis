@@ -50,10 +50,10 @@ public class PaasNamespaceHandler extends NamespaceHandlerSupport {
       String className = entry.getValue().toString();
       try {
         Class<?> clazz = Class.forName(className);
-        Object instance = clazz.newInstance();
+        Object instance = clazz.getDeclaredConstructor().newInstance();
         registerBeanDefinitionParser(entry.getKey().toString(),
             (BeanDefinitionParser) instance);
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      } catch (ReflectiveOperationException e) {
         // 类找不到，说明没部署相应的jar包，这不一定是错误
         // 可能是业务就选择不部署相应的jar包
         // 所以只是打印个info日志

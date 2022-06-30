@@ -56,7 +56,7 @@ public class ConfigObjectFactory {
 
   public <T> ConfigObject<T> create(Class<T> cls, Map<String, Object> parameters) {
     try {
-      return create(cls.newInstance(), parameters);
+      return create(cls.getDeclaredConstructor().newInstance(), parameters);
     } catch (Throwable e) {
       throw new IllegalStateException("create config object failed, class=" + cls.getName(), e);
     }

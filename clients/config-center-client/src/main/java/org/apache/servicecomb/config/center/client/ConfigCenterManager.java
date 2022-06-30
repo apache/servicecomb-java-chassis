@@ -80,7 +80,7 @@ public class ConfigCenterManager extends AbstractTask {
               .createIncremental(configConverter.getCurrentData(), lastData);
           eventBus.post(event);
         }
-        startTask(new BackOffSleepTask(configCenterConfiguration.getRefreshInterval(), new PollConfigurationTask(0)));
+        startTask(new BackOffSleepTask(configCenterConfiguration.getRefreshIntervalInMillis(), new PollConfigurationTask(0)));
       } catch (Exception e) {
         LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));

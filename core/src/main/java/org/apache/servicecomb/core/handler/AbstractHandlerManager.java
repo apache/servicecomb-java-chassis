@@ -93,7 +93,7 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
     List<Handler> handlerList = new ArrayList<>();
     for (Class<Handler> cls : chainClasses) {
       try {
-        handlerList.add(cls.newInstance());
+        handlerList.add(cls.getDeclaredConstructor().newInstance());
       } catch (Exception e) {
         // 在启动阶段直接抛异常出来
         throw new Error(e);

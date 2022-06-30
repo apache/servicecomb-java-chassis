@@ -90,7 +90,7 @@ public final class ConverterMgr {
   private static void initTypeFormatMap() {
     try {
       for (Entry<Class<? extends Property>, JavaType> entry : PROPERTY_MAP.entrySet()) {
-        Property property = entry.getKey().newInstance();
+        Property property = entry.getKey().getDeclaredConstructor().newInstance();
         String key = genTypeFormatKey(property.getType(), property.getFormat());
         TYPE_FORMAT_MAP.put(key, entry.getValue());
       }

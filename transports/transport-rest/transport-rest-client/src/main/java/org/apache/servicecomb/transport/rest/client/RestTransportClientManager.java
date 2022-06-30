@@ -31,7 +31,7 @@ public final class RestTransportClientManager {
 
   private RestTransportClientManager() {
     try {
-      restClient = TransportClientConfig.getRestTransportClientCls().newInstance();
+      restClient = TransportClientConfig.getRestTransportClientCls().getDeclaredConstructor().newInstance();
       restClient.init(transportVertx);
     } catch (Exception e) {
       throw new IllegalStateException("Failed to init RestTransportClient.", e);
