@@ -116,6 +116,10 @@
     </Match>
 
     <Match>
+        <Bug pattern="NM_METHOD_NAMING_CONVENTION"/>
+    </Match>
+
+    <Match>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
 
@@ -168,6 +172,18 @@
     </Match>
 
     <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_THROWABLE"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
+    </Match>
+
+    <Match>
         <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
 
@@ -181,18 +197,6 @@
 
     <Match>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_THROWABLE"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
     </Match>
 
 </FindBugsFilter>
