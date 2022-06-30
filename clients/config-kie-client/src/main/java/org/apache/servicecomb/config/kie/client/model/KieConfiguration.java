@@ -22,7 +22,7 @@ public class KieConfiguration {
 
   private int pollingWaitInSeconds;
 
-  private int refreshIntervallnMillis = 15000;
+  private int refreshIntervalInMillis = 15000;
 
   private String project;
 
@@ -152,12 +152,12 @@ public class KieConfiguration {
     return this;
   }
 
-  public int getRefreshIntervallnMillis() {
-    return refreshIntervallnMillis;
+  public int getRefreshIntervalInMillis() {
+    return refreshIntervalInMillis;
   }
 
-  public KieConfiguration setRefreshIntervallnMillis(int refreshIntervallnMillis) {
-    this.refreshIntervallnMillis = refreshIntervallnMillis;
+  public KieConfiguration setRefreshIntervalInMillis(int refreshIntervallnMillis) {
+    this.refreshIntervalInMillis = refreshIntervallnMillis;
     return this;
   }
 }
