@@ -24,7 +24,6 @@ import java.util.function.Supplier;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.governance.MatchType;
-import org.apache.servicecomb.core.governance.ServiceCombInvocationContext;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
@@ -62,14 +61,9 @@ public class ProviderGovernanceHandler implements Handler {
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
-    try {
-      ServiceCombInvocationContext.setInvocationContext(invocation);
-      addRateLimiting(dcs, request);
-      addCircuitBreaker(dcs, request);
-      addBulkhead(dcs, request);
-    } finally {
-      ServiceCombInvocationContext.removeInvocationContext();
-    }
+    addRateLimiting(dcs, request);
+    addCircuitBreaker(dcs, request);
+    addBulkhead(dcs, request);
 
     dcs.get().whenComplete((r, e) -> {
       if (e == null) {

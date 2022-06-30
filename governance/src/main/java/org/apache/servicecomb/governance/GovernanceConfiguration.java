@@ -124,8 +124,8 @@ public class GovernanceConfiguration {
   }
 
   @Bean
-  public MatchersManager matchersManager(MatchersService matchersService, InvocationContext invocationContext) {
-    return new MatchersManager(matchersService, invocationContext);
+  public MatchersManager matchersManager(MatchersService matchersService) {
+    return new MatchersManager(matchersService);
   }
 
   // operators

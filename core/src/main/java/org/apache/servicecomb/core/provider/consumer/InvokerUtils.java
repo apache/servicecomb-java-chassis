@@ -44,7 +44,6 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.governance.GovernanceConfiguration;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.core.governance.RetryContext;
-import org.apache.servicecomb.core.governance.ServiceCombInvocationContext;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
@@ -193,12 +192,7 @@ public final class InvokerUtils {
   public static Response innerSyncInvoke(Invocation invocation) {
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
-    try {
-      ServiceCombInvocationContext.setInvocationContext(invocation);
-      return decorateSyncRetry(invocation, request);
-    } finally {
-      ServiceCombInvocationContext.removeInvocationContext();
-    }
+    return decorateSyncRetry(invocation, request);
   }
 
   private static Response innerSyncInvokeImpl(Invocation invocation) throws Throwable {
@@ -314,12 +308,7 @@ public final class InvokerUtils {
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
-    try {
-      ServiceCombInvocationContext.setInvocationContext(invocation);
-      decorateReactiveRetry(invocation, dcs, request);
-    } finally {
-      ServiceCombInvocationContext.removeInvocationContext();
-    }
+    decorateReactiveRetry(invocation, dcs, request);
 
     dcs.get().whenComplete((r, e) -> {
       if (e == null) {
@@ -415,12 +404,7 @@ public final class InvokerUtils {
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
 
-    try {
-      ServiceCombInvocationContext.setInvocationContext(invocation);
-      decorateReactiveRetry(invocation, dcs, request);
-    } finally {
-      ServiceCombInvocationContext.removeInvocationContext();
-    }
+    decorateReactiveRetry(invocation, dcs, request);
 
     CompletableFuture<Response> result = new CompletableFuture<>();
     dcs.get().whenComplete((r, e) -> {
