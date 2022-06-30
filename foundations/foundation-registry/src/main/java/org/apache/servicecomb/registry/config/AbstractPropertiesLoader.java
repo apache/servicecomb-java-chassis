@@ -65,12 +65,12 @@ public abstract class AbstractPropertiesLoader {
         throw new Error(errMsg);
       }
 
-      PropertyExtended instance = (PropertyExtended) classExternalProperty.newInstance();
+      PropertyExtended instance = (PropertyExtended) classExternalProperty.getDeclaredConstructor().newInstance();
       Map<String, String> extendedPropertiesMap = instance.getExtendedProperties();
       if (extendedPropertiesMap != null && !extendedPropertiesMap.isEmpty()) {
         propertiesMap.putAll(extendedPropertiesMap);
       }
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+    } catch (ReflectiveOperationException e) {
       String errMsg = "Fail to create instance of class: " + extendedPropertyClass;
       LOGGER.error(errMsg);
       throw new Error(errMsg, e);

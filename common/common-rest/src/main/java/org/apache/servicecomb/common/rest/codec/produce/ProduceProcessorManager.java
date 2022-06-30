@@ -68,7 +68,7 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
       Map<String, ProduceProcessor> produceViewMap) {
     ProduceProcessor newInstance;
     try {
-      newInstance = produceViewMap.get(DEFAULT_SERIAL_CLASS).getClass().newInstance();
+      newInstance = produceViewMap.get(DEFAULT_SERIAL_CLASS).getClass().getDeclaredConstructor().newInstance();
       newInstance.setSerializationView(serialViewClass);
       return newInstance;
     } catch (Throwable e) {

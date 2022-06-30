@@ -30,7 +30,7 @@ public class PojoInstanceFactory implements InstanceFactory {
   public Object create(String className) {
     try {
       Class<?> clazz = Class.forName(className);
-      return clazz.newInstance();
+      return clazz.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       throw new Error("Fail to create instance of class:" + className, e);
     }
