@@ -22,6 +22,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,7 @@ public class SubProcessLogger implements Closeable {
     this.startCompleteLog = startCompleteLog;
 
     BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-    this.reader = new BufferedReader(new InputStreamReader(bufferedInputStream));
+    this.reader = new BufferedReader(new InputStreamReader(bufferedInputStream, StandardCharsets.UTF_8));
 
     thread = new Thread(this::run, "SubProcessLogger-" + displayName);
     thread.start();

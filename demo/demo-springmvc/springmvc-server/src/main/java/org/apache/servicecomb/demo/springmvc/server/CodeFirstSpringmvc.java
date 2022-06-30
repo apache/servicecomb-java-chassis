@@ -240,7 +240,7 @@ public class CodeFirstSpringmvc {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -283,11 +283,11 @@ public class CodeFirstSpringmvc {
 
   @DeleteMapping(path = "/addstring", produces = MediaType.TEXT_PLAIN_VALUE)
   public String addString(@RequestParam(name = "s") List<String> s) {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (String x : s) {
-      result += x;
+      result.append(x);
     }
-    return result;
+    return result.toString();
   }
 
   // Using 490, 590 error code, the response type should be CommonExceptionData. Or we need
@@ -360,7 +360,7 @@ public class CodeFirstSpringmvc {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

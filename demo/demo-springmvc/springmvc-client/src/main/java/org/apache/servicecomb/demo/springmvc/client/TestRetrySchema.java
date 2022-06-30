@@ -38,7 +38,7 @@ public class TestRetrySchema implements CategorizedTestCase {
 
   RestTemplate restTemplate = RestTemplateBuilder.create();
 
-  final String server = "servicecomb://springmvc";
+  private static final String SERVER = "servicecomb://springmvc";
 
   @Override
   public void testAllTransport() throws Exception {
@@ -55,7 +55,7 @@ public class TestRetrySchema implements CategorizedTestCase {
   }
 
   private void testRetryGovernanceRestTemplate() {
-    TestMgr.check(restTemplate.getForObject(server + "/retry/governance/successWhenRetry", boolean.class), true);
-    TestMgr.check(restTemplate.getForObject(server + "/retry/governance/successWhenRetry", boolean.class), true);
+    TestMgr.check(restTemplate.getForObject(SERVER + "/retry/governance/successWhenRetry", boolean.class), true);
+    TestMgr.check(restTemplate.getForObject(SERVER + "/retry/governance/successWhenRetry", boolean.class), true);
   }
 }
