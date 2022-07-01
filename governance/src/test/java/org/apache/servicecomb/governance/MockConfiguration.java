@@ -26,11 +26,6 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
 @Configuration
 public class MockConfiguration {
   @Bean
-  public MockInvocationContext mockInvocationContext() {
-    return new MockInvocationContext();
-  }
-
-  @Bean
   public MockMicroserviceMeta mockMicroserviceMeta() {
     return new MockMicroserviceMeta();
   }
