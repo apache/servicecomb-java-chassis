@@ -16,14 +16,14 @@
  */
 package org.apache.servicecomb.huaweicloud.servicestage;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestCasEnvConfig {
 
-  @BeforeClass
+  @BeforeAll
   public static void init() {
     System.setProperty("CAS_APPLICATION_ID", "application-id");
     System.setProperty("CAS_ENVIRONMENT_ID", "env-id");
@@ -37,7 +37,7 @@ public class TestCasEnvConfig {
     Assertions.assertEquals("env-id", instance.getNonEmptyProperties().get("CAS_ENVIRONMENT_ID"));
   }
 
-  @AfterClass
+  @AfterAll
   public static void destroy() {
     System.getProperties().remove("CAS_ENVIRONMENT_ID");
     System.getProperties().remove("CAS_APPLICATION_ID");
