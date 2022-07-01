@@ -89,7 +89,7 @@ public class TestHighwayClient {
 
   @Test
   public void testLoginTimeout(@Mocked Vertx vertx) {
-    TcpClientConfig tcpClientConfig = Deencapsulation.invoke(client, "createTcpClientConfig");
+    TcpClientConfig tcpClientConfig = client.createTcpClientConfig();
     Assertions.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
   }
 
@@ -170,9 +170,7 @@ public class TestHighwayClient {
     Mockito.when(operationMeta.getConfig()).thenReturn(Mockito.mock(OperationConfig.class));
 
     Holder<Object> result = new Holder<>();
-    client.send(invocation, ar -> {
-      result.value = ar.getResult();
-    });
+    client.send(invocation, ar -> result.value = ar.getResult());
 
     return result.value;
   }

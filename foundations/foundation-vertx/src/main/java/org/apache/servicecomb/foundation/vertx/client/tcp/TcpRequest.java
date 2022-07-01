@@ -50,9 +50,7 @@ public class TcpRequest {
       return;
     }
 
-    callContext.runOnContext(Void -> {
-      responseCallback.success(tcpData);
-    });
+    callContext.runOnContext(Void -> responseCallback.success(tcpData));
   }
 
   public void onSendError(Throwable e) {

@@ -31,8 +31,8 @@ public interface SSLOptionFactory {
   static SSLOptionFactory createSSLOptionFactory(String className) {
     if (className != null && !className.isEmpty()) {
       try {
-        return (SSLOptionFactory) Class.forName(className).newInstance();
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        return (SSLOptionFactory) Class.forName(className).getDeclaredConstructor().newInstance();
+      } catch (ReflectiveOperationException e) {
         throw new IllegalStateException("Failed to create SSLOptionFactory.", e);
       }
     }

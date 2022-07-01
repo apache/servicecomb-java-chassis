@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +74,7 @@ public class ComputeImpl {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -116,10 +117,10 @@ public class ComputeImpl {
   @DELETE
   @Produces(MediaType.TEXT_PLAIN)
   public String addString(@QueryParam("s") String[] s) {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     for (String x : s) {
-      result += x;
+      result.append(x);
     }
-    return result;
+    return result.toString();
   }
 }

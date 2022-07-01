@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -115,9 +116,7 @@ public class RestServerVerticle extends AbstractVerticle {
         } else {
           LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         }
-        httpServerExceptionHandlers.forEach(httpServerExceptionHandler -> {
-          httpServerExceptionHandler.handle(e);
-        });
+        httpServerExceptionHandlers.forEach(httpServerExceptionHandler -> httpServerExceptionHandler.handle(e));
       });
       startListen(httpServer, startPromise);
     } catch (Throwable e) {
@@ -127,7 +126,8 @@ public class RestServerVerticle extends AbstractVerticle {
     }
   }
 
-  private void mountGlobalRestFailureHandler(Router mainRouter) {
+  @VisibleForTesting
+  void mountGlobalRestFailureHandler(Router mainRouter) {
     GlobalRestFailureHandler globalRestFailureHandler =
         SPIServiceUtils.getPriorityHighestService(GlobalRestFailureHandler.class);
     Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?

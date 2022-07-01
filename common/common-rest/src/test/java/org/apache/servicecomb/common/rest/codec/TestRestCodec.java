@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,18 +29,17 @@ import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestRestCodec {
 
@@ -58,23 +55,22 @@ public class TestRestCodec {
 
   private static List<RestParam> paramList = null;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     Parameter hp = new HeaderParameter();
     hp.setName("header");
     RestParam restParam = new RestParam(hp, int.class);
 
     restOperation = Mockito.mock(RestOperationMeta.class);
-    //        clientRequest = Mockito.mock(RestClientRequest.class);
     paramList = new ArrayList<>();
 
 
     paramList.add(restParam);
-    when(restOperation.getParamList()).thenReturn(paramList);
-    when(restOperation.getParamByName("test")).thenReturn(restParam);
+    Mockito.when(restOperation.getParamList()).thenReturn(paramList);
+    Mockito.when(restOperation.getParamByName("test")).thenReturn(restParam);
   }
 
-  @AfterClass
+  @AfterAll
   public static void afterClass() {
     restOperation = null;
     clientRequest = null;
@@ -95,50 +91,42 @@ public class TestRestCodec {
   }
 
   @Test
-  public void testRestToArgs(@Mocked HttpServletRequest request,
-      @Mocked RestOperationMeta restOperation, @Mocked RestParam restParam,
-      @Mocked ParamValueProcessor processer) throws Exception {
+  public void testRestToArgs() throws Exception {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    RestOperationMeta restOperation = Mockito.mock(RestOperationMeta.class);
+    RestParam restParam = Mockito.mock(RestParam.class);
+    ParamValueProcessor processor = Mockito.mock(ParamValueProcessor.class);
     List<RestParam> params = new ArrayList<>();
     params.add(restParam);
     String s = "my";
-
-    new Expectations() {
-      {
-        restOperation.getParamList();
-        result = params;
-        restParam.getParamProcessor();
-        result = processer;
-        processer.getValue(request);
-        result = s;
-        restParam.getParamName();
-        result = "test";
-      }
-    };
+    Mockito.when(restOperation.getParamList()).thenReturn(params);
+    Mockito.when(restParam.getParamProcessor()).thenReturn(processor);
+    Mockito.when(processor.getValue(request)).thenReturn(s);
+    Mockito.when(restParam.getParamName()).thenReturn("test");
 
     Map<String, Object> xx = RestCodec.restToArgs(request, restOperation);
     Assertions.assertEquals(xx.get("test"), s);
   }
 
   @Test
-  public void testRestToArgsExcetpion(@Mocked HttpServletRequest request,
-      @Mocked RestOperationMeta restOperation, @Mocked RestParam restParam,
-      @Mocked ParamValueProcessor processer) throws Exception {
+  public void testRestToArgsException() throws Exception {
+    ParamValueProcessor processor = Mockito.mock(ParamValueProcessor.class);
+    Mockito.when(processor.getValue(Mockito.any())).thenThrow(new Exception("bad request parame"));
+
+    RestOperationMeta restOperation = Mockito.mock(RestOperationMeta.class);
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(restParam.getParamProcessor()).thenReturn(processor);
+
     List<RestParam> params = new ArrayList<>();
     params.add(restParam);
+    Mockito.when(restOperation.getParamList()).thenReturn(params);
 
-    new Expectations() {
-      {
-        restOperation.getParamList();
-        result = params;
-        restParam.getParamProcessor();
-        result = processer;
-        processer.getValue(request);
-        result = new Exception("bad request parame");
-      }
-    };
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
 
     boolean success = false;
     try {
+      HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {
@@ -149,26 +137,25 @@ public class TestRestCodec {
   }
 
   @Test
-  public void testRestToArgsInstanceExcetpion(@Mocked HttpServletRequest request,
-      @Mocked RestOperationMeta restOperation, @Mocked RestParam restParam,
-      @Mocked ParamValueProcessor processer) throws Exception {
+  public void testRestToArgsInstanceException() throws Exception {
+    InvocationException exception = new InvocationException(Status.BAD_REQUEST, "Parameter is not valid.");
+    ParamValueProcessor processor = Mockito.mock(ParamValueProcessor.class);
+    Mockito.when(processor.getValue(Mockito.any())).thenThrow(exception);
+
+    RestOperationMeta restOperation = Mockito.mock(RestOperationMeta.class);
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(restParam.getParamProcessor()).thenReturn(processor);
+
     List<RestParam> params = new ArrayList<>();
     params.add(restParam);
-    InvocationException exception = new InvocationException(Status.BAD_REQUEST, "Parameter is not valid.");
+    Mockito.when(restOperation.getParamList()).thenReturn(params);
 
-    new Expectations() {
-      {
-        restOperation.getParamList();
-        result = params;
-        restParam.getParamProcessor();
-        result = processer;
-        processer.getValue(request);
-        result = exception;
-      }
-    };
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
 
     boolean success = false;
     try {
+      HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {

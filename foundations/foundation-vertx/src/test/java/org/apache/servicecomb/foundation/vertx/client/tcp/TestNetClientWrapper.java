@@ -100,12 +100,8 @@ public class TestNetClientWrapper {
     };
 
     List<NetSocket> socks = new ArrayList<>();
-    netClientWrapper.connect(false, port, host, asyncSocket -> {
-      socks.add(asyncSocket.result());
-    });
-    netClientWrapper.connect(true, port, host, asyncSocket -> {
-      socks.add(asyncSocket.result());
-    });
+    netClientWrapper.connect(false, port, host, asyncSocket -> socks.add(asyncSocket.result()));
+    netClientWrapper.connect(true, port, host, asyncSocket -> socks.add(asyncSocket.result()));
 
     MatcherAssert.assertThat(socks, Matchers.contains(normalSocket, sslSocket));
   }

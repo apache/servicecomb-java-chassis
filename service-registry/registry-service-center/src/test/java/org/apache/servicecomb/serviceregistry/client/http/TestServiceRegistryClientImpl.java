@@ -62,7 +62,6 @@ import com.google.common.cache.LoadingCache;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
@@ -100,25 +99,6 @@ public class TestServiceRegistryClientImpl {
   public void tearDown() throws Exception {
     oClient = null;
     HttpClients.destroy();
-  }
-
-  @Test
-  public void testPrivateMethodCreateHttpClientOptions() {
-    ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION, "app");
-    ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "ms");
-    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    Microservice microservice = microserviceFactory.create();
-    oClient.registerMicroservice(microservice);
-    oClient.registerMicroserviceInstance(microservice.getInstance());
-    try {
-      oClient.init();
-      HttpClientOptions httpClientOptions = Deencapsulation.invoke(oClient, "createHttpClientOptions");
-      Assertions.assertNotNull(httpClientOptions);
-      Assertions.assertEquals(80, httpClientOptions.getDefaultPort());
-    } catch (Exception e) {
-      Assertions.assertNotNull(e);
-    }
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

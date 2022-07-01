@@ -602,9 +602,7 @@ public class TestMicroserviceRegisterTask {
       registerTask.run();
     } catch (IllegalStateException exception) {
       isIllegalException = true;
-      List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
-        return MicroserviceRegisterTask.class.getName().equals(e.getLoggerName());
-      }).collect(Collectors.toList());
+      List<LoggingEvent> events = collector.getEvents().stream().filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
 
       Assertions.assertEquals("service center schema and local schema both are different:\n" +
           " service center schema:\n" +

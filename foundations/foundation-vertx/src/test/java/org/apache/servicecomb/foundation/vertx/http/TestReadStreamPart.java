@@ -141,9 +141,7 @@ public class TestReadStreamPart {
       }
     }.getMockInstance();
 
-    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
-      part.saveToWriteStream(writeStream).get();
-    });
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> part.saveToWriteStream(writeStream).get());
     Assertions.assertTrue(exception.getCause() instanceof RuntimeException);
   }
 
@@ -157,9 +155,7 @@ public class TestReadStreamPart {
       }
     };
 
-    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
-      part.saveToWriteStream(writeStream).get();
-    });
+    ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> part.saveToWriteStream(writeStream).get());
     Assertions.assertTrue(exception.getCause() instanceof RuntimeException);
   }
 

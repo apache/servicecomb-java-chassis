@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest;
 
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestDefPath {
 

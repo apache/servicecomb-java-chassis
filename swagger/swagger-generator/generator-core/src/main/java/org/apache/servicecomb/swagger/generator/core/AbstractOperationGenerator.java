@@ -127,6 +127,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   @Override
+  public String getHttpMethod() {
+    return httpMethod;
+  }
+
+  @Override
   public Operation getOperation() {
     return swaggerOperation;
   }

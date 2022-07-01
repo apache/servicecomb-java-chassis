@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 
 import io.vertx.core.buffer.Buffer;
@@ -48,10 +49,20 @@ public class BodyBufferSupportImpl implements BodyBufferSupport {
     return bodyBuffer;
   }
 
+  @VisibleForTesting
+  void setBodyBytes(byte[] bodyBytes) {
+    this.bodyBytes = bodyBytes;
+  }
+
   @Override
   public byte[] getBodyBytes() {
     prepare();
     return bodyBytes;
+  }
+
+  @VisibleForTesting
+  void setBodyLength(int bodyLength) {
+    this.bodyLength = bodyLength;
   }
 
   @Override

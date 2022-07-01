@@ -61,7 +61,7 @@ public class KieConfig {
 
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
 
-  private static final int DEFAULT_REFRESH_INTERVAL = 3000;
+  private static final int DEFAULT_REFRESH_INTERVAL = 15000;
 
   private static final int DEFAULT_POLLING_WAIT_TIME = 10;
 

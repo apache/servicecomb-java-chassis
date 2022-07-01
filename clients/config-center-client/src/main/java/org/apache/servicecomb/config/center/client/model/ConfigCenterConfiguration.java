@@ -19,14 +19,14 @@ package org.apache.servicecomb.config.center.client.model;
 
 public class ConfigCenterConfiguration {
 
-    private long refreshInterval;
+    private long refreshIntervalInMillis = 15000;
 
-    public long getRefreshInterval() {
-        return refreshInterval;
+    public long getRefreshIntervalInMillis() {
+        return refreshIntervalInMillis;
     }
 
-    public ConfigCenterConfiguration setRefreshInterval(long refreshInterval) {
-        this.refreshInterval = refreshInterval;
+    public ConfigCenterConfiguration setRefreshIntervalInMillis(long refreshIntervalInMillis) {
+        this.refreshIntervalInMillis = refreshIntervalInMillis;
         return this;
     }
 }

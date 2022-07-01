@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class NormalDeploy {
     this.prevFailCount = ITJUnitUtils.getFailures().size();
     LOGGER.info("createProcessBuilder: " + StringUtils.join(cmds, " ") + "\nWorkDir: " + deployDefinition.getWorkDir());
     subProcess = createProcessBuilder(cmds).start();
-    subProcessCommandWriter = new BufferedWriter(new OutputStreamWriter(subProcess.getOutputStream()));
+    subProcessCommandWriter = new BufferedWriter(new OutputStreamWriter(subProcess.getOutputStream(), StandardCharsets.UTF_8));
     subProcessLogger = new SubProcessLogger(deployDefinition.getDisplayName(), subProcess.getInputStream(),
         deployDefinition.getStartCompleteLog());
   }

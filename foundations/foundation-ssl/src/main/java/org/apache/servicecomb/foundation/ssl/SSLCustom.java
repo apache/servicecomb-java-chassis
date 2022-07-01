@@ -45,9 +45,9 @@ public abstract class SSLCustom {
   public static SSLCustom createSSLCustom(String name) {
     try {
       if (name != null && !name.isEmpty()) {
-        return (SSLCustom) Class.forName(name).newInstance();
+        return (SSLCustom) Class.forName(name).getDeclaredConstructor().newInstance();
       }
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+    } catch (ReflectiveOperationException e) {
       LOG.warn("init SSLCustom class failed, name is " + name);
     }
     return defaultSSLCustom();

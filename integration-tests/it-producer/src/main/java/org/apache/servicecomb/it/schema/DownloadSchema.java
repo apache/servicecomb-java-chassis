@@ -216,8 +216,8 @@ public class DownloadSchema implements BootListener {
 
     slowInputStreamThread = new Thread(() -> {
       Thread.currentThread().setName("download thread");
-      byte[] bytes = "1".getBytes();
-      for (; ; ) {
+      byte[] bytes = "1".getBytes(StandardCharsets.UTF_8);
+      while (true) {
         try {
           out.write(bytes);
           out.flush();

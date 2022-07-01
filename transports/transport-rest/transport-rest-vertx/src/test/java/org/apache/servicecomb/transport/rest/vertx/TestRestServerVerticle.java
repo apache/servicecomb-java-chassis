@@ -49,7 +49,6 @@ import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -251,7 +250,7 @@ public class TestRestServerVerticle {
 
     RestServerVerticle server = new RestServerVerticle();
 
-    Deencapsulation.invoke(server, "mountCorsHandler", router);
+    server.mountCorsHandler(router);
     Assertions.assertEquals(7, counter.get());
   }
 
@@ -278,7 +277,7 @@ public class TestRestServerVerticle {
 
     RestServerVerticle restServerVerticle = new RestServerVerticle();
 
-    Deencapsulation.invoke(restServerVerticle, "mountGlobalRestFailureHandler", mainRouter);
+    restServerVerticle.mountGlobalRestFailureHandler(mainRouter);
     Assertions.assertNotNull(handlerHolder.value);
 
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);

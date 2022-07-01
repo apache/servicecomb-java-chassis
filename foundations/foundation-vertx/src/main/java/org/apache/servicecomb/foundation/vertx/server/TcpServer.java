@@ -78,9 +78,7 @@ public class TcpServer {
       TcpServerConnection connection = createTcpServerConnection();
       connection.init(netSocket);
     });
-    netServer.exceptionHandler(e -> {
-      LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
-    });
+    netServer.exceptionHandler(e -> LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e)));
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();
     netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
       if (ar.succeeded()) {

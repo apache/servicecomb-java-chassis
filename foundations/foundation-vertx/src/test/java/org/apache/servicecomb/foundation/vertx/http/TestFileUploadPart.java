@@ -25,17 +25,17 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import io.vertx.ext.web.FileUpload;
-import mockit.Expectations;
-import mockit.Mocked;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestFileUploadPart {
-  @Mocked
+
   FileUpload fileUpload;
 
   FileUploadPart part;
@@ -44,26 +44,27 @@ public class TestFileUploadPart {
 
   static String content = "fileContent";
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() throws IOException {
     file = File.createTempFile("upload", ".txt");
     file.deleteOnExit();
     FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8, false);
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
+    fileUpload = Mockito.mock(FileUpload.class);
     part = new FileUploadPart(fileUpload);
+  }
+
+  @AfterEach
+  public void after() {
+    Mockito.reset(fileUpload);
   }
 
   @Test
   public void getInputStream() throws IOException {
-    new Expectations() {
-      {
-        fileUpload.uploadedFileName();
-        result = file.getAbsolutePath();
-      }
-    };
+    Mockito.when(fileUpload.uploadedFileName()).thenReturn(file.getAbsolutePath());
     try (InputStream is = part.getInputStream()) {
       Assertions.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
     }
@@ -72,12 +73,7 @@ public class TestFileUploadPart {
   @Test
   public void getContentType() {
     String contentType = "type";
-    new Expectations() {
-      {
-        fileUpload.contentType();
-        result = contentType;
-      }
-    };
+    Mockito.when(fileUpload.contentType()).thenReturn(contentType);
 
     Assertions.assertEquals(contentType, part.getContentType());
   }
@@ -85,12 +81,7 @@ public class TestFileUploadPart {
   @Test
   public void getName() {
     String name = "pName";
-    new Expectations() {
-      {
-        fileUpload.name();
-        result = name;
-      }
-    };
+    Mockito.when(fileUpload.name()).thenReturn(name);
 
     Assertions.assertEquals(name, part.getName());
   }
@@ -98,12 +89,7 @@ public class TestFileUploadPart {
   @Test
   public void getSubmittedFileName() {
     String clientName = "clientName";
-    new Expectations() {
-      {
-        fileUpload.fileName();
-        result = clientName;
-      }
-    };
+    Mockito.when(fileUpload.fileName()).thenReturn(clientName);
 
     Assertions.assertEquals(clientName, part.getSubmittedFileName());
   }
@@ -111,24 +97,14 @@ public class TestFileUploadPart {
   @Test
   public void getSize() {
     long fileSize = 10;
-    new Expectations() {
-      {
-        fileUpload.size();
-        result = fileSize;
-      }
-    };
+    Mockito.when(fileUpload.size()).thenReturn(fileSize);
 
     Assertions.assertEquals(fileSize, part.getSize());
   }
 
   @Test
   public void write() throws IOException {
-    new Expectations() {
-      {
-        fileUpload.uploadedFileName();
-        result = file.getAbsolutePath();
-      }
-    };
+    Mockito.when(fileUpload.uploadedFileName()).thenReturn(file.getAbsolutePath());
 
     File targetFile = new File(UUID.randomUUID().toString());
     targetFile.deleteOnExit();

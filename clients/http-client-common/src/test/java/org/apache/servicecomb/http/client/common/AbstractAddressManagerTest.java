@@ -121,7 +121,7 @@ public class AbstractAddressManagerTest {
     new Expectations(addressManager) {
       {
         Deencapsulation.setField(addressManager, "cacheAddress", cache);
-        Deencapsulation.invoke(addressManager, "telnetTest", "http://127.0.0.3:30100");
+        addressManager.telnetTest("http://127.0.0.3:30100");
         result = true;
       }
     };

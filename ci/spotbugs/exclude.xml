@@ -44,6 +44,30 @@
     </Match>
 
     <Match>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+        <Class name="org.apache.servicecomb.demo.jaxrs.server.beanParam.BeanParamTestService"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+        <Class name="org.apache.servicecomb.it.deploy.Deploys"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+        <Class name="org.apache.servicecomb.it.testcase.TestParamCodecEdge"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+        <Class name="org.apache.servicecomb.it.testcase.TestRestServerConfigEdge"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="DM_EXIT"/>
+    </Match>
+
+    <Match>
         <Bug pattern="EC_UNRELATED_TYPES"/>
     </Match>
 
@@ -116,11 +140,38 @@
     </Match>
 
     <Match>
+        <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NM_METHOD_NAMING_CONVENTION"/>
+    </Match>
+
+    <Match>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
 
     <Match>
+        <Bug pattern="NP_NONNULL_PARAM_VIOLATION"/>
+        <Class name="org.apache.servicecomb.it.testcase.objectparams.TestJAXRSObjectParamType"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_NONNULL_PARAM_VIOLATION"/>
+        <Class name="org.apache.servicecomb.it.testcase.objectparams.TestRPCObjectParamType"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_NONNULL_PARAM_VIOLATION"/>
+        <Class name="org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamType"/>
+    </Match>
+
+    <Match>
         <Bug pattern="NP_NONNULL_RETURN_VIOLATION"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH"/>
     </Match>
 
     <Match>
@@ -144,6 +195,11 @@
     </Match>
 
     <Match>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+        <Class name="org.apache.servicecomb.demo.springmvc.SpringmvcClient"/>
+    </Match>
+
+    <Match>
         <Bug pattern="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS"/>
     </Match>
 
@@ -152,7 +208,16 @@
     </Match>
 
     <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
+    </Match>
+
+    <Match>
         <Bug pattern="SE_BAD_FIELD"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SR_NOT_CHECKED"/>
+        <Class name="org.apache.servicecomb.demo.springmvc.client.ConsumerTestsAfterBootup"/>
     </Match>
 
     <Match>
@@ -165,6 +230,18 @@
 
     <Match>
         <Bug pattern="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_THROWABLE"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
     </Match>
 
     <Match>
@@ -181,18 +258,6 @@
 
     <Match>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_THROWABLE"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
     </Match>
 
 </FindBugsFilter>

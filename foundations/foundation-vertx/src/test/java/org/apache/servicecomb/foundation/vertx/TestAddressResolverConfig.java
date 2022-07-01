@@ -22,43 +22,37 @@ import java.util.Collections;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import io.vertx.core.dns.AddressResolverOptions;
-import mockit.Expectations;
-import mockit.Mocked;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestAddressResolverConfig {
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ArchaiusUtils.resetConfig();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     ArchaiusUtils.resetConfig();
   }
 
   @Test
-  public void testGetResolverFromResource(@Mocked Configuration finalConfig) {
+  public void testGetResolverFromResource() {
+    Configuration finalConfig = Mockito.mock(Configuration.class);
     ArchaiusUtils.resetConfig();
     ArchaiusUtils.setProperty("addressResolver.servers", "8.8.8.8,8.8.4.4");
-    new Expectations() {
-      {
-        finalConfig.getStringArray("addressResolver.servers");
-        result = new String[] {"6.6.6.6", "6.6.4.4"};
-        finalConfig.getStringArray("addressResolver.searchDomains");
-        result = new String[] {"default.svc.local.cluster"};
-        finalConfig.getInteger("addressResolver.queryTimeout", null);
-        result = 2000;
-        finalConfig.getInteger("addressResolver.maxQueries", null);
-        result = -2;
-      }
-    };
+
+    Mockito.when(finalConfig.getStringArray("addressResolver.servers")).thenReturn(new String[] {"6.6.6.6", "6.6.4.4"});
+    Mockito.when(finalConfig.getStringArray("addressResolver.searchDomains")).thenReturn(new String[] {"default.svc.local.cluster"});
+    Mockito.when(finalConfig.getInteger("addressResolver.queryTimeout", null)).thenReturn(2000);
+    Mockito.when(finalConfig.getInteger("addressResolver.maxQueries", null)).thenReturn(-2);
+
     AddressResolverOptions resolverOptions = AddressResolverConfig.getAddressResover("test", finalConfig);
     Assertions.assertEquals(Arrays.asList("6.6.6.6", "6.6.4.4"), resolverOptions.getServers());
     Assertions.assertEquals(Collections.singletonList("default.svc.local.cluster"), resolverOptions.getSearchDomains());

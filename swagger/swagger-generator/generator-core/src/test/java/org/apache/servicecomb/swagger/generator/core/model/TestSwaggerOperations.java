@@ -31,9 +31,7 @@ public class TestSwaggerOperations {
         .findFirst().get()
         .getPost().setOperationId("");
 
-    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-      new SwaggerOperations(swagger);
-    });
+    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> new SwaggerOperations(swagger));
     Assertions.assertEquals("OperationId can not be empty, path=/testboolean, httpMethod=POST.", exception.getMessage());
   }
 }

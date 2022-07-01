@@ -190,12 +190,9 @@ public class AccessController {
   }
 
   private void logConfigurations(Map<String, ConfigurationItem> configurations, boolean isWhite) {
-    configurations.entrySet().forEach(stringConfigurationItemEntry -> {
-      ConfigurationItem item = stringConfigurationItemEntry.getValue();
-      LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + stringConfigurationItemEntry.getKey()
-          + ";category=" + item.category
-          + ";propertyName=" + item.propertyName
-          + ";rule=" + item.rule);
-    });
+    configurations.forEach((key, item) -> LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + key
+            + ";category=" + item.category
+            + ";propertyName=" + item.propertyName
+            + ";rule=" + item.rule));
   }
 }

@@ -36,17 +36,13 @@ public class TcpServerConnection extends TcpConnection {
     LOGGER.info("connect from {}, in thread {}",
         remoteAddress,
         Thread.currentThread().getName());
-    netSocket.exceptionHandler(e -> {
-      LOGGER.error("disconected from {}, in thread {}, cause {}",
-          remoteAddress,
-          Thread.currentThread().getName(),
-          e.getMessage());
-    });
-    netSocket.closeHandler(Void -> {
-      LOGGER.error("disconected from {}, in thread {}",
-          remoteAddress,
-          Thread.currentThread().getName());
-    });
+    netSocket.exceptionHandler(e -> LOGGER.error("disconected from {}, in thread {}, cause {}",
+        remoteAddress,
+        Thread.currentThread().getName(),
+        e.getMessage()));
+    netSocket.closeHandler(Void -> LOGGER.error("disconected from {}, in thread {}",
+        remoteAddress,
+        Thread.currentThread().getName()));
 
     netSocket.handler(splitter);
   }

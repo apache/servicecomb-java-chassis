@@ -93,9 +93,7 @@ public class TcpConnection {
 
   // notify context thread to write
   protected void scheduleWrite() {
-    context.runOnContext(v -> {
-      writeInContext();
-    });
+    context.runOnContext(v -> writeInContext());
   }
 
   protected void writeInContext() {

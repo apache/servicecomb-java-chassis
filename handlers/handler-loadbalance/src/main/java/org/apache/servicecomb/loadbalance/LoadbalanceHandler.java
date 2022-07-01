@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import javax.ws.rs.core.Response.Status;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
@@ -180,7 +181,8 @@ public class LoadbalanceHandler implements Handler {
     loadBalancerMap.clear();
   }
 
-  private void send(Invocation invocation, AsyncResponse asyncResp, LoadBalancer chosenLB) throws Exception {
+  @VisibleForTesting
+  void send(Invocation invocation, AsyncResponse asyncResp, LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
     ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {

@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.config.common.exception;
 
-import java.util.Map;
+public class OperationException extends RuntimeException {
+  private static final long serialVersionUID = 1L;
 
-public interface InvocationContext {
-  Map<String, Boolean> getCalculatedMatches();
+  public OperationException(String message) {
+    super(message);
+  }
 
-  void addMatch(String key, Boolean value);
+  public OperationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

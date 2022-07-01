@@ -24,7 +24,6 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMe
 import org.junit.Before;
 import org.junit.Test;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
@@ -32,8 +31,6 @@ import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultTcpServerMetrics {
-  @Mocked
-  Vertx vertx;
 
   VertxOptions vertxOptions = new VertxOptions();
 

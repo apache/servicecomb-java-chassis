@@ -19,18 +19,18 @@ package org.apache.servicecomb.common.rest;
 import javax.servlet.MultipartConfigElement;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestUploadConfig {
-  @Before
+  @BeforeEach
   public void setUp() {
     ArchaiusUtils.resetConfig();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     ArchaiusUtils.resetConfig();
   }

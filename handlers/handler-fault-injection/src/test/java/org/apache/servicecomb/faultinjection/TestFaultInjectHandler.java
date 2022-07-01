@@ -29,11 +29,11 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -73,7 +73,7 @@ public class TestFaultInjectHandler {
     }
   };
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ArchaiusUtils.resetConfig();
     handler = new FaultInjectionHandler();
@@ -84,7 +84,7 @@ public class TestFaultInjectHandler {
     MockitoAnnotations.openMocks(this);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     handler = null;
     invocation = null;
@@ -94,7 +94,7 @@ public class TestFaultInjectHandler {
     ArchaiusUtils.resetConfig();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     VertxUtils.blockCloseVertxByName("faultinjectionTest");
   }

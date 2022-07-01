@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.jaxrs.client.beanParam;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,9 +77,9 @@ public class BeanParamRestTemplateClient implements CategorizedTestCase {
   }
 
   private void testUpload() {
-    BufferedInputStream bufferedInputStream0 = new BufferedInputStream(new ByteArrayInputStream("up0".getBytes()));
-    BufferedInputStream bufferedInputStream1 = new BufferedInputStream(new ByteArrayInputStream("up1".getBytes()));
-    BufferedInputStream bufferedInputStream2 = new BufferedInputStream(new ByteArrayInputStream("up2".getBytes()));
+    BufferedInputStream bufferedInputStream0 = new BufferedInputStream(new ByteArrayInputStream("up0".getBytes(StandardCharsets.UTF_8)));
+    BufferedInputStream bufferedInputStream1 = new BufferedInputStream(new ByteArrayInputStream("up1".getBytes(StandardCharsets.UTF_8)));
+    BufferedInputStream bufferedInputStream2 = new BufferedInputStream(new ByteArrayInputStream("up2".getBytes(StandardCharsets.UTF_8)));
 
     HashMap<String, Object> formData = new HashMap<>();
     formData.put("up0", bufferedInputStream0);

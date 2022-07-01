@@ -23,6 +23,7 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -41,6 +42,18 @@ public class SpringMVCSchema {
       )})
   @RequestMapping(path = "/testApiExample", method = RequestMethod.POST)
   public String testApiExample(@RequestBody String name, HttpServletRequest request) {
+    return null;
+  }
+
+  @ApiResponses({
+      @ApiResponse(code = 200, response = String.class, message = "success",
+          examples = @Example({
+              @ExampleProperty(value = "wget http://localhost/springMvcSchema/testDefaultGetApiExample", mediaType = "text"),
+              @ExampleProperty(value = "{name:hello}", mediaType = "application/json"),
+              @ExampleProperty(value = "{name:hello}", mediaType = "json")})
+      )})
+  @RequestMapping(path = "/testDefaultGetApiExample")
+  public String testDefaultGetApiExample(@RequestParam String name, HttpServletRequest request) {
     return null;
   }
 }

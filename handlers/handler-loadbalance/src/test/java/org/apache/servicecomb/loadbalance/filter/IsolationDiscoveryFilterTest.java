@@ -90,7 +90,7 @@ public class IsolationDiscoveryFilterTest {
 
   @AfterEach
   public void after() {
-    Deencapsulation.invoke(ServiceCombLoadBalancerStats.INSTANCE, "init");
+    ServiceCombLoadBalancerStats.INSTANCE.init();
     TestServiceCombServerStats.releaseTryingChance();
   }
 

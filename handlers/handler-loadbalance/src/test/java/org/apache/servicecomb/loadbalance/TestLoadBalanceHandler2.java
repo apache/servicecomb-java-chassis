@@ -473,9 +473,7 @@ public class TestLoadBalanceHandler2 {
 
   @Test
   public void testZoneAwareAndIsolationFilterUsingMockedInvocationWorks() throws Exception {
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> {
-      aysnc.success("OK");
-    });
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> aysnc.success("OK"));
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -553,18 +551,14 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> {
-      Assertions.assertEquals("OK", response.getResult());
-    });
+    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> {
-      Assertions.assertEquals("OK", response.getResult());
-    });
+    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
@@ -604,18 +598,14 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> {
-      Assertions.assertEquals("OK", response.getResult());
-    });
+    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
   }
 
   @Test
   public void testStatusFilterUsingMockedInvocationWorks() throws Exception {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.status.enabled", "false");
 
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> {
-      aysnc.success("OK");
-    });
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> aysnc.success("OK"));
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -694,18 +684,14 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> {
-      Assertions.assertEquals("OK", response.getResult());
-    });
+    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> {
-      Assertions.assertEquals("OK", response.getResult());
-    });
+    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
@@ -745,9 +731,7 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> {
-      Assertions.assertEquals("OK", response.getResult());
-    });
+    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
   }
 
   @Test

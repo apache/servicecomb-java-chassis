@@ -55,7 +55,7 @@ public class ProducerBeanParamMapper extends ProducerArgumentMapper {
   public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
       Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
     try {
-      Object paramInstance = producerParamType.newInstance();
+      Object paramInstance = producerParamType.getDeclaredConstructor().newInstance();
       invocationArguments.put(invocationArgumentName, paramInstance);
 
       for (FieldMeta fieldMeta : fields) {

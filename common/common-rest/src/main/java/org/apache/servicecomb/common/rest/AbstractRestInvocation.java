@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
@@ -98,7 +99,8 @@ public abstract class AbstractRestInvocation {
     }
   }
 
-  protected void setContext() throws Exception {
+  @VisibleForTesting
+  public void setContext() throws Exception {
     String strCseContext = requestEx.getHeader(Const.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
       return;

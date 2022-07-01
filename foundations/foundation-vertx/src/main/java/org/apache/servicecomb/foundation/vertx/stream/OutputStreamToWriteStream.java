@@ -141,7 +141,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
 
   @Override
   public WriteStream<Buffer> setWriteQueueMaxSize(int maxSize) {
-    this.maxBuffers = maxSize < SMALLEST_MAX_BUFFERS ? SMALLEST_MAX_BUFFERS : maxSize;
+    this.maxBuffers = Math.max(maxSize, SMALLEST_MAX_BUFFERS);
     this.drainMark = maxBuffers / 2;
     return this;
   }

@@ -739,9 +739,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           }, e -> {
             watchErrorHandler(e, selfMicroserviceId, callback);
             onClose.success(null);
-          }, f -> {
-            watchErrorHandler(f, selfMicroserviceId, callback);
-          });
+          }, f -> watchErrorHandler(f, selfMicroserviceId, callback));
         }
       }
     }
