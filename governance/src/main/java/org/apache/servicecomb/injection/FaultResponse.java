@@ -25,8 +25,17 @@ public class FaultResponse {
 
   private String errorMsg;
 
+  private boolean delay;
+
   public static FaultResponse createSuccess() {
     FaultResponse faultResponse = new FaultResponse();
+    faultResponse.setSuccess(true);
+    return faultResponse;
+  }
+
+  public static FaultResponse createDelay() {
+    FaultResponse faultResponse = new FaultResponse();
+    faultResponse.setDelay(true);
     faultResponse.setSuccess(true);
     return faultResponse;
   }
@@ -61,5 +70,13 @@ public class FaultResponse {
 
   public void setErrorMsg(String errorMsg) {
     this.errorMsg = errorMsg;
+  }
+
+  public boolean isDelay() {
+    return delay;
+  }
+
+  public void setDelay(boolean delay) {
+    this.delay = delay;
   }
 }

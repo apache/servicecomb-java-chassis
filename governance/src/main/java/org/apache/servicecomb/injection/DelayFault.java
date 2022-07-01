@@ -23,8 +23,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DelayFault implements Fault {
+public class DelayFault extends AbstractFault {
   private static final Logger LOGGER = LoggerFactory.getLogger(DelayFault.class);
+
+  public DelayFault(String key, FaultInjectionPolicy policy) {
+    super(key, policy);
+  }
 
   @Override
   public int getOrder() {
@@ -32,9 +36,8 @@ public class DelayFault implements Fault {
   }
 
   @Override
-  public void injectFault(FaultParam param, FaultInjectionPolicy policy,
-      FaultHandler faultHandler) {
-    if (!shouldDelay(param, policy)) {
+  public void injectFault(FaultHandler faultHandler, FaultParam faultParam) {
+    if (!shouldDelay(faultParam, policy)) {
       faultHandler.handle(FaultResponse.createSuccess());
       return;
     }
@@ -47,13 +50,13 @@ public class DelayFault implements Fault {
       return;
     }
 
-    executeDelay(param, faultHandler, delay);
+    executeDelay(faultParam, faultHandler, delay);
   }
 
   private void executeDelay(FaultParam faultParam, FaultHandler faultHandler, long delay) {
     Sleepable sleepable = faultParam.getSleepable();
     if (sleepable != null) {
-      sleepable.sleep(delay, () -> faultHandler.handle(FaultResponse.createSuccess()));
+      sleepable.sleep(delay, () -> faultHandler.handle(FaultResponse.createDelay()));
     }
   }
 

@@ -21,8 +21,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.injection.Fault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,16 @@ import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 public class FlowControlTest {
   private RateLimitingHandler rateLimitingHandler;
 
+  private FaultInjectionHandler faultInjectionHandler;
+
   @Autowired
   public void setRateLimitingHandler(RateLimitingHandler rateLimitingHandler) {
     this.rateLimitingHandler = rateLimitingHandler;
+  }
+
+  @Autowired
+  public void setFaultInjectionHandler(FaultInjectionHandler faultInjectionHandler) {
+    this.faultInjectionHandler = faultInjectionHandler;
   }
 
   public FlowControlTest() {
@@ -122,5 +131,94 @@ public class FlowControlTest {
     cd.await(1, TimeUnit.SECONDS);
     Assertions.assertTrue(expected.get());
     Assertions.assertFalse(notExpected.get());
+  }
+
+  @Test
+  public void test_delay_fault_injection_service_name_work() throws Throwable {
+    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/faultInjectDelay");
+    request.setServiceName("srcService");
+
+    Fault fault = faultInjectionHandler.getActuator(request);
+
+    Assertions.assertEquals("test", ds.get());
+
+    // flow control
+    CountDownLatch cd = new CountDownLatch(10);
+    AtomicBoolean notExpected = new AtomicBoolean(false);
+    AtomicBoolean delayExpected = new AtomicBoolean(false);
+    AtomicBoolean abortExpected = new AtomicBoolean(false);
+    for (int i = 0; i < 10; i++) {
+      new Thread(() -> {
+        fault.injectFault(faultResponse -> {
+          if(faultResponse.isDelay()){
+            delayExpected.set(true);
+          } else if (!faultResponse.isSuccess()) {
+            abortExpected.set(true);
+          } else {
+            try {
+              Object result = ds.get();
+              if (!"test".equals(result)) {
+                notExpected.set(true);
+              }
+            } catch (Throwable e) {
+              notExpected.set(true);
+            }
+          }
+          cd.countDown();
+        });
+      }).start();
+    }
+    //timeout should be bigger than delayTime
+    cd.await(10, TimeUnit.SECONDS);
+    Assertions.assertFalse(notExpected.get());
+    Assertions.assertFalse(abortExpected.get());
+    Assertions.assertTrue(delayExpected.get());
+  }
+
+  @Test
+  public void test_abort_fault_injection_service_name_work() throws Throwable {
+    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/faultInjectAbort");
+    request.setServiceName("srcService");
+
+    Fault fault = faultInjectionHandler.getActuator(request);
+
+    Assertions.assertEquals("test", ds.get());
+
+    // flow control
+    CountDownLatch cd = new CountDownLatch(10);
+    AtomicBoolean notExpected = new AtomicBoolean(false);
+    AtomicBoolean delayExpected = new AtomicBoolean(false);
+    AtomicBoolean abortExpected = new AtomicBoolean(false);
+    for (int i = 0; i < 10; i++) {
+      new Thread(() -> {
+          fault.injectFault(faultResponse -> {
+            if(faultResponse.isDelay()){
+              delayExpected.set(true);
+            } else if (!faultResponse.isSuccess()) {
+              abortExpected.set(true);
+            } else {
+              try {
+                Object result = ds.get();
+                if (!"test".equals(result)) {
+                  notExpected.set(true);
+                }
+              } catch (Throwable e) {
+                notExpected.set(true);
+              }
+            }
+            cd.countDown();
+          });
+      }).start();
+    }
+    cd.await(1000, TimeUnit.SECONDS);
+    Assertions.assertFalse(notExpected.get());
+    Assertions.assertTrue(abortExpected.get());
+    Assertions.assertFalse(delayExpected.get());
   }
 }

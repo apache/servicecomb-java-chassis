@@ -19,12 +19,20 @@ package org.apache.servicecomb.injection;
 
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 
-public interface Fault {
+public abstract class AbstractFault implements Fault {
+    protected String key;
+    protected FaultInjectionPolicy policy;
 
-  int getOrder();
+    public AbstractFault(String key, FaultInjectionPolicy policy) {
+        this.key = key;
+        this.policy = policy;
+    }
 
-  String getName();
+    @Override
+    public void injectFault(FaultHandler faultHandler) {
+        FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
+        injectFault(faultHandler,faultParam);
+    }
 
-  void injectFault(FaultHandler faultHandler);
-
+    public abstract void injectFault(FaultHandler faultHandler,FaultParam faultParam);
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
@@ -115,6 +116,11 @@ public class GovernanceConfiguration {
   @Bean
   public RetryHandler retryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
     return new RetryHandler(retryProperties, retryExtension);
+  }
+
+  @Bean
+  public FaultInjectionHandler faultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
+    return new FaultInjectionHandler(faultInjectionProperties);
   }
 
   // request processor

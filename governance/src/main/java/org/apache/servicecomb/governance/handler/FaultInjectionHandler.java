@@ -20,17 +20,18 @@ package org.apache.servicecomb.governance.handler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.servicecomb.injection.Fault;
+import org.apache.servicecomb.injection.FaultInjectionUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FaultInjectionHandler extends AbstractGovernanceHandler<FaultInjectionPolicy, FaultInjectionPolicy> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(FaultInjectionHandler.class);
+public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, FaultInjectionPolicy> {
 
-  @Autowired
   private FaultInjectionProperties faultInjectionProperties;
+
+  public FaultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
+    this.faultInjectionProperties = faultInjectionProperties;
+  }
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, FaultInjectionPolicy policy) {
@@ -43,8 +44,7 @@ public class FaultInjectionHandler extends AbstractGovernanceHandler<FaultInject
   }
 
   @Override
-  protected FaultInjectionPolicy createProcessor(String key, GovernanceRequest governanceRequest,
-      FaultInjectionPolicy policy) {
-    return policy;
+  protected Fault createProcessor(String key, GovernanceRequest governanceRequest, FaultInjectionPolicy policy) {
+    return FaultInjectionUtil.getFault(key, policy);
   }
 }

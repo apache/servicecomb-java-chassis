@@ -23,16 +23,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AbortFault implements Fault {
+public class AbortFault extends AbstractFault {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbortFault.class);
 
   public static final String ABORTED_ERROR_MSG = "aborted by fault inject";
 
+  public AbortFault(String key, FaultInjectionPolicy policy) {
+    super(key, policy);
+  }
+
   @Override
-  public void injectFault(FaultParam param, FaultInjectionPolicy policy,
-      FaultHandler faultHandler) {
-    if (!shouldAbort(param, policy)) {
+  public void injectFault(FaultHandler faultHandler, FaultParam faultParam) {
+    if (!shouldAbort(faultParam, policy)) {
       faultHandler.handle(FaultResponse.createSuccess());
       return;
     }

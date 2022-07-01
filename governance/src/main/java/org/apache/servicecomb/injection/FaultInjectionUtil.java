@@ -21,11 +21,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
+
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 
 /**
  * Handles the count for all request based key[transport + microservice qualified name].
  */
 public class FaultInjectionUtil {
+
   private FaultInjectionUtil() {
   }
 
@@ -69,4 +74,29 @@ public class FaultInjectionUtil {
     // if both are not matching then delay/abort should be added.
     return (resultNew != resultOld);
   }
+
+  public static Fault getFault(String key, FaultInjectionPolicy policy) {
+    Fault fault = null;
+    if (FaultInjectionConst.TYPE_DELAY.equals(policy.getType())) {
+      fault = new DelayFault(key,policy);
+    }else if (FaultInjectionConst.TYPE_ABORT.equals(policy.getType())) {
+      fault = new AbortFault(key,policy);
+    }
+    return fault;
+  }
+
+  public static FaultParam initFaultParam(String key) {
+    AtomicLong reqCount = FaultInjectionUtil.getOperMetTotalReq(key);
+    // increment the request count here after checking the delay/abort condition.
+    long reqCountCurrent = reqCount.getAndIncrement();
+
+    FaultParam param = new FaultParam(reqCountCurrent);
+    Context currentContext = Vertx.currentContext();
+    if (currentContext != null && currentContext.owner() != null && currentContext.isEventLoopContext()) {
+      param.setSleepable(
+          (delay, sleepCallback) -> currentContext.owner().setTimer(delay, timeId -> sleepCallback.callback()));
+    }
+    return param;
+  }
+
 }
