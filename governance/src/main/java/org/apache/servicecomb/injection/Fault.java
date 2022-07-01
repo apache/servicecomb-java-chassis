@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.injection;
 
-import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
-
 public interface Fault {
 
   int getOrder();

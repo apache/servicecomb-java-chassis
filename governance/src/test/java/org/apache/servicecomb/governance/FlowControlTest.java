@@ -153,7 +153,7 @@ public class FlowControlTest {
     for (int i = 0; i < 10; i++) {
       new Thread(() -> {
         fault.injectFault(faultResponse -> {
-          if(faultResponse.isDelay()){
+          if (faultResponse.isDelay()) {
             delayExpected.set(true);
           } else if (!faultResponse.isSuccess()) {
             abortExpected.set(true);
@@ -197,23 +197,23 @@ public class FlowControlTest {
     AtomicBoolean abortExpected = new AtomicBoolean(false);
     for (int i = 0; i < 10; i++) {
       new Thread(() -> {
-          fault.injectFault(faultResponse -> {
-            if(faultResponse.isDelay()){
-              delayExpected.set(true);
-            } else if (!faultResponse.isSuccess()) {
-              abortExpected.set(true);
-            } else {
-              try {
-                Object result = ds.get();
-                if (!"test".equals(result)) {
-                  notExpected.set(true);
-                }
-              } catch (Throwable e) {
+        fault.injectFault(faultResponse -> {
+          if (faultResponse.isDelay()) {
+            delayExpected.set(true);
+          } else if (!faultResponse.isSuccess()) {
+            abortExpected.set(true);
+          } else {
+            try {
+              Object result = ds.get();
+              if (!"test".equals(result)) {
                 notExpected.set(true);
               }
+            } catch (Throwable e) {
+              notExpected.set(true);
             }
-            cd.countDown();
-          });
+          }
+          cd.countDown();
+        });
       }).start();
     }
     cd.await(1000, TimeUnit.SECONDS);

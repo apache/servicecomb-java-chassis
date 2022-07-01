@@ -78,9 +78,9 @@ public class FaultInjectionUtil {
   public static Fault getFault(String key, FaultInjectionPolicy policy) {
     Fault fault = null;
     if (FaultInjectionConst.TYPE_DELAY.equals(policy.getType())) {
-      fault = new DelayFault(key,policy);
-    }else if (FaultInjectionConst.TYPE_ABORT.equals(policy.getType())) {
-      fault = new AbortFault(key,policy);
+      fault = new DelayFault(key, policy);
+    } else if (FaultInjectionConst.TYPE_ABORT.equals(policy.getType())) {
+      fault = new AbortFault(key, policy);
     }
     return fault;
   }
