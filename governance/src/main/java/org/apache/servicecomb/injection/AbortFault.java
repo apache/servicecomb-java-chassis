@@ -20,9 +20,7 @@ package org.apache.servicecomb.injection;
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class AbortFault extends AbstractFault {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbortFault.class);
