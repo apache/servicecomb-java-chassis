@@ -22,9 +22,7 @@ import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.injection.Fault;
 import org.apache.servicecomb.injection.FaultInjectionUtil;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, FaultInjectionPolicy> {
 
   private FaultInjectionProperties faultInjectionProperties;
