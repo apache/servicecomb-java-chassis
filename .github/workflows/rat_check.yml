@@ -27,7 +27,7 @@ on:
       - master
 
 jobs:
-  publish:
+  rat_check:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
