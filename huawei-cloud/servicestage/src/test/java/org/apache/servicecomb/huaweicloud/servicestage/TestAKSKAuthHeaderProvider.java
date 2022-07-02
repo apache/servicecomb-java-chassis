@@ -18,7 +18,7 @@
 package org.apache.servicecomb.huaweicloud.servicestage;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;

@@ -20,8 +20,8 @@ import org.apache.servicecomb.authentication.consumer.ConsumerAuthHandler;
 import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestConsumerAuthHandler {
@@ -51,7 +51,7 @@ public class TestConsumerAuthHandler {
     consumerAuthHandler.handle(invocation, asyncResp);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);

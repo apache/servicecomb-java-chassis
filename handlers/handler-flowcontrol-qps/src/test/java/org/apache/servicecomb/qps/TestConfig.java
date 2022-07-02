@@ -18,18 +18,18 @@
 package org.apache.servicecomb.qps;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestConfig {
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ArchaiusUtils.resetConfig();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     ArchaiusUtils.resetConfig();
   }

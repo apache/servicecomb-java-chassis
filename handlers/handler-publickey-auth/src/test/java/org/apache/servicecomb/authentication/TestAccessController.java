@@ -22,12 +22,12 @@ import java.util.Map;
 import org.apache.servicecomb.authentication.provider.AccessController;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestAccessController {
-  @After
+  @AfterEach
   public void tearDown() {
     ArchaiusUtils.resetConfig();
   }

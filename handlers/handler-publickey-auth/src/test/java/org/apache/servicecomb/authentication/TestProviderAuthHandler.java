@@ -22,9 +22,9 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestProviderAuthHandler {
@@ -32,14 +32,14 @@ public class TestProviderAuthHandler {
 
   AsyncResponse asyncResp = null;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     ConfigUtil.installDynamicConfig();
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
     Mockito.when(invocation.getContext(Const.AUTH_TOKEN)).thenReturn("testtoken");
   }
-  @After
+  @AfterEach
   public void tearDown() {
     ArchaiusUtils.resetConfig();
   }
