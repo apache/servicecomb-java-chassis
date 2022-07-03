@@ -36,6 +36,8 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestClientPoolManager {
   @Mocked
@@ -200,38 +202,30 @@ public class TestClientPoolManager {
   }
 
   @Test
-  public void findByContext_otherVertx(@Mocked VertxImpl otherVertx, @Mocked Context otherContext) {
+  public void findByContext_otherVertx() {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations() {
-      {
-        Vertx.currentContext();
-        result = otherContext;
-        otherContext.owner();
-        result = otherVertx;
-      }
-    };
-
-    Assertions.assertSame(pool, poolMgr.findByContext());
+    Context otherContext = Mockito.mock(Context.class);
+    VertxImpl otherVertx = Mockito.mock(VertxImpl.class);
+    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
+      vertxMockedStatic.when(Vertx::currentContext).thenReturn(otherContext);
+      Mockito.when(otherContext.owner()).thenReturn(otherVertx);
+      Assertions.assertSame(pool, poolMgr.findByContext());
+    }
   }
 
   @Test
-  public void findByContext_worker(@Mocked Context workerContext) {
+  public void findByContext_worker() {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations() {
-      {
-        Vertx.currentContext();
-        result = workerContext;
-        workerContext.owner();
-        result = vertx;
-        workerContext.isEventLoopContext();
-        result = false;
-      }
-    };
-
-    Assertions.assertSame(pool, poolMgr.findByContext());
+    Context workerContext = Mockito.mock(Context.class);
+    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
+      vertxMockedStatic.when(Vertx::currentContext).thenReturn(workerContext);
+      Mockito.when(workerContext.owner()).thenReturn(vertx);
+      Mockito.when(workerContext.isEventLoopContext()).thenReturn(false);
+      Assertions.assertSame(pool, poolMgr.findByContext());
+    }
   }
 }
