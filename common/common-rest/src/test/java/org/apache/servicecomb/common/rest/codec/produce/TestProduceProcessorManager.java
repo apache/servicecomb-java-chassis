@@ -18,7 +18,7 @@
 package org.apache.servicecomb.common.rest.codec.produce;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestProduceProcessorManager {
   @Test

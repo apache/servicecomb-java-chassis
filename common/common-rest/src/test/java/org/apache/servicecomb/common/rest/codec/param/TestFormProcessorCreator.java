@@ -19,9 +19,9 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import io.swagger.models.parameters.FormParameter;
+import org.junit.jupiter.api.Test;
 
 public class TestFormProcessorCreator {
   @Test

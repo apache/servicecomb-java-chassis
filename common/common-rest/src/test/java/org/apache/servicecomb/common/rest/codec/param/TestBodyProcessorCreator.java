@@ -21,9 +21,9 @@ import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyP
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import io.swagger.models.parameters.BodyParameter;
+import org.junit.jupiter.api.Test;
 
 public class TestBodyProcessorCreator {
   @Test

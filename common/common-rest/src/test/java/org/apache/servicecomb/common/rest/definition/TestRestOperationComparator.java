@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest.definition;
 
 import org.apache.servicecomb.common.rest.locator.MicroservicePaths;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestRestOperationComparator {
   @Test
