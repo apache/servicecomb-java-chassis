@@ -50,7 +50,8 @@ public class FaultInjectionTest {
   @Test
   public void test_delay_fault_injection_service_name_work() throws Throwable {
     DecorateCheckedSupplier<Object> dcs = Decorators.ofCheckedSupplier(() -> "test");
-    ServicecombDecorateCheckedSupplier<Object> ds = ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
+    ServicecombDecorateCheckedSupplier<Object> ds =
+        ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
 
     GovernanceRequest request = new GovernanceRequest();
     request.setUri("/faultInjectDelay");
@@ -74,7 +75,7 @@ public class FaultInjectionTest {
             notExpected.set(true);
           }
           // delayTime is 2S
-          if(System.currentTimeMillis() - startTime > 1000){
+          if (System.currentTimeMillis() - startTime > 1000) {
             expected.set(true);
           }
         } catch (Throwable e) {
@@ -92,7 +93,8 @@ public class FaultInjectionTest {
   @Test
   public void test_abort_fault_injection_service_name_work() throws Throwable {
     DecorateCheckedSupplier<Object> dcs = Decorators.ofCheckedSupplier(() -> "test");
-    ServicecombDecorateCheckedSupplier<Object> ds = ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
+    ServicecombDecorateCheckedSupplier<Object> ds =
+        ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
 
     GovernanceRequest request = new GovernanceRequest();
     request.setUri("/faultInjectAbort");

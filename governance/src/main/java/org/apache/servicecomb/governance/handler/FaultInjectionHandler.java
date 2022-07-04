@@ -33,7 +33,7 @@ public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, Faul
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, FaultInjectionPolicy policy) {
-    return "servicecomb.faultInjection." + policy.getName();
+    return FaultInjectionProperties.MATCH_FAULT_INJECTION_KEY + policy.getName();
   }
 
   @Override
