@@ -27,10 +27,10 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.jupiter.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import io.swagger.models.parameters.QueryParameter;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class QueryVarParamWriterTest {
   private static QueryVarParamWriter queryVarParamWriterCsv;
@@ -39,7 +39,7 @@ public class QueryVarParamWriterTest {
 
   private static QueryVarParamWriter queryVarParamWriterDefault;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     QueryParameter parameter = new QueryParameter();
     parameter.setName("q");
