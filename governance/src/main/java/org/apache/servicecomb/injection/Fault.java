@@ -46,4 +46,6 @@ public interface Fault {
 
   void injectFault(FaultParam faultParam);
 
+  String getKey();
+
 }

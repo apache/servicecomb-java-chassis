@@ -34,4 +34,9 @@ public abstract class AbstractFault implements Fault {
     FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
     injectFault(faultParam);
   }
+
+  @Override
+  public String getKey() {
+    return key;
+  }
 }
