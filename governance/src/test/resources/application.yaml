@@ -118,7 +118,6 @@ servicecomb:
       delayTime: 2S
       type: delay
       percentage: 100
-      errorCode: 500
     demo-faultInjectAbort: |
       type: abort
       percentage: 50

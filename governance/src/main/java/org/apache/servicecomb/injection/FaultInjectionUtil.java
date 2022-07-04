@@ -94,7 +94,7 @@ public class FaultInjectionUtil {
     Context currentContext = Vertx.currentContext();
     if (currentContext != null && currentContext.owner() != null && currentContext.isEventLoopContext()) {
       param.setSleepable(
-          (delay, sleepCallback) -> currentContext.owner().setTimer(delay, timeId -> sleepCallback.callback()));
+          (delay) -> currentContext.owner().setTimer(delay, timeId -> {}));
     }
     return param;
   }

@@ -34,9 +34,8 @@ public class DelayFault extends AbstractFault {
   }
 
   @Override
-  public void injectFault(FaultHandler faultHandler, FaultParam faultParam) {
+  public void injectFault(FaultParam faultParam) {
     if (!shouldDelay(faultParam, policy)) {
-      faultHandler.handle(FaultResponse.createSuccess());
       return;
     }
 
@@ -44,17 +43,16 @@ public class DelayFault extends AbstractFault {
     long delay = policy.getDelayTimeToMillis();
     if (delay == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: delay is not configured");
-      faultHandler.handle(FaultResponse.createSuccess());
       return;
     }
 
-    executeDelay(faultParam, faultHandler, delay);
+    executeDelay(faultParam, delay);
   }
 
-  private void executeDelay(FaultParam faultParam, FaultHandler faultHandler, long delay) {
+  private void executeDelay(FaultParam faultParam, long delay) {
     Sleepable sleepable = faultParam.getSleepable();
     if (sleepable != null) {
-      sleepable.sleep(delay, () -> faultHandler.handle(FaultResponse.createDelay()));
+      sleepable.sleep(delay);
     }
   }
 

@@ -17,33 +17,17 @@
 
 package org.apache.servicecomb.injection;
 
-import io.vavr.CheckedFunction0;
+public class FaultInjectionException extends RuntimeException {
+  private static final long serialVersionUID = 1675558351029273343L;
 
-public interface Fault {
-  static <T> CheckedFunction0<T> decorateCheckedSupplier(Fault fault, CheckedFunction0<T> supplier) {
-    return () -> {
-      try {
-        fault.injectFault();
-      } catch (FaultInjectionException exception) {
-        if (!exception.getFaultResponse().isDelay()) {
-          throw exception;
-        }
-      }
-      try {
-        T result = supplier.apply();
-        return result;
-      } catch (Exception exception) {
-        throw exception;
-      }
-    };
+  private final FaultResponse faultResponse;
+
+  public FaultInjectionException(FaultResponse faultResponse) {
+    super(faultResponse.getErrorMsg());
+    this.faultResponse = faultResponse;
   }
 
-  int getOrder();
-
-  String getName();
-
-  void injectFault();
-
-  void injectFault(FaultParam faultParam);
-
+  public FaultResponse getFaultResponse() {
+    return faultResponse;
+  }
 }

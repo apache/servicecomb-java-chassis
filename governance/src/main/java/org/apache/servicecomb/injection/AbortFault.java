@@ -32,9 +32,8 @@ public class AbortFault extends AbstractFault {
   }
 
   @Override
-  public void injectFault(FaultHandler faultHandler, FaultParam faultParam) {
+  public void injectFault(FaultParam faultParam) {
     if (!shouldAbort(faultParam, policy)) {
-      faultHandler.handle(FaultResponse.createSuccess());
       return;
     }
 
@@ -42,11 +41,10 @@ public class AbortFault extends AbstractFault {
     int errorCode = policy.getErrorCode();
     if (errorCode == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: Abort error code is not configured");
-      faultHandler.handle(FaultResponse.createSuccess());
       return;
     }
 
-    faultHandler.handle(FaultResponse.createFail(errorCode, ABORTED_ERROR_MSG));
+    throw new FaultInjectionException(FaultResponse.createFail(errorCode, ABORTED_ERROR_MSG));
   }
 
   private boolean shouldAbort(FaultParam param, FaultInjectionPolicy policy) {

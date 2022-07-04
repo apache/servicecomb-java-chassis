@@ -28,13 +28,12 @@ public class FaultParam {
 
   private long reqCount;
 
-  private Sleepable sleepable = (delay, faultCallback) -> {
+  private Sleepable sleepable = (delay) -> {
     try {
       Thread.sleep(delay);
     } catch (InterruptedException e) {
       LOGGER.info("Interrupted exception is received");
     }
-    faultCallback.callback();
   };
 
   public long getReqCount() {

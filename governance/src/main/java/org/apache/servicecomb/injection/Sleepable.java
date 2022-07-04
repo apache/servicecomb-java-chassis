@@ -18,5 +18,5 @@
 package org.apache.servicecomb.injection;
 
 public interface Sleepable {
-  void sleep(long delay, SleepCallback sleepCallback);
+  void sleep(long delay);
 }

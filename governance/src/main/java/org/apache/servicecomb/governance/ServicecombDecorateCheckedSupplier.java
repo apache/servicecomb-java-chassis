@@ -15,8 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance;
 
-public interface SleepCallback {
-  void callback();
+import org.apache.servicecomb.injection.Fault;
+
+import io.vavr.CheckedFunction0;
+
+public class ServicecombDecorateCheckedSupplier<T> {
+
+  private CheckedFunction0<T> supplier;
+
+  public static <T> ServicecombDecorateCheckedSupplier<T> ofCheckedSupplier(CheckedFunction0<T> supplier) {
+    return new ServicecombDecorateCheckedSupplier<>(supplier);
+  }
+
+  protected ServicecombDecorateCheckedSupplier(CheckedFunction0<T> supplier) {
+    this.supplier = supplier;
+  }
+
+  public ServicecombDecorateCheckedSupplier<T> withFaultInjection(Fault fault) {
+    supplier = Fault.decorateCheckedSupplier(fault, supplier);
+    return this;
+  }
+
+  public T get() throws Throwable {
+    return supplier.apply();
+  }
 }

@@ -30,10 +30,8 @@ public abstract class AbstractFault implements Fault {
   }
 
   @Override
-  public void injectFault(FaultHandler faultHandler) {
+  public void injectFault() {
     FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
-    injectFault(faultHandler, faultParam);
+    injectFault(faultParam);
   }
-
-  public abstract void injectFault(FaultHandler faultHandler, FaultParam faultParam);
 }

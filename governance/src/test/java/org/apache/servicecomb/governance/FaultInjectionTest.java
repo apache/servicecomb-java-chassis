@@ -21,8 +21,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.servicecomb.governance.handler.RateLimitingHandler;
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.injection.Fault;
+import org.apache.servicecomb.injection.FaultInjectionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,70 +33,73 @@ import org.springframework.test.context.ContextConfiguration;
 
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
-import io.github.resilience4j.ratelimiter.RateLimiter;
-import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
 @SpringBootTest
 @ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
-public class FlowControlTest {
-  private RateLimitingHandler rateLimitingHandler;
+public class FaultInjectionTest {
+  private FaultInjectionHandler faultInjectionHandler;
 
   @Autowired
-  public void setRateLimitingHandler(RateLimitingHandler rateLimitingHandler) {
-    this.rateLimitingHandler = rateLimitingHandler;
+  public void setFaultInjectionHandler(FaultInjectionHandler faultInjectionHandler) {
+    this.faultInjectionHandler = faultInjectionHandler;
   }
 
-  public FlowControlTest() {
-  }
-
-  @Test
-  public void test_rate_limiting_work() throws Throwable {
-    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
-
-    GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/hello");
-
-    RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
-    ds.withRateLimiter(rateLimiter);
-
-    Assertions.assertEquals("test", ds.get());
-
-    // flow control
-    CountDownLatch cd = new CountDownLatch(10);
-    AtomicBoolean expected = new AtomicBoolean(false);
-    AtomicBoolean notExpected = new AtomicBoolean(false);
-    for (int i = 0; i < 10; i++) {
-      new Thread(() -> {
-        try {
-          Object result = ds.get();
-          if (!"test".equals(result)) {
-            notExpected.set(true);
-          }
-        } catch (Throwable e) {
-          if (e instanceof RequestNotPermitted) {
-            expected.set(true);
-          } else {
-            notExpected.set(true);
-          }
-        }
-        cd.countDown();
-      }).start();
-    }
-    cd.await(1, TimeUnit.SECONDS);
-    Assertions.assertTrue(expected.get());
-    Assertions.assertFalse(notExpected.get());
+  public FaultInjectionTest() {
   }
 
   @Test
-  public void test_rate_limiting_service_name_work() throws Throwable {
-    DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
+  public void test_delay_fault_injection_service_name_work() throws Throwable {
+    DecorateCheckedSupplier<Object> dcs = Decorators.ofCheckedSupplier(() -> "test");
+    ServicecombDecorateCheckedSupplier<Object> ds = ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/helloServiceName");
+    request.setUri("/faultInjectDelay");
     request.setServiceName("srcService");
 
-    RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
-    ds.withRateLimiter(rateLimiter);
+    Fault fault = faultInjectionHandler.getActuator(request);
+    ds.withFaultInjection(fault);
+
+    Assertions.assertEquals("test", ds.get());
+
+    // flow control
+    CountDownLatch cd = new CountDownLatch(10);
+    AtomicBoolean expected = new AtomicBoolean(false);
+    AtomicBoolean notExpected = new AtomicBoolean(false);
+    for (int i = 0; i < 10; i++) {
+      new Thread(() -> {
+        try {
+          long startTime = System.currentTimeMillis();
+          Object result = ds.get();
+          if (!"test".equals(result)) {
+            notExpected.set(true);
+          }
+          // delayTime is 2S
+          if(System.currentTimeMillis() - startTime > 1000){
+            expected.set(true);
+          }
+        } catch (Throwable e) {
+          notExpected.set(true);
+        }
+        cd.countDown();
+      }).start();
+    }
+    //timeout should be bigger than delayTime
+    cd.await(10, TimeUnit.SECONDS);
+    Assertions.assertFalse(notExpected.get());
+    Assertions.assertTrue(expected.get());
+  }
+
+  @Test
+  public void test_abort_fault_injection_service_name_work() throws Throwable {
+    DecorateCheckedSupplier<Object> dcs = Decorators.ofCheckedSupplier(() -> "test");
+    ServicecombDecorateCheckedSupplier<Object> ds = ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/faultInjectAbort");
+    request.setServiceName("srcService");
+
+    Fault fault = faultInjectionHandler.getActuator(request);
+    ds.withFaultInjection(fault);
 
     Assertions.assertEquals("test", ds.get());
 
@@ -109,18 +114,16 @@ public class FlowControlTest {
           if (!"test".equals(result)) {
             notExpected.set(true);
           }
+        } catch (FaultInjectionException e) {
+          expected.set(true);
         } catch (Throwable e) {
-          if (e instanceof RequestNotPermitted) {
-            expected.set(true);
-          } else {
-            notExpected.set(true);
-          }
+          notExpected.set(true);
         }
         cd.countDown();
       }).start();
     }
     cd.await(1, TimeUnit.SECONDS);
-    Assertions.assertTrue(expected.get());
     Assertions.assertFalse(notExpected.get());
+    Assertions.assertTrue(expected.get());
   }
 }
