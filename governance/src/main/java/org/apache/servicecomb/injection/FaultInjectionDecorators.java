@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
-
-import org.apache.servicecomb.injection.Fault;
+package org.apache.servicecomb.injection;
 
 import io.vavr.CheckedFunction0;
 
-public class ServicecombDecorateCheckedSupplier<T> {
-
-  private CheckedFunction0<T> supplier;
-
-  public static <T> ServicecombDecorateCheckedSupplier<T> ofCheckedSupplier(CheckedFunction0<T> supplier) {
-    return new ServicecombDecorateCheckedSupplier<>(supplier);
+public interface FaultInjectionDecorators {
+  static <T> FaultInjectionDecorateCheckedSupplier<T> ofCheckedSupplier(CheckedFunction0<T> supplier) {
+    return new FaultInjectionDecorateCheckedSupplier<>(supplier);
   }
 
-  protected ServicecombDecorateCheckedSupplier(CheckedFunction0<T> supplier) {
-    this.supplier = supplier;
+  class FaultInjectionDecorateCheckedSupplier<T> {
+
+    private CheckedFunction0<T> supplier;
+
+    protected FaultInjectionDecorateCheckedSupplier(CheckedFunction0<T> supplier) {
+      this.supplier = supplier;
+    }
+
+    public FaultInjectionDecorateCheckedSupplier<T> withFaultInjection(Fault fault) {
+      supplier = Fault.decorateCheckedSupplier(fault, supplier);
+      return this;
+    }
+
+    public T get() throws Throwable {
+      return supplier.apply();
+    }
   }
 
-  public ServicecombDecorateCheckedSupplier<T> withFaultInjection(Fault fault) {
-    supplier = Fault.decorateCheckedSupplier(fault, supplier);
-    return this;
-  }
-
-  public T get() throws Throwable {
-    return supplier.apply();
-  }
 }

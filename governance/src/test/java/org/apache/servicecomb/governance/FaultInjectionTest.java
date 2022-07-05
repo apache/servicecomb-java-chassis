@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.injection.Fault;
+import org.apache.servicecomb.injection.FaultInjectionDecorators;
+import org.apache.servicecomb.injection.FaultInjectionDecorators.FaultInjectionDecorateCheckedSupplier;
 import org.apache.servicecomb.injection.FaultInjectionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -49,9 +51,8 @@ public class FaultInjectionTest {
 
   @Test
   public void test_delay_fault_injection_service_name_work() throws Throwable {
-    DecorateCheckedSupplier<Object> dcs = Decorators.ofCheckedSupplier(() -> "test");
-    ServicecombDecorateCheckedSupplier<Object> ds =
-        ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
+    FaultInjectionDecorateCheckedSupplier<Object> ds =
+        FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
     request.setUri("/faultInjectDelay");
@@ -92,9 +93,8 @@ public class FaultInjectionTest {
 
   @Test
   public void test_abort_fault_injection_service_name_work() throws Throwable {
-    DecorateCheckedSupplier<Object> dcs = Decorators.ofCheckedSupplier(() -> "test");
-    ServicecombDecorateCheckedSupplier<Object> ds =
-        ServicecombDecorateCheckedSupplier.ofCheckedSupplier(dcs.decorate());
+    FaultInjectionDecorateCheckedSupplier<Object> ds =
+        FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
     request.setUri("/faultInjectAbort");
