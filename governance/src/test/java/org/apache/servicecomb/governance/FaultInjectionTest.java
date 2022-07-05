@@ -33,9 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import io.github.resilience4j.decorators.Decorators;
-import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
-
 @SpringBootTest
 @ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
 public class FaultInjectionTest {
