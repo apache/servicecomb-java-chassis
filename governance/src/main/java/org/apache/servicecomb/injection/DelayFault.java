@@ -68,6 +68,6 @@ public class DelayFault extends AbstractFault {
 
   @Override
   public String getName() {
-    return "delay";
+    return FaultInjectionConst.TYPE_DELAY;
   }
 }

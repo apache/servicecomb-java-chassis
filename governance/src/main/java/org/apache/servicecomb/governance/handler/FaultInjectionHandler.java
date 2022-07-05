@@ -25,7 +25,7 @@ import org.apache.servicecomb.injection.FaultInjectionUtil;
 
 public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, FaultInjectionPolicy> {
 
-  private FaultInjectionProperties faultInjectionProperties;
+  private final FaultInjectionProperties faultInjectionProperties;
 
   public FaultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
     this.faultInjectionProperties = faultInjectionProperties;

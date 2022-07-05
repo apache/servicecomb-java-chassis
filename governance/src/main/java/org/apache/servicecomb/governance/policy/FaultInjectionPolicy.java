@@ -19,10 +19,12 @@ package org.apache.servicecomb.governance.policy;
 
 import java.time.Duration;
 
+import org.apache.servicecomb.injection.FaultInjectionConst;
+
 public class FaultInjectionPolicy extends AbstractPolicy {
   public static final Duration DEFAULT_TIMEOUT_DURATION = Duration.ofMillis(0);
 
-  private String type = "delay";
+  private String type = FaultInjectionConst.TYPE_DELAY;
 
   private String delayTime = DEFAULT_TIMEOUT_DURATION.toString();
 
@@ -68,10 +70,12 @@ public class FaultInjectionPolicy extends AbstractPolicy {
 
   @Override
   public boolean isValid() {
-    if (getDelayTimeToMillis() < 0 && "delay".equals(type)) {
+    if (getDelayTimeToMillis() < 0 && FaultInjectionConst.TYPE_DELAY.equals(type)) {
       return false;
     }
-    if ((getErrorCode() < 200 || getErrorCode() > 600) && "abort".equals(type)) {
+    if ((getErrorCode() < FaultInjectionConst.ERROR_CODE_MIN
+        || getErrorCode() > FaultInjectionConst.ERROR_CODE_MAX)
+        && FaultInjectionConst.TYPE_ABORT.equals(type)) {
       return false;
     }
     return super.isValid();

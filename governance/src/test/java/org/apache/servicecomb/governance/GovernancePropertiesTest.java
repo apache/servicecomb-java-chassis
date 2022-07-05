@@ -42,6 +42,7 @@ import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
+import org.apache.servicecomb.injection.FaultInjectionConst;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -404,12 +405,12 @@ public class GovernancePropertiesTest {
     Map<String, FaultInjectionPolicy> policies = faultInjectionProperties.getParsedEntity();
     Assertions.assertEquals(2, policies.size());
     FaultInjectionPolicy policy = policies.get("demo-faultInjectDelay");
-    Assertions.assertEquals("delay", policy.getType());
+    Assertions.assertEquals(FaultInjectionConst.TYPE_DELAY, policy.getType());
     Assertions.assertEquals(2000, policy.getDelayTimeToMillis());
     Assertions.assertEquals(100, policy.getPercentage());
 
     policy = policies.get("demo-faultInjectAbort");
-    Assertions.assertEquals("abort", policy.getType());
+    Assertions.assertEquals(FaultInjectionConst.TYPE_ABORT, policy.getType());
     Assertions.assertEquals(50, policy.getPercentage());
     Assertions.assertEquals(500, policy.getErrorCode());
   }

@@ -66,6 +66,6 @@ public class AbortFault extends AbstractFault {
 
   @Override
   public String getName() {
-    return "abort";
+    return FaultInjectionConst.TYPE_ABORT;
   }
 }

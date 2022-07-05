@@ -24,9 +24,11 @@ public class FaultInjectionConst {
 
   public static final int FAULT_INJECTION_DEFAULT_VALUE = -1;
 
-  public static final String SUCCESS_RESPONSE = "success";
-
   public static final String TYPE_DELAY = "delay";
 
   public static final String TYPE_ABORT = "abort";
+
+  public static final int ERROR_CODE_MIN = 200;
+
+  public static final int ERROR_CODE_MAX = 600;
 }
