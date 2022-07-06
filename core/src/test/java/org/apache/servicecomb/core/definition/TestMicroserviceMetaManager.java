@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.core.definition;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestMicroserviceMetaManager {

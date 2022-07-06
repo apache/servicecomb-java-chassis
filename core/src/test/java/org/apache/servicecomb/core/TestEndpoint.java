@@ -18,21 +18,16 @@
 package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestEndpoint {
   @Test
-  public void testEndpoint(@Mocked Transport transport) {
-    new Expectations() {
-      {
-        transport.parseAddress("rest://123.6.6.6:8080");
-        result = "rest://123.6.6.6:8080";
-      }
-    };
+  public void testEndpoint() {
+    Transport transport = Mockito.mock(Transport.class);
+    Mockito.when(transport.parseAddress("rest://123.6.6.6:8080")).thenReturn("rest://123.6.6.6:8080");
+
     Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080");
     Assertions.assertEquals(endpoint.getAddress(), "rest://123.6.6.6:8080");
     Assertions.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");
@@ -41,7 +36,9 @@ public class TestEndpoint {
   }
 
   @Test
-  public void testEndpointAddressConstructor(@Mocked Transport transport, @Mocked MicroserviceInstance instance) {
+  public void testEndpointAddressConstructor() {
+    Transport transport = Mockito.mock(Transport.class);
+    MicroserviceInstance instance = Mockito.mock(MicroserviceInstance.class);
     Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080", instance, "iot://123.6.6.6:8080");
     Assertions.assertEquals(endpoint.getAddress(), "iot://123.6.6.6:8080");
     Assertions.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");
