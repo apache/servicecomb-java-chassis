@@ -18,18 +18,18 @@
 package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestTransport {
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
 
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     SCBEngine.getInstance().destroy();
   }

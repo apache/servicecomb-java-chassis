@@ -26,10 +26,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -47,7 +47,7 @@ import com.netflix.config.ConfigurationManager;
 import mockit.Deencapsulation;
 
 public class TestConfigurationSpringInitializer {
-  @Before
+  @BeforeEach
   public void beforeTest() {
     Logger.getRootLogger().setLevel(Level.OFF);
 
@@ -57,7 +57,7 @@ public class TestConfigurationSpringInitializer {
     Logger.getRootLogger().setLevel(Level.INFO);
   }
 
-  @After
+  @AfterEach
   public void afterTest() {
     ConfigUtil.clearExtraConfig();
     ArchaiusUtils.resetConfig();
@@ -218,12 +218,14 @@ public class TestConfigurationSpringInitializer {
     Assertions.assertEquals("value2", extraProperties.get("key2"));
   }
 
-  @Test(expected = RuntimeException.class)
-  public void shoud_throw_exception_when_given_ignoreResolveFailure_false() {
-    StandardEnvironment environment = newStandardEnvironment();
+  @Test
+  public void should_throw_exception_when_given_ignoreResolveFailure_false() {
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      StandardEnvironment environment = newStandardEnvironment();
 
-    ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
-    configurationSpringInitializer.setEnvironment(environment);
+      ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
+      configurationSpringInitializer.setEnvironment(environment);
+    });
   }
 
   private Map<String, Map<String, Object>> getExtraConfigMapFromConfigUtil() {

@@ -18,8 +18,8 @@
 package org.apache.servicecomb.core.consumer;
 
 import org.apache.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestReactiveResponseExecutor {

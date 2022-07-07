@@ -19,8 +19,8 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestException {
   @Test

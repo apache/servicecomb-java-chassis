@@ -17,16 +17,16 @@
 package org.apache.servicecomb.core.event;
 
 import org.apache.servicecomb.core.Invocation;
-import org.junit.Test;
-
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestInvocationStartEvent {
   InvocationStartEvent event;
 
   @Test
-  public void construct(@Mocked Invocation invocation) {
+  public void construct() {
+    Invocation invocation = Mockito.mock(Invocation.class);
     event = new InvocationStartEvent(invocation);
 
     Assertions.assertSame(invocation, event.getInvocation());
