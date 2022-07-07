@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class FaultParam {
   private static final Logger LOGGER = LoggerFactory.getLogger(FaultParam.class);
 
-  private long reqCount;
+  private final long reqCount;
 
   private Sleepable sleepable = (delay) -> {
     try {
@@ -38,10 +38,6 @@ public class FaultParam {
 
   public long getReqCount() {
     return reqCount;
-  }
-
-  public void setReqCount(long reqCount) {
-    this.reqCount = reqCount;
   }
 
   public FaultParam(long reqCount) {

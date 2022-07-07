@@ -29,12 +29,7 @@ public interface Fault {
           throw exception;
         }
       }
-      try {
-        T result = supplier.apply();
-        return result;
-      } catch (Exception exception) {
-        throw exception;
-      }
+      return supplier.apply();
     };
   }
 

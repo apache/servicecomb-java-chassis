@@ -19,41 +19,17 @@ package org.apache.servicecomb.injection;
 
 public class FaultResponse {
 
-  private boolean success;
-
   private int errorCode;
 
   private String errorMsg;
 
   private boolean delay;
 
-  public static FaultResponse createSuccess() {
-    FaultResponse faultResponse = new FaultResponse();
-    faultResponse.setSuccess(true);
-    return faultResponse;
-  }
-
-  public static FaultResponse createDelay() {
-    FaultResponse faultResponse = new FaultResponse();
-    faultResponse.setDelay(true);
-    faultResponse.setSuccess(true);
-    return faultResponse;
-  }
-
   public static FaultResponse createFail(int errorCode, String errorMsg) {
     FaultResponse faultResponse = new FaultResponse();
-    faultResponse.setSuccess(false);
     faultResponse.setErrorCode(errorCode);
     faultResponse.setErrorMsg(errorMsg);
     return faultResponse;
-  }
-
-  public boolean isSuccess() {
-    return success;
-  }
-
-  public void setSuccess(boolean success) {
-    this.success = success;
   }
 
   public int getErrorCode() {

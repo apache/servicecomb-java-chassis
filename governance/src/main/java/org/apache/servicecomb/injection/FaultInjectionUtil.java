@@ -29,13 +29,15 @@ import io.vertx.core.Vertx;
 /**
  * Handles the count for all request based key[transport + microservice qualified name].
  */
-public class FaultInjectionUtil {
+public final class FaultInjectionUtil {
 
   private FaultInjectionUtil() {
   }
 
-  // key is transport+operQualifiedName
-  private static Map<String, AtomicLong> requestCount = new ConcurrentHashMapEx<>();
+  /**
+   * key is transport+operQualifiedName
+   */
+  private static final Map<String, AtomicLong> REQUEST_COUNT = new ConcurrentHashMapEx<>();
 
   /**
    * Returns total requests per provider for operational level.
@@ -45,15 +47,15 @@ public class FaultInjectionUtil {
    * @return long total requests
    */
   public static AtomicLong getOperMetTotalReq(String key) {
-    return requestCount.computeIfAbsent(key, p -> new AtomicLong(1));
+    return REQUEST_COUNT.computeIfAbsent(key, p -> new AtomicLong(1));
   }
 
   /**
    * It will check the delay/abort condition based on request count and percentage
    * received.
    *
-   * @param reqCount
-   * @param percentage
+   * @param reqCount total request count of the uri
+   * @param percentage the percentage of hitting fault injection
    * @return true: delay/abort is needed. false: delay/abort is not needed.
    */
   public static boolean isFaultNeedToInject(long reqCount, int percentage) {

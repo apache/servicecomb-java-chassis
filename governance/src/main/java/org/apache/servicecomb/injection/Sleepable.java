@@ -18,5 +18,9 @@
 package org.apache.servicecomb.injection;
 
 public interface Sleepable {
+  /**
+   * sleep some time
+   * @param delay time unit is millisecond
+   */
   void sleep(long delay);
 }
