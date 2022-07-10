@@ -22,7 +22,7 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Strings;
 import org.junit.jupiter.api.Assertions;

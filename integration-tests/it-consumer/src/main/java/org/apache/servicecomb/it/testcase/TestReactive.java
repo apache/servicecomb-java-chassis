@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.ReactiveHelloIntf;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 public class TestReactive {

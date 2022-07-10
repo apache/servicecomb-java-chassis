@@ -36,8 +36,8 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -48,7 +48,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-@Ignore
+@Disabled
 public class JaxrsIntegrationTestBase {
 
   private final String baseUrl = "http://127.0.0.1:8080/";

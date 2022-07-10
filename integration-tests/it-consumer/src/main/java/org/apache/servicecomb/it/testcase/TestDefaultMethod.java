@@ -19,7 +19,7 @@ package org.apache.servicecomb.it.testcase;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;

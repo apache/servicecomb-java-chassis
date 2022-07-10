@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;

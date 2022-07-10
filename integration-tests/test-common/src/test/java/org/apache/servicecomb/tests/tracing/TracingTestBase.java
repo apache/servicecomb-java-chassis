@@ -31,7 +31,7 @@ import org.apache.servicecomb.tests.EmbeddedAppender;
 import org.apache.servicecomb.tests.Log4jConfig;
 import org.awaitility.Awaitility;
 import org.hamcrest.MatcherAssert;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.ClassRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class TracingTestBase {
 
   final RestTemplate restTemplate = new RestTemplate();
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpClass() throws Exception {
     System.setProperty(CONFIG_TRACING_COLLECTOR_ADDRESS, zipkin.httpUrl());
 

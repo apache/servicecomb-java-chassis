@@ -20,7 +20,7 @@ package org.apache.servicecomb.it.testcase;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 public class TestParamCodec {

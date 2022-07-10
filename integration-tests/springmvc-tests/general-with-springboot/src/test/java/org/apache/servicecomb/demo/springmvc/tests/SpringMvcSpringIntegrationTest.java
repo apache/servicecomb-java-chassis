@@ -18,21 +18,21 @@
 package org.apache.servicecomb.demo.springmvc.tests;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.SpringApplication;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase {
-  @BeforeClass
+  @BeforeAll
   public static void init() {
     System.setProperty("servicecomb.uploads.directory", "/tmp");
     SpringApplication.run(SpringMvcSpringMain.class);
   }
 
-  @AfterClass
+  @AfterAll
   public static void shutdown() {
     SCBEngine.getInstance().destroy();
   }
