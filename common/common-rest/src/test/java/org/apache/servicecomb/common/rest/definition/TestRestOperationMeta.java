@@ -35,6 +35,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
@@ -45,7 +46,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.models.Swagger;
-import mockit.Expectations;
+import org.mockito.Mockito;
 
 public class TestRestOperationMeta {
   @Path("/")
@@ -165,7 +166,7 @@ public class TestRestOperationMeta {
     scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new RestOperationMetaSchema())
         .run();
-    swagger = scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger();
+    swagger = Mockito.spy(scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger());
   }
 
   @AfterClass
@@ -175,8 +176,11 @@ public class TestRestOperationMeta {
   }
 
   private void findOperation(String operationId) {
-    meta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1." + operationId);
-    operationMeta = RestMetaUtils.getRestOperationMeta(meta);
+    meta = Mockito.spy(scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1." + operationId));
+    operationMeta = Mockito.spy(RestMetaUtils.getRestOperationMeta(meta));
+    SchemaMeta schemaMeta = Mockito.spy(meta.getSchemaMeta());
+    Mockito.when(meta.getSchemaMeta()).thenReturn(schemaMeta);
+    Mockito.when(schemaMeta.getSwagger()).thenReturn(swagger);
   }
 
   @Test
@@ -381,14 +385,9 @@ public class TestRestOperationMeta {
   @Test
   public void generatesAbsolutePathWithNonRootBasePath() {
     findOperation("textCharJsonChar");
-    new Expectations(swagger) {
-      {
-        swagger.getBasePath();
-        result = "/rest";
-      }
-    };
+    Mockito.when(swagger.getBasePath()).thenReturn("/rest");
     RestOperationMeta restOperationMeta = new RestOperationMeta();
-    restOperationMeta.init(operationMeta.getOperationMeta());
+    restOperationMeta.init(meta);
 
     MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/textCharJsonChar/"));
   }
@@ -396,20 +395,10 @@ public class TestRestOperationMeta {
   @Test
   public void generatesAbsolutePathWithNullPath() {
     findOperation("textCharJsonChar");
-    new Expectations(swagger) {
-      {
-        swagger.getBasePath();
-        result = null;
-      }
-    };
-    new Expectations(meta) {
-      {
-        meta.getOperationPath();
-        result = null;
-      }
-    };
+    Mockito.when(swagger.getBasePath()).thenReturn(null);
+    Mockito.when(meta.getOperationPath()).thenReturn(null);
     RestOperationMeta restOperationMeta = new RestOperationMeta();
-    restOperationMeta.init(operationMeta.getOperationMeta());
+    restOperationMeta.init(meta);
 
     MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/"));
   }
@@ -417,20 +406,10 @@ public class TestRestOperationMeta {
   @Test
   public void generatesAbsolutePathWithEmptyPath() {
     findOperation("textCharJsonChar");
-    new Expectations(swagger) {
-      {
-        swagger.getBasePath();
-        result = "";
-      }
-    };
-    new Expectations(meta) {
-      {
-        meta.getOperationPath();
-        result = "";
-      }
-    };
+    Mockito.when(swagger.getBasePath()).thenReturn("");
+    Mockito.when(meta.getOperationPath()).thenReturn("");
     RestOperationMeta restOperationMeta = new RestOperationMeta();
-    restOperationMeta.init(operationMeta.getOperationMeta());
+    restOperationMeta.init(meta);
 
     MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/"));
   }
@@ -438,20 +417,10 @@ public class TestRestOperationMeta {
   @Test
   public void consecutiveSlashesAreRemoved() {
     findOperation("textCharJsonChar");
-    new Expectations(swagger) {
-      {
-        swagger.getBasePath();
-        result = "//rest//";
-      }
-    };
-    new Expectations(meta) {
-      {
-        meta.getOperationPath();
-        result = "//sayHi//";
-      }
-    };
+    Mockito.when(swagger.getBasePath()).thenReturn("//rest//");
+    Mockito.when(meta.getOperationPath()).thenReturn("//sayHi//");
     RestOperationMeta restOperationMeta = new RestOperationMeta();
-    restOperationMeta.init(operationMeta.getOperationMeta());
+    restOperationMeta.init(meta);
 
     MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/sayHi/"));
   }

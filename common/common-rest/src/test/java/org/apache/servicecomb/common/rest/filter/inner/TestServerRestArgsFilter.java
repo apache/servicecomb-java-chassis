@@ -16,16 +16,11 @@
  */
 package org.apache.servicecomb.common.rest.filter.inner;
 
-import java.util.concurrent.CompletableFuture;
-
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
-import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
@@ -33,55 +28,37 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.mockito.Mockito;
 
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestServerRestArgsFilter {
-  @Mocked
-  Invocation invocation;
 
-  @Mocked
-  HttpServletResponseEx responseEx;
+  Invocation invocation = Mockito.mock(Invocation.class);
 
-  @Mocked
-  Response response;
+  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
-  @Mocked
-  Part part;
+  Response response = Mockito.mock(Response.class);
 
-  @Mocked
-  OperationMeta operationMeta;
+  Part part = Mockito.mock(Part.class);
 
   boolean invokedSendPart;
 
   ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
-  public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) {
+  public void asyncBeforeSendResponse_part() {
     ResponsesMeta responsesMeta = new ResponsesMeta();
     responsesMeta.getResponseMap().put(202, RestObjectMapperFactory.getRestObjectMapper().constructType(Part.class));
-    new Expectations(RestMetaUtils.class) {
-      {
-        responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
-        result = response;
-        response.getResult();
-        result = part;
-        response.getStatusCode();
-        result = 202;
-        invocation.findResponseType(202);
-        result = TypeFactory.defaultInstance().constructType(Part.class);
-      }
-    };
-    new MockUp<HttpServletResponseEx>(responseEx) {
-      @Mock
-      CompletableFuture<Void> sendPart(Part body) {
-        invokedSendPart = true;
-        return null;
-      }
-    };
+
+    Mockito.when(responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE)).thenReturn(response);
+    Mockito.when(response.getResult()).thenReturn(part);
+    Mockito.when(response.getStatusCode()).thenReturn(202);
+    Mockito.when(invocation.findResponseType(202)).thenReturn(TypeFactory.defaultInstance().constructType(Part.class));
+
+    Mockito.doAnswer(invocationOnMock -> {
+      invokedSendPart = true;
+      return null;
+    }).when(responseEx).sendPart(part);
 
     Assertions.assertNull(filter.beforeSendResponseAsync(invocation, responseEx));
     Assertions.assertTrue(invokedSendPart);

@@ -29,6 +29,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Multimap;
@@ -37,18 +38,11 @@ import io.vertx.core.Context;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestRestClientRequestImpl {
-  @Mocked
-  private HttpClientRequest request;
+  private HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
 
-  @Mocked
-  private Context context;
+  private Context context = Mockito.mock(Context.class);
 
   @Test
   public void testForm() throws Exception {
@@ -62,21 +56,13 @@ public class TestRestClientRequestImpl {
 
   @Test
   public void testCookie() throws Exception {
-    HttpClientRequest request = new MockUp<HttpClientRequest>() {
+    final MultiMap map = MultiMap.caseInsensitiveMultiMap();
+    Mockito.doAnswer(invocation -> {
+      map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+      return null;
+    }).when(request).putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+    Mockito.when(request.headers()).thenReturn(map);
 
-      final MultiMap map = MultiMap.caseInsensitiveMultiMap();
-
-      @Mock
-      public HttpClientRequest putHeader(CharSequence key, CharSequence val) {
-        map.add(key, val);
-        return null;
-      }
-
-      @Mock
-      public MultiMap headers() {
-        return map;
-      }
-    }.getMockInstance();
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     restClientRequest.addCookie("sessionid", "abcdefghijklmnopqrstuvwxyz");
     restClientRequest.addCookie("region", "china-north");
@@ -89,15 +75,11 @@ public class TestRestClientRequestImpl {
   }
 
   @Test
-  public void fileBoundaryInfo_nullSubmittedFileName(@Mocked Part part) {
-    new Expectations() {
-      {
-        part.getSubmittedFileName();
-        result = null;
-        part.getContentType();
-        result = "abc";
-      }
-    };
+  public void fileBoundaryInfo_nullSubmittedFileName() {
+    Part part = Mockito.mock(Part.class);
+    Mockito.when(part.getSubmittedFileName()).thenReturn(null);
+    Mockito.when(part.getContentType()).thenReturn("abc");
+
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     Buffer buffer = restClientRequest.fileBoundaryInfo("boundary", "name", part);
     Assertions.assertEquals("\r\n" +
@@ -109,15 +91,10 @@ public class TestRestClientRequestImpl {
   }
 
   @Test
-  public void fileBoundaryInfo_validSubmittedFileName(@Mocked Part part) {
-    new Expectations() {
-      {
-        part.getSubmittedFileName();
-        result = "a.txt";
-        part.getContentType();
-        result = MediaType.TEXT_PLAIN;
-      }
-    };
+  public void fileBoundaryInfo_validSubmittedFileName() {
+    Part part = Mockito.mock(Part.class);
+    Mockito.when(part.getSubmittedFileName()).thenReturn("a.txt");
+    Mockito.when(part.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
     Buffer buffer = restClientRequest.fileBoundaryInfo("boundary", "name", part);
     Assertions.assertEquals("\r\n" +
@@ -136,7 +113,7 @@ public class TestRestClientRequestImpl {
 
     restClientRequest.attach(fileName, part);
 
-    Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
+    Multimap<String, Part> uploads = restClientRequest.uploads;
     Assertions.assertEquals(1, uploads.size());
     MatcherAssert.assertThat(uploads.asMap(), Matchers.hasEntry(fileName, Arrays.asList(part)));
   }
@@ -147,32 +124,26 @@ public class TestRestClientRequestImpl {
 
     restClientRequest.attach("fileName", null);
 
-    Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
+    Multimap<String, Part> uploads = restClientRequest.uploads;
     Assertions.assertTrue(uploads.isEmpty());
   }
 
   @Test
   public void doEndWithUpload() {
     Map<String, String> headers = new HashMap<>();
-    new MockUp<HttpClientRequest>(request) {
-      @Mock
-      HttpClientRequest putHeader(String name, String value) {
-        headers.put(name, value);
-        return request;
-      }
-    };
+    Mockito.doAnswer(invocation -> {
+      headers.put(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
+      return null;
+    }).when(request).putHeader(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
 
     UUID uuid = new UUID(0, 0);
-    new Expectations(UUID.class) {
-      {
-        UUID.randomUUID();
-        result = uuid;
-      }
-    };
-    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
-    restClientRequest.doEndWithUpload();
+    try (MockedStatic<UUID> mockedStatic = Mockito.mockStatic(UUID.class)) {
+      mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+      RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
+      restClientRequest.doEndWithUpload();
 
-    Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
-        headers.get(HttpHeaders.CONTENT_TYPE));
+      Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
+              headers.get(HttpHeaders.CONTENT_TYPE));
+    }
   }
 }

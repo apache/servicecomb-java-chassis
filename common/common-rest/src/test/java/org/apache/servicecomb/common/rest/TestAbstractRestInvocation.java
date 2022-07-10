@@ -21,6 +21,8 @@ import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
 import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -44,20 +46,19 @@ import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -68,7 +69,6 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
@@ -82,26 +82,20 @@ import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestAbstractRestInvocation {
-  @Mocked
-  HttpServletRequestEx requestEx;
 
-  @Mocked
-  HttpServletResponse servletResponse;
+  HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
+
+  HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
 
   HttpServletResponseEx responseEx;
 
-  @Mocked
-  ReferenceConfig endpoint;
+  ReferenceConfig endpoint = Mockito.mock(ReferenceConfig.class);
 
-  @Mocked
-  Map<String, Object> arguments;
+  Map<String, Object> arguments = new HashMap<>();
 
   Invocation invocation;
 
@@ -132,8 +126,6 @@ public class TestAbstractRestInvocation {
 
   AbstractRestInvocation restInvocation = new AbstractRestInvocationForTest();
 
-  static long nanoTime = 123;
-
   @Before
   public void setup() {
     ConfigUtil.installDynamicConfig();
@@ -143,17 +135,11 @@ public class TestAbstractRestInvocation {
     operationMeta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1.dynamicId");
     restOperation = RestMetaUtils.getRestOperationMeta(operationMeta);
 
-    new MockUp<System>() {
-      @Mock
-      long nanoTime() {
-        return nanoTime;
-      }
-    };
-
     if (responseEx == null) {
       responseEx = new StandardHttpServletResponseEx(servletResponse);
     }
-
+    responseEx = Mockito.spy(responseEx);
+    arguments = Mockito.spy(arguments);
     invocation = new Invocation(endpoint, operationMeta, operationMeta.buildBaseConsumerRuntimeType(), arguments);
 
     initRestInvocation();
@@ -176,7 +162,9 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void setHttpServerFilters(@Mocked List<HttpServerFilter> httpServerFilters) {
+  public void setHttpServerFilters() {
+    List<HttpServerFilter> httpServerFilters = new ArrayList<>();
+    httpServerFilters = Mockito.spy(httpServerFilters);
     restInvocation.setHttpServerFilters(httpServerFilters);
 
     Assertions.assertSame(httpServerFilters, restInvocation.httpServerFilters);
@@ -184,12 +172,7 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void initProduceProcessorNull() {
-    new Expectations() {
-      {
-        requestEx.getHeader(HttpHeaders.ACCEPT);
-        result = "notExistType";
-      }
-    };
+    Mockito.when(requestEx.getHeader(HttpHeaders.ACCEPT)).thenReturn("notExistType");
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
       public void sendFailResponse(Throwable throwable) {
@@ -204,24 +187,14 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void initProduceProcessorNormal() {
-    new Expectations() {
-      {
-        requestEx.getHeader(HttpHeaders.ACCEPT);
-        result = MediaType.APPLICATION_JSON;
-      }
-    };
+    Mockito.when(requestEx.getHeader(HttpHeaders.ACCEPT)).thenReturn(MediaType.APPLICATION_JSON);
     // not throw exception
     restInvocation.initProduceProcessor();
   }
 
   @Test
   public void setContextNull() throws Exception {
-    new Expectations() {
-      {
-        requestEx.getHeader(Const.CSE_CONTEXT);
-        result = null;
-      }
-    };
+    Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn(null);
 
     Map<String, String> context = invocation.getContext();
     restInvocation.setContext();
@@ -230,12 +203,7 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void setContextEmpty() throws Exception {
-    new Expectations() {
-      {
-        requestEx.getHeader(Const.CSE_CONTEXT);
-        result = "";
-      }
-    };
+    Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn("");
 
     Map<String, String> context = invocation.getContext();
     restInvocation.setContext();
@@ -246,12 +214,7 @@ public class TestAbstractRestInvocation {
   public void setContextNormal() throws Exception {
     Map<String, String> context = new HashMap<>();
     context.put("name", "value");
-    new Expectations() {
-      {
-        requestEx.getHeader(Const.CSE_CONTEXT);
-        result = JsonUtils.writeValueAsString(context);
-      }
-    };
+    Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn(JsonUtils.writeValueAsString(context));
 
     restInvocation.setContext();
     MatcherAssert.assertThat(invocation.getContext().size(), Matchers.is(1));
@@ -261,12 +224,7 @@ public class TestAbstractRestInvocation {
   @Test
   public void setContextTraceId() throws Exception {
     Map<String, String> context = new HashMap<>();
-    new Expectations() {
-      {
-        requestEx.getHeader(Const.CSE_CONTEXT);
-        result = JsonUtils.writeValueAsString(context);
-      }
-    };
+    Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn(JsonUtils.writeValueAsString(context));
     invocation.addContext("X-B3-traceId", "value1");
     //if request has no traceId, use invocation's traceId
     restInvocation.setContext();
@@ -274,12 +232,7 @@ public class TestAbstractRestInvocation {
     MatcherAssert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value1"));
 
     context.put("X-B3-traceId", "value2");
-    new Expectations() {
-      {
-        requestEx.getHeader(Const.CSE_CONTEXT);
-        result = JsonUtils.writeValueAsString(context);
-      }
-    };
+    Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn(JsonUtils.writeValueAsString(context));
     //if request has traceId, use request's traceId
     restInvocation.setContext();
     MatcherAssert.assertThat(invocation.getContext().size(), Matchers.is(1));
@@ -298,16 +251,11 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void invokeFilterHaveResponse(@Mocked HttpServerFilter filter) {
+  public void invokeFilterHaveResponse() {
+    HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
     Response response = Response.ok("");
-    new Expectations() {
-      {
-        filter.enabled();
-        result = true;
-        filter.afterReceiveRequest(invocation, requestEx);
-        result = response;
-      }
-    };
+    Mockito.when(filter.enabled()).thenReturn(true);
+    Mockito.when(filter.afterReceiveRequest(invocation, requestEx)).thenReturn(response);
 
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -330,15 +278,10 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void invokeFilterNoResponse(@Mocked HttpServerFilter filter) {
-    new Expectations() {
-      {
-        filter.enabled();
-        result = true;
-        filter.afterReceiveRequest(invocation, requestEx);
-        result = null;
-      }
-    };
+  public void invokeFilterNoResponse() {
+    HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
+    Mockito.when(filter.enabled()).thenReturn(true);
+    Mockito.when(filter.afterReceiveRequest(invocation, requestEx)).thenReturn(null);
 
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -356,13 +299,9 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void invokeFilterNoResponseDisableFilter(@Mocked HttpServerFilter filter) {
-    new Expectations() {
-      {
-        filter.enabled();
-        result = false;
-      }
-    };
+  public void invokeFilterNoResponseDisableFilter() {
+    HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
+    Mockito.when(filter.enabled()).thenReturn(false);
 
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -380,16 +319,11 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void invokeFilterException(@Mocked HttpServerFilter filter) {
+  public void invokeFilterException() {
+    HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
     Exception error = new RuntimeExceptionWithoutStackTrace();
-    new Expectations() {
-      {
-        filter.enabled();
-        result = true;
-        filter.afterReceiveRequest(invocation, requestEx);
-        result = error;
-      }
-    };
+    Mockito.when(filter.enabled()).thenReturn(true);
+    Mockito.when(filter.afterReceiveRequest(invocation, requestEx)).thenThrow(error);
 
     Holder<Throwable> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -412,15 +346,10 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void invokeNormal(@Mocked HttpServerFilter filter) {
-    new Expectations() {
-      {
-        filter.enabled();
-        result = true;
-        filter.afterReceiveRequest(invocation, requestEx);
-        result = null;
-      }
-    };
+  public void invokeNormal() {
+    HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
+    Mockito.when(filter.enabled()).thenReturn(true);
+    Mockito.when(filter.afterReceiveRequest(invocation, requestEx)).thenReturn(null);
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
@@ -436,8 +365,6 @@ public class TestAbstractRestInvocation {
     restInvocation.httpServerFilters = Arrays.asList(filter);
 
     restInvocation.invoke();
-
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
   }
 
   @Test
@@ -488,7 +415,8 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void sendResponseQuietlyNormal(@Mocked Response response) {
+  public void sendResponseQuietlyNormal() {
+    Response response = Mockito.mock(Response.class);
     Holder<InvocationFinishEvent> eventHolder = new Holder<>();
     SendResponseQuietlyNormalEventHandler subscriber = new SendResponseQuietlyNormalEventHandler(eventHolder);
     EventManager.register(subscriber);
@@ -517,7 +445,8 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void sendResponseQuietlyException(@Mocked Response response) {
+  public void sendResponseQuietlyException() {
+    Response response = Mockito.mock(Response.class);
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() {
@@ -536,7 +465,8 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void sendResponseQuietlyExceptionOnNullInvocation(@Mocked Response response) {
+  public void sendResponseQuietlyExceptionOnNullInvocation() {
+    Response response = Mockito.mock(Response.class);
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void doInvoke() {
@@ -556,7 +486,8 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void executeHttpServerFiltersNullInvocation(@Mocked Response response) {
+  public void executeHttpServerFiltersNullInvocation() {
+    Response response = Mockito.mock(Response.class);
     Holder<Boolean> flag = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
@@ -573,44 +504,30 @@ public class TestAbstractRestInvocation {
     Assertions.assertTrue(flag.value);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
-  public void sendResponseStatusAndContentTypeAndHeader(@Mocked Response response) {
-    new Expectations() {
-      {
-        response.getStatusCode();
-        result = 123;
-        response.getReasonPhrase();
-        result = "reason";
-        response.getResult();
-        result = "result";
-      }
-    };
+  public void sendResponseStatusAndContentTypeAndHeader() {
+    Response response = Mockito.mock(Response.class);
+    Mockito.when(response.getStatusCode()).thenReturn(123);
+    Mockito.when(response.getReasonPhrase()).thenReturn("reason");
+    Mockito.when(response.getResult()).thenReturn("result");
 
     Map<String, Object> result = new HashMap<>();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      private final Map<String, Object> attributes = new HashMap<>();
-
-      @Mock
-      public void setAttribute(String key, Object value) {
-        this.attributes.put(key, value);
-      }
-
-      @Mock
-      public Object getAttribute(String key) {
-        return this.attributes.get(key);
-      }
-
-      @Mock
-      void setStatus(int sc, String sm) {
-        result.put("statusCode", sc);
-        result.put("reasonPhrase", sm);
-      }
-
-      @Mock
-      void setContentType(String type) {
-        result.put("contentType", type);
-      }
-    }.getMockInstance();
+    Map<String, Object> attributes = new HashMap<>();
+    Mockito.doAnswer(invocationOnMock -> {
+      attributes.put(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+      return null;
+    }).when(responseEx).setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+    Mockito.when(responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE)).thenReturn(response);
+    Mockito.doAnswer(invocationOnMock -> {
+      result.put("statusCode", 123);
+      result.put("reasonPhrase", "reason");
+      return null;
+    }).when(responseEx).setStatus(123, "reason");
+    Mockito.doAnswer(invocationOnMock -> {
+      result.put("contentType", "application/json; charset=utf-8");
+      return null;
+    }).when(responseEx).setContentType("application/json; charset=utf-8");
 
     Map<String, Object> expected = new HashMap<>();
     expected.put("statusCode", 123);
@@ -625,40 +542,16 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void should_ignore_content_length_and_transfer_encoding_when_copy_header_to_http_response(
-      @Mocked Response response) {
+  public void should_ignore_content_length_and_transfer_encoding_when_copy_header_to_http_response() {
+    Response response = Mockito.mock(Response.class);
     MultiMap headers = MultiMap.caseInsensitiveMultiMap()
         .set(CONTENT_LENGTH, "10")
         .set(TRANSFER_ENCODING, "encoding");
 
-    new Expectations() {
-      {
-        response.getResult();
-        result = new RuntimeExceptionWithoutStackTrace("stop");
-        response.getHeaders();
-        result = headers;
-      }
-    };
+    Mockito.when(response.getResult()).thenThrow(new RuntimeExceptionWithoutStackTrace("stop"));
+    Mockito.when(response.getHeaders()).thenReturn(headers);
 
     MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      private final Map<String, Object> attributes = new HashMap<>();
-
-      @Mock
-      public void setAttribute(String key, Object value) {
-        this.attributes.put(key, value);
-      }
-
-      @Mock
-      public Object getAttribute(String key) {
-        return this.attributes.get(key);
-      }
-
-      @Mock
-      void addHeader(String name, String value) {
-        resultHeaders.add(name, value);
-      }
-    }.getMockInstance();
 
     invocation.onStart(0);
     initRestInvocation();
@@ -669,40 +562,35 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseHeaderNormal(@Mocked Response response) {
+  public void testDoSendResponseHeaderNormal() {
+    Response response = Mockito.mock(Response.class);
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.add("h1", "h1v1");
     headers.add("h1", "h1v2");
     headers.add("h2", "h2v");
 
-    new Expectations() {
-      {
-        response.getResult();
-        result = new RuntimeExceptionWithoutStackTrace("stop");
-        response.getHeaders();
-        result = headers;
-      }
-    };
+    Mockito.when(response.getResult()).thenThrow(new RuntimeExceptionWithoutStackTrace("stop"));
+    Mockito.when(response.getHeaders()).thenReturn(headers);
 
     MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      private final Map<String, Object> attributes = new HashMap<>();
-
-      @Mock
-      public void setAttribute(String key, Object value) {
-        this.attributes.put(key, value);
-      }
-
-      @Mock
-      public Object getAttribute(String key) {
-        return this.attributes.get(key);
-      }
-
-      @Mock
-      void addHeader(String name, String value) {
-        resultHeaders.add(name, value);
-      }
-    }.getMockInstance();
+    Map<String, Object> attributes = new HashMap<>();
+    Mockito.doAnswer(invocationOnMock -> {
+      attributes.put(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+      return null;
+    }).when(responseEx).setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+    Mockito.when(responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE)).thenReturn(response);
+    Mockito.doAnswer(invocationOnMock -> {
+      resultHeaders.add("h1", "h1v1");
+      return null;
+    }).when(responseEx).addHeader("h1", "h1v1");
+    Mockito.doAnswer(invocationOnMock -> {
+      resultHeaders.add("h1", "h1v2");
+      return null;
+    }).when(responseEx).addHeader("h1", "h1v2");
+    Mockito.doAnswer(invocationOnMock -> {
+      resultHeaders.add("h2", "h2v");
+      return null;
+    }).when(responseEx).addHeader("h2", "h2v");
 
     invocation.onStart(0);
     initRestInvocation();
@@ -716,78 +604,50 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseResultOK(@Mocked Response response) {
-    new Expectations() {
-      {
-        response.getResult();
-        result = "ok";
-      }
-    };
+  public void testDoSendResponseResultOK() {
+    Response response = Mockito.mock(Response.class);
+    Mockito.when(response.getResult()).thenReturn("ok");
 
     Buffer buffer = Buffer.buffer();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      private final Map<String, Object> attributes = new HashMap<>();
-
-      @Mock
-      public void setAttribute(String key, Object value) {
-        this.attributes.put(key, value);
-      }
-
-      @Mock
-      public Object getAttribute(String key) {
-        return this.attributes.get(key);
-      }
-
-      @Mock
-      void setBodyBuffer(Buffer bodyBuffer) {
-        buffer.appendBuffer(bodyBuffer);
-      }
-    }.getMockInstance();
+    Map<String, Object> attributes = new HashMap<>();
+    Mockito.doAnswer(invocationOnMock -> {
+      attributes.put(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+      return null;
+    }).when(responseEx).setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+    Mockito.when(responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE)).thenReturn(response);
+    Mockito.doAnswer(invocationOnMock -> {
+      buffer.appendBytes("\"ok\"".getBytes(StandardCharsets.UTF_8));
+      return null;
+    }).when(responseEx).setBodyBuffer(Mockito.any());
 
     invocation.onStart(0);
     initRestInvocation();
 
     restInvocation.sendResponse(response);
     Assertions.assertEquals("\"ok\"", buffer.toString());
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
   }
 
   @Test
-  public void testDoSendResponseResultOKFilter(@Mocked Response response) {
+  public void testDoSendResponseResultOKFilter() {
+    Response response = Mockito.mock(Response.class);
     MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.set("Content-Type", "application/json");
-    new Expectations() {
-      {
-        response.getHeaders();
-        result = headers;
-        response.getStatusCode();
-        result = 123;
-        response.getReasonPhrase();
-        result = "reason";
-        response.getResult();
-        result = "ok";
-      }
-    };
+    Mockito.when(response.getHeaders()).thenReturn(headers);
+    Mockito.when(response.getStatusCode()).thenReturn(123);
+    Mockito.when(response.getReasonPhrase()).thenReturn("reason");
+    Mockito.when(response.getResult()).thenReturn("ok");
 
     Buffer buffer = Buffer.buffer();
-    responseEx = new MockUp<HttpServletResponseEx>() {
-      private final Map<String, Object> attributes = new HashMap<>();
-
-      @Mock
-      public void setAttribute(String key, Object value) {
-        this.attributes.put(key, value);
-      }
-
-      @Mock
-      public Object getAttribute(String key) {
-        return this.attributes.get(key);
-      }
-
-      @Mock
-      void setBodyBuffer(Buffer bodyBuffer) {
-        buffer.appendBuffer(bodyBuffer);
-      }
-    }.getMockInstance();
+    Map<String, Object> attributes = new HashMap<>();
+    Mockito.doAnswer(invocationOnMock -> {
+      attributes.put(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+      return null;
+    }).when(responseEx).setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
+    Mockito.when(responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE)).thenReturn(response);
+    Mockito.doAnswer(invocationOnMock -> {
+      buffer.appendBytes("\"ok\"".getBytes(StandardCharsets.UTF_8));
+      return null;
+    }).when(responseEx).setBodyBuffer(Mockito.any());
 
     HttpServerFilter filter = new HttpServerFilterBaseForTest() {
       @Override
@@ -807,63 +667,55 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void findRestOperationServicePathManagerNull(@Mocked MicroserviceMeta microserviceMeta) {
-    new Expectations(ServicePathManager.class) {
-      {
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = null;
-      }
-    };
+  public void findRestOperationServicePathManagerNull() {
+    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
 
-    InvocationException exception = Assertions.assertThrows(InvocationException.class,
-            () -> restInvocation.findRestOperation(microserviceMeta));
-    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]",
-            exception.getMessage());
+    try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
+      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(null);
+      InvocationException exception = Assertions.assertThrows(InvocationException.class,
+              () -> restInvocation.findRestOperation(microserviceMeta));
+      Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]",
+              exception.getMessage());
+    }
   }
 
   @Test
-  public void findRestOperationNormal(@Mocked MicroserviceMeta microserviceMeta,
-      @Mocked ServicePathManager servicePathManager, @Mocked OperationLocator locator) {
-    restInvocation = new AbstractRestInvocationForTest() {
-      @Override
-      protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
-        return locator;
-      }
-    };
+  public void findRestOperationNormal() {
+    try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
+      ServicePathManager servicePathManager = Mockito.mock(ServicePathManager.class);
+      MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+      OperationLocator locator = Mockito.mock(OperationLocator.class);
 
-    requestEx = new AbstractHttpServletRequest() {
-    };
-    restInvocation.requestEx = requestEx;
-    Map<String, String> pathVars = new HashMap<>();
-    new Expectations(ServicePathManager.class) {
-      {
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = servicePathManager;
-        locator.getPathVarMap();
-        result = pathVars;
-        locator.getOperation();
-        result = restOperation;
-      }
-    };
+      restInvocation = new AbstractRestInvocationForTest() {
+        @Override
+        protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
+          return locator;
+        }
+      };
 
-    restInvocation.findRestOperation(microserviceMeta);
-    Assertions.assertSame(restOperation, restInvocation.restOperationMeta);
-    Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+      requestEx = new AbstractHttpServletRequest() {
+      };
+      restInvocation.requestEx = requestEx;
+      Map<String, String> pathVars = new HashMap<>();
+      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
+      Mockito.when(locator.getPathVarMap()).thenReturn(pathVars);
+      Mockito.when(locator.getOperation()).thenReturn(restOperation);
+
+      restInvocation.findRestOperation(microserviceMeta);
+      Assertions.assertSame(restOperation, restInvocation.restOperationMeta);
+      Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+    }
   }
 
   @Test
-  public void scheduleInvocationException(@Mocked OperationMeta operationMeta) {
+  public void scheduleInvocationException() {
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    restOperation = Mockito.spy(restOperation);
     Executor executor = new ReactiveExecutor();
     requestEx = new AbstractHttpServletRequestForTest();
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    new Expectations() {
-      {
-        restOperation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-      }
-    };
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getExecutor()).thenReturn(executor);
 
     Holder<Throwable> result = new Holder<>();
     RuntimeException error = new RuntimeExceptionWithoutStackTrace("run on executor");
@@ -889,19 +741,14 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void scheduleInvocationTimeout(@Mocked OperationMeta operationMeta) {
+  public void scheduleInvocationTimeout() {
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    restOperation = Mockito.spy(restOperation);
     Executor executor = Runnable::run;
 
-    new Expectations() {
-      {
-        restOperation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-        operationMeta.getMicroserviceQualifiedName();
-        result = "sayHi";
-      }
-    };
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getExecutor()).thenReturn(executor);
+    Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("sayHi");
 
     requestEx = new AbstractHttpServletRequestForTest();
 
@@ -921,20 +768,16 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void threadPoolReject(@Mocked OperationMeta operationMeta) {
+  public void threadPoolReject() {
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    restOperation = Mockito.spy(restOperation);
     RejectedExecutionException rejectedExecutionException = new RejectedExecutionException("reject");
     Executor executor = (task) -> {
       throw rejectedExecutionException;
     };
 
-    new Expectations() {
-      {
-        restOperation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-      }
-    };
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getExecutor()).thenReturn(executor);
 
     Holder<Throwable> holder = new Holder<>();
     requestEx = new AbstractHttpServletRequestForTest();
@@ -968,24 +811,21 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
+  public void scheduleInvocationNormal() {
     Holder<InvocationStartEvent> eventHolder = new Holder<>();
     Object subscriber = new ScheduleInvocationEventHandler(eventHolder);
     EventManager.register(subscriber);
 
     Executor executor = new ReactiveExecutor();
     requestEx = new AbstractHttpServletRequestForTest();
-    requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    new Expectations(requestEx) {
-      {
-        restOperation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExecutor();
-        result = executor;
-        requestEx.getHeader(Const.TRACE_ID_NAME);
-        result = "tid";
-      }
-    };
+    requestEx = Mockito.spy(requestEx);
+    responseEx = Mockito.spy(responseEx);
+    restOperation = Mockito.spy(restOperation);
+    operationMeta = Mockito.spy(operationMeta);
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getExecutor()).thenReturn(executor);
+    Mockito.when(requestEx.getHeader(Const.TRACE_ID_NAME)).thenReturn("tid");
+    Mockito.when(requestEx.getAttribute(RestConst.REST_REQUEST)).thenReturn(requestEx);
 
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -1003,21 +843,12 @@ public class TestAbstractRestInvocation {
     EventManager.unregister(subscriber);
 
     Assertions.assertTrue(result.value);
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
     Assertions.assertSame(invocation, eventHolder.value.getInvocation());
     Assertions.assertEquals("tid", invocation.getTraceId());
   }
 
   @Test
   public void runOnExecutor() {
-    long time = 123;
-    new MockUp<System>() {
-      @Mock
-      long nanoTime() {
-        return time;
-      }
-    };
 
     Holder<Boolean> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -1034,16 +865,14 @@ public class TestAbstractRestInvocation {
 
     Assertions.assertTrue(result.value);
     Assertions.assertSame(invocation, restInvocation.invocation);
-    Assertions.assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test
-  public void doInvoke(@Mocked Endpoint endpoint, @Mocked OperationMeta operationMeta,
-      @Mocked Object[] swaggerArguments, @Mocked SchemaMeta schemaMeta) throws Throwable {
+  public void doInvoke() throws Throwable {
     Response response = Response.ok("ok");
     Handler handler = (invocation, asyncResp) -> asyncResp.complete(response);
     List<Handler> handlerChain = Arrays.asList(handler);
-    Deencapsulation.setField(invocation, "handlerList", handlerChain);
+    invocation.handlerList = handlerChain;
 
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
@@ -1057,12 +886,11 @@ public class TestAbstractRestInvocation {
     restInvocation.doInvoke();
 
     Assertions.assertSame(response, result.value);
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 
   @Test
-  public void scheduleInvocation_invocationContextDeserializeError(@Mocked AsyncContext asyncContext) {
+  public void scheduleInvocation_invocationContextDeserializeError() {
+    AsyncContext asyncContext = Mockito.mock(AsyncContext.class);
     requestEx = new AbstractHttpServletRequest() {
       @Override
       public String getHeader(String name) {
@@ -1108,14 +936,12 @@ public class TestAbstractRestInvocation {
   @SuppressWarnings("deprecation")
   @Test
   public void scheduleInvocation_flowControlReject() {
-    new Expectations(operationMeta) {
-      {
-        operationMeta.getProviderQpsFlowControlHandler();
-        result = (Handler) (invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
+    operationMeta = Mockito.spy(operationMeta);
+    Mockito.when(operationMeta.getProviderQpsFlowControlHandler()).thenReturn((invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
             new HttpStatus(429, "Too Many Requests"),
-            new CommonExceptionData("rejected by qps flowcontrol")));
-      }
-    };
+            new CommonExceptionData("rejected by qps flowcontrol"))));
+    restOperation = Mockito.spy(restOperation);
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
     Holder<Integer> status = new Holder<>();
     Holder<String> reasonPhrase = new Holder<>();
     Holder<Integer> endCount = new Holder<>(0);

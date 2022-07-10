@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -87,7 +88,8 @@ public class Invocation extends SwaggerInvocation {
   private final Map<String, Object> handlerContext = localContext;
 
   // handler链，是arrayList，可以高效地通过index访问
-  private List<Handler> handlerList;
+  @VisibleForTesting
+  public List<Handler> handlerList;
 
   private int handlerIndex;
 

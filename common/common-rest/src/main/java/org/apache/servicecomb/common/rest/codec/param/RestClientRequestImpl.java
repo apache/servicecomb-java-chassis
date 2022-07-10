@@ -32,6 +32,7 @@ import java.util.UUID;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
@@ -61,7 +62,8 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected AsyncResponse asyncResp;
 
-  private final Multimap<String, Part> uploads = ArrayListMultimap.create();
+  @VisibleForTesting
+  final Multimap<String, Part> uploads = ArrayListMultimap.create();
 
   protected HttpClientRequest request;
 

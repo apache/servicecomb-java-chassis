@@ -19,12 +19,14 @@ package org.apache.servicecomb.common.rest.definition.path;
 
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 
 public abstract class AbstractUrlParamWriter implements UrlParamWriter {
   protected RestParam param;
 
-  protected Object getParamValue(Map<String, Object> args) {
+  @VisibleForTesting
+  public Object getParamValue(Map<String, Object> args) {
     if (param == null) {
       // Wrong server definition
       //  @GetMapping(path = "/getLocalDateTime/{paramX}")

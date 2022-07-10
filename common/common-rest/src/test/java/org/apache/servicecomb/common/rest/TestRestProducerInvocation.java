@@ -44,21 +44,16 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestRestProducerInvocation {
-  @Mocked
-  Transport transport;
 
-  @Mocked
-  HttpServletRequestEx requestEx;
+  Transport transport = Mockito.mock(Transport.class);
 
-  @Mocked
-  HttpServletResponseEx responseEx;
+  HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
+
+  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
   RestProducerInvocation restProducerInvocation;
 
@@ -104,22 +99,14 @@ public class TestRestProducerInvocation {
   @Test
   public void invokeSendFail() {
     InvocationException expected = new InvocationException(javax.ws.rs.core.Response.Status.BAD_REQUEST, "test");
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void sendFailResponse(Throwable throwable) {
-        throwableOfSendFailResponse = throwable;
-      }
+    restProducerInvocation = Mockito.spy(new RestProducerInvocation());
+    Mockito.doThrow(expected).when(restProducerInvocation).findRestOperation();
+    Mockito.doAnswer(invocationOnMock -> {
+      throwableOfSendFailResponse = expected;
+      return null;
+    }).when(restProducerInvocation).sendFailResponse(Mockito.any());
+    Mockito.doThrow(new IllegalStateException("must not invoke scheduleInvocation")).when(restProducerInvocation).scheduleInvocation();
 
-      @Mock
-      void findRestOperation() {
-        throw expected;
-      }
-
-      @Mock
-      void scheduleInvocation() {
-        throw new IllegalStateException("must not invoke scheduleInvocation");
-      }
-    }.getMockInstance();
 
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
 
@@ -128,17 +115,15 @@ public class TestRestProducerInvocation {
 
   @Test
   public void invokeNormal() {
-    restProducerInvocation = new MockUp<RestProducerInvocation>() {
-      @Mock
-      void findRestOperation() {
-        restProducerInvocation.restOperationMeta = restOperationMeta;
-      }
-
-      @Mock
-      void scheduleInvocation() {
-        scheduleInvocation = true;
-      }
-    }.getMockInstance();
+    restProducerInvocation = Mockito.spy(new RestProducerInvocation());
+    Mockito.doAnswer(invocationOnMock -> {
+      restProducerInvocation.restOperationMeta = restOperationMeta;
+      return null;
+    }).when(restProducerInvocation).findRestOperation();
+    Mockito.doAnswer(invocationOnMock -> {
+      scheduleInvocation = true;
+      return null;
+    }).when(restProducerInvocation).scheduleInvocation();
 
     requestEx = new AbstractHttpServletRequest() {
     };
@@ -153,24 +138,19 @@ public class TestRestProducerInvocation {
     Microservice microservice = new Microservice();
     microservice.setServiceName("ms");
 
-    new Expectations(ServicePathManager.class) {
-      {
-        //just make the method throw Exception
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = null;
-      }
-    };
-    restProducerInvocation = new RestProducerInvocation();
-    initRestProducerInvocation();
+    try (MockedStatic<ServicePathManager> managerMockedStatic = Mockito.mockStatic(ServicePathManager.class)){
+      managerMockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(null);
+      restProducerInvocation = new RestProducerInvocation();
+      initRestProducerInvocation();
 
-    Exception exception = Assertions.assertThrows(Exception.class,
-            () -> restProducerInvocation.findRestOperation());
-    Assertions.assertTrue(exception.getMessage().contains("[message=Not Found]"));
+      Exception exception = Assertions.assertThrows(Exception.class,
+              () -> restProducerInvocation.findRestOperation());
+      Assertions.assertTrue(exception.getMessage().contains("[message=Not Found]"));
+    }
   }
 
   @Test
-  public void findRestOperationNormal(@Mocked ServicePathManager servicePathManager,
-      @Mocked OperationLocator locator) {
+  public void findRestOperationNormal() {
     requestEx = new AbstractHttpServletRequest() {
       @Override
       public String getRequestURI() {
@@ -188,23 +168,19 @@ public class TestRestProducerInvocation {
       }
     };
     Map<String, String> pathVars = new HashMap<>();
-    new Expectations(ServicePathManager.class) {
-      {
-        ServicePathManager.getServicePathManager(microserviceMeta);
-        result = servicePathManager;
-        servicePathManager.producerLocateOperation(anyString, anyString);
-        result = locator;
-        locator.getPathVarMap();
-        result = pathVars;
-        locator.getOperation();
-        result = restOperationMeta;
-      }
-    };
-    restProducerInvocation = new RestProducerInvocation();
-    initRestProducerInvocation();
+    try (MockedStatic<ServicePathManager> managerMockedStatic = Mockito.mockStatic(ServicePathManager.class)){
+      ServicePathManager servicePathManager = Mockito.mock(ServicePathManager.class);
+      OperationLocator locator = Mockito.mock(OperationLocator.class);
+      managerMockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
+      Mockito.when(servicePathManager.producerLocateOperation(Mockito.any(), Mockito.any())).thenReturn(locator);
+      Mockito.when(locator.getPathVarMap()).thenReturn(pathVars);
+      Mockito.when(locator.getOperation()).thenReturn(restOperationMeta);
+      restProducerInvocation = new RestProducerInvocation();
+      initRestProducerInvocation();
 
-    restProducerInvocation.findRestOperation();
-    Assertions.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
-    Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+      restProducerInvocation.findRestOperation();
+      Assertions.assertSame(restOperationMeta, restProducerInvocation.restOperationMeta);
+      Assertions.assertSame(pathVars, requestEx.getAttribute(RestConst.PATH_PARAMETERS));
+    }
   }
 }

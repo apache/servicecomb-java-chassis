@@ -26,15 +26,15 @@ import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExcep
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.junit.jupiter.api.Assertions;
 
-import mockit.Mocked;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 public class TestHttpServerFilterBeforeSendResponseExecutor {
-  @Mocked
+  @Mock
   Invocation invocation;
 
-  @Mocked
+  @Mock
   HttpServletResponseEx responseEx;
 
   List<HttpServerFilter> httpServerFilters = new ArrayList<>();

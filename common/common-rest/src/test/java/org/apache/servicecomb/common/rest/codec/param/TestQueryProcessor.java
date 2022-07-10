@@ -30,12 +30,11 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
-import mockit.Expectations;
-import mockit.Mocked;
+import org.mockito.Mockito;
+
 
 public class TestQueryProcessor {
-  @Mocked
-  HttpServletRequest request;
+  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   private ParamValueProcessor createProcessor(String name, Class<?> type, String collectionFormat) {
     return createProcessor(name, type, null, true, collectionFormat);
@@ -59,12 +58,7 @@ public class TestQueryProcessor {
 
   @Test
   public void testGetValueNormal() throws Exception {
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = "value";
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn("value");
 
     ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     Object value = processor.getValue(request);
@@ -73,12 +67,7 @@ public class TestQueryProcessor {
 
   @Test
   public void testGetValueContainerType() throws Exception {
-    new Expectations() {
-      {
-        request.getParameterValues("name");
-        result = new String[] {"value", "value2"};
-      }
-    };
+    Mockito.when(request.getParameterValues("name")).thenReturn(new String[] {"value", "value2"});
 
     ParamValueProcessor processor = createProcessor("name", String[].class, "multi");
     String[] value = (String[]) processor.getValue(request);
@@ -87,12 +76,7 @@ public class TestQueryProcessor {
 
   @Test
   public void testGetValueOnCollectionFormatIsCsv() throws Exception {
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = "value2,value3";
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn("value2,value3");
 
     ParamValueProcessor processor = createProcessor("name", String[].class, "csv");
     String[] value = (String[]) processor.getValue(request);
@@ -107,12 +91,7 @@ public class TestQueryProcessor {
 
   @Test
   public void testGetValueRequiredTrue() throws Exception {
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = null;
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn(null);
 
     ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     try {
@@ -125,12 +104,7 @@ public class TestQueryProcessor {
 
   @Test
   public void testGetValueRequiredFalse() throws Exception {
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = null;
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn(null);
 
     ParamValueProcessor processor = createProcessor("name", String.class, "test", false, "multi");
     Object result = processor.getValue(request);
