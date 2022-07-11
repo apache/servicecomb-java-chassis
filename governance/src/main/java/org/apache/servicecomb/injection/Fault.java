@@ -22,13 +22,7 @@ import io.vavr.CheckedFunction0;
 public interface Fault {
   static <T> CheckedFunction0<T> decorateCheckedSupplier(Fault fault, CheckedFunction0<T> supplier) {
     return () -> {
-      try {
-        fault.injectFault();
-      } catch (FaultInjectionException exception) {
-        if (!exception.getFaultResponse().isDelay()) {
-          throw exception;
-        }
-      }
+      fault.injectFault();
       return supplier.apply();
     };
   }

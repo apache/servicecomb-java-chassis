@@ -23,8 +23,6 @@ public class FaultResponse {
 
   private String errorMsg;
 
-  private boolean delay;
-
   public static FaultResponse createFail(int errorCode, String errorMsg) {
     FaultResponse faultResponse = new FaultResponse();
     faultResponse.setErrorCode(errorCode);
@@ -46,13 +44,5 @@ public class FaultResponse {
 
   public void setErrorMsg(String errorMsg) {
     this.errorMsg = errorMsg;
-  }
-
-  public boolean isDelay() {
-    return delay;
-  }
-
-  public void setDelay(boolean delay) {
-    this.delay = delay;
   }
 }
