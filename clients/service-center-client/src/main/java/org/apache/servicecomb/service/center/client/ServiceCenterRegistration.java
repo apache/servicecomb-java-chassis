@@ -131,7 +131,10 @@ public class ServiceCenterRegistration extends AbstractTask {
           startTask(new RegisterSchemaTask(0));
         } else {
           Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
-          dealIsSwaggerDifferent(newMicroservice);
+          boolean swaggerDifferent = isSwaggerDifferent(newMicroservice);
+          if (swaggerDifferent){
+            startTask(new RegisterSchemaTask(0));
+          }
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setMicroservice(microservice);
@@ -149,20 +152,20 @@ public class ServiceCenterRegistration extends AbstractTask {
     }
   }
 
-  private void dealIsSwaggerDifferent(Microservice newMicroservice) {
-    if (isListEquals(newMicroservice.getSchemas(), microservice.getSchemas())) {
-      return;
+  private boolean isSwaggerDifferent(Microservice newMicroservice) {
+    if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()){
+      if (!isListEquals(newMicroservice.getSchemas(),microservice.getSchemas())){
+        return true;
+      }
+      List<SchemaInfo> schemaInfos = serviceCenterClient.getServiceSchemasList(newMicroservice.getServiceId(),true);
+      if (!isListEquals(schemaInfos,this.schemaInfos)){
+        return true;
+      }
     }
-    if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()) {
-      throw new IllegalStateException("Service has already registered, but schema ids not equal, stop register. "
-          + "Change the microservice version or delete the old microservice info and try again.");
-    }
-    LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
-        + "If you want to eliminate this warning. you can Change the microservice version or delete the old " +
-        "microservice info and try again. eg: version:1.0.0 -> 1.0.1");
+    return false;
   }
 
-  private boolean isListEquals(List<String> one, List<String> two) {
+  private boolean isListEquals(List<?> one, List<?> two) {
     return one.size() == two.size() && one.containsAll(two) && two.containsAll(one);
   }
 
