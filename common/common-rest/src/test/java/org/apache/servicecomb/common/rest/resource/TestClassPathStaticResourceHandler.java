@@ -33,8 +33,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import mockit.Expectations;
+import org.mockito.Mockito;
 
 public class TestClassPathStaticResourceHandler {
   static ClassPathStaticResourceHandler handler = new ClassPathStaticResourceHandler();
@@ -83,12 +82,9 @@ public class TestClassPathStaticResourceHandler {
 
   @Test
   public void readContentFailed() throws IOException {
-    new Expectations(handler) {
-      {
-        handler.findResource(anyString);
-        result = new RuntimeExceptionWithoutStackTrace("read content failed.");
-      }
-    };
+    handler = Mockito.spy(TestClassPathStaticResourceHandler.handler);
+    Mockito.when(handler.findResource("web-root/index.html"))
+            .thenThrow(new RuntimeExceptionWithoutStackTrace("read content failed."));
 
     try (LogCollector logCollector = new LogCollector()) {
       Response response = handler.handle("index.html");

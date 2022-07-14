@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -41,18 +42,14 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.properties.ArrayProperty;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import org.mockito.Mockito;
 
 public class TestHeaderProcessor {
-  @Mocked
-  HttpServletRequest request;
+  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   Map<String, String> headers = new HashMap<>();
 
-  RestClientRequest clientRequest;
+  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
   private HeaderProcessor createProcessor(String name, Type type) {
     return createProcessor(name, type, null, true);
@@ -72,23 +69,18 @@ public class TestHeaderProcessor {
     return new HeaderProcessor(headerParameter, javaType);
   }
 
-  private void createClientRequest() {
+  /*private void createClientRequest() {
     clientRequest = new MockUp<RestClientRequest>() {
       @Mock
       void putHeader(String name, String value) {
         headers.put(name, value);
       }
     }.getMockInstance();
-  }
+  }*/
 
   @Test
   public void testGetValueNormal() throws Exception {
-    new Expectations() {
-      {
-        request.getHeader("h1");
-        result = "h1v";
-      }
-    };
+    Mockito.when(request.getHeader("h1")).thenReturn("h1v");
 
     HeaderProcessor processor = createProcessor("h1", String.class);
     Object value = processor.getValue(request);
@@ -100,12 +92,7 @@ public class TestHeaderProcessor {
   public void testGetValueNormalDate() throws Exception {
     Date date = new Date();
     String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date);
-    new Expectations() {
-      {
-        request.getHeader("h1");
-        result = strDate;
-      }
-    };
+    Mockito.when(request.getHeader("h1")).thenReturn(strDate);
 
     HeaderProcessor processor = createProcessor("h1", Date.class);
     Object value = processor.getValue(request);
@@ -114,12 +101,7 @@ public class TestHeaderProcessor {
 
   @Test
   public void testGetValueContainerTypeNull() throws Exception {
-    new Expectations() {
-      {
-        request.getHeaders("h1");
-        result = null;
-      }
-    };
+    Mockito.when(request.getHeader("h1")).thenReturn(null);
 
     HeaderProcessor processor = createProcessor("h1", String[].class, null, false);
     String[] value = (String[]) processor.getValue(request);
@@ -128,12 +110,7 @@ public class TestHeaderProcessor {
 
   @Test
   public void testGetValueRequiredTrue() throws Exception {
-    new Expectations() {
-      {
-        request.getHeader("h1");
-        result = null;
-      }
-    };
+    Mockito.when(request.getHeader("h1")).thenReturn(null);
 
     HeaderProcessor processor = createProcessor("h1", String.class);
     try {
@@ -146,12 +123,7 @@ public class TestHeaderProcessor {
 
   @Test
   public void testGetValueRequiredFalse() throws Exception {
-    new Expectations() {
-      {
-        request.getHeader("h1");
-        result = null;
-      }
-    };
+    Mockito.when(request.getHeader("h1")).thenReturn(null);
 
     HeaderProcessor processor = createProcessor("h1", String.class, "test", false);
     Object value = processor.getValue(request);
@@ -160,12 +132,7 @@ public class TestHeaderProcessor {
 
   @Test
   public void testGetValueArray() throws Exception {
-    new Expectations() {
-      {
-        request.getHeaders("h1");
-        result = Collections.enumeration(Arrays.asList("h1v"));
-      }
-    };
+    Mockito.when(request.getHeaders("h1")).thenReturn(Collections.enumeration(Arrays.asList("h1v")));
 
     HeaderProcessor processor = createProcessor("h1", String[].class);
     String[] value = (String[]) processor.getValue(request);
@@ -175,12 +142,7 @@ public class TestHeaderProcessor {
   @SuppressWarnings("unchecked")
   @Test
   public void testGetValueList() throws Exception {
-    new Expectations() {
-      {
-        request.getHeaders("h1");
-        result = Collections.enumeration(Arrays.asList("h1v"));
-      }
-    };
+    Mockito.when(request.getHeaders("h1")).thenReturn(Collections.enumeration(Arrays.asList("h1v")));
 
     HeaderProcessor processor = createProcessor("h1",
         TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
@@ -192,12 +154,7 @@ public class TestHeaderProcessor {
   @SuppressWarnings("unchecked")
   @Test
   public void testGetValueSet() throws Exception {
-    new Expectations() {
-      {
-        request.getHeaders("h1");
-        result = Collections.enumeration(Arrays.asList("h1v"));
-      }
-    };
+    Mockito.when(request.getHeaders("h1")).thenReturn(Collections.enumeration(Arrays.asList("h1v")));
 
     HeaderProcessor processor = createProcessor("h1",
         TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class),
@@ -208,7 +165,10 @@ public class TestHeaderProcessor {
 
   @Test
   public void testSetValue() throws Exception {
-    createClientRequest();
+    Mockito.doAnswer(invocation -> {
+      headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString("h1v"));
+      return null;
+    }).when(clientRequest).putHeader("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString("h1v"));
 
     HeaderProcessor processor = createProcessor("h1", String.class);
     processor.setValue(clientRequest, "h1v");
@@ -217,7 +177,10 @@ public class TestHeaderProcessor {
 
   @Test
   public void testSetValueNull() throws Exception {
-    createClientRequest();
+    Mockito.doAnswer(invocation -> {
+      headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(null));
+      return null;
+    }).when(clientRequest).putHeader("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(null));
     HeaderProcessor processor = createProcessor("h1", String.class);
     processor.setValue(clientRequest, null);
     Assertions.assertEquals(0, headers.size());
@@ -228,7 +191,10 @@ public class TestHeaderProcessor {
     Date date = new Date(1586957400199L);
     String strDate =  "2020-04-15T13:30:00.199+00:00";
 
-    createClientRequest();
+    Mockito.doAnswer(invocation -> {
+      headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
+      return null;
+    }).when(clientRequest).putHeader("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
 
     HeaderProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
@@ -239,7 +205,10 @@ public class TestHeaderProcessor {
   public void testSetValueDate() throws Exception {
     Date date = new Date();
     String strDate =  new StdDateFormat().format(date);
-    createClientRequest();
+    Mockito.doAnswer(invocation -> {
+      headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
+      return null;
+    }).when(clientRequest).putHeader("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
 
     HeaderProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);

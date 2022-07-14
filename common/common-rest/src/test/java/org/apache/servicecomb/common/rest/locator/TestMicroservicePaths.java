@@ -28,10 +28,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
+import org.mockito.Mockito;
 
 public class TestMicroservicePaths {
   static SCBEngine scbEngine;
@@ -46,7 +43,7 @@ public class TestMicroservicePaths {
         .run();
 
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
-    paths = Deencapsulation.getField(spm, "producerPaths");
+    paths = spm.producerPaths;
   }
 
   @AfterClass
@@ -65,17 +62,12 @@ public class TestMicroservicePaths {
   }
 
   @Test
-  public void testAddResourceStaticDuplicatedHttpMethod(@Mocked RestOperationMeta staticResPost) {
-    new Expectations() {
-      {
-        staticResPost.getHttpMethod();
-        result = "POST";
-        staticResPost.getAbsolutePath();
-        result = "/static/";
-        staticResPost.isAbsoluteStaticPath();
-        result = true;
-      }
-    };
+  public void testAddResourceStaticDuplicatedHttpMethod() {
+    RestOperationMeta staticResPost = Mockito.mock(RestOperationMeta.class);
+    Mockito.when(staticResPost.getHttpMethod()).thenReturn("POST");
+    Mockito.when(staticResPost.getAbsolutePath()).thenReturn("/static/");
+    Mockito.when(staticResPost.isAbsoluteStaticPath()).thenReturn(true);
+
 
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
             () -> paths.addResource(staticResPost));

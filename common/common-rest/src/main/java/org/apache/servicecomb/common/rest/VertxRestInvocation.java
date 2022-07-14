@@ -24,7 +24,7 @@ import io.vertx.ext.web.RoutingContext;
 public class VertxRestInvocation extends RestProducerInvocation {
   @Override
   protected void createInvocation() {
-    super.createInvocation();
+    callParentCreateInvocation();
 
     RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
     VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx,
@@ -32,5 +32,12 @@ public class VertxRestInvocation extends RestProducerInvocation {
 
     invocation.setTransportContext(transportContext);
     routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
+  }
+
+  /**
+   * easy to mock when do test
+   */
+  void callParentCreateInvocation() {
+    super.createInvocation();
   }
 }
