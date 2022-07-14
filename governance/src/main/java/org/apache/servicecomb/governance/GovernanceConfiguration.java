@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
@@ -36,6 +37,7 @@ import org.apache.servicecomb.governance.marker.operator.PrefixOperator;
 import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
@@ -81,6 +83,11 @@ public class GovernanceConfiguration {
     return new RetryProperties();
   }
 
+  @Bean
+  public FaultInjectionProperties faultInjectionProperties() {
+    return new FaultInjectionProperties();
+  }
+
   // handlers configuration
   @Bean
   public BulkheadHandler bulkheadHandler(BulkheadProperties bulkheadProperties) {
@@ -109,6 +116,11 @@ public class GovernanceConfiguration {
   @Bean
   public RetryHandler retryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
     return new RetryHandler(retryProperties, retryExtension);
+  }
+
+  @Bean
+  public FaultInjectionHandler faultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
+    return new FaultInjectionHandler(faultInjectionProperties);
   }
 
   // request processor
