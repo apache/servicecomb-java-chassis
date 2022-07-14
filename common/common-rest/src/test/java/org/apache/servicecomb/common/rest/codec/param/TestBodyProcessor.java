@@ -34,8 +34,6 @@ import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyP
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -44,22 +42,24 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 
 public class TestBodyProcessor {
 
-  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+  final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   MultiMap headers;
 
-  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
+  final RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
   ParamValueProcessor processor;
 
-  ByteBuf inputBodyByteBuf = Unpooled.buffer();
+  final ByteBuf inputBodyByteBuf = Unpooled.buffer();
 
-  BufferInputStream inputStream = new BufferInputStream(inputBodyByteBuf);
+  final BufferInputStream inputStream = new BufferInputStream(inputBodyByteBuf);
 
   Buffer outputBodyBuffer;
 
@@ -92,7 +92,7 @@ public class TestBodyProcessor {
     initInputStream();
   }
 
-  @Before
+  @BeforeEach
   public void before() {
     headers = new HeadersMultiMap();
     value = "value";

@@ -24,10 +24,10 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestMicroservicePaths {
@@ -35,7 +35,7 @@ public class TestMicroservicePaths {
 
   static MicroservicePaths paths;
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
@@ -46,7 +46,7 @@ public class TestMicroservicePaths {
     paths = spm.producerPaths;
   }
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     scbEngine.destroy();
     ArchaiusUtils.resetConfig();

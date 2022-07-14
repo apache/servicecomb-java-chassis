@@ -25,15 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.PathProcessorCreator.PathProcessor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestPathProcessor {
-  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+  final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-  Map<String, String> pathVars = new HashMap<>();
+  final Map<String, String> pathVars = new HashMap<>();
 
   ParamValueProcessor processor;
 

@@ -33,15 +33,15 @@ import com.google.common.base.Strings;
 import org.junit.jupiter.api.Test;
 
 public class TestDoSFix {
-  static ObjectMapper mapper = new RestObjectMapper();
+  static final ObjectMapper mapper = new RestObjectMapper();
 
-  static String invalidNum = Strings.repeat("9", 100_0000);
+  static final String invalidNum = Strings.repeat("9", 100_0000);
 
-  static String invalidStr = "\"" + invalidNum + "\"";
+  static final String invalidStr = "\"" + invalidNum + "\"";
 
-  static String invalidArrNum = "[" + invalidNum + "]";
+  static final String invalidArrNum = "[" + invalidNum + "]";
 
-  static String invalidArrStr = "[\"" + invalidNum + "\"]";
+  static final String invalidArrStr = "[\"" + invalidNum + "\"]";
 
   public static class Model {
     public Color color;

@@ -40,20 +40,20 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class TestRestProducerInvocation {
 
-  Transport transport = Mockito.mock(Transport.class);
+  final Transport transport = Mockito.mock(Transport.class);
 
   HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
 
-  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
+  final HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
   RestProducerInvocation restProducerInvocation;
 
@@ -61,7 +61,7 @@ public class TestRestProducerInvocation {
 
   boolean scheduleInvocation;
 
-  static List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+  static final List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
   static SCBEngine scbEngine;
 
@@ -71,7 +71,7 @@ public class TestRestProducerInvocation {
 
   static MicroserviceMeta microserviceMeta;
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
@@ -82,7 +82,7 @@ public class TestRestProducerInvocation {
     microserviceMeta = operationMeta.getMicroserviceMeta();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
     ArchaiusUtils.resetConfig();
