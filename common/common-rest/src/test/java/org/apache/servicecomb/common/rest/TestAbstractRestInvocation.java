@@ -871,8 +871,7 @@ public class TestAbstractRestInvocation {
   public void doInvoke() throws Throwable {
     Response response = Response.ok("ok");
     Handler handler = (invocation, asyncResp) -> asyncResp.complete(response);
-    List<Handler> handlerChain = Arrays.asList(handler);
-    invocation.handlerList = handlerChain;
+    invocation.setHandlerList(Arrays.asList(handler));
 
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {

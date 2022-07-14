@@ -27,8 +27,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -40,9 +42,19 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 
 public class TestRestClientRequestImpl {
-  private HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+  private HttpClientRequest request;
 
   private Context context = Mockito.mock(Context.class);
+
+  @BeforeEach
+  public void before() {
+    request = Mockito.mock(HttpClientRequest.class);
+  }
+
+  @AfterEach
+  public void after() {
+    Mockito.reset(request);
+  }
 
   @Test
   public void testForm() throws Exception {

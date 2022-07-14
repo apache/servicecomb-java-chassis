@@ -88,8 +88,7 @@ public class Invocation extends SwaggerInvocation {
   private final Map<String, Object> handlerContext = localContext;
 
   // handler链，是arrayList，可以高效地通过index访问
-  @VisibleForTesting
-  public List<Handler> handlerList;
+  private List<Handler> handlerList;
 
   private int handlerIndex;
 
@@ -160,6 +159,11 @@ public class Invocation extends SwaggerInvocation {
 
   public List<Handler> getHandlerChain() {
     return schemaMeta.getMicroserviceMeta().getHandlerChain();
+  }
+
+  @VisibleForTesting
+  public void setHandlerList(List<Handler> handlerList) {
+    this.handlerList = handlerList;
   }
 
   public Executor getResponseExecutor() {
