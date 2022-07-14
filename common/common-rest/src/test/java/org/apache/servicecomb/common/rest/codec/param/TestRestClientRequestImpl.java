@@ -31,6 +31,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -141,7 +144,28 @@ public class TestRestClientRequestImpl {
   }
 
   @Test
-  public void doEndWithUpload() {
+  @EnabledOnJre(JRE.JAVA_8)
+  public void doEndWithUploadForJre8() {
+    Map<String, String> headers = new HashMap<>();
+    Mockito.doAnswer(invocation -> {
+      headers.put(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null");
+      return null;
+    }).when(request).putHeader(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null");
+
+    UUID uuid = new UUID(0, 0);
+    try (MockedStatic<UUID> mockedStatic = Mockito.mockStatic(UUID.class)) {
+      mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
+      RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
+      restClientRequest.doEndWithUpload();
+
+      Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null",
+              headers.get(HttpHeaders.CONTENT_TYPE));
+    }
+  }
+
+  @Test
+  @EnabledForJreRange(min = JRE.JAVA_9)
+  public void doEndWithUploadAfterJre8() {
     Map<String, String> headers = new HashMap<>();
     Mockito.doAnswer(invocation -> {
       headers.put(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
