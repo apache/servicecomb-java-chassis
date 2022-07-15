@@ -19,9 +19,9 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.CookieProcessorCreator.CookieProcessor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import io.swagger.models.parameters.CookieParameter;
+import org.junit.jupiter.api.Test;
 
 public class TestCookieProcessorCreator {
   @Test

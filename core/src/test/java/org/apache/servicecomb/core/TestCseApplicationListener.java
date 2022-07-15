@@ -20,28 +20,28 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.context.event.ContextClosedEvent;
 
-import mockit.Mocked;
-
 public class TestCseApplicationListener {
-  @Before
+  @BeforeEach
   public void before() {
     ConfigUtil.installDynamicConfig();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     DiscoveryManager.renewInstance();
     ArchaiusUtils.resetConfig();
   }
 
   @Test
-  public void onApplicationEvent_close(@Mocked ContextClosedEvent contextClosedEvent) {
+  public void onApplicationEvent_close() {
+    ContextClosedEvent contextClosedEvent = Mockito.mock(ContextClosedEvent.class);
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.setStatus(SCBStatus.UP);
 

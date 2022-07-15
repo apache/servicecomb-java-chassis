@@ -23,7 +23,6 @@ import java.util.Date;
 
 import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.json.JsonObject;
+import org.junit.jupiter.api.Test;
 
 public class TestRestObjectMapper {
 

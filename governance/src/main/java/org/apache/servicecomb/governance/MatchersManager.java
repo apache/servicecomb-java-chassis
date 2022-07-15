@@ -27,28 +27,17 @@ import org.apache.servicecomb.governance.service.MatchersService;
 public class MatchersManager {
   private MatchersService matchersService;
 
-  private InvocationContext invocationContext;
-
-  public MatchersManager(MatchersService matchersService, InvocationContext invocationContext) {
+  public MatchersManager(MatchersService matchersService) {
     this.matchersService = matchersService;
-    this.invocationContext = invocationContext;
   }
 
   public <T extends AbstractPolicy> T match(GovernanceRequest request, Map<String, T> policies) {
-    Map<String, Boolean> calculatedMatches = invocationContext.getCalculatedMatches();
-
     List<T> sortPolicies = new ArrayList<>(policies.size());
     sortPolicies.addAll(policies.values());
     sortPolicies.sort(T::compareTo);
 
     for (T policy : sortPolicies) {
-      if (calculatedMatches.containsKey(policy.getName())) {
-        return policy;
-      }
-
-      boolean keyMatch = matchersService.checkMatch(request, policy.getName());
-      invocationContext.addMatch(policy.getName(), keyMatch);
-      if (keyMatch) {
+      if (matchersService.checkMatch(request, policy.getName())) {
         return policy;
       }
     }

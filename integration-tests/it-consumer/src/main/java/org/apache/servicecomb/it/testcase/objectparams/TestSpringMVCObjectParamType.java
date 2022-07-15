@@ -37,7 +37,7 @@ import org.apache.servicecomb.it.schema.objectparams.ObjectParamTypeSchema;
 import org.apache.servicecomb.it.schema.objectparams.QueryObjectModel;
 import org.apache.servicecomb.it.schema.objectparams.RecursiveObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.TestNullFieldAndDefaultValueParam;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

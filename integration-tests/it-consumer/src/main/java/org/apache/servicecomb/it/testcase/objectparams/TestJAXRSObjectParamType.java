@@ -41,7 +41,7 @@ import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam2;
 import org.apache.servicecomb.it.schema.objectparams.ObjectParamTypeSchema;
 import org.apache.servicecomb.it.schema.objectparams.RecursiveObjectParam;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

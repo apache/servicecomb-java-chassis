@@ -25,17 +25,17 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestRestEngineSchemaListener {
   static SCBEngine scbEngine;
 
   static ServicePathManager spm;
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
@@ -44,7 +44,7 @@ public class TestRestEngineSchemaListener {
     spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
   }
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     scbEngine.destroy();
     ArchaiusUtils.resetConfig();

@@ -18,7 +18,7 @@ package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

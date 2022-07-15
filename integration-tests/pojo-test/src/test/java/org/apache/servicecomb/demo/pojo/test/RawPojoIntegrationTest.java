@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.demo.pojo.test;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 public class RawPojoIntegrationTest extends PojoIntegrationTestBase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     PojoTestMain.main(new String[0]);
   }

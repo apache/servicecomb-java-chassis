@@ -53,8 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.ext.web.RoutingContext;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class VertxRestAccessLogPatternParserTest {
   private static final String ROW_PATTERN = "[cs-method] %m %s%T%D%h%v%p%B%b%r%U%q"
@@ -312,30 +310,37 @@ public class VertxRestAccessLogPatternParserTest {
     metaList0.add(new VertxRestAccessLogItemMeta("%0", "}abc", null, 1));
     metaList0.add(new VertxRestAccessLogItemMeta("%m", null, null));
 
-    new MockUp<VertxRestAccessLogPatternParser>() {
-      @Mock
-      List<VertxRestAccessLogItemMeta> loadVertxRestLogItemMeta() {
-        List<VertxRestAccessLogItemMeta> metaList = new ArrayList<>(1);
-        CompositeVertxRestAccessLogItemMeta compositeMeta0 = new CompositeVertxRestAccessLogItemMeta() {
-          @Override
-          public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
-            return metaList0;
-          }
-        };
-        CompositeVertxRestAccessLogItemMeta compositeMeta1 = new CompositeVertxRestAccessLogItemMeta() {
-          @Override
-          public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
-            return metaList1;
-          }
-        };
-        metaList.add(compositeMeta0);
-        metaList.add(compositeMeta1);
-        metaList.add(new VertxRestAccessLogItemMeta("%{", null, null));
-        return metaList;
+    CompositeVertxRestAccessLogItemMeta compositeMeta0 = new CompositeVertxRestAccessLogItemMeta() {
+      @Override
+      public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
+        return metaList0;
+      }
+    };
+    CompositeVertxRestAccessLogItemMeta compositeMeta1 = new CompositeVertxRestAccessLogItemMeta() {
+      @Override
+      public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
+        return metaList1;
       }
     };
 
-    VertxRestAccessLogPatternParser parser = new VertxRestAccessLogPatternParser();
+    List<VertxRestAccessLogItemMeta> metaList = new ArrayList<>(1);
+    metaList.add(compositeMeta0);
+    metaList.add(compositeMeta1);
+    metaList.add(new VertxRestAccessLogItemMeta("%{", null, null));
+
+    VertxRestAccessLogPatternParser parser = Mockito.mock(VertxRestAccessLogPatternParser.class);
+    Mockito.when(parser.getMetaList()).thenAnswer(invocation -> {
+      List<VertxRestAccessLogItemMeta> resultMetaList = new ArrayList<>();
+      for (VertxRestAccessLogItemMeta meta : metaList) {
+        if (CompositeVertxRestAccessLogItemMeta.class.isAssignableFrom(meta.getClass())) {
+          resultMetaList.addAll(((CompositeVertxRestAccessLogItemMeta) meta).getAccessLogItemMetas());
+        } else {
+          resultMetaList.add(meta);
+        }
+      }
+      VertxRestAccessLogPatternParser.sortAccessLogItemMeta(resultMetaList);
+      return resultMetaList;
+    });
 
     List<VertxRestAccessLogItemMeta> accessLogItemMetaList = parser.getMetaList();
 

@@ -18,8 +18,9 @@
 package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Test;
+
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 

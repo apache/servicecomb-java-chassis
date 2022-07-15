@@ -24,12 +24,12 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.buffer.Buffer;
+import org.junit.jupiter.api.Test;
 
 public class TestProduceTextPlainProcessor {
   ProduceProcessor pp = ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor();

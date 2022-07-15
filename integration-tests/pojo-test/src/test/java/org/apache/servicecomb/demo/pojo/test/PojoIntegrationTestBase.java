@@ -38,11 +38,11 @@ import org.apache.servicecomb.demo.smartcare.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
-@Ignore
+@Disabled
 public class PojoIntegrationTestBase {
 
   @Test

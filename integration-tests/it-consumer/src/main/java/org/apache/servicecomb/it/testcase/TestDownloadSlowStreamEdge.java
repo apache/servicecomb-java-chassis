@@ -19,7 +19,7 @@ package org.apache.servicecomb.it.testcase;
 import java.io.IOException;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

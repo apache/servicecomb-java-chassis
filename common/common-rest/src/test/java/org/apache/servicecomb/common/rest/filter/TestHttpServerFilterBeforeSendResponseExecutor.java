@@ -24,17 +24,17 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import mockit.Mocked;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 public class TestHttpServerFilterBeforeSendResponseExecutor {
-  @Mocked
+  @Mock
   Invocation invocation;
 
-  @Mocked
+  @Mock
   HttpServletResponseEx responseEx;
 
   List<HttpServerFilter> httpServerFilters = new ArrayList<>();
@@ -42,7 +42,7 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   HttpServerFilterBeforeSendResponseExecutor executor =
       new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
 
-  @Before
+  @BeforeEach
   public void setup() {
     httpServerFilters.add(new HttpServerFilterBaseForTest());
   }

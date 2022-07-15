@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 public class RawJaxrsIntegrationTest extends JaxrsIntegrationTestBase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     JaxrsTestMain.main(new String[0]);
   }

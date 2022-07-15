@@ -89,6 +89,7 @@ public class InstanceIsolationTest {
     GovernanceRequest request2 = new GovernanceRequest();
     request2.setInstanceId("instance02");
     request2.setServiceName("service01");
+    request2.setUri("/test");
 
     CircuitBreaker circuitBreaker2 = instanceIsolationHandler.getActuator(request2);
     ds2.withCircuitBreaker(circuitBreaker2);

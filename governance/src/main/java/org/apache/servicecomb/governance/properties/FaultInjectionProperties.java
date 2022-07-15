@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.governance;
+package org.apache.servicecomb.governance.properties;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 
-public class MockInvocationContext implements InvocationContext {
-  private final ThreadLocal<Map<String, Boolean>> context = new ThreadLocal<>();
+public class FaultInjectionProperties extends PolicyProperties<FaultInjectionPolicy> {
+  public static final String MATCH_FAULT_INJECTION_KEY = "servicecomb.faultInjection";
 
-  @Override
-  public Map<String, Boolean> getCalculatedMatches() {
-    Map<String, Boolean> result = context.get();
-    if (result == null) {
-      return Collections.emptyMap();
-    }
-    return result;
+  public FaultInjectionProperties() {
+    super(MATCH_FAULT_INJECTION_KEY);
   }
 
   @Override
-  public void addMatch(String key, Boolean value) {
-    Map<String, Boolean> result = context.get();
-    if (result == null) {
-      result = new HashMap<>();
-      context.set(result);
-    }
-    result.put(key, value);
+  public Class<FaultInjectionPolicy> getEntityClass() {
+    return FaultInjectionPolicy.class;
   }
 }

@@ -24,9 +24,7 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
-
-import mockit.Mock;
-import mockit.MockUp;
+import org.mockito.Mockito;
 
 public class PathVarParamWriterTest {
 
@@ -85,12 +83,8 @@ public class PathVarParamWriterTest {
   }
 
   private PathVarParamWriter createPathVarParamWriter() {
-    RestParam restParam = new MockUp<RestParam>() {
-      @Mock
-      public String getParamName(){
-        return "test";
-      }
-    }.getMockInstance();
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(restParam.getParamName()).thenReturn("test");
     return new PathVarParamWriter(restParam);
   }
 }

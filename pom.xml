@@ -29,7 +29,7 @@
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>2.7.4</version>
+  <version>2.7.5</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
@@ -50,7 +50,6 @@
     <dependency-check-maven-plugin.version>7.1.1</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.40.1</docker-maven-plugin.version>
     <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
-    <gmaven-plugin.version>1.5</gmaven-plugin.version>
     <gpg-maven-plugin.version>3.0.1</gpg-maven-plugin.version>
     <lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
@@ -69,7 +68,7 @@
     <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
     <site-maven-plugin.version>3.12.0</site-maven-plugin.version>
     <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
-    <spotbug-maven-plugin.version>4.7.0.0</spotbug-maven-plugin.version>
+    <spotbug-maven-plugin.version>4.7.1.0</spotbug-maven-plugin.version>
     <spring-boot-maven-plugin.version>2.7.0</spring-boot-maven-plugin.version>
     <surefire-maven-plugin.version>3.0.0-M7</surefire-maven-plugin.version>
     <!-- plugin version end -->
@@ -352,11 +351,6 @@
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
           <version>${docker-maven-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.gmaven</groupId>
-          <artifactId>gmaven-plugin</artifactId>
-          <version>${gmaven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>

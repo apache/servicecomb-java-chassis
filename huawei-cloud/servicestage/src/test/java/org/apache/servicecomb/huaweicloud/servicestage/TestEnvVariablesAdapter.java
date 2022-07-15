@@ -17,14 +17,14 @@
 package org.apache.servicecomb.huaweicloud.servicestage;
 
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestEnvVariablesAdapter {
 
-  @BeforeClass
+  @BeforeAll
   public static void init() {
     System.setProperty("servicecomb.huaweicloud.servicestage.cas.application-id", "application-id");
     System.setProperty("servicecomb.huaweicloud.servicestage.cas.environment-id", "env-id");
@@ -41,7 +41,7 @@ public class TestEnvVariablesAdapter {
     Assertions.assertEquals("env-id", instance.getProperties().get("CAS_ENVIRONMENT_ID"));
   }
 
-  @AfterClass
+  @AfterAll
   public static void destroy() {
     System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.application-id");
     System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.environment-id");

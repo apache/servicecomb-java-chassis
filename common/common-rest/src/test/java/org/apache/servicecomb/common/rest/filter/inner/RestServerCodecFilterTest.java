@@ -23,12 +23,13 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.fasterxml.jackson.databind.JavaType;
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Endpoint;
@@ -36,7 +37,10 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -52,29 +56,30 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.json.Json;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
+import org.mockito.Mockito;
+
+import javax.servlet.http.Part;
 
 public class RestServerCodecFilterTest {
   RestServerCodecFilter codecFilter = new RestServerCodecFilter();
 
   Invocation invocation;
 
-  @Mocked
-  Endpoint endpoint;
+  Endpoint endpoint = Mockito.mock(Endpoint.class);
 
-  @Mocked
-  OperationMeta operationMeta;
+  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
-  @Mocked
-  RestOperationMeta restOperationMeta;
+  SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
 
-  @Mocked
-  HttpTransportContext transportContext;
+  MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
 
-  @Mocked
-  HttpServletResponseEx responseEx;
+  InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
+
+  RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
+
+  HttpTransportContext transportContext = Mockito.mock(HttpTransportContext.class);
+
+  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
   MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
@@ -103,45 +108,36 @@ public class RestServerCodecFilterTest {
 
   @Before
   public void setUp() {
-    invocation = InvocationFactory.forProvider(endpoint, operationMeta, null);
+    Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
+    Mockito.when(microserviceMeta.getHandlerChain()).thenReturn(new ArrayList<>());
+    Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
+    Mockito.when(transportContext.getProduceProcessor()).thenReturn(Mockito.mock(ProduceJsonProcessor.class));
+    invocation = Mockito.spy(InvocationFactory.forProvider(endpoint, operationMeta, null));
   }
 
   private void mockDecodeRequestFail() {
-    new Expectations(invocation) {
-      {
-        invocation.getTransportContext();
-        result = transportContext;
-
-        invocation.getRequestEx();
-        result = new RuntimeExceptionWithoutStackTrace("mock encode request failed");
-      }
-    };
+    Mockito.when(invocation.getTransportContext()).thenReturn(transportContext);
+    Mockito.when(transportContext.getResponseEx()).thenReturn(responseEx);
+    Mockito.when(invocation.getRequestEx()).thenThrow(new RuntimeExceptionWithoutStackTrace("mock encode request failed"));
   }
 
   @Test
-  public void should_not_invoke_filter_when_decode_request_failed(@Mocked FilterNode nextNode) {
+  public void should_not_invoke_filter_when_decode_request_failed() {
+    FilterNode nextNode = Mockito.mock(FilterNode.class);
     mockDecodeRequestFail();
 
     codecFilter.onFilter(invocation, nextNode);
 
-    new Verifications() {
-      {
-        nextNode.onFilter(invocation);
-        times = 0;
-      }
-    };
+    Mockito.verify(nextNode, Mockito.times(0)).onFilter(invocation);
   }
 
   @Test
   public void should_convert_exception_to_response_when_decode_request_failed()
       throws ExecutionException, InterruptedException {
     mockDecodeRequestFail();
-    new Expectations(invocation) {
-      {
-        invocation.findResponseType(anyInt);
-        result = TypeFactory.defaultInstance().constructType(String.class);
-      }
-    };
+    Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode()))
+            .thenReturn(TypeFactory.defaultInstance().constructType(String.class));
 
     Response response = codecFilter.onFilter(invocation, nextNode).get();
 
@@ -151,18 +147,14 @@ public class RestServerCodecFilterTest {
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {
-    new Expectations(invocation) {
-      {
-        invocation.getTransportContext();
-        result = transportContext;
-
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = restOperationMeta;
-
-        invocation.findResponseType(anyInt);
-        result = TypeFactory.defaultInstance().constructType(String.class);
-      }
-    };
+    Mockito.when(invocation.getTransportContext()).thenReturn(transportContext);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
+    Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode())).thenReturn(TypeFactory.defaultInstance().constructType(String.class));
+    JavaType javaType = Mockito.mock(JavaType.class);
+    Mockito.when(invocationRuntimeType.findResponseType(200)).thenReturn(javaType);
+    Mockito.when(javaType.getRawClass()).thenAnswer(invocationOnMock -> Part.class);
+    Mockito.when(invocation.getTransportContext()).thenReturn(transportContext);
+    Mockito.when(transportContext.getResponseEx()).thenReturn(responseEx);
 
     codecFilter.onFilter(invocation, nextNode).get();
   }
@@ -172,15 +164,7 @@ public class RestServerCodecFilterTest {
     headers.add("h1", "v1");
     success_invocation();
 
-    new Verifications() {
-      {
-        String name;
-        String value;
-        responseEx.addHeader(name = withCapture(), value = withCapture());
-        assertThat(name).isEqualTo("h1");
-        assertThat(value).isEqualTo("v1");
-      }
-    };
+   Mockito.verify(responseEx).addHeader("h1", "v1");
   }
 
   @Test
@@ -190,15 +174,8 @@ public class RestServerCodecFilterTest {
         .add(CONTENT_LENGTH, "10");
     success_invocation();
 
-    new Verifications() {
-      {
-        List<String> names = new ArrayList<>();
-        List<String> values = new ArrayList<>();
-        responseEx.addHeader(withCapture(names), withCapture(values));
-        assertThat(names).containsExactly("h1", "h2");
-        assertThat(values).containsExactly("v1", "v2");
-      }
-    };
+    Mockito.verify(responseEx, Mockito.times(1)).addHeader("h1", "v1");
+    Mockito.verify(responseEx, Mockito.times(1)).addHeader("h2", "v2");
   }
 
   @Test
@@ -208,14 +185,7 @@ public class RestServerCodecFilterTest {
         .add(TRANSFER_ENCODING, "test");
     success_invocation();
 
-    new Verifications() {
-      {
-        List<String> names = new ArrayList<>();
-        List<String> values = new ArrayList<>();
-        responseEx.addHeader(withCapture(names), withCapture(values));
-        assertThat(names).containsExactly("h1", "h2");
-        assertThat(values).containsExactly("v1", "v2");
-      }
-    };
+    Mockito.verify(responseEx, Mockito.times(1)).addHeader("h1", "v1");
+    Mockito.verify(responseEx, Mockito.times(1)).addHeader("h2", "v2");
   }
 }

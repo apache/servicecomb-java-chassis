@@ -33,8 +33,7 @@ import org.junit.Test;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
-import mockit.Mock;
-import mockit.MockUp;
+import org.mockito.Mockito;
 
 public class TestPath {
 
@@ -119,21 +118,12 @@ public class TestPath {
   @Test
   public void testQueryVarParamWriter() {
     boolean status = true;
-    new MockUp<RestParam>() {
-      @Mock
-      public String getParamName() {
-        return "queryVar";
-      }
-    };
-    new MockUp<QueryVarParamWriter>() {
-      @Mock
-      private Object getParamValue(Object[] args) {
-        return args[0];
-      }
-    };
 
     Parameter parameter = new QueryParameter();
-    QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(parameter, String.class));
+    RestParam restParam = new RestParam(parameter, String.class);
+    RestParam spy = Mockito.spy(restParam);
+    Mockito.when(spy.getParamName()).thenReturn("queryVar");
+    QueryVarParamWriter writer = new QueryVarParamWriter(spy);
     try {
       Map<String, Object> parameters = new HashMap<>();
       parameters.put("queryVar", "T");

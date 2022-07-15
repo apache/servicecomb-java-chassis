@@ -20,8 +20,8 @@ package org.apache.servicecomb.core.consumer;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestSyncResponseExecutor {

@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 import javax.ws.rs.core.HttpHeaders;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -122,7 +123,8 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
     return servicePathManager.producerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
   }
 
-  private void initProduceProcessor() {
+  @VisibleForTesting
+  void initProduceProcessor() {
     produceProcessor = restOperationMeta.ensureFindProduceProcessor(requestEx);
     if (produceProcessor == null) {
       LOGGER.error("Accept {} is not supported, operation={}.", requestEx.getHeader(HttpHeaders.ACCEPT),

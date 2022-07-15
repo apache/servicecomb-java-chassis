@@ -24,12 +24,12 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.Collection;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 public class ZipkinTracingIntegrationTest extends TracingTestBase {
-  @Before
+  @BeforeEach
   public void setUp() {
     TracingTestMain.main(new String[0]);
   }

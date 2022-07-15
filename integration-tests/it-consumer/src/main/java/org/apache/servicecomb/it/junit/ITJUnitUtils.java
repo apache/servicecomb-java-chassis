@@ -21,8 +21,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -32,17 +34,22 @@ import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunListener;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.discovery.ClassSelector;
+import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestExecutionListener;
+import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
 
 import com.google.common.reflect.ClassPath;
 
 public final class ITJUnitUtils {
   private static final ClassLoader classLoader = JvmUtils.findClassLoader();
 
-  private static final JUnitCore jUnitCore = new JUnitCore();
+  private static final Launcher launcher;
 
   private static final Stack<String> parents = new Stack<>();
 
@@ -63,12 +70,18 @@ public final class ITJUnitUtils {
   }
 
   static {
-    jUnitCore.addListener(new RunListener() {
+    launcher = LauncherFactory.create();
+    launcher.registerTestExecutionListeners(new TestExecutionListener() {
       @Override
-      public void testFailure(Failure failure) {
-        SCBFailure scbFailure = new SCBFailure(failure.getDescription(), failure.getException());
-        failures.add(scbFailure);
-        System.out.println(scbFailure);
+      public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult result) {
+        if (result.getStatus() == TestExecutionResult.Status.FAILED) {
+          Optional<Throwable> throwable = result.getThrowable();
+          SCBFailure scbFailure = throwable.map(value -> new SCBFailure(testIdentifier.getDisplayName(), value))
+              .orElseGet(() -> new SCBFailure(testIdentifier.getDisplayName(),
+                  new RuntimeException("no exception was thrown but the test failed.")));
+          failures.add(scbFailure);
+          System.out.println(scbFailure);
+        }
       }
     });
   }
@@ -131,8 +144,16 @@ public final class ITJUnitUtils {
 
   public static void run(Class<?>... classes) throws Throwable {
     initClasses(classes);
-    Result result = jUnitCore.run(classes);
-    runCount.addAndGet(result.getRunCount());
+
+    List<ClassSelector> selectors = Arrays.stream(classes).map(DiscoverySelectors::selectClass)
+        .collect(Collectors.toList());
+    LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request().selectors(selectors).build();
+    launcher.execute(request, new TestExecutionListener() {
+      @Override
+      public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult) {
+        runCount.addAndGet(1);
+      }
+    });
   }
 
   public static void initClasses(Class<?>... classes) throws Throwable {
@@ -201,6 +222,7 @@ public final class ITJUnitUtils {
    * 3.run the case
    * 4.after finished the debug, remove code of ITJUnitUtils.initForDebug
    * </pre>
+   *
    * @param producerName
    * @param transport
    */

@@ -37,8 +37,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.assertj.core.api.Condition;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
@@ -83,7 +83,7 @@ public class TestUpload {
   private static Consumers<UploadIntf> consumersJaxrs = new Consumers<>("uploadJaxrsSchema",
       UploadIntf.class);
 
-  @Before
+  @BeforeEach
   public void init() {
     try {
       File file1 = File.createTempFile("jaxrstest1", ".txt");

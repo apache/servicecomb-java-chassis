@@ -17,25 +17,25 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.netflix.config.DynamicProperty;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = JaxrsSpringMain.class)
 public class JaxrsSpringIntegrationTest extends JaxrsIntegrationTestBase {
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     System.setProperty("property.test5", "from_system_property");
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     System.clearProperty("property.test5");
   }

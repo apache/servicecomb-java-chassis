@@ -53,8 +53,8 @@ public class ResultPrinter {
       sb.append(String.format("%s, %s\n"
               + "%s\n",
           failure.getParents(),
-          failure.getTestHeader(),
-          failure.getTrace()));
+          failure.getDisplayName(),
+          failure.getStacktrace()));
     }
     sb.append(String.format("\nrun count:%d, failed count: %d, totalTime: %s.\n",
         ITJUnitUtils.getRunCount(),
