@@ -63,11 +63,6 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>config-center-client</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jmockit</groupId>
-      <artifactId>jmockit</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

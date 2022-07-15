@@ -28,27 +28,25 @@ import org.mockito.Mockito;
 
 import com.netflix.config.WatchedUpdateListener;
 
-import mockit.Deencapsulation;
-
 public class NacosConfigurationSourceImplTest {
   @Test
   public void testCreate() throws Exception {
     NacosConfigurationSourceImpl nacosConfigurationSource = new NacosConfigurationSourceImpl();
     nacosConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getAdded().isEmpty()));
-    UpdateHandler udateHandler = Deencapsulation.getField(nacosConfigurationSource, UpdateHandler.class);
+    UpdateHandler updateHandler = nacosConfigurationSource.getUpdateHandler();
     Map<String, Object> createItems = new HashMap<>();
     createItems.put("nacosTestKey", "testValue");
-    udateHandler.handle(ConfigurationAction.CREATE, createItems);
+    updateHandler.handle(ConfigurationAction.CREATE, createItems);
   }
 
   @Test
   public void testUpdate() throws Exception {
     NacosConfigurationSourceImpl nacosConfigurationSource = new NacosConfigurationSourceImpl();
     nacosConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getChanged().isEmpty()));
-    UpdateHandler udateHandler = Deencapsulation.getField(nacosConfigurationSource, UpdateHandler.class);
+    UpdateHandler updateHandler = nacosConfigurationSource.getUpdateHandler();
     Map<String, Object> updateItems = new HashMap<>();
     updateItems.put("nacosTestKey", "testValue");
-    udateHandler.handle(ConfigurationAction.SET, updateItems);
+    updateHandler.handle(ConfigurationAction.SET, updateItems);
 
   }
 
@@ -56,12 +54,12 @@ public class NacosConfigurationSourceImplTest {
   public void testDelete() throws Exception {
     NacosConfigurationSourceImpl nacosConfigurationSource = new NacosConfigurationSourceImpl();
     nacosConfigurationSource.addUpdateListener(result -> Assertions.assertFalse(result.getDeleted().isEmpty()));
-    UpdateHandler udateHandler = Deencapsulation.getField(nacosConfigurationSource, UpdateHandler.class);
+    UpdateHandler updateHandler = nacosConfigurationSource.getUpdateHandler();
     Map<String, Object> deleteItems = new HashMap<>();
     deleteItems.put("nacosTestKey", "testValue");
 
     nacosConfigurationSource.getCurrentData().put("nacosTestKey", "testValue");
-    udateHandler.handle(ConfigurationAction.DELETE, deleteItems);
+    updateHandler.handle(ConfigurationAction.DELETE, deleteItems);
     Assertions.assertTrue(nacosConfigurationSource.getCurrentData().isEmpty());
   }
 
