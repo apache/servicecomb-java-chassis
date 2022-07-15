@@ -35,8 +35,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import mockit.Deencapsulation;
-
 public class ApolloClientTest {
   @BeforeAll
   public static void setUpClass() {
@@ -48,6 +46,7 @@ public class ApolloClientTest {
   public void refreshApolloConfig() {
     ApolloConfig apolloConfig = ApolloConfig.INSTANCE;
     RestTemplate rest = Mockito.mock(RestTemplate.class);
+    ApolloClient.setRest(rest);
 
     ResponseEntity<String> responseEntity = new ResponseEntity<>(
         "{\"apollo\":\"mocked\", \"configurations\":{\"timeout\":1000}}", HttpStatus.OK);
@@ -59,12 +58,10 @@ public class ApolloClientTest {
     ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     ApolloClient apolloClient = new ApolloClient(updateHandler);
-    Deencapsulation.setField(apolloClient, "rest", rest);
     ConfigRefresh cr = apolloClient.new ConfigRefresh(apolloConfig.getServerUri());
     cr.run();
 
-    Map<String, Object> originMap = Deencapsulation.getField(apolloClient, "originalConfigMap");
-    Assertions.assertEquals(1, originMap.size());
+    Assertions.assertEquals(1, ApolloClient.getOriginalConfigMap().size());
   }
 
   @Test
