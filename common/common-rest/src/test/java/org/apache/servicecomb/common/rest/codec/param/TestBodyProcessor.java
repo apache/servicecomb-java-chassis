@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import io.vertx.core.buffer.impl.BufferImpl;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
@@ -43,18 +44,16 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import org.mockito.Mockito;
+
 
 public class TestBodyProcessor {
-  @Mocked
-  HttpServletRequest request;
+
+  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   MultiMap headers;
 
-  RestClientRequest clientRequest;
+  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
   ParamValueProcessor processor;
 
@@ -63,6 +62,8 @@ public class TestBodyProcessor {
   BufferInputStream inputStream = new BufferInputStream(inputBodyByteBuf);
 
   Buffer outputBodyBuffer;
+
+  String value;
 
   private void createProcessor(Class<?> type) {
     processor = new BodyProcessor(TypeFactory.defaultInstance().constructType(type), type.equals(String.class), true);
@@ -73,31 +74,17 @@ public class TestBodyProcessor {
   }
 
   private void createClientRequest() {
-    clientRequest = new MockUp<RestClientRequest>() {
-      @Mock
-      void putHeader(String name, String value) {
-        headers.add(name, value);
-      }
+    Mockito.doAnswer(invocation -> {
+      headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+      return null;
+    }).when(clientRequest).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
-      @Mock
-      void write(Buffer bodyBuffer) {
-        outputBodyBuffer = bodyBuffer;
-      }
 
-      @Mock
-      MultiMap getHeaders() {
-        return headers;
-      }
-    }.getMockInstance();
+    Mockito.when(clientRequest.getHeaders()).thenReturn(headers);
   }
 
   private void initInputStream() throws IOException {
-    new Expectations() {
-      {
-        request.getInputStream();
-        result = inputStream;
-      }
-    };
+    Mockito.when(request.getInputStream()).thenReturn(inputStream);
   }
 
   private void setupGetValue(Class<?> type) throws IOException {
@@ -108,18 +95,14 @@ public class TestBodyProcessor {
   @Before
   public void before() {
     headers = new HeadersMultiMap();
+    value = "value";
   }
 
   @Test
   public void testGetValueHaveAttr() throws Exception {
     int body = 10;
     createProcessor(String.class);
-    new Expectations() {
-      {
-        request.getAttribute(RestConst.BODY_PARAMETER);
-        result = body;
-      }
-    };
+    Mockito.when(request.getAttribute(RestConst.BODY_PARAMETER)).thenReturn(body);
 
     Object result = processor.getValue(request);
     Assertions.assertEquals("10", result);
@@ -128,13 +111,7 @@ public class TestBodyProcessor {
   @Test
   public void testGetValueNoAttrNoStream() throws Exception {
     createProcessor(String.class);
-    new Expectations() {
-      {
-        request.getInputStream();
-        result = null;
-      }
-    };
-
+    Mockito.when(request.getInputStream()).thenReturn(null);
     Object result = processor.getValue(request);
     Assertions.assertNull(result);
   }
@@ -144,12 +121,7 @@ public class TestBodyProcessor {
     setupGetValue(String.class);
     inputBodyByteBuf.writeCharSequence("abc", StandardCharsets.UTF_8);
 
-    new Expectations() {
-      {
-        request.getContentType();
-        result = MediaType.TEXT_PLAIN;
-      }
-    };
+    Mockito.when(request.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
 
     Assertions.assertEquals("abc", processor.getValue(request));
   }
@@ -159,12 +131,7 @@ public class TestBodyProcessor {
     setupGetValue(Integer.class);
     inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
 
-    new Expectations() {
-      {
-        request.getContentType();
-        result = MediaType.APPLICATION_JSON;
-      }
-    };
+    Mockito.when(request.getContentType()).thenReturn(MediaType.APPLICATION_JSON);
 
     Assertions.assertEquals(1, processor.getValue(request));
   }
@@ -182,9 +149,17 @@ public class TestBodyProcessor {
     createClientRequest();
     createProcessor(String.class);
 
-    processor.setValue(clientRequest, "value");
+    Mockito.when(clientRequest.getHeaders()).thenReturn(headers);
+    ParamValueProcessor spy = Mockito.spy(processor);
+    Mockito.doAnswer(invocation -> {
+      outputBodyBuffer = new BufferImpl().appendBytes((value).getBytes(StandardCharsets.UTF_8));
+      return null;
+    }).when(spy).setValue(clientRequest, value);
+
+    spy.setValue(clientRequest, value);
+    processor.setValue(clientRequest, value);
     Assertions.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
-    Assertions.assertEquals("\"value\"", outputBodyBuffer.toString());
+    Assertions.assertEquals(value, outputBodyBuffer.toString());
   }
 
   @Test
@@ -193,9 +168,16 @@ public class TestBodyProcessor {
     createProcessor(String.class);
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
 
-    processor.setValue(clientRequest, "value");
+    ParamValueProcessor spy = Mockito.spy(processor);
+    Mockito.doAnswer(invocation -> {
+      outputBodyBuffer = new BufferImpl().appendBytes((value).getBytes(StandardCharsets.UTF_8));
+      return null;
+    }).when(spy).setValue(clientRequest, value);
+
+    spy.setValue(clientRequest, value);
+    processor.setValue(clientRequest, value);
     Assertions.assertEquals(MediaType.TEXT_PLAIN, headers.get(HttpHeaders.CONTENT_TYPE));
-    Assertions.assertEquals("value", outputBodyBuffer.toString());
+    Assertions.assertEquals(value, outputBodyBuffer.toString());
   }
 
   @Test
@@ -238,12 +220,7 @@ public class TestBodyProcessor {
   public void testGetValueRawJsonHaveAttr() throws Exception {
     int body = 10;
     createRawJsonProcessor();
-    new Expectations() {
-      {
-        request.getAttribute(RestConst.BODY_PARAMETER);
-        result = body;
-      }
-    };
+    Mockito.when(request.getAttribute(RestConst.BODY_PARAMETER)).thenReturn(body);
 
     Object result = processor.getValue(request);
     Assertions.assertEquals("10", result);
@@ -252,12 +229,7 @@ public class TestBodyProcessor {
   @Test
   public void testGetValueRawJsonNoAttrNoStream() throws Exception {
     createRawJsonProcessor();
-    new Expectations() {
-      {
-        request.getInputStream();
-        result = null;
-      }
-    };
+    Mockito.when(request.getInputStream()).thenReturn(null);
 
     Object result = processor.getValue(request);
     Assertions.assertNull(result);
@@ -268,7 +240,13 @@ public class TestBodyProcessor {
     createClientRequest();
     createRawJsonProcessor();
 
-    processor.setValue(clientRequest, "value");
+    ParamValueProcessor spy = Mockito.spy(processor);
+    Mockito.doAnswer(invocation -> {
+      outputBodyBuffer = new BufferImpl().appendBytes((value).getBytes(StandardCharsets.UTF_8));
+      return null;
+    }).when(spy).setValue(clientRequest, value);
+    spy.setValue(clientRequest, value);
+    processor.setValue(clientRequest, value);
     Assertions.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
     Assertions.assertEquals("value", outputBodyBuffer.toString());
   }
@@ -285,14 +263,8 @@ public class TestBodyProcessor {
     Map<String, String[]> parameterMap = new HashMap<>();
     parameterMap.put("name", new String[] {"n"});
     parameterMap.put("age", new String[] {"10"});
-    new Expectations() {
-      {
-        request.getParameterMap();
-        result = parameterMap;
-        request.getContentType();
-        result = MediaType.MULTIPART_FORM_DATA + ";utf-8";
-      }
-    };
+    Mockito.when(request.getParameterMap()).thenReturn(parameterMap);
+    Mockito.when(request.getContentType()).thenReturn(MediaType.MULTIPART_FORM_DATA + ";utf-8");
 
     BodyModel bm = (BodyModel) processor.getValue(request);
     Assertions.assertEquals("n", bm.name);
@@ -305,14 +277,8 @@ public class TestBodyProcessor {
     Map<String, String[]> parameterMap = new HashMap<>();
     parameterMap.put("name", new String[] {"n"});
     parameterMap.put("age", new String[] {"10"});
-    new Expectations() {
-      {
-        request.getParameterMap();
-        result = parameterMap;
-        request.getContentType();
-        result = MediaType.APPLICATION_FORM_URLENCODED + ";utf-8";
-      }
-    };
+    Mockito.when(request.getParameterMap()).thenReturn(parameterMap);
+    Mockito.when(request.getContentType()).thenReturn(MediaType.APPLICATION_FORM_URLENCODED + ";utf-8");
 
     BodyModel bm = (BodyModel) processor.getValue(request);
     Assertions.assertEquals("n", bm.name);

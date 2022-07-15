@@ -58,6 +58,14 @@ servicecomb:
         - apiPath:
           exact: "/bulkhead"
       services: other:1.0
+    demo-faultInjectDelay: |
+      matches:
+        - apiPath:
+            contains: "/faultInjectDelay"
+    demo-faultInjectAbort: |
+      matches:
+        - apiPath:
+            contains: "/faultInjectAbort"
   rateLimiting:
     demo-rateLimiting: |
       rate: 1
@@ -105,3 +113,15 @@ servicecomb:
       slidingWindowSize: 2
       slidingWindowType: COUNT_BASED
       waitDurationInOpenState: 1000
+  faultInjection:
+    demo-faultInjectDelay: |
+      delayTime: 2S
+      type: delay
+      percentage: 100
+    demo-faultInjectAbort: |
+      type: abort
+      percentage: 50
+      errorCode: 500
+    wrongIngored: |
+      delayTime: -1
+      type: ERROR

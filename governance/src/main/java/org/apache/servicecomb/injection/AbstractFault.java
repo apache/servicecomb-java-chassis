@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest;
+package org.apache.servicecomb.injection;
 
-import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 
-import io.vertx.ext.web.RoutingContext;
+public abstract class AbstractFault implements Fault {
+  protected String key;
 
-public class VertxRestInvocation extends RestProducerInvocation {
-  @Override
-  protected void createInvocation() {
-    callParentCreateInvocation();
+  protected FaultInjectionPolicy policy;
 
-    RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx,
-        produceProcessor);
-
-    invocation.setTransportContext(transportContext);
-    routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
+  public AbstractFault(String key, FaultInjectionPolicy policy) {
+    this.key = key;
+    this.policy = policy;
   }
 
-  /**
-   * easy to mock when do test
-   */
-  void callParentCreateInvocation() {
-    super.createInvocation();
+  @Override
+  public void injectFault() {
+    FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
+    injectFault(faultParam);
+  }
+
+  @Override
+  public String getKey() {
+    return key;
   }
 }

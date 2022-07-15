@@ -28,13 +28,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import org.mockito.Mockito;
 
 public class TestPathProcessor {
-  @Mocked
-  HttpServletRequest request;
+  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   Map<String, String> pathVars = new HashMap<>();
 
@@ -46,12 +43,7 @@ public class TestPathProcessor {
 
   private void prepareGetValue(String name, Class<?> type) {
     createProcessor(name, type);
-    new Expectations() {
-      {
-        request.getAttribute(RestConst.PATH_PARAMETERS);
-        result = pathVars;
-      }
-    };
+    Mockito.when(request.getAttribute(RestConst.PATH_PARAMETERS)).thenReturn(pathVars);
   }
 
   @Test

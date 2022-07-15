@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest.definition.path;
+package org.apache.servicecomb.injection;
 
-import java.util.Map;
+import io.vavr.CheckedFunction0;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.servicecomb.common.rest.definition.RestParam;
-
-public abstract class AbstractUrlParamWriter implements UrlParamWriter {
-  protected RestParam param;
-
-  @VisibleForTesting
-  public Object getParamValue(Map<String, Object> args) {
-    if (param == null) {
-      // Wrong server definition
-      //  @GetMapping(path = "/getLocalDateTime/{paramX}")
-      //  public LocalDateTime getLocalDateTimePath(@PathParam("paramY") LocalDateTime date) {
-      throw new IllegalArgumentException("Path parameter name not valid in provider. Check if provider "
-          + "path pattern has the parameter name.");
-    }
-    return args.get(param.getParamName());
+public interface FaultInjectionDecorators {
+  static <T> FaultInjectionDecorateCheckedSupplier<T> ofCheckedSupplier(CheckedFunction0<T> supplier) {
+    return new FaultInjectionDecorateCheckedSupplier<>(supplier);
   }
+
+  class FaultInjectionDecorateCheckedSupplier<T> {
+
+    private CheckedFunction0<T> supplier;
+
+    protected FaultInjectionDecorateCheckedSupplier(CheckedFunction0<T> supplier) {
+      this.supplier = supplier;
+    }
+
+    public FaultInjectionDecorateCheckedSupplier<T> withFaultInjection(Fault fault) {
+      supplier = Fault.decorateCheckedSupplier(fault, supplier);
+      return this;
+    }
+
+    public T get() throws Throwable {
+      return supplier.apply();
+    }
+  }
+
 }

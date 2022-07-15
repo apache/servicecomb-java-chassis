@@ -25,25 +25,26 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.CookieProcessorCreator.CookieProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import org.mockito.Mockito;
 
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestCookieProcessor {
-  @Mocked
-  HttpServletRequest request;
+  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   Map<String, String> cookies = new HashMap<>();
 
-  RestClientRequest clientRequest;
+  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
+
+  String cookieName = "v1";
+
+  String cookieValue = "c1v";
 
   private CookieProcessor createProcessor(String name, Class<?> type) {
     return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);
@@ -54,38 +55,26 @@ public class TestCookieProcessor {
   }
 
   private void createClientRequest() {
-    clientRequest = new MockUp<RestClientRequest>() {
-      @Mock
-      void addCookie(String name, String value) {
-        cookies.put(name, value);
-      }
-    }.getMockInstance();
+    Mockito.doAnswer(invocation -> {
+      cookies.put(cookieName, cookieValue);
+      return null;
+    }).when(clientRequest).addCookie(cookieName, cookieValue);
   }
 
   @Test
   public void testGetValueNoCookies() throws Exception {
-    new Expectations() {
-      {
-        request.getCookies();
-        result = null;
-      }
-    };
+    Mockito.when(request.getCookies()).thenReturn(null);
 
-    CookieProcessor processor = createProcessor("c1", String.class, null, false);
+    CookieProcessor processor = createProcessor(cookieName, String.class, null, false);
     Object value = processor.getValue(request);
     Assertions.assertNull(value);
   }
 
   @Test
   public void testNoCookieAndRequired() throws Exception {
-    new Expectations() {
-      {
-        request.getCookies();
-        result = null;
-      }
-    };
+    Mockito.when(request.getCookies()).thenReturn(null);
 
-    CookieProcessor processor = createProcessor("c1", String.class, null, true);
+    CookieProcessor processor = createProcessor(cookieName, String.class, null, true);
     try {
       processor.getValue(request);
       Assertions.assertEquals("required is true, throw exception", "not throw exception");
@@ -96,13 +85,8 @@ public class TestCookieProcessor {
 
   @Test
   public void testGetValueCookiesNotFound() throws Exception {
-    Cookie[] cookies = new Cookie[] {new Cookie("c1", "c1v")};
-    new Expectations() {
-      {
-        request.getCookies();
-        result = cookies;
-      }
-    };
+    Cookie[] cookies = new Cookie[] {new Cookie(cookieName, cookieValue)};
+    Mockito.when(request.getCookies()).thenReturn(cookies);
 
     CookieProcessor processor = createProcessor("c2", String.class, null, false);
     Object value = processor.getValue(request);
@@ -111,30 +95,20 @@ public class TestCookieProcessor {
 
   @Test
   public void testGetValueCookiesFound() throws Exception {
-    Cookie[] cookies = new Cookie[] {new Cookie("c1", "c1v")};
-    new Expectations() {
-      {
-        request.getCookies();
-        result = cookies;
-      }
-    };
+    Cookie[] cookies = new Cookie[] {new Cookie(cookieName, cookieValue)};
+    Mockito.when(request.getCookies()).thenReturn(cookies);
 
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor(cookieName, String.class);
     Object value = processor.getValue(request);
-    Assertions.assertEquals("c1v", value);
+    Assertions.assertEquals(cookieValue, value);
   }
 
   @Test
   public void testGetValueRequiredTrue() throws Exception {
-    Cookie[] cookies = new Cookie[] {new Cookie("c1", null)};
-    new Expectations() {
-      {
-        request.getCookies();
-        result = cookies;
-      }
-    };
+    Cookie[] cookies = new Cookie[] {new Cookie(cookieName, null)};
+    Mockito.when(request.getCookies()).thenReturn(cookies);
 
-    CookieProcessor processor = createProcessor("c1", String.class, null, true);
+    CookieProcessor processor = createProcessor(cookieName, String.class, null, true);
     try {
       processor.getValue(request);
       Assertions.assertEquals("required is true, throw exception", "not throw exception");
@@ -145,15 +119,10 @@ public class TestCookieProcessor {
 
   @Test
   public void testGetValueRequiredFalse() throws Exception {
-    Cookie[] cookies = new Cookie[] {new Cookie("c1", null)};
-    new Expectations() {
-      {
-        request.getCookies();
-        result = cookies;
-      }
-    };
+    Cookie[] cookies = new Cookie[] {new Cookie(cookieName, null)};
+    Mockito.when(request.getCookies()).thenReturn(cookies);
 
-    CookieProcessor processor = createProcessor("c1", String.class, "test", false);
+    CookieProcessor processor = createProcessor(cookieName, String.class, "test", false);
     Object result = processor.getValue(request);
     Assertions.assertEquals("test", result);
   }
@@ -163,15 +132,10 @@ public class TestCookieProcessor {
   public void testGetValueCookiesDate() throws Exception {
     Date date = new Date();
     String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date);
-    Cookie[] cookies = new Cookie[] {new Cookie("c1", strDate)};
-    new Expectations() {
-      {
-        request.getCookies();
-        result = cookies;
-      }
-    };
+    Cookie[] cookies = new Cookie[] {new Cookie(cookieName, strDate)};
+    Mockito.when(request.getCookies()).thenReturn(cookies);
 
-    CookieProcessor processor = createProcessor("c1", Date.class);
+    CookieProcessor processor = createProcessor(cookieName, Date.class);
     Object value = processor.getValue(request);
     Assertions.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
@@ -180,9 +144,9 @@ public class TestCookieProcessor {
   public void testSetValue() throws Exception {
     createClientRequest();
 
-    CookieProcessor processor = createProcessor("c1", String.class);
-    processor.setValue(clientRequest, "c1v");
-    Assertions.assertEquals("c1v", cookies.get("c1"));
+    CookieProcessor processor = createProcessor(cookieName, String.class);
+    processor.setValue(clientRequest, cookieValue);
+    Assertions.assertEquals(cookieValue, cookies.get(cookieName));
   }
 
   @Test
@@ -190,8 +154,11 @@ public class TestCookieProcessor {
     Date date = new Date(1586957400199L);
     String strDate =  "2020-04-15T13:30:00.199+00:00";
 
-    createClientRequest();
-
+    String cookieValue = RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date);
+    Mockito.doAnswer(invocation -> {
+      cookies.put("h1", cookieValue);
+      return null;
+    }).when(clientRequest).addCookie("h1", cookieValue);
     CookieProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
     Assertions.assertEquals(strDate, cookies.get("h1"));
@@ -203,8 +170,11 @@ public class TestCookieProcessor {
 
     String strDate =  new StdDateFormat().format(date);
 
-    createClientRequest();
-
+    String cookieValue = RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date);
+    Mockito.doAnswer(invocation -> {
+      cookies.put("h1", cookieValue);
+      return null;
+    }).when(clientRequest).addCookie("h1", cookieValue);
     CookieProcessor processor = createProcessor("h1", Date.class);
     processor.setValue(clientRequest, date);
     Assertions.assertEquals(strDate, cookies.get("h1"));
@@ -212,7 +182,7 @@ public class TestCookieProcessor {
 
   @Test
   public void testGetProcessorType() {
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor(cookieName, String.class);
     Assertions.assertEquals("cookie", processor.getProcessorType());
   }
 }

@@ -39,18 +39,14 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.properties.ArrayProperty;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import org.mockito.Mockito;
 
 public class TestFormProcessor {
-  @Mocked
-  HttpServletRequest request;
+  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   Map<String, Object> forms = new HashMap<>();
 
-  RestClientRequest clientRequest;
+  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
   private FormProcessor createProcessor(String name, Type type) {
     return createProcessor(name, type, null, true);
@@ -70,25 +66,11 @@ public class TestFormProcessor {
     return new FormProcessor(formParameter, javaType);
   }
 
-  private void createClientRequest() {
-    clientRequest = new MockUp<RestClientRequest>() {
-      @Mock
-      void addForm(String name, Object value) {
-        forms.put(name, value);
-      }
-    }.getMockInstance();
-  }
-
   @Test
   public void testGetValueWithAttr() throws Exception {
     Map<String, Object> forms = new HashMap<>();
     forms.put("name", "value");
-    new Expectations() {
-      {
-        request.getAttribute(RestConst.FORM_PARAMETERS);
-        result = forms;
-      }
-    };
+    Mockito.when(request.getAttribute(RestConst.FORM_PARAMETERS)).thenReturn(forms);
 
     ParamValueProcessor processor = createProcessor("name", String.class);
     Object value = processor.getValue(request);
@@ -97,12 +79,7 @@ public class TestFormProcessor {
 
   @Test
   public void testGetValueNormal() throws Exception {
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = "value";
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn("value");
 
     ParamValueProcessor processor = createProcessor("name", String.class);
     Object value = processor.getValue(request);
@@ -114,12 +91,7 @@ public class TestFormProcessor {
   public void testGetValueNormalDate() throws Exception {
     Date date = new Date();
     String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date);
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = strDate;
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn(strDate);
 
     ParamValueProcessor processor = createProcessor("name", Date.class);
     Object value = processor.getValue(request);
@@ -128,12 +100,7 @@ public class TestFormProcessor {
 
   @Test
   public void testGetValueContainerTypeNull() throws Exception {
-    new Expectations() {
-      {
-        request.getParameterValues("name");
-        result = null;
-      }
-    };
+    Mockito.when(request.getParameterValues("name")).thenReturn(null);
 
     ParamValueProcessor processor = createProcessor("name", String[].class, null, false);
     String[] value = (String[]) processor.getValue(request);
@@ -142,12 +109,7 @@ public class TestFormProcessor {
 
   @Test
   public void testGetValueNull() throws Exception {
-    new Expectations() {
-      {
-        request.getParameter("name");
-        result = null;
-      }
-    };
+    Mockito.when(request.getParameter("name")).thenReturn(null);
 
     ParamValueProcessor processor = createProcessor("name", String.class, null, true);
     try {
@@ -160,12 +122,7 @@ public class TestFormProcessor {
 
   @Test
   public void testGetValueArray() throws Exception {
-    new Expectations() {
-      {
-        request.getParameterValues("name");
-        result = new String[] {"value"};
-      }
-    };
+    Mockito.when(request.getParameterValues("name")).thenReturn(new String[] {"value"});
 
     ParamValueProcessor processor = createProcessor("name", String[].class);
     String[] value = (String[]) processor.getValue(request);
@@ -175,12 +132,7 @@ public class TestFormProcessor {
   @SuppressWarnings("unchecked")
   @Test
   public void testGetValueList() throws Exception {
-    new Expectations() {
-      {
-        request.getParameterValues("name");
-        result = new String[] {"value"};
-      }
-    };
+    Mockito.when(request.getParameterValues("name")).thenReturn(new String[] {"value"});
 
     ParamValueProcessor processor = createProcessor("name",
         TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
@@ -192,12 +144,7 @@ public class TestFormProcessor {
   @SuppressWarnings("unchecked")
   @Test
   public void testGetValueSet() throws Exception {
-    new Expectations() {
-      {
-        request.getParameterValues("name");
-        result = new String[] {"value"};
-      }
-    };
+    Mockito.when(request.getParameterValues("name")).thenReturn(new String[] {"value"});
 
     ParamValueProcessor processor = createProcessor("name",
         TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null,
@@ -208,7 +155,10 @@ public class TestFormProcessor {
 
   @Test
   public void testSetValue() throws Exception {
-    createClientRequest();
+    Mockito.doAnswer(invocation -> {
+      forms.put("name", "value");
+      return null;
+    }).when(clientRequest).addForm("name", "value");
 
     ParamValueProcessor processor = createProcessor("name", String.class);
     processor.setValue(clientRequest, "value");
@@ -219,8 +169,10 @@ public class TestFormProcessor {
   public void testSetValueDate() throws Exception {
     Date date = new Date();
 
-    createClientRequest();
-
+    Mockito.doAnswer(invocation -> {
+      forms.put("name", date);
+      return null;
+    }).when(clientRequest).addForm("name", date);
     ParamValueProcessor processor = createProcessor("name", Date.class);
     processor.setValue(clientRequest, date);
     Assertions.assertSame(date, forms.get("name"));

@@ -23,31 +23,18 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class VertxRestInvocationTest {
   @Test
   public void testCreateInvocation() {
-    new MockUp<RestProducerInvocation>() {
-      /**
-       * Mock this method to avoid error
-       */
-      @Mock
-      void createInvocation() {
-      }
-    };
-
-    VertxRestInvocation vertxRestInvocation = new VertxRestInvocation();
+    VertxRestInvocation vertxRestInvocation = Mockito.spy(new VertxRestInvocation());
+    Mockito.doNothing().when(vertxRestInvocation).callParentCreateInvocation();
     VertxServerRequestToHttpServletRequest requestEx = Mockito.mock(VertxServerRequestToHttpServletRequest.class);
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Invocation invocation = Mockito.mock(Invocation.class);
 
-    Deencapsulation.setField(
-        vertxRestInvocation, "requestEx", requestEx);
-    Deencapsulation.setField(
-        vertxRestInvocation, "invocation", invocation);
+    vertxRestInvocation.requestEx = requestEx;
+    vertxRestInvocation.invocation = invocation;
     Mockito.when(requestEx.getContext()).thenReturn(routingContext);
 
     vertxRestInvocation.createInvocation();

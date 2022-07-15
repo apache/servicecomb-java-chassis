@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest.definition.path;
+package org.apache.servicecomb.injection;
 
-import java.util.Map;
+public class FaultInjectionException extends RuntimeException {
+  private static final long serialVersionUID = 1675558351029273343L;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.servicecomb.common.rest.definition.RestParam;
+  private final FaultResponse faultResponse;
 
-public abstract class AbstractUrlParamWriter implements UrlParamWriter {
-  protected RestParam param;
+  public FaultInjectionException(FaultResponse faultResponse) {
+    super(faultResponse.getErrorMsg());
+    this.faultResponse = faultResponse;
+  }
 
-  @VisibleForTesting
-  public Object getParamValue(Map<String, Object> args) {
-    if (param == null) {
-      // Wrong server definition
-      //  @GetMapping(path = "/getLocalDateTime/{paramX}")
-      //  public LocalDateTime getLocalDateTimePath(@PathParam("paramY") LocalDateTime date) {
-      throw new IllegalArgumentException("Path parameter name not valid in provider. Check if provider "
-          + "path pattern has the parameter name.");
-    }
-    return args.get(param.getParamName());
+  public FaultResponse getFaultResponse() {
+    return faultResponse;
   }
 }
