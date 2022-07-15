@@ -26,12 +26,23 @@ public class ServiceCenterConfiguration {
    */
   private Boolean ignoreSwaggerDifferent;
 
+  private Boolean coverSwagger;
+
   public Boolean isIgnoreSwaggerDifferent() {
     return ignoreSwaggerDifferent;
   }
 
+  public Boolean isCoverSwagger(){
+    return coverSwagger;
+  }
+
   public ServiceCenterConfiguration setIgnoreSwaggerDifferent(Boolean ignoreSwaggerDifferent) {
     this.ignoreSwaggerDifferent = ignoreSwaggerDifferent;
+    return this;
+  }
+
+  public ServiceCenterConfiguration setCoverSwagger(Boolean coverSwagger){
+    this.coverSwagger = coverSwagger;
     return this;
   }
 }

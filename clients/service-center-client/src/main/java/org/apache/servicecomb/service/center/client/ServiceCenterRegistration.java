@@ -133,13 +133,13 @@ public class ServiceCenterRegistration extends AbstractTask {
           Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
           boolean swaggerDifferent = isSwaggerDifferent(newMicroservice);
           if (swaggerDifferent){
+            LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register");
             startTask(new RegisterSchemaTask(0));
           }
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setMicroservice(microservice);
           eventBus.post(new MicroserviceRegistrationEvent(true));
-          LOGGER.info("microservice is already registered, meta info like swagger contents will not be updated.");
           startTask(new RegisterMicroserviceInstanceTask(0));
         }
       } catch (IllegalStateException e) {
@@ -153,14 +153,23 @@ public class ServiceCenterRegistration extends AbstractTask {
   }
 
   private boolean isSwaggerDifferent(Microservice newMicroservice) {
-    if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()){
-      if (!isListEquals(newMicroservice.getSchemas(),microservice.getSchemas())){
-        return true;
-      }
-      List<SchemaInfo> schemaInfos = serviceCenterClient.getServiceSchemasList(newMicroservice.getServiceId(),true);
-      if (!isListEquals(schemaInfos,this.schemaInfos)){
-        return true;
-      }
+    if (!isListEquals(newMicroservice.getSchemas(),microservice.getSchemas())){
+      return coverAndIgnore();
+    }
+    List<SchemaInfo> schemaInfos =serviceCenterClient.getServiceSchemasList(newMicroservice.getServiceId(),true);
+    if (!isListEquals(schemaInfos,this.schemaInfos)){
+      return coverAndIgnore();
+    }
+    return false;
+    }
+
+  private boolean coverAndIgnore(){
+    if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()&&serviceCenterConfiguration.isCoverSwagger()){
+      return true;
+    }else {
+      LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
+              + "If you want to eliminate this warning. you can Change the microservice version or delete the old " +
+              "microservice info and try again. eg: version:1.0.0 -> 1.0.1");
     }
     return false;
   }
