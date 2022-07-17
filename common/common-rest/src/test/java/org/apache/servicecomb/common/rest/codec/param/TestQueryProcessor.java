@@ -23,18 +23,17 @@ import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.Quer
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-
 public class TestQueryProcessor {
-  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+  final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   private ParamValueProcessor createProcessor(String name, Class<?> type, String collectionFormat) {
     return createProcessor(name, type, null, true, collectionFormat);

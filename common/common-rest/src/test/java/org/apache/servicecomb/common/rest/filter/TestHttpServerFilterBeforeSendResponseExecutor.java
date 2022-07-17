@@ -37,9 +37,9 @@ public class TestHttpServerFilterBeforeSendResponseExecutor {
   @Mock
   HttpServletResponseEx responseEx;
 
-  List<HttpServerFilter> httpServerFilters = new ArrayList<>();
+  final List<HttpServerFilter> httpServerFilters = new ArrayList<>();
 
-  HttpServerFilterBeforeSendResponseExecutor executor =
+  final HttpServerFilterBeforeSendResponseExecutor executor =
       new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
 
   @BeforeEach

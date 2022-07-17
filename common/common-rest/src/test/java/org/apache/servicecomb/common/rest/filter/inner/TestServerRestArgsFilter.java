@@ -25,25 +25,25 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 
 public class TestServerRestArgsFilter {
 
-  Invocation invocation = Mockito.mock(Invocation.class);
+  final Invocation invocation = Mockito.mock(Invocation.class);
 
-  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
+  final HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
-  Response response = Mockito.mock(Response.class);
+  final Response response = Mockito.mock(Response.class);
 
-  Part part = Mockito.mock(Part.class);
+  final Part part = Mockito.mock(Part.class);
 
   boolean invokedSendPart;
 
-  ServerRestArgsFilter filter = new ServerRestArgsFilter();
+  final ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
   public void asyncBeforeSendResponse_part() {

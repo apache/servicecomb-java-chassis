@@ -47,7 +47,7 @@ import io.vertx.core.http.HttpClientRequest;
 public class TestRestClientRequestImpl {
   private HttpClientRequest request;
 
-  private Context context = Mockito.mock(Context.class);
+  private final Context context = Mockito.mock(Context.class);
 
   @BeforeEach
   public void before() {
