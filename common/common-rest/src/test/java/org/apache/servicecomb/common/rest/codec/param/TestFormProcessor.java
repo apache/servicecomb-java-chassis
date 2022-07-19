@@ -32,21 +32,20 @@ import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormP
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.properties.ArrayProperty;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
 public class TestFormProcessor {
-  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+  final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-  Map<String, Object> forms = new HashMap<>();
+  final Map<String, Object> forms = new HashMap<>();
 
-  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
+  final RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
   private FormProcessor createProcessor(String name, Type type) {
     return createProcessor(name, type, null, true);

@@ -73,15 +73,15 @@ import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -89,11 +89,11 @@ public class TestAbstractRestInvocation {
 
   HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
 
-  HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
+  final HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
 
   HttpServletResponseEx responseEx;
 
-  ReferenceConfig endpoint = Mockito.mock(ReferenceConfig.class);
+  final ReferenceConfig endpoint = Mockito.mock(ReferenceConfig.class);
 
   Map<String, Object> arguments = new HashMap<>();
 
@@ -126,7 +126,7 @@ public class TestAbstractRestInvocation {
 
   AbstractRestInvocation restInvocation = new AbstractRestInvocationForTest();
 
-  @Before
+  @BeforeEach
   public void setup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
@@ -147,7 +147,7 @@ public class TestAbstractRestInvocation {
     restInvocation.setHttpServerFilters(httpServerFilters);
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     ArchaiusUtils.resetConfig();
     scbEngine.destroy();

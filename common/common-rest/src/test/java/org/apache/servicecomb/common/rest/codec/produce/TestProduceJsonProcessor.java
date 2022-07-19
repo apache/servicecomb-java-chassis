@@ -24,18 +24,18 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.buffer.Buffer;
+import org.junit.jupiter.api.Test;
 
 public class TestProduceJsonProcessor {
-  ProduceProcessor pp = ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor();
+  final ProduceProcessor pp = ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor();
 
-  JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
+  final JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 
   @Test
   public void testEncodeResponseNull() throws Exception {
@@ -48,7 +48,7 @@ public class TestProduceJsonProcessor {
   }
 
   @Test
-  public void testdecodeResponseNull() throws Exception {
+  public void testDecodeResponseNull() throws Exception {
     JavaType resultType = TypeFactory.unknownType();
     Object result = pp.decodeResponse(Buffer.buffer(), resultType);
     Assertions.assertNull(result);

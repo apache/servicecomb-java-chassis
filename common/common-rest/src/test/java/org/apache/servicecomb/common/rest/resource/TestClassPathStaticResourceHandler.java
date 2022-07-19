@@ -31,14 +31,14 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestClassPathStaticResourceHandler {
   static ClassPathStaticResourceHandler handler = new ClassPathStaticResourceHandler();
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     handler.setWebRoot("web-root/");
   }
