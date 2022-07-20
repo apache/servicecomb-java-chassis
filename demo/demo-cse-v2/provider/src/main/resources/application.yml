@@ -31,6 +31,13 @@ servicecomb:
       address: ${CSE_V2_SC}
       instance:
         watch: false
+    service-description:
+      properties:
+        component: ServiceComponent
+        k2: v2
+    instance-description:
+      properties:
+        x-group: red
   kie:
     serverUri: ${CSE_V2_CC}
     customLabel: public

@@ -84,6 +84,9 @@ public class BootStrapProperties {
 
   public static final String CONFIG_SERVICE_PATHS = "servicecomb.service.paths";
 
+  public static final String CONFIG_SERVICE_DESCRIPTION_PROPERTIES =
+          "servicecomb.service.service-description.properties";
+
   // service instance definition keys of new version
   public static final String CONFIG_SERVICE_INSTANCE_PROPERTIES = "servicecomb.instance.properties";
 
@@ -94,6 +97,9 @@ public class BootStrapProperties {
   public static final String CONFIG_SERVICE_INSTANCE_INITIAL_STATUS = "servicecomb.instance.initialStatus";
 
   private static final String CONFIG_SERVICE_INSTANCE_TAGS = "servicecomb.instance.properties.tags";
+
+  public static final String SERVICE_INSTANCE_DESCRIPTION_PROPERTIES =
+          "servicecomb.service.instance-description.properties";
 
   // configuration default values
   public static final String DEFAULT_APPLICATION = "default";
@@ -190,7 +196,11 @@ public class BootStrapProperties {
   }
 
   public static Map<String, String> readServiceProperties(Configuration configuration) {
-    return readProperties(configuration, CONFIG_SERVICE_PROPERTIES, OLD_CONFIG_SERVICE_PROPERTIES);
+    Map<String, String> serviceProperties = new LinkedHashMap<>();
+    serviceProperties.putAll(readProperties(configuration, CONFIG_SERVICE_PROPERTIES, OLD_CONFIG_SERVICE_PROPERTIES));
+    serviceProperties.putAll(readProperties(configuration, CONFIG_SERVICE_DESCRIPTION_PROPERTIES,
+            CONFIG_SERVICE_DESCRIPTION_PROPERTIES));
+    return serviceProperties;
   }
 
   public static Map<String, String> readServiceProperties() {
@@ -210,7 +220,12 @@ public class BootStrapProperties {
   }
 
   public static Map<String, String> readServiceInstanceProperties(Configuration configuration) {
-    return readProperties(configuration, CONFIG_SERVICE_INSTANCE_PROPERTIES, OLD_CONFIG_SERVICE_INSTANCE_PROPERTIES);
+    Map<String, String> serviceInstanceProperties = new LinkedHashMap<>();
+    serviceInstanceProperties.putAll(readProperties(configuration, CONFIG_SERVICE_INSTANCE_PROPERTIES,
+            OLD_CONFIG_SERVICE_INSTANCE_PROPERTIES));
+    serviceInstanceProperties.putAll(readProperties(configuration, SERVICE_INSTANCE_DESCRIPTION_PROPERTIES,
+            SERVICE_INSTANCE_DESCRIPTION_PROPERTIES));
+    return serviceInstanceProperties;
   }
 
   public static Map<String, String> readServiceInstanceProperties() {
