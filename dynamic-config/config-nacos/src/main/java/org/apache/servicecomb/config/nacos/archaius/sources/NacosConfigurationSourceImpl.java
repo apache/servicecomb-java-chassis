@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.nacos.client.ConfigurationAction;
@@ -51,6 +52,11 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
   }
 
   private final UpdateHandler updateHandler = new UpdateHandler();
+
+  @VisibleForTesting
+  UpdateHandler getUpdateHandler() {
+    return updateHandler;
+  }
 
   @Override
   public int getOrder() {

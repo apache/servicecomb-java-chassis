@@ -38,14 +38,14 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestRestOperationMeta {
@@ -160,7 +160,7 @@ public class TestRestOperationMeta {
 
   RestOperationMeta operationMeta;
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
@@ -169,7 +169,7 @@ public class TestRestOperationMeta {
     swagger = Mockito.spy(scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger());
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
     ArchaiusUtils.resetConfig();

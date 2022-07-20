@@ -29,8 +29,6 @@ import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import mockit.Deencapsulation;
-
 class ConfigCenterConfigurationSourceImplTest {
 
   @Test
@@ -64,7 +62,7 @@ class ConfigCenterConfigurationSourceImplTest {
     AddressManager addressManager = new AddressManager("test", addresses, EventManager.getEventBus());
     addressManager.onRefreshEndpointEvent(event);
 
-    List<String> availableAZ = Deencapsulation.getField(addressManager, "availableZone");
+    List<String> availableAZ = addressManager.getAvailableZone();
     Assertions.assertEquals("https://127.0.0.1:30100/v3/test", availableAZ.get(0));
   }
 }

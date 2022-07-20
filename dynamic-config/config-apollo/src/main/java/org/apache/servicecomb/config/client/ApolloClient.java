@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -75,6 +76,16 @@ public class ApolloClient {
 
   public ApolloClient(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
+  }
+
+  @VisibleForTesting
+  static Map<String, Object> getOriginalConfigMap() {
+    return originalConfigMap;
+  }
+
+  @VisibleForTesting
+  static void setRest(RestTemplate rest) {
+    ApolloClient.rest = rest;
   }
 
   public void refreshApolloConfig() {

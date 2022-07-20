@@ -32,7 +32,7 @@ import io.swagger.models.properties.ArrayProperty;
 public class QueryCodecTestBase {
   QueryCodec codec;
 
-  String queryName = "q";
+  final String queryName = "q";
 
   void should_encode(String encodedValue, Object... values) throws Exception {
     URLPathStringBuilder builder = new URLPathStringBuilder();

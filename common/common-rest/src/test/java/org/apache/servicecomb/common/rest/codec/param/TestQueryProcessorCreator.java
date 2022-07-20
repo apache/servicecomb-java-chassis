@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -78,5 +78,6 @@ public class TestQueryProcessorCreator {
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
     result = (String) processor.getValue(request);
     Assertions.assertNull(result);
+    ArchaiusUtils.resetConfig();
   }
 }
