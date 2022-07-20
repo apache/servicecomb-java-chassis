@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.ext.web.RoutingContext;

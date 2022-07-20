@@ -47,43 +47,43 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.json.Json;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.Part;
 
 public class RestServerCodecFilterTest {
-  RestServerCodecFilter codecFilter = new RestServerCodecFilter();
+  final RestServerCodecFilter codecFilter = new RestServerCodecFilter();
 
   Invocation invocation;
 
-  Endpoint endpoint = Mockito.mock(Endpoint.class);
+  final Endpoint endpoint = Mockito.mock(Endpoint.class);
 
-  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+  final OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
-  SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+  final SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
 
-  MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+  final MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
 
-  InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
+  final InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
 
-  RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
+  final RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
 
-  HttpTransportContext transportContext = Mockito.mock(HttpTransportContext.class);
+  final HttpTransportContext transportContext = Mockito.mock(HttpTransportContext.class);
 
-  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
+  final HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
-  MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+  final MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
-  FilterNode nextNode = new FilterNode((invocation, next) -> {
+  final FilterNode nextNode = new FilterNode((invocation, next) -> {
     Response response = Response.ok("ok");
     response.setHeaders(headers);
     return CompletableFuture.completedFuture(response);
@@ -91,7 +91,7 @@ public class RestServerCodecFilterTest {
 
   static SCBEngine engine;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     ArchaiusUtils.resetConfig();
     ConfigUtil.installDynamicConfig();
@@ -100,13 +100,13 @@ public class RestServerCodecFilterTest {
     engine.setStatus(SCBStatus.UP);
   }
 
-  @AfterClass
+  @AfterAll
   public static void afterClass() {
     engine.destroy();
     ArchaiusUtils.resetConfig();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);

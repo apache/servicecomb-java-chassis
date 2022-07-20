@@ -28,8 +28,6 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.eventbus.EventBus;
 
-import mockit.Deencapsulation;
-
 class AddressManagerTest {
   private static final List<String> addresses = new ArrayList<>();
 
@@ -47,7 +45,7 @@ class AddressManagerTest {
     Assertions.assertNotNull(addressManager1);
     Assertions.assertNotNull(addressManager2);
 
-    List<String> addresses = Deencapsulation.getField(addressManager1, "addresses");
+    List<String> addresses = addressManager1.getAddresses();
     Assertions.assertEquals(2, addresses.size());
     Assertions.assertEquals("http://127.0.0.1:30103/v3/project", addresses.get(0));
 
@@ -69,10 +67,10 @@ class AddressManagerTest {
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseConfigCenter");
     addressManager1.refreshEndpoint(event, "CseConfigCenter");
 
-    List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
+    List<String> availableZone = addressManager1.getAvailableZone();
     Assertions.assertEquals("http://127.0.0.3:30100/v3/project", availableZone.get(0));
 
-    List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
+    List<String> availableRegion = addressManager1.getAvailableRegion();
     Assertions.assertEquals("http://127.0.0.4:30100/v3/project", availableRegion.get(0));
 
     Assertions.assertEquals("http://127.0.0.3:30100/v3/project", addressManager1.address());

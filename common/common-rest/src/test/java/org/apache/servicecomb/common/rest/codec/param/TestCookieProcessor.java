@@ -28,23 +28,22 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.CookieProcessorCreator.CookieProcessor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-
 public class TestCookieProcessor {
-  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+  final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-  Map<String, String> cookies = new HashMap<>();
+  final Map<String, String> cookies = new HashMap<>();
 
-  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
+  final RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
-  String cookieName = "v1";
+  final String cookieName = "v1";
 
-  String cookieValue = "c1v";
+  final String cookieValue = "c1v";
 
   private CookieProcessor createProcessor(String name, Class<?> type) {
     return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);

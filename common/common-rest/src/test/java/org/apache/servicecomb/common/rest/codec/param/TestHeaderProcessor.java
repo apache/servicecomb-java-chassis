@@ -34,7 +34,6 @@ import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.Hea
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -42,14 +41,15 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.properties.ArrayProperty;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestHeaderProcessor {
-  HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+  final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-  Map<String, String> headers = new HashMap<>();
+  final Map<String, String> headers = new HashMap<>();
 
-  RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
+  final RestClientRequest clientRequest = Mockito.mock(RestClientRequest.class);
 
   private HeaderProcessor createProcessor(String name, Type type) {
     return createProcessor(name, type, null, true);
@@ -68,15 +68,6 @@ public class TestHeaderProcessor {
     }
     return new HeaderProcessor(headerParameter, javaType);
   }
-
-  /*private void createClientRequest() {
-    clientRequest = new MockUp<RestClientRequest>() {
-      @Mock
-      void putHeader(String name, String value) {
-        headers.put(name, value);
-      }
-    }.getMockInstance();
-  }*/
 
   @Test
   public void testGetValueNormal() throws Exception {

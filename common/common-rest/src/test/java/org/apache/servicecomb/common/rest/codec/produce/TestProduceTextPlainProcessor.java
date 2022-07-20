@@ -32,9 +32,9 @@ import io.vertx.core.buffer.Buffer;
 import org.junit.jupiter.api.Test;
 
 public class TestProduceTextPlainProcessor {
-  ProduceProcessor pp = ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor();
+  final ProduceProcessor pp = ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor();
 
-  JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
+  final JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 
   @Test
   public void testEncodeResponseNull() throws Exception {

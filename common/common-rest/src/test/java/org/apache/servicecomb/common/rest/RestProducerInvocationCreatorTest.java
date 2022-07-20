@@ -43,13 +43,13 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -57,33 +57,33 @@ import java.util.ArrayList;
 
 public class RestProducerInvocationCreatorTest {
 
-  RoutingContext routingContext = Mockito.mock(RoutingContext.class);
+  final RoutingContext routingContext = Mockito.mock(RoutingContext.class);
 
-  MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+  final MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
 
-  ServicePathManager servicePathManager = Mockito.mock(ServicePathManager.class);
+  final ServicePathManager servicePathManager = Mockito.mock(ServicePathManager.class);
 
-  RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
+  final RestOperationMeta restOperationMeta = Mockito.mock(RestOperationMeta.class);
 
-  Endpoint endpoint = Mockito.mock(Endpoint.class);
+  final Endpoint endpoint = Mockito.mock(Endpoint.class);
 
-  HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
+  final HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
 
-  HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
+  final HttpServletResponseEx responseEx = Mockito.mock(HttpServletResponseEx.class);
 
-  OperationLocator locator = Mockito.mock(OperationLocator.class);
+  final OperationLocator locator = Mockito.mock(OperationLocator.class);
 
-  InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
+  final InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
 
-  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+  final OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
-  SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+  final SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
 
   RestProducerInvocationCreator creator;
 
   static SCBEngine engine;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeClass() {
     ArchaiusUtils.resetConfig();
     ConfigUtil.installDynamicConfig();
@@ -92,13 +92,13 @@ public class RestProducerInvocationCreatorTest {
     engine.setStatus(SCBStatus.UP);
   }
 
-  @AfterClass
+  @AfterAll
   public static void afterClass() {
     engine.destroy();
     ArchaiusUtils.resetConfig();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     creator = new RestVertxProducerInvocationCreator(routingContext, microserviceMeta, endpoint,
         requestEx, responseEx);
