@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.huaweicloud.servicestage;
 
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -26,8 +27,10 @@ public class TestEnvVariablesAdapter {
 
   @BeforeAll
   public static void init() {
-    System.setProperty("servicecomb.huaweicloud.servicestage.cas.application-id", "application-id");
-    System.setProperty("servicecomb.huaweicloud.servicestage.cas.environment-id", "env-id");
+    System.setProperty("CAS_APPLICATION_ID", "application-id");
+    System.setProperty("CAS_ENVIRONMENT_ID", "env-id");
+    System.setProperty("SERVICECOMB_SERVICE_PROPS", "component:ConsumerService,other:A");
+    System.setProperty("SERVICECOMB_INSTANCE_PROPS", "route:gray");
   }
 
   @Test
@@ -36,14 +39,23 @@ public class TestEnvVariablesAdapter {
     MicroserviceInstance instance = new MicroserviceInstance();
     adapter.beforeRegisterInstance(instance);
 
-    Assertions.assertEquals(2, instance.getProperties().size());
+    Assertions.assertEquals(3, instance.getProperties().size());
     Assertions.assertEquals("application-id", instance.getProperties().get("CAS_APPLICATION_ID"));
     Assertions.assertEquals("env-id", instance.getProperties().get("CAS_ENVIRONMENT_ID"));
+    Assertions.assertEquals("gray", instance.getProperties().get("route"));
+
+    Microservice microservice = new Microservice();
+    adapter.beforeRegisterService(microservice);
+    Assertions.assertEquals(2, microservice.getProperties().size());
+    Assertions.assertEquals("ConsumerService", microservice.getProperties().get("component"));
+    Assertions.assertEquals("A", microservice.getProperties().get("other"));
   }
 
   @AfterAll
   public static void destroy() {
-    System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.application-id");
-    System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.environment-id");
+    System.getProperties().remove("CAS_APPLICATION_ID");
+    System.getProperties().remove("CAS_ENVIRONMENT_ID");
+    System.getProperties().remove("SERVICECOMB_SERVICE_PROPS");
+    System.getProperties().remove("SERVICECOMB_INSTANCE_PROPS");
   }
 }

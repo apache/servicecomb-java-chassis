@@ -37,3 +37,7 @@ PAAS_PROJECT_NAME:
 #  - servicecomb.service.name
 #CAS_INSTANCE_VERSION:
 #  - servicecomb.service.version
+#SERVICECOMB_SERVICE_PROPS:
+#  - servicecomb.service.properties
+#SERVICECOMB_INSTANCE_PROPS:
+#  - servicecomb.instance.properties

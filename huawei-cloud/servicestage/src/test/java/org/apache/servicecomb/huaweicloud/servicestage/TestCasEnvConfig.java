@@ -27,19 +27,29 @@ public class TestCasEnvConfig {
   public static void init() {
     System.setProperty("CAS_APPLICATION_ID", "application-id");
     System.setProperty("CAS_ENVIRONMENT_ID", "env-id");
+    System.setProperty("SERVICECOMB_SERVICE_PROPS", "component:ConsumerService,other:A");
+    System.setProperty("SERVICECOMB_INSTANCE_PROPS", "route:gray");
   }
 
   @Test
   public void testConfig() {
     CasEnvConfig instance = CasEnvConfig.INSTANCE;
-    Assertions.assertEquals(2, instance.getNonEmptyProperties().size());
-    Assertions.assertEquals("application-id", instance.getNonEmptyProperties().get("CAS_APPLICATION_ID"));
-    Assertions.assertEquals("env-id", instance.getNonEmptyProperties().get("CAS_ENVIRONMENT_ID"));
+    Assertions.assertEquals(3, instance.getNonEmptyInstanceProperties().size());
+    Assertions.assertEquals("application-id", instance.getNonEmptyInstanceProperties().get("CAS_APPLICATION_ID"));
+    Assertions.assertEquals("env-id", instance.getNonEmptyInstanceProperties().get("CAS_ENVIRONMENT_ID"));
+    Assertions.assertEquals("gray", instance.getNonEmptyInstanceProperties().get("route"));
+
+
+    Assertions.assertEquals(2, instance.getNonEmptyServiceProperties().size());
+    Assertions.assertEquals("ConsumerService", instance.getNonEmptyServiceProperties().get("component"));
+    Assertions.assertEquals("A", instance.getNonEmptyServiceProperties().get("other"));
   }
 
   @AfterAll
   public static void destroy() {
     System.getProperties().remove("CAS_ENVIRONMENT_ID");
     System.getProperties().remove("CAS_APPLICATION_ID");
+    System.getProperties().remove("SERVICECOMB_SERVICE_PROPS");
+    System.getProperties().remove("SERVICECOMB_INSTANCE_PROPS");
   }
 }
