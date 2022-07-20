@@ -17,6 +17,15 @@
 
 servicecomb:
   matchGroup:
+    demo-fallback-returnNull: |
+      matches:
+        - serviceName: "returnNull"
+    demo-fallback-ThrowException: |
+      matches:
+        - serviceName: "ThrowException"
+    demo-faultInject-forceClosed: |
+      matches:
+        - serviceName: "forceClosed"
     demo-allOperation: |
       matches:
         - apiPath:
@@ -114,6 +123,16 @@ servicecomb:
       slidingWindowType: COUNT_BASED
       waitDurationInOpenState: 1000
   faultInjection:
+    demo-fallback-ThrowException: |
+      type: abort
+      percentage: 100
+    demo-fallback-returnNull: |
+      fallbackType: ReturnNull
+      type: abort
+      percentage: 100
+    demo-faultInject-forceClosed: |
+      forceClosed: true
+      fallbackType: ReturnNull
     demo-faultInjectDelay: |
       delayTime: 2S
       type: delay

@@ -32,19 +32,8 @@ public class AbortFault extends AbstractFault {
   }
 
   @Override
-  public void injectFault(FaultParam faultParam) {
-    if (!shouldAbort(faultParam, policy)) {
-      return;
-    }
-
-    // get the config values related to abort percentage.
-    int errorCode = policy.getErrorCode();
-    if (errorCode == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
-      LOGGER.debug("Fault injection: Abort error code is not configured");
-      return;
-    }
-
-    throw new FaultInjectionException(FaultResponse.createFail(errorCode, ABORTED_ERROR_MSG));
+  public boolean injectFault(FaultParam faultParam) {
+    return shouldAbort(faultParam, policy);
   }
 
   private boolean shouldAbort(FaultParam param, FaultInjectionPolicy policy) {

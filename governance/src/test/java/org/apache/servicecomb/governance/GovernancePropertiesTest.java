@@ -170,7 +170,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_successfully_loaded() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(9, markers.size());
+    Assertions.assertEquals(12, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -188,17 +188,17 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_delete() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(9, markers.size());
+    Assertions.assertEquals(12, markers.size());
     dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(10, markers.size());
+    Assertions.assertEquals(13, markers.size());
     tearDown();
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(9, markers.size());
+    Assertions.assertEquals(12, markers.size());
   }
 
   @Test
@@ -215,7 +215,7 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(10, markers.size());
+    Assertions.assertEquals(13, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -403,7 +403,7 @@ public class GovernancePropertiesTest {
   @Test
   public void test_fault_injection_properties_successfully_loaded() {
     Map<String, FaultInjectionPolicy> policies = faultInjectionProperties.getParsedEntity();
-    Assertions.assertEquals(2, policies.size());
+    Assertions.assertEquals(5, policies.size());
     FaultInjectionPolicy policy = policies.get("demo-faultInjectDelay");
     Assertions.assertEquals(FaultInjectionConst.TYPE_DELAY, policy.getType());
     Assertions.assertEquals(2000, policy.getDelayTimeToMillis());
