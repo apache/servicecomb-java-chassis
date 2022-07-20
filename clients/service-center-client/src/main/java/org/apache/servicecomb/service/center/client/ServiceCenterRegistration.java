@@ -133,8 +133,11 @@ public class ServiceCenterRegistration extends AbstractTask {
           Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
           boolean swaggerDifferent = isSwaggerDifferent(newMicroservice);
           if (swaggerDifferent){
-            LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register");
-            startTask(new RegisterSchemaTask(0));
+            boolean canRewriteSwagger = canRewriteSwagger();
+            if (canRewriteSwagger){
+              LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register");
+              startTask(new RegisterSchemaTask(0));
+            }
           }
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
@@ -154,17 +157,20 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   private boolean isSwaggerDifferent(Microservice newMicroservice) {
     if (!isListEquals(newMicroservice.getSchemas(),microservice.getSchemas())){
-      return coverAndIgnore();
-    }
-    List<SchemaInfo> schemaInfos =serviceCenterClient.getServiceSchemasList(newMicroservice.getServiceId(),true);
-    if (!isListEquals(schemaInfos,this.schemaInfos)){
-      return coverAndIgnore();
+      if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()){
+        return true;
+      }else {
+        LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
+                + "If you want to eliminate this warning. you can Change the microservice version or delete the old " +
+                "microservice info and try again. eg: version:1.0.0 -> 1.0.1");
+        return false;
+      }
     }
     return false;
     }
 
-  private boolean coverAndIgnore(){
-    if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()&&serviceCenterConfiguration.isCoverSwagger()){
+  private boolean canRewriteSwagger(){
+    if (serviceCenterConfiguration.canRewriteSwagger()){
       return true;
     }else {
       LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
