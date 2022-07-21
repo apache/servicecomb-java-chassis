@@ -118,7 +118,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       child.data(instances);
     } else {
       synchronized (this) {
-        // if server list are different,then following filter should recalculate its data
+        // if cached map is different from the new one,then following filter should recalculate its data
         if (child.data() != null && !isInstanceMapEqual(child.data(), filteredServers)) {
           child.children().clear();
         }
