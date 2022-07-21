@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +63,8 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Mock;
 import mockit.MockUp;
+
+import static org.mockito.Mockito.when;
 
 public class TestLoadBalanceHandler2 {
   private Holder<Long> mockTimeMillis;
@@ -732,6 +732,74 @@ public class TestLoadBalanceHandler2 {
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
+  }
+
+  @Test
+  public void testIsolationFilterUsingMockedInvocationWorks() throws Exception {
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> aysnc.success("OK"));
+
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    Transport transport = Mockito.mock(Transport.class);
+
+    MicroserviceInstance allmatchInstance = new MicroserviceInstance();
+    List<String> allMatchEndpoint = new ArrayList<>();
+    allMatchEndpoint.add("rest://localhost:9090");
+    allmatchInstance.setEndpoints(allMatchEndpoint);
+    allmatchInstance.setInstanceId("allmatchInstance");
+
+    MicroserviceInstance regionMatchInstance = new MicroserviceInstance();
+    List<String> regionMatchEndpoint = new ArrayList<>();
+    regionMatchEndpoint.add("rest://localhost:9091");
+    regionMatchInstance.setEndpoints(regionMatchEndpoint);
+    regionMatchInstance.setInstanceId("regionMatchInstance");
+
+    MicroserviceInstance noneMatchInstance = new MicroserviceInstance();
+    List<String> noMatchEndpoint = new ArrayList<>();
+    noMatchEndpoint.add("rest://localhost:9092");
+    noneMatchInstance.setEndpoints(noMatchEndpoint);
+    noneMatchInstance.setInstanceId("noneMatchInstance");
+
+    Map<String, MicroserviceInstance> data = new HashMap<>();
+    DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
+    scbEngine.setTransportManager(transportManager);
+
+    mockUpInstanceCacheManager(instanceCacheManager);
+    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+        .thenReturn(parent);
+    when(transportManager.findTransport("rest")).thenReturn(transport);
+
+    LoadbalanceHandler handler = null;
+    LoadBalancer loadBalancer = null;
+    ServiceCombServer server = null;
+
+    data.put("noneMatchInstance", noneMatchInstance);
+    data.put("regionMatchInstance", regionMatchInstance);
+    data.put("allmatchInstance", allmatchInstance);
+    parent.cacheVersion(1);
+    DiscoveryTree discoveryTree = new DiscoveryTree();
+    discoveryTree.addFilter(new IsolationDiscoveryFilter());
+    discoveryTree.addFilter(new ServerDiscoveryFilter());
+    discoveryTree.sort();
+    handler = new LoadbalanceHandler(discoveryTree);
+
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = loadBalancer.chooseServer(invocation);
+    Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
+    server = loadBalancer.chooseServer(invocation);
+    Assertions.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
+    ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
+    serverStats.markIsolated(true);
+    server = loadBalancer.chooseServer(invocation);
+    Assertions.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
+    serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
+    serverStats.markIsolated(true);
+
+    for (int i = 0; i < 10; i++) {
+      loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+      server = loadBalancer.chooseServer(invocation);
+      Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
+    }
   }
 
   @Test

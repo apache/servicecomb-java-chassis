@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
@@ -48,7 +51,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
-  private static final String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
+  private static final String EMPTY_INSTANCE_PROTECTION =
+      "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
 
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
@@ -82,7 +86,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.enabled", true).get();
+        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.enabled", true)
+        .get();
   }
 
   @Override
@@ -112,9 +117,33 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
       child.data(instances);
     } else {
-      child.data(filteredServers);
+      synchronized (this) {
+        // if server list are different,then following filter should recalculate its data
+        if (child.data() != null && !isInstanceMapEqual(child.data(), filteredServers)) {
+          child.children().clear();
+        }
+        child.data(filteredServers);
+      }
     }
     return child;
+  }
+
+  private boolean isInstanceMapEqual(Map<String, MicroserviceInstance> oldServers,
+      Map<String, MicroserviceInstance> filteredServers) {
+    if (oldServers == null || filteredServers == null) {
+      return false;
+    }
+    if (oldServers.size() == filteredServers.size()) {
+      HashSet<String> ids1 = new HashSet<>(filteredServers.keySet());
+      List<String> ids2 = new ArrayList<>(oldServers.keySet());
+      for (String id : ids2) {
+        if (!ids1.contains(id)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   private Settings createSettings(Invocation invocation) {
@@ -150,7 +179,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         eventBus.post(
             new IsolationServerEvent(invocation, instance, serverStats,
                 settings, Type.OPEN, server.getEndpoint()));
-        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
+        LOGGER.warn("Isolate service {}'s instance {}.",
+            invocation.getMicroserviceName(),
             instance.getInstanceId());
       }
       return false;
@@ -164,7 +194,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       serverStats.markIsolated(false);
       eventBus.post(new IsolationServerEvent(invocation, instance, serverStats,
           settings, Type.CLOSE, server.getEndpoint()));
-      LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
+      LOGGER.warn("Recover service {}'s instance {} from isolation.",
+          invocation.getMicroserviceName(),
           instance.getInstanceId());
     }
     return true;
