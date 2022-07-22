@@ -28,6 +28,10 @@ public class FaultInjectionConst {
 
   public static final String TYPE_ABORT = "abort";
 
+  public static final String FALLBACK_THROWEXCEPTION = "ThrowException";
+
+  public static final String FALLBACK_RETURNNULL = "ReturnNull";
+
   public static final int ERROR_CODE_MIN = 200;
 
   public static final int ERROR_CODE_MAX = 600;
