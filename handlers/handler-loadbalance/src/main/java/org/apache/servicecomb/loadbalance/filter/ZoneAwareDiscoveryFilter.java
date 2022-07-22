@@ -48,8 +48,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.zoneaware.enabled", true).get();
+    return false;
   }
 
   @Override

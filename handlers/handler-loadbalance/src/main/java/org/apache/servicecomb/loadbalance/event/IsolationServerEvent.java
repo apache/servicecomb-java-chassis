@@ -21,6 +21,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filterext.IsolationDiscoveryFilterExt;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class IsolationServerEvent extends AlarmEvent {
@@ -53,6 +54,23 @@ public class IsolationServerEvent extends AlarmEvent {
   public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
       ServiceCombServerStats serverStats,
       IsolationDiscoveryFilter.Settings settings, Type type, Endpoint endpoint) {
+    super(type);
+    this.microserviceName = invocation.getMicroserviceName();
+    this.endpoint = endpoint;
+    this.currentTotalRequest = serverStats.getTotalRequests();
+    this.currentCountinuousFailureCount = serverStats.getContinuousFailureCount();
+    this.currentErrorPercentage = serverStats.getFailedRate();
+    this.minIsolationTime = settings.minIsolationTime;
+    this.enableRequestThreshold = settings.enableRequestThreshold;
+    this.continuousFailureThreshold = settings.continuousFailureThreshold;
+    this.errorThresholdPercentage = settings.errorThresholdPercentage;
+    this.singleTestTime = settings.singleTestTime;
+    this.instance = instance;
+  }
+
+  public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
+      ServiceCombServerStats serverStats,
+      IsolationDiscoveryFilterExt.Settings settings, Type type, Endpoint endpoint) {
     super(type);
     this.microserviceName = invocation.getMicroserviceName();
     this.endpoint = endpoint;

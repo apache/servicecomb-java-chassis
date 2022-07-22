@@ -847,11 +847,13 @@ public class TestLoadBalanceHandler2 {
 
     Assertions.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
     invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.enabled", "false");
     try {
       handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
     } catch (Exception e) {
       Assertions.fail("unexpected exception " + e.getMessage());
     }
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.enabled", "true");
     Assertions.assertEquals("rest://127.0.0.1:8080", invocation.getEndpoint().getEndpoint());
     Assertions.assertTrue(serviceCombServerStats.isIsolated());
     Assertions.assertEquals(0, serviceCombServerStats.getContinuousFailureCount());
