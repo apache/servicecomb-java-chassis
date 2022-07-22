@@ -131,7 +131,14 @@ public class ServiceCenterRegistration extends AbstractTask {
           startTask(new RegisterSchemaTask(0));
         } else {
           Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
-          dealIsSwaggerDifferent(newMicroservice);
+          boolean swaggerDifferent = isSwaggerDifferent(newMicroservice);
+          if (swaggerDifferent){
+            boolean canRewriteSwagger = canRewriteSwagger();
+            if (canRewriteSwagger){
+              LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register");
+              startTask(new RegisterSchemaTask(0));
+            }
+          }
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setMicroservice(microservice);
@@ -149,17 +156,29 @@ public class ServiceCenterRegistration extends AbstractTask {
     }
   }
 
-  private void dealIsSwaggerDifferent(Microservice newMicroservice) {
-    if (isListEquals(newMicroservice.getSchemas(), microservice.getSchemas())) {
-      return;
+  private boolean isSwaggerDifferent(Microservice newMicroservice) {
+    if (!isListEquals(newMicroservice.getSchemas(),microservice.getSchemas())){
+      if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()){
+        return true;
+      }else {
+        LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
+                + "If you want to eliminate this warning. you can Change the microservice version or delete the old " +
+                "microservice info and try again. eg: version:1.0.0 -> 1.0.1");
+        return false;
+      }
     }
-    if (!serviceCenterConfiguration.isIgnoreSwaggerDifferent()) {
-      throw new IllegalStateException("Service has already registered, but schema ids not equal, stop register. "
-          + "Change the microservice version or delete the old microservice info and try again.");
+    return false;
+  }
+
+  private boolean canRewriteSwagger(){
+    if (serviceCenterConfiguration.canRewriteSwagger()){
+      return true;
+    }else {
+      LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
+              + "If you want to eliminate this warning. you can Change the microservice version or delete the old " +
+              "microservice info and try again. eg: version:1.0.0 -> 1.0.1");
     }
-    LOGGER.warn("Service has already registered, but schema ids not equal. However, it will continue to register. "
-        + "If you want to eliminate this warning. you can Change the microservice version or delete the old " +
-        "microservice info and try again. eg: version:1.0.0 -> 1.0.1");
+    return false;
   }
 
   private boolean isListEquals(List<String> one, List<String> two) {
