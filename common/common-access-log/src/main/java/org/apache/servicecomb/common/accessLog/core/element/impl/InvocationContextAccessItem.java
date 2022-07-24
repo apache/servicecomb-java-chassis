@@ -33,7 +33,7 @@ public class InvocationContextAccessItem implements AccessLogItem<RoutingContext
 
   public static final String NOT_FOUND = "-";
 
-  String varName;
+  final String varName;
 
   public InvocationContextAccessItem(String varName) {
     this.varName = varName;
