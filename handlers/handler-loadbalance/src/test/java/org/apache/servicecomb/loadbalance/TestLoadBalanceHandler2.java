@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +40,6 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.loadbalance.filterext.IsolationDiscoveryFilter;
-import org.apache.servicecomb.loadbalance.filterext.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.localregistry.LocalRegistryStore;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
@@ -65,6 +61,8 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Mock;
 import mockit.MockUp;
+
+import static org.mockito.Mockito.when;
 
 public class TestLoadBalanceHandler2 {
   private Holder<Long> mockTimeMillis;
