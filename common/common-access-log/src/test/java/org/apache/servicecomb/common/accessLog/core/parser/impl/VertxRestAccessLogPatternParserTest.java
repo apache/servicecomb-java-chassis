@@ -201,7 +201,7 @@ public class VertxRestAccessLogPatternParserTest {
     Assertions.assertEquals(UrlPathWithQueryAccessItem.class, result.get(11).getClass());
   }
 
-  Comparator<VertxRestAccessLogItemMeta> comparator = VertxRestAccessLogPatternParser.accessLogItemMetaComparator;
+  final Comparator<VertxRestAccessLogItemMeta> comparator = VertxRestAccessLogPatternParser.accessLogItemMetaComparator;
 
   /**
    * one factor test
