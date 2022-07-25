@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.loadbalance.FilterConstant;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.RegistrationManager;
@@ -28,17 +29,17 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ZoneAwareDiscoveryFilterExt implements ServerListFilterExt {
+public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
 
   @Override
   public int getOrder() {
-    return 100;
+    return FilterConstant.ORDER_ZONE_AWARE;
   }
 
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.zoneaware.enabled", true)
+        .getBooleanProperty(FilterConstant.ZONE_AWARE_FILTER_ENABLED, true)
         .get();
   }
 

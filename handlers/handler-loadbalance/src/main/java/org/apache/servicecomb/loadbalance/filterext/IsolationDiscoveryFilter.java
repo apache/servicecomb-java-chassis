@@ -18,23 +18,18 @@
 package org.apache.servicecomb.loadbalance.filterext;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
+import org.apache.servicecomb.loadbalance.FilterConstant;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +40,12 @@ import com.netflix.config.DynamicPropertyFactory;
 /**
  * Isolate instances by error metrics
  */
-public class IsolationDiscoveryFilterExt implements ServerListFilterExt {
+public class IsolationDiscoveryFilter implements ServerListFilterExt {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilterExt.class);
-
-  private static final String EMPTY_INSTANCE_PROTECTION =
-      "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
+  private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
+      .getBooleanProperty(FilterConstant.EMPTY_INSTANCE_PROTECTION, false);
 
   public EventBus eventBus = EventManager.getEventBus();
 
@@ -71,20 +63,20 @@ public class IsolationDiscoveryFilterExt implements ServerListFilterExt {
 
   @Override
   public int getOrder() {
-    return -100;
+    return FilterConstant.ORDER_ISOLATION;
   }
 
-  public IsolationDiscoveryFilterExt() {
+  public IsolationDiscoveryFilter() {
     emptyProtection.addCallback(() -> {
       boolean newValue = emptyProtection.get();
-      LOGGER.info("{} changed from {} to {}", EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);
+      LOGGER.info("{} changed from {} to {}", FilterConstant.EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);
     });
   }
 
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.enabled", true)
+        .getBooleanProperty(FilterConstant.ISOLATION_FILTER_ENABLED, true)
         .get();
   }
 
@@ -92,8 +84,9 @@ public class IsolationDiscoveryFilterExt implements ServerListFilterExt {
   public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
       Invocation invocation) {
     List<ServiceCombServer> filteredServers = new ArrayList<>();
+    Settings settings = createSettings(invocation);
     servers.forEach((server) -> {
-      if (allowVisit(invocation, server)) {
+      if (allowVisit(invocation, server, settings)) {
         filteredServers.add(server);
       }
     });
@@ -102,55 +95,6 @@ public class IsolationDiscoveryFilterExt implements ServerListFilterExt {
       return servers;
     }
     return filteredServers;
-  }
-
-  public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
-    Map<String, MicroserviceInstance> instances = parent.data();
-    Invocation invocation = context.getInputParameters();
-    if (!Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName())) {
-      return parent;
-    }
-
-    Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    instances.forEach((key, instance) -> {
-      if (allowVisit(invocation, null)) {
-        filteredServers.put(key, instance);
-      }
-    });
-
-    DiscoveryTreeNode child = parent.children().computeIfAbsent("filterred", etn -> new DiscoveryTreeNode());
-    if (filteredServers.isEmpty()
-        && emptyProtection.get()) {
-      LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
-      child.data(instances);
-    } else {
-      synchronized (this) {
-        // if server list are different,then following filter should recalculate its data
-        if (child.data() != null && !isInstanceMapEqual(child.data(), filteredServers)) {
-          child.children().clear();
-        }
-        child.data(filteredServers);
-      }
-    }
-    return child;
-  }
-
-  private boolean isInstanceMapEqual(Map<String, MicroserviceInstance> oldServers,
-      Map<String, MicroserviceInstance> filteredServers) {
-    if (oldServers == null || filteredServers == null) {
-      return false;
-    }
-    if (oldServers.size() == filteredServers.size()) {
-      HashSet<String> ids1 = new HashSet<>(filteredServers.keySet());
-      List<String> ids2 = new ArrayList<>(oldServers.keySet());
-      for (String id : ids2) {
-        if (!ids1.contains(id)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   private Settings createSettings(Invocation invocation) {
@@ -167,9 +111,8 @@ public class IsolationDiscoveryFilterExt implements ServerListFilterExt {
     return settings;
   }
 
-  private boolean allowVisit(Invocation invocation, ServiceCombServer server) {
+  private boolean allowVisit(Invocation invocation, ServiceCombServer server, Settings settings) {
     ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
-    Settings settings = createSettings(invocation);
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
           && (System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {

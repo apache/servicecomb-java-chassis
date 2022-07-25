@@ -17,27 +17,16 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.List;
+public interface FilterConstant {
+  int ORDER_NORMAL = 100;
 
-import org.apache.servicecomb.core.Invocation;
+  int ORDER_ISOLATION = 0;
 
-/**
- *  Base interface for server list filters.
- *
- *  Robin ServerListFilter can not support invocation based filter strategies, so we create a new one to
- *  support this.
- */
-public interface ServerListFilterExt {
-  default int getOrder() {
-    return FilterConstant.ORDER_NORMAL;
-  }
+  int ORDER_ZONE_AWARE = 200;
 
-  default boolean enabled() {
-    return true;
-  }
+  String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
 
-  default void setLoadBalancer(LoadBalancer loadBalancer) {
-  }
+  String ISOLATION_FILTER_ENABLED = "servicecomb.loadbalance.filter.isolation.enabled";
 
-  List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers, Invocation invocation);
+  String ZONE_AWARE_FILTER_ENABLED = "servicecomb.loadbalance.filter.zoneaware.enabled";
 }

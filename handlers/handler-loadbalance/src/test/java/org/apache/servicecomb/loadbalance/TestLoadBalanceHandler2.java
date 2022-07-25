@@ -41,9 +41,9 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
-import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filterext.IsolationDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filterext.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.localregistry.LocalRegistryStore;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
@@ -536,8 +536,6 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
-    discoveryTree.addFilter(new IsolationDiscoveryFilter());
-    discoveryTree.addFilter(new ZoneAwareDiscoveryFilter());
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
     handler = new LoadbalanceHandler(discoveryTree);
@@ -669,8 +667,6 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
-    discoveryTree.addFilter(new IsolationDiscoveryFilter());
-    discoveryTree.addFilter(new ZoneAwareDiscoveryFilter());
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
     handler = new LoadbalanceHandler(discoveryTree);
@@ -846,7 +842,6 @@ public class TestLoadBalanceHandler2 {
         });
 
     Assertions.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
-    invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.enabled", "false");
     try {
       handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
