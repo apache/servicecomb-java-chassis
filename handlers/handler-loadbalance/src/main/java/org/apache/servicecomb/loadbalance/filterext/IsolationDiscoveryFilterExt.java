@@ -88,7 +88,8 @@ public class IsolationDiscoveryFilterExt implements ServerListFilterExt {
         .get();
   }
 
-  @Override public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
+  @Override
+  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
       Invocation invocation) {
     List<ServiceCombServer> filteredServers = new ArrayList<>();
     servers.forEach((server) -> {

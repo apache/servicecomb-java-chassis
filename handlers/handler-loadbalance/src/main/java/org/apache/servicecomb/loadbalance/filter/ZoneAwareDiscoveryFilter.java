@@ -27,9 +27,6 @@ import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-
 public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
   public static final String KEY_ZONE_AWARE_STEP = "_KEY_ZONE_AWARE_STEP";
 

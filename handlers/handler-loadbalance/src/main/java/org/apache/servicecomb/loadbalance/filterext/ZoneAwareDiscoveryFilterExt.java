@@ -38,10 +38,12 @@ public class ZoneAwareDiscoveryFilterExt implements ServerListFilterExt {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.zoneaware.enabled", true).get();
+        .getBooleanProperty("servicecomb.loadbalance.filter.zoneaware.enabled", true)
+        .get();
   }
 
-  @Override public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
+  @Override
+  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
       Invocation invocation) {
     MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
 
@@ -57,16 +59,16 @@ public class ZoneAwareDiscoveryFilterExt implements ServerListFilterExt {
         instancesNoMatch.add(server);
       }
     });
-    if(!instancesRegionAndAZMatch.isEmpty()){
+    if (!instancesRegionAndAZMatch.isEmpty()) {
       return instancesRegionAndAZMatch;
-    }else if(!instancesAZMatch.isEmpty()){
+    } else if (!instancesAZMatch.isEmpty()) {
       return instancesAZMatch;
     }
     return instancesNoMatch;
   }
 
   private boolean regionAndAZMatch(MicroserviceInstance myself, MicroserviceInstance target) {
-    if (myself==null || myself.getDataCenterInfo() == null) {
+    if (myself == null || myself.getDataCenterInfo() == null) {
       // when instance have no datacenter info, it will match all other datacenters
       return true;
     }
