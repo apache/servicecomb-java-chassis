@@ -24,24 +24,24 @@ public class ServiceCenterConfiguration {
    * when swagger is different between local with remote serviceCenter. if ignoreSwaggerDifferent is true.
    * it will ignore the different and continue the program. otherwise, the program will be stop.
    */
-  private Boolean ignoreSwaggerDifferent;
+  private boolean ignoreSwaggerDifferent;
 
-  private Boolean rewriteSwagger;
+  private boolean rewriteSwagger;
 
-  public Boolean isIgnoreSwaggerDifferent() {
+  public boolean isIgnoreSwaggerDifferent() {
     return ignoreSwaggerDifferent;
   }
 
-  public Boolean canRewriteSwagger(){
+  public boolean canRewriteSwagger(){
     return rewriteSwagger;
   }
 
-  public ServiceCenterConfiguration setIgnoreSwaggerDifferent(Boolean ignoreSwaggerDifferent) {
+  public ServiceCenterConfiguration setIgnoreSwaggerDifferent(boolean ignoreSwaggerDifferent) {
     this.ignoreSwaggerDifferent = ignoreSwaggerDifferent;
     return this;
   }
 
-  public ServiceCenterConfiguration setRewriteSwagger(Boolean rewriteSwagger){
+  public ServiceCenterConfiguration setRewriteSwagger(boolean rewriteSwagger) {
     this.rewriteSwagger = rewriteSwagger;
     return this;
   }
