@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.adapter.EnvAdapter;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
@@ -35,6 +36,11 @@ public class CasEnvVariablesAdapter implements EnvAdapter {
 
   @Override
   public void beforeRegisterInstance(MicroserviceInstance instance) {
-    instance.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyProperties());
+    instance.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyInstanceProperties());
+  }
+
+  @Override
+  public void beforeRegisterService(Microservice microservice) {
+    microservice.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyServiceProperties());
   }
 }

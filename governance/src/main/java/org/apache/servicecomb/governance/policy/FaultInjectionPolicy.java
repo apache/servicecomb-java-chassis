@@ -30,7 +30,11 @@ public class FaultInjectionPolicy extends AbstractPolicy {
 
   private int percentage = -1;
 
-  private int errorCode = -1;
+  private int errorCode = 500;
+
+  private boolean forceClosed = false;
+
+  private String fallbackType = FaultInjectionConst.FALLBACK_THROWEXCEPTION;
 
   public String getType() {
     return type;
@@ -66,6 +70,22 @@ public class FaultInjectionPolicy extends AbstractPolicy {
 
   public long getDelayTimeToMillis() {
     return Duration.parse(delayTime).toMillis();
+  }
+
+  public boolean isForceClosed() {
+    return forceClosed;
+  }
+
+  public void setForceClosed(boolean forceClosed) {
+    this.forceClosed = forceClosed;
+  }
+
+  public String getFallbackType() {
+    return fallbackType;
+  }
+
+  public void setFallbackType(String fallbackType) {
+    this.fallbackType = fallbackType;
   }
 
   @Override

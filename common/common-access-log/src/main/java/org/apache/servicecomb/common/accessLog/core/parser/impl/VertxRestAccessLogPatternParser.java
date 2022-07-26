@@ -296,17 +296,17 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     /**
      * prefixIndex = rawPattern.indexOf(prefix)
      */
-    int prefixIndex;
+    final int prefixIndex;
 
     /**
      * suffixIndex = rawPattern.indexOf(suffix)
      */
-    int suffixIndex;
+    final int suffixIndex;
 
     /**
      * tail = suffixIndex + suffix.length()
      */
-    int tail;
+    final int tail;
 
     VertxRestAccessLogItemMeta accessLogItemMeta;
 
