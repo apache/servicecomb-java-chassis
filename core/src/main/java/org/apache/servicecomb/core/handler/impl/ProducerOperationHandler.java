@@ -130,7 +130,8 @@ public class ProducerOperationHandler implements Handler {
     } catch (Throwable e) {
       if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
           false).get()) {
-        LOGGER.error("unexpected error operation={}", invocation.getInvocationQualifiedName(), e);
+        invocation.getTraceIdLogger().error(LOGGER, "unexpected error operation={}",
+            invocation.getInvocationQualifiedName(), e);
       } else {
         if (shouldPrintErrorLog(e)) {
           invocation.getTraceIdLogger().error(LOGGER, "unexpected error operation={}, message={}",
