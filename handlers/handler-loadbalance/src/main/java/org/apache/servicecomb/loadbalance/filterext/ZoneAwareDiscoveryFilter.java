@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.loadbalance.FilterConstant;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.RegistrationManager;
@@ -33,13 +32,13 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
 
   @Override
   public int getOrder() {
-    return FilterConstant.ORDER_ZONE_AWARE;
+    return ORDER_ZONE_AWARE;
   }
 
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(FilterConstant.ZONE_AWARE_FILTER_ENABLED, true)
+        .getBooleanProperty(ZONE_AWARE_FILTER_ENABLED, true)
         .get();
   }
 

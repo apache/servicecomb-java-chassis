@@ -24,7 +24,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
-import org.apache.servicecomb.loadbalance.FilterConstant;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
@@ -45,7 +44,7 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty(FilterConstant.EMPTY_INSTANCE_PROTECTION, false);
+      .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
 
   public EventBus eventBus = EventManager.getEventBus();
 
@@ -63,20 +62,20 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
 
   @Override
   public int getOrder() {
-    return FilterConstant.ORDER_ISOLATION;
+    return ORDER_ISOLATION;
   }
 
   public IsolationDiscoveryFilter() {
     emptyProtection.addCallback(() -> {
       boolean newValue = emptyProtection.get();
-      LOGGER.info("{} changed from {} to {}", FilterConstant.EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);
+      LOGGER.info("{} changed from {} to {}", EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);
     });
   }
 
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(FilterConstant.ISOLATION_FILTER_ENABLED, true)
+        .getBooleanProperty(ISOLATION_FILTER_ENABLED, true)
         .get();
   }
 

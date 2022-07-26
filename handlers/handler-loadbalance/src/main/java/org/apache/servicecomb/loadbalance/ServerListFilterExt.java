@@ -28,8 +28,20 @@ import org.apache.servicecomb.core.Invocation;
  *  support this.
  */
 public interface ServerListFilterExt {
+  int ORDER_NORMAL = 0;
+
+  int ORDER_ISOLATION = -100;
+
+  int ORDER_ZONE_AWARE = 100;
+
+  String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
+
+  String ISOLATION_FILTER_ENABLED = "servicecomb.loadbalance.filter.isolation.enabled";
+
+  String ZONE_AWARE_FILTER_ENABLED = "servicecomb.loadbalance.filter.zoneaware.enabled";
+
   default int getOrder() {
-    return FilterConstant.ORDER_NORMAL;
+    return ORDER_NORMAL;
   }
 
   default boolean enabled() {
