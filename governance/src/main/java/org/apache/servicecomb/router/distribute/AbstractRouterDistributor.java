@@ -116,7 +116,7 @@ public abstract class AbstractRouterDistributor<T, E> implements
         TagItem targetTag = null;
         int maxMatch = 0;
         for (RouteItem entry : invokeRule.getRoute()) {
-          if (entry.getTagitem()==null){
+          if (entry.getTagitem() == null){
             continue;
           }
           int nowMatch = entry.getTagitem().matchNum(tagItem);
