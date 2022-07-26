@@ -26,14 +26,14 @@ public class ServiceCenterConfiguration {
    */
   private boolean ignoreSwaggerDifferent;
 
-  private boolean rewriteSwagger;
+  private boolean canOverwriteSwagger;
 
   public boolean isIgnoreSwaggerDifferent() {
     return ignoreSwaggerDifferent;
   }
 
-  public boolean canRewriteSwagger(){
-    return rewriteSwagger;
+  public boolean isCanOverwriteSwagger(){
+    return canOverwriteSwagger;
   }
 
   public ServiceCenterConfiguration setIgnoreSwaggerDifferent(boolean ignoreSwaggerDifferent) {
@@ -41,8 +41,8 @@ public class ServiceCenterConfiguration {
     return this;
   }
 
-  public ServiceCenterConfiguration setRewriteSwagger(boolean rewriteSwagger) {
-    this.rewriteSwagger = rewriteSwagger;
+  public ServiceCenterConfiguration setCanOverwriteSwagger(boolean canOverwriteSwagger) {
+    this.canOverwriteSwagger = canOverwriteSwagger;
     return this;
   }
 }
