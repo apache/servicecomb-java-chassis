@@ -30,13 +30,21 @@ public abstract class AbstractFault implements Fault {
   }
 
   @Override
-  public void injectFault() {
+  public boolean injectFault() {
+    if (policy.isForceClosed()) {
+      return false;
+    }
     FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
-    injectFault(faultParam);
+    return injectFault(faultParam);
   }
 
   @Override
   public String getKey() {
     return key;
+  }
+
+  @Override
+  public FaultInjectionPolicy getPolicy() {
+    return policy;
   }
 }

@@ -18,6 +18,7 @@ package org.apache.servicecomb.huaweicloud.servicestage;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,29 +39,48 @@ public class CasEnvConfig {
 
   private static final String ENVIRONMENT_ID = "CAS_ENVIRONMENT_ID";
 
+  private static final String SERVICE_PROPS = "SERVICECOMB_SERVICE_PROPS";
+
+  private static final String INSTANCE_PROPS = "SERVICECOMB_INSTANCE_PROPS";
+
   public static final CasEnvConfig INSTANCE = new CasEnvConfig();
 
-  private final Map<String, String> properties = new HashMap<>();
-
-  private CasEnvConfig() {
-    init();
+  private Map<String, String> parseProps(String value) {
+    Map<String, String> rs = new HashMap<>();
+    if (StringUtils.isEmpty(value)) {
+      return rs;
+    }
+    return Arrays.stream(value.split(",")).map(v -> v.split(":"))
+            .filter(v -> v.length == 2)
+            .collect(Collectors.toMap(v -> v[0], v -> v[1]));
   }
 
-  private void init() {
-    properties.put(APPLICATION_ID, DynamicPropertyFactory
-        .getInstance().getStringProperty(APPLICATION_ID, EMPTY).get());
-    properties.put(COMPONENT_NAME, DynamicPropertyFactory
-        .getInstance().getStringProperty(COMPONENT_NAME, EMPTY).get());
-    properties.put(INSTANCE_VERSION, DynamicPropertyFactory
-        .getInstance().getStringProperty(INSTANCE_VERSION, EMPTY).get());
-    properties.put(INSTANCE_ID, DynamicPropertyFactory
-        .getInstance().getStringProperty(INSTANCE_ID, EMPTY).get());
-    properties.put(ENVIRONMENT_ID, DynamicPropertyFactory
-        .getInstance().getStringProperty(ENVIRONMENT_ID, EMPTY).get());
+  public Map<String, String> getNonEmptyInstanceProperties() {
+    Map<String, String> map = new HashMap<>();
+
+    map.put(APPLICATION_ID, DynamicPropertyFactory
+            .getInstance().getStringProperty(APPLICATION_ID, EMPTY).get());
+    map.put(COMPONENT_NAME, DynamicPropertyFactory
+            .getInstance().getStringProperty(COMPONENT_NAME, EMPTY).get());
+    map.put(INSTANCE_VERSION, DynamicPropertyFactory
+            .getInstance().getStringProperty(INSTANCE_VERSION, EMPTY).get());
+    map.put(INSTANCE_ID, DynamicPropertyFactory
+            .getInstance().getStringProperty(INSTANCE_ID, EMPTY).get());
+    map.put(ENVIRONMENT_ID, DynamicPropertyFactory
+            .getInstance().getStringProperty(ENVIRONMENT_ID, EMPTY).get());
+
+    Map<String, String> instanceProps = map.entrySet().stream()
+            .filter(entry -> StringUtils.isNotEmpty(entry.getValue()))
+            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+    instanceProps.putAll(parseProps(DynamicPropertyFactory
+            .getInstance().getStringProperty(INSTANCE_PROPS, EMPTY).get()));
+
+    return instanceProps;
   }
 
-  public Map<String, String> getNonEmptyProperties() {
-    return properties.entrySet().stream().filter(entry -> StringUtils.isNotEmpty(entry.getValue()))
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+  public Map<String, String> getNonEmptyServiceProperties() {
+    return parseProps(DynamicPropertyFactory
+                    .getInstance().getStringProperty(SERVICE_PROPS, EMPTY).get());
   }
 }

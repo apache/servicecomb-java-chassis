@@ -17,12 +17,23 @@
 
 package org.apache.servicecomb.injection;
 
+import static org.apache.servicecomb.injection.AbortFault.ABORTED_ERROR_MSG;
+
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
+
 import io.vavr.CheckedFunction0;
 
 public interface Fault {
   static <T> CheckedFunction0<T> decorateCheckedSupplier(Fault fault, CheckedFunction0<T> supplier) {
     return () -> {
-      fault.injectFault();
+      if (fault.injectFault()) {
+        if (FaultInjectionConst.FALLBACK_THROWEXCEPTION.equals(fault.getPolicy().getFallbackType())) {
+          throw new FaultInjectionException(
+              FaultResponse.createFail(fault.getPolicy().getErrorCode(), ABORTED_ERROR_MSG));
+        } else {
+          return null;
+        }
+      }
       return supplier.apply();
     };
   }
@@ -31,10 +42,19 @@ public interface Fault {
 
   String getName();
 
-  void injectFault();
+  /*
+   * If true is returned,the downgrade governance policy is executed.
+   * Otherwise,the original request is directly executed.
+   * */
+  boolean injectFault();
 
-  void injectFault(FaultParam faultParam);
+  /*
+   * If true is returned,the downgrade governance policy is executed.
+   * Otherwise,the original request is directly executed.
+   * */
+  boolean injectFault(FaultParam faultParam);
 
   String getKey();
 
+  FaultInjectionPolicy getPolicy();
 }

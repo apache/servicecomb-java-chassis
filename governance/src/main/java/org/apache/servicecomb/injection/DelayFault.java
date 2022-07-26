@@ -34,19 +34,20 @@ public class DelayFault extends AbstractFault {
   }
 
   @Override
-  public void injectFault(FaultParam faultParam) {
+  public boolean injectFault(FaultParam faultParam) {
     if (!shouldDelay(faultParam, policy)) {
-      return;
+      return false;
     }
 
     LOGGER.debug("Fault injection: delay is added for the request by fault inject handler");
     long delay = policy.getDelayTimeToMillis();
     if (delay == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: delay is not configured");
-      return;
+      return false;
     }
 
     executeDelay(faultParam, delay);
+    return false;
   }
 
   private void executeDelay(FaultParam faultParam, long delay) {

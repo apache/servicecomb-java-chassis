@@ -125,4 +125,54 @@ public class FaultInjectionTest {
     Assertions.assertFalse(notExpected.get());
     Assertions.assertTrue(expected.get());
   }
+
+  @Test
+  public void test_fallback_returnNull_work() throws Throwable {
+    FaultInjectionDecorateCheckedSupplier<Object> ds =
+        FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/returnNull");
+    request.setServiceName("returnNull");
+
+    Fault fault = faultInjectionHandler.getActuator(request);
+    ds.withFaultInjection(fault);
+    Assertions.assertEquals(null, ds.get());
+  }
+
+  @Test
+  public void test_fallback_ThrowException_work() throws Throwable {
+    FaultInjectionDecorateCheckedSupplier<Object> ds =
+        FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/throwException");
+    request.setServiceName("ThrowException");
+
+    Fault fault = faultInjectionHandler.getActuator(request);
+    ds.withFaultInjection(fault);
+    boolean expected = false;
+    try {
+      ds.get();
+    } catch (FaultInjectionException e) {
+      if (e.getFaultResponse().getErrorCode() == 500) {
+        expected = true;
+      }
+    }
+    Assertions.assertEquals(true, expected);
+  }
+
+  @Test
+  public void test_fallback_forceClosed_work() throws Throwable {
+    FaultInjectionDecorateCheckedSupplier<Object> ds =
+        FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/forceClosed");
+    request.setServiceName("forceClosed");
+
+    Fault fault = faultInjectionHandler.getActuator(request);
+    ds.withFaultInjection(fault);
+    Assertions.assertEquals("test", ds.get());
+  }
 }
