@@ -68,7 +68,7 @@ public class DistributeTest {
         }
     }
     boolean flag = false;
-    if (Math.round(serverNum2*1.0 / serverNum1) == 4){
+    if (Math.round(serverNum2 * 1.0 / serverNum1) == 4){
         flag = true;
     }
       Assertions.assertTrue(flag);
