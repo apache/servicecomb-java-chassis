@@ -57,14 +57,4 @@ public class ServiceIns {
   public void addTags(String key, String v) {
     tags.put(key, v);
   }
-
-  @Override
-  public String toString() {
-    return "ServiceIns{" +
-            "version='" + version + '\'' +
-            ", serverName='" + serverName + '\'' +
-            ", tags=" + tags +
-            ", id='" + id + '\'' +
-            '}';
-  }
 }

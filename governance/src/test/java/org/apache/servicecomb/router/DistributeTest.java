@@ -65,7 +65,7 @@ public class DistributeTest {
   }
 
    PolicyRuleItem initPolicyRuleItem(){
-    //1. 模拟初始化RouteRules
+    //1. Mock init RouteRules
     PolicyRuleItem policyRuleItem = new PolicyRuleItem();
     policyRuleItem.setPrecedence(2);
     RouteItem routeItem1 = new RouteItem();
@@ -84,7 +84,6 @@ public class DistributeTest {
     routeItemArrayList.add(routeItem1);
     routeItemArrayList.add(routeItem2);
     policyRuleItem.setRoute(routeItemArrayList);
-    System.out.println(policyRuleItem);
     return policyRuleItem;
   }
 
@@ -98,7 +97,6 @@ public class DistributeTest {
         List<ServiceIns> list = new ArrayList<>();
         list.add(serviceIns1);
         list.add(serviceIns2);
-        System.out.println(list);
         return list;
     }
 
