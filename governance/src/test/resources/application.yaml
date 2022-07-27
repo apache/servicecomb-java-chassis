@@ -144,3 +144,31 @@ servicecomb:
     wrongIngored: |
       delayTime: -1
       type: ERROR
+
+  routeRule:
+    test_server1: |                              # 服务名
+      - precedence: 1                        # 优先级，数字越大，优先级越高。
+        match:                               # 请求匹配规则。0..N个，不配置表示匹配。
+          headers:                           # header 匹配
+            region:                          # 如果配置了多个 header，那么所有的 header 规则都必须和请求匹配
+              exact: 'providerRegion'
+              caseInsensitive: false         # 不区分大小写
+            type:
+              regex: gray_[a-z]+             # java 正则表达式匹配
+              caseInsensitive: true          # 区分大小写
+        route:                               # 路由规则
+          - weight: 20                       # 权重值
+            tags:
+              version: 1.0.0                 # 实例标记。满足标记条件的实例放到这一组。
+          - weight: 80                       # 权重值
+            tags:
+              version: 2.0.0                 # 实例标记。满足标记条件的实例放到这一组。
+
+      - precedence: 2
+        route:
+          - weight: 20
+            tags:
+              x-group: red
+          - weight: 80
+            tags:
+              x-group: green
