@@ -59,11 +59,11 @@ public class DistributeTest {
     }
     Assertions.assertNotNull(listOfServers);
     for (ServiceIns server : listOfServers) {
-        Assertions.assertEquals(TARGET_SERVICE_NAME,server.getServerName());
+        Assertions.assertEquals(TARGET_SERVICE_NAME, server.getServerName());
     }
-    int ServerNum1 =0;
-    int ServerNum2 =0;
-    for (int i = 0; i < 10; i++) {
+    int ServerNum1 = 0;
+    int ServerNum2 = 0;
+    for (int i = 0; i < 100; i++) {
         List<ServiceIns> serverList = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
         for (ServiceIns serviceIns : serverList) {
             if ("01".equals(serviceIns.getId())){
@@ -74,8 +74,8 @@ public class DistributeTest {
             }
         }
     }
-    Assertions.assertEquals(2,ServerNum1);
-    Assertions.assertEquals(8,ServerNum2);
+    Assertions.assertEquals(20, ServerNum1);
+    Assertions.assertEquals(80, ServerNum2);
   }
 
    PolicyRuleItem initPolicyRuleItem(){
@@ -88,8 +88,8 @@ public class DistributeTest {
     routeItem2.setWeight(80);
     HashMap<String, String> tags1 = new HashMap<>();
     HashMap<String, String> tags2 = new HashMap<>();
-    tags1.put("x-group","red");
-    tags2.put("x-group","green");
+    tags1.put("x-group", "red");
+    tags2.put("x-group", "green");
     routeItem1.setTags(tags1);
     routeItem1.initTagItem();
     routeItem2.setTags(tags2);
