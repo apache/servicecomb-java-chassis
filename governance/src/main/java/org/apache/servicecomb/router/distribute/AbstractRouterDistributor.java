@@ -157,7 +157,7 @@ public abstract class AbstractRouterDistributor<T, E> implements
       }
     }
     TagItem tagitem = new TagItem(latestVersion);
-    routerRuleCache.getServiceInfoCacheMap().get(serviceName).setLatestVersionTag(tagitem);// NPE
+    routerRuleCache.getServiceInfoCacheMap().get(serviceName).setLatestVersionTag(tagitem);
   }
 
   public List<T> getLatestVersionList(List<T> list, String targetServiceName) {
