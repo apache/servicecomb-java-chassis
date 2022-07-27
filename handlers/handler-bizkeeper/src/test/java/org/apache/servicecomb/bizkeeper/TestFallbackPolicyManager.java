@@ -21,18 +21,19 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.exception.CseException;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestFallbackPolicyManager {
   @Test
-  public void testFallbackPolicyManager(final @Mocked Configuration config, final @Mocked Invocation invocation,
-      final @Mocked OperationMeta operation) {
+  public void testFallbackPolicyManager() {
+    OperationMeta operation = Mockito.mock(OperationMeta.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
+
     FallbackPolicyManager.addPolicy(new ReturnNullFallbackPolicy());
     FallbackPolicyManager.addPolicy(new ThrowExceptionFallbackPolicy());
     FallbackPolicyManager.addPolicy(new FromCacheFallbackPolicy());
@@ -56,88 +57,48 @@ public class TestFallbackPolicyManager {
       }
     });
 
-    new Expectations() {
-      {
-        invocation.getMicroserviceName();
-        result = "testservice";
-        invocation.getOperationMeta();
-        result = operation;
-        operation.getMicroserviceQualifiedName();
-        result = "testservice.schema.custom";
-        config.getFallbackPolicyPolicy("Consumer", "testservice", "testservice.schema.custom");
-        result = "custom";
-      }
-    };
-
+    Mockito.when(operation.getMicroserviceQualifiedName()).thenReturn("testservice.schema.custom");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testservice");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operation);
+    ArchaiusUtils.setProperty("servicecomb.fallbackpolicy.Consumer.testservice.schema.custom.policy", "custom");
     Assertions.assertEquals("runtime",
         FallbackPolicyManager.getFallbackResponse("Consumer", new RuntimeException(), invocation)
             .getResult());
 
-    new Expectations() {
-      {
-        invocation.getMicroserviceName();
-        result = "testservice";
-        invocation.getOperationMeta();
-        result = operation;
-        operation.getMicroserviceQualifiedName();
-        result = "testservice.schema.returnnull";
-        config.getFallbackPolicyPolicy("Consumer", "testservice", "testservice.schema.returnnull");
-        result = "returnnull";
-      }
-    };
-
+    Mockito.when(operation.getMicroserviceQualifiedName()).thenReturn("testservice.schema.returnnull");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testservice");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operation);
+    ArchaiusUtils.setProperty("servicecomb.fallbackpolicy.Consumer.testservice.schema.returnnull.policy", "returnnull");
     Assertions.assertEquals((String) null,
         FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
-    new Expectations() {
-      {
-        invocation.getMicroserviceName();
-        result = "testservice";
-        invocation.getOperationMeta();
-        result = operation;
-        operation.getMicroserviceQualifiedName();
-        result = "testservice.schema.throwexception";
-        config.getFallbackPolicyPolicy("Consumer", "testservice", "testservice.schema.throwexception");
-        result = "throwexception";
-      }
-    };
+    Mockito.when(operation.getMicroserviceQualifiedName()).thenReturn("testservice.schema.throwexception");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testservice");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operation);
+    ArchaiusUtils.setProperty("servicecomb.fallbackpolicy.Consumer.testservice.schema.throwexception.policy", "throwexception");
     Assertions.assertEquals(CseException.class,
         ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult()).getCause()
             .getClass());
 
-    new Expectations() {
-      {
-        invocation.getMicroserviceName();
-        result = "testservice";
-        invocation.getOperationMeta();
-        result = operation;
-        operation.getMicroserviceQualifiedName();
-        result = "testservice.schema.fromcache";
-        config.getFallbackPolicyPolicy("Consumer", "testservice", "testservice.schema.fromcache");
-        result = "fromcache";
-        invocation.getInvocationQualifiedName();
-        result = "testservice.schema.fromcache";
-      }
-    };
+    Mockito.when(operation.getMicroserviceQualifiedName()).thenReturn("testservice.schema.fromcache");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testservice");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operation);
+    ArchaiusUtils.setProperty("servicecomb.fallbackpolicy.Consumer.testservice.schema.fromcache.policy", "fromcache");
+    Mockito.when(invocation.getInvocationQualifiedName()).thenReturn("estservice.schema.fromcache");
+
     FallbackPolicyManager.record("Consumer", invocation, Response.succResp("mockedsuccess"), true);
     FallbackPolicyManager.record("Consumer", invocation, Response.succResp("mockedfailure"), false);
     Assertions.assertEquals("mockedsuccess",
         FallbackPolicyManager.getFallbackResponse("Consumer", null, invocation).getResult());
 
-    new Expectations() {
-      {
-        invocation.getMicroserviceName();
-        result = "testservice";
-        invocation.getOperationMeta();
-        result = operation;
-        operation.getMicroserviceQualifiedName();
-        result = "testservice.schema.unknown";
-        config.getFallbackPolicyPolicy("Consumer", "testservice", "testservice.schema.unknown");
-        result = "unknown";
-      }
-    };
+    Mockito.when(operation.getMicroserviceQualifiedName()).thenReturn("testservice.schema.unknown");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testservice");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operation);
+    ArchaiusUtils.setProperty("servicecomb.fallbackpolicy.Consumer.testservice.schema.unknown.policy", "unknown");
     Assertions.assertEquals(InvocationException.class,
         ((Exception) FallbackPolicyManager.getFallbackResponse("Consumer", new InvocationException(
             Status.TOO_MANY_REQUESTS, ""), invocation).getResult()).getClass());
+
+    ArchaiusUtils.resetConfig();
   }
 }
