@@ -32,7 +32,7 @@ public interface ServerListFilterExt {
 
   int ORDER_ISOLATION = -100;
 
-  int ORDER_ZONE_AWARE = 100;
+  int ORDER_ZONE_AWARE = 200;
 
   String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
 
