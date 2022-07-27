@@ -21,10 +21,10 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
@@ -46,7 +46,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     super(GROUP_NAME);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     bizkeeperHandler = new TestBizkeeperHandler();
     invocation = Mockito.mock(Invocation.class);
@@ -57,7 +57,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     FallbackPolicyManager.addPolicy(new FromCacheFallbackPolicy());
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     bizkeeperHandler = null;
     invocation = null;

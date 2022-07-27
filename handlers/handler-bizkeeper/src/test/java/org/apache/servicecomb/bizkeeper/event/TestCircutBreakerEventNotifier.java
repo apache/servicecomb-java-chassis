@@ -21,18 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandMetrics;
 import com.netflix.hystrix.HystrixEventType;
-
-import mockit.Expectations;
 
 public class TestCircutBreakerEventNotifier {
   private List<AlarmEvent> taskList = null;
@@ -44,7 +43,7 @@ public class TestCircutBreakerEventNotifier {
   Object receiveEvent = null;
 
   public static class EventSubscriber {
-    List<AlarmEvent> taskList;
+    final List<AlarmEvent> taskList;
 
     public EventSubscriber(List<AlarmEvent> taskList) {
       this.taskList = taskList;
@@ -56,7 +55,7 @@ public class TestCircutBreakerEventNotifier {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     taskList = new ArrayList<>();
     circutBreakerEventNotifier = new CircutBreakerEventNotifier();
@@ -65,7 +64,7 @@ public class TestCircutBreakerEventNotifier {
     circutBreakerEventNotifier.eventBus.register(receiveEvent);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     circutBreakerEventNotifier.eventBus.unregister(receiveEvent);
   }
@@ -73,15 +72,12 @@ public class TestCircutBreakerEventNotifier {
   @Test
   public void testMarkEvent() {
     Mockito.when(commandKey.name()).thenReturn("Consumer.springmvc.springmvcHello.sayHi");
-    new Expectations(HystrixCommandMetrics.class) {
-      {
-        HystrixCommandMetrics.getInstance(commandKey);
-        result = null;
-      }
-    };
-    circutBreakerEventNotifier.markEvent(HystrixEventType.SHORT_CIRCUITED, commandKey);
-    Assertions.assertEquals(1, taskList.size());
-    circutBreakerEventNotifier.markEvent(HystrixEventType.SUCCESS, commandKey);
-    Assertions.assertEquals(2, taskList.size());
+    try (MockedStatic<HystrixCommandMetrics> mockedStatic = Mockito.mockStatic(HystrixCommandMetrics.class)) {
+      mockedStatic.when(() -> HystrixCommandMetrics.getInstance(commandKey)).thenReturn(null);
+      circutBreakerEventNotifier.markEvent(HystrixEventType.SHORT_CIRCUITED, commandKey);
+      Assertions.assertEquals(1, taskList.size());
+      circutBreakerEventNotifier.markEvent(HystrixEventType.SUCCESS, commandKey);
+      Assertions.assertEquals(2, taskList.size());
+    }
   }
 }
