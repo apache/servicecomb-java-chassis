@@ -18,8 +18,6 @@ package org.apache.servicecomb.router.distribute;
 
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.ServiceIns;
-import org.apache.servicecomb.router.model.PolicyRuleItem;
-import org.apache.servicecomb.router.model.RouteItem;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -49,7 +47,6 @@ public class DistributeTest {
 
   @Test
     public void testDistribute(){
-    PolicyRuleItem policyRuleItem = initPolicyRuleItem();
     List<ServiceIns> list = initServiceList();
     HashMap<String, String> header = new HashMap<>();
     List<ServiceIns> listOfServers = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
@@ -57,48 +54,24 @@ public class DistributeTest {
     for (ServiceIns server : listOfServers) {
         Assertions.assertEquals(TARGET_SERVICE_NAME, server.getServerName());
     }
-    int ServerNum1 = 0;
-    int ServerNum2 = 0;
+    int serverNum1 = 0;
+    int serverNum2 = 0;
 
     for (int i = 0; i < 10; i++) {
         List<ServiceIns> serverList = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
         for (ServiceIns serviceIns : serverList) {
             if ("01".equals(serviceIns.getId())){
-                ServerNum1 ++;
-            }
-            else if ("02".equals(serviceIns.getId())){
-                ServerNum2 ++;
+                serverNum1++;
+            } else if ("02".equals(serviceIns.getId())){
+                serverNum2++;
             }
         }
     }
     boolean flag = false;
-    if (Math.round(ServerNum2 / ServerNum1) == 4 ){
+    if (Math.round(serverNum2*1.0 / serverNum1) == 4){
         flag = true;
     }
-    Assertions.assertEquals(true, flag);
-  }
-
-   PolicyRuleItem initPolicyRuleItem(){
-    //1. Mock init RouteRules
-    PolicyRuleItem policyRuleItem = new PolicyRuleItem();
-    policyRuleItem.setPrecedence(2);
-    RouteItem routeItem1 = new RouteItem();
-    RouteItem routeItem2 = new RouteItem();
-    routeItem1.setWeight(20);
-    routeItem2.setWeight(80);
-    HashMap<String, String> tags1 = new HashMap<>();
-    HashMap<String, String> tags2 = new HashMap<>();
-    tags1.put("x-group", "red");
-    tags2.put("x-group", "green");
-    routeItem1.setTags(tags1);
-    routeItem1.initTagItem();
-    routeItem2.setTags(tags2);
-    routeItem2.initTagItem();
-    ArrayList<RouteItem> routeItemArrayList = new ArrayList<>();
-    routeItemArrayList.add(routeItem1);
-    routeItemArrayList.add(routeItem2);
-    policyRuleItem.setRoute(routeItemArrayList);
-    return policyRuleItem;
+      Assertions.assertTrue(flag);
   }
 
     List<ServiceIns> initServiceList(){
