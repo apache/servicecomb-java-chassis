@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.qps;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
@@ -58,4 +59,10 @@ public class ProviderQpsFlowControlHandler implements Handler {
       return false;
     }
   }
+
+  @VisibleForTesting
+  public QpsControllerManager getQpsControllerMgr() {
+    return qpsControllerMgr;
+  }
+
 }

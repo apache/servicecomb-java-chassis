@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.qps;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -33,10 +33,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class TestConsumerQpsFlowControlHandler {
 
@@ -74,7 +70,7 @@ public class TestConsumerQpsFlowControlHandler {
   @Test
   public void testHandle() throws Exception {
     String key = "svc.schema.opr";
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    AbstractQpsStrategy qpsStrategy = Mockito.spy(new FixedWindowStrategy());
     qpsStrategy.setKey("key");
     qpsStrategy.setQpsLimit(12L);
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
@@ -82,20 +78,10 @@ public class TestConsumerQpsFlowControlHandler {
     Mockito.when(invocation.getSchemaId()).thenReturn("schema");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("svc");
     setQpsController(key, qpsStrategy);
-    new MockUp<FixedWindowStrategy>() {
-      @Mock
-      public boolean isLimitNewRequest() {
-        return true;
-      }
-    };
 
-    new MockUp<QpsControllerManager>() {
-      @Mock
-      private QpsStrategy create(String qualifiedNameKey) {
-        return qpsStrategy;
-      }
-    };
-
+    QpsControllerManager qpsControllerMgr = Mockito.spy(handler.getQpsControllerMgr());
+    Mockito.doReturn(qpsStrategy).when(qpsControllerMgr).getOrCreate("svc", invocation);
+    Mockito.when(qpsStrategy.isLimitNewRequest()).thenReturn(true);
     handler.handle(invocation, asyncResp);
 
     ArgumentCaptor<InvocationException> captor = ArgumentCaptor.forClass(InvocationException.class);
@@ -109,7 +95,7 @@ public class TestConsumerQpsFlowControlHandler {
   @Test
   public void testHandleIsLimitNewRequestAsFalse() throws Exception {
     String key = "service.schema.id";
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    AbstractQpsStrategy qpsStrategy = Mockito.spy(new FixedWindowStrategy());
     qpsStrategy.setKey("service");
     qpsStrategy.setQpsLimit(12L);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("service");
@@ -118,29 +104,17 @@ public class TestConsumerQpsFlowControlHandler {
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.id");
     setQpsController(key, qpsStrategy);
 
-    new MockUp<QpsStrategy>() {
-      @Mock
-      public boolean isLimitNewRequest() {
-        return false;
-      }
-    };
-
-    new MockUp<QpsControllerManager>() {
-
-      @Mock
-      private QpsStrategy create(String qualifiedNameKey) {
-        return qpsStrategy;
-      }
-    };
+    QpsControllerManager spy = Mockito.spy(handler.getQpsControllerMgr());
+    Mockito.doReturn(qpsStrategy).when(spy).getOrCreate("svc", invocation);
+    Mockito.when(qpsStrategy.isLimitNewRequest()).thenReturn(false);
     handler.handle(invocation, asyncResp);
 
     Mockito.verify(invocation).next(asyncResp);
   }
 
-  private void setQpsController(String key, QpsStrategy qpsStrategy) {
-    QpsControllerManager qpsControllerManager = Deencapsulation.getField(handler, "qpsControllerMgr");
-    ConcurrentHashMap<String, QpsStrategy> objMap = Deencapsulation
-        .getField(qpsControllerManager, "qualifiedNameControllerMap");
+  private void setQpsController(String key, AbstractQpsStrategy qpsStrategy) {
+    QpsControllerManager qpsControllerManager = handler.getQpsControllerMgr();
+    Map<String, AbstractQpsStrategy> objMap = qpsControllerManager.getQualifiedNameControllerMap();
     objMap.put(key, qpsStrategy);
   }
 }
