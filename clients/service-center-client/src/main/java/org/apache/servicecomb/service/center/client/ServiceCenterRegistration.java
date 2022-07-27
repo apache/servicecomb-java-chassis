@@ -141,7 +141,7 @@ public class ServiceCenterRegistration extends AbstractTask {
               return;
             }
             if (serviceCenterConfiguration.isIgnoreSwaggerDifferent()) {
-              LOGGER.warn("Service has already registered, but schema ids not equal, try to register it again");
+              LOGGER.warn("Service has already registered, but schema ids not equal. Ignore and continue to register");
             } else {
               throw new IllegalStateException("Service has already registered, but schema ids not equal, stop register. "
                       + "Change the microservice version or delete the old microservice info and try again.");
@@ -161,7 +161,7 @@ public class ServiceCenterRegistration extends AbstractTask {
   }
 
   private boolean isSwaggerDifferent(Microservice newMicroservice) {
-      return !isListEquals(newMicroservice.getSchemas(),microservice.getSchemas());
+    return !isListEquals(newMicroservice.getSchemas(), microservice.getSchemas());
   }
 
   private boolean isListEquals(List<String> one, List<String> two) {

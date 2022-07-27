@@ -26,7 +26,7 @@ public class ServiceCenterConfiguration {
    */
   private boolean ignoreSwaggerDifferent;
 
-  private boolean canOverwriteSwagger;
+  private boolean canOverwriteSwagger = true;
 
   public boolean isIgnoreSwaggerDifferent() {
     return ignoreSwaggerDifferent;
