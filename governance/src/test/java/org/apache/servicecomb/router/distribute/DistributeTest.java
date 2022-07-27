@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,57 +34,62 @@ import java.util.List;
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class DistributeTest {
   private static final String TARGET_SERVICE_NAME = "test_server1";
+
   private RouterFilter routerFilter;
+
   private RouterDistributor<ServiceIns, ServiceIns> routerDistributor;
 
   @Autowired
   public void setRouterFilter(RouterFilter routerFilter) {
-      this.routerFilter = routerFilter;
+    this.routerFilter = routerFilter;
   }
+
   @Autowired
   public void setRouterDistributor(RouterDistributor<ServiceIns, ServiceIns> routerDistributor) {
-      this.routerDistributor = routerDistributor;
+    this.routerDistributor = routerDistributor;
   }
 
   @Test
-    public void testDistribute(){
+  public void testDistribute() {
     List<ServiceIns> list = initServiceList();
     HashMap<String, String> header = new HashMap<>();
-    List<ServiceIns> listOfServers = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
+    List<ServiceIns> listOfServers = routerFilter
+        .getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
     Assertions.assertNotNull(listOfServers);
     for (ServiceIns server : listOfServers) {
-        Assertions.assertEquals(TARGET_SERVICE_NAME, server.getServerName());
+      Assertions.assertEquals(TARGET_SERVICE_NAME, server.getServerName());
     }
     int serverNum1 = 0;
     int serverNum2 = 0;
 
     for (int i = 0; i < 10; i++) {
-        List<ServiceIns> serverList = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
-        for (ServiceIns serviceIns : serverList) {
-            if ("01".equals(serviceIns.getId())){
-                serverNum1++;
-            } else if ("02".equals(serviceIns.getId())){
-                serverNum2++;
-            }
+      List<ServiceIns> serverList = routerFilter
+          .getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
+      for (ServiceIns serviceIns : serverList) {
+        if ("01".equals(serviceIns.getId())) {
+          serverNum1++;
+        } else if ("02".equals(serviceIns.getId())) {
+          serverNum2++;
         }
+      }
     }
     boolean flag = false;
-    if (Math.round(serverNum2 * 1.0 / serverNum1) == 4){
-        flag = true;
+    if (Math.round(serverNum2 * 1.0 / serverNum1) == 4) {
+      flag = true;
     }
-      Assertions.assertTrue(flag);
+    Assertions.assertTrue(flag);
   }
 
-    List<ServiceIns> initServiceList(){
-        ServiceIns serviceIns1 = new ServiceIns("01", "test_server1");
-        ServiceIns serviceIns2 = new ServiceIns("02", "test_server1");
-        serviceIns1.setVersion("1.0");
-        serviceIns2.setVersion("2.0");
-        serviceIns1.addTags("x-group", "red");
-        serviceIns2.addTags("x-group", "green");
-        List<ServiceIns> list = new ArrayList<>();
-        list.add(serviceIns1);
-        list.add(serviceIns2);
-        return list;
-    }
+  List<ServiceIns> initServiceList() {
+    ServiceIns serviceIns1 = new ServiceIns("01", "test_server1");
+    ServiceIns serviceIns2 = new ServiceIns("02", "test_server1");
+    serviceIns1.setVersion("1.0");
+    serviceIns2.setVersion("2.0");
+    serviceIns1.addTags("x-group", "red");
+    serviceIns2.addTags("x-group", "green");
+    List<ServiceIns> list = new ArrayList<>();
+    list.add(serviceIns1);
+    list.add(serviceIns2);
+    return list;
+  }
 }
