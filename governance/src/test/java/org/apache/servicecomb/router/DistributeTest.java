@@ -1,11 +1,26 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.servicecomb.router;
-
 
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.RouteItem;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
@@ -15,20 +30,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class DistributeTest {
   private static final String TARGET_SERVICE_NAME = "test_server";
-  private RouterDistributor<ServiceIns,ServiceIns> testDistributor;
+
   private RouterFilter routerFilter;
   private RouterDistributor<ServiceIns, ServiceIns> routerDistributor;
 
-
-  @Autowired
-  public void setTestDistributor(RouterDistributor<ServiceIns, ServiceIns> testDistributor) {
-    this.testDistributor = testDistributor;
-  }
   @Autowired
   public void setRouterFilter(RouterFilter routerFilter) {
       this.routerFilter = routerFilter;
@@ -40,19 +49,23 @@ public class DistributeTest {
 
   @Test
     public void testDistribute(){
-
     PolicyRuleItem policyRuleItem = initPolicyRuleItem();
     List<ServiceIns> list = initServiceList();
     HashMap<String, String> header = new HashMap<>();
     List<ServiceIns> listOfServers = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
-    Assert.assertNotNull(listOfServers);
+    ArrayList<String> xGroup = new ArrayList<>();
+    for (RouteItem routeItem : policyRuleItem.getRoute()) {
+        xGroup.add(routeItem.getTags().get("x-group"));
+    }
+    Assertions.assertNotNull(listOfServers);
+    for (ServiceIns server : listOfServers) {
+        Assertions.assertEquals(TARGET_SERVICE_NAME,server.getServerName());
+        Assertions.assertEquals(true,assertXGroup(xGroup,server.getTags().get("x-group")));
+    }
   }
 
-
    PolicyRuleItem initPolicyRuleItem(){
-    /* 1. 模拟初始化RouteRules
-    *  2.
-    * */
+    //1. 模拟初始化RouteRules
     PolicyRuleItem policyRuleItem = new PolicyRuleItem();
     policyRuleItem.setPrecedence(2);
     RouteItem routeItem1 = new RouteItem();
@@ -87,6 +100,13 @@ public class DistributeTest {
         list.add(serviceIns2);
         System.out.println(list);
         return list;
+    }
+
+    static boolean assertXGroup(List<String> list, String target){
+      if (!list.contains(target)){
+          return false;
+      }
+      return true;
     }
 
 }
