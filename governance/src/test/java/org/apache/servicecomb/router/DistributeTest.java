@@ -102,8 +102,8 @@ public class DistributeTest {
         ServiceIns serviceIns2 = new ServiceIns("02", "test_server");
         serviceIns1.setVersion("1.0");
         serviceIns2.setVersion("2.0");
-        serviceIns1.addTags("x-group","red");
-        serviceIns2.addTags("x-group","green");
+        serviceIns1.addTags("x-group", "red");
+        serviceIns2.addTags("x-group", "green");
         List<ServiceIns> list = new ArrayList<>();
         list.add(serviceIns1);
         list.add(serviceIns2);
