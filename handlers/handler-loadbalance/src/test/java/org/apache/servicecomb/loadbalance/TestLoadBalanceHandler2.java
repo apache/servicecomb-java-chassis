@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +39,7 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
-import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.localregistry.LocalRegistryStore;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
@@ -65,6 +61,8 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Mock;
 import mockit.MockUp;
+
+import static org.mockito.Mockito.when;
 
 public class TestLoadBalanceHandler2 {
   private Holder<Long> mockTimeMillis;
@@ -536,8 +534,6 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
-    discoveryTree.addFilter(new IsolationDiscoveryFilter());
-    discoveryTree.addFilter(new ZoneAwareDiscoveryFilter());
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
     handler = new LoadbalanceHandler(discoveryTree);
@@ -669,8 +665,6 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
-    discoveryTree.addFilter(new IsolationDiscoveryFilter());
-    discoveryTree.addFilter(new ZoneAwareDiscoveryFilter());
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
     handler = new LoadbalanceHandler(discoveryTree);
@@ -846,12 +840,13 @@ public class TestLoadBalanceHandler2 {
         });
 
     Assertions.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
-    invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.enabled", "false");
     try {
       handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
     } catch (Exception e) {
       Assertions.fail("unexpected exception " + e.getMessage());
     }
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.enabled", "true");
     Assertions.assertEquals("rest://127.0.0.1:8080", invocation.getEndpoint().getEndpoint());
     Assertions.assertTrue(serviceCombServerStats.isIsolated());
     Assertions.assertEquals(0, serviceCombServerStats.getContinuousFailureCount());
