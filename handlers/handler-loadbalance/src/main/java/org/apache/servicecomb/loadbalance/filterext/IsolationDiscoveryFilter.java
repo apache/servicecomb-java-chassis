@@ -46,7 +46,7 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
 
-  public EventBus eventBus = EventManager.getEventBus();
+  private final EventBus eventBus = EventManager.getEventBus();
 
   public static class Settings {
     public int errorThresholdPercentage;
