@@ -33,11 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
-
 public class TestProviderQpsFlowControlHandler {
   ProviderQpsFlowControlHandler handler;
 
@@ -58,22 +53,16 @@ public class TestProviderQpsFlowControlHandler {
   }
 
   @Test
-  public void testGlobalQpsControl(final @Injectable Invocation invocation,
-      final @Injectable AsyncResponse asyncResp) throws Exception {
-    new Expectations() {
-      {
-        invocation.getHandlerIndex();
-        result = 0;
-        invocation.getContext(Const.SRC_MICROSERVICE);
-        result = "test";
-        invocation.getOperationMeta();
-        result = QpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
-        invocation.getSchemaId();
-        result = "server";
-        asyncResp.producerFail((Throwable) any);
-        result = new RuntimeException("test error");
-      }
-    };
+  public void testGlobalQpsControl() throws Exception {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+    OperationMeta operationMeta = QpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
+
+    Mockito.when(invocation.getHandlerIndex()).thenReturn(0);
+    Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn("test");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.doThrow(new RuntimeException("test error")).when(asyncResp).producerFail(Mockito.any());
 
     ProviderQpsFlowControlHandler gHandler = new ProviderQpsFlowControlHandler();
     gHandler.handle(invocation, asyncResp);
@@ -134,15 +123,11 @@ public class TestProviderQpsFlowControlHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(mockOperationMeta);
     Mockito.when(invocation.getSchemaId()).thenReturn("server");
 
-    new MockUp<QpsControllerManager>() {
-      @Mock
-      private QpsStrategy create(String qualifiedNameKey) {
-        AbstractQpsStrategy strategy = new FixedWindowStrategy();
-        strategy.setKey(qualifiedNameKey);
-        strategy.setQpsLimit(1L);
-        return strategy;
-      }
-    };
+    AbstractQpsStrategy strategy = new FixedWindowStrategy();
+    strategy.setKey("");
+    strategy.setQpsLimit(1L);
+    QpsControllerManager qpsControllerMgr = Mockito.spy(handler.getQpsControllerMgr());
+    Mockito.doReturn(strategy).when(qpsControllerMgr).create("test.server.opr", "test", invocation);
 
     handler.handle(invocation, asyncResp);
     handler.handle(invocation, asyncResp);
@@ -164,15 +149,12 @@ public class TestProviderQpsFlowControlHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(mockOperationMeta);
     Mockito.when(invocation.getSchemaId()).thenReturn("server");
 
-    new MockUp<QpsControllerManager>() {
-      @Mock
-      private QpsStrategy create(String qualifiedNameKey) {
-        AbstractQpsStrategy strategy = new FixedWindowStrategy();
-        strategy.setKey(qualifiedNameKey);
-        strategy.setQpsLimit(1L);
-        return strategy;
-      }
-    };
+    AbstractQpsStrategy strategy = new FixedWindowStrategy();
+    strategy.setKey("");
+    strategy.setQpsLimit(1L);
+    QpsControllerManager qpsControllerMgr = Mockito.spy(handler.getQpsControllerMgr());
+    Mockito.doReturn(strategy).when(qpsControllerMgr).create("test.server.opr", "test", invocation);
+
     handler.handle(invocation, asyncResp);
 
     Mockito.verify(invocation, Mockito.times(0)).next(asyncResp);

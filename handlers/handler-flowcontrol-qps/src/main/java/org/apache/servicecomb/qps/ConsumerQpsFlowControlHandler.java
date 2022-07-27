@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.qps;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -28,6 +29,11 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  * Support 3 levels of microservice/schema/operation.
  */
 public class ConsumerQpsFlowControlHandler implements Handler {
+
+  @VisibleForTesting
+  public QpsControllerManager getQpsControllerMgr() {
+    return qpsControllerMgr;
+  }
 
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
 

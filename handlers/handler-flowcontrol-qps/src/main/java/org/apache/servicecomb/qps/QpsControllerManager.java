@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -75,6 +76,11 @@ public class QpsControllerManager {
     initGlobalQpsController();
   }
 
+  @VisibleForTesting
+  public Map<String, AbstractQpsStrategy> getQualifiedNameControllerMap() {
+    return qualifiedNameControllerMap;
+  }
+
   public QpsStrategy getOrCreate(String microserviceName, Invocation invocation) {
     final String name = validatedName(microserviceName);
     return qualifiedNameControllerMap
@@ -95,7 +101,8 @@ public class QpsControllerManager {
    * Create relevant qpsLimit dynamicProperty and watch the configuration change.
    * Search and return a valid qpsController.
    */
-  private AbstractQpsStrategy create(String qualifiedNameKey, String microserviceName,
+  @VisibleForTesting
+  AbstractQpsStrategy create(String qualifiedNameKey, String microserviceName,
       Invocation invocation) {
     createForService(qualifiedNameKey, microserviceName, invocation);
     String qualifiedAnyServiceName = Config.ANY_SERVICE + qualifiedNameKey.substring(microserviceName.length());

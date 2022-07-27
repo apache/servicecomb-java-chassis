@@ -28,9 +28,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import mockit.Expectations;
-import mockit.Mocked;
-
 public class QpsControllerManagerTest {
 
   @Before
@@ -44,17 +41,13 @@ public class QpsControllerManagerTest {
   }
 
   @Test
-  public void testGetOrCreate(@Mocked Invocation invocation, @Mocked OperationMeta operationMeta) {
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+  public void testGetOrCreate() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
+
     QpsControllerManager testQpsControllerManager = new QpsControllerManager(false);
     initTestQpsControllerManager(false, testQpsControllerManager, invocation, operationMeta);
 
@@ -85,17 +78,12 @@ public class QpsControllerManagerTest {
   }
 
   @Test
-  public void testGetOrCreateWithGlobalConfig(@Mocked Invocation invocation, @Mocked OperationMeta operationMeta) {
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+  public void testGetOrCreateWithGlobalConfig() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
 
     QpsControllerManager testQpsControllerManager = new QpsControllerManager(true);
 
@@ -127,78 +115,41 @@ public class QpsControllerManagerTest {
   }
 
   @Test
-  public void testQualifiedNameKey(@Mocked Invocation invocation, @Mocked OperationMeta operationMeta) {
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "schema";
-        operationMeta.getSchemaQualifiedName();
-        result = "schema.opr";
-      }
-    };
+  public void testQualifiedNameKey() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("schema");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.opr");
     QpsControllerManager qpsControllerManager = new QpsControllerManager(true);
     QpsStrategy qpsStrategy = qpsControllerManager.getOrCreate("service", invocation);
     Assertions.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
         ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "test_schema";
-        operationMeta.getSchemaQualifiedName();
-        result = "test_schema.test_opr";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("test_schema");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("test_schema.test_opr");
     qpsStrategy = qpsControllerManager.getOrCreate("test_service", invocation);
     Assertions.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
         ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "test_schema";
-        operationMeta.getSchemaQualifiedName();
-        result = "test-schema.test-opr";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("test_schema");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("test-schema.test-opr");
     qpsStrategy = qpsControllerManager.getOrCreate("test-service", invocation);
     Assertions.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
         ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "schema";
-        operationMeta.getSchemaQualifiedName();
-        result = "schema.opr.tail";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("schema");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.opr.tail");
     qpsStrategy = qpsControllerManager.getOrCreate("svc", invocation);
     Assertions.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
         ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "schema.opr2";
-        operationMeta.getSchemaQualifiedName();
-        result = "schema.opr2.tail";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("schema.opr2");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.opr2.tail");
     qpsStrategy = qpsControllerManager.getOrCreate("svc", invocation);
     Assertions.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
         ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -208,74 +159,33 @@ public class QpsControllerManagerTest {
   private void testGetOrCreateCommon(boolean isProvider, QpsControllerManager testQpsControllerManager,
       Invocation invocation,
       OperationMeta operationMeta) {
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
+
     setConfigWithDefaultPrefix(isProvider, "pojo.server", 200);
     QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(200, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getSchemaQualifiedName();
-        result = "server2.test";
-      }
-    };
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server2.test");
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(100, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getSchemaQualifiedName();
-        result = "serve.test";
-      }
-    };
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("serve.test");
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(100, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
 
     // pojo.server.test
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
     setConfigWithDefaultPrefix(isProvider, "pojo.server.test", 300);
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo.server.test", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(300, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test2";
-      }
-    };
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test2");
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(200, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-
-        operationMeta.getSchemaQualifiedName();
-        result = "server.tes";
-      }
-    };
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.tes");
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals("pojo.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(200, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
@@ -288,16 +198,9 @@ public class QpsControllerManagerTest {
       Invocation invocation,
       OperationMeta operationMeta) {
     // pojo.server.test
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
     QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -307,16 +210,8 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.server.test2
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test2";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test2");
     testQpsControllerManager.getOrCreate("pojo", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -326,16 +221,8 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.server.tes
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.tes";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.tes");
     testQpsControllerManager.getOrCreate("pojo", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -345,16 +232,8 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.server2.test
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server2";
-        operationMeta.getSchemaQualifiedName();
-        result = "server2.test";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("server2");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server2.test");
     testQpsControllerManager.getOrCreate("pojo", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -364,16 +243,8 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.serve.test
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "serve";
-        operationMeta.getSchemaQualifiedName();
-        result = "serve.test";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("serve");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("serve.test");
     testQpsControllerManager.getOrCreate("pojo", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -383,16 +254,8 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo2.server.test
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
     qpsStrategy = testQpsControllerManager.getOrCreate("pojo2", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -402,16 +265,8 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // poj.server.test
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        invocation.getSchemaId();
-        result = "server";
-        operationMeta.getSchemaQualifiedName();
-        result = "server.test";
-      }
-    };
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
+    Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
     qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
     if (isProvider) {
       Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
