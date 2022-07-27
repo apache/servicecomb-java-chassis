@@ -18,6 +18,8 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import mockit.Mock;
 import mockit.MockUp;
+
+
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.jupiter.api.Assertions;
