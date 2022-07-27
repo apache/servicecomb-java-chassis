@@ -53,10 +53,6 @@ public class DistributeTest {
     List<ServiceIns> list = initServiceList();
     HashMap<String, String> header = new HashMap<>();
     List<ServiceIns> listOfServers = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
-    ArrayList<String> xGroup = new ArrayList<>();
-    for (RouteItem routeItem : policyRuleItem.getRoute()) {
-        xGroup.add(routeItem.getTags().get("x-group"));
-    }
     Assertions.assertNotNull(listOfServers);
     for (ServiceIns server : listOfServers) {
         Assertions.assertEquals(TARGET_SERVICE_NAME, server.getServerName());
