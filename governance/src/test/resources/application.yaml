@@ -146,7 +146,7 @@ servicecomb:
       type: ERROR
 
   routeRule:
-    test_server: |                              # 服务名
+    test_server1: |                              # 服务名
       - precedence: 1                        # 优先级，数字越大，优先级越高。
         match:                               # 请求匹配规则。0..N个，不配置表示匹配。
           headers:                           # header 匹配

@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router;
+package org.apache.servicecomb.router.distribute;
 
-import org.apache.servicecomb.router.distribute.RouterDistributor;
+import org.apache.servicecomb.router.RouterFilter;
+import org.apache.servicecomb.router.ServiceIns;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.RouteItem;
 import org.junit.Test;
@@ -33,8 +34,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class DistributeTest {
-  private static final String TARGET_SERVICE_NAME = "test_server";
-
+  private static final String TARGET_SERVICE_NAME = "test_server1";
   private RouterFilter routerFilter;
   private RouterDistributor<ServiceIns, ServiceIns> routerDistributor;
 
@@ -59,19 +59,23 @@ public class DistributeTest {
     }
     int ServerNum1 = 0;
     int ServerNum2 = 0;
-    for (int i = 0; i < 100; i++) {
+
+    for (int i = 0; i < 10; i++) {
         List<ServiceIns> serverList = routerFilter.getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
         for (ServiceIns serviceIns : serverList) {
             if ("01".equals(serviceIns.getId())){
-                ServerNum1++;
+                ServerNum1 ++;
             }
             else if ("02".equals(serviceIns.getId())){
-                ServerNum2++;
+                ServerNum2 ++;
             }
         }
     }
-    Assertions.assertEquals(20, ServerNum1);
-    Assertions.assertEquals(80, ServerNum2);
+    boolean flag = false;
+    if (Math.round(ServerNum2 / ServerNum1) == 4 ){
+        flag = true;
+    }
+    Assertions.assertEquals(true, flag);
   }
 
    PolicyRuleItem initPolicyRuleItem(){
@@ -98,8 +102,8 @@ public class DistributeTest {
   }
 
     List<ServiceIns> initServiceList(){
-        ServiceIns serviceIns1 = new ServiceIns("01", "test_server");
-        ServiceIns serviceIns2 = new ServiceIns("02", "test_server");
+        ServiceIns serviceIns1 = new ServiceIns("01", "test_server1");
+        ServiceIns serviceIns2 = new ServiceIns("02", "test_server1");
         serviceIns1.setVersion("1.0");
         serviceIns2.setVersion("2.0");
         serviceIns1.addTags("x-group", "red");
