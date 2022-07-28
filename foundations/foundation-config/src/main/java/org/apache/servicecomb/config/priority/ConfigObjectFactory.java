@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.config.priority;
 
 import static org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils.createObjectSetter;
@@ -26,7 +27,9 @@ import java.util.Map;
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
 import org.apache.servicecomb.config.inject.PlaceholderResolver;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.springframework.stereotype.Component;
 
@@ -37,14 +40,21 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  * must create by PriorityPropertyManager<br>
- *   or register to PriorityPropertyManager manually<br>
+ * or register to PriorityPropertyManager manually<br>
  * <br>
  * ${} or ${not-exist-key} is valid key in archaius<br>
- * so this wrapper mechanism will not throw exception even can not find value by placeholder
+ * so this wrapper mechanism will not throw exception even can not find value by
+ * placeholder
  */
 @Component
 public class ConfigObjectFactory {
   private final PriorityPropertyFactory propertyFactory;
+
+  private static final Map<Class<?>, JavaType> classCache = new ConcurrentHashMapEx<>();
+
+  private static final Map<JavaType, BeanDescription> javaTypeCache = new ConcurrentHashMapEx<>();
+
+  private static final Map<BeanPropertyDefinition, Setter<Object, Object>> beanDescriptionCache = new ConcurrentHashMapEx<>();
 
   public ConfigObjectFactory(PriorityPropertyFactory propertyFactory) {
     this.propertyFactory = propertyFactory;
@@ -56,7 +66,7 @@ public class ConfigObjectFactory {
 
   public <T> ConfigObject<T> create(Class<T> cls, Map<String, Object> parameters) {
     try {
-      return create(cls.getDeclaredConstructor().newInstance(), parameters);
+      return create(cls.newInstance(), parameters);
     } catch (Throwable e) {
       throw new IllegalStateException("create config object failed, class=" + cls.getName(), e);
     }
@@ -84,8 +94,9 @@ public class ConfigObjectFactory {
 
   public List<ConfigObjectProperty> createProperties(Object instance, String prefix, Map<String, Object> parameters) {
     List<ConfigObjectProperty> properties = new ArrayList<>();
-    JavaType javaType = TypeFactory.defaultInstance().constructType(instance.getClass());
-    BeanDescription beanDescription = JsonUtils.OBJ_MAPPER.getSerializationConfig().introspect(javaType);
+    JavaType javaType = classCache.computeIfAbsent(instance.getClass(), TypeFactory.defaultInstance()::constructType);
+    BeanDescription beanDescription = javaTypeCache.computeIfAbsent(javaType,
+            JsonUtils.OBJ_MAPPER.getSerializationConfig()::introspect);
     for (BeanPropertyDefinition propertyDefinition : beanDescription.findProperties()) {
       if (propertyDefinition.getField() == null) {
         continue;
@@ -95,9 +106,10 @@ public class ConfigObjectFactory {
         continue;
       }
 
-      Setter<Object, Object> setter = createObjectSetter(propertyDefinition);
+      Setter<Object, Object> setter = beanDescriptionCache.computeIfAbsent(propertyDefinition,
+              LambdaMetafactoryUtils::createObjectSetter);
       PriorityProperty<?> priorityProperty = createPriorityProperty(propertyDefinition.getField().getAnnotated(),
-          prefix, parameters);
+              prefix, parameters);
       setter.set(instance, priorityProperty.getValue());
       properties.add(new ConfigObjectProperty(setter, priorityProperty));
     }
@@ -131,9 +143,9 @@ public class ConfigObjectFactory {
         return createBooleanProperty(field, keys, false);
       case "java.lang.Boolean":
         return createBooleanProperty(field, keys, null);
-      default:
-        throw new IllegalStateException("not support, field=" + field);
     }
+
+    throw new IllegalStateException("not support, field=" + field);
   }
 
   private PriorityProperty<?> createStringProperty(Field field, String[] keys) {
@@ -205,7 +217,7 @@ public class ConfigObjectFactory {
 
   private String[] collectPropertyKeys(Field field, String prefix, Map<String, Object> parameters) {
     String propertyPrefix = prefix;
-    String[] keys = new String[] {field.getName()};
+    String[] keys = new String[]{field.getName()};
 
     InjectProperty injectProperty = field.getAnnotation(InjectProperty.class);
     if (injectProperty != null) {
