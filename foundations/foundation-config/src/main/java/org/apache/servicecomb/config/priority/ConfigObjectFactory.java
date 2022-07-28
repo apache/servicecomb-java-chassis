@@ -47,11 +47,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 @Component
 public class ConfigObjectFactory {
   private final PriorityPropertyFactory propertyFactory;
-
   private static final Map<Class<?>, JavaType> classCache = new ConcurrentHashMapEx<>();
- 
   private static final Map<JavaType, BeanDescription> javaTypeCache = new ConcurrentHashMapEx<>();
- 
   private static final Map<BeanPropertyDefinition, Setter<Object, Object>> beanDescriptionCache = new ConcurrentHashMapEx<>();
   
   public ConfigObjectFactory(PriorityPropertyFactory propertyFactory) {
