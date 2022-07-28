@@ -143,9 +143,9 @@ public class ConfigObjectFactory {
         return createBooleanProperty(field, keys, false);
       case "java.lang.Boolean":
         return createBooleanProperty(field, keys, null);
+      default:
+        throw new IllegalStateException("not support, field=" + field);
     }
-
-    throw new IllegalStateException("not support, field=" + field);
   }
 
   private PriorityProperty<?> createStringProperty(Field field, String[] keys) {
