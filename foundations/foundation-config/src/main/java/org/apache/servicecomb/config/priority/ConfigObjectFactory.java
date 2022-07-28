@@ -50,7 +50,6 @@ public class ConfigObjectFactory {
   private static final Map<Class<?>, JavaType> classCache = new ConcurrentHashMapEx<>();
   private static final Map<JavaType, BeanDescription> javaTypeCache = new ConcurrentHashMapEx<>();
   private static final Map<BeanPropertyDefinition, Setter<Object, Object>> beanDescriptionCache = new ConcurrentHashMapEx<>();
-  
   public ConfigObjectFactory(PriorityPropertyFactory propertyFactory) {
     this.propertyFactory = propertyFactory;
   }
