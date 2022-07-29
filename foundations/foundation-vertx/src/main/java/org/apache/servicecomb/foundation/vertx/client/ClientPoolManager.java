@@ -22,6 +22,9 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.netflix.config.DynamicDoubleProperty;
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
@@ -51,6 +54,9 @@ public class ClientPoolManager<CLIENT_POOL> {
   // if we use threadId to hash a context, will always select the same context from one thread
   private final AtomicInteger reactiveNextIndex = new AtomicInteger();
 
+  private final DynamicDoubleProperty maxSize = DynamicPropertyFactory.getInstance()
+      .getDoubleProperty("servicecomb.clientPool.maxSize", 100);
+
   public ClientPoolManager(Vertx vertx, ClientPoolFactory<CLIENT_POOL> factory) {
     this.vertx = vertx;
     this.factory = factory;
@@ -64,7 +70,9 @@ public class ClientPoolManager<CLIENT_POOL> {
 
   protected void addPool(Context context, CLIENT_POOL pool) {
     context.put(id, pool);
-    pools.add(pool);
+    if (pools.size() < maxSize.get()) {
+      pools.add(pool);
+    }
   }
 
   public CLIENT_POOL findClientPool(boolean sync) {
