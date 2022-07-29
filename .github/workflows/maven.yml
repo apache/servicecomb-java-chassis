@@ -51,7 +51,7 @@ jobs:
     - name: Collect integration-tests logs
       if: failure()
       continue-on-error: true
-      uses: ./.github/actions/copy-integration-tests-logs/action.yml
+      uses: ./.github/actions/copy-integration-tests-logs
     - name: Upload Surefire reports
       uses: actions/upload-artifact@v3
       if: failure()

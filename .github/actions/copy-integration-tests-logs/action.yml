@@ -22,6 +22,5 @@ description: Aggregates all integration-tests logs
 runs:
   using: composite
   steps:
-    - run: |
-        $GITHUB_WORKSPACE/ci/copy-integration-tests-logs.sh
+    - run: bash $GITHUB_WORKSPACE/ci/copy-integration-tests-logs.sh
       shell: bash

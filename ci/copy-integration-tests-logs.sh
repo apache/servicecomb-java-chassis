@@ -19,4 +19,4 @@
 #
 
 mkdir integration-tests-logs
-copy ./integration-tests/it-consumer/servicecomb-integration-*.log integration-tests-logs/
+cp ./integration-tests/it-consumer/servicecomb-integration-*.log integration-tests-logs/
