@@ -17,6 +17,7 @@
 
 package io.vertx.ext.web.impl;
 
+import io.vertx.ext.web.RequestBody;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 
 import io.vertx.core.http.impl.HttpServerRequestInternal;
@@ -35,6 +36,8 @@ public class TestHttpServerRequestUtils {
     HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request, AllowForwardHeaders.NONE);
     Mockito.when(request.scheme()).thenReturn("http");
     Mockito.when(context.request()).thenReturn(wrapper);
+    RequestBody requestBody = Mockito.mock(RequestBody.class);
+    Mockito.when(context.body()).thenReturn(requestBody);
 
     VertxServerRequestToHttpServletRequest reqEx = new VertxServerRequestToHttpServletRequest(context, "abc");
     Assertions.assertEquals("abc", reqEx.getRequestURI());

@@ -68,7 +68,7 @@ public class TestVertxMetersInitializer {
     @Override
     public void start(Promise<Void> startPromise) {
       Router mainRouter = Router.router(vertx);
-      mainRouter.route("/").handler(context -> context.response().end(context.getBody()));
+      mainRouter.route("/").handler(context -> context.response().end(context.body().buffer()));
 
       HttpServer server = vertx.createHttpServer();
       server.requestHandler(mainRouter);

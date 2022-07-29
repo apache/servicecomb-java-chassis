@@ -22,7 +22,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.net.SocketAddress;
+import io.vertx.ext.web.RequestBody;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Expectations;
@@ -228,22 +228,17 @@ public class TestVertxRestDispatcher {
   }
 
   @Test
-  public void onRequest(@Mocked Vertx vertx, @Mocked Context context, @Mocked HttpServerRequest request,
-      @Mocked SocketAddress socketAddress) {
-
+  public void onRequest(@Mocked Vertx vertx, @Mocked Context context) {
+    RequestBody requestBody = Mockito.mock(RequestBody.class);
+    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     Map<String, Object> map = new HashMap<>();
-    RoutingContext routingContext = new MockUp<RoutingContext>() {
-      @Mock
-      RoutingContext put(String key, Object obj) {
-        map.put(key, obj);
-        return null;
-      }
-
-      @Mock
-      HttpServerRequest request() {
-        return request;
-      }
-    }.getMockInstance();
+    RoutingContext mockRoutingContext = Mockito.mock(RoutingContext.class);
+    Mockito.when(mockRoutingContext.body()).thenReturn(requestBody);
+    Mockito.when(mockRoutingContext.request()).thenReturn(request);
+    Mockito.doAnswer(invocation -> {
+      map.put(invocation.getArgument(0), invocation.getArgument(1));
+      return null;
+    }).when(mockRoutingContext).put(Mockito.anyString(), Mockito.any());
 
     new Expectations() {
       {
@@ -252,7 +247,7 @@ public class TestVertxRestDispatcher {
       }
     };
 
-    dispatcher.onRequest(routingContext);
+    dispatcher.onRequest(mockRoutingContext);
 
     Assertions.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
     Assertions.assertTrue(invoked);

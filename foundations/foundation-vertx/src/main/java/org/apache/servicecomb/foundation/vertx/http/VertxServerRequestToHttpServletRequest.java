@@ -33,6 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
+import io.vertx.ext.web.impl.RoutingContextInternal;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.slf4j.Logger;
@@ -77,13 +78,16 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     this.context = context;
     this.vertxRequest = context.request();
     this.socketAddress = this.vertxRequest.remoteAddress();
-    super.setBodyBuffer(context.getBody());
+    super.setBodyBuffer(context.body().buffer());
   }
 
   @Override
   public void setBodyBuffer(Buffer bodyBuffer) {
     super.setBodyBuffer(bodyBuffer);
-    context.setBody(bodyBuffer);
+    if (context instanceof RoutingContextInternal) {
+      RoutingContextInternal contextInternal = (RoutingContextInternal) context;
+      contextInternal.setBody(bodyBuffer);
+    }
     this.inputStream = null;
   }
 
@@ -143,8 +147,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
       Map<String, String[]> paramMap = new HashMap<>();
       MultiMap map = this.vertxRequest.params();
       for (String name : map.names()) {
-        List<String> valueList = map.getAll(name);
-        paramMap.put(name, map.getAll(name).toArray(new String[valueList.size()]));
+        paramMap.put(name, map.getAll(name).toArray(new String[0]));
       }
       parameterMap = paramMap;
     }
@@ -255,10 +258,10 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     if (inputStream != null) {
       return inputStream;
     }
-    if (context.getBody() == null) {
+    if (context.body().buffer() == null) {
       return null;
     }
-    inputStream = new BufferInputStream(context.getBody().getByteBuf());
+    inputStream = new BufferInputStream(context.body().buffer().getByteBuf());
     return inputStream;
   }
 
@@ -284,8 +287,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public Collection<Part> getParts() {
-    Set<FileUpload> fileUploads = context.fileUploads();
-    return fileUploads.stream().map(FileUploadPart::new).collect(Collectors.toList());
+    return context.fileUploads().stream().map(FileUploadPart::new).collect(Collectors.toList());
   }
 
   public RoutingContext getContext() {
