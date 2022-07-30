@@ -130,6 +130,13 @@
     </dependencies>
   </dependencyManagement>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <pluginManagement>
       <plugins>
