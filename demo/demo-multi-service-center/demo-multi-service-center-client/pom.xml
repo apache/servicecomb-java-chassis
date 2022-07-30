@@ -184,8 +184,8 @@
             <artifactId>docker-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>gmaven-plugin</artifactId>
+            <groupId>org.codehaus.gmavenplus</groupId>
+            <artifactId>gmavenplus-plugin</artifactId>
             <executions>
               <execution>
                 <id>add-default-properties</id>
@@ -194,10 +194,12 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <source>
-                    project.properties.setProperty('docker.hostname', 'localhost')
-                    log.info("Docker hostname is " + project.properties['docker.hostname'])
-                  </source>
+                  <scripts>
+                    <script>
+                      project.properties.setProperty('docker.hostname', 'localhost')
+                      log.info("Docker hostname is " + project.properties['docker.hostname'])
+                    </script>
+                  </scripts>
                 </configuration>
               </execution>
             </executions>

@@ -50,6 +50,7 @@
     <dependency-check-maven-plugin.version>7.1.1</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.40.1</docker-maven-plugin.version>
     <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+    <gmavenplus-plugin.version>1.13.1</gmavenplus-plugin.version>
     <gpg-maven-plugin.version>3.0.1</gpg-maven-plugin.version>
     <lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
@@ -498,6 +499,11 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.gmavenplus</groupId>
+            <artifactId>gmavenplus-plugin</artifactId>
+            <version>${gmavenplus-plugin.version}</version>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
