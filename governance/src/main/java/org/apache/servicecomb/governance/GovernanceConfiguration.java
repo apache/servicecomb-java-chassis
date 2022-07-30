@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
+import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
@@ -38,6 +39,7 @@ import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
+import org.apache.servicecomb.governance.properties.InstanceBulkheadProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
@@ -56,6 +58,11 @@ public class GovernanceConfiguration {
   @Bean
   public BulkheadProperties bulkheadProperties() {
     return new BulkheadProperties();
+  }
+
+  @Bean
+  public InstanceBulkheadProperties instanceBulkheadProperties() {
+    return new InstanceBulkheadProperties();
   }
 
   @Bean
@@ -92,6 +99,11 @@ public class GovernanceConfiguration {
   @Bean
   public BulkheadHandler bulkheadHandler(BulkheadProperties bulkheadProperties) {
     return new BulkheadHandler(bulkheadProperties);
+  }
+
+  @Bean
+  public InstanceBulkheadHandler instanceBulkheadHandler(InstanceBulkheadProperties instanceBulkheadProperties) {
+    return new InstanceBulkheadHandler(instanceBulkheadProperties);
   }
 
   @Bean

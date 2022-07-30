@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.handler.governance;
+package org.apache.servicecomb.governance.properties;
 
-import org.apache.servicecomb.core.Handler;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 
-public class ConsumerGovernanceHandler implements Handler {
-  // an empty implementation, will add possible features in future.
+public class InstanceBulkheadProperties extends PolicyProperties<BulkheadPolicy> {
+  public static final String MATCH_INSTANCE_BULKHEAD_KEY = "servicecomb.instanceBulkhead";
+
+  public InstanceBulkheadProperties() {
+    super(MATCH_INSTANCE_BULKHEAD_KEY);
+  }
+
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    invocation.next(asyncResp);
+  public Class<BulkheadPolicy> getEntityClass() {
+    return BulkheadPolicy.class;
   }
 }

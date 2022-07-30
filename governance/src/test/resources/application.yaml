@@ -122,6 +122,10 @@ servicecomb:
       slidingWindowSize: 2
       slidingWindowType: COUNT_BASED
       waitDurationInOpenState: 1000
+  instanceBulkhead:
+    demo-allOperation: |
+      maxConcurrentCalls: 2
+      maxWaitDuration: 10
   faultInjection:
     demo-fallback-ThrowException: |
       type: abort
