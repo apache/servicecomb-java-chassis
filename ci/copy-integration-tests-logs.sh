@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -17,23 +18,5 @@
 # under the License.
 #
 
-name: Unit Test Jdk11
-
-on:
-  pull_request:
-    branches:
-      - master
-
-jobs:
-  unit-tests:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up jdk
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-      - name: Compilation and Installation
-        run: mvn -B -Dcheckstyle.skip -Dspotbugs.skip=true clean test
+mkdir integration-tests-logs
+cp ./integration-tests/it-consumer/servicecomb-integration-*.log integration-tests-logs/
