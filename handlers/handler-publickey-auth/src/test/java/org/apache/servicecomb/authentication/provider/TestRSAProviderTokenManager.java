@@ -37,8 +37,9 @@ import org.junit.Test;
 
 import com.google.common.cache.Cache;
 
-import mockit.Expectations;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestRSAProviderTokenManager {
 
@@ -72,32 +73,27 @@ public class TestRSAProviderTokenManager {
 
     String tokenStr =
         "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ@WBYouF6hXYrXzBA31HC3VX8Bw9PNgJUtVqOPAaeW9ye3q/D7WWb0M+XMouBIWxWY6v9Un1dGu5Rkjlx6gZbnlHkb2VO8qFR3Y6lppooWCirzpvEBRjlJQu8LPBur0BCfYGq8XYrEZA2NU6sg2zXieqCSiX6BnMnBHNn4cR9iZpk=";
-    RSAAuthenticationToken token = RSAAuthenticationToken.fromStr(tokenStr);
-    RSAProviderTokenManager tokenManager = new RSAProviderTokenManager() {
+    RSAAuthenticationToken token = Mockito.spy(RSAAuthenticationToken.fromStr(tokenStr));
+    RSAProviderTokenManager tokenManager = Mockito.spy(new RSAProviderTokenManager() {
       @Override
       protected int getExpiredTime() {
         return 500;
       }
-    };
+    });
 
-    new Expectations(RSAProviderTokenManager.class, RSAAuthenticationToken.class) {
-      {
-        token.getGenerateTime();
-        result = System.currentTimeMillis();
+    try (MockedStatic<RSAAuthenticationToken> rsaAuthenticationTokenMockedStatic = Mockito.mockStatic(RSAAuthenticationToken.class)) {
+      rsaAuthenticationTokenMockedStatic.when(() -> RSAAuthenticationToken.fromStr(tokenStr)).thenReturn(token);
+      Mockito.when(token.getGenerateTime()).thenReturn(System.currentTimeMillis());
+      Mockito.doReturn(true).when(tokenManager).isValidToken(token);
+      Assertions.assertTrue(tokenManager.valid(tokenStr));
 
-        tokenManager.isValidToken(token);
-        result = true;
-      }
-    };
+      Cache<RSAAuthenticationToken, Boolean> cache = tokenManager
+              .getValidatedToken();
+      Assertions.assertTrue(cache.asMap().containsKey(token));
 
-    Assertions.assertTrue(tokenManager.valid(tokenStr));
-
-    Cache<RSAAuthenticationToken, Boolean> cache = tokenManager
-        .getValidatedToken();
-    Assertions.assertTrue(cache.asMap().containsKey(token));
-
-    Thread.sleep(1000);
-    Assertions.assertFalse(cache.asMap().containsKey(token));
+      Thread.sleep(1000);
+      Assertions.assertFalse(cache.asMap().containsKey(token));
+    }
   }
 
   @Test
@@ -116,31 +112,24 @@ public class TestRSAProviderTokenManager {
     properties.put(DefinitionConst.INSTANCE_PUBKEY_PRO, rsaKeyPairEntry.getPublicKeyEncoded());
     Microservice microservice = new Microservice();
     microservice.setServiceId(serviceId);
-    new Expectations(RegistrationManager.INSTANCE) {
-      {
-        RegistrationManager.INSTANCE.getMicroservice();
-        result = microservice;
-        RegistrationManager.INSTANCE.getMicroserviceInstance();
-        result = microserviceInstance;
-      }
-    };
+    RegistrationManager.INSTANCE = Mockito.spy(RegistrationManager.INSTANCE);
+    Mockito.when(RegistrationManager.INSTANCE.getMicroservice()).thenReturn(microservice);
+    Mockito.when(RegistrationManager.INSTANCE.getMicroserviceInstance()).thenReturn(microserviceInstance);
     //Test Consumer first create token
     String token = rsaConsumerTokenManager.getToken();
     Assertions.assertNotNull(token);
     // use cache token
     Assertions.assertEquals(token, rsaConsumerTokenManager.getToken());
-    new Expectations(MicroserviceInstanceCache.class) {
-      {
-        MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
-        result = microserviceInstance;
-        MicroserviceInstanceCache.getOrCreate(serviceId);
-        result = microservice;
-      }
-    };
-    RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
-    //first validate need to verify use RSA
-    Assertions.assertTrue(rsaProviderTokenManager.valid(token));
-    // second validate use validated pool
-    Assertions.assertTrue(rsaProviderTokenManager.valid(token));
+    try (MockedStatic<MicroserviceInstanceCache> microserviceInstanceCacheMockedStatic = Mockito.mockStatic(MicroserviceInstanceCache.class);) {
+      microserviceInstanceCacheMockedStatic.when(() -> MicroserviceInstanceCache.getOrCreate(serviceId, instanceId))
+              .thenReturn(microserviceInstance);
+      microserviceInstanceCacheMockedStatic.when(() -> MicroserviceInstanceCache.getOrCreate(serviceId))
+              .thenReturn(microservice);
+      RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
+      //first validate need to verify use RSA
+      Assertions.assertTrue(rsaProviderTokenManager.valid(token));
+      // second validate use validated pool
+      Assertions.assertTrue(rsaProviderTokenManager.valid(token));
+    }
   }
 }
