@@ -33,7 +33,7 @@ public class TestMgr {
 
   private static String msg = "";
 
-  private static AtomicLong checkes = new AtomicLong(0);
+  private static final AtomicLong checkes = new AtomicLong(0);
 
   public static void setMsg(String msg) {
     TestMgr.msg = msg;

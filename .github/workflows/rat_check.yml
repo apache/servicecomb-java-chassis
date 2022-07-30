@@ -38,4 +38,4 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
       - name: rat check
-        run: mvn apache-rat:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pit,distribution
+        run: mvn apache-rat:check -B -Pit,distribution
