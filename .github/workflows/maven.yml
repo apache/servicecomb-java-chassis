@@ -45,7 +45,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: Compilation and Installation
-      run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage
+      run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage
     - name: publish coverage report
       run: bash <(curl -s https://codecov.io/bash)
     - name: Collect integration-tests logs
