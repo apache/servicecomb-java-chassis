@@ -26,10 +26,10 @@ import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -40,14 +40,14 @@ public class TestProviderQpsFlowControlHandler {
 
   AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-  @Before
+  @BeforeEach
   public void setUP() {
     ArchaiusUtils.resetConfig();
     handler = new ProviderQpsFlowControlHandler();
     ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
   }
 
-  @After
+  @AfterEach
   public void afterTest() {
     ArchaiusUtils.resetConfig();
   }
