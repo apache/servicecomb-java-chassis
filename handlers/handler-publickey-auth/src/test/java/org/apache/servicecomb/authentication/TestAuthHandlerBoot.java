@@ -28,21 +28,21 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestAuthHandlerBoot {
   private SCBEngine engine;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
     engine = SCBBootstrap.createSCBEngineForTest().run();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     engine.destroy();
     ArchaiusUtils.resetConfig();
