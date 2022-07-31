@@ -44,7 +44,7 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
+      .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, true);
 
   private final EventBus eventBus = EventManager.getEventBus();
 

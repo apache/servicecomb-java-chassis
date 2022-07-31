@@ -38,12 +38,15 @@ public abstract class AbstractFailurePredictor implements FailurePredictor {
   }
 
   private static boolean statusCodeMatch(String status, String responseStatus) {
-    if (3 != status.length()) {
+    if (status == null) {
+      return false;
+    }
+    if (responseStatus.length() != status.length()) {
       return false;
     }
     char[] statusChar = status.toCharArray();
     char[] responseChar = responseStatus.toCharArray();
-    return IntStream.range(0, 3).noneMatch(i ->
+    return IntStream.range(0, statusChar.length).noneMatch(i ->
         statusChar[i] != responseChar[i] && statusChar[i] != 'x');
   }
 }

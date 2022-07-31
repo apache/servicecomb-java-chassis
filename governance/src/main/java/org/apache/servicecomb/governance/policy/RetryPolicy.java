@@ -17,8 +17,9 @@
 package org.apache.servicecomb.governance.policy;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -27,11 +28,14 @@ public class RetryPolicy extends AbstractPolicy {
 
   public static final int DEFAULT_MAX_ATTEMPTS = 3;
 
-  public static final Duration DEFAULT_WAIT_DURATION = Duration.ofMillis(10);
+  public static final Duration DEFAULT_WAIT_DURATION = Duration.ofMillis(1);
 
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS_502 = "502";
 
   public static final String DEFAULT_RETRY_ON_RESPONSE_STATUS_503 = "503";
+
+  public static final List<String> DEFAULT_STATUS_LIST = Arrays.asList(DEFAULT_RETRY_ON_RESPONSE_STATUS_502,
+      DEFAULT_RETRY_ON_RESPONSE_STATUS_503);
 
   private static final Duration INITIAL_INTERVAL = Duration.ofMillis(1000);
 
@@ -48,7 +52,7 @@ public class RetryPolicy extends AbstractPolicy {
   private String waitDuration = DEFAULT_WAIT_DURATION.toString();
 
   //status code that need retry
-  private List<String> retryOnResponseStatus = new ArrayList<>();
+  private List<String> retryOnResponseStatus = DEFAULT_STATUS_LIST;
 
   //retry strategy
   private String retryStrategy = DEFAULT_RETRY_STRATEGY;
@@ -71,14 +75,17 @@ public class RetryPolicy extends AbstractPolicy {
 
   public List<String> getRetryOnResponseStatus() {
     if (CollectionUtils.isEmpty(retryOnResponseStatus)) {
-      this.retryOnResponseStatus.add(DEFAULT_RETRY_ON_RESPONSE_STATUS_502);
-      this.retryOnResponseStatus.add(DEFAULT_RETRY_ON_RESPONSE_STATUS_503);
+      return DEFAULT_STATUS_LIST;
     }
     return retryOnResponseStatus;
   }
 
   public void setRetryOnResponseStatus(List<String> retryOnResponseStatus) {
-    this.retryOnResponseStatus = retryOnResponseStatus;
+    if (retryOnResponseStatus == null) {
+      return;
+    }
+    this.retryOnResponseStatus = retryOnResponseStatus.stream().filter(e -> !StringUtils.isEmpty(e))
+        .collect(Collectors.toList());
   }
 
   public int getMaxAttempts() {
@@ -90,7 +97,7 @@ public class RetryPolicy extends AbstractPolicy {
   }
 
   public String getWaitDuration() {
-    return Duration.parse(waitDuration).toMillis() < 10 ? DEFAULT_WAIT_DURATION.toString() : waitDuration;
+    return Duration.parse(waitDuration).toMillis() < 1 ? DEFAULT_WAIT_DURATION.toString() : waitDuration;
   }
 
   public void setWaitDuration(String waitDuration) {

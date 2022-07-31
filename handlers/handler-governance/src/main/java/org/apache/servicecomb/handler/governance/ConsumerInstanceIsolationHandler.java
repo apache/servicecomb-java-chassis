@@ -46,9 +46,15 @@ public class ConsumerInstanceIsolationHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (invocation.getEndpoint() == null) {
+      invocation.next(asyncResp);
+      return;
+    }
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
+    request.setServiceName(invocation.getMicroserviceName());
+    request.setInstanceId(invocation.getEndpoint().getMicroserviceInstance().getInstanceId());
 
     addCircuitBreaker(dcs, request);
 
