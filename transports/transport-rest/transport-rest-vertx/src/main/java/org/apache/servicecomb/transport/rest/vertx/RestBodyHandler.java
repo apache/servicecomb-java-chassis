@@ -22,7 +22,7 @@
 package org.apache.servicecomb.transport.rest.vertx;
 
 import java.io.File;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -209,7 +209,7 @@ public class RestBodyHandler implements BodyHandler {
         initBodyBuffer();
       }
 
-      Set<FileUpload> fileUploads = context.fileUploads();
+      List<FileUpload> fileUploads = context.fileUploads();
 
       final String contentType = context.request().getHeader(HttpHeaders.CONTENT_TYPE);
       if (contentType == null) {
@@ -361,7 +361,10 @@ public class RestBodyHandler implements BodyHandler {
       if (mergeFormAttributes && req.isExpectMultipart()) {
         req.params().addAll(req.formAttributes());
       }
-      context.setBody(body);
+      if (context instanceof RoutingContextInternal) {
+        RoutingContextInternal contextInternal = (RoutingContextInternal) context;
+        contextInternal.setBody(body);
+      }
       // release body as it may take lots of memory
       body = null;
 

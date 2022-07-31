@@ -29,10 +29,13 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 
+import io.vertx.ext.web.RequestBody;
+import io.vertx.ext.web.impl.RoutingContextInternal;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,10 +47,9 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestVertxServerRequestToHttpServletRequest {
   @Mocked
@@ -58,6 +60,14 @@ public class TestVertxServerRequestToHttpServletRequest {
 
   @Mocked
   SocketAddress socketAddress;
+
+  RequestBody mockRequestBody;
+
+  RoutingContextInternal mockContext;
+
+  HttpServerRequest mockHttpServerRequest;
+
+  SocketAddress mockSocketAddress;
 
   VertxServerRequestToHttpServletRequest request;
 
@@ -72,7 +82,22 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
+    mockRequestBody = Mockito.mock(RequestBody.class);
+    mockContext = Mockito.mock(RoutingContextInternal.class);
+    mockHttpServerRequest = Mockito.mock(HttpServerRequest.class);
+    mockSocketAddress = Mockito.mock(SocketAddress.class);
+    // init mocks
+    Mockito.when(mockHttpServerRequest.remoteAddress()).thenReturn(mockSocketAddress);
+    Mockito.when(mockContext.body()).thenReturn(mockRequestBody);
+    Mockito.when(mockContext.request()).thenReturn(mockHttpServerRequest);
+
     request = new VertxServerRequestToHttpServletRequest(context);
+  }
+
+  @After
+  public void clean() {
+    Mockito.reset(mockRequestBody);
+    Mockito.reset(mockContext);
   }
 
   @Test
@@ -85,18 +110,11 @@ public class TestVertxServerRequestToHttpServletRequest {
   @Test
   public void setBodyBuffer() {
     Holder<Buffer> bodyHolder = new Holder<>();
-    context = new MockUp<RoutingContext>() {
-      @Mock
-      HttpServerRequest request() {
-        return vertxRequest;
-      }
-
-      @Mock
-      void setBody(Buffer body) {
-        bodyHolder.value = body;
-      }
-    }.getMockInstance();
-    request = new VertxServerRequestToHttpServletRequest(context);
+    Mockito.doAnswer(invocation -> {
+      bodyHolder.value = invocation.getArgument(0);
+      return null;
+    }).when(mockContext).setBody(Mockito.any());
+    request = new VertxServerRequestToHttpServletRequest(mockContext);
 
     Buffer bodyBuffer = Buffer.buffer();
     request.setBodyBuffer(bodyBuffer);
@@ -107,13 +125,8 @@ public class TestVertxServerRequestToHttpServletRequest {
 
   @Test
   public void testGetContentType() {
-    new Expectations() {
-      {
-        vertxRequest.getHeader(HttpHeaders.CONTENT_TYPE);
-        result = "json";
-      }
-    };
-
+    VertxServerRequestToHttpServletRequest request = new VertxServerRequestToHttpServletRequest(mockContext);
+    Mockito.when(mockHttpServerRequest.getHeader(HttpHeaders.CONTENT_TYPE)).thenReturn("json");
     Assertions.assertEquals("json", request.getContentType());
   }
 
@@ -425,13 +438,11 @@ public class TestVertxServerRequestToHttpServletRequest {
     Buffer body = Buffer.buffer();
     body.appendByte((byte) 1);
 
-    new Expectations() {
-      {
-        context.getBody();
-        result = body;
-      }
-    };
+    Mockito.when(mockRequestBody.buffer()).thenReturn(body);
+    Mockito.when(mockContext.request()).thenReturn(vertxRequest);
+    Mockito.when(mockContext.body()).thenReturn(mockRequestBody);
 
+    VertxServerRequestToHttpServletRequest request = new VertxServerRequestToHttpServletRequest(mockContext);
     ServletInputStream is1 = request.getInputStream();
     Assertions.assertSame(is1, request.getInputStream());
     int value = is1.read();

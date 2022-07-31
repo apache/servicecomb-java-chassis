@@ -29,7 +29,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   public SyncContext(VertxInternal vertx) {
-    super(vertx, null, null, null, null, null, null, false);
+    super(vertx, null, null, null, null, null, null);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
-  public void runOnContext(AbstractContext ctx, Handler<Void> action) {
+  protected void runOnContext(ContextInternal ctx, Handler<Void> action) {
     action.handle(null);
   }
 

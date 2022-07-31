@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.vertx.ext.web.handler.PlatformHandler;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
     // cookies handler are enabled by default start from 3.8.3
     String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, PATTERN_ANY).get();
     router.routeWithRegex(pattern).failureHandler(this::onFailure)
-        .handler(this::preCheck)
+        .handler((PlatformHandler) URLMappedEdgeDispatcher.this::preCheck)
         .handler(createBodyHandler())
         .handler(this::onRequest);
   }
