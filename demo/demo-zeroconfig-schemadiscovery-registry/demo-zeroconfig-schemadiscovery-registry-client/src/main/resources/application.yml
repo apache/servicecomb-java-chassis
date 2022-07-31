@@ -37,7 +37,7 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: governance-consumer,loadbalance
+        default: loadbalance
       Provider:
         default: governance-provider
 

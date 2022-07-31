@@ -25,9 +25,7 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.governance.handler.BulkheadHandler;
-import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
-import org.apache.servicecomb.governance.handler.RateLimitingHandler;
+import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -38,31 +36,26 @@ import org.slf4j.LoggerFactory;
 
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
-import io.github.resilience4j.ratelimiter.RateLimiter;
-import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
-public class ProviderGovernanceHandler implements Handler {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderGovernanceHandler.class);
+public class ConsumerInstanceBulkheadHandler implements Handler {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInstanceBulkheadHandler.class);
 
-  private final RateLimitingHandler rateLimitingHandler = BeanUtils.getBean(RateLimitingHandler.class);
-
-  private final CircuitBreakerHandler circuitBreakerHandler = BeanUtils.getBean(CircuitBreakerHandler.class);
-
-  private final BulkheadHandler bulkheadHandler = BeanUtils.getBean(BulkheadHandler.class);
+  private final InstanceBulkheadHandler instanceBulkheadHandler = BeanUtils.getBean(InstanceBulkheadHandler.class);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-
+    if (invocation.getEndpoint() == null) {
+      invocation.next(asyncResp);
+      return;
+    }
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
+    request.setServiceName(invocation.getMicroserviceName());
+    request.setInstanceId(invocation.getEndpoint().getMicroserviceInstance().getInstanceId());
 
-    addRateLimiting(dcs, request);
-    addCircuitBreaker(dcs, request);
     addBulkhead(dcs, request);
 
     dcs.get().whenComplete((r, e) -> {
@@ -71,18 +64,10 @@ public class ProviderGovernanceHandler implements Handler {
         return;
       }
 
-      if (e instanceof RequestNotPermitted) {
+      if (e instanceof BulkheadFullException) {
+        // return 503 so that consumer can retry
         asyncResp.complete(
-            Response.failResp(new InvocationException(429, "rate limited.", new CommonExceptionData("rate limited."))));
-        LOGGER.warn("the request is rate limit by policy : {}", e.getMessage());
-      } else if (e instanceof CallNotPermittedException) {
-        asyncResp.complete(
-            Response.failResp(new InvocationException(429, "circuitBreaker is open.",
-                new CommonExceptionData("circuitBreaker is open."))));
-        LOGGER.warn("circuitBreaker is open by policy : {}", e.getMessage());
-      } else if (e instanceof BulkheadFullException) {
-        asyncResp.complete(
-            Response.failResp(new InvocationException(429, "bulkhead is full and does not permit further calls.",
+            Response.failResp(new InvocationException(503, "bulkhead is full and does not permit further calls.",
                 new CommonExceptionData("bulkhead is full and does not permit further calls."))));
         LOGGER.warn("bulkhead is full and does not permit further calls by policy : {}", e.getMessage());
       } else {
@@ -92,23 +77,9 @@ public class ProviderGovernanceHandler implements Handler {
   }
 
   private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    Bulkhead bulkhead = bulkheadHandler.getActuator(request);
+    Bulkhead bulkhead = instanceBulkheadHandler.getActuator(request);
     if (bulkhead != null) {
       dcs.withBulkhead(bulkhead);
-    }
-  }
-
-  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    CircuitBreaker circuitBreaker = circuitBreakerHandler.getActuator(request);
-    if (circuitBreaker != null) {
-      dcs.withCircuitBreaker(circuitBreaker);
-    }
-  }
-
-  private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
-    RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
-    if (rateLimiter != null) {
-      dcs.withRateLimiter(rateLimiter);
     }
   }
 

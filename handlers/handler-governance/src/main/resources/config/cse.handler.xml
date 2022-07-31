@@ -18,6 +18,8 @@
 <config>
   <handler id="governance-provider"
     class="org.apache.servicecomb.handler.governance.ProviderGovernanceHandler"/>
-  <handler id="governance-consumer"
-    class="org.apache.servicecomb.handler.governance.ConsumerGovernanceHandler"/>
+  <handler id="instance-bulkhead-consumer"
+    class="org.apache.servicecomb.handler.governance.ConsumerInstanceBulkheadHandler"/>
+  <handler id="instance-isolation-consumer"
+    class="org.apache.servicecomb.handler.governance.ConsumerInstanceIsolationHandler"/>
 </config>

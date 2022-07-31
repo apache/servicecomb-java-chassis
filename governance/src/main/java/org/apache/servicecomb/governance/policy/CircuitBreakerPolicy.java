@@ -17,8 +17,9 @@
 package org.apache.servicecomb.governance.policy;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
@@ -48,6 +49,9 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public static final String DEFAULT_FAILURE_RESPONSE_STATUS_503 = "503";
 
+  public static final List<String> DEFAULT_STATUS_LIST = Arrays.asList(DEFAULT_FAILURE_RESPONSE_STATUS_502,
+      DEFAULT_FAILURE_RESPONSE_STATUS_503);
+
   private float failureRateThreshold = DEFAULT_FAILURE_RATE_THRESHOLD;
 
   private float slowCallRateThreshold = DEFAULT_SLOW_CALL_RATE_THRESHOLD;
@@ -65,7 +69,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
   private String slidingWindowSize = DEFAULT_SLIDING_WINDOW_SIZE;
 
   //status code that need record as a failure
-  private List<String> recordFailureStatus = new ArrayList<>();
+  private List<String> recordFailureStatus = DEFAULT_STATUS_LIST;
 
   //force close this circuit breaker. This parameter is not used by circuit breaker directly
   private boolean forceClosed = false;
@@ -193,14 +197,17 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
 
   public List<String> getRecordFailureStatus() {
     if (CollectionUtils.isEmpty(this.recordFailureStatus)) {
-      this.recordFailureStatus.add(DEFAULT_FAILURE_RESPONSE_STATUS_502);
-      this.recordFailureStatus.add(DEFAULT_FAILURE_RESPONSE_STATUS_503);
+      return DEFAULT_STATUS_LIST;
     }
     return this.recordFailureStatus;
   }
 
   public void setRecordFailureStatus(List<String> recordFailureStatus) {
-    this.recordFailureStatus = recordFailureStatus;
+    if (recordFailureStatus == null) {
+      return;
+    }
+    this.recordFailureStatus = recordFailureStatus.stream().filter(e -> !StringUtils.isEmpty(e))
+        .collect(Collectors.toList());
   }
 
   public boolean isForceClosed() {
@@ -230,6 +237,7 @@ public class CircuitBreakerPolicy extends AbstractPolicy {
         ", minimumNumberOfCalls=" + minimumNumberOfCalls +
         ", slidingWindowType='" + slidingWindowType + '\'' +
         ", slidingWindowSize=" + slidingWindowSize +
+        ", recordFailureStatus=" + recordFailureStatus +
         '}';
   }
 }
