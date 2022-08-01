@@ -31,25 +31,25 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.google.common.cache.Cache;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class TestRSAProviderTokenManager {
 
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     ArchaiusUtils.resetConfig();
   }
