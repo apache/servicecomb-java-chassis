@@ -167,6 +167,13 @@ public class QpsControllerManager {
         || controllerEntry.getKey().startsWith(configKey + SEPARATOR);
   }
 
+  /**
+   * Determine whether the micro-service level is ANY during dynamic configuration
+   */
+  private boolean isConfigKeyContainsANY(String configKey){
+    return configKey.contains("ANY");
+  }
+
   private boolean isValidQpsController(AbstractQpsStrategy qpsStrategy) {
     return null != qpsStrategy && null != qpsStrategy.getQpsLimit();
   }
@@ -211,12 +218,22 @@ public class QpsControllerManager {
     Iterator<Entry<String, AbstractQpsStrategy>> it = qualifiedNameControllerMap.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<String, AbstractQpsStrategy> entry = it.next();
+      AbstractQpsStrategy qpsStrategy = null;
       if (keyMatch(configKey, entry)) {
-        AbstractQpsStrategy qpsStrategy = searchQpsController(entry.getKey());
+        qpsStrategy = searchQpsController(entry.getKey());
         if (qpsStrategy != null) {
           entry.setValue(qpsStrategy);
           LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
               entry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
+        } else {
+          it.remove();
+        }
+      } else if (isConfigKeyContainsANY(configKey)) {
+        qpsStrategy = searchQpsController(configKey);
+        if (qpsStrategy != null) {
+          entry.setValue(qpsStrategy);
+          LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
+                  entry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
         } else {
           it.remove();
         }
