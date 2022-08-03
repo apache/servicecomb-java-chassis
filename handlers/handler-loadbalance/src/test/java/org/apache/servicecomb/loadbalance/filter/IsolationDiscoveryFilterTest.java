@@ -38,9 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
-import mockit.Deencapsulation;
-import mockit.Mocked;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IsolationDiscoveryFilterTest {
 
@@ -48,7 +45,6 @@ public class IsolationDiscoveryFilterTest {
 
   private List<ServiceCombServer> servers;
 
-  @Mocked
   private Transport transport = Mockito.mock(Transport.class);
 
   private Invocation invocation = new Invocation() {
@@ -179,10 +175,8 @@ public class IsolationDiscoveryFilterTest {
   }
 
   private ServiceCombServerStats letIsolatedInstancePassSingleTestTime(ServiceCombServerStats serviceCombServerStats) {
-    Deencapsulation.setField(serviceCombServerStats, "lastActiveTime",
-        System.currentTimeMillis() - 1 - Configuration.INSTANCE.getSingleTestTime(invocation.getMicroserviceName()));
-    Deencapsulation.setField(serviceCombServerStats, "lastVisitTime",
-        System.currentTimeMillis() - 1 - Configuration.INSTANCE.getSingleTestTime(invocation.getMicroserviceName()));
+    serviceCombServerStats.setLastActiveTime(System.currentTimeMillis() - 1 - Configuration.INSTANCE.getSingleTestTime(invocation.getMicroserviceName()));
+    serviceCombServerStats.setLastVisitTime(System.currentTimeMillis() - 1 - Configuration.INSTANCE.getSingleTestTime(invocation.getMicroserviceName()));
     return serviceCombServerStats;
   }
 
@@ -199,8 +193,7 @@ public class IsolationDiscoveryFilterTest {
 
     ServiceCombServerStats serviceCombServerStats = ServiceCombLoadBalancerStats.INSTANCE
         .getServiceCombServerStats(server0);
-    Deencapsulation.setField(serviceCombServerStats, "isolatedTime",
-        System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
+    serviceCombServerStats.setIsolatedTime(System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
     filteredServers = filter.getFilteredListOfServers(servers, invocation);
     Assertions.assertEquals(filteredServers.size(), 3);
     Assertions.assertEquals(servers.get(0), filteredServers.get(0));
@@ -216,8 +209,7 @@ public class IsolationDiscoveryFilterTest {
         .getServiceCombServerStats(server0);
 
     ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server0, true);
-    Deencapsulation.setField(serviceCombServerStats, "isolatedTime",
-        System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
+    serviceCombServerStats.setIsolatedTime(System.currentTimeMillis() - Configuration.INSTANCE.getMinIsolationTime(invocation.getMicroserviceName()) - 1);
 
     List<ServiceCombServer> filteredServers = filter.getFilteredListOfServers(servers, invocation);
     Assertions.assertEquals(filteredServers.size(), 3);

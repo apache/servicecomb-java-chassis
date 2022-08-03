@@ -34,10 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
+import org.mockito.Mockito;
 
 /**
  * Test for PriorityInstancePropertyDiscoveryFilter
@@ -52,8 +49,7 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
   private MicroserviceInstance self;
 
-  @Injectable
-  RegistrationManager registrationManager;
+  RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
 
   RegistrationManager original;
 
@@ -80,20 +76,15 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
     instances.put(instance3.getInstanceId(), instance3);
     instances.put(instance4.getInstanceId(), instance4);
 
-    original = Deencapsulation.getField(RegistrationManager.class, "INSTANCE");
-    Deencapsulation.setField(RegistrationManager.class, "INSTANCE", registrationManager);
+    original = RegistrationManager.INSTANCE;
+    RegistrationManager.setINSTANCE(registrationManager);
 
-    new Expectations() {
-      {
-        registrationManager.getMicroserviceInstance();
-        result = self;
-      }
-    };
+    Mockito.when(registrationManager.getMicroserviceInstance()).thenReturn(self);
   }
 
   @After
   public void cleanup() {
-    Deencapsulation.setField(RegistrationManager.class, "INSTANCE", original);
+    RegistrationManager.setINSTANCE(original);
   }
 
   @Test

@@ -56,6 +56,16 @@ public class SessionStickinessRule implements RuleExt {
     triggerRule = new RoundRobinRuleExt();
   }
 
+  @VisibleForTesting
+  public long getLastAccessedTime() {
+    return lastAccessedTime;
+  }
+
+  @VisibleForTesting
+  public void setLastAccessedTime(long lastAccessedTime) {
+    this.lastAccessedTime = lastAccessedTime;
+  }
+
   public void setLoadBalancer(LoadBalancer loadBalancer) {
     this.microserviceName = loadBalancer.getMicroServiceName();
     this.loadBalancer = loadBalancer;

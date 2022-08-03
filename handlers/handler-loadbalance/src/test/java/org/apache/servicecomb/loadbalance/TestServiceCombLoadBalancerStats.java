@@ -31,65 +31,59 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestServiceCombLoadBalancerStats {
   @Before
   public void before() {
     // Ensure clean all of mocked server cache before running testMultiThread
     // Or the mocked server without instance will cause NPE and the target server will never get ping mark failure
-    Map<ServiceCombServer, ServiceCombServerStats> pingView =
-        Deencapsulation.getField(ServiceCombLoadBalancerStats.INSTANCE, "pingView");
+    Map<ServiceCombServer, ServiceCombServerStats> pingView = ServiceCombLoadBalancerStats.INSTANCE.getPingView();
     pingView.clear();
     ServiceCombLoadBalancerStats.INSTANCE.init();
   }
 
   @AfterClass
   public static void afterClass() {
-    Map<ServiceCombServer, ServiceCombServerStats> pingView =
-        Deencapsulation.getField(ServiceCombLoadBalancerStats.INSTANCE, "pingView");
+    Map<ServiceCombServer, ServiceCombServerStats> pingView = ServiceCombLoadBalancerStats.INSTANCE.getPingView();
     pingView.clear();
     ServiceCombLoadBalancerStats.INSTANCE.init();
   }
 
   @Test
-  public void testServiceExpire(@Injectable Transport transport, @Mocked SPIServiceUtils utils, @Injectable
-      MicroserviceInstancePing ping) {
+  public void testServiceExpire() {
+    Transport transport = Mockito.mock(Transport.class);
+    MicroserviceInstancePing ping = Mockito.mock(MicroserviceInstancePing.class);
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("instance1");
 
-    new Expectations() {
-      {
-        SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
-        result = ping;
-        ping.ping(instance);
-        result = false;
-      }
-    };
+    Mockito.when(ping.ping(instance)).thenReturn(false);
+    try (MockedStatic<SPIServiceUtils> spiServiceUtilsMockedStatic = Mockito.mockStatic(SPIServiceUtils.class)) {
+      spiServiceUtilsMockedStatic.when(() -> SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class)).thenReturn(ping);
+      ServiceCombLoadBalancerStats serviceCombLoadBalancerStats = new ServiceCombLoadBalancerStats();
+      serviceCombLoadBalancerStats.setServerExpireInSeconds(2);
+      serviceCombLoadBalancerStats.setTimerIntervalInMillis(500);
+      serviceCombLoadBalancerStats.init();
 
-    ServiceCombLoadBalancerStats serviceCombLoadBalancerStats = new ServiceCombLoadBalancerStats();
-    serviceCombLoadBalancerStats.setServerExpireInSeconds(2);
-    serviceCombLoadBalancerStats.setTimerIntervalInMillis(500);
-    serviceCombLoadBalancerStats.init();
-
-    ServiceCombServer serviceCombServer = new ServiceCombServer(null, transport,
-        new CacheEndpoint("rest://localhost:8080", instance));
-    serviceCombLoadBalancerStats.markSuccess(serviceCombServer);
-    ServiceCombServerStats stats = serviceCombLoadBalancerStats.getServiceCombServerStats(serviceCombServer);
-    Assertions.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 1);
-    Awaitility.await().atMost(5, TimeUnit.SECONDS)
-        .until(() -> serviceCombLoadBalancerStats.getPingView().size() <= 0);
-    Assertions.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 0);
-    System.out.print(stats.getFailedRequests());
-    Assertions.assertTrue(stats.getFailedRequests() >= 1);
+      ServiceCombServer serviceCombServer = new ServiceCombServer(null, transport,
+              new CacheEndpoint("rest://localhost:8080", instance));
+      serviceCombLoadBalancerStats.markSuccess(serviceCombServer);
+      ServiceCombServerStats stats = serviceCombLoadBalancerStats.getServiceCombServerStats(serviceCombServer);
+      Assertions.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 1);
+      Awaitility.await().atMost(5, TimeUnit.SECONDS)
+              .until(() -> serviceCombLoadBalancerStats.getPingView().size() <= 0);
+      Assertions.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 0);
+      System.out.print(stats.getFailedRequests());
+      Assertions.assertTrue(stats.getFailedRequests() >= 1);
+    }
   }
 
   @Test
-  public void testSimpleThread(@Injectable Transport transport) {
+  public void testSimpleThread() {
+    Transport transport = Mockito.mock(Transport.class);
     long time = System.currentTimeMillis();
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("instance1");
@@ -120,7 +114,8 @@ public class TestServiceCombLoadBalancerStats {
   }
 
   @Test
-  public void testMultiThread(@Injectable Transport transport) throws Exception {
+  public void testMultiThread() throws Exception {
+    Transport transport = Mockito.mock(Transport.class);
     long time = System.currentTimeMillis();
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("instance2");

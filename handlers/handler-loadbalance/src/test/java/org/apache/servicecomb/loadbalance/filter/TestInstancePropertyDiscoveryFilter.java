@@ -30,9 +30,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Injectable;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestInstancePropertyDiscoveryFilter {
 
@@ -76,20 +75,15 @@ public class TestInstancePropertyDiscoveryFilter {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testGetFilteredListOfServers(@Injectable DiscoveryContext context, @Injectable DiscoveryTreeNode parent,
-      @Injectable Invocation invocation) {
+  public void testGetFilteredListOfServers() {
     Map<String, MicroserviceInstance> instances = new HashMap<>();
     instances.put(instance.getInstanceId(), instance);
-    new Expectations() {
-      {
-        context.getInputParameters();
-        result = invocation;
-        parent.data();
-        result = instances;
-        parent.name();
-        result = "parent";
-      }
-    };
+    DiscoveryContext context = Mockito.mock(DiscoveryContext.class);
+    DiscoveryTreeNode parent = Mockito.spy(new DiscoveryTreeNode());
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(context.getInputParameters()).thenReturn(invocation);
+    Mockito.when(parent.data()).thenReturn(instances);
+    Mockito.when(parent.name()).thenReturn("parent");
 
     DiscoveryTreeNode node = filter.discovery(context, parent);
     Assertions.assertEquals(1, ((Map<String, MicroserviceInstance>) node.data()).keySet().size());

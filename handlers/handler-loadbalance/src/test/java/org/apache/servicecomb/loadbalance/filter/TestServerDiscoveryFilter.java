@@ -32,10 +32,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestServerDiscoveryFilter {
   static SCBEngine scbEngine;
@@ -44,14 +43,14 @@ public class TestServerDiscoveryFilter {
 
   ServerDiscoveryFilter filter = new ServerDiscoveryFilter();
 
-  @Mocked
-  Transport trasport;
+  Transport trasport = Mockito.mock(Transport.class);
 
   @BeforeClass
   public static void setup() {
     ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
-    transportManager = scbEngine.getTransportManager();
+    scbEngine = Mockito.spy(SCBBootstrap.createSCBEngineForTest().run());
+    transportManager = Mockito.spy(scbEngine.getTransportManager());
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
   }
 
   @AfterClass
@@ -62,36 +61,31 @@ public class TestServerDiscoveryFilter {
 
   @Test
   public void createEndpoint_TransportNotExist() {
-    new Expectations(transportManager) {
-      {
-        transportManager.findTransport(anyString);
-        result = null;
-      }
-    };
+    Mockito.when(transportManager.findTransport(Mockito.anyString())).thenReturn(null);
 
     ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, Const.RESTFUL, null, null);
     Assertions.assertNull(server);
   }
 
   @Test
-  public void createEndpointNormal(@Injectable DiscoveryContext context, @Injectable Invocation invocation) {
-    new Expectations(transportManager) {
-      {
-        transportManager.findTransport(anyString);
-        result = trasport;
-        context.getInputParameters();
-        result = invocation;
-        invocation.getMicroserviceName();
-        result = "test";
-      }
-    };
-    MicroserviceInstance instance = new MicroserviceInstance();
-    instance.setInstanceId("0000001");
+  public void createEndpointNormal() {
+    try (MockedStatic<SCBEngine> scbEngineMockedStatic = Mockito.mockStatic(SCBEngine.class)) {
+      scbEngineMockedStatic.when(SCBEngine::getInstance).thenReturn(scbEngine);
 
-    ServiceCombServer server = (ServiceCombServer) filter
-        .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
-    Assertions.assertSame(instance, server.getInstance());
-    Assertions.assertSame(trasport, server.getEndpoint().getTransport());
-    Assertions.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
+      DiscoveryContext context = Mockito.spy(new DiscoveryContext());
+      Invocation invocation = Mockito.mock(Invocation.class);
+      Mockito.when(transportManager.findTransport(Const.RESTFUL)).thenReturn(trasport);
+      Mockito.when(context.getInputParameters()).thenReturn(invocation);
+      Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
+
+      MicroserviceInstance instance = new MicroserviceInstance();
+      instance.setInstanceId("0000001");
+
+      ServiceCombServer server = (ServiceCombServer) filter
+              .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
+      Assertions.assertSame(instance, server.getInstance());
+      Assertions.assertSame(trasport, server.getEndpoint().getTransport());
+      Assertions.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
+    }
   }
 }

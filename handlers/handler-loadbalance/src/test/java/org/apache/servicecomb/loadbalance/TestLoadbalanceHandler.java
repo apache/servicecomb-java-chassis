@@ -19,12 +19,16 @@ package org.apache.servicecomb.loadbalance;
 
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
 
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -45,13 +49,8 @@ import org.junit.Test;
 
 import com.netflix.loadbalancer.LoadBalancerStats;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 /**
  *
@@ -68,11 +67,9 @@ public class TestLoadbalanceHandler {
 
   Map<String, LoadBalancer> loadBalancerMap;
 
-  @Injectable
-  Invocation invocation;
+  Invocation invocation = Mockito.spy(new Invocation());
 
-  @Mocked
-  Transport restTransport;
+  Transport restTransport =Mockito.mock(Transport.class);
 
   Response sendResponse;
 
@@ -116,11 +113,11 @@ public class TestLoadbalanceHandler {
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
-    Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
+    holder.setExtentionsFactories(extensionsFactories);
     holder.init();
 
     handler = new LoadbalanceHandler();
-    loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
+    loadBalancerMap = handler.getLoadBalancerMap();
   }
 
   @After
@@ -130,13 +127,9 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void send_noEndPoint(@Injectable LoadBalancer loadBalancer) throws Exception {
-    new Expectations(loadBalancer) {
-      {
-        loadBalancer.chooseServer(invocation);
-        result = null;
-      }
-    };
+  public void send_noEndPoint() throws Exception {
+    LoadBalancer loadBalancer = Mockito.mock(LoadBalancer.class);
+    Mockito.when(loadBalancer.chooseServer(invocation)).thenReturn(null);
 
     Holder<Throwable> result = new Holder<>();
     handler.send(invocation, resp -> result.value = resp.getResult(), loadBalancer);
@@ -146,24 +139,26 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void send_failed2(@Injectable LoadBalancer loadBalancer) throws Exception {
+  public void send_failed2() throws Exception {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
     ServiceCombServer server = new ServiceCombServer(null, restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
-    new Expectations(loadBalancer) {
-      {
-        loadBalancer.chooseServer(invocation);
-        result = server;
-        loadBalancer.getLoadBalancerStats();
-        result = stats;
-      }
-    };
+
+    LoadBalancer loadBalancer = Mockito.mock(LoadBalancer.class);
+    Mockito.when(loadBalancer.chooseServer(invocation)).thenReturn(server);
+    Mockito.when(loadBalancer.getLoadBalancerStats()).thenReturn(stats);
     sendResponse = Response.create(Status.BAD_REQUEST, "send failed");
 
     Holder<Throwable> result = new Holder<>();
-    handler.send(invocation, resp -> result.value = resp.getResult(), loadBalancer);
+    AsyncResponse asyncResp = resp -> result.value = resp.getResult();
+
+    Mockito.doAnswer(invoke -> {
+      asyncResp.handle(sendResponse);
+      return null;
+    }).when(invocation).next(Mockito.any());
+    handler.send(invocation, asyncResp, loadBalancer);
 
     // InvocationException is not taken as a failure
     Assertions.assertEquals(0,
@@ -173,24 +168,23 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void send_failed(@Injectable LoadBalancer loadBalancer) throws Exception {
+  public void send_failed() throws Exception {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
     ServiceCombServer server = new ServiceCombServer(null, restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
-    new Expectations(loadBalancer) {
-      {
-        loadBalancer.chooseServer(invocation);
-        result = server;
-        loadBalancer.getLoadBalancerStats();
-        result = stats;
-      }
-    };
+
+    LoadBalancer loadBalancer = Mockito.mock(LoadBalancer.class);
+    Mockito.when(loadBalancer.chooseServer(invocation)).thenReturn(server);
+    Mockito.when(loadBalancer.getLoadBalancerStats()).thenReturn(stats);
     sendResponse = Response.consumerFailResp(new SocketException());
 
     Holder<Throwable> result = new Holder<>();
-    handler.send(invocation, resp -> result.value = resp.getResult(), loadBalancer);
+    AsyncResponse asyncResp = resp -> result.value = resp.getResult();
+
+    invocation.setHandlerList(Arrays.asList(handler));
+    handler.send(invocation, asyncResp, loadBalancer);
 
     Assertions.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
@@ -200,20 +194,16 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void send_success(@Injectable LoadBalancer loadBalancer) throws Exception {
+  public void send_success() throws Exception {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
     ServiceCombServer server = new ServiceCombServer(null, restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
-    new Expectations(loadBalancer) {
-      {
-        loadBalancer.chooseServer(invocation);
-        result = server;
-        loadBalancer.getLoadBalancerStats();
-        result = stats;
-      }
-    };
+
+    LoadBalancer loadBalancer = Mockito.mock(LoadBalancer.class);
+    Mockito.when(loadBalancer.chooseServer(invocation)).thenReturn(server);
+    Mockito.when(loadBalancer.getLoadBalancerStats()).thenReturn(stats);
     sendResponse = Response.ok("success");
 
     Holder<String> result = new Holder<>();
@@ -223,6 +213,7 @@ public class TestLoadbalanceHandler {
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getActiveRequestsCount());
     Assertions.assertEquals("success", result.value);
   }
+
 
   @Test
   public void testIsFailedResponse() {

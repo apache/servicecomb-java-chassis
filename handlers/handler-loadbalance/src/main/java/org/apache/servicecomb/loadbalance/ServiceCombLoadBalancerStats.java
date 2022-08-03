@@ -70,6 +70,11 @@ public class ServiceCombLoadBalancerStats {
   ServiceCombLoadBalancerStats() {
   }
 
+  @VisibleForTesting
+  public int getServerExpireInSeconds() {
+    return serverExpireInSeconds;
+  }
+
   public void markIsolated(ServiceCombServer server, boolean isolated) {
     try {
       serverStatsCache.get(server).markIsolated(isolated);

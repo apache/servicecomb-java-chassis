@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -77,6 +78,11 @@ public class RegistrationManager {
         .filter((SPIEnabled::enabled))
         .forEach(registrationList::add);
     initPrimary();
+  }
+
+  @VisibleForTesting
+  public static void setINSTANCE(RegistrationManager INSTANCE) {
+    RegistrationManager.INSTANCE = INSTANCE;
   }
 
   public MicroserviceInstance getMicroserviceInstance() {

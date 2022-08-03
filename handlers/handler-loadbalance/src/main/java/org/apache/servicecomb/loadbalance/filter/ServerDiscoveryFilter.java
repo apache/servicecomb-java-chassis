@@ -21,6 +21,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
@@ -34,7 +35,9 @@ public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
   @Override
   protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
       MicroserviceInstance instance) {
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
+    SCBEngine scbEngine = SCBEngine.getInstance();
+    TransportManager transportManager = scbEngine.getTransportManager();
+    Transport transport = transportManager.findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;

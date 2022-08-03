@@ -87,6 +87,10 @@ public class LoadbalanceHandler implements Handler {
     discoveryTree.sort();
   }
 
+  public Map<String, LoadBalancer> getLoadBalancerMap() {
+    return loadBalancerMap;
+  }
+
   private void preCheck() {
     // Old configurations check.Just print an error, because configurations may given in dynamic and fail on runtime.
 

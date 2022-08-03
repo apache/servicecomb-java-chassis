@@ -29,15 +29,16 @@ import org.junit.Test;
 
 import com.netflix.loadbalancer.Server;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestLoadBalanceCreator {
+
+  Invocation invocation = Mockito.mock(Invocation.class);
+  Transport transport = Mockito.mock(Transport.class);
+
   @Test
-  public void testLoadBalanceWithRoundRobinRuleAndFilter(@Injectable Invocation invocation,
-      @Injectable Transport transport) {
+  public void testLoadBalanceWithRoundRobinRuleAndFilter() {
     // Robin components implementations require getReachableServers & getServerList have the same size, we add a test case for this.
     RoundRobinRuleExt rule = new RoundRobinRuleExt();
     List<ServiceCombServer> servers = new ArrayList<>();
@@ -69,12 +70,7 @@ public class TestLoadBalanceCreator {
     });
     lb.setFilters(filters);
 
-    new Expectations() {
-      {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
-        result = servers;
-      }
-    };
+    Mockito.when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(servers);
     Server s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
@@ -84,8 +80,7 @@ public class TestLoadBalanceCreator {
   }
 
   @Test
-  public void testLoadBalanceWithRandomRuleAndFilter(@Injectable Invocation invocation,
-      @Injectable Transport transport) {
+  public void testLoadBalanceWithRandomRuleAndFilter() {
     // Robin components implementations require getReachableServers & getServerList have the same size, we add a test case for this.
     RandomRuleExt rule = new RandomRuleExt();
     LoadBalancer lb = new LoadBalancer(rule, "service");
@@ -116,12 +111,7 @@ public class TestLoadBalanceCreator {
       return filteredServers;
     });
     lb.setFilters(filters);
-    new Expectations() {
-      {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
-        result = servers;
-      }
-    };
+    Mockito.when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(servers);
     Server s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
@@ -131,8 +121,9 @@ public class TestLoadBalanceCreator {
   }
 
   @Test
-  public void testLoadBalanceWithWeightedResponseTimeRuleAndFilter(@Injectable Endpoint endpoint1,
-      @Injectable Endpoint endpoint2, @Injectable Invocation invocation) {
+  public void testLoadBalanceWithWeightedResponseTimeRuleAndFilter() {
+    Endpoint endpoint1 = Mockito.mock(Endpoint.class);
+    Endpoint endpoint2 = Mockito.mock(Endpoint.class);
     // Robin components implementations require getReachableServers & getServerList have the same size, we add a test case for this.
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
     LoadBalancer lb = new LoadBalancer(rule, "service");
@@ -145,14 +136,8 @@ public class TestLoadBalanceCreator {
     ServiceCombServer server = new ServiceCombServer(null, endpoint1, instance1);
     ServiceCombServer server2 = new ServiceCombServer(null, endpoint2, instance2);
 
-    new Expectations() {
-      {
-        endpoint1.getEndpoint();
-        result = "host1";
-        endpoint2.getEndpoint();
-        result = "host2";
-      }
-    };
+    Mockito.when(endpoint1.getEndpoint()).thenReturn("host1");
+    Mockito.when(endpoint2.getEndpoint()).thenReturn("host2");
 
     servers.add(server);
     servers.add(server2);
@@ -168,12 +153,7 @@ public class TestLoadBalanceCreator {
       return filteredServers;
     });
     lb.setFilters(filters);
-    new Expectations() {
-      {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
-        result = servers;
-      }
-    };
+    Mockito.when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(servers);
     Server s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
@@ -183,8 +163,7 @@ public class TestLoadBalanceCreator {
   }
 
   @Test
-  public void testLoadBalanceWithSessionSticknessRule(@Injectable Invocation invocation,
-      @Injectable Transport transport) {
+  public void testLoadBalanceWithSessionSticknessRule() {
     SessionStickinessRule rule = new SessionStickinessRule();
     LoadBalancer lb = new LoadBalancer(rule, "service");
 
@@ -203,20 +182,15 @@ public class TestLoadBalanceCreator {
     servers.add(server2);
 
     lb.setFilters(new ArrayList<>());
-    new Expectations() {
-      {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
-        result = servers;
-      }
-    };
+    Mockito.when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(servers);
 
     Server s = lb.chooseServer(invocation);
     Assertions.assertEquals(server, s);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server, s);
 
-    long time = Deencapsulation.getField(rule, "lastAccessedTime");
-    Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 300);
+    long time = rule.getLastAccessedTime();
+    rule.setLastAccessedTime(time - 1000 * 300);
     ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);

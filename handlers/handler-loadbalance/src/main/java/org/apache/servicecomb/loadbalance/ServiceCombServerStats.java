@@ -21,6 +21,7 @@ import java.time.Clock;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.TimeUtils;
 import org.slf4j.Logger;
@@ -75,6 +76,21 @@ public class ServiceCombServerStats {
     this.clock = clock;
     this.microserviceName = microserviceName;
     init();
+  }
+
+  @VisibleForTesting
+  public void setLastActiveTime(long lastActiveTime) {
+    this.lastActiveTime = lastActiveTime;
+  }
+
+  @VisibleForTesting
+  public void setLastVisitTime(long lastVisitTime) {
+    this.lastVisitTime = lastVisitTime;
+  }
+
+  @VisibleForTesting
+  public void setIsolatedTime(long isolatedTime) {
+    this.isolatedTime = isolatedTime;
   }
 
   private void init() {

@@ -24,6 +24,10 @@ public class BeansHolder {
   @Inject
   private List<ExtensionsFactory> extentionsFactories;
 
+  public void setExtentionsFactories(List<ExtensionsFactory> extentionsFactories) {
+    this.extentionsFactories = extentionsFactories;
+  }
+
   public void init() {
     for (ExtensionsFactory extension : this.extentionsFactories) {
       ExtensionsManager.addExtentionsFactory(extension);
