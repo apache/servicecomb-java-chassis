@@ -92,7 +92,7 @@
     <servlet-api.version>4.0.4</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>1.30</snakeyaml.version>
-    <spectator.version>1.3.5</spectator.version>
+    <spectator.version>1.3.6</spectator.version>
     <spring.version>5.3.21</spring.version>
     <spring-boot.version>2.6.7</spring-boot.version>
     <swagger.version>1.6.6</swagger.version>
