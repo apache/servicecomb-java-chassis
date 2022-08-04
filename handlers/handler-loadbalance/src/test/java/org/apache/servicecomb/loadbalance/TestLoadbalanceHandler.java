@@ -69,7 +69,7 @@ public class TestLoadbalanceHandler {
 
   Invocation invocation = Mockito.spy(new Invocation());
 
-  Transport restTransport =Mockito.mock(Transport.class);
+  Transport restTransport = Mockito.mock(Transport.class);
 
   Response sendResponse;
 
