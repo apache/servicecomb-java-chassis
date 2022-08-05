@@ -64,8 +64,8 @@ public class RequestProcessor {
       return true;
     }
     for (Entry<String, RawOperator> entry : matcher.getHeaders().entrySet()) {
-      if (!request.getHeaders().containsKey(entry.getKey()) ||
-          !operatorMatch(request.getHeaders().get(entry.getKey()), entry.getValue())) {
+      if (request.getHeader(entry.getKey()) == null ||
+          !operatorMatch(request.getHeader(entry.getKey()), entry.getValue())) {
         return false;
       }
     }

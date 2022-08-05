@@ -55,11 +55,11 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
   }
 
   @Override
-  public Retry createProcessor(String key, GovernanceRequest governanceRequest, RetryPolicy policy) {
+  public Disposable<Retry> createProcessor(String key, GovernanceRequest governanceRequest, RetryPolicy policy) {
     return getRetry(key, policy);
   }
 
-  private Retry getRetry(String key, RetryPolicy retryPolicy) {
+  private Disposable<Retry> getRetry(String key, RetryPolicy retryPolicy) {
     LOGGER.info("applying new policy {} for {}", key, retryPolicy.toString());
 
     RetryConfig config = RetryConfig.custom()
@@ -71,7 +71,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
         .build();
 
     RetryRegistry registry = RetryRegistry.of(config);
-    return registry.retry(key);
+    return new DisposableRetry(key, registry, registry.retry(key));
   }
 
   private IntervalFunction getIntervalFunction(RetryPolicy retryPolicy) {

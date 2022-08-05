@@ -17,32 +17,34 @@
 
 package org.apache.servicecomb.governance.handler;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
 
 public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
-  protected final Map<String, PROCESSOR> processors = new ConcurrentHashMap<>();
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGovernanceHandler.class);
+
+  protected final DisposableMap<PROCESSOR> processors;
 
   private final Object lock = new Object();
 
   protected MatchersManager matchersManager;
 
+  protected AbstractGovernanceHandler() {
+    GovernanceEventManager.register(this);
+    processors = new DisposableMap<>(this::onConfigurationChanged);
+  }
+
   @Autowired
   public void setMatchersManager(MatchersManager matchersManager) {
     this.matchersManager = matchersManager;
-  }
-
-  protected AbstractGovernanceHandler() {
-    GovernanceEventManager.register(this);
   }
 
   public PROCESSOR getActuator(GovernanceRequest governanceRequest) {
@@ -52,7 +54,11 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     }
 
     String key = createKey(governanceRequest, policy);
-    PROCESSOR processor = processors.get(key);
+    if (key == null) {
+      return null;
+    }
+
+    Disposable<PROCESSOR> processor = processors.get(key);
     if (processor == null) {
       synchronized (lock) {
         processor = processors.get(key);
@@ -62,17 +68,23 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
         }
       }
     }
-    return processor;
+
+    return processor.get();
   }
 
   protected abstract String createKey(GovernanceRequest governanceRequest, POLICY policy);
 
   protected abstract POLICY matchPolicy(GovernanceRequest governanceRequest);
 
-  protected abstract PROCESSOR createProcessor(String key, GovernanceRequest governanceRequest, POLICY policy);
+  protected abstract Disposable<PROCESSOR> createProcessor(String key, GovernanceRequest governanceRequest,
+      POLICY policy);
 
   protected void onConfigurationChanged(String key) {
-    processors.remove(key);
+    Disposable<PROCESSOR> processor = processors.remove(key);
+    if (processor != null) {
+      LOGGER.info("remove governance processor {}", key);
+      processor.dispose();
+    }
   }
 
   @Subscribe

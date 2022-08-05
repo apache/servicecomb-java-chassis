@@ -42,8 +42,8 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
   @Override
   protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
     return InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY
-        + "." + governanceRequest.getServiceName()
         + "." + policy.getName()
+        + "." + governanceRequest.getServiceName()
         + "." + governanceRequest.getInstanceId();
   }
 
@@ -52,7 +52,11 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
     if (key.startsWith(InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY)) {
       for (String processorKey : processors.keySet()) {
         if (processorKey.startsWith(key)) {
-          processors.remove(processorKey);
+          Disposable<Bulkhead> processor = processors.remove(processorKey);
+          if (processor != null) {
+            LOGGER.info("remove instance bulkhead processor {}", key);
+            processor.dispose();
+          }
         }
       }
     }
@@ -69,11 +73,11 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
   }
 
   @Override
-  public Bulkhead createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  public Disposable<Bulkhead> createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
     return getBulkhead(key, policy);
   }
 
-  private Bulkhead getBulkhead(String key, BulkheadPolicy policy) {
+  private Disposable<Bulkhead> getBulkhead(String key, BulkheadPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     BulkheadConfig config = BulkheadConfig.custom()
@@ -83,6 +87,6 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
 
-    return registry.bulkhead(key, config);
+    return new DisposableBulkhead(key, registry, registry.bulkhead(key, config));
   }
 }
