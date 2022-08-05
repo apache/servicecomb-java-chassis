@@ -17,6 +17,12 @@
 
 servicecomb:
   matchGroup:
+    demo-loadbalance-random: |
+      matches:
+        - serviceName: "loadrandom"
+    demo-loadbalance-roundRobin: |
+      matches:
+        - serviceName: "loadroundRobin"
     demo-fallback-returnNull: |
       matches:
         - serviceName: "returnNull"
@@ -155,7 +161,11 @@ servicecomb:
     wrongIngored: |
       delayTime: -1
       type: ERROR
-
+  loadbalance:
+    demo-loadbalance-random: |
+      rule: Random
+    demo-loadbalance-roundRobin: |
+      rule: RoundRobin
   routeRule:
     test_server1: |                              # 服务名
       - precedence: 1                        # 优先级，数字越大，优先级越高。

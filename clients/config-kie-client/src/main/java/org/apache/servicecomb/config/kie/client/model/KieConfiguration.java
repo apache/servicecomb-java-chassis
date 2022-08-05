@@ -156,8 +156,8 @@ public class KieConfiguration {
     return refreshIntervalInMillis;
   }
 
-  public KieConfiguration setRefreshIntervalInMillis(int refreshIntervalInMillis) {
-    this.refreshIntervalInMillis = refreshIntervalInMillis;
+  public KieConfiguration setRefreshIntervalInMillis(int refreshIntervallnMillis) {
+    this.refreshIntervalInMillis = refreshIntervallnMillis;
     return this;
   }
 }
