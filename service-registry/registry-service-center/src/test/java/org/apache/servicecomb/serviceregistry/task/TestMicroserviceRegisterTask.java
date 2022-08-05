@@ -682,7 +682,7 @@ public class TestMicroserviceRegisterTask {
           "        type: \"integer\"\n" +
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(4).getMessage());
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
 
       Assertions.assertEquals("The difference in local schema:\n" +
           "[type: \"string\"\n" +
@@ -698,7 +698,7 @@ public class TestMicroserviceRegisterTask {
           "        type: \"integer\"\n" +
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(6).getMessage());
     }
 
     Assertions.assertTrue(isIllegalException);

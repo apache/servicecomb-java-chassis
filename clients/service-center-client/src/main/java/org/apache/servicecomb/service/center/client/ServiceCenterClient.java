@@ -55,6 +55,7 @@ import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
 import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceInstanceResponse;
 import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceResponse;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
+import org.apache.servicecomb.service.center.client.model.UpdatePropertiesRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -525,6 +526,27 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     } catch (IOException e) {
       throw new OperationException(
           "query token failed", e);
+    }
+  }
+
+  @Override
+  public boolean updateMicroserviceProperties(String serviceId, Map<String, String> serviceProperties) {
+    try {
+      UpdatePropertiesRequest request = new UpdatePropertiesRequest();
+      request.setProperties(serviceProperties);
+      HttpResponse response = httpClient.putHttpRequest(
+              "/registry/microservices/" + serviceId + "/properties", null, HttpUtils.serialize(request));
+      if (response.getStatusCode() == HttpStatus.SC_OK) {
+        return true;
+      }
+      sendUnAuthorizedEvent(response);
+      throw new OperationException(
+              "update service instance status fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                      .getMessage()
+                      + "; content = " + response.getContent());
+    } catch (IOException e) {
+      throw new OperationException(
+              "update service instance status fails", e);
     }
   }
 }
