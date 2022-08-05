@@ -82,6 +82,13 @@ servicecomb:
       rate: 1
     wrongIngored: |
       rate: 0
+  identifierRateLimiting:
+    demo-rateLimiting: |
+      rate: 1
+      identifier: test
+    demo-rateLimiting-servicename: |
+      rate: 1
+      identifier: test
   retry:
     demo-retry: |
       maxAttempts: 3

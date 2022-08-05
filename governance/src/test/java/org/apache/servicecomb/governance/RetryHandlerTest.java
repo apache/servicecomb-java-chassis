@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance;
 
+import org.apache.servicecomb.governance.handler.Disposable;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
@@ -41,8 +42,8 @@ public class RetryHandlerTest {
     retryPolicy.setFailAfterMaxAttempts(false);
     RetryHandler retryHandler = new RetryHandler(retryProperties, retryExtension);
 
-    Retry retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
-    Assertions.assertThrows(IllegalStateException.class, () -> retry.<Integer>executeCheckedSupplier(() -> {
+    Disposable<Retry> retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
+    Assertions.assertThrows(IllegalStateException.class, () -> retry.get().<Integer>executeCheckedSupplier(() -> {
       throw new IllegalStateException();
     }));
   }
@@ -59,8 +60,8 @@ public class RetryHandlerTest {
     retryPolicy.setFailAfterMaxAttempts(true);
     RetryHandler retryHandler = new RetryHandler(retryProperties, retryExtension);
 
-    Retry retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
-    Assertions.assertThrows(IllegalStateException.class, () -> retry.<Integer>executeCheckedSupplier(() -> {
+    Disposable<Retry> retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
+    Assertions.assertThrows(IllegalStateException.class, () -> retry.get().<Integer>executeCheckedSupplier(() -> {
       throw new IllegalStateException();
     }));
   }
@@ -77,7 +78,8 @@ public class RetryHandlerTest {
     retryPolicy.setFailAfterMaxAttempts(true);
     RetryHandler retryHandler = new RetryHandler(retryProperties, retryExtension);
 
-    Retry retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
-    Assertions.assertThrows(MaxRetriesExceededException.class, () -> retry.<Integer>executeCheckedSupplier(() -> -1));
+    Disposable<Retry> retry = retryHandler.createProcessor(retryPolicy.getName(), governanceRequest, retryPolicy);
+    Assertions.assertThrows(MaxRetriesExceededException.class,
+        () -> retry.get().<Integer>executeCheckedSupplier(() -> -1));
   }
 }

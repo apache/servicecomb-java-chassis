@@ -54,8 +54,8 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
     return InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
-        + "." + governanceRequest.getServiceName()
         + "." + policy.getName()
+        + "." + governanceRequest.getServiceName()
         + "." + governanceRequest.getInstanceId();
   }
 
@@ -64,7 +64,11 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
     if (key.startsWith(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY)) {
       for (String processorKey : processors.keySet()) {
         if (processorKey.startsWith(key)) {
-          processors.remove(processorKey);
+          Disposable<CircuitBreaker> circuitBreaker = processors.remove(processorKey);
+          if (circuitBreaker != null) {
+            LOGGER.info("remove instance isolation processor {}", key);
+            circuitBreaker.dispose();
+          }
         }
       }
     }
@@ -81,11 +85,12 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   }
 
   @Override
-  public CircuitBreaker createProcessor(String key, GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+  public Disposable<CircuitBreaker> createProcessor(String key, GovernanceRequest governanceRequest,
+      CircuitBreakerPolicy policy) {
     return getCircuitBreaker(key, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
+  private Disposable<CircuitBreaker> getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
@@ -106,6 +111,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
           .ofCircuitBreakerRegistry(circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
-    return circuitBreakerRegistry.circuitBreaker(key, circuitBreakerConfig);
+    return new DisposableCircuitBreaker(key, circuitBreakerRegistry,
+        circuitBreakerRegistry.circuitBreaker(key, circuitBreakerConfig));
   }
 }

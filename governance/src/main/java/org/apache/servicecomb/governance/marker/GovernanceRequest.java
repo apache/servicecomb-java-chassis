@@ -56,6 +56,10 @@ public class GovernanceRequest {
    */
   private String serviceName;
 
+  public String getHeader(String key) {
+    return headers.get(key);
+  }
+
   public Map<String, String> getHeaders() {
     return headers;
   }

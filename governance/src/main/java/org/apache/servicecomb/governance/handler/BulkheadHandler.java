@@ -49,11 +49,11 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
   }
 
   @Override
-  public Bulkhead createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  public Disposable<Bulkhead> createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
     return getBulkhead(key, policy);
   }
 
-  private Bulkhead getBulkhead(String key, BulkheadPolicy policy) {
+  private Disposable<Bulkhead> getBulkhead(String key, BulkheadPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
     BulkheadConfig config = BulkheadConfig.custom()
@@ -63,6 +63,6 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
 
-    return registry.bulkhead(key);
+    return new DisposableBulkhead(key, registry, registry.bulkhead(key));
   }
 }

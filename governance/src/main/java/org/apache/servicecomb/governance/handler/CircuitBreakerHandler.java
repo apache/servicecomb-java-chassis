@@ -60,11 +60,12 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
   }
 
   @Override
-  public CircuitBreaker createProcessor(String key, GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+  public Disposable<CircuitBreaker> createProcessor(String key, GovernanceRequest governanceRequest,
+      CircuitBreakerPolicy policy) {
     return getCircuitBreaker(key, policy);
   }
 
-  private CircuitBreaker getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
+  private Disposable<CircuitBreaker> getCircuitBreaker(String key, CircuitBreakerPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy);
 
     CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
@@ -85,6 +86,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
           .ofCircuitBreakerRegistry(circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
-    return circuitBreakerRegistry.circuitBreaker(key, circuitBreakerConfig);
+    return new DisposableCircuitBreaker(key, circuitBreakerRegistry,
+        circuitBreakerRegistry.circuitBreaker(key, circuitBreakerConfig));
   }
 }

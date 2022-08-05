@@ -42,7 +42,8 @@ public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, Faul
   }
 
   @Override
-  protected Fault createProcessor(String key, GovernanceRequest governanceRequest, FaultInjectionPolicy policy) {
-    return FaultInjectionUtil.getFault(key, policy);
+  protected DisposableHolder<Fault> createProcessor(String key, GovernanceRequest governanceRequest,
+      FaultInjectionPolicy policy) {
+    return new DisposableHolder<>(key, FaultInjectionUtil.getFault(key, policy));
   }
 }

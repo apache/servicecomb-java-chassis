@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
+import org.apache.servicecomb.governance.handler.IdentifierRateLimitingHandler;
 import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
@@ -39,6 +40,7 @@ import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
+import org.apache.servicecomb.governance.properties.IdentifierRateLimitProperties;
 import org.apache.servicecomb.governance.properties.InstanceBulkheadProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
@@ -86,6 +88,11 @@ public class GovernanceConfiguration {
   }
 
   @Bean
+  public IdentifierRateLimitProperties identifierRateLimitProperties() {
+    return new IdentifierRateLimitProperties();
+  }
+
+  @Bean
   public RetryProperties retryProperties() {
     return new RetryProperties();
   }
@@ -123,6 +130,12 @@ public class GovernanceConfiguration {
   @Bean
   public RateLimitingHandler rateLimitingHandler(RateLimitProperties rateLimitProperties) {
     return new RateLimitingHandler(rateLimitProperties);
+  }
+
+  @Bean
+  public IdentifierRateLimitingHandler identifierRateLimitingHandler(
+      IdentifierRateLimitProperties identifierRateLimitProperties) {
+    return new IdentifierRateLimitingHandler(identifierRateLimitProperties);
   }
 
   @Bean
