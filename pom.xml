@@ -67,7 +67,7 @@
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
     <puppycrawl-checkstyle.version>10.3.2</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
-    <site-maven-plugin.version>3.12.0</site-maven-plugin.version>
+    <site-maven-plugin.version>3.12.1</site-maven-plugin.version>
     <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
     <spotbug-maven-plugin.version>4.7.1.1</spotbug-maven-plugin.version>
     <spring-boot-maven-plugin.version>2.7.0</spring-boot-maven-plugin.version>
