@@ -26,6 +26,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -35,7 +36,6 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestClientPoolManager {
   @Mocked
@@ -143,22 +143,22 @@ public class TestClientPoolManager {
 
   @Test
   public void findByContext_reactive() {
-    HttpClientWithContext notMatchPool = new HttpClientWithContext(null, null);
-    pools.add(notMatchPool);
+    HttpClientWithContext notMatchPool1 = new HttpClientWithContext(null, null);
+    HttpClientWithContext notMatchPool2 = new HttpClientWithContext(null, null);
+    pools.add(notMatchPool1);
+    pools.add(notMatchPool2);
 
     new Expectations() {
       {
-        factory.createClientPool(context);
-        result = new HttpClientWithContext(null, null);
         Vertx.currentContext();
         result = context;
       }
     };
+    context.put(id, notMatchPool2);
 
-    HttpClientWithContext result = poolMgr.findByContext();
-    Assertions.assertNotSame(notMatchPool, result);
+    Assertions.assertSame(notMatchPool2, poolMgr.findByContext());
     // find again, get the same result
-    Assertions.assertSame(result, poolMgr.findByContext());
+    Assertions.assertSame(notMatchPool2, poolMgr.findByContext());
   }
 
   @Test
