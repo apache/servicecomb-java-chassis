@@ -30,8 +30,6 @@ import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -60,17 +58,6 @@ public class HttpClients {
     });
   }
 
-  @VisibleForTesting
-  public static void mockClientPoolManager(String name, ClientPoolManager<HttpClientWithContext> clientPool) {
-    httpClients.put(name, clientPool);
-  }
-
-  /* used for configurations module: these module must be boot before other HttpClients is initialized. so can
-   * not load by SPI, must add manually  */
-  public static void addNewClientPoolManager(HttpClientOptionsSPI option) {
-    httpClients.put(option.clientName(), createClientPoolManager(option));
-  }
-
   /* destroy at shutdown. */
   public static void destroy() {
     httpClients.clear();
@@ -84,7 +71,7 @@ public class HttpClients {
         new HttpClientPoolFactory(HttpClientOptionsSPI.createHttpClientOptions(option)));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientPoolManager,
-        option.getInstanceCount())
+            option.getInstanceCount())
         .setWorker(option.isWorker())
         .setWorkerPoolName(option.getWorkerPoolName())
         .setWorkerPoolSize(option.getWorkerPoolSize());
@@ -117,12 +104,7 @@ public class HttpClients {
    * @return the deployed instance name
    */
   public static HttpClientWithContext getClient(String clientName) {
-    ClientPoolManager<HttpClientWithContext> poolManager = httpClients.get(clientName);
-    if (poolManager == null) {
-      LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
-      return null;
-    }
-    return poolManager.findThreadBindClientPool();
+    return getClient(clientName, true);
   }
 
   /**
@@ -132,12 +114,7 @@ public class HttpClients {
    * @return the deployed instance name
    */
   public static HttpClientWithContext getClient(String clientName, boolean sync) {
-    ClientPoolManager<HttpClientWithContext> poolManager = httpClients.get(clientName);
-    if (poolManager == null) {
-      LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
-      return null;
-    }
-    return poolManager.findClientPool(sync);
+    return getClient(clientName, sync, null);
   }
 
   /**
