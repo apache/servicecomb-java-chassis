@@ -95,9 +95,9 @@ public class ClientPoolManager<CLIENT_POOL> {
         return clientPool;
       }
 
-      // this will make "client.thread-count" bigger than which in microservice.yaml
-      // maybe it's better to remove "client.thread-count", just use "rest/highway.thread-count"
-      return createClientPool(currentContext);
+      // Maybe executed in a call back of a reactive call.
+      // The Context is created in a non-event thread and passed to the event loop
+      // thread by vert.x.
     }
 
     // not in correct context:
@@ -120,7 +120,7 @@ public class ClientPoolManager<CLIENT_POOL> {
   }
 
   private void assertPoolsInitialized() {
-    if (pools.size() == 0) {
+    if (pools.isEmpty()) {
       throw new IllegalStateException("client pool not initialized successfully when making calls."
           + "Please check if system boot up is ready or some errors happened when startup.");
     }
