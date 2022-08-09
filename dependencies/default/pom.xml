@@ -77,7 +77,7 @@
     <netty.version>4.1.79.Final</netty.version>
     <okhttp3.version>4.10.0</okhttp3.version>
     <maven-model.version>3.8.6</maven-model.version>
-    <micrometer.version>1.9.2</micrometer.version>
+    <micrometer.version>1.9.3</micrometer.version>
     <nacos-client.version>2.1.0</nacos-client.version>
     <prometheus.version>0.16.0</prometheus.version>
     <protobuf.version>3.21.4</protobuf.version>
