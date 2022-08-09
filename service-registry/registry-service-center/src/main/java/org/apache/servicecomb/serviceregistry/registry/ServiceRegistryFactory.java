@@ -21,7 +21,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.event.ServiceCenterEventBus;
+import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;

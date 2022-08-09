@@ -58,6 +58,7 @@ import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -150,7 +151,8 @@ public class CodeFirstJaxrs {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -209,7 +211,8 @@ public class CodeFirstJaxrs {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -273,6 +276,12 @@ public class CodeFirstJaxrs {
     return new FilePart(null, file)
         .setDeleteAfterFinished(true)
         .setSubmittedFileName(name);
+  }
+
+  @Path("/instanceIsolationTest")
+  @GET
+  public String instanceIsolationTest() {
+    throw new InvocationException(503, "", "business");
   }
 
   private File createTempFile(String name, String content) throws IOException {

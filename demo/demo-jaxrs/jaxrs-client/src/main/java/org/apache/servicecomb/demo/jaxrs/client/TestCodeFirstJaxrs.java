@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo.jaxrs.client;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
@@ -27,6 +28,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,6 +50,39 @@ public class TestCodeFirstJaxrs implements CategorizedTestCase {
   public void testAllTransport() throws Exception {
     testCodeFirstJaxrs();
     testResponseLong();
+  }
+
+  @Override
+  public void testHighwayTransport() throws Exception {
+    // test only once
+    testInstanceIsolation();
+  }
+
+  private void testInstanceIsolation() {
+    AtomicInteger e503Business = new AtomicInteger(0);
+    AtomicInteger e503CircuitBreaker = new AtomicInteger(0);
+
+    for (int i = 0; i < 30; i++) {
+      try {
+        InvokerUtils.syncInvoke(SERVICE_NAME, SCHEMA_ID, "instanceIsolationTest", null,
+            String.class);
+      } catch (InvocationException e) {
+        if (e.getStatusCode() == 503) {
+          if ("CommonExceptionData [message=business]".equals(e.getErrorData().toString())) {
+            e503Business.getAndIncrement();
+          } else if ("CommonExceptionData [message=instance isolation circuitBreaker is open.]".equals(
+              e.getErrorData().toString())) {
+            e503CircuitBreaker.getAndIncrement();
+          } else {
+            TestMgr.fail("not expected message");
+          }
+        } else {
+          TestMgr.fail("not expected code");
+        }
+      }
+    }
+    TestMgr.check(true, e503Business.get() >= 10);
+    TestMgr.check(true, e503CircuitBreaker.get() >= 10);
   }
 
   @Override

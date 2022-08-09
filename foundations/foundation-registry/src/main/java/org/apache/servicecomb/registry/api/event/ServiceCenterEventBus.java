@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.event;
+package org.apache.servicecomb.registry.api.event;
 
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 

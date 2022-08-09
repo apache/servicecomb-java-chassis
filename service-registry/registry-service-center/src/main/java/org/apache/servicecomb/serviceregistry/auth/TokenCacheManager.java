@@ -33,7 +33,7 @@ import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
 import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
 import org.apache.servicecomb.serviceregistry.event.NotPermittedEvent;
-import org.apache.servicecomb.serviceregistry.event.ServiceCenterEventBus;
+import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

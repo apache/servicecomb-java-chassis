@@ -27,6 +27,9 @@ import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.registry.api.MicroserviceKey;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -65,15 +68,25 @@ public class ConsumerInstanceIsolationHandler implements Handler {
       }
 
       if (e instanceof CallNotPermittedException) {
+        LOGGER.warn("instance isolation circuitBreaker is open by policy : {}", e.getMessage());
+        ServiceCenterEventBus.getEventBus().post(createMicroserviceInstanceChangedEvent(invocation));
         // return 503 so that consumer can retry
         asyncResp.complete(
             Response.failResp(new InvocationException(503, "instance isolation circuitBreaker is open.",
                 new CommonExceptionData("instance isolation circuitBreaker is open."))));
-        LOGGER.warn("instance isolation circuitBreaker is open by policy : {}", e.getMessage());
       } else {
         asyncResp.complete(Response.createProducerFail(e));
       }
     });
+  }
+
+  private Object createMicroserviceInstanceChangedEvent(Invocation invocation) {
+    MicroserviceInstanceChangedEvent event = new MicroserviceInstanceChangedEvent();
+    MicroserviceKey key = new MicroserviceKey();
+    key.setAppId(invocation.getAppId());
+    key.setServiceName(invocation.getMicroserviceName());
+    event.setKey(key);
+    return event;
   }
 
   private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {

@@ -69,7 +69,6 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         },
         (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.toString())
     );
-    executorService = taskPool;
   }
 
   @Override
