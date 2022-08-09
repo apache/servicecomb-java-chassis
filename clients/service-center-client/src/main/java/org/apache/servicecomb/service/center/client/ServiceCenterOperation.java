@@ -18,6 +18,7 @@
 package org.apache.servicecomb.service.center.client;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.CreateSchemaRequest;
@@ -184,4 +185,12 @@ public interface ServiceCenterOperation {
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
   RbacTokenResponse queryToken(RbacTokenRequest request);
+
+  /**
+   * Update properties of microservice
+   *
+   * @return if update is successful
+   * @throws OperationException If some problems happened to contact service center or non http 200 returned.
+   */
+  boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
 }

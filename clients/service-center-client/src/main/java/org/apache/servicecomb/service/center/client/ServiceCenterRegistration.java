@@ -18,6 +18,7 @@
 package org.apache.servicecomb.service.center.client;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.http.client.task.AbstractTask;
@@ -131,6 +132,18 @@ public class ServiceCenterRegistration extends AbstractTask {
           startTask(new RegisterSchemaTask(0));
         } else {
           Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
+
+          Map<String, String> propertiesTemp = microservice.getProperties();
+          microservice.setProperties(newMicroservice.getProperties());
+          microservice.getProperties().putAll(propertiesTemp);
+          if (serviceCenterClient.updateMicroserviceProperties(serviceResponse.getServiceId(), microservice.getProperties())) {
+            LOGGER.info("microservice is already registered. Update microservice properties successfully. properties=[{}]",
+                    microservice.getProperties());
+          } else {
+            LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}]",
+                    microservice.getProperties());
+          }
+
           microservice.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setServiceId(serviceResponse.getServiceId());
           microserviceInstance.setMicroservice(microservice);

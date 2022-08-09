@@ -19,6 +19,7 @@ package org.apache.servicecomb.service.center.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.HttpResponse;
@@ -486,6 +487,24 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     boolean result = serviceCenterClient
         .updateServiceSchemaContext("111", new SchemaInfo());
+
+    Assertions.assertTrue(result);
+  }
+
+  @Test
+  public void testUpdateMicroserviceProperties() throws IOException {
+    ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
+
+    HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setStatusCode(200);
+    httpResponse.setMessage("ok");
+
+    Mockito.when(serviceCenterRawClient.putHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
+            .thenReturn(httpResponse);
+
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    boolean result = serviceCenterClient
+            .updateMicroserviceProperties("111", new HashMap<String, String>());
 
     Assertions.assertTrue(result);
   }
