@@ -30,6 +30,7 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.event.HeartbeatFailEvent;
 import org.apache.servicecomb.serviceregistry.event.HeartbeatSuccEvent;
+import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,12 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
   public ScheduledThreadPoolExecutor getTaskPool() {
     return this.taskPool;
+  }
+
+  @Override
+  protected void shutdownEventHandler(ShutdownEvent event) {
+    super.shutdownEventHandler(event);
+    this.taskPool.shutdownNow();
   }
 
   @Subscribe

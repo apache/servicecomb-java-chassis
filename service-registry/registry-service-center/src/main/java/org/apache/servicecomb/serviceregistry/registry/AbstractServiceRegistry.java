@@ -263,6 +263,10 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Subscribe
   public void onShutdown(ShutdownEvent event) {
+    shutdownEventHandler(event);
+  }
+
+  protected void shutdownEventHandler(ShutdownEvent event) {
     LOGGER.info("service center task is shutdown.");
     executorService.shutdownNow();
   }
