@@ -32,4 +32,4 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: bizkeeper-consumer,loadbalance
+        default: loadbalance,instance-isolation-consumer,instance-bulkhead-consumer

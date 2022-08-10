@@ -45,6 +45,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-pojo</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-governance</artifactId>
+    </dependency>
     <!-- can be added in local test -->
     <!-- This jar will add an environment version={project.version}, and may cause spring boot application
        startup fail -->

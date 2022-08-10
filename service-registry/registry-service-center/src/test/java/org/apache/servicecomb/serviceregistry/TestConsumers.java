@@ -34,10 +34,10 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.jupiter.api.Assertions;
 
 public class TestConsumers extends TestRegistryBase {
   @Before
@@ -89,6 +89,10 @@ public class TestConsumers extends TestRegistryBase {
     key.setAppId(appId);
     key.setServiceName(serviceName);
     eventBus.post(event);
+    long begin = System.currentTimeMillis();
+    while (microserviceManager.getVersionsByName().size() > 0 && System.currentTimeMillis() - begin < 1000) {
+      Thread.yield();
+    }
     Assertions.assertEquals(0, microserviceManager.getVersionsByName().size());
   }
 

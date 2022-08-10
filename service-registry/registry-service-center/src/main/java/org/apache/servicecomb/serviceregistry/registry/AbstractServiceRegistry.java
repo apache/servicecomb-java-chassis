@@ -19,13 +19,15 @@ package org.apache.servicecomb.serviceregistry.registry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
@@ -36,11 +38,11 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheRefreshedEvent;
 import org.apache.servicecomb.serviceregistry.registry.cache.RefreshableServiceRegistryCache;
-import org.apache.servicecomb.serviceregistry.registry.cache.ServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.slf4j.Logger;
@@ -48,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.MoreExecutors;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
@@ -65,11 +66,14 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected ServiceCenterTask serviceCenterTask;
 
-  protected ExecutorService executorService = MoreExecutors.newDirectExecutorService();
+  private final ExecutorService executorService = new ThreadPoolExecutor(1, 1,
+      0L, TimeUnit.MILLISECONDS,
+      new ArrayBlockingQueue<>(5),
+      r -> new Thread(r, "instance-changed-event-task"));
+
+  protected RefreshableServiceRegistryCache serviceRegistryCache;
 
   private String name;
-
-  RefreshableServiceRegistryCache serviceRegistryCache;
 
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       Configuration configuration) {
@@ -257,23 +261,26 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     this.name = name;
   }
 
-  public ServiceRegistryCache getServiceRegistryCache() {
-    return serviceRegistryCache;
-  }
-
   @Subscribe
   public void onShutdown(ShutdownEvent event) {
+    shutdownEventHandler(event);
+  }
+
+  protected void shutdownEventHandler(ShutdownEvent event) {
     LOGGER.info("service center task is shutdown.");
     executorService.shutdownNow();
   }
 
-  // post from watch eventloop, should refresh the exact microservice instances immediately
   @Subscribe
   public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    executorService.execute(new SuppressedRunnableWrapper(
-        () -> {
-          serviceRegistryCache.onMicroserviceInstanceChanged(changedEvent);
-          DiscoveryManager.INSTANCE.getAppManager().onMicroserviceInstanceChanged(changedEvent);
-        }));
+    try {
+      executorService.execute(new SuppressedRunnableWrapper(
+          () -> {
+            serviceRegistryCache.onMicroserviceInstanceChanged(changedEvent);
+            DiscoveryManager.INSTANCE.getAppManager().onMicroserviceInstanceChanged(changedEvent);
+          }));
+    } catch (Exception e) {
+      LOGGER.info("instance changed event ignored, {}", e.getMessage());
+    }
   }
 }
