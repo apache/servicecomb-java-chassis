@@ -93,7 +93,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
         currentProperty = currentProperty.child();
       }
     }
-    LOGGER.debug("Discovery instance filter by {}", currentProperty.toString());
+    LOGGER.debug("Discovery instance filter by {}", currentProperty);
     context.putContextParameter(propertyKey, currentProperty);
 
     // stop push filter stack if property is empty
