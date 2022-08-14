@@ -101,10 +101,7 @@ public class RSAAuthenticationToken {
     if (!token.plainToken().equals(this.plainToken())) {
       return false;
     }
-    if (!token.getSign().equals(this.sign)) {
-      return false;
-    }
-    return true;
+    return token.getSign().equals(this.sign);
   }
 
   public int hashCode() {

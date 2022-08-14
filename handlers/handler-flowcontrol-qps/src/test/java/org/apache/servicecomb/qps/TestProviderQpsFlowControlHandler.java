@@ -36,9 +36,9 @@ import org.mockito.Mockito;
 public class TestProviderQpsFlowControlHandler {
   ProviderQpsFlowControlHandler handler;
 
-  Invocation invocation = Mockito.mock(Invocation.class);
+  final Invocation invocation = Mockito.mock(Invocation.class);
 
-  AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+  final AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
   @BeforeEach
   public void setUP() {

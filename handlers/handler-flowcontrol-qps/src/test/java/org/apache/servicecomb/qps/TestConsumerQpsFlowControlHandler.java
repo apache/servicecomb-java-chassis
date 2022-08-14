@@ -38,11 +38,11 @@ public class TestConsumerQpsFlowControlHandler {
 
   ConsumerQpsFlowControlHandler handler;
 
-  Invocation invocation = Mockito.mock(Invocation.class);
+  final Invocation invocation = Mockito.mock(Invocation.class);
 
-  AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+  final AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+  final OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
   @BeforeEach
   public void setUP() {
