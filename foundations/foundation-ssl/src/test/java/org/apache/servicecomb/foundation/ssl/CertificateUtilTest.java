@@ -38,9 +38,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class CertificateUtilTest {
   static class MyX509Certificate extends X509Certificate {
@@ -186,35 +185,23 @@ public class CertificateUtilTest {
   }
 
   @Test
-  public void testGetCN(@Mocked X500Principal aX500Principal, @Mocked MyX509Certificate myX509Certificate) {
-    new Expectations() {
-      {
-        aX500Principal.getName();
-        result = "CN=Test1234";
-        myX509Certificate.getSubjectX500Principal();
-        result = aX500Principal;
-      }
-    };
+  public void testGetCN() {
 
-    MyX509Certificate xxmyX509Certificate = new MyX509Certificate();
+    MyX509Certificate xxmyX509Certificate = Mockito.spy(new MyX509Certificate());
+    X500Principal aX500Principal = Mockito.mock(X500Principal.class);
+    Mockito.doReturn(aX500Principal).when(xxmyX509Certificate).getSubjectX500Principal();
+    Mockito.when(aX500Principal.getName()).thenReturn("CN=Test1234");
     Set<String> strExpect = CertificateUtil.getCN(xxmyX509Certificate);
 
     Assertions.assertTrue(strExpect.contains("Test1234"));
   }
 
   @Test
-  public void testGetCNException(@Mocked X500Principal aX500Principal,
-      @Mocked MyX509Certificate myX509Certificate) {
-    new Expectations() {
-      {
-        aX500Principal.getName();
-        result = "NOCN=Test1234";
-        myX509Certificate.getSubjectX500Principal();
-        result = aX500Principal;
-      }
-    };
-
-    MyX509Certificate xxmyX509Certificate = new MyX509Certificate();
+  public void testGetCNException() {
+    MyX509Certificate xxmyX509Certificate = Mockito.spy(new MyX509Certificate());
+    X500Principal aX500Principal = Mockito.mock(X500Principal.class);
+    Mockito.doReturn(aX500Principal).when(xxmyX509Certificate).getSubjectX500Principal();
+    Mockito.when(aX500Principal.getName()).thenReturn("NOCN=Test1234");
 
     try {
       Set<String> strExpect = CertificateUtil.getCN(xxmyX509Certificate);
@@ -225,30 +212,17 @@ public class CertificateUtilTest {
   }
 
   @Test
-  public void testFindOwner(@Mocked X500Principal aX500Principal1, @Mocked X500Principal aX500Principal2,
-      @Mocked MyX509Certificate myX509Certificate) {
-    new Expectations() {
-      {
-        aX500Principal1.getName();
-        result = "Huawei";
-      }
-
-      {
-        aX500Principal2.getName();
-        result = "Huawei";
-      }
-
-      {
-        myX509Certificate.getSubjectX500Principal();
-        result = aX500Principal1;
-
-        myX509Certificate.getIssuerX500Principal();
-        result = aX500Principal2;
-      }
-    };
-
-    MyX509Certificate myX509Certificate1 = new MyX509Certificate();
-    MyX509Certificate myX509Certificate2 = new MyX509Certificate();
+  public void testFindOwner() {
+    MyX509Certificate myX509Certificate1 = Mockito.spy(new MyX509Certificate());
+    MyX509Certificate myX509Certificate2 = Mockito.spy(new MyX509Certificate());
+    X500Principal aX500Principal1 = Mockito.mock(X500Principal.class);
+    X500Principal aX500Principal2 = Mockito.mock(X500Principal.class);
+    Mockito.doReturn(aX500Principal1).when(myX509Certificate1).getSubjectX500Principal();
+    Mockito.doReturn(aX500Principal2).when(myX509Certificate1).getIssuerX500Principal();
+    Mockito.doReturn(aX500Principal1).when(myX509Certificate2).getSubjectX500Principal();
+    Mockito.doReturn(aX500Principal2).when(myX509Certificate2).getIssuerX500Principal();
+    Mockito.when(aX500Principal1.getName()).thenReturn("Huawei");
+    Mockito.when(aX500Principal2.getName()).thenReturn("Huawei");
 
     MyX509Certificate[] xxmyX509Certificate = new MyX509Certificate[2];
     xxmyX509Certificate[0] = myX509Certificate1;
@@ -259,30 +233,17 @@ public class CertificateUtilTest {
   }
 
   @Test
-  public void testFindRootCAException(@Mocked X500Principal aX500Principal1, @Mocked X500Principal aX500Principal2,
-      @Mocked MyX509Certificate myX509Certificate) {
-    new Expectations() {
-      {
-        aX500Principal1.getName();
-        result = "Huawei1";
-      }
-
-      {
-        aX500Principal2.getName();
-        result = "Huawei3";
-      }
-
-      {
-        myX509Certificate.getSubjectX500Principal();
-        result = aX500Principal1;
-
-        myX509Certificate.getIssuerX500Principal();
-        result = aX500Principal2;
-      }
-    };
-
-    MyX509Certificate myX509Certificate1 = new MyX509Certificate();
-    MyX509Certificate myX509Certificate2 = new MyX509Certificate();
+  public void testFindRootCAException() {
+    MyX509Certificate myX509Certificate1 = Mockito.spy(new MyX509Certificate());
+    MyX509Certificate myX509Certificate2 = Mockito.spy(new MyX509Certificate());
+    X500Principal aX500Principal1 = Mockito.mock(X500Principal.class);
+    X500Principal aX500Principal2 = Mockito.mock(X500Principal.class);
+    Mockito.doReturn(aX500Principal1).when(myX509Certificate1).getSubjectX500Principal();
+    Mockito.doReturn(aX500Principal2).when(myX509Certificate1).getIssuerX500Principal();
+    Mockito.doReturn(aX500Principal1).when(myX509Certificate2).getSubjectX500Principal();
+    Mockito.doReturn(aX500Principal2).when(myX509Certificate2).getIssuerX500Principal();
+    Mockito.when(aX500Principal1.getName()).thenReturn("Huawei1");
+    Mockito.when(aX500Principal2.getName()).thenReturn("Huawei3");
 
     MyX509Certificate[] xxmyX509Certificate = new MyX509Certificate[2];
     xxmyX509Certificate[0] = myX509Certificate1;

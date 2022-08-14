@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.CRL;
 import java.security.cert.CRLException;
@@ -29,10 +27,8 @@ import java.util.Collection;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import mockit.Mock;
-import mockit.MockUp;
 
 public class KeyStoreUtilTest {
   final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -92,28 +88,32 @@ public class KeyStoreUtilTest {
   @Test
   public void testCreateCRL() {
     String crlfile = strFilePath + "/ssl/server.p12";
-    mockGenerateCRLs();
-    boolean validAssert = true;
-    try {
-      CRL[] crl = KeyStoreUtil.createCRL(crlfile);
-      Assertions.assertNull(crl);
-    } catch (Exception e) {
-      validAssert = false;
+    try (MockedStatic<CertificateFactory> certificateFactoryMockedStatic = Mockito.mockStatic(CertificateFactory.class)) {
+      CertificateFactory certificateFactory = Mockito.mock(CertificateFactory.class);
+      Mockito.when(certificateFactory.generateCRLs(Mockito.any())).thenReturn(Mockito.mock(Collection.class));
+      certificateFactoryMockedStatic.when(() -> CertificateFactory.getInstance(Mockito.anyString())).thenReturn(certificateFactory);
+
+      boolean validAssert = true;
+      try {
+        CRL[] crl = KeyStoreUtil.createCRL(crlfile);
+        Assertions.assertNull(crl);
+      } catch (Exception e) {
+        validAssert = false;
+      }
+      Assertions.assertTrue(validAssert);
+    } catch (CRLException e) {
+      throw new RuntimeException(e);
     }
-    Assertions.assertTrue(validAssert);
   }
 
   @Test
   public void testCreateCRLException() {
     String crlfile = strFilePath + "/ssl/server.p12";
     boolean validAssert = true;
-    try {
-      new MockUp<CertificateFactory>() {
-        @Mock
-        public CertificateFactory getInstance(String type) throws CertificateException {
-          throw new CertificateException();
-        }
-      };
+    try (MockedStatic<CertificateFactory> certificateFactoryMockedStatic = Mockito.mockStatic(CertificateFactory.class)) {
+      certificateFactoryMockedStatic.when(() ->
+                      CertificateFactory.getInstance(Mockito.anyString()))
+              .thenThrow(new CertificateException());
 
       KeyStoreUtil.createCRL(crlfile);
     } catch (Exception e) {
@@ -126,14 +126,10 @@ public class KeyStoreUtilTest {
   public void testExceptionFileNotFound() {
     String crlfile = strFilePath + "/ssl/server.p12";
     boolean validAssert = true;
-    try {
-      new MockUp<CertificateFactory>() {
-        @Mock
-        public CertificateFactory getInstance(
-            String type) throws CertificateException, FileNotFoundException {
-          throw new FileNotFoundException();
-        }
-      };
+    try (MockedStatic<CertificateFactory> certificateFactoryMockedStatic = Mockito.mockStatic(CertificateFactory.class)) {
+      certificateFactoryMockedStatic.when(() ->
+                      CertificateFactory.getInstance(Mockito.anyString()))
+              .thenThrow(new CertificateException());
       KeyStoreUtil.createCRL(crlfile);
     } catch (Exception e) {
       validAssert = false;
@@ -146,28 +142,15 @@ public class KeyStoreUtilTest {
   public void testExceptionCRLException() {
     String crlfile = strFilePath + "/ssl/server.p12";
     boolean validAssert = true;
-    try {
-      new MockUp<CertificateFactory>() {
-        @Mock
-        public CertificateFactory getInstance(String type) throws CertificateException, CRLException {
-          throw new CRLException();
-        }
-      };
+    try (MockedStatic<CertificateFactory> certificateFactoryMockedStatic = Mockito.mockStatic(CertificateFactory.class)) {
+      certificateFactoryMockedStatic.when(() ->
+                      CertificateFactory.getInstance(Mockito.anyString()))
+              .thenThrow(new CertificateException());
       KeyStoreUtil.createCRL(crlfile);
     } catch (Exception e) {
       validAssert = false;
       Assertions.assertEquals("java.lang.IllegalArgumentException", e.getClass().getName());
     }
     Assertions.assertFalse(validAssert);
-  }
-
-  private void mockGenerateCRLs() {
-    new MockUp<CertificateFactory>() {
-      @SuppressWarnings("unchecked")
-      @Mock
-      public Collection<? extends CRL> generateCRLs(InputStream inStream) throws CRLException {
-        return Mockito.mock(Collection.class);
-      }
-    };
   }
 }

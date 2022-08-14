@@ -33,6 +33,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
@@ -40,15 +41,17 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TrustManagerExtTest {
   final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -273,33 +276,28 @@ public class TrustManagerExtTest {
     myX509CertificateArray[0] = myX509Certificate1;
     myX509CertificateArray[1] = myX509Certificate2;
 
-    new Expectations(CertificateUtil.class) {
-      {
-        CertificateUtil.findOwner((X509Certificate[]) any);
-        result = any;
+    try (MockedStatic<CertificateUtil> certificateUtilMockedStatic = Mockito.mockStatic(CertificateUtil.class)) {
+      certificateUtilMockedStatic.when(()-> CertificateUtil.getCN(Mockito.any())).thenReturn(Collections.singleton("10.67.147.115"));
+      certificateUtilMockedStatic.when(()-> CertificateUtil.findOwner(Mockito.any())).thenReturn(Mockito.any());
 
-        CertificateUtil.getCN((X509Certificate) any);
-        result = "10.67.147.115";
+      MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+      TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+
+      Assertions.assertNotNull(trustManagerExt);
+      boolean validAssert = true;
+      try {
+        trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks");
+        trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks");
+        trustManagerExt.getAcceptedIssuers();
+      } catch (Exception e) {
+        validAssert = false;
       }
-    };
-
-    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
-
-    Assertions.assertNotNull(trustManagerExt);
-    boolean validAssert = true;
-    try {
-      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks");
-      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks");
-      trustManagerExt.getAcceptedIssuers();
-    } catch (Exception e) {
-      validAssert = false;
+      Assertions.assertTrue(validAssert);
     }
-    Assertions.assertTrue(validAssert);
   }
 
   @Test
-  public void testCheckClientTrusted(@Mocked CertificateUtil certificateUtil) {
+  public void testCheckClientTrusted() {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
@@ -307,35 +305,30 @@ public class TrustManagerExtTest {
     myX509CertificateArray[0] = myX509Certificate1;
     myX509CertificateArray[1] = myX509Certificate2;
 
-    new Expectations() {
-      {
-        CertificateUtil.findOwner((X509Certificate[]) any);
-        result = any;
+    try (MockedStatic<CertificateUtil> certificateUtilMockedStatic = Mockito.mockStatic(CertificateUtil.class)) {
+      certificateUtilMockedStatic.when(() -> CertificateUtil.getCN(Mockito.any())).thenReturn(Collections.singleton("10.67.147.115"));
+      certificateUtilMockedStatic.when(() -> CertificateUtil.findOwner(Mockito.any())).thenReturn(Mockito.any());
 
-        CertificateUtil.getCN((X509Certificate) any);
-        result = "10.67.147.115";
+      MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+      TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+
+      Socket socket = null;
+      SSLEngine sslengine = null;
+      boolean validAssert = true;
+      try {
+        trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", socket);
+        trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", sslengine);
+        trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", socket);
+        trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", sslengine);
+      } catch (Exception e) {
+        validAssert = false;
       }
-    };
-
-    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
-
-    Socket socket = null;
-    SSLEngine sslengine = null;
-    boolean validAssert = true;
-    try {
-      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", socket);
-      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks", sslengine);
-      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", socket);
-      trustManagerExt.checkServerTrusted(myX509CertificateArray, "pks", sslengine);
-    } catch (Exception e) {
-      validAssert = false;
+      Assertions.assertTrue(validAssert);
     }
-    Assertions.assertTrue(validAssert);
   }
 
   @Test
-  public void testCatchException(@Mocked CertificateUtil certificateUtil) {
+  public void testCatchException() {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
@@ -343,26 +336,20 @@ public class TrustManagerExtTest {
     myX509CertificateArray[0] = myX509Certificate1;
     myX509CertificateArray[1] = myX509Certificate2;
 
-    new Expectations() {
-      {
-        CertificateUtil.findOwner((X509Certificate[]) any);
-        result = any;
-
-        CertificateUtil.getCN((X509Certificate) any);
-        result = "10.67.147.114";
+    try (MockedStatic<CertificateUtil> certificateUtilMockedStatic = Mockito.mockStatic(CertificateUtil.class)) {
+      certificateUtilMockedStatic.when(() -> CertificateUtil.getCN(Mockito.any())).thenReturn(Collections.singleton("10.67.147.114"));
+      certificateUtilMockedStatic.when(() -> CertificateUtil.findOwner(Mockito.any())).thenReturn(Mockito.any());
+      MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
+      TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
+      boolean validAssert = true;
+      try {
+        trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks");
+      } catch (CertificateException e) {
+        Assertions.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
+        validAssert = false;
       }
-    };
-
-    MyX509ExtendedTrustManager myX509ExtendedTrustManager = new MyX509ExtendedTrustManager();
-    TrustManagerExt trustManagerExt = new TrustManagerExt(myX509ExtendedTrustManager, option, custom);
-    boolean validAssert = true;
-    try {
-      trustManagerExt.checkClientTrusted(myX509CertificateArray, "pks");
-    } catch (CertificateException e) {
-      Assertions.assertEquals("CN does not match IP: e=[10.67.147.114],t=null", e.getMessage());
-      validAssert = false;
+      Assertions.assertFalse(validAssert);
     }
-    Assertions.assertFalse(validAssert);
   }
 
   @Test
