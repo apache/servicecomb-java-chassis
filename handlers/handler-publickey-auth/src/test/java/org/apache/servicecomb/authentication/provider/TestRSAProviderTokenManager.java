@@ -120,7 +120,7 @@ public class TestRSAProviderTokenManager {
     Assertions.assertNotNull(token);
     // use cache token
     Assertions.assertEquals(token, rsaConsumerTokenManager.getToken());
-    try (MockedStatic<MicroserviceInstanceCache> microserviceInstanceCacheMockedStatic = Mockito.mockStatic(MicroserviceInstanceCache.class);) {
+    try (MockedStatic<MicroserviceInstanceCache> microserviceInstanceCacheMockedStatic = Mockito.mockStatic(MicroserviceInstanceCache.class)) {
       microserviceInstanceCacheMockedStatic.when(() -> MicroserviceInstanceCache.getOrCreate(serviceId, instanceId))
               .thenReturn(microserviceInstance);
       microserviceInstanceCacheMockedStatic.when(() -> MicroserviceInstanceCache.getOrCreate(serviceId))
