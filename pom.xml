@@ -54,7 +54,7 @@
     <gpg-maven-plugin.version>3.0.1</gpg-maven-plugin.version>
     <lifecycle-mapping-plugin.version>1.0.0</lifecycle-mapping-plugin.version>
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
-    <javadoc-maven-plugin.version>3.4.0</javadoc-maven-plugin.version>
+    <javadoc-maven-plugin.version>3.4.1</javadoc-maven-plugin.version>
     <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
