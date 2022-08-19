@@ -57,6 +57,8 @@ public class KieConfig {
 
   private static final String ENABLE_SERVICE_CONFIG = "servicecomb.kie.enableServiceConfig";
 
+  private static final String ENABLE_VERSION_CONFIG = "servicecomb.kie.enableVersionConfig";
+
   private static final String ENABLE_CUSTOM_CONFIG = "servicecomb.kie.enableCustomConfig";
 
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
@@ -138,6 +140,10 @@ public class KieConfig {
 
   public boolean enableServiceConfig() {
     return finalConfig.getBoolean(ENABLE_SERVICE_CONFIG, true);
+  }
+
+  public boolean enableVersionConfig() {
+    return finalConfig.getBoolean(ENABLE_VERSION_CONFIG, true);
   }
 
   public boolean enableCustomConfig() {

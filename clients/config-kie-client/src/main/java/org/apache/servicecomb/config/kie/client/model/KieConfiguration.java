@@ -32,9 +32,13 @@ public class KieConfiguration {
 
   private String environment;
 
+  private String version;
+
   private boolean enableAppConfig;
 
   private boolean enableServiceConfig;
+
+  private boolean enableVersionConfig;
 
   private boolean enableCustomConfig;
 
@@ -125,6 +129,15 @@ public class KieConfiguration {
     return this;
   }
 
+  public boolean isEnableVersionConfig() {
+    return enableVersionConfig;
+  }
+
+  public KieConfiguration setEnableVersionConfig(boolean enableVersionConfig) {
+    this.enableVersionConfig = enableVersionConfig;
+    return this;
+  }
+
   public int getPollingWaitInSeconds() {
     return pollingWaitInSeconds;
   }
@@ -158,6 +171,15 @@ public class KieConfiguration {
 
   public KieConfiguration setRefreshIntervalInMillis(int refreshIntervallnMillis) {
     this.refreshIntervalInMillis = refreshIntervallnMillis;
+    return this;
+  }
+
+  public String getVersion() {
+    return version;
+  }
+
+  public KieConfiguration setVersion(String version) {
+    this.version = version;
     return this;
   }
 }

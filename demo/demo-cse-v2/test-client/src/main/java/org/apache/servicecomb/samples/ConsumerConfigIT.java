@@ -43,6 +43,8 @@ public class ConsumerConfigIT implements CategorizedTestCase {
     TestMgr.check("\"common\"", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.extra", String.class);
     TestMgr.check("\"common\"", result);
+    result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.priority1", String.class);
+    TestMgr.check("\"v3\"", result);
   }
 
   private void testFooBar() {
