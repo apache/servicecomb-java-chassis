@@ -28,7 +28,6 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
@@ -54,11 +53,6 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
   @Override
   public boolean enabled() {
     return enabled;
-  }
-
-  @Override
-  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
-
   }
 
   protected ProduceProcessor findProduceProcessor(RestOperationMeta restOperation,

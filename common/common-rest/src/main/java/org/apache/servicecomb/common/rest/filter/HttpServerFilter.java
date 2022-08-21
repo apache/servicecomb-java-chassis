@@ -43,7 +43,7 @@ public interface HttpServerFilter {
   Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx);
 
   /**
-   * @param invocation maybe null
+   * callback method before send a server response.
    */
   default CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     CompletableFuture<Void> future = new CompletableFuture<>();
@@ -57,8 +57,12 @@ public interface HttpServerFilter {
   }
 
   /**
-   * @param invocation maybe null
+   * callback method before send a server response.
+   *
+   * @Deprecated this method may be called in an event-loop thread, do not add blocking
+   * methods. Implement #beforeSendResponseAsync instead.
    */
+  @Deprecated
   default void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
 
   }

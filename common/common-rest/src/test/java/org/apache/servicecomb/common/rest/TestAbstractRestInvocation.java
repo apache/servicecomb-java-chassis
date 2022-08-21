@@ -85,6 +85,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+@SuppressWarnings("deprecation")
 public class TestAbstractRestInvocation {
 
   HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);

@@ -14,24 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.demo.signature;
+package org.apache.servicecomb.common.rest.filter;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class ClientSignature implements HttpClientFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ClientSignature.class);
-
+public class HttpClientFilterBaseForTest implements HttpClientFilter {
   @Override
   public int getOrder() {
     return 0;
@@ -39,23 +31,11 @@ public class ClientSignature implements HttpClientFilter {
 
   @Override
   public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
-    String signature = SignatureUtils.genSignature(requestEx);
-    requestEx.setHeader("signature", signature);
-    return CompletableFuture.completedFuture(null);
+    return null;
   }
 
   @Override
   public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-    String signature = SignatureUtils.genSignature(responseEx);
-    String serverSignature = responseEx.getHeader("signature");
-
-    if (serverSignature != null) {
-      LOGGER.debug("check response signature, client: {}, server: {}.", signature, serverSignature);
-      if (!signature.equals(serverSignature)) {
-        LOGGER.error("check response signature failed");
-        return Response.create(Status.UNAUTHORIZED, "check response signature failed");
-      }
-    }
     return null;
   }
 }

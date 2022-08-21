@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.provider.springmvc.reference;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
@@ -36,10 +38,10 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
   }
 
   @Override
-  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
     HttpHeaders httpHeaders = (HttpHeaders) invocation.getHandlerContext().get(RestConst.CONSUMER_HEADER);
     if (httpHeaders == null) {
-      return;
+      return CompletableFuture.completedFuture(null);
     }
 
     httpHeaders.forEach((key, values) -> {
@@ -57,6 +59,7 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
         requestEx.addHeader(key, value);
       }
     });
+    return CompletableFuture.completedFuture(null);
   }
 
   @Override

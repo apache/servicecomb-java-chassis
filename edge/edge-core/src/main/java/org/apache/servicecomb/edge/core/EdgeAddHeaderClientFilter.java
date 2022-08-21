@@ -19,6 +19,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,8 +78,9 @@ public class EdgeAddHeaderClientFilter implements HttpClientFilter {
   }
 
   @Override
-  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
     addHeaders(invocation, requestEx::addHeader);
+    return CompletableFuture.completedFuture(null);
   }
 
   public void addHeaders(Invocation invocation, BiConsumer<String, String> headerAdder) {

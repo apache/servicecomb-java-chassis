@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.filter;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -29,7 +31,30 @@ public interface HttpClientFilter {
 
   int getOrder();
 
-  void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx);
+  /**
+   * callback method before send a client request.
+   *
+   * @Deprecated this method may be called in an event-loop thread, do not add blocking
+   * methods. Implement #beforeSendRequestAsync instead.
+   */
+  @Deprecated
+  default void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+
+  }
+
+  /**
+   *  callback method before send a client request.
+   */
+  default CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    try {
+      beforeSendRequest(invocation, requestEx);
+      future.complete(null);
+    } catch (Throwable e) {
+      future.completeExceptionally(e);
+    }
+    return future;
+  }
 
   // if finished, then return a none null response
   // if return a null response, then sdk will call next filter.afterReceive

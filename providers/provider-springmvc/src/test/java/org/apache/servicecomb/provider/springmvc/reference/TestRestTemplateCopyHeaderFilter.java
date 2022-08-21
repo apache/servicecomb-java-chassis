@@ -20,6 +20,7 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
@@ -42,7 +43,7 @@ public class TestRestTemplateCopyHeaderFilter {
   }
 
   @Test
-  public void beforeSendRequestNoHeader(@Mocked Invocation invocation) {
+  public void beforeSendRequestNoHeader(@Mocked Invocation invocation) throws ExecutionException, InterruptedException {
     Map<String, Object> context = new HashMap<>();
     new Expectations() {
       {
@@ -52,12 +53,13 @@ public class TestRestTemplateCopyHeaderFilter {
     };
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
-    filter.beforeSendRequest(invocation, requestEx);
+    filter.beforeSendRequestAsync(invocation, requestEx).get();
     Assertions.assertFalse(requestEx.getHeaderNames().hasMoreElements());
   }
 
   @Test
-  public void beforeSendRequestWithNullHeader(@Mocked Invocation invocation) {
+  public void beforeSendRequestWithNullHeader(@Mocked Invocation invocation)
+      throws ExecutionException, InterruptedException {
     Map<String, Object> context = new HashMap<>(1);
     HttpHeaders httpHeaders = new HttpHeaders();
     context.put(RestConst.CONSUMER_HEADER, httpHeaders);
@@ -72,14 +74,15 @@ public class TestRestTemplateCopyHeaderFilter {
     };
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
-    filter.beforeSendRequest(invocation, requestEx);
+    filter.beforeSendRequestAsync(invocation, requestEx).get();
     Assertions.assertEquals("headerValue0", requestEx.getHeader("headerName0"));
     Assertions.assertEquals("headerValue2", requestEx.getHeader("headerName2"));
     Assertions.assertNull(requestEx.getHeader("headerName1"));
   }
 
   @Test
-  public void beforeSendRequestHaveHeader(@Mocked Invocation invocation) {
+  public void beforeSendRequestHaveHeader(@Mocked Invocation invocation)
+      throws ExecutionException, InterruptedException {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("name", "value");
 
@@ -93,12 +96,13 @@ public class TestRestTemplateCopyHeaderFilter {
     };
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
-    filter.beforeSendRequest(invocation, requestEx);
+    filter.beforeSendRequestAsync(invocation, requestEx).get();
     MatcherAssert.assertThat(Collections.list(requestEx.getHeaders("name")), Matchers.contains("value"));
   }
 
   @Test
-  public void beforeSendRequestSkipContentLength(@Mocked Invocation invocation) {
+  public void beforeSendRequestSkipContentLength(@Mocked Invocation invocation)
+      throws ExecutionException, InterruptedException {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(HttpHeaders.CONTENT_LENGTH, "0");
 
@@ -112,7 +116,7 @@ public class TestRestTemplateCopyHeaderFilter {
     };
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
-    filter.beforeSendRequest(invocation, requestEx);
+    filter.beforeSendRequestAsync(invocation, requestEx).get();
     Assertions.assertNull((requestEx.getHeader(HttpHeaders.CONTENT_LENGTH)));
   }
 

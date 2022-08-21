@@ -39,6 +39,7 @@ public class JaxrsDemoHttpServerFilter implements HttpServerFilter {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     // in 404 situation, invocation is null and a NPE is thrown
     LOGGER.info("JaxrsDemoHttpServerFilter is called, operation=[{}]", invocation.getOperationName());
