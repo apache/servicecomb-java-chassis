@@ -17,6 +17,7 @@
 package org.apache.servicecomb.it.edge.encrypt.filter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
@@ -48,14 +49,14 @@ public class EdgeSignatureResponseFilter implements HttpServerFilter {
   }
 
   @Override
-  public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     if (invocation == null) {
-      return;
+      return CompletableFuture.completedFuture(null);
     }
 
     EncryptContext encryptContext = (EncryptContext) invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT);
     if (encryptContext == null) {
-      return;
+      return CompletableFuture.completedFuture(null);
     }
     Hcr hcr = encryptContext.getHcr();
 
@@ -72,5 +73,6 @@ public class EdgeSignatureResponseFilter implements HttpServerFilter {
       body = body.substring(0, body.length() - 1) + ",\"signature\":\"" + signature + "\"}";
       responseEx.setBodyBuffer(Buffer.buffer(body));
     }
+    return CompletableFuture.completedFuture(null);
   }
 }

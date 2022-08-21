@@ -57,6 +57,7 @@ public class ServerSignature implements HttpServerFilter {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     String signature = SignatureUtils.genSignature(responseEx);
     responseEx.addHeader("signature", signature);

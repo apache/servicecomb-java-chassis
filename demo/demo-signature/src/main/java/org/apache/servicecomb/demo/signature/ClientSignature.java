@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.signature;
 
+import java.util.concurrent.CompletableFuture;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
@@ -36,9 +38,10 @@ public class ClientSignature implements HttpClientFilter {
   }
 
   @Override
-  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
     String signature = SignatureUtils.genSignature(requestEx);
     requestEx.setHeader("signature", signature);
+    return CompletableFuture.completedFuture(null);
   }
 
   @Override

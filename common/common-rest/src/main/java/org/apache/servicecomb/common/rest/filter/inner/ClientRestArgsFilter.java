@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.filter.inner;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
@@ -27,7 +29,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
 public class ClientRestArgsFilter implements HttpClientFilter {
 
@@ -37,8 +38,8 @@ public class ClientRestArgsFilter implements HttpClientFilter {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
+    CompletableFuture<Void> result = new CompletableFuture<>();
     RestClientRequestImpl restClientRequest = (RestClientRequestImpl) invocation.getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
     OperationMeta operationMeta = invocation.getOperationMeta();
@@ -47,9 +48,11 @@ public class ClientRestArgsFilter implements HttpClientFilter {
       RestCodec.argsToRest(invocation.getSwaggerArguments(), swaggerRestOperation,
           restClientRequest);
       requestEx.setBodyBuffer(restClientRequest.getBodyBuffer());
+      result.complete(null);
     } catch (Throwable e) {
-      throw ExceptionFactory.convertConsumerException(e);
+      result.completeExceptionally(e);
     }
+    return result;
   }
 
   @Override
