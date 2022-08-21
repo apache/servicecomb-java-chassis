@@ -493,7 +493,7 @@ public class SCBEngine {
     long start = System.currentTimeMillis();
     while (true) {
       long remaining = invocationStartedCounter.get() - invocationFinishedCounter.get();
-      if (remaining == 0) {
+      if (remaining <= 0) {
         return;
       }
 

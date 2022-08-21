@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.common.rest.filter;
 
 import java.util.concurrent.CompletableFuture;
@@ -24,39 +23,19 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-public interface HttpClientFilter {
-  default boolean enabled() {
-    return true;
+public class HttpClientFilterBaseForTest implements HttpClientFilter {
+  @Override
+  public int getOrder() {
+    return 0;
   }
 
-  int getOrder();
-
-  /**
-   * callback method before send a client request.
-   *
-   * @Deprecated this method may be called in an event-loop thread, do not add blocking
-   * methods. Implement #beforeSendRequestAsync instead.
-   */
-  @Deprecated
-  default void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
-
+  @Override
+  public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
+    return null;
   }
 
-  /**
-   *  callback method before send a client request.
-   */
-  default CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
-    CompletableFuture<Void> future = new CompletableFuture<>();
-    try {
-      beforeSendRequest(invocation, requestEx);
-      future.complete(null);
-    } catch (Throwable e) {
-      future.completeExceptionally(e);
-    }
-    return future;
+  @Override
+  public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+    return null;
   }
-
-  // if finished, then return a none null response
-  // if return a null response, then sdk will call next filter.afterReceive
-  Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx);
 }

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.Response.Status;
@@ -27,6 +28,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
+import org.apache.servicecomb.common.rest.filter.HttpClientFilterBeforeSendRequestExecutor;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
@@ -121,28 +123,25 @@ public class RestClientInvocation {
       }
       HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
       invocation.getInvocationStageTrace().startClientFiltersRequest();
-      for (HttpClientFilter filter : httpClientFilters) {
-        if (filter.enabled()) {
-          filter.beforeSendRequest(invocation, requestEx);
-        }
-      }
 
-      // 从业务线程转移到网络线程中去发送
-      invocation.onStartSendRequest();
-      httpClientWithContext.runOnContext(httpClient -> {
-        clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
-        clientRequest.response().onComplete(asyncResult -> {
-          if (asyncResult.failed()) {
-            fail(asyncResult.cause());
-            return;
-          }
-          handleResponse(asyncResult.result());
+      return Future.fromCompletionStage(executeHttpClientFilters(requestEx).thenCompose((v) -> {
+        // 从业务线程转移到网络线程中去发送
+        invocation.onStartSendRequest();
+        httpClientWithContext.runOnContext(httpClient -> {
+          clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
+          clientRequest.response().onComplete(asyncResult -> {
+            if (asyncResult.failed()) {
+              fail(asyncResult.cause());
+              return;
+            }
+            handleResponse(asyncResult.result());
+          });
+          processServiceCombHeaders(invocation, operationMeta);
+          restClientRequest.end()
+              .onComplete((t) -> invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime()));
         });
-        processServiceCombHeaders(invocation, operationMeta);
-        restClientRequest.end()
-            .onComplete((t) -> invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime()));
-      });
-      return Future.succeededFuture();
+        return CompletableFuture.completedFuture((Void) null);
+      }));
     }).onFailure(failure -> {
       invocation.getTraceIdLogger()
           .error(LOGGER, "Failed to send request, alreadyFailed:{}, local:{}, remote:{}, message={}.",
@@ -151,6 +150,13 @@ public class RestClientInvocation {
       throwableHandler.handle(failure);
     });
   }
+
+  private CompletableFuture<Void> executeHttpClientFilters(HttpServletRequestEx requestEx) {
+    HttpClientFilterBeforeSendRequestExecutor exec =
+        new HttpClientFilterBeforeSendRequestExecutor(httpClientFilters, invocation, requestEx);
+    return exec.run();
+  }
+
 
   /**
    * If this is a 3rd party invocation, ServiceComb related headers should be removed by default to hide inner

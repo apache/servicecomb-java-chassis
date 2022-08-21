@@ -39,6 +39,7 @@ public class TestHttpServerFilter {
   public void asyncFailed() throws InterruptedException, ExecutionException {
     HttpServerFilter filter = new HttpServerFilterBaseForTest() {
       @Override
+      @SuppressWarnings("deprecation")
       public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
         throw new RuntimeExceptionWithoutStackTrace();
       }
