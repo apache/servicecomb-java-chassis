@@ -72,7 +72,7 @@
     <log4j2.version>2.18.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
     <mockito.version>4.0.0</mockito.version>
-    <mock-server.version>5.13.2</mock-server.version>
+    <mock-server.version>5.14.0</mock-server.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.79.Final</netty.version>
     <okhttp3.version>4.10.0</okhttp3.version>
