@@ -33,7 +33,7 @@ import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.http.client.auth.DefaultRequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
-import org.apache.servicecomb.service.center.client.AddressManager;
+import org.apache.servicecomb.service.center.client.ServiceCenterAddressManager;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.springframework.core.env.Environment;
@@ -59,7 +59,7 @@ public class RBACBootStrapService implements BootStrapService {
       return;
     }
 
-    AddressManager addressManager = createAddressManager(environment);
+    ServiceCenterAddressManager addressManager = createAddressManager(environment);
     SSLProperties sslProperties = createSSLProperties(environment, "sc.consumer");
     sslProperties.setEnabled(addressManager.sslEnabled());
 
@@ -90,8 +90,8 @@ public class RBACBootStrapService implements BootStrapService {
         .orElseThrow(() -> new IllegalArgumentException("failed to find cipher named " + cipherName));
   }
 
-  private AddressManager createAddressManager(Environment environment) {
-    return new AddressManager(getTenantName(environment),
+  private ServiceCenterAddressManager createAddressManager(Environment environment) {
+    return new ServiceCenterAddressManager(getTenantName(environment),
         getRBACAddressList(environment), EventManager.getEventBus());
   }
 

@@ -32,20 +32,20 @@ import com.google.common.eventbus.EventBus;
 import mockit.Deencapsulation;
 import org.junit.jupiter.api.Test;
 
-class AddressManagerTest {
+class ServiceRegistryAddressManagerTest {
 
   private static final List<String> addresses = new ArrayList<>();
 
-  private static AddressManager addressManager1;
+  private static ServiceRegistryAddressManager addressManager1;
 
-  private static AddressManager addressManager2;
+  private static ServiceRegistryAddressManager addressManager2;
 
   @Test
   public void addressManagerTest() {
     IpPort ipPort = new IpPort("127.0.0.1", 30103);
     addresses.add(ipPort.toString());
-    addressManager1 = new AddressManager(addresses, new EventBus());
-    addressManager2 = new AddressManager(addresses, new EventBus());
+    addressManager1 = new ServiceRegistryAddressManager(addresses, new EventBus());
+    addressManager2 = new ServiceRegistryAddressManager(addresses, new EventBus());
 
     Assertions.assertNotNull(addressManager1);
     Assertions.assertNotNull(addressManager2);
@@ -70,7 +70,7 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new AddressManager(addresses, new EventBus());
+    addressManager1 = new ServiceRegistryAddressManager(addresses, new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 
@@ -88,7 +88,7 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", new ArrayList<>());
-    addressManager1 = new AddressManager(addresses, EventManager.getEventBus());
+    addressManager1 = new ServiceRegistryAddressManager(addresses, EventManager.getEventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 

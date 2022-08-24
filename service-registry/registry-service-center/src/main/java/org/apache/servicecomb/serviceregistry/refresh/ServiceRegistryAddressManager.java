@@ -33,12 +33,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class AddressManager extends AbstractAddressManager {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AddressManager.class);
+public class ServiceRegistryAddressManager extends AbstractAddressManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryAddressManager.class);
 
   private static final String URI_PREFIX = "rest://";
 
-  public AddressManager(List<String> addresses, EventBus eventBus) {
+  public ServiceRegistryAddressManager(List<String> addresses, EventBus eventBus) {
     super(addresses);
     eventBus.register(this);
   }

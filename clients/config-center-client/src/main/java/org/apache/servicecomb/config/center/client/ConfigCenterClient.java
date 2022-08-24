@@ -50,9 +50,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
   private final HttpTransport httpTransport;
 
-  private final AddressManager addressManager;
+  private final ConfigCenterAddressManager addressManager;
 
-  public ConfigCenterClient(AddressManager addressManager, HttpTransport httpTransport) {
+  public ConfigCenterClient(ConfigCenterAddressManager addressManager, HttpTransport httpTransport) {
     this.addressManager = addressManager;
     this.httpTransport = httpTransport;
   }

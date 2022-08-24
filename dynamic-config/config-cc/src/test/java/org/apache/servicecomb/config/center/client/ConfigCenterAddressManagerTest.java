@@ -28,19 +28,19 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.eventbus.EventBus;
 
-class AddressManagerTest {
+class ConfigCenterAddressManagerTest {
   private static final List<String> addresses = new ArrayList<>();
 
-  private static AddressManager addressManager1;
+  private static ConfigCenterAddressManager addressManager1;
 
-  private static AddressManager addressManager2;
+  private static ConfigCenterAddressManager addressManager2;
 
   @Test
   public void addressManagerTest() {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
-    addressManager2 = new AddressManager(null, addresses, new EventBus());
+    addressManager1 = new ConfigCenterAddressManager("project", addresses, new EventBus());
+    addressManager2 = new ConfigCenterAddressManager(null, addresses, new EventBus());
 
     Assertions.assertNotNull(addressManager1);
     Assertions.assertNotNull(addressManager2);
@@ -63,7 +63,7 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
+    addressManager1 = new ConfigCenterAddressManager("project", addresses, new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseConfigCenter");
     addressManager1.refreshEndpoint(event, "CseConfigCenter");
 

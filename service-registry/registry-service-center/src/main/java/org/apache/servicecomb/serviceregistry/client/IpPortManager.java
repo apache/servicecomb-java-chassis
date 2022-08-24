@@ -28,7 +28,7 @@ import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.api.Type;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.refresh.AddressManager;
+import org.apache.servicecomb.serviceregistry.refresh.ServiceRegistryAddressManager;
 import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class IpPortManager {
 
   private boolean autoDiscoveryInited = false;
 
-  private final AddressManager addressManger;
+  private final ServiceRegistryAddressManager addressManger;
 
   ClassificationAddress classificationAddress;
 
@@ -66,7 +66,7 @@ public class IpPortManager {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     List<String> addresses = defaultIpPort.stream().map(IpPort::toString).collect(Collectors.toList());
-    addressManger = new AddressManager(addresses, EventManager.getEventBus());
+    addressManger = new ServiceRegistryAddressManager(addresses, EventManager.getEventBus());
     classificationAddress = new ClassificationAddress(serviceRegistryConfig, instanceCacheManager);
     LOGGER.info("Initial service center address is {}", getAvailableAddress());
   }

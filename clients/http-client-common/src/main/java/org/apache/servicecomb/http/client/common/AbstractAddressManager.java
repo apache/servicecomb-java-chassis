@@ -62,11 +62,20 @@ public class AbstractAddressManager {
 
   private String projectName;
 
-  private final Map<String, Boolean> categoryMap = new HashMap<>();
+  // if address in same zone will be true; others will be false.
+  private final Map<String, Boolean> addressCategory = new HashMap<>();
 
-  private final Map<String, Integer> recodeStatus = new ConcurrentHashMap<>();
+  // recording continuous times of failure of an address.
+  private final Map<String, Integer> addressFailureStatus = new ConcurrentHashMap<>();
 
-  private final Map<String, Boolean> history = new ConcurrentHashMap<>();
+  // recording address isolation status, if isolated will be false
+  private final Map<String, Boolean> addressIsolated = new ConcurrentHashMap<>();
+
+  // recording address isolation status, if isolated will be false
+  private final Cache<String, Boolean> addressIsolationStatus = CacheBuilder.newBuilder()
+      .maximumSize(100)
+      .expireAfterWrite(1, TimeUnit.MINUTES)
+      .build();
 
   private volatile List<String> availableZone = new ArrayList<>();
 
@@ -74,7 +83,7 @@ public class AbstractAddressManager {
 
   private final List<String> defaultAddress = new ArrayList<>();
 
-  private boolean isAddressRefresh = false;
+  private boolean addressAutoRefreshed = false;
 
   private final Object lock = new Object();
 
@@ -83,12 +92,8 @@ public class AbstractAddressManager {
           .setNameFormat("check-available-address-%d")
           .build());
 
-  private final Cache<String, Boolean> cacheAddress = CacheBuilder.newBuilder()
-      .maximumSize(100)
-      .expireAfterWrite(10, TimeUnit.MINUTES)
-      .build();
-
   public AbstractAddressManager(List<String> addresses) {
+    this.projectName = DEFAULT_PROJECT;
     this.addresses.addAll(addresses);
     this.defaultAddress.addAll(addresses);
   }
@@ -99,24 +104,16 @@ public class AbstractAddressManager {
     this.defaultAddress.addAll(this.addresses);
   }
 
-  @VisibleForTesting
   public List<String> getAddresses() {
     return addresses;
   }
 
-  @VisibleForTesting
   public List<String> getAvailableZone() {
     return availableZone;
   }
 
-  @VisibleForTesting
   public List<String> getAvailableRegion() {
     return availableRegion;
-  }
-
-  @VisibleForTesting
-  protected void setAddressRefresh(boolean addressRefresh) {
-    isAddressRefresh = addressRefresh;
   }
 
   private void startCheck() {
@@ -130,9 +127,8 @@ public class AbstractAddressManager {
     return absoluteUrl ? address + url : formatAddress(address) + url;
   }
 
-  // if isAddressRefresh is false, polling with available initial addresses.
   public String address() {
-    if (!isAddressRefresh) {
+    if (!addressAutoRefreshed) {
       return getDefaultAddress();
     } else {
       return getAvailableZoneAddress();
@@ -204,7 +200,7 @@ public class AbstractAddressManager {
   }
 
   private List<String> getAvailableAddress(List<String> endpoints) {
-    return endpoints.stream().filter(uri -> !history.containsKey(uri))
+    return endpoints.stream().filter(uri -> !addressIsolated.containsKey(uri) || addressIsolated.get(uri))
         .collect(Collectors.toList());
   }
 
@@ -213,26 +209,27 @@ public class AbstractAddressManager {
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
-    this.setAddressRefresh(true);
     if (null == event || !event.getName().equals(key)) {
       return;
     }
+
     availableZone = event.getSameZone().stream().map(this::normalizeUri).collect(Collectors.toList());
     availableRegion = event.getSameRegion().stream().map(this::normalizeUri).collect(Collectors.toList());
-    availableZone.forEach(address -> categoryMap.put(address, true));
-    availableRegion.forEach(address -> categoryMap.put(address, false));
+    availableZone.forEach(address -> addressCategory.put(address, true));
+    availableRegion.forEach(address -> addressCategory.put(address, false));
     startCheck();
+    addressAutoRefreshed = true;
   }
 
   public void recordFailState(String address) {
     synchronized (lock) {
-      if (!recodeStatus.containsKey(address)) {
-        recodeStatus.put(address, 1);
+      if (!addressFailureStatus.containsKey(address)) {
+        addressFailureStatus.put(address, 1);
         return;
       }
-      int number = recodeStatus.get(address) + 1;
+      int number = addressFailureStatus.get(address) + 1;
       if (number < ISOLATION_THRESHOLD) {
-        recodeStatus.put(address, number);
+        addressFailureStatus.put(address, number);
       } else {
         removeAddress(address);
       }
@@ -240,23 +237,23 @@ public class AbstractAddressManager {
   }
 
   public void recordSuccessState(String address) {
-    recodeStatus.put(address, 0);
+    addressFailureStatus.put(address, 0);
   }
 
   @VisibleForTesting
   protected void checkHistory() {
-    history.keySet().stream().filter(this::judgeIsolation).forEach(s -> {
+    addressIsolated.keySet().stream().filter(this::judgeIsolation).forEach(s -> {
       if (telnetTest(s)) {
         rejoinAddress(s);
       } else {
-        cacheAddress.put(s, false);
+        addressIsolationStatus.put(s, false);
       }
     });
   }
 
   private Boolean judgeIsolation(String address) {
     try {
-      return cacheAddress.get(address, () -> true);
+      return addressIsolationStatus.get(address, () -> true);
     } catch (ExecutionException e) {
       return true;
     }
@@ -285,35 +282,50 @@ public class AbstractAddressManager {
   // add it to the sequence of, and delete the record in history
   @VisibleForTesting
   void rejoinAddress(String address) {
-    if (!isAddressRefresh) {
+    if (!addressAutoRefreshed) {
       defaultAddress.add(address);
-    } else {
-      if (categoryMap.get(address)) {
-        availableZone.add(address);
-      } else {
-        availableRegion.add(address);
-      }
+      addressFailureStatus.put(address, 0);
+      addressIsolated.remove(address);
+      return;
     }
-    recodeStatus.put(address, 0);
-    history.remove(address);
+
+    if (addressCategory.get(address) == null) {
+      LOGGER.warn("may not happen {}-{}", addressCategory.size(), address);
+      return;
+    }
+
+    if (addressCategory.get(address)) {
+      availableZone.add(address);
+    } else {
+      availableRegion.add(address);
+    }
+    addressFailureStatus.put(address, 0);
+    addressIsolated.remove(address);
   }
 
   //Query whether the current address belongs to the same AZ or the same region through AZMap,
   // and delete it from the record. At the same time, add records in history and cache
   @VisibleForTesting
   void removeAddress(String address) {
-    if (!isAddressRefresh) {
+    if (!addressAutoRefreshed) {
       defaultAddress.remove(address);
-      history.put(address, false);
-    } else {
-      if (categoryMap.get(address)) {
-        availableZone.remove(address);
-      } else {
-        availableRegion.remove(address);
-      }
-      history.put(address, categoryMap.get(address));
+      addressIsolated.put(address, false);
+      addressIsolationStatus.put(address, false);
+      return;
     }
-    recodeStatus.put(address, 0);
-    cacheAddress.put(address, false);
+
+    if (addressCategory.get(address) == null) {
+      LOGGER.warn("may not happen {}-{}", addressCategory.size(), address);
+      return;
+    }
+
+    if (addressCategory.get(address)) {
+      availableZone.remove(address);
+    } else {
+      availableRegion.remove(address);
+    }
+
+    addressIsolated.put(address, false);
+    addressIsolationStatus.put(address, false);
   }
 }

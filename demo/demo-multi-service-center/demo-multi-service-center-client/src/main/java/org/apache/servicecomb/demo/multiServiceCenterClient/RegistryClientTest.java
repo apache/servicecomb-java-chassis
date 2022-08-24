@@ -28,7 +28,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.http.client.auth.DefaultRequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
-import org.apache.servicecomb.service.center.client.AddressManager;
+import org.apache.servicecomb.service.center.client.ServiceCenterAddressManager;
 import org.apache.servicecomb.service.center.client.RegistrationEvents;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceInstanceRegistrationEvent;
@@ -60,7 +60,7 @@ public class RegistryClientTest implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"),
+    ServiceCenterAddressManager addressManager = new ServiceCenterAddressManager("default", Arrays.asList("http://127.0.0.1:30100"),
         new EventBus());
     SSLProperties sslProperties = new SSLProperties();
     sslProperties.setEnabled(false);
