@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.router.match;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
@@ -36,9 +37,16 @@ public class RouterRuleMatcher {
   }
 
   public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {
-    for (PolicyRuleItem rule : routerRuleCache.getServiceInfoCacheMap().get(serviceName)
-        .getAllrule()) {
-      if (rule.getMatch() == null || rule.getMatch().match(invokeHeader)) {
+    List<PolicyRuleItem> ruleList = routerRuleCache.getServiceInfoCacheMap().get(serviceName).getAllrule();
+
+    for (PolicyRuleItem rule : ruleList) {
+      if (rule.getMatch() != null && rule.getMatch().match(invokeHeader)) {
+        return rule;
+      }
+    }
+    // find out the highest priority rule when match result is null
+    for (PolicyRuleItem rule : ruleList) {
+      if (rule.getMatch() == null) {
         return rule;
       }
     }
