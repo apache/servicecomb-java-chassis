@@ -22,6 +22,8 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 @Component
 public class TestControllerImpl implements CategorizedTestCase {
   RestTemplate restTemplate = RestTemplateBuilder.create();
@@ -33,8 +35,16 @@ public class TestControllerImpl implements CategorizedTestCase {
   }
 
   private void testQueryParamSpecial() {
-    TestMgr.check(restTemplate.getForObject(
-        SERVER + "/springmvc/controller/sayHello1?name=you;me", String.class), "Hello you,v");
+    // vert.x and servlet container have different query parameter implementations
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+
+      TestMgr.check(restTemplate.getForObject(
+          SERVER + "/springmvc/controller/sayHello1?name=you;me", String.class), "Hello you,v");
+    } else {
+      TestMgr.check(restTemplate.getForObject(
+          SERVER + "/springmvc/controller/sayHello1?name=you;me", String.class), "Hello you;me,v");
+    }
     TestMgr.check(restTemplate.getForObject(
         SERVER + "/springmvc/controller/sayHello1?name={1}",
         String.class, "you;me"), "Hello you;me,v");
