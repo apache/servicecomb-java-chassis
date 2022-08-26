@@ -30,19 +30,19 @@ import mockit.Deencapsulation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class AddressManagerTest {
+class ServiceCenterAddressManagerTest {
 
   private static final List<String> addresses = new ArrayList<>();
 
-  private static AddressManager addressManager1;
+  private static ServiceCenterAddressManager addressManager1;
 
-  private static AddressManager addressManager2;
+  private static ServiceCenterAddressManager addressManager2;
 
 
   @Test
   public void getUrlPrefix() {
     addresses.add("http://127.0.0.1:30103");
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
+    addressManager1 = new ServiceCenterAddressManager("project", addresses, new EventBus());
 
     Assertions.assertNotNull(addressManager1);
 
@@ -56,7 +56,7 @@ class AddressManagerTest {
   @Test
   public void formatUrlTest() {
     addresses.add("http://127.0.0.1:30103");
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
+    addressManager1 = new ServiceCenterAddressManager("project", addresses, new EventBus());
     Assertions.assertNotNull(addressManager1);
 
     String address = addressManager1.address();
@@ -77,7 +77,7 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new AddressManager("project", addresses, new EventBus());
+    addressManager1 = new ServiceCenterAddressManager("project", addresses, new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 

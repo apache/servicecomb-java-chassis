@@ -36,10 +36,10 @@ public class ServiceCenterRawClient {
 
   private final HttpTransport httpTransport;
 
-  private final AddressManager addressManager;
+  private final ServiceCenterAddressManager addressManager;
 
   private ServiceCenterRawClient(String tenantName, HttpTransport httpTransport,
-      AddressManager addressManager) {
+      ServiceCenterAddressManager addressManager) {
     this.httpTransport = httpTransport;
     this.tenantName = tenantName;
     this.addressManager = addressManager;
@@ -102,7 +102,7 @@ public class ServiceCenterRawClient {
 
     private HttpTransport httpTransport;
 
-    private AddressManager addressManager;
+    private ServiceCenterAddressManager addressManager;
 
     public Builder() {
     }
@@ -117,7 +117,7 @@ public class ServiceCenterRawClient {
       return this;
     }
 
-    public Builder setAddressManager(AddressManager addressManager) {
+    public Builder setAddressManager(ServiceCenterAddressManager addressManager) {
       this.addressManager = addressManager;
       return this;
     }

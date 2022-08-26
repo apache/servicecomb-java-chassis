@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.config.center.client;
 
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.common.URLEndPoint;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class AddressManager extends AbstractAddressManager {
-  public AddressManager(String projectName, List<String> addresses, EventBus eventBus) {
+public class ConfigCenterAddressManager extends AbstractAddressManager {
+
+  public ConfigCenterAddressManager(String projectName, List<String> addresses, EventBus eventBus) {
     super(projectName, addresses);
     eventBus.register(this);
   }
 
   @Override
-  protected List<String> transformAddress(List<String> addresses) {
-    return addresses;
-  }
-
-  @Override
-  protected String getUrlPrefix(String address) {
-    return address + V4_PREFIX;
+  protected String normalizeUri(String endpoint) {
+    String address = new URLEndPoint(endpoint).toString();
+    return formatAddress(address);
   }
 
   @Subscribe
   public void onRefreshEndpointEvent(RefreshEndpointEvent event) {
-    refreshEndpoint(event, RefreshEndpointEvent.SERVICE_CENTER_NAME);
+    refreshEndpoint(event, RefreshEndpointEvent.CONFIG_CENTER_NAME);
   }
 }

@@ -51,7 +51,7 @@ public class ServiceCenterWatch implements WebSocketListener {
 
   private static final long SLEEP_MAX = 10 * 60 * 10000;
 
-  private final AddressManager addressManager;
+  private final ServiceCenterAddressManager addressManager;
 
   private final SSLProperties sslProperties;
 
@@ -78,7 +78,7 @@ public class ServiceCenterWatch implements WebSocketListener {
   private final ExecutorService connector = Executors.newFixedThreadPool(1, (r) -> new
       Thread(r, "web-socket-connector"));
 
-  public ServiceCenterWatch(AddressManager addressManager,
+  public ServiceCenterWatch(ServiceCenterAddressManager addressManager,
       SSLProperties sslProperties,
       RequestAuthHeaderProvider requestAuthHeaderProvider,
       String tenantName,

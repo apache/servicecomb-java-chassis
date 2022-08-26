@@ -78,7 +78,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     return this;
   }
 
-  public ServiceCenterClient(AddressManager addressManager,
+  public ServiceCenterClient(ServiceCenterAddressManager addressManager,
       SSLProperties sslProperties,
       RequestAuthHeaderProvider requestAuthHeaderProvider,
       String tenantName,

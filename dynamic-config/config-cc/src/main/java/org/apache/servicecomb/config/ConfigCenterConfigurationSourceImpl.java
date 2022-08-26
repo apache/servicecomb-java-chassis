@@ -31,7 +31,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.servicecomb.config.center.client.AddressManager;
+import org.apache.servicecomb.config.center.client.ConfigCenterAddressManager;
 import org.apache.servicecomb.config.center.client.ConfigCenterClient;
 import org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration;
 import org.apache.servicecomb.config.center.client.ConfigCenterManager;
@@ -88,7 +88,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public void init(Configuration localConfiguration) {
     configConverter = new ConfigConverter(ConfigCenterConfig.INSTANCE.getFileSources());
 
-    AddressManager kieAddressManager = configKieAddressManager();
+    ConfigCenterAddressManager kieAddressManager = configKieAddressManager();
 
     HttpTransport httpTransport = createHttpTransport(kieAddressManager,
         HttpTransportFactory.defaultRequestConfig().build(),
@@ -146,7 +146,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return new ConfigCenterConfiguration().setRefreshIntervalInMillis(ConfigCenterConfig.INSTANCE.getRefreshInterval());
   }
 
-  private HttpTransport createHttpTransport(AddressManager kieAddressManager, RequestConfig requestConfig,
+  private HttpTransport createHttpTransport(ConfigCenterAddressManager kieAddressManager, RequestConfig requestConfig,
       Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
@@ -184,8 +184,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     };
   }
 
-  private AddressManager configKieAddressManager() {
-    return new AddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
+  private ConfigCenterAddressManager configKieAddressManager() {
+    return new ConfigCenterAddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
             .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),
         EventManager.getEventBus());
