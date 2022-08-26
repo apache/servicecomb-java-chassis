@@ -27,5 +27,6 @@ servicecomb:
       Consumer:
         default: loadbalance
   loadbalance:
-    isolation:
-      enabled: false
+    filter:
+      isolation:
+        enabled: false
