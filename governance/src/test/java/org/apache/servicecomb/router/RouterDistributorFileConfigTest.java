@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.distribute;
+package org.apache.servicecomb.router;
 
-import org.apache.servicecomb.router.RouterFilter;
-import org.apache.servicecomb.router.ServiceIns;
+import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -32,7 +31,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
-public class DistributeTest {
+public class RouterDistributorFileConfigTest {
   private static final String TARGET_SERVICE_NAME = "test_server1";
 
   private RouterFilter routerFilter;
