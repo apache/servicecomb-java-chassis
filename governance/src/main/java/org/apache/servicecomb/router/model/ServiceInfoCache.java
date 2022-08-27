@@ -24,29 +24,19 @@ import java.util.stream.Collectors;
  * @Date 2019/10/17
  **/
 public class ServiceInfoCache {
-
-  private List<PolicyRuleItem> allrule;
+  private final List<PolicyRuleItem> allrule;
 
   /**
    * for default version
    */
   private TagItem latestVersionTag;
 
-  public ServiceInfoCache() {
-  }
-
   public ServiceInfoCache(List<PolicyRuleItem> policyRuleItemList) {
-    this.setAllrule(policyRuleItemList);
-    // init tagitem
+    this.allrule = policyRuleItemList.stream().sorted().collect(Collectors.toList());
+
     this.getAllrule().forEach(rule ->
         rule.getRoute().forEach(RouteItem::initTagItem)
     );
-    // sort by precedence
-    this.sortRule();
-  }
-
-  public void sortRule() {
-    allrule = allrule.stream().sorted().collect(Collectors.toList());
   }
 
   public TagItem getNextInvokeVersion(PolicyRuleItem policyRuleItem) {
@@ -68,10 +58,6 @@ public class ServiceInfoCache {
 
   public List<PolicyRuleItem> getAllrule() {
     return allrule;
-  }
-
-  public void setAllrule(List<PolicyRuleItem> allrule) {
-    this.allrule = allrule;
   }
 
   public TagItem getLatestVersionTag() {

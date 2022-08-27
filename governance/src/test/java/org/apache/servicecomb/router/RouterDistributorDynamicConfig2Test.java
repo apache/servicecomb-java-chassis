@@ -17,6 +17,15 @@
 
 package org.apache.servicecomb.router;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
+import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Before;
@@ -31,45 +40,29 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @RunWith(SpringRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
-public class RouterDistributorTest {
+public class RouterDistributorDynamicConfig2Test {
   private static final String TARGET_SERVICE_NAME = "test_server";
 
   private static final String RULE_STRING = ""
-      + "      - precedence: 2 #优先级\n"
-      + "        match:        #匹配策略\n"
-      + "          source: xx #匹配某个服务名\n"
+      + "      - precedence: 2\n"
+      + "        route:\n"
+      + "          - weight: 100\n"
+      + "            tags:\n"
+      + "              version: 2.0\n"
+      + "      - precedence: 1\n"
+      + "        match:\n"
       + "          headers:          #header匹配\n"
       + "            appId:\n"
       + "              regex: 01\n"
       + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
       + "            userId:\n"
       + "              exact: 01\n"
-      + "        route: #路由规则\n"
-      + "          - weight: 50\n"
-      + "            tags:\n"
-      + "              version: 1.1\n"
-      + "      - precedence: 1\n"
-      + "        match:\n"
-      + "          source: 1 #匹配某个服务名\n"
-      + "          headers:          #header匹配\n"
-      + "            appId:\n"
-      + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
-      + "            userId:\n"
-      + "              exact: 02\n"
       + "        route:\n"
-      + "          - weight: 1\n"
+      + "          - weight: 100\n"
       + "            tags:\n"
-      + "              version: 1\n"
-      + "              app: a";
+      + "              version: 1.0\n";
 
   private Environment environment;
 
@@ -90,9 +83,6 @@ public class RouterDistributorTest {
   @Autowired
   public void setTestDistributor(RouterDistributor<ServiceIns, ServiceIns> testDistributor) {
     this.testDistributor = testDistributor;
-  }
-
-  public RouterDistributorTest() {
   }
 
   private final Map<String, Object> dynamicValues = new HashMap<>();
@@ -119,49 +109,30 @@ public class RouterDistributorTest {
         });
 
     dynamicValues.put(RouterRuleCache.ROUTE_RULE_PREFIX + TARGET_SERVICE_NAME, RULE_STRING);
-  }
 
-
-  @Test
-  public void testHeaderIsEmpty() {
-    List<ServiceIns> list = getMockList();
-    List<ServiceIns> serverList = mainFilter(list, Collections.emptyMap());
-    Assertions.assertEquals(2, serverList.size());
+    Set<String> changedKeys = new HashSet<>();
+    changedKeys.add(RouterRuleCache.ROUTE_RULE_PREFIX + TARGET_SERVICE_NAME);
+    GovernanceConfigurationChangedEvent newEvent = new GovernanceConfigurationChangedEvent(changedKeys);
+    GovernanceEventManager.post(newEvent);
   }
 
   @Test
-  public void testVersionNotMatch() {
-    Map<String, String> headerMap = new HashMap<>();
-    headerMap.put("userId", "01");
-    headerMap.put("appId", "01");
-    headerMap.put("format", "json");
-    List<ServiceIns> list = getMockList();
-    list.remove(1);
-    List<ServiceIns> serverList = mainFilter(list, headerMap);
-    Assertions.assertEquals(1, serverList.size());
-    Assertions.assertEquals("01", serverList.get(0).getId());
-  }
-
-  @Test
-  public void testVersionMatch() {
+  public void testMatchPrecedenceHigher() {
     Map<String, String> headers = new HashMap<>();
     headers.put("userId", "01");
     headers.put("appId", "01");
-    headers.put("format", "json");
-    List<ServiceIns> serverList = mainFilter(getMockList(), headers);
-    Assertions.assertEquals(1, serverList.size());
-    Assertions.assertEquals("02", serverList.get(0).getId());
-  }
 
-  private List<ServiceIns> getMockList() {
     List<ServiceIns> serverList = new ArrayList<>();
     ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
     ins1.setVersion("2.0");
     ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME);
-    ins2.addTags("app", "a");
+    ins2.setVersion("1.0");
     serverList.add(ins1);
     serverList.add(ins2);
-    return serverList;
+
+    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    Assertions.assertEquals(1, resultServerList.size());
+    Assertions.assertEquals("01", resultServerList.get(0).getId());
   }
 
   private List<ServiceIns> mainFilter(List<ServiceIns> serverList, Map<String, String> headers) {

@@ -25,14 +25,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RouterRuleMatcher {
-  private RouterRuleCache routerRuleCache;
+  private final RouterRuleCache routerRuleCache;
 
   @Autowired
   public RouterRuleMatcher(RouterRuleCache routerRuleCache) {
     this.routerRuleCache = routerRuleCache;
-  }
-
-  public RouterRuleMatcher() {
   }
 
   public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {

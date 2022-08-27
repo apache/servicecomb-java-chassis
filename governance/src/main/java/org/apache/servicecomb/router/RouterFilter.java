@@ -46,7 +46,7 @@ public class RouterFilter {
   }
 
   public <T, E> List<T> getFilteredListOfServers(List<T> list,
-                                                 String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
+      String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
     if (CollectionUtils.isEmpty(list)) {
       return list;
     }

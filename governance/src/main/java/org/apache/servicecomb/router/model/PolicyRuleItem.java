@@ -17,6 +17,7 @@
 package org.apache.servicecomb.router.model;
 
 import java.util.List;
+
 import org.apache.servicecomb.router.exception.RouterIllegalParamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,11 +78,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   @Override
   public int compareTo(PolicyRuleItem param) {
-    if (param.precedence.equals(this.precedence)) {
-      LOGGER.warn("the same canary precedence is not recommended");
-      return 0;
-    }
-    return param.precedence > this.precedence ? 1 : -1;
+    return Integer.compare(param.precedence, this.precedence);
   }
 
   public Integer getPrecedence() {
