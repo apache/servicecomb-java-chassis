@@ -50,6 +50,8 @@ public class MonitorData {
 
   private String serviceId;
 
+  private String environment;
+
   private String instance;
 
   private String instanceId;
@@ -174,5 +176,13 @@ public class MonitorData {
 
   public void setCustoms(Map<String, Object> customs) {
     this.customs = customs;
+  }
+
+  public String getEnvironment() {
+    return environment;
+  }
+
+  public void setEnvironment(String environment) {
+    this.environment = environment;
   }
 }
