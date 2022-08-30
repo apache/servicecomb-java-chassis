@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class SessionStickinessRule implements RuleExt {
   private LoadBalancer loadBalancer;
 
   // use random rule as the trigger rule, to prevent consumer instance select the same producer instance.
-  private RuleExt triggerRule;
+  private final RuleExt triggerRule;
 
   private volatile ServiceCombServer lastServer = null;
 
@@ -75,7 +76,8 @@ public class SessionStickinessRule implements RuleExt {
     return lastServer;
   }
 
-  private ServiceCombServer chooseServerWhenTimeout(List<ServiceCombServer> servers, Invocation invocation) {
+  @VisibleForTesting
+  ServiceCombServer chooseServerWhenTimeout(List<ServiceCombServer> servers, Invocation invocation) {
     synchronized (lock) {
       if (isTimeOut()) {
         chooseNextServer(servers, invocation);
@@ -106,9 +108,9 @@ public class SessionStickinessRule implements RuleExt {
 
     if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
       ServerStats serverStats = stats.getSingleServerStat(lastServer);
-      int successiveFaildCount = serverStats.getSuccessiveConnectionFailureCount();
+      int successiveFailedCount = serverStats.getSuccessiveConnectionFailureCount();
       if (Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
-          && successiveFaildCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
+          && successiveFailedCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
         serverStats.clearSuccessiveConnectionFailureCount();
         return true;
       }

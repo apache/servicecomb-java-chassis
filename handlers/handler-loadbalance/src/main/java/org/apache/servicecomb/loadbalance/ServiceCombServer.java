@@ -20,6 +20,7 @@ package org.apache.servicecomb.loadbalance;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -90,24 +91,28 @@ public class ServiceCombServer extends Server {
     return instance;
   }
 
+  @Override
   public String toString() {
     return endpoint.getEndpoint();
   }
 
   // used in LoadBalancerContext
+  @Override
   public String getHost() {
     return endpoint.getEndpoint();
   }
 
-  // take endpoints that belongs to same instance as same server
+  @Override
   public boolean equals(Object o) {
     if (o instanceof ServiceCombServer) {
-      return this.instance.getInstanceId().equals(((ServiceCombServer) o).instance.getInstanceId());
+      return this.instance.getInstanceId().equals(((ServiceCombServer) o).instance.getInstanceId())
+          && StringUtils.equals(endpoint.getEndpoint(), ((ServiceCombServer) o).getEndpoint().getEndpoint());
     } else {
       return false;
     }
   }
 
+  @Override
   public int hashCode() {
     return this.instance.getInstanceId().hashCode();
   }
