@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.loadbalance.filter;
+package org.apache.servicecomb.loadbalance.filterext;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
+import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,18 +39,16 @@ import com.netflix.config.DynamicPropertyFactory;
 /**
  * Isolate instances by error metrics
  */
-public class IsolationDiscoveryFilter implements DiscoveryFilter {
-
-  public static final String TRYING_INSTANCES_EXISTING = "scb-hasTryingInstances";
+public class IsolationDiscoveryFilter implements ServerListFilterExt {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
-
-  private static final String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
 
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
 
-  public class Settings {
+  private final EventBus eventBus = EventManager.getEventBus();
+
+  public static class Settings {
     public int errorThresholdPercentage;
 
     public long singleTestTime;
@@ -65,11 +60,9 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     public int minIsolationTime; // to avoid isolation recover too fast due to no concurrent control in concurrent scenario
   }
 
-  public EventBus eventBus = EventManager.getEventBus();
-
   @Override
   public int getOrder() {
-    return 500;
+    return ORDER_ISOLATION;
   }
 
   public IsolationDiscoveryFilter() {
@@ -82,40 +75,25 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.enabled", true).get();
+        .getBooleanProperty(ISOLATION_FILTER_ENABLED, true)
+        .get();
   }
 
   @Override
-  public boolean isGroupingFilter() {
-    return false;
-  }
-
-  @Override
-  public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
-    Map<String, MicroserviceInstance> instances = parent.data();
-    Invocation invocation = context.getInputParameters();
-    if (!Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName())) {
-      return parent;
-    }
-
-    Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
-      MicroserviceInstance instance = stringMicroserviceInstanceEntry.getValue();
-      if (allowVisit(invocation, instance)) {
-        filteredServers.put(stringMicroserviceInstanceEntry.getKey(), instance);
+  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
+      Invocation invocation) {
+    List<ServiceCombServer> filteredServers = new ArrayList<>();
+    Settings settings = createSettings(invocation);
+    servers.forEach((server) -> {
+      if (allowVisit(invocation, server, settings)) {
+        filteredServers.add(server);
       }
     });
-
-    DiscoveryTreeNode child = parent.children().computeIfAbsent("filterred", etn -> new DiscoveryTreeNode());
-    if (ZoneAwareDiscoveryFilter.GROUP_Instances_All
-        .equals(context.getContextParameter(ZoneAwareDiscoveryFilter.KEY_ZONE_AWARE_STEP)) && filteredServers.isEmpty()
-        && emptyProtection.get()) {
+    if (filteredServers.isEmpty() && emptyProtection.get()) {
       LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
-      child.data(instances);
-    } else {
-      child.data(filteredServers);
+      return servers;
     }
-    return child;
+    return filteredServers;
   }
 
   private Settings createSettings(Invocation invocation) {
@@ -132,14 +110,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     return settings;
   }
 
-  private boolean allowVisit(Invocation invocation, MicroserviceInstance instance) {
-    ServiceCombServer server = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(instance);
-    if (server == null) {
-      // first time accessed.
-      return true;
-    }
+  private boolean allowVisit(Invocation invocation, ServiceCombServer server, Settings settings) {
     ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
-    Settings settings = createSettings(invocation);
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
           && (System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
@@ -149,10 +121,11 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         // checkThresholdAllowed is not concurrent control, may print several logs/events in current access.
         serverStats.markIsolated(true);
         eventBus.post(
-            new IsolationServerEvent(invocation, instance, serverStats,
+            new IsolationServerEvent(invocation, server.getInstance(), serverStats,
                 settings, Type.OPEN, server.getEndpoint()));
-        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
-            instance.getInstanceId());
+        LOGGER.warn("Isolate service {}'s instance {}.",
+            invocation.getMicroserviceName(),
+            server.getInstance().getInstanceId());
       }
       return false;
     }
@@ -163,10 +136,11 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         return false;
       }
       serverStats.markIsolated(false);
-      eventBus.post(new IsolationServerEvent(invocation, instance, serverStats,
+      eventBus.post(new IsolationServerEvent(invocation, server.getInstance(), serverStats,
           settings, Type.CLOSE, server.getEndpoint()));
-      LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
-          instance.getInstanceId());
+      LOGGER.warn("Recover service {}'s instance {} from isolation.",
+          invocation.getMicroserviceName(),
+          server.getInstance().getInstanceId());
     }
     return true;
   }

@@ -53,30 +53,52 @@ public class TestWeightedResponseTimeRuleExt {
   }
 
   @Test
-  public void testWeighed() {
+  public void testWeighed() throws InterruptedException {
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
     LoadBalancer loadBalancer = new LoadBalancer(rule, "testService");
     List<ServiceCombServer> servers = new ArrayList<>();
     Invocation invocation = Mockito.mock(Invocation.class);
-    for (int i = 0; i < 2; i++) {
-      ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
-      Mockito.when(server.toString()).thenReturn("server " + i);
-      servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 20 * Math.pow(4, i + 1));
-    }
 
-    AtomicInteger server1 = new AtomicInteger(0);
-    AtomicInteger server2 = new AtomicInteger(0);
+    ServiceCombServer server1 = Mockito.mock(ServiceCombServer.class);
+    Mockito.when(server1.toString()).thenReturn("server " + 0);
+    servers.add(server1);
+    ServiceCombServer server2 = Mockito.mock(ServiceCombServer.class);
+    Mockito.when(server2.toString()).thenReturn("server " + 1);
+    servers.add(server2);
+
+    AtomicInteger serverCounter1 = new AtomicInteger(0);
+    AtomicInteger serverCounter2 = new AtomicInteger(0);
     for (int i = 0; i < 2000; i++) {
+      loadBalancer.getLoadBalancerStats().noteResponseTime(server1, 20);
+      loadBalancer.getLoadBalancerStats().noteResponseTime(server2, 400);
+      Thread.sleep(1);
       if (rule.choose(servers, invocation).toString().equals("server 0")) {
-        server1.incrementAndGet();
+        serverCounter1.incrementAndGet();
       } else {
-        server2.incrementAndGet();
+        serverCounter2.incrementAndGet();
       }
     }
-    double percent = (double) server1.get() / (server2.get() + server1.get());
+    double percent = (double) serverCounter1.get() / (serverCounter2.get() + serverCounter1.get());
     System.out.println("percent" + percent);
-    Assert.assertEquals("actually percent: " + percent, 0.70d < percent, percent < 0.90d);
+    Assert.assertTrue(percent > 0.60d);
+    Assert.assertTrue(percent < 0.90d);
+    serverCounter1.set(0);
+    serverCounter2.set(0);
+
+    Thread.sleep(1000);
+    for (int i = 0; i < 2000; i++) {
+      loadBalancer.getLoadBalancerStats().noteResponseTime(server1, 20);
+      loadBalancer.getLoadBalancerStats().noteResponseTime(server2, 20);
+      Thread.sleep(1);
+      if (rule.choose(servers, invocation).toString().equals("server 0")) {
+        serverCounter1.incrementAndGet();
+      } else {
+        serverCounter2.incrementAndGet();
+      }
+    }
+    percent = (double) serverCounter1.get() / (serverCounter2.get() + serverCounter1.get());
+    System.out.println("percent" + percent);
+    Assert.assertEquals(0.50d, percent, 0.2);
   }
 
   @Test
@@ -99,7 +121,7 @@ public class TestWeightedResponseTimeRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals("actually taken: " + taken, taken < 1000 * 5, true); // 5 * times make slow machine happy
+    Assert.assertTrue(taken < 1000 * 5); // 5 * times make slow machine happy
   }
 
   @Test
@@ -121,6 +143,6 @@ public class TestWeightedResponseTimeRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals("actually taken: " + taken, taken < 200 * 5, true); // 5 * times make slow machine happy
+    Assert.assertTrue(taken < 200 * 5); // 5 * times make slow machine happy
   }
 }

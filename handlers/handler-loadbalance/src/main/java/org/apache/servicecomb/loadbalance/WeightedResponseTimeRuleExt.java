@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.servicecomb.core.Invocation;
 
@@ -34,11 +34,9 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
 
   private static final int RANDOM_PERCENT = 10;
 
-  private Random random = new Random();
-
   private LoadBalancer loadBalancer;
 
-  private double totalWeightsCache = 0d;
+  private double totalWeightsCache = -1d;
 
   @Override
   public void setLoadBalancer(LoadBalancer loadBalancer) {
@@ -55,7 +53,7 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
       for (int i = 0; i < stats.size() - 1; i++) {
         weights.add(finalTotal - stats.get(i));
       }
-      double ran = random.nextDouble() * finalTotal * (servers.size() - 1);
+      double ran = ThreadLocalRandom.current().nextDouble() * finalTotal * (servers.size() - 1);
       for (int i = 0; i < weights.size(); i++) {
         ran -= weights.get(i);
         if (ran < 0) {
@@ -68,11 +66,11 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
   }
 
   private List<Double> calculateTotalWeights(List<ServiceCombServer> servers) {
-    if (totalWeightsCache > MIN_GAP * servers.size()) {
+    if (Double.compare(totalWeightsCache, 0) < 0 || Double.compare(totalWeightsCache, MIN_GAP * servers.size()) > 0) {
       return doCalculateTotalWeights(servers);
     }
     // 10% possibilities to use weighed response rule when the normal access is very fast.
-    if (random.nextInt(RANDOM_PERCENT) == 0) {
+    if (ThreadLocalRandom.current().nextInt(RANDOM_PERCENT) == 0) {
       return doCalculateTotalWeights(servers);
     } else {
       return new ArrayList<>();
@@ -85,7 +83,8 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
     boolean needRandom = false;
     for (ServiceCombServer server : servers) {
       ServerStats serverStats = loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
-      double avgTime = serverStats.getResponseTimeAvg();
+      //getResponseTimeAvgRecent()按照时间窗口统计，时间窗口大小为1分钟；getResponseTimeAvg()一直累积
+      double avgTime = serverStats.getResponseTimeAvgRecent();
       if (!needRandom && avgTime > MIN_GAP) {
         needRandom = true;
       }
