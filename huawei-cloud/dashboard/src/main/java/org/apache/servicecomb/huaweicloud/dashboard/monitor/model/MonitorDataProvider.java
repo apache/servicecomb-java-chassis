@@ -49,6 +49,7 @@ public interface MonitorDataProvider {
     monitorData.setServiceId(microservice.getServiceId());
     monitorData.setInstance(microserviceInstance.getHostName());
     monitorData.setInstanceId(microserviceInstance.getInstanceId());
+    monitorData.setEnvironment(microserviceInstance.getEnvironment());
   }
 
   default void exactProcessInfo(MonitorData monitorData) {
