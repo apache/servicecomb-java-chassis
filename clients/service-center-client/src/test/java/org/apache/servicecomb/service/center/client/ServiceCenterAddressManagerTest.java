@@ -26,7 +26,6 @@ import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.EventBus;
 
-import mockit.Deencapsulation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +45,7 @@ class ServiceCenterAddressManagerTest {
 
     Assertions.assertNotNull(addressManager1);
 
-    List<String> addresses = Deencapsulation.getField(addressManager1, "addresses");
+    List<String> addresses = addressManager1.getAddresses();
     Assertions.assertEquals(1, addresses.size());
     Assertions.assertEquals("http://127.0.0.1:30103", addresses.get(0));
     Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
@@ -81,10 +80,10 @@ class ServiceCenterAddressManagerTest {
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 
-    List<String> availableZone = Deencapsulation.getField(addressManager1, "availableZone");
+    List<String> availableZone = addressManager1.getAvailableZone();
     Assertions.assertEquals("http://127.0.0.3:30100", availableZone.get(0));
 
-    List<String> availableRegion = Deencapsulation.getField(addressManager1, "availableRegion");
+    List<String> availableRegion = addressManager1.getAvailableRegion();
     Assertions.assertEquals("http://127.0.0.4:30100", availableRegion.get(0));
   }
 }
