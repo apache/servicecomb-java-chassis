@@ -32,10 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
+import org.mockito.Mockito;
 
 public class AbstractAddressManagerTest {
 
@@ -101,7 +98,7 @@ public class AbstractAddressManagerTest {
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
 
     // test recodeStatus times
-    Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager, "addressFailureStatus");
+    Map<String, Integer> recodeStatus = addressManager.getAddressFailureStatus();
     Assertions.assertEquals(0, (int) recodeStatus.get("http://127.0.0.3:30100"));
 
     // test fail 3 times ,it will be isolated
@@ -111,21 +108,13 @@ public class AbstractAddressManagerTest {
     Assertions.assertEquals("http://127.0.0.4:30100", addressManager.address());
 
     // mock cacheAddress status refresh after 10 minute
-    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-        .maximumSize(100)
-        .expireAfterWrite(10, TimeUnit.MINUTES)
-        .build();
+    Cache<String, Boolean> cache = addressManager.getAddressIsolationStatus();
     cache.put("http://127.0.0.3:30100", true);
 
     // mock the address telnetTest is access
-    new Expectations(addressManager) {
-      {
-        Deencapsulation.setField(addressManager, "addressIsolationStatus", cache);
-        addressManager.telnetTest("http://127.0.0.3:30100");
-        result = true;
-      }
-    };
-    Cache<String, Boolean> result = Deencapsulation.getField(addressManager, "addressIsolationStatus");
+    addressManager = Mockito.spy(addressManager);
+    Mockito.when(addressManager.telnetTest("http://127.0.0.3:30100")).thenReturn(true);
+    Cache<String, Boolean> result = addressManager.getAddressIsolationStatus();
     Assertions.assertEquals(true, result.get("http://127.0.0.3:30100", () -> false));
 
     // test restore isolation
@@ -151,7 +140,7 @@ public class AbstractAddressManagerTest {
     }
     latch.await(30, TimeUnit.SECONDS);
 
-    Map<String, Integer> recodeStatus = Deencapsulation.getField(addressManager, "addressFailureStatus");
+    Map<String, Integer> recodeStatus = addressManager.getAddressFailureStatus();
     Assertions.assertEquals(2, (int) recodeStatus.get("http://127.0.0.3:30100"));
   }
 

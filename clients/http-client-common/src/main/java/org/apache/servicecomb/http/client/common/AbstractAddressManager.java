@@ -104,6 +104,15 @@ public class AbstractAddressManager {
     this.defaultAddress.addAll(this.addresses);
   }
 
+  @VisibleForTesting
+  public Map<String, Integer> getAddressFailureStatus() {
+    return addressFailureStatus;
+  }
+
+  public Cache<String, Boolean> getAddressIsolationStatus() {
+    return addressIsolationStatus;
+  }
+
   public List<String> getAddresses() {
     return addresses;
   }
