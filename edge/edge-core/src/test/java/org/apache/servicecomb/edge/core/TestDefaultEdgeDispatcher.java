@@ -20,21 +20,22 @@ package org.apache.servicecomb.edge.core;
 import static org.apache.servicecomb.edge.core.DefaultEdgeDispatcher.MICROSERVICE_NAME;
 import static org.apache.servicecomb.edge.core.DefaultEdgeDispatcher.VERSION;
 
-import org.apache.servicecomb.core.SCBEngine;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.web.RequestBody;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestDefaultEdgeDispatcher {
   @Before
@@ -49,45 +50,42 @@ public class TestDefaultEdgeDispatcher {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testOnRequest(@Mocked Router router, @Mocked Route route
-      , @Mocked RoutingContext context
-      , @Mocked HttpServerRequest requst
-      , @Mocked EdgeInvocation invocation) {
+  public void testOnRequest() {
     DefaultEdgeDispatcher dispatcher = new DefaultEdgeDispatcher() {
       @Override
       protected boolean isFilterChainEnabled() {
         return false;
       }
     };
-
-    new Expectations(SCBEngine.class) {
-      {
-        router.routeWithRegex(dispatcher.generateRouteRegex("api", true));
-        result = route;
-        route.handler((Handler<RoutingContext>) any);
-        result = route;
-        route.failureHandler((Handler<RoutingContext>) any);
-        result = route;
-        context.pathParam(MICROSERVICE_NAME);
-        result = "testService";
-        context.pathParam(VERSION);
-        result = "v1";
-        context.request();
-        result = requst;
-        requst.path();
-        result = "/api/testService/v1/hello";
-        invocation.setVersionRule("1.0.0.0-2.0.0.0");
-        invocation.init("testService", context, "/testService/v1/hello",
-            Deencapsulation.getField(dispatcher, "httpServerFilters"));
-        invocation.edgeInvoke();
-      }
-    };
+    Router router = Mockito.mock(Router.class);
+    Route route = Mockito.mock(Route.class);
+    RoutingContext context = Mockito.mock(RoutingContext.class);
+    EdgeInvocation invocation = Mockito.mock(EdgeInvocation.class);
+    dispatcher = Mockito.spy(dispatcher);
+    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
+    Mockito.when(router.routeWithRegex(dispatcher.generateRouteRegex("api", true))).thenReturn(route);
+    Mockito.when(route.handler(Mockito.any())).thenReturn(route);
+    Mockito.when(route.failureHandler(Mockito.any())).thenReturn(route);
+    RequestBody body = Mockito.mock(RequestBody.class);
+    Mockito.when(context.body()).thenReturn(body);
+    Mockito.when(body.buffer()).thenReturn(Mockito.mock(Buffer.class));
+    Mockito.when(context.pathParam(MICROSERVICE_NAME)).thenReturn("testService");
+    Mockito.when(context.pathParam(VERSION)).thenReturn("v1");
+    Mockito.when(context.request()).thenReturn(request);
+    Mockito.when(request.path()).thenReturn("/api/testService/v1/hello");
+    Mockito.when(dispatcher.createEdgeInvocation()).thenReturn(invocation);
+    invocation.setVersionRule("2.0.0+");
+    invocation.init("serviceName", context, "/c/d/e", dispatcher.getHttpServerFilters());
+    Mockito.doNothing().when(invocation).edgeInvoke();
     dispatcher.init(router);
     Assertions.assertFalse(dispatcher.enabled());
     Assertions.assertEquals(Utils.findActualPath("/api/test", 1), "/test");
     Assertions.assertEquals(dispatcher.getOrder(), 20000);
 
-    dispatcher.onRequest(context);
-    // assert done in expectations.
+    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
+      vertxMockedStatic.when(Vertx::currentContext).thenReturn(Mockito.mock(Context.class));
+      dispatcher.onRequest(context);
+      // assert done in expectations.
+    }
   }
 }

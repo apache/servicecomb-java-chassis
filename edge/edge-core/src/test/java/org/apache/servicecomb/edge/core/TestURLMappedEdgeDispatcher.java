@@ -19,6 +19,10 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.Map;
 
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.web.RequestBody;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.junit.After;
@@ -27,10 +31,9 @@ import org.junit.Test;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestURLMappedEdgeDispatcher {
   @Before
@@ -43,30 +46,24 @@ public class TestURLMappedEdgeDispatcher {
   }
 
   @Test
-  public void testConfigurations(@Mocked RoutingContext context
-      , @Mocked HttpServerRequest requst
-      , @Mocked EdgeInvocation invocation) {
+  public void testConfigurations() {
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.enabled", true);
 
     URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher();
-    Map<String, URLMappedConfigurationItem> items = Deencapsulation
-        .getField(dispatcher, "configurations");
+    Map<String, URLMappedConfigurationItem> items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 0);
 
-    new Expectations() {
-      {
-        context.get(RestBodyHandler.BYPASS_BODY_HANDLER);
-        result = Boolean.TRUE;
-        context.next();
-      }
-    };
+    RoutingContext context = Mockito.mock(RoutingContext.class);
+    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
+    EdgeInvocation invocation = Mockito.mock(EdgeInvocation.class);
+    Mockito.when(context.get(RestBodyHandler.BYPASS_BODY_HANDLER)).thenReturn(Boolean.TRUE);
     dispatcher.onRequest(context);
 
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.path", "/a/b/c/.*");
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.microserviceName", "serviceName");
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.prefixSegmentCount", 2);
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule", "2.0.0+");
-    items = Deencapsulation.getField(dispatcher, "configurations");
+    items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 1);
     URLMappedConfigurationItem item = items.get("service1");
     Assertions.assertEquals(item.getMicroserviceName(), "serviceName");
@@ -76,7 +73,7 @@ public class TestURLMappedEdgeDispatcher {
 
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service2.versionRule", "2.0.0+");
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service3.path", "/b/c/d/.*");
-    items = Deencapsulation.getField(dispatcher, "configurations");
+    items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 1);
     item = items.get("service1");
     Assertions.assertEquals(item.getMicroserviceName(), "serviceName");
@@ -85,23 +82,21 @@ public class TestURLMappedEdgeDispatcher {
     Assertions.assertEquals(item.getVersionRule(), "2.0.0+");
 
     URLMappedConfigurationItem finalItem = item;
-    new Expectations() {
-      {
-        context.get(RestBodyHandler.BYPASS_BODY_HANDLER);
-        result = Boolean.FALSE;
-        context.get(URLMappedEdgeDispatcher.CONFIGURATION_ITEM);
-        result = finalItem;
-
-        context.request();
-        result = requst;
-        requst.path();
-        result = "/a/b/c/d/e";
-        invocation.setVersionRule("2.0.0+");
-        invocation.init("serviceName", context, "/c/d/e",
-            Deencapsulation.getField(dispatcher, "httpServerFilters"));
-        invocation.edgeInvoke();
-      }
-    };
-    dispatcher.onRequest(context);
+    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
+      vertxMockedStatic.when(Vertx::currentContext).thenReturn(Mockito.mock(Context.class));
+      dispatcher = Mockito.spy(dispatcher);
+      RequestBody body = Mockito.mock(RequestBody.class);
+      Mockito.when(context.body()).thenReturn(body);
+      Mockito.when(body.buffer()).thenReturn(Mockito.mock(Buffer.class));
+      Mockito.when(context.get(RestBodyHandler.BYPASS_BODY_HANDLER)).thenReturn(Boolean.FALSE);
+      Mockito.when(context.get(URLMappedEdgeDispatcher.CONFIGURATION_ITEM)).thenReturn(finalItem);
+      Mockito.when(context.request()).thenReturn(request);
+      Mockito.when(request.path()).thenReturn("/a/b/c/d/e");
+      Mockito.when(dispatcher.createEdgeInvocation()).thenReturn(invocation);
+      invocation.setVersionRule("2.0.0+");
+      invocation.init("serviceName", context, "/c/d/e", dispatcher.getHttpServerFilters());
+      Mockito.doNothing().when(invocation).edgeInvoke();
+      dispatcher.onRequest(context);
+    }
   }
 }

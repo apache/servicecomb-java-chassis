@@ -19,6 +19,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.UploadConfig;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -31,6 +32,11 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractVertxHttpDispatcher.class);
 
   protected List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
+
+  @VisibleForTesting
+  public List<HttpServerFilter> getHttpServerFilters() {
+    return httpServerFilters;
+  }
 
   protected BodyHandler createBodyHandler() {
     RestBodyHandler bodyHandler = new RestBodyHandler();
