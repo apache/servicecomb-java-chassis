@@ -19,11 +19,11 @@ package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.Test;
 
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestAbstractEdgeDispatcher {
