@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.edge.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
@@ -27,11 +24,7 @@ import org.junit.Test;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestAbstractEdgeDispatcher {
   static class AbstractEdgeDispatcherForTest extends AbstractEdgeDispatcher {
@@ -46,51 +39,25 @@ public class TestAbstractEdgeDispatcher {
   }
 
   @Test
-  public void onFailure(@Mocked RoutingContext context) {
-    Map<String, Object> map = new HashMap<>();
-    HttpServerResponse response = new MockUp<HttpServerResponse>() {
-      @Mock
-      HttpServerResponse setStatusCode(int statusCode) {
-        map.put("code", statusCode);
-        return null;
-      }
+  public void onFailure() {
+    RoutingContext context = Mockito.mock(RoutingContext.class);
 
-      @Mock
-      HttpServerResponse setStatusMessage(String statusMessage) {
-        map.put("msg", statusMessage);
-        return null;
-      }
-    }.getMockInstance();
+    HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
 
-    new Expectations() {
-      {
-        context.failure();
-        returns(new RuntimeExceptionWithoutStackTrace("failed"), null);
-        context.response();
-        result = response;
-      }
-    };
+    Mockito.when(context.response()).thenReturn(response);
+    Mockito.when(context.failure()).thenReturn(new RuntimeExceptionWithoutStackTrace("failed"));
 
     AbstractEdgeDispatcherForTest dispatcher = new AbstractEdgeDispatcherForTest();
     dispatcher.onFailure(context);
 
-    Assertions.assertEquals(502, map.get("code"));
-    Assertions.assertEquals("Bad Gateway", map.get("msg"));
+    Mockito.verify(response).setStatusMessage("Bad Gateway");
+    Mockito.verify(response).setStatusCode(502);
 
-    new Expectations() {
-      {
-        context.failure();
-        returns(new InvocationException(401, "unauthorized", "unauthorized"),
-            new InvocationException(401, "unauthorized", "unauthorized"));
-        context.response();
-        result = response;
-      }
-    };
+    Mockito.when(context.failure()).thenReturn(new InvocationException(401, "unauthorized", "unauthorized"));
 
     dispatcher = new AbstractEdgeDispatcherForTest();
     dispatcher.onFailure(context);
-
-    Assertions.assertEquals(401, map.get("code"));
-    Assertions.assertEquals("unauthorized", map.get("msg"));
+    Mockito.verify(response).setStatusMessage("unauthorized");
+    Mockito.verify(response).setStatusCode(401);
   }
 }

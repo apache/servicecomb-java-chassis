@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.vertx.ext.web.handler.PlatformHandler;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.slf4j.Logger;
@@ -55,6 +56,11 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
     if (this.enabled()) {
       loadConfigurations();
     }
+  }
+
+  @VisibleForTesting
+  public Map<String, URLMappedConfigurationItem> getConfigurations() {
+    return configurations;
   }
 
   @Override
