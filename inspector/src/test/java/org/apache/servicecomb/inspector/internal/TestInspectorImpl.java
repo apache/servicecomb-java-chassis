@@ -63,15 +63,17 @@ import org.junit.Test;
 
 import com.netflix.config.DynamicProperty;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
+import org.mockito.Mockito;
 
 public class TestInspectorImpl {
   static Map<String, String> schemas = new LinkedHashMap<>();
 
   static InspectorImpl inspector;
+
+  static RegistrationManager originRegistrationManagerInstance;
 
   @BeforeClass
   public static void setup() throws IOException {
@@ -82,6 +84,7 @@ public class TestInspectorImpl {
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema2.yaml"), StandardCharsets.UTF_8));
 
     inspector = initInspector(null);
+    originRegistrationManagerInstance = RegistrationManager.INSTANCE;
   }
 
   private static InspectorImpl initInspector(String urlPrefix) {
@@ -89,7 +92,7 @@ public class TestInspectorImpl {
     scbEngine.getTransportManager().clearTransportBeforeInit();
 
     if (StringUtils.isNotEmpty(urlPrefix)) {
-      Map<String, Transport> transportMap = Deencapsulation.getField(scbEngine.getTransportManager(), "transportMap");
+      Map<String, Transport> transportMap = scbEngine.getTransportManager().getTransportMap();
       transportMap.put(RESTFUL, new ServletRestTransport());
       ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     }
@@ -129,24 +132,22 @@ public class TestInspectorImpl {
   }
 
   @Test
-  public void downloadSchemas_default_to_swagger(@Mocked Microservice microservice) throws IOException {
+  public void downloadSchemas_default_to_swagger() throws IOException {
+    Microservice microservice = Mockito.mock(Microservice.class);
     testDownloadSchemasSwagger(microservice, null);
   }
 
   @Test
-  public void downloadSchemas_swagger(@Mocked Microservice microservice) throws IOException {
+  public void downloadSchemas_swagger() throws IOException {
+    Microservice microservice = Mockito.mock(Microservice.class);
     testDownloadSchemasSwagger(microservice, SchemaFormat.SWAGGER);
   }
 
   private void testDownloadSchemasSwagger(Microservice microservice, SchemaFormat format) throws IOException {
-    new Expectations(RegistrationManager.INSTANCE) {
-      {
-        RegistrationManager.INSTANCE.getMicroservice();
-        result = microservice;
-        microservice.getServiceName();
-        result = "ms";
-      }
-    };
+    RegistrationManager spy = Mockito.spy(RegistrationManager.INSTANCE);
+    RegistrationManager.setINSTANCE(spy);
+    Mockito.when(spy.getMicroservice()).thenReturn(microservice);
+    Mockito.when(microservice.getServiceName()).thenReturn("ms");
 
     Response response = inspector.downloadSchemas(format);
     Part part = response.getResult();
@@ -162,15 +163,13 @@ public class TestInspectorImpl {
   }
 
   @Test
-  public void downloadSchemas_html(@Mocked Microservice microservice) throws IOException {
-    new Expectations(RegistrationManager.INSTANCE) {
-      {
-        RegistrationManager.INSTANCE.getMicroservice();
-        result = microservice;
-        microservice.getServiceName();
-        result = "ms";
-      }
-    };
+  public void downloadSchemas_html() throws IOException {
+    Microservice microservice = Mockito.mock(Microservice.class);
+    RegistrationManager spy = Mockito.spy(RegistrationManager.INSTANCE);
+    RegistrationManager.setINSTANCE(spy);
+    Mockito.when(spy.getMicroservice()).thenReturn(microservice);
+    Mockito.when(microservice.getServiceName()).thenReturn("ms");
+
     Response response = inspector.downloadSchemas(SchemaFormat.HTML);
     Part part = response.getResult();
     Assertions.assertEquals("ms.html.zip", part.getSubmittedFileName());
@@ -185,14 +184,10 @@ public class TestInspectorImpl {
   }
 
   @Test
+  @EnabledForJreRange(min = JRE.JAVA_9)
   public void downloadSchemas_failed() {
-    SchemaFormat format = SchemaFormat.SWAGGER;
-    new Expectations(format) {
-      {
-        format.getSuffix();
-        result = new RuntimeExceptionWithoutStackTrace("zip failed.");
-      }
-    };
+    SchemaFormat format = Mockito.spy(SchemaFormat.SWAGGER);
+    Mockito.doThrow(new RuntimeExceptionWithoutStackTrace("zip failed.")).when(format).getSuffix();
 
     try (LogCollector logCollector = new LogCollector()) {
       Response response = inspector.downloadSchemas(format);
@@ -364,9 +359,10 @@ public class TestInspectorImpl {
 
   @Test
   public void urlPrefix() {
+    RegistrationManager.setINSTANCE(originRegistrationManagerInstance);
     InspectorImpl inspector = initInspector("/webroot/rest");
 
-    Map<String, String> schemas = Deencapsulation.getField(inspector, "schemas");
+    Map<String, String> schemas = inspector.getSchemas();
     Assertions.assertTrue(schemas.get("schema1").indexOf("/webroot/rest/metrics") > 0);
   }
 }
