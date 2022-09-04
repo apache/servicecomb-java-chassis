@@ -40,6 +40,10 @@ public class TransportManager {
 
   private final Map<String, Transport> transportMap = new HashMap<>();
 
+  public Map<String, Transport> getTransportMap() {
+    return transportMap;
+  }
+
   public void clearTransportBeforeInit() {
     transports.clear();
   }

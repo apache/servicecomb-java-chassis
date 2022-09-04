@@ -42,6 +42,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandler;
 import org.apache.servicecomb.common.rest.resource.StaticResourceHandler;
@@ -106,6 +107,11 @@ public class InspectorImpl {
   public InspectorImpl setPropertyFactory(PriorityPropertyFactory propertyFactory) {
     this.propertyFactory = propertyFactory;
     return this;
+  }
+
+  @VisibleForTesting
+  public Map<String, String> getSchemas() {
+    return schemas;
   }
 
   public InspectorImpl setSchemas(Map<String, String> schemas) {
