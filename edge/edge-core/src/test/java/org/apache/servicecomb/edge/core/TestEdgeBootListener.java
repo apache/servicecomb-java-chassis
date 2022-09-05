@@ -21,24 +21,24 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.netflix.config.DynamicPropertyFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEdgeBootListener {
   EdgeBootListener listener = new EdgeBootListener();
 
   BootEvent bootEvent = new BootEvent();
 
-  @Before
+  @BeforeEach
   public void setup() {
     ArchaiusUtils.resetConfig();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     ArchaiusUtils.resetConfig();
     System.clearProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT);
