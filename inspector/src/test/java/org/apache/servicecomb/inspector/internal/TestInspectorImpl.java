@@ -57,13 +57,13 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.servlet.ServletRestTransport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.netflix.config.DynamicProperty;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
@@ -75,7 +75,7 @@ public class TestInspectorImpl {
 
   static RegistrationManager originRegistrationManagerInstance;
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() throws IOException {
     ConfigUtil.installDynamicConfig();
     schemas.put("schema1", IOUtils
@@ -105,7 +105,7 @@ public class TestInspectorImpl {
     return inspector;
   }
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     ArchaiusUtils.resetConfig();
     SCBEngine.getInstance().destroy();
