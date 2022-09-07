@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -75,15 +76,15 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 @SuppressWarnings("deprecation")
 public class TestAbstractRestInvocation {
@@ -182,8 +183,10 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
 
     InvocationException exception = Assertions.assertThrows(InvocationException.class,
-            () -> restInvocation.initProduceProcessor());
-    Assertions.assertEquals("InvocationException: code=406;msg=CommonExceptionData [message=Accept notExistType is not supported]", exception.getMessage());
+        () -> restInvocation.initProduceProcessor());
+    Assertions.assertEquals(
+        "InvocationException: code=406;msg=CommonExceptionData [message=Accept notExistType is not supported]",
+        exception.getMessage());
   }
 
   @Test
@@ -652,8 +655,9 @@ public class TestAbstractRestInvocation {
 
     HttpServerFilter filter = new HttpServerFilterBaseForTest() {
       @Override
-      public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+      public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
         buffer.appendString("-filter");
+        return CompletableFuture.completedFuture(null);
       }
     };
 
@@ -674,9 +678,9 @@ public class TestAbstractRestInvocation {
     try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
       mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(null);
       InvocationException exception = Assertions.assertThrows(InvocationException.class,
-              () -> restInvocation.findRestOperation(microserviceMeta));
+          () -> restInvocation.findRestOperation(microserviceMeta));
       Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]",
-              exception.getMessage());
+          exception.getMessage());
     }
   }
 
@@ -698,7 +702,8 @@ public class TestAbstractRestInvocation {
       };
       restInvocation.requestEx = requestEx;
       Map<String, String> pathVars = new HashMap<>();
-      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
+      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta))
+          .thenReturn(servicePathManager);
       Mockito.when(locator.getPathVarMap()).thenReturn(pathVars);
       Mockito.when(locator.getOperation()).thenReturn(restOperation);
 
@@ -937,7 +942,8 @@ public class TestAbstractRestInvocation {
   @Test
   public void scheduleInvocation_flowControlReject() {
     operationMeta = Mockito.spy(operationMeta);
-    Mockito.when(operationMeta.getProviderQpsFlowControlHandler()).thenReturn((invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
+    Mockito.when(operationMeta.getProviderQpsFlowControlHandler())
+        .thenReturn((invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
             new HttpStatus(429, "Too Many Requests"),
             new CommonExceptionData("rejected by qps flowcontrol"))));
     restOperation = Mockito.spy(restOperation);

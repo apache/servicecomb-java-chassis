@@ -37,6 +37,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -121,7 +122,8 @@ public class TestServiceRegistryClientImpl {
     Assertions.assertFalse(oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
     Assertions.assertNull(oClient.heartbeat("microserviceId", "microserviceInstanceId"));
     Assertions.assertNull(oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
-    Assertions.assertNull(oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
+    Assertions.assertNull(
+        oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
 
     Assertions.assertEquals("a", new ClientException("a").getMessage());
 
@@ -540,9 +542,8 @@ public class TestServiceRegistryClientImpl {
     }.run();
   }
 
-  @SuppressWarnings("deprecation")
   @Test
-  public void undateMicroserviceInstanceStatus() {
+  public void updateMicroserviceInstanceStatus() {
     HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
       @Mock
       int statusCode() {
@@ -557,13 +558,13 @@ public class TestServiceRegistryClientImpl {
       }
     };
 
-    boolean result = oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", "UP");
+    boolean result = oClient.updateMicroserviceInstanceStatus
+        ("svcId", "instanceId", MicroserviceInstanceStatus.UP);
     Assertions.assertTrue(result);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
-  public void undateMicroserviceInstanceStatus_response_failure() {
+  public void updateMicroserviceInstanceStatus_response_failure() {
     HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
       @Mock
       int statusCode() {
@@ -578,26 +579,9 @@ public class TestServiceRegistryClientImpl {
       }
     };
 
-    boolean result = oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", "UP");
+    boolean result = oClient.updateMicroserviceInstanceStatus
+        ("svcId", "instanceId", MicroserviceInstanceStatus.UP);
     Assertions.assertFalse(result);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void undateMicroserviceInstanceStatus_illegal_status() {
-    try {
-      oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", null);
-      shouldThrowException();
-    } catch (NullPointerException e) {
-      Assertions.assertEquals("Name is null", e.getMessage());
-    }
-    try {
-      oClient
-          .undateMicroserviceInstanceStatus("svcId", "instanceId", "IllegalStatus");
-      shouldThrowException();
-    } catch (IllegalArgumentException e) {
-      Assertions.assertEquals("Invalid status: IllegalStatus", e.getMessage());
-    }
   }
 
   private void shouldThrowException() {

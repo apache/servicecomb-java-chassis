@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -39,9 +41,9 @@ public class JaxrsDemoHttpServerFilter implements HttpServerFilter {
   }
 
   @Override
-  @SuppressWarnings("deprecation")
-  public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     // in 404 situation, invocation is null and a NPE is thrown
     LOGGER.info("JaxrsDemoHttpServerFilter is called, operation=[{}]", invocation.getOperationName());
+    return CompletableFuture.completedFuture(null);
   }
 }

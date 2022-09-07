@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -28,6 +29,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
@@ -48,6 +50,11 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
   @Override
   public int getOrder() {
     return 10000;
+  }
+
+  @Override
+  public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
+    return CompletableFuture.completedFuture(null);
   }
 
   @Override

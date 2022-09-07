@@ -39,17 +39,18 @@ public class TestHttpServerFilter {
   public void asyncFailed() throws InterruptedException, ExecutionException {
     HttpServerFilter filter = new HttpServerFilterBaseForTest() {
       @Override
-      @SuppressWarnings("deprecation")
-      public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-        throw new RuntimeExceptionWithoutStackTrace();
+      public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
+        CompletableFuture<Void> result = new CompletableFuture<>();
+        result.completeExceptionally(new RuntimeExceptionWithoutStackTrace());
+        return result;
       }
     };
 
     ExecutionException exception = Assertions.assertThrows(ExecutionException.class,
-            () -> {
-              CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
-              future.get();
-            });
+        () -> {
+          CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
+          future.get();
+        });
     Assertions.assertTrue(exception.getCause() instanceof RuntimeExceptionWithoutStackTrace);
   }
 }
