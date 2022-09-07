@@ -17,11 +17,13 @@
 package org.apache.servicecomb.it.edge.encrypt.filter;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.it.authentication.encrypt.Hcr;
 import org.apache.servicecomb.it.edge.EdgeConst;
 import org.apache.servicecomb.it.edge.encrypt.EncryptContext;
@@ -62,5 +64,10 @@ public class DecodeBodyFilter implements HttpServerFilter {
       return Response.producerFailResp(e);
     }
     return null;
+  }
+
+  @Override
+  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
+    return CompletableFuture.completedFuture(null);
   }
 }

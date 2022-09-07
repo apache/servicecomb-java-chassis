@@ -53,7 +53,7 @@ public class HttpClientFilterBeforeSendRequestExecutor {
         if (future == null) {
           future = new CompletableFuture<>();
           future.completeExceptionally(new IllegalStateException(
-              "HttpClientFilter beforeSendRequestAsync can not return null, do not override it. Class="
+              "HttpClientFilter beforeSendRequestAsync can not return null. Class="
                   + httpClientFilter.getClass()
                   .getName()));
         }

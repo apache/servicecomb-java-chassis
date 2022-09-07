@@ -18,12 +18,14 @@
 package org.apache.servicecomb.it.edge.filter;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
@@ -49,6 +51,11 @@ public class CheckRawFormParamFilter implements HttpServerFilter {
       return Response.failResp(new InvocationException(Status.BAD_REQUEST, "param is not map"));
     }
     return checkRequestType((Map<Object, Object>) swaggerArgument);
+  }
+
+  @Override
+  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
+    return CompletableFuture.completedFuture(null);
   }
 
   private Response checkRequestType(Map<Object, Object> swaggerArgument) {

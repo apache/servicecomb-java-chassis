@@ -46,24 +46,6 @@ public interface HttpServerFilter {
    * callback method before send a server response.
    */
   default CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
-    CompletableFuture<Void> future = new CompletableFuture<>();
-    try {
-      beforeSendResponse(invocation, responseEx);
-      future.complete(null);
-    } catch (Throwable e) {
-      future.completeExceptionally(e);
-    }
-    return future;
-  }
-
-  /**
-   * callback method before send a server response.
-   *
-   * @Deprecated this method may be called in an event-loop thread, do not add blocking
-   * methods. Implement #beforeSendResponseAsync instead.
-   */
-  @Deprecated
-  default void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-
+    return CompletableFuture.completedFuture(null);
   }
 }

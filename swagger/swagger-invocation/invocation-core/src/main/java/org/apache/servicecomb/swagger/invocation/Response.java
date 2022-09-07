@@ -46,11 +46,6 @@ public class Response {
     return HttpStatus.isSuccess(status);
   }
 
-  @Deprecated
-  public boolean isSuccessed() {
-    return isSucceed();
-  }
-
   public boolean isFailed() {
     return !isSucceed();
   }

@@ -17,18 +17,16 @@
 
 package org.apache.servicecomb.demo.signature;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ServerSignature implements HttpServerFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServerSignature.class);
-
   public ServerSignature() {
   }
 
@@ -44,22 +42,13 @@ public class ServerSignature implements HttpServerFilter {
 
   @Override
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
-//    String signature = SignatureUtils.genSignature(requestEx);
-//    String clientSignature = requestEx.getHeader("signature");
-//    LOGGER.debug("check request signature, client: {}, server: {}.", clientSignature, signature);
-//    if (!signature.equals(clientSignature)) {
-//      LOGGER.error("check request signature failed: {}", invocation.getInvocationQualifiedName());
-//      return Response
-//          .create(Status.UNAUTHORIZED, "check request signature failed: " + invocation.getInvocationQualifiedName());
-//    }
-
     return null;
   }
 
   @Override
-  @SuppressWarnings("deprecation")
-  public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     String signature = SignatureUtils.genSignature(responseEx);
     responseEx.addHeader("signature", signature);
+    return CompletableFuture.completedFuture(null);
   }
 }

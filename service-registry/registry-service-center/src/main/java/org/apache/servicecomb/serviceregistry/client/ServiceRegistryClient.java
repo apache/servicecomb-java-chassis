@@ -163,8 +163,6 @@ public interface ServiceRegistryClient {
 
   /**
    * 通过serviceId， instanceId 获取instance对象。
-   * @param serviceId
-   * @param instanceId
    * @return MicroserviceInstance
    */
   MicroserviceInstance findServiceInstance(String serviceId, String instanceId);
@@ -173,26 +171,6 @@ public interface ServiceRegistryClient {
    * get ServiceCenterVersionInfo
    */
   ServiceCenterInfo getServiceCenterInfo();
-
-  /**
-   * 修改微服务实例状态
-   * @param microserviceId
-   * @param microserviceInstanceId
-   * @return
-   * @deprecated use {@link #updateMicroserviceInstanceStatus(String, String, MicroserviceInstanceStatus)} instead
-   */
-  @Deprecated
-  default boolean undateMicroserviceInstanceStatus(String microserviceId, String microserviceInstanceId,
-      String status) {
-    MicroserviceInstanceStatus instanceStatus;
-    try {
-      instanceStatus = MicroserviceInstanceStatus.valueOf(status);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Invalid status: " + status);
-    }
-
-    return updateMicroserviceInstanceStatus(microserviceId, microserviceInstanceId, instanceStatus);
-  }
 
   /**
    * Update the instance status registered in service center.
