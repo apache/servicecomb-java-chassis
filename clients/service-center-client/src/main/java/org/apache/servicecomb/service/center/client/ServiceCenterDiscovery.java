@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -186,7 +187,11 @@ public class ServiceCenterDiscovery extends AbstractTask {
       }
     } catch (Exception e) {
       LOGGER.error("find service {}#{} instance failed.", k.appId, k.serviceName, e);
-      failedKeys.add(k);
+      if (!(e.getCause() instanceof IOException)) {
+        // for IOException, do not remove cache, or when service center
+        // not available, invocation between microservices will fail.
+        failedKeys.add(k);
+      }
     }
     return failedKeys;
   }
