@@ -427,8 +427,8 @@
             <artifactId>org.abego.treelayout.core</artifactId>
           </exclusion>
           <exclusion>
-              <groupId>com.google.inject.extensions</groupId>
-              <artifactId>guice-multibindings</artifactId>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
