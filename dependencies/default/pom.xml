@@ -56,6 +56,7 @@
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.12</hdr-histogram.version>
     <hibernate-validator.version>6.2.4.Final</hibernate-validator.version>
+    <hibernate-validator.api.version>3.0.0</hibernate-validator.api.version>
     <httpcomponents.version>4.5.13</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
     <jackson.version>2.13.4</jackson.version>
@@ -427,8 +428,8 @@
             <artifactId>org.abego.treelayout.core</artifactId>
           </exclusion>
           <exclusion>
-              <groupId>com.google.inject.extensions</groupId>
-              <artifactId>guice-multibindings</artifactId>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -672,6 +673,11 @@
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
         <version>${hibernate-validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>${hibernate-validator.api.version}</version>
       </dependency>
 
       <dependency>
