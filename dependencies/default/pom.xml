@@ -90,7 +90,7 @@
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
     <servlet-api.version>4.0.4</servlet-api.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.1</slf4j.version>
     <snakeyaml.version>1.32</snakeyaml.version>
     <spectator.version>1.3.6</spectator.version>
     <spring.version>5.3.22</spring.version>
