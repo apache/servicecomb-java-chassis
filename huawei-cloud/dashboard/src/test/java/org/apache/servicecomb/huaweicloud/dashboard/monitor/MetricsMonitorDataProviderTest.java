@@ -16,6 +16,15 @@
  */
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,5 +35,16 @@ public class MetricsMonitorDataProviderTest {
     Assertions.assertTrue("202".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
     Assertions.assertFalse("2002".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
     Assertions.assertFalse("400".matches(MetricsMonitorDataProvider.CODE_SUCCESS));
+  }
+
+  @Test
+  public void testEnvironment() {
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(ServiceRegistryConfig.INSTANCE, configuration);
+    Microservice microservice = serviceRegistry.getMicroservice();
+    MonitorDataProvider monitorDataProvider = new HealthMonitorDataProvider();
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+    Assert.assertEquals(monitorDataProvider.getData().getEnvironment(), microservice.getEnvironment());
+    Assert.assertEquals("development", monitorDataProvider.getData().getEnvironment());
   }
 }

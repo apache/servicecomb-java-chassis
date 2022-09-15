@@ -227,16 +227,6 @@ public class BootStrapProperties {
     return readServiceInstanceExtendedClass(BootStrapProperties.configuration);
   }
 
-  public static String readServiceInstanceEnvironment(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_INSTANCE_ENVIRONMENT,
-        OLD_CONFIG_SERVICE_INSTANCE_ENVIRONMENT,
-        DEFAULT_MICROSERVICE_INSTANCE_ENVIRONMENT);
-  }
-
-  public static String readServiceInstanceEnvironment() {
-    return readServiceInstanceEnvironment(BootStrapProperties.configuration);
-  }
-
   public static String readServiceInstanceInitialStatus(Configuration configuration) {
     return readStringValue(configuration, CONFIG_SERVICE_INSTANCE_INITIAL_STATUS,
         OLD_CONFIG_SERVICE_INSTANCE_INITIAL_STATUS,

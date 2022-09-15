@@ -53,12 +53,6 @@ public class MicroserviceInstance {
 
   private HealthCheck healthCheck;
 
-  /**
-   * Will be abandoned, use Microservice Environment instead
-   */
-  @Deprecated
-  private String environment;
-
   private String stage;
 
   private DataCenterInfo dataCenterInfo;
@@ -149,14 +143,6 @@ public class MicroserviceInstance {
     this.healthCheck = healthCheck;
   }
 
-  public String getEnvironment() {
-    return environment;
-  }
-
-  public void setEnvironment(String environment) {
-    this.environment = environment;
-  }
-
   @Deprecated
   public String getStage() {
     return stage;
@@ -193,8 +179,6 @@ public class MicroserviceInstance {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     // default hard coded values
     microserviceInstance.setStage(DefinitionConst.DEFAULT_STAGE);
-    microserviceInstance
-        .setEnvironment(BootStrapProperties.readServiceInstanceEnvironment(configuration));
     microserviceInstance.setStatus(MicroserviceInstanceStatus
         .valueOf(BootStrapProperties.readServiceInstanceInitialStatus()));
     HealthCheck healthCheck = new HealthCheck();
