@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.demo.zeroconfig.tests;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
@@ -39,6 +41,29 @@ public class ServerTest implements CategorizedTestCase {
     testGetAllMicroservice();
     testJsonObject();
     testString();
+    testDateForEdge();
+  }
+
+  @SuppressWarnings("unchecked")
+  private void testDateForEdge() {
+    for (int i = 0; i < 3; i++) {
+      ClientModel clientModelReq = new ClientModel();
+      Date date = new Date(1663590135202L);
+      clientModelReq.setUpdateDate(date);
+      Map<String, Object> response = template
+          .postForObject(
+              "cse://demo-zeroconfig-schemadiscovery-registry-edge"
+                  + "/register/url/prefix/postModel", clientModelReq,
+              Map.class);
+      Object result = response.get("updateDate");
+      // TODO: highway and rest Date field will give different result
+      // we can not change this now, because it is incompatible
+      if (result instanceof Long) {
+        TestMgr.check(((Long) response.get("updateDate")).longValue(), 1663590135202L);
+      } else {
+        TestMgr.check(response.get("updateDate"), "2022-09-19T12:22:15.202+00:00");
+      }
+    }
   }
 
   private void testServerGetName() throws Exception {

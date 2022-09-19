@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.Date;
@@ -53,21 +54,6 @@ public class Int64WriteSchemas {
         return;
       }
 
-      if (value instanceof String[]) {
-        if (((String[]) value).length == 0) {
-          return;
-        }
-        long parsedValue = Long.parseLong(((String[]) value)[0], 10);
-        output.writeScalarInt64(tag, tagSize, parsedValue);
-        return;
-      }
-
-      if (value instanceof String) {
-        long parsedValue = Long.parseLong((String) value, 10);
-        output.writeScalarInt64(tag, tagSize, parsedValue);
-        return;
-      }
-
       if (value instanceof Date) {
         long parsedValue = ((Date) value).getTime();
         output.writeScalarInt64(tag, tagSize, parsedValue);
@@ -82,6 +68,28 @@ public class Int64WriteSchemas {
 
       if (value instanceof LocalDateTime) {
         long parsedValue = ((LocalDateTime) value).toInstant(ZoneOffset.UTC).toEpochMilli();
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof String) {
+        long parsedValue;
+        if (((String) value).contains(":")) {
+          // from edge, ISO8601 date time, e.g. 2022-05-31T09:16:38.941Z
+          OffsetDateTime offsetDateTime = OffsetDateTime.parse((String) value);
+          parsedValue = offsetDateTime.toInstant().toEpochMilli();
+        } else {
+          parsedValue = Long.parseLong((String) value, 10);
+        }
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof String[]) {
+        if (((String[]) value).length == 0) {
+          return;
+        }
+        long parsedValue = Long.parseLong(((String[]) value)[0], 10);
         output.writeScalarInt64(tag, tagSize, parsedValue);
         return;
       }
