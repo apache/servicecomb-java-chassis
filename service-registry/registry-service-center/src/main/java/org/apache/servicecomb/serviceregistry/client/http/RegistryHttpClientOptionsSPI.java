@@ -130,7 +130,11 @@ public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getKeepAliveTimeout() {
-    return HttpClientOptions.DEFAULT_KEEP_ALIVE_TIMEOUT;
+    int result = getIdleTimeoutInSeconds();
+    if (result > 1) {
+      return result - 1;
+    }
+    return result;
   }
 
   @Override

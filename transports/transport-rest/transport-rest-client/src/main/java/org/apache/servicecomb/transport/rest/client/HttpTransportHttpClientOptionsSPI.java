@@ -128,7 +128,7 @@ public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getKeepAliveTimeout() {
-    return TransportClientConfig.getConnectionIdleTimeoutInSeconds();
+    return TransportClientConfig.getConnectionKeepAliveTimeoutInSeconds();
   }
 
   @Override
