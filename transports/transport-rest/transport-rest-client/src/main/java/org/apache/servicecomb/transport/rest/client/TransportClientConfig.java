@@ -93,6 +93,21 @@ public final class TransportClientConfig {
         .get();
   }
 
+  public static int getConnectionKeepAliveTimeoutInSeconds() {
+    int result = DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.client.connection.keepAliveTimeoutInSeconds",
+            -1)
+        .get();
+    if (result >= 0) {
+      return result;
+    }
+    result = getConnectionIdleTimeoutInSeconds();
+    if (result > 1) {
+      return result - 1; // a bit shorter than ConnectionIdleTimeoutInSeconds
+    }
+    return result;
+  }
+
   public static boolean getConnectionCompression() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.client.connection.compression",
