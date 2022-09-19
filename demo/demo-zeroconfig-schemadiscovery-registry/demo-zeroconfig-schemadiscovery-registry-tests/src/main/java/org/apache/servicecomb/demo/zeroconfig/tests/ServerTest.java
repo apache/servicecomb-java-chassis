@@ -59,7 +59,7 @@ public class ServerTest implements CategorizedTestCase {
       // TODO: highway and rest Date field will give different result
       // we can not change this now, because it is incompatible
       if (result instanceof Long) {
-        TestMgr.check(((Long) response.get("updateDate")).longValue(), 1663590135202L);
+        TestMgr.check(response.get("updateDate"), 1663590135202L);
       } else {
         TestMgr.check(response.get("updateDate"), "2022-09-19T12:22:15.202+00:00");
       }
