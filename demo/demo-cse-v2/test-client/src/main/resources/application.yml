@@ -28,11 +28,11 @@ servicecomb:
     name: test-client
     version: 0.0.1
     registry:
-      address: ${CSE_V2_SC}
+      address: ${PAAS_CSE_SC_ENDPOINT:http://127.0.0.1:30100}
       instance:
         watch: false
   kie:
-    serverUri: ${CSE_V2_CC}
+    serverUri: ${PAAS_CSE_CC_ENDPOINT:http://127.0.0.1:30110}
     customLabel: public
 
   rest:
