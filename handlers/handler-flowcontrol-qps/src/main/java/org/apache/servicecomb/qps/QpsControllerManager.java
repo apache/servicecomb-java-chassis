@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -33,6 +32,7 @@ import org.apache.servicecomb.qps.strategy.IStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicProperty;
 
 public class QpsControllerManager {
@@ -162,11 +162,6 @@ public class QpsControllerManager {
     return null;
   }
 
-  private boolean keyMatch(String configKey, Entry<String, AbstractQpsStrategy> controllerEntry) {
-    return controllerEntry.getKey().equals(configKey)
-        || controllerEntry.getKey().startsWith(configKey + SEPARATOR);
-  }
-
   private boolean isValidQpsController(AbstractQpsStrategy qpsStrategy) {
     return null != qpsStrategy && null != qpsStrategy.getQpsLimit();
   }
@@ -189,37 +184,37 @@ public class QpsControllerManager {
       configQpsControllerMap.put(configKey, innerQpsStrategy);
       LOGGER.info("Global flow control strategy update, value = [{}]",
           strategyProperty.getString());
-      updateObjMap(configKey);
+      updateObjMap();
     });
     limitProperty.addCallback(() -> {
       qpsStrategy.setQpsLimit(limitProperty.getLong());
       LOGGER.info("Qps limit updated, configKey = [{}], value = [{}]", configKey,
           limitProperty.getString());
-      updateObjMap(configKey);
+      updateObjMap();
     });
     bucketProperty.addCallback(() -> {
       qpsStrategy.setBucketLimit(bucketProperty.getLong());
       LOGGER.info("bucket limit updated, configKey = [{}], value = [{}]", configKey,
           bucketProperty.getString());
-      updateObjMap(configKey);
+      updateObjMap();
     });
 
     configQpsControllerMap.put(configKey, qpsStrategy);
   }
 
-  protected void updateObjMap(String configKey) {
+  protected void updateObjMap() {
     Iterator<Entry<String, AbstractQpsStrategy>> it = qualifiedNameControllerMap.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<String, AbstractQpsStrategy> entry = it.next();
-      if (keyMatch(configKey, entry)) {
-        AbstractQpsStrategy qpsStrategy = searchQpsController(entry.getKey());
-        if (qpsStrategy != null) {
-          entry.setValue(qpsStrategy);
-          LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
-              entry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
-        } else {
-          it.remove();
-        }
+      AbstractQpsStrategy qpsStrategy = searchQpsController(entry.getKey());
+      if (qpsStrategy == null) {
+        it.remove();
+        continue;
+      }
+      if (qpsStrategy != entry.getValue()) {
+        entry.setValue(qpsStrategy);
+        LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
+            entry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
       }
     }
   }

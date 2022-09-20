@@ -3,8 +3,8 @@
 * 参考：https://support.huaweicloud.com/devg-cse/cse_devg_0036.html 安装微服务引擎2.0
 
 * 设置环境变量:
-  * CSE_V2_SC: 注册中心的地址
-  * CSE_V2_CC: 配置中心的地址
+  * PAAS_CSE_SC_ENDPOINT: 注册中心的地址
+  * PAAS_CSE_CC_ENDPOINT: 配置中心的地址
 
 * 依次启动 provider、consumer、gateway
 
