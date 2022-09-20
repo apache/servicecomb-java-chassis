@@ -108,12 +108,14 @@ public class TcpConnection {
       cbb.addComponent(true, buf);
 
       if (cbb.numComponents() == cbb.maxNumComponents()) {
-        netSocket.write(Buffer.buffer(cbb));
+        CompositeByteBuf last = cbb;
+        netSocket.write(Buffer.buffer(last)).onComplete(r -> last.release());
         cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
       }
     }
     if (cbb.isReadable()) {
-      netSocket.write(Buffer.buffer(cbb));
+      CompositeByteBuf last = cbb;
+      netSocket.write(Buffer.buffer(last)).onComplete(r -> last.release());
     }
   }
 }

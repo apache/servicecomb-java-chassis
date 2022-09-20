@@ -40,10 +40,16 @@ public final class MatchType {
         request.setHeaders(getHeaderMap(invocation, true));
         return request;
       }
-      request.setUri(invocation.getRequestEx().getRequestURI());
-      request.setMethod(invocation.getRequestEx().getMethod());
-      request.setHeaders(getHeaderMap(invocation, false));
-      return request;
+
+      // not highway
+      if (invocation.getRequestEx() != null) {
+        request.setUri(invocation.getRequestEx().getRequestURI());
+        request.setMethod(invocation.getRequestEx().getMethod());
+        request.setHeaders(getHeaderMap(invocation, false));
+        return request;
+      }
+
+      // maybe highway
     }
 
     if (invocation.isConsumer()) {

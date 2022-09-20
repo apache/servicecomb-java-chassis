@@ -27,6 +27,8 @@ service_description:
 servicecomb:
   rest:
     address: 0.0.0.0:8082
+  highway:
+    address: 0.0.0.0:8084
   config:
     client:
       # for testing dynamic configuration

@@ -83,4 +83,9 @@ public class ClientServerEndpoint {
   public String getString(@RawJsonRequestBody String jsonString) {
     return jsonString;
   }
+
+  @PostMapping(path = "/postModel")
+  public ClientModel postModel(@RequestBody ClientModel clientModel) {
+    return clientModel;
+  }
 }

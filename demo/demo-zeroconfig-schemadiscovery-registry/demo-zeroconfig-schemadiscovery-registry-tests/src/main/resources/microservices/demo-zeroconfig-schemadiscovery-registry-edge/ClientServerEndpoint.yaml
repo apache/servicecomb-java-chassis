@@ -53,3 +53,64 @@ paths:
             items:
               type: "string"
             uniqueItems: true
+  /getString:
+    post:
+      operationId: "getString"
+      parameters:
+        - in: "body"
+          name: "jsonString"
+          required: true
+          schema:
+            type: "string"
+          x-raw-json: true
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "string"
+  /jsonObject:
+    post:
+      operationId: "jsonObject"
+      parameters:
+        - in: "body"
+          name: "jsonObject"
+          required: true
+          schema:
+            $ref: "#/definitions/JsonObject"
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            $ref: "#/definitions/JsonObject"
+  /postModel:
+    post:
+      operationId: "postModel"
+      parameters:
+        - in: "body"
+          name: "clientModel"
+          required: true
+          schema:
+            $ref: "#/definitions/ClientModel"
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            $ref: "#/definitions/ClientModel"
+definitions:
+  JsonObject:
+    type: "object"
+    properties:
+      map:
+        type: "object"
+        additionalProperties:
+          type: "object"
+      empty:
+        type: "boolean"
+    x-java-class: "io.vertx.core.json.JsonObject"
+  ClientModel:
+    type: "object"
+    properties:
+      updateDate:
+        type: "string"
+        format: "date-time"
+    x-java-class: "org.apache.servicecomb.demo.zeroconfig.client.ClientModel"
