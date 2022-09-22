@@ -22,6 +22,8 @@ import java.util.Arrays;
 import org.apache.servicecomb.provider.pojo.registry.ThirdServiceWithInvokerRegister;
 import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 /**
  * see: https://github.com/apache/servicecomb-java-chassis/issues/2534
  */
@@ -30,6 +32,11 @@ public class Register extends ThirdServiceWithInvokerRegister {
   public Register() {
     super("third");
     addSchema("heartbeat", HealthSchema.class);
-    setUrls("", Arrays.asList("rest://localhost:8080?sslEnabled=false"));
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      setUrls("", Arrays.asList("rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi"));
+    } else {
+      setUrls("", Arrays.asList("rest://localhost:8080?sslEnabled=false"));
+    }
   }
 }

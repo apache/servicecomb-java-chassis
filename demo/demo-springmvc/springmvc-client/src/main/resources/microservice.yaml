@@ -142,7 +142,7 @@ cse:
 
 3rd-svc:
   urls:
-    - http://localhost:8080
+    - rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi
 
 #########SSL options
 ssl.protocols: TLSv1.2

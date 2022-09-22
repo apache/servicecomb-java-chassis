@@ -21,8 +21,6 @@ import java.util.List;
 import org.apache.servicecomb.governance.entity.Configurable;
 
 public class TrafficMarker extends Configurable {
-  private String name;
-
   private List<Matcher> matches;
 
   @Override
@@ -39,16 +37,6 @@ public class TrafficMarker extends Configurable {
 
   public void setMatches(List<Matcher> matches) {
     this.matches = matches;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public void setName(String name) {
-    this.name = name;
   }
 
   public boolean checkMatch(GovernanceRequest governanceRequest, RequestProcessor requestProcessor) {

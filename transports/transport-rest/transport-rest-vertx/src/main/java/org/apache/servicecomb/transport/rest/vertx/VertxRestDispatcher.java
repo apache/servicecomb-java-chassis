@@ -54,7 +54,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
   private static final String KEY_ENABLED = "servicecomb.http.dispatcher.rest.enabled";
 
-  private static final String KEY_PATTERN = "servicecomb.http.dispatcher.rest.pattern";
+  public static final String KEY_PATTERN = "servicecomb.http.dispatcher.rest.pattern";
 
   private Transport transport;
 
