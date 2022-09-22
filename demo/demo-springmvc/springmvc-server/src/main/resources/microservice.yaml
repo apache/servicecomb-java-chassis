@@ -46,6 +46,10 @@ servicecomb:
       autodiscovery: true
   uploads:
     directory: target
+  http:
+    dispatcher:
+      rest:
+        pattern: "/api/(.*)"
   rest:
     address: 0.0.0.0:8080?sslEnabled=false
     server:

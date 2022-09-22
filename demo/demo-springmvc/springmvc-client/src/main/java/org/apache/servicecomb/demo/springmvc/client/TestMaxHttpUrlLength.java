@@ -39,12 +39,12 @@ public class TestMaxHttpUrlLength implements CategorizedTestCase {
   private void testUrlNotLongerThan4096() {
     RestTemplate restTemplate = RestTemplateBuilder.create();
 
-    String q = Strings.repeat("q", 4096 - "GET /springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
+    String q = Strings.repeat("q", 4096 - "GET /api/springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
     TestMgr.check("hi " + q + " [" + q + "]",
         restTemplate.getForObject("cse://springmvc/springmvc/controller/sayhi?name=" + q,
             String.class));
 
-    q = Strings.repeat("q", 4096 + 1 - "GET /springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
+    q = Strings.repeat("q", 4096 + 1 - "GET /api/springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
     try {
       restTemplate.getForObject("cse://springmvc/springmvc/controller/sayhi?name=" + q,
           String.class);

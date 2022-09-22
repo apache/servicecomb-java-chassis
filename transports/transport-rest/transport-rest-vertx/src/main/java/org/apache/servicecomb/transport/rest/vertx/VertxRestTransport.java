@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.servicecomb.core.Const;
@@ -25,14 +26,18 @@ import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.VertxOptions;
@@ -54,7 +59,17 @@ public class VertxRestTransport extends AbstractTransport {
 
   @Override
   public boolean canInit() {
-    setListenAddressWithoutSchema(TransportConfig.getAddress());
+    String pattern = DynamicPropertyFactory.getInstance()
+        .getStringProperty(VertxRestDispatcher.KEY_PATTERN, null).get();
+    String urlPrefix = null;
+    if (pattern == null || pattern.length() <= 5) {
+      setListenAddressWithoutSchema(TransportConfig.getAddress());
+    } else {
+      // e.g.  "/api/(.*)" -> "/api"
+      urlPrefix = pattern.substring(0, pattern.length() - 5);
+      setListenAddressWithoutSchema(TransportConfig.getAddress(),
+          Collections.singletonMap(DefinitionConst.URL_PREFIX, urlPrefix));
+    }
 
     URIEndpointObject ep = (URIEndpointObject) getEndpoint().getAddress();
     if (ep == null) {
@@ -63,9 +78,14 @@ public class VertxRestTransport extends AbstractTransport {
 
     if (!NetUtils.canTcpListen(ep.getSocketAddress().getAddress(), ep.getPort())) {
       LOGGER.warn(
-          "Can not start VertxRestTransport, the port:{} may have been occupied. You can ignore this message if you are using a web container like tomcat.",
+          "Can not start VertxRestTransport, the port:{} may have been occupied. "
+              + "You can ignore this message if you are using a web container like tomcat.",
           ep.getPort());
       return false;
+    }
+
+    if (urlPrefix != null) {
+      ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     }
 
     return true;

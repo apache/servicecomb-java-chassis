@@ -29,6 +29,8 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 @Component
 public class TestThirdPartyRegistration implements BootListener, CategorizedTestCase {
   private ThirdPartyService thirdPartyService;
@@ -36,7 +38,12 @@ public class TestThirdPartyRegistration implements BootListener, CategorizedTest
   @Override
   public void onAfterRegistry(BootEvent event) {
     List<String> endpoints = new ArrayList<>();
-    endpoints.add("rest://localhost:8080");
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      endpoints.add("rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi");
+    } else {
+      endpoints.add("rest://localhost:8080?sslEnabled=false");
+    }
     RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints("testServiceName",
         "1.0.1", endpoints, ThirdPartyService.class);
     thirdPartyService = Invoker.createProxy("testServiceName",
