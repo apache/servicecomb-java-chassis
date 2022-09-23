@@ -31,6 +31,9 @@ updates:
       - dependency-name: "asciidoctorj"
         versions:
           - "2.x"
+      - dependency-name: "hibernate-validator"
+        versions:
+          - "8.x"
       # asciidoctorj new version needs higher swagger2markup, which will need java11
       - dependency-name: "jakarta.activation"
         versions:
