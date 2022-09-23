@@ -17,9 +17,11 @@
 package org.apache.servicecomb.provider.pojo.reference;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
@@ -34,13 +36,21 @@ public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueRe
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
     // 扫描所有field，处理扩展的field标注
     ReflectionUtils.doWithFields(bean.getClass(), field -> processConsumerField(bean, field));
-
+    ReflectionUtils.doWithMethods(bean.getClass(), method -> processConsumerMethod(bean, beanName, method));
     return bean;
   }
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
     return bean;
+  }
+
+  protected void processConsumerMethod(Object bean, String beanName, Method method) throws BeansException {
+    RpcReference reference = method.getAnnotation(RpcReference.class);
+    if (reference == null) {
+      return;
+    }
+    handleReferenceMethod(bean, beanName, method, reference);
   }
 
   protected void processConsumerField(Object bean, Field field) {
@@ -57,19 +67,32 @@ public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueRe
     this.resolver = resolver;
   }
 
+  private void handleReferenceMethod(Object bean, String beanName, Method method, RpcReference reference)
+      throws BeansException {
+    try {
+      PojoReferenceMeta pojoReference = createPojoReferenceMeta(reference, method.getParameterTypes()[0]);
+      method.invoke(bean, pojoReference.getProxy());
+    } catch (Exception e) {
+      throw new BeanCreationException(beanName, "", e);
+    }
+  }
+
   private void handleReferenceField(Object obj, Field field,
       RpcReference reference) {
+    PojoReferenceMeta pojoReference = createPojoReferenceMeta(reference, field.getType());
+    ReflectionUtils.makeAccessible(field);
+    ReflectionUtils.setField(field, obj, pojoReference.getProxy());
+  }
+
+  private PojoReferenceMeta createPojoReferenceMeta(RpcReference reference, Class<?> consumerInterface) {
     String microserviceName = reference.microserviceName();
     microserviceName = resolver.resolveStringValue(microserviceName);
 
     PojoReferenceMeta pojoReference = new PojoReferenceMeta();
     pojoReference.setMicroserviceName(microserviceName);
     pojoReference.setSchemaId(reference.schemaId());
-    pojoReference.setConsumerIntf(field.getType());
-
+    pojoReference.setConsumerIntf(consumerInterface);
     pojoReference.afterPropertiesSet();
-
-    ReflectionUtils.makeAccessible(field);
-    ReflectionUtils.setField(field, obj, pojoReference.getProxy());
+    return pojoReference;
   }
 }

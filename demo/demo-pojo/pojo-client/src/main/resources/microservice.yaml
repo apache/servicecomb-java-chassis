@@ -53,3 +53,5 @@ servicecomb:
             FlowControlClientSchema:
               foo: 3
               bar: 3000
+  provider:
+    name: pojo
