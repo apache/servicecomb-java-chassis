@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
@@ -36,6 +36,7 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilterBeforeSendRespo
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
@@ -50,10 +51,17 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.netflix.config.DynamicPropertyFactory;
+
 public abstract class AbstractRestInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
 
   public static final String UNKNOWN_OPERATION_ID = "UNKNOWN_OPERATION";
+
+  private final Map<String, Object> headerContextMappers;
+
+  private final Map<String, Object> queryContextMappers;
 
   protected long start;
 
@@ -71,6 +79,23 @@ public abstract class AbstractRestInvocation {
 
   public AbstractRestInvocation() {
     this.start = System.nanoTime();
+
+    String headerContextMapper = DynamicPropertyFactory.getInstance()
+        .getStringProperty(RestConst.HEADER_CONTEXT_MAPPER, null).get();
+    String queryContextMapper = DynamicPropertyFactory.getInstance()
+        .getStringProperty(RestConst.QUERY_CONTEXT_MAPPER, null).get();
+
+    if (headerContextMapper != null) {
+      headerContextMappers = YAMLUtil.yaml2Properties(headerContextMapper);
+    } else {
+      headerContextMappers = new HashMap<>();
+    }
+
+    if (queryContextMapper != null) {
+      queryContextMappers = YAMLUtil.yaml2Properties(queryContextMapper);
+    } else {
+      queryContextMappers = new HashMap<>();
+    }
   }
 
   public void setHttpServerFilters(List<HttpServerFilter> httpServerFilters) {
@@ -110,6 +135,21 @@ public abstract class AbstractRestInvocation {
     Map<String, String> cseContext =
         JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
     invocation.mergeContext(cseContext);
+
+    addParameterContext();
+  }
+
+  protected void addParameterContext() {
+    headerContextMappers.forEach((k, v) -> {
+      if (v instanceof String && requestEx.getHeader(k) instanceof String) {
+        invocation.addContext((String) v, requestEx.getHeader(k));
+      }
+    });
+    queryContextMappers.forEach((k, v) -> {
+      if (v instanceof String && requestEx.getParameter(k) instanceof String) {
+        invocation.addContext((String) v, requestEx.getParameter(k));
+      }
+    });
   }
 
   public String getContext(String key) {

@@ -103,3 +103,8 @@ servicecomb:
       maxConcurrentCalls: 5
       ## services is optional in configuration file
       services: demo-zeroconfig-schemadiscovery-registry-client
+  context:
+    headerContextMapper: |
+      clientHeader: context-client-header
+    queryContextMapper: |
+      clientQuery: context-client-query

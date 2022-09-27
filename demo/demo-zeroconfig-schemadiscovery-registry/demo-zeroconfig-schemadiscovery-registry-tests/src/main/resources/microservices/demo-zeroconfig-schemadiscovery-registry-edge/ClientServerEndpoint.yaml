@@ -28,6 +28,31 @@ consumes:
 produces:
   - "application/json"
 paths:
+  /contextMapper:
+    get:
+      operationId: "contextMapper"
+      parameters:
+        - name: "gatewayHeader"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "clientHeader"
+          in: "header"
+          required: true
+          type: "string"
+        - name: "gatewayQuery"
+          in: "query"
+          required: true
+          type: "string"
+        - name: "clientQuery"
+          in: "query"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "string"
   /getName:
     get:
       operationId: "getName"

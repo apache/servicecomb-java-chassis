@@ -29,11 +29,11 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
 import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
 import org.apache.servicecomb.serviceregistry.event.NotPermittedEvent;
-import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,16 @@ public final class TokenCacheManager {
       this.cipher = cipher;
 
       if (enabled()) {
-        executorService = Executors.newFixedThreadPool(1, t -> new Thread(t, "rbac-executor-" + this.registryName));
+        executorService = Executors.newFixedThreadPool(1, t -> new Thread(t, "rbac-executor-" + this.registryName) {
+          @Override
+          public void run() {
+            try {
+              super.run();
+            } catch (Throwable e) {
+              LOGGER.error("", e);
+            }
+          }
+        });
         cache = CacheBuilder.newBuilder()
             .maximumSize(1)
             .refreshAfterWrite(refreshTime(), TimeUnit.MILLISECONDS)
