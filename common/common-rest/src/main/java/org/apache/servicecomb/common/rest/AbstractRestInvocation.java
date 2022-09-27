@@ -141,12 +141,12 @@ public abstract class AbstractRestInvocation {
 
   protected void addParameterContext() {
     headerContextMappers.forEach((k, v) -> {
-      if (v instanceof String && requestEx.getHeader(k) instanceof String) {
+      if (v instanceof String && requestEx.getHeader(k) != null) {
         invocation.addContext((String) v, requestEx.getHeader(k));
       }
     });
     queryContextMappers.forEach((k, v) -> {
-      if (v instanceof String && requestEx.getParameter(k) instanceof String) {
+      if (v instanceof String && requestEx.getParameter(k) != null) {
         invocation.addContext((String) v, requestEx.getParameter(k));
       }
     });
