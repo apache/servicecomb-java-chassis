@@ -33,7 +33,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 
-public class CseApplicationListener
+public class SCBApplicationListener
     implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware {
   private Class<?> initEventClass = ContextRefreshedEvent.class;
 
