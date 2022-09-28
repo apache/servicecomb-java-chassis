@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.zeroconfig.tests;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,12 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import io.vertx.core.json.JsonObject;
@@ -42,6 +49,18 @@ public class ServerTest implements CategorizedTestCase {
     testJsonObject();
     testString();
     testDateForEdge();
+    testContextMapper();
+  }
+
+  private void testContextMapper() throws URISyntaxException {
+    MultiValueMap<String, String> headers = new HttpHeaders();
+    headers.add("clientHeader", "v1");
+    headers.add("gatewayHeader", "v2");
+    RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
+        new URI("cse://demo-zeroconfig-schemadiscovery-registry-edge/register/url/prefix/contextMapper?clientQuery=v3&"
+            + "gatewayQuery=v4"));
+    ResponseEntity<String> response = template.exchange(requestEntity, String.class);
+    TestMgr.check(response.getBody(), "success");
   }
 
   @SuppressWarnings("unchecked")

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.event.ContextClosedEvent;
 
-public class TestCseApplicationListener {
+public class TestSCBApplicationListener {
   @BeforeEach
   public void before() {
     ConfigUtil.installDynamicConfig();
@@ -45,7 +45,7 @@ public class TestCseApplicationListener {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.setStatus(SCBStatus.UP);
 
-    CseApplicationListener listener = new CseApplicationListener();
+    SCBApplicationListener listener = new SCBApplicationListener();
     listener.onApplicationEvent(contextClosedEvent);
 
     Assertions.assertEquals(SCBStatus.DOWN, scbEngine.getStatus());

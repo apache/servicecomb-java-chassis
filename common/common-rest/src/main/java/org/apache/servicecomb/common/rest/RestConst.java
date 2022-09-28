@@ -82,4 +82,8 @@ public final class RestConst {
   public static final String PROVIDER_SCAN_REST_CONTROLLER = "servicecomb.provider.rest.scanRestController";
 
   public static final String PRINT_CODEC_ERROR_MESSGAGE = "servicecomb.codec.printErrorMessage";
+
+  public static final String HEADER_CONTEXT_MAPPER = "servicecomb.context.headerContextMapper";
+
+  public static final String QUERY_CONTEXT_MAPPER = "servicecomb.context.queryContextMapper";
 }

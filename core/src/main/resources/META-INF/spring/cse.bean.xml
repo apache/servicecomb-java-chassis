@@ -28,7 +28,7 @@
   <!-- initializer doing before any bean -->
   <bean class="org.apache.servicecomb.core.ConfigurationSpringInitializer"/>
   <!-- initializer after any bean initialized -->
-  <bean class="org.apache.servicecomb.core.CseApplicationListener"/>
+  <bean class="org.apache.servicecomb.core.SCBApplicationListener"/>
 
   <bean id="cse.executor.groupThreadPool" class="org.apache.servicecomb.core.executor.GroupExecutor"
     init-method="init"/>

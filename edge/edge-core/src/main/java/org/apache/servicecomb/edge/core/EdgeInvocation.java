@@ -121,5 +121,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   @Override
   public void setContext() throws Exception {
     // do not read InvocationContext from HTTP header, for security reason
+
+    addParameterContext();
   }
 }

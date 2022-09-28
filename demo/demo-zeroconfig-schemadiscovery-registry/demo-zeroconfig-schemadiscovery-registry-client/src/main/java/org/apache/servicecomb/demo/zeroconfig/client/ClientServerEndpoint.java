@@ -28,11 +28,12 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -41,9 +42,6 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "ClientServerEndpoint")
 @RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
 public class ClientServerEndpoint {
-  private static final Logger LOGGER
-      = LoggerFactory.getLogger(ClientServerEndpoint.class);
-
   @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
   private IServerEndpoint serverEndpoint;
 
@@ -87,5 +85,20 @@ public class ClientServerEndpoint {
   @PostMapping(path = "/postModel")
   public ClientModel postModel(@RequestBody ClientModel clientModel) {
     return clientModel;
+  }
+
+  @GetMapping(path = "/contextMapper")
+  public String contextMapper(@RequestHeader("gatewayHeader") String gatewayHeader,
+      @RequestHeader("clientHeader") String clientHeader,
+      @RequestParam("gatewayQuery") String gatewayQuery,
+      @RequestParam("clientQuery") String clientQuery) {
+    InvocationContext context = ContextUtils.getInvocationContext();
+    if (gatewayHeader.equals(context.getContext("context-gateway-header")) &&
+        clientHeader.equals(context.getContext("context-client-header")) &&
+        gatewayQuery.equals(context.getContext("context-gateway-query")) &&
+        clientQuery.equals(context.getContext("context-client-query"))) {
+      return "success";
+    }
+    return "fail";
   }
 }

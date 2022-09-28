@@ -29,13 +29,13 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-/**
- * Created by   on 2017/1/5.
- */
 public final class YAMLUtil {
-  private static final Yaml SAFE_PARSER = new Yaml(new SafeConstructor());
-
   private YAMLUtil() {
+  }
+
+  private static Yaml safeParser() {
+    // Yaml instance is not thread safe, create a new instance for each parser
+    return new Yaml(new SafeConstructor());
   }
 
   /**
@@ -50,7 +50,7 @@ public final class YAMLUtil {
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
-    SAFE_PARSER.loadAll(input).forEach(data -> {
+    safeParser().loadAll(input).forEach(data -> {
       if (data instanceof Map && isValidMap((Map<Object, Object>) data)) {
         configurations.putAll(retrieveItems("", (Map<String, Object>) data));
       } else {
@@ -84,7 +84,7 @@ public final class YAMLUtil {
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(String input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
-    SAFE_PARSER.loadAll(input).forEach(data -> {
+    safeParser().loadAll(input).forEach(data -> {
       if (data instanceof Map && isValidMap((Map<Object, Object>) data)) {
         configurations.putAll(retrieveItems("", (Map<String, Object>) data));
       } else {
