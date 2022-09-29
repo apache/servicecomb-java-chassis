@@ -33,7 +33,7 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
   private static final Logger LOGGER = LoggerFactory.getLogger(LeakyBucketStrategy.class);
 
   // Request count between Interval begin and now in one interval
-  private volatile AtomicLong requestCount = new AtomicLong();
+  private final AtomicLong requestCount = new AtomicLong();
 
   private volatile long lastTime;
 
@@ -47,7 +47,7 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
       throw new IllegalStateException("should not happen");
     }
     if (this.getBucketLimit() == null) {
-      this.setBucketLimit(Math.max(2 * this.getQpsLimit(), Integer.MAX_VALUE));
+      this.setBucketLimit(Math.min(2 * this.getQpsLimit(), Integer.MAX_VALUE));
     }
     long nowTime = System.currentTimeMillis();
     //get the num of te period time

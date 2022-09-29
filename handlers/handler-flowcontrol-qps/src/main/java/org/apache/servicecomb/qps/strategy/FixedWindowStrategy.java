@@ -29,7 +29,7 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
   private volatile long msCycleBegin;
 
   // Request count between Interval begin and now in one interval
-  private AtomicLong requestCount = new AtomicLong();
+  private final AtomicLong requestCount = new AtomicLong();
 
   // request count  before an interval
   private volatile long lastRequestCount = 1;
@@ -55,9 +55,8 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
     // Configuration update and use is at the situation of multi-threaded concurrency
     // It is possible that operation level updated to null,but schema level or microservice level does not updated
     boolean isLimitRequest = newCount - lastRequestCount >= this.getQpsLimit();
-    if (isLimitRequest) {
-      LOGGER.warn("qps flowcontrol open, qpsLimit is {} and tps is {}", this.getQpsLimit(),
-          newCount - lastRequestCount + 1);
+    if (isLimitRequest){
+      LOGGER.warn("qps flowcontrol open, qpsLimit is {} and tps is {}", this.getQpsLimit(), newCount - lastRequestCount + 1);
     }
     return isLimitRequest;
   }

@@ -24,7 +24,10 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class ProviderQpsFlowControlHandler implements Handler {
+
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
@@ -44,16 +47,19 @@ public class ProviderQpsFlowControlHandler implements Handler {
 
     String microserviceName = invocation.getContext(Const.SRC_MICROSERVICE);
     QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(microserviceName, invocation);
-    isLimitNewRequest(qpsStrategy, asyncResp);
+    checkRequestRateLimited(qpsStrategy, asyncResp);
   }
 
-  private boolean isLimitNewRequest(QpsStrategy qpsStrategy, AsyncResponse asyncResp) {
+  private void checkRequestRateLimited(QpsStrategy qpsStrategy, AsyncResponse asyncResp) {
     if (qpsStrategy.isLimitNewRequest()) {
-      CommonExceptionData errorData = new CommonExceptionData("provider request rejected by qps flowcontrol");
+      CommonExceptionData errorData = new CommonExceptionData(
+          "provider request rejected by qps flowcontrol");
       asyncResp.producerFail(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
-      return true;
-    } else {
-      return false;
     }
+  }
+
+  @VisibleForTesting
+  public QpsControllerManager getQpsControllerMgr() {
+    return qpsControllerMgr;
   }
 }
