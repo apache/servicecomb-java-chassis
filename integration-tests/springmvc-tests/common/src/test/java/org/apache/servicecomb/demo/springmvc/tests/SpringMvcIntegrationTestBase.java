@@ -49,9 +49,9 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
@@ -74,8 +74,6 @@ import org.springframework.web.client.RestTemplate;
 @SuppressWarnings("deprecation")
 // TODO : upgrade to spring 5 will having warning's , we'll fix it later
 public class SpringMvcIntegrationTestBase {
-  private static String LINE_SEP = System.getProperty("line.separator");
-
   @TempDir
   public static Path folder;
 
@@ -229,8 +227,8 @@ public class SpringMvcIntegrationTestBase {
 
   @Test
   public void ableToUploadFile() throws Exception {
-    String file1Content = "hello world" + LINE_SEP;
-    String file2Content = "bonjour" + LINE_SEP;
+    String file1Content = "hello world";
+    String file2Content = "bonjour";
     String username = "mike";
 
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();

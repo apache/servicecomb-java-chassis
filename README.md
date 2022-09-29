@@ -2,6 +2,13 @@
 
 Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
 
+# releases
+
+| Release Train | Latest Version  | Compiled JDK Version | Tested JDK Version            |
+|---------------|-----------------|----------------------|-------------------------------|
+| 2.x.x         | 2.8.0           | OpenJDK 8            | OpenJDK 8, 11, 17 | 
+| 1.x.x         | 1.3.8           | OpenJDK 8             | OpenJDK 8                        |
+
 # Why use Java Chassis
 
 - **High performance**
@@ -24,12 +31,6 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 - **Out-of-box microservice governance features**
 
   Java Chassis provides a lot of features for microservice governance and monitor.
-
-- **Multi languages support**
-
-  Via [ServiceComb Mesher](https://github.com/apache/servicecomb-mesher), the microservices
-  built by other languages are also able to work with ServiceComb components. And Java Chassis can communicate with such
-  microservices and make use of the built-in capabilities.
 
 # Quick Start
 

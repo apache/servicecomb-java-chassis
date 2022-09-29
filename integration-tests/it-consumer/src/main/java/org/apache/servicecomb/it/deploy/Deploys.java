@@ -17,12 +17,14 @@
 package org.apache.servicecomb.it.deploy;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,20 +103,31 @@ public class Deploys {
     initSpringBoot2ServletProducer();
   }
 
-  private void initPomVersion() {
+  private void initPomVersion() throws Throwable {
     // already set manually
     if (pomVersion != null) {
       return;
     }
 
     // already package to jar
-    pomVersion = SCBEngine.class.getPackage().getImplementationVersion();
+    pomVersion = Deploys.class.getPackage().getImplementationVersion();
     if (pomVersion != null) {
       return;
     }
 
-    // read environment
-    pomVersion = System.getenv("revision");
+    // run in ide
+    MavenXpp3Reader reader = new MavenXpp3Reader();
+    Model model = reader.read(new FileReader("pom.xml"));
+    pomVersion = model.getVersion();
+    if (pomVersion != null) {
+      return;
+    }
+
+    if (model.getParent() == null) {
+      throw new IllegalStateException("can not find pom ServiceComb version");
+    }
+
+    pomVersion = model.getParent().getVersion();
     if (pomVersion != null) {
       return;
     }
@@ -208,9 +221,9 @@ public class Deploys {
     URL urlTrust = Thread.currentThread().getContextClassLoader().getResource("certificates/trust.jks");
     if (urlServer != null && urlTrust != null) {
       definition.appendArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
-          "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
-          "-Dserver.p12=" + urlServer.getPath(),
-          "-Dtrust.jks=" + urlTrust.getPath()
+              "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
+              "-Dserver.p12=" + urlServer.getPath(),
+              "-Dtrust.jks=" + urlTrust.getPath()
       });
     }
     definition.setAppId("integration-test");

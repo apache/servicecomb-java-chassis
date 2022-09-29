@@ -21,7 +21,7 @@
   <parent>
     <artifactId>foundations</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <version>${revision}</version>
+    <version>2.8.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

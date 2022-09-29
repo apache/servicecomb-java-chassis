@@ -10,6 +10,13 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 [design]: https://servicecomb.apache.org/references/java-chassis/zh_CN/start/design.html
 
+# releases
+
+| 版本火车  | 最新版本  | 编译的JDK版本  | 支持的JDK版本 |
+|-------|-------|-----------|-------------------|
+| 2.x.x | 2.8.0 | OpenJDK 8 | OpenJDK 8, 11, 17 | 
+| 1.x.x | 1.3.8 | OpenJDK 8 | OpenJDK 8         |
+
 # 为什么使用Java Chassis
 
 - **高性能**
@@ -85,9 +92,9 @@ public class HelloWorldConsumer  {
 
 # 联系我们
 
-Bugs: [issues](https://issues.apache.org/jira/browse/SCB)
+报告缺陷: [issues](https://issues.apache.org/jira/browse/SCB)
 
-mailing list: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
+邮件列表: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
 
 
 # 参与代码提交
