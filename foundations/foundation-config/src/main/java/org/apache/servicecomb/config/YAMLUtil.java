@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -35,7 +36,7 @@ public final class YAMLUtil {
 
   private static Yaml safeParser() {
     // Yaml instance is not thread safe, create a new instance for each parser
-    return new Yaml(new SafeConstructor());
+    return new Yaml(new SafeConstructor(new LoaderOptions()));
   }
 
   /**
@@ -95,7 +96,7 @@ public final class YAMLUtil {
   }
 
   public static <T> T parserObject(String yamlContent, Class<T> clazz) {
-    Yaml parser = new Yaml(new Constructor(new TypeDescription(clazz, clazz)));
+    Yaml parser = new Yaml(new Constructor(new TypeDescription(clazz, clazz), new LoaderOptions()));
     return parser.loadAs(yamlContent, clazz);
   }
 

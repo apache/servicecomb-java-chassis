@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -53,7 +55,7 @@ public class RouterRuleCache {
 
   private final Object lock = new Object();
 
-  private final Representer representer = new Representer();
+  private final Representer representer = new Representer(new DumperOptions());
 
   @Autowired
   public RouterRuleCache(Environment environment) {
@@ -98,7 +100,8 @@ public class RouterRuleCache {
     List<PolicyRuleItem> policyRuleItemList;
     try {
       Yaml entityParser = new Yaml(
-          new Constructor(new TypeDescription(PolicyRuleItem[].class, PolicyRuleItem[].class)), representer);
+          new Constructor(new TypeDescription(PolicyRuleItem[].class, PolicyRuleItem[].class), new LoaderOptions()),
+          representer);
       policyRuleItemList = Arrays
           .asList(entityParser.loadAs(ruleStr, PolicyRuleItem[].class));
     } catch (Exception e) {

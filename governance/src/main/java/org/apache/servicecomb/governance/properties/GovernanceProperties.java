@@ -39,6 +39,8 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -49,7 +51,7 @@ import com.google.common.eventbus.Subscribe;
 public abstract class GovernanceProperties<T extends Configurable> implements InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceProperties.class);
 
-  private final Representer representer = new Representer();
+  private final Representer representer = new Representer(new DumperOptions());
 
   private final String configKey;
 
@@ -169,7 +171,8 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
     }
 
     try {
-      Yaml entityParser = new Yaml(new Constructor(new TypeDescription(entityClass, entityClass)), representer);
+      Yaml entityParser = new Yaml(new Constructor(new TypeDescription(entityClass, entityClass), new LoaderOptions()),
+          representer);
       T result = entityParser.loadAs(value, entityClass);
       result.setName(key);
 
