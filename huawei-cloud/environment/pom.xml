@@ -21,7 +21,7 @@
   <parent>
     <artifactId>huawei-cloud</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <version>2.8.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>servicestage-environment</artifactId>
