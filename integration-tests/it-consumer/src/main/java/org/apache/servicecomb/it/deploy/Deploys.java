@@ -17,14 +17,11 @@
 package org.apache.servicecomb.it.deploy;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.servicecomb.core.SCBEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +101,7 @@ public class Deploys {
     initSpringBoot2ServletProducer();
   }
 
-  private void initPomVersion() throws Throwable {
+  private void initPomVersion() {
     // already set manually
     if (pomVersion != null) {
       return;
