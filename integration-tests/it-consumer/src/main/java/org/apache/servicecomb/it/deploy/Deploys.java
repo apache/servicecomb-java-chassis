@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.servicecomb.core.SCBEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,24 +111,13 @@ public class Deploys {
     }
 
     // already package to jar
-    pomVersion = Deploys.class.getPackage().getImplementationVersion();
+    pomVersion = SCBEngine.class.getPackage().getImplementationVersion();
     if (pomVersion != null) {
       return;
     }
 
-    // run in ide
-    MavenXpp3Reader reader = new MavenXpp3Reader();
-    Model model = reader.read(new FileReader("pom.xml"));
-    pomVersion = model.getVersion();
-    if (pomVersion != null) {
-      return;
-    }
-
-    if (model.getParent() == null) {
-      throw new IllegalStateException("can not find pom ServiceComb version");
-    }
-
-    pomVersion = model.getParent().getVersion();
+    // read environment
+    pomVersion = System.getenv("revision");
     if (pomVersion != null) {
       return;
     }
@@ -221,9 +211,9 @@ public class Deploys {
     URL urlTrust = Thread.currentThread().getContextClassLoader().getResource("certificates/trust.jks");
     if (urlServer != null && urlTrust != null) {
       definition.appendArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
-              "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
-              "-Dserver.p12=" + urlServer.getPath(),
-              "-Dtrust.jks=" + urlTrust.getPath()
+          "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
+          "-Dserver.p12=" + urlServer.getPath(),
+          "-Dtrust.jks=" + urlTrust.getPath()
       });
     }
     definition.setAppId("integration-test");
