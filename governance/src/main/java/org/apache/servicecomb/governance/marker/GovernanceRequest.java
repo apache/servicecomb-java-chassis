@@ -56,6 +56,13 @@ public class GovernanceRequest {
    */
   private String serviceName;
 
+  /**
+   sourceRequest the source request for creating this governanceRequest
+   For provider: uri indicates the request to me.
+   For consumer: uri indicates the request to the target.
+   */
+  private Object sourceRequest;
+
   public String getHeader(String key) {
     return headers.get(key);
   }
@@ -101,5 +108,13 @@ public class GovernanceRequest {
 
   public void setServiceName(String serviceName) {
     this.serviceName = serviceName;
+  }
+
+  public Object getSourceRequest() {
+    return sourceRequest;
+  }
+
+  public void setSourceRequest(Object sourceRequest) {
+    this.sourceRequest = sourceRequest;
   }
 }

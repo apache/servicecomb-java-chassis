@@ -81,6 +81,64 @@ servicecomb:
       matches:
         - apiPath:
             contains: "/faultInjectAbort"
+    demo-profileExtraction-profileValue: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill"
+    demo-profileExtraction-emptyProfileValue: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: ""
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ProfileExtractionDemo"
+    demo-profileExtraction-profileClass: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ProfileExtractionDemo"
+    demo-profileExtraction-emptyProfileClass: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill"
+      profileExtractClass: ""
+    demo-profileExtraction-classValueMatch: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ProfileExtractionDemo"
+    demo-profileExtraction-classNotFound: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ProfileExtractionDemoNotFound"
+    demo-profileExtraction-multipleValues: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill,joey,h*#$"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ProfileExtractionDemo"
+    demo-profileExtraction-notImplementExtraction: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill,joey,h*#$"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ClassNotImplments"
+    demo-profileExtraction-abstractClass: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill,joey,h*#$"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.AbstractClassDemo"
+    demo-profileExtraction-annotationClass: |
+      matches:
+        - apiPath:
+            prefix: "/"
+      profileValues: "bill,joey,h*#$"
+      profileExtractClass: "org.apache.servicecomb.governance.profileclasses.ClassWithAnnotation"
   rateLimiting:
     demo-rateLimiting: |
       rate: 1
