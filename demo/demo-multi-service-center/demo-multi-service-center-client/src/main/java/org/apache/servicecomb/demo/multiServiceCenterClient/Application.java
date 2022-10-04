@@ -59,7 +59,17 @@ public class Application {
         expectedThread.add(thread.getName());
       }
     });
-    TestMgr.check(6, expectedThread.size());
+    // After SSL improvements https://github.com/eclipse-vertx/vert.x/pull/4468 introduced in 4.3.4
+    // SSL helper will use `internal-blocking` thread init ssl engine
+    // transport-vert.x-eventloop-thread-0
+    // transport-vert.x-eventloop-thread-1
+    // transport-vert.x-eventloop-thread-2
+    // transport-vert.x-eventloop-thread-3
+    // transport-vert.x-eventloop-thread-4
+    // transport-vert.x-eventloop-thread-5
+    // transport-vert.x-internal-blocking-0
+    // transport-vert.x-internal-blocking-1
+    TestMgr.check(8, expectedThread.size());
   }
 
   private static void testRegistryThreads() throws Exception {
