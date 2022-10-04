@@ -59,6 +59,7 @@ public class Application {
         expectedThread.add(thread.getName());
       }
     });
+    System.out.printf("transport threads is %s%n", expectedThread);
     TestMgr.check(6, expectedThread.size());
   }
 
