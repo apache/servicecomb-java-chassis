@@ -39,7 +39,7 @@ public class TestAbstractHttpServletRequest {
     MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key));
 
     request.setAttribute("a2", "v");
-    MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.contains(key, "a2"));
+    MatcherAssert.assertThat(Collections.list(request.getAttributeNames()), Matchers.containsInAnyOrder(key, "a2"));
 
     request.removeAttribute(key);
     Assertions.assertNull(request.getAttribute(key));

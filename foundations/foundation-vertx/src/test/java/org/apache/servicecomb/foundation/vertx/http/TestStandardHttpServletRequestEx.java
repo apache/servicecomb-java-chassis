@@ -131,7 +131,7 @@ public class TestStandardHttpServletRequestEx {
       }
     };
 
-    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.containsInAnyOrder("p1", "p2"));
     MatcherAssert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
     Assertions.assertEquals("v1-1", requestEx.getParameter("p1"));
   }
@@ -149,6 +149,6 @@ public class TestStandardHttpServletRequestEx {
 
     Assertions.assertSame(parameterMap, requestEx.getParameterMap());
 
-    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("k1", "k2"));
+    MatcherAssert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.containsInAnyOrder("k1", "k2"));
   }
 }
