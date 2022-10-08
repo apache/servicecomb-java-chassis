@@ -23,10 +23,6 @@ import org.apache.servicecomb.governance.entity.Configurable;
 public class TrafficMarker extends Configurable {
   private List<Matcher> matches;
 
-  private String profileValues;
-
-  private String profileExtractClass;
-
   @Override
   public boolean isValid() {
     if (matches == null || matches.isEmpty()) {
@@ -46,20 +42,5 @@ public class TrafficMarker extends Configurable {
   public boolean checkMatch(GovernanceRequest governanceRequest, RequestProcessor requestProcessor) {
     return this.matches.stream().anyMatch(match -> requestProcessor.match(governanceRequest, match));
   }
-
-  public String getProfileValues() {
-    return profileValues;
-  }
-
-  public void setProfileValues(String profileValues) {
-    this.profileValues = profileValues;
-  }
-
-  public String getProfileExtractClass() {
-    return profileExtractClass;
-  }
-
-  public void setProfileExtractClass(String profileExtractClass) {
-    this.profileExtractClass = profileExtractClass;
-  }
+  
 }
