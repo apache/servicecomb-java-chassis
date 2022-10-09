@@ -171,7 +171,7 @@ public class RequestProcessor implements ApplicationContextAware{
       return  extractObject;
     } catch (BeansException e) {
       LOGGER.error(e.getMessage(), e);
-      throw new RuntimeException(customMatcherHandler + CustomMatch.errorMessageForAbstractClass);
+      throw new RuntimeException(customMatcherHandler + CustomMatch.errorMessageForAbstractClass, e);
     }
   }
 
