@@ -151,6 +151,7 @@ public class RequestProcessor implements ApplicationContextAware{
       return extractObject;
     }
 
+    LOGGER.info("{} {}",customMatcherHandler, CustomMatch.infoMessageForCreatingClass);
     Class<?> extractionHandlerClass = null;
     try {
       extractionHandlerClass = Class.forName(customMatcherHandler);
