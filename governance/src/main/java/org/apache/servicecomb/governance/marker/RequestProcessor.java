@@ -65,7 +65,7 @@ public class RequestProcessor implements ApplicationContextAware{
     if (!serviceNameMatch(request, matcher)) {
       return false;
     }
-    return customMatch(request, matcher) ;
+    return customMatch(request, matcher);
   }
 
   private boolean serviceNameMatch(GovernanceRequest request, Matcher matcher) {
@@ -143,7 +143,7 @@ public class RequestProcessor implements ApplicationContextAware{
         LOGGER.error("{} {}", customMatcherHandler, errorMessageForNotImplements);
         throw new RuntimeException(customMatcherHandler + errorMessageForNotImplements);
       }
-      return (CustomMatch)extractObject;
+      return (CustomMatch) extractObject;
     }
     return null;
   }
@@ -155,7 +155,7 @@ public class RequestProcessor implements ApplicationContextAware{
       return extractObject;
     }
 
-    LOGGER.info("{} {}",customMatcherHandler, infoMessageForCreatingClass);
+    LOGGER.info("{} {}", customMatcherHandler, infoMessageForCreatingClass);
     Class<?> extractionHandlerClass = null;
     try {
       extractionHandlerClass = Class.forName(customMatcherHandler);
@@ -172,7 +172,7 @@ public class RequestProcessor implements ApplicationContextAware{
     BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
     registry.registerBeanDefinition(customMatcherHandler, builder.getBeanDefinition());
     try {
-      extractObject  = (CustomMatch)applicationContext.getBean(customMatcherHandler);
+      extractObject  = (CustomMatch) applicationContext.getBean(customMatcherHandler);
       return  extractObject;
     } catch (BeansException e) {
       LOGGER.error(e.getMessage(), e);

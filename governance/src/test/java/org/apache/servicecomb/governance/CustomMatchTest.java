@@ -22,7 +22,6 @@ import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.marker.Matcher;
 import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.governance.mockclasses.service.MockConfigurationForCustomMatcher;
-import org.apache.servicecomb.governance.service.MatchersService;
 import org.apache.servicecomb.governance.utils.CustomMatch;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -55,18 +54,18 @@ public class CustomMatchTest {
     public void test_should_pass_when_value_class_empty() {
         GovernanceRequest request = new GovernanceRequest();
         Matcher mockMatcher = generateMatcher("", "");
-        Assert.assertTrue(this.requestProcessor.match(request,mockMatcher));
+        Assert.assertTrue(this.requestProcessor.match(request, mockMatcher));
         mockMatcher = generateMatcher("", "bill");
-        Assert.assertTrue(this.requestProcessor.match(request,mockMatcher));
+        Assert.assertTrue(this.requestProcessor.match(request, mockMatcher));
         mockMatcher = generateMatcher("classWithAnnotation", "");
-        Assert.assertTrue(this.requestProcessor.match(request,mockMatcher));
+        Assert.assertTrue(this.requestProcessor.match(request, mockMatcher));
     }
 
     @Test
     public void test_should_pass_when_value_class_match() {
         GovernanceRequest request = new GovernanceRequest();
         Matcher mockMatcher = generateMatcher("classWithAnnotation", "bill");
-        Assert.assertTrue(this.requestProcessor.match(request,mockMatcher));
+        Assert.assertTrue(this.requestProcessor.match(request, mockMatcher));
     }
 
     @Test
@@ -74,7 +73,7 @@ public class CustomMatchTest {
         GovernanceRequest request = new GovernanceRequest();
         try {
             Matcher mockMatcher = generateMatcher("classWithAnnotationNotFound", "bill");
-            this.requestProcessor.match(request,mockMatcher);
+            this.requestProcessor.match(request, mockMatcher);
             Assertions.fail("an exception is expected!");
         } catch (Exception e) {
             Assert.assertTrue(e.getCause() instanceof ClassNotFoundException);
@@ -85,7 +84,7 @@ public class CustomMatchTest {
     public void test_should_pass_when_multiple_value() {
         GovernanceRequest request = new GovernanceRequest();
         Matcher mockMatcher = generateMatcher("classWithAnnotation", "bill,bill2");
-        Assert.assertTrue(this.requestProcessor.match(request,mockMatcher));
+        Assert.assertTrue(this.requestProcessor.match(request, mockMatcher));
     }
 
     @Test
@@ -93,7 +92,7 @@ public class CustomMatchTest {
         GovernanceRequest request = new GovernanceRequest();
         try {
             Matcher mockMatcher = generateMatcher("classNotImplments", "bill,bill2");
-            this.requestProcessor.match(request,mockMatcher);
+            this.requestProcessor.match(request, mockMatcher);
             Assertions.fail("an exception is expected!");
         } catch (Exception e) {
             Assert.assertTrue(e.getMessage().contains(RequestProcessor.errorMessageForNotImplements));
