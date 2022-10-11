@@ -96,7 +96,7 @@ public class CustomMatchTest {
             this.requestProcessor.match(request,mockMatcher);
             Assertions.fail("an exception is expected!");
         } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains(CustomMatch.errorMessageForNotImplements));
+            Assert.assertTrue(e.getMessage().contains(RequestProcessor.errorMessageForNotImplements));
         }
     }
 }
