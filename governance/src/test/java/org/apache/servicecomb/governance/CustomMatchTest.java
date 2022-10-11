@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.junit.jupiter.api.Assertions;
 
 @SpringBootTest
 @ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class, MockConfigurationForCustomMatcher.class})
@@ -74,6 +75,7 @@ public class CustomMatchTest {
         try {
             Matcher mockMatcher = generateMatcher("classWithAnnotationNotFound", "bill");
             this.requestProcessor.match(request,mockMatcher);
+            Assertions.fail("an exception is expected!");
         } catch (Exception e) {
             Assert.assertTrue(e.getCause() instanceof ClassNotFoundException);
         }
@@ -92,6 +94,7 @@ public class CustomMatchTest {
         try {
             Matcher mockMatcher = generateMatcher("classNotImplments", "bill,bill2");
             this.requestProcessor.match(request,mockMatcher);
+            Assertions.fail("an exception is expected!");
         } catch (Exception e) {
             Assert.assertTrue(e.getMessage().contains(CustomMatch.errorMessageForNotImplements));
         }

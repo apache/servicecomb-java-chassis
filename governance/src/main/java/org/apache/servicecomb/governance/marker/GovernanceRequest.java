@@ -60,6 +60,8 @@ public class GovernanceRequest {
    sourceRequest the source request for creating this governanceRequest
    For provider: uri indicates the request to me.
    For consumer: uri indicates the request to the target.
+   the type of sourceRequest could be ClientRequest, ServerWebExchange, HttpRequest, HttpServletRequest and so on,
+   it is desided by user. user will use this request to extract the information he need
    */
   private Object sourceRequest;
 
