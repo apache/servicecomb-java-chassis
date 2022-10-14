@@ -32,6 +32,8 @@ public class Matcher {
 
   private String serviceName;
 
+  private CustomMatcher customMatcher;
+
   public String getName() {
     return name;
   }
@@ -71,5 +73,13 @@ public class Matcher {
 
   public void setServiceName(String serviceName) {
     this.serviceName = serviceName;
+  }
+
+  public CustomMatcher getCustomMatcher() {
+    return customMatcher;
+  }
+
+  public void setCustomMatcher(CustomMatcher customMatcher) {
+    this.customMatcher = customMatcher;
   }
 }

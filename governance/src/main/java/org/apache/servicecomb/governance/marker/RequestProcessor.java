@@ -19,21 +19,34 @@ package org.apache.servicecomb.governance.marker;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.marker.operator.MatchOperator;
 import org.apache.servicecomb.governance.marker.operator.RawOperator;
+import org.apache.servicecomb.governance.utils.CustomMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Request Processor checks if a request matches a configuration.
  */
-public class RequestProcessor {
+public class RequestProcessor implements ApplicationContextAware{
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
+
+  public static final String errorMessageForNotImplements = " didn't implement interface org.apache.servicecomb.governance.utils.CustomMatch";
+  public static final String errorMessageForAbstractClass = " should be a instantiable class rather than abstract class or other else";
+  public static final String infoMessageForCreatingClass = "is not in spring container, create one and register it to spring container";
 
   private static final String OPERATOR_SUFFIX = "Operator";
 
   private final Map<String, MatchOperator> operatorMap;
+
+  private ApplicationContext applicationContext;
 
   public RequestProcessor(Map<String, MatchOperator> operatorMap) {
     this.operatorMap = operatorMap;
@@ -49,7 +62,10 @@ public class RequestProcessor {
     if (!headersMatch(request, matcher)) {
       return false;
     }
-    return serviceNameMatch(request, matcher);
+    if (!serviceNameMatch(request, matcher)) {
+      return false;
+    }
+    return customMatch(request, matcher);
   }
 
   private boolean serviceNameMatch(GovernanceRequest request, Matcher matcher) {
@@ -102,5 +118,70 @@ public class RequestProcessor {
       }
     }
     return true;
+  }
+
+  private boolean customMatch(GovernanceRequest request, Matcher matcher) {
+    if (matcher.getCustomMatcher() == null) {
+      return true;
+    }
+    String customMatcherHandlerName = matcher.getCustomMatcher().getCustomMatcherHandler();
+    String customMatcherParameters = matcher.getCustomMatcher().getCustomMatcherParameters();
+
+    if (StringUtils.isEmpty(customMatcherHandlerName) || StringUtils.isEmpty(customMatcherParameters)) {
+      return true;
+    }
+
+    CustomMatch customMatcherHandler = generateHandler(customMatcherHandlerName);
+    return customMatcherHandler.matchRequest(request, customMatcherParameters);
+  }
+
+  private CustomMatch getBeanByHandlerName(String customMatcherHandler) {
+    Object extractObject = null;
+    if (applicationContext.containsBean(customMatcherHandler)) {
+      extractObject = applicationContext.getBean(customMatcherHandler);
+      if (!(extractObject instanceof CustomMatch)) {
+        LOGGER.error("{} {}", customMatcherHandler, errorMessageForNotImplements);
+        throw new RuntimeException(customMatcherHandler + errorMessageForNotImplements);
+      }
+      return (CustomMatch) extractObject;
+    }
+    return null;
+  }
+
+
+  public CustomMatch generateHandler(String customMatcherHandler) {
+    CustomMatch extractObject = getBeanByHandlerName(customMatcherHandler);
+    if (extractObject != null) {
+      return extractObject;
+    }
+
+    LOGGER.info("{} {}", customMatcherHandler, infoMessageForCreatingClass);
+    Class<?> extractionHandlerClass = null;
+    try {
+      extractionHandlerClass = Class.forName(customMatcherHandler);
+    } catch (ClassNotFoundException e) {
+      LOGGER.error(e.getMessage(), e);
+      throw new RuntimeException(e);
+    }
+
+    if (!CustomMatch.class.isAssignableFrom(extractionHandlerClass)) {
+      LOGGER.error("{} {}", customMatcherHandler, errorMessageForNotImplements);
+      throw new RuntimeException(customMatcherHandler + errorMessageForNotImplements);
+    }
+    BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(extractionHandlerClass);
+    BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
+    registry.registerBeanDefinition(customMatcherHandler, builder.getBeanDefinition());
+    try {
+      extractObject  = (CustomMatch) applicationContext.getBean(customMatcherHandler);
+      return  extractObject;
+    } catch (BeansException e) {
+      LOGGER.error(e.getMessage(), e);
+      throw new RuntimeException(customMatcherHandler + errorMessageForAbstractClass, e);
+    }
+  }
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
   }
 }
