@@ -22,7 +22,6 @@ import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.marker.Matcher;
 import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.governance.mockclasses.service.MockConfigurationForCustomMatcher;
-import org.apache.servicecomb.governance.utils.CustomMatch;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
