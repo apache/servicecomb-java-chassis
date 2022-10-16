@@ -39,8 +39,8 @@ import com.netflix.spectator.api.Registry;
 import com.sun.net.httpserver.HttpServer;
 
 import io.prometheus.client.exporter.HTTPServer;
-import mockit.Expectations;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 @SuppressWarnings("restriction")
 public class TestPrometheusPublisher {
@@ -79,12 +79,8 @@ public class TestPrometheusPublisher {
 
   @Test
   public void collect() throws IllegalAccessException, IOException {
-    new Expectations(RegistrationManager.INSTANCE) {
-      {
-        RegistrationManager.INSTANCE.getAppId();
-        result = "testAppId";
-      }
-    };
+    RegistrationManager.INSTANCE = Mockito.spy(RegistrationManager.INSTANCE);
+    Mockito.doReturn("testAppId").when(RegistrationManager.INSTANCE).getAppId();
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
     publisher.init(globalRegistry, null, null);
 
