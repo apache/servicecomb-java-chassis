@@ -33,10 +33,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestDiscoveryTree {
   @Before
@@ -50,7 +49,7 @@ public class TestDiscoveryTree {
 
   DiscoveryTree discoveryTree = new DiscoveryTree();
 
-  List<DiscoveryFilter> filters = Deencapsulation.getField(discoveryTree, "filters");
+  List<DiscoveryFilter> filters = discoveryTree.getFilters();
 
   DiscoveryContext context = new DiscoveryContext();
 
@@ -59,38 +58,33 @@ public class TestDiscoveryTree {
   DiscoveryTreeNode result;
 
   @Test
-  public void loadFromSPI(@Mocked DiscoveryFilter f1, @Mocked DiscoveryFilter f2) {
+  public void loadFromSPI() {
+    DiscoveryFilter f1 = Mockito.mock(DiscoveryFilter.class);
+    DiscoveryFilter f2 = Mockito.mock(DiscoveryFilter.class);
+
     Class<? extends DiscoveryFilter> cls = DiscoveryFilter.class;
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getSortedService(cls);
-        result = Arrays.asList(f1, f2);
-      }
-    };
+    try (MockedStatic<SPIServiceUtils> spiServiceUtilsMockedStatic = Mockito.mockStatic(SPIServiceUtils.class)) {
+      spiServiceUtilsMockedStatic.when(() -> SPIServiceUtils.getSortedService(cls)).thenReturn(Arrays.asList(f1, f2));
 
-    discoveryTree.loadFromSPI(cls);
+      discoveryTree.loadFromSPI(cls);
 
-    MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
+      MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
+    }
   }
 
+
   @Test
-  public void sort(@Mocked DiscoveryFilter f1, @Mocked DiscoveryFilter f2, @Mocked DiscoveryFilter f3) {
-    new Expectations() {
-      {
-        f1.getOrder();
-        result = -1;
-        f1.enabled();
-        result = true;
-        f2.getOrder();
-        result = 0;
-        f2.enabled();
-        result = true;
-        f3.getOrder();
-        result = 0;
-        f3.enabled();
-        result = false;
-      }
-    };
+  public void sort() {
+    DiscoveryFilter f1 = Mockito.mock(DiscoveryFilter.class);
+    DiscoveryFilter f2 = Mockito.mock(DiscoveryFilter.class);
+    DiscoveryFilter f3 = Mockito.mock(DiscoveryFilter.class);
+    Mockito.when(f1.getOrder()).thenReturn(-1);
+    Mockito.when(f1.enabled()).thenReturn(true);
+    Mockito.when(f2.getOrder()).thenReturn(0);
+    Mockito.when(f2.enabled()).thenReturn(true);
+    Mockito.when(f3.getOrder()).thenReturn(0);
+    Mockito.when(f3.enabled()).thenReturn(false);
+
     discoveryTree.addFilter(f3);
     discoveryTree.addFilter(f2);
     discoveryTree.addFilter(f1);
@@ -98,6 +92,7 @@ public class TestDiscoveryTree {
 
     MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
   }
+
 
   @Test
   public void isMatch_existingNull() {
@@ -175,15 +170,12 @@ public class TestDiscoveryTree {
   }
 
   @Test
-  public void easyDiscovery(@Mocked InstanceCacheManager instanceCacheManager) {
-    new Expectations(DiscoveryManager.class) {
-      {
-        DiscoveryManager.INSTANCE.getInstanceCacheManager();
-        result = instanceCacheManager;
-        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
-        result = parent;
-      }
-    };
+  public void easyDiscovery() {
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    DiscoveryManager.INSTANCE = Mockito.spy(DiscoveryManager.INSTANCE);
+    Mockito.when(DiscoveryManager.INSTANCE.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+    Mockito.when(instanceCacheManager.getOrCreateVersionedCache(null, null, null)).thenReturn(parent);
+
 
     result = discoveryTree.discovery(context, null, null, null);
     Assertions.assertEquals(parent.name(), result.name());
@@ -191,15 +183,11 @@ public class TestDiscoveryTree {
   }
 
   @Test
-  public void discovery_filterReturnNull(@Mocked InstanceCacheManager instanceCacheManager) {
-    new Expectations(DiscoveryManager.class) {
-      {
-        DiscoveryManager.INSTANCE.getInstanceCacheManager();
-        result = instanceCacheManager;
-        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
-        result = parent;
-      }
-    };
+  public void discovery_filterReturnNull() {
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    DiscoveryManager.INSTANCE = Mockito.spy(DiscoveryManager.INSTANCE);
+    Mockito.when(DiscoveryManager.INSTANCE.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+    Mockito.when(instanceCacheManager.getOrCreateVersionedCache(null, null, null)).thenReturn(parent);
 
     DiscoveryFilter filter = new DiscoveryFilter() {
       @Override
@@ -253,7 +241,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void avoidConcurrentProblem() {
-    Deencapsulation.setField(discoveryTree, "root", parent.cacheVersion(1));
+    discoveryTree.setRoot(parent.cacheVersion(1));
     Assertions.assertTrue(parent.children().isEmpty());
 
     discoveryTree.discovery(context, new VersionedCache().cacheVersion(0).name("input"));
@@ -262,7 +250,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_match() {
-    Deencapsulation.setField(discoveryTree, "root", parent);
+    discoveryTree.setRoot(parent);
 
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(parent);
 
@@ -271,23 +259,23 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_expired() {
-    Deencapsulation.setField(discoveryTree, "root", parent);
+    discoveryTree.setRoot(parent);
 
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() + 1);
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
 
     Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
-    Assertions.assertSame(Deencapsulation.getField(discoveryTree, "root"), root);
+    Assertions.assertSame(discoveryTree.getRoot(), root);
   }
 
   @Test
   public void getOrCreateRoot_tempRoot() {
-    Deencapsulation.setField(discoveryTree, "root", parent);
+    discoveryTree.setRoot(parent);
 
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() - 1);
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
 
     Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
-    Assertions.assertNotSame(Deencapsulation.getField(discoveryTree, "root"), root);
+    Assertions.assertNotSame(discoveryTree.getRoot(), root);
   }
 }

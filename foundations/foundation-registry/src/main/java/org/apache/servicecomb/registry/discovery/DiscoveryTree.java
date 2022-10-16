@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -81,6 +82,21 @@ public class DiscoveryTree {
   private final Object lock = new Object();
 
   private final List<DiscoveryFilter> filters = new ArrayList<>();
+
+  @VisibleForTesting
+  public void setRoot(DiscoveryTreeNode root) {
+    this.root = root;
+  }
+
+  @VisibleForTesting
+  public DiscoveryTreeNode getRoot() {
+    return root;
+  }
+
+  @VisibleForTesting
+  public List<DiscoveryFilter> getFilters() {
+    return filters;
+  }
 
   public void loadFromSPI(Class<? extends DiscoveryFilter> cls) {
     filters.addAll(SPIServiceUtils.getSortedService(cls));
