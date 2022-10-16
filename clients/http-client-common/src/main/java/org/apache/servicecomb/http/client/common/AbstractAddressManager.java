@@ -72,7 +72,7 @@ public class AbstractAddressManager {
   private final Map<String, Boolean> addressIsolated = new ConcurrentHashMap<>();
 
   // recording address isolation status, if isolated will be false
-  private final Cache<String, Boolean> addressIsolationStatus = CacheBuilder.newBuilder()
+  private Cache<String, Boolean> addressIsolationStatus = CacheBuilder.newBuilder()
       .maximumSize(100)
       .expireAfterWrite(1, TimeUnit.MINUTES)
       .build();
@@ -102,6 +102,21 @@ public class AbstractAddressManager {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
     this.defaultAddress.addAll(this.addresses);
+  }
+
+  @VisibleForTesting
+  Cache<String, Boolean> getAddressIsolationStatus() {
+    return addressIsolationStatus;
+  }
+
+  @VisibleForTesting
+  void setAddressIsolationStatus(Cache<String, Boolean> addressIsolationStatus) {
+    this.addressIsolationStatus = addressIsolationStatus;
+  }
+
+  @VisibleForTesting
+  Map<String, Integer> getAddressFailureStatus() {
+    return addressFailureStatus;
   }
 
   public List<String> getAddresses() {
