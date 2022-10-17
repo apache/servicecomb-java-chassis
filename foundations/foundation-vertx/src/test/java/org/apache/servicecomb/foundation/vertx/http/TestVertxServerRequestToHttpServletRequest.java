@@ -491,6 +491,6 @@ public class TestVertxServerRequestToHttpServletRequest {
 
     Assertions.assertSame(parameterMap, request.getParameterMap());
 
-    MatcherAssert.assertThat(Collections.list(request.getParameterNames()), Matchers.contains("k1", "k2"));
+    MatcherAssert.assertThat(Collections.list(request.getParameterNames()), Matchers.containsInAnyOrder("k1", "k2"));
   }
 }
