@@ -55,7 +55,7 @@ public class Application {
     Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
     List<String> expectedThread = new ArrayList<>();
     threadSet.forEach(thread -> {
-      if (thread.getName().contains("transport-")) {
+      if (thread.getName().startsWith("transport-vert.x-eventloop-thread")) {
         expectedThread.add(thread.getName());
       }
     });
@@ -69,7 +69,7 @@ public class Application {
     // transport-vert.x-eventloop-thread-5
     // transport-vert.x-internal-blocking-0
     // transport-vert.x-internal-blocking-1
-    TestMgr.check(8, expectedThread.size());
+    TestMgr.check(6, expectedThread.size());
   }
 
   private static void testRegistryThreads() throws Exception {
