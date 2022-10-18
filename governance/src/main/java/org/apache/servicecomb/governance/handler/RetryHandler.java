@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.resilience4j.core.IntervalFunction;
+import io.github.resilience4j.micrometer.tagged.RetryMetricNames;
+import io.github.resilience4j.micrometer.tagged.TaggedRetryMetrics;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
@@ -71,6 +73,14 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
         .build();
 
     RetryRegistry registry = RetryRegistry.of(config);
+    if (meterRegistry != null) {
+      TaggedRetryMetrics
+          .ofRetryRegistry(RetryMetricNames.custom()
+                  .callsMetricName(RetryProperties.MATCH_RETRY_KEY + ".calls")
+                  .build(),
+              registry)
+          .bindTo(meterRegistry);
+    }
     return new DisposableRetry(key, registry, registry.retry(key));
   }
 

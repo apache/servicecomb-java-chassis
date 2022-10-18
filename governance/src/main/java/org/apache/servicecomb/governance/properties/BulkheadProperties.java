@@ -20,10 +20,10 @@ package org.apache.servicecomb.governance.properties;
 import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 
 public class BulkheadProperties extends PolicyProperties<BulkheadPolicy> {
-  public static final String MATCH_BULKHEAD__KEY = "servicecomb.bulkhead";
+  public static final String MATCH_BULKHEAD_KEY = "servicecomb.bulkhead";
 
   public BulkheadProperties() {
-    super(MATCH_BULKHEAD__KEY);
+    super(MATCH_BULKHEAD_KEY);
   }
 
   @Override

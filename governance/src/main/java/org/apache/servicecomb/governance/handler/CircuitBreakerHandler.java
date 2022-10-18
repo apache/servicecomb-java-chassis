@@ -24,13 +24,12 @@ import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.micrometer.tagged.CircuitBreakerMetricNames;
 import io.github.resilience4j.micrometer.tagged.TaggedCircuitBreakerMetrics;
-import io.micrometer.core.instrument.MeterRegistry;
 
 public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBreaker, CircuitBreakerPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerHandler.class);
@@ -39,14 +38,10 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
 
   private final AbstractCircuitBreakerExtension circuitBreakerExtension;
 
-  private final MeterRegistry meterRegistry;
-
   public CircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
-      AbstractCircuitBreakerExtension circuitBreakerExtension,
-      ObjectProvider<MeterRegistry> meterRegistry) {
+      AbstractCircuitBreakerExtension circuitBreakerExtension) {
     this.circuitBreakerProperties = circuitBreakerProperties;
     this.circuitBreakerExtension = circuitBreakerExtension;
-    this.meterRegistry = meterRegistry.getIfAvailable();
   }
 
   @Override
@@ -83,7 +78,15 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     if (meterRegistry != null) {
       TaggedCircuitBreakerMetrics
-          .ofCircuitBreakerRegistry(circuitBreakerRegistry)
+          .ofCircuitBreakerRegistry(CircuitBreakerMetricNames.custom()
+              .callsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".calls")
+              .notPermittedCallsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".not.permitted.calls")
+              .stateMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".state")
+              .bufferedCallsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".buffered.calls")
+              .slowCallsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".slow.calls")
+              .failureRateMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".failure.rate")
+              .slowCallRateMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".slow.call.rate")
+              .build(), circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
     return new DisposableCircuitBreaker(key, circuitBreakerRegistry,

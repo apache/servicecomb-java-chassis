@@ -31,6 +31,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.micrometer.tagged.CircuitBreakerMetricNames;
 import io.github.resilience4j.micrometer.tagged.TaggedCircuitBreakerMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -108,7 +109,16 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
     if (meterRegistry != null) {
       TaggedCircuitBreakerMetrics
-          .ofCircuitBreakerRegistry(circuitBreakerRegistry)
+          .ofCircuitBreakerRegistry(CircuitBreakerMetricNames.custom()
+              .callsMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".calls")
+              .notPermittedCallsMetricName(
+                  InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".not.permitted.calls")
+              .stateMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".state")
+              .bufferedCallsMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".buffered.calls")
+              .slowCallsMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".slow.calls")
+              .failureRateMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".failure.rate")
+              .slowCallRateMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".slow.call.rate")
+              .build(), circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }
     return new DisposableCircuitBreaker(key, circuitBreakerRegistry,

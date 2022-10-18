@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
 
+import io.micrometer.core.instrument.MeterRegistry;
+
 public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends AbstractPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGovernanceHandler.class);
 
@@ -37,6 +39,8 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
 
   protected MatchersManager matchersManager;
 
+  protected MeterRegistry meterRegistry;
+
   protected AbstractGovernanceHandler() {
     GovernanceEventManager.register(this);
     processors = new DisposableMap<>(this::onConfigurationChanged);
@@ -45,6 +49,11 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
   @Autowired
   public void setMatchersManager(MatchersManager matchersManager) {
     this.matchersManager = matchersManager;
+  }
+
+  @Autowired(required = false)
+  public void setMeterRegistry(MeterRegistry meterRegistry) {
+    this.meterRegistry = meterRegistry;
   }
 
   public PROCESSOR getActuator(GovernanceRequest governanceRequest) {
