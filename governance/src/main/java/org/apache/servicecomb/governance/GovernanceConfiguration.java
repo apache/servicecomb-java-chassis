@@ -127,9 +127,8 @@ public class GovernanceConfiguration {
 
   @Bean
   public CircuitBreakerHandler circuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
-      AbstractCircuitBreakerExtension circuitBreakerExtension,
-      ObjectProvider<MeterRegistry> meterRegistry) {
-    return new CircuitBreakerHandler(circuitBreakerProperties, circuitBreakerExtension, meterRegistry);
+      AbstractCircuitBreakerExtension circuitBreakerExtension) {
+    return new CircuitBreakerHandler(circuitBreakerProperties, circuitBreakerExtension);
   }
 
   @Bean

@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
+import io.github.resilience4j.micrometer.tagged.BulkheadMetricNames;
+import io.github.resilience4j.micrometer.tagged.TaggedBulkheadMetrics;
 
 public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, BulkheadPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BulkheadHandler.class);
@@ -40,7 +42,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
-    return BulkheadProperties.MATCH_BULKHEAD__KEY + "." + policy.getName();
+    return BulkheadProperties.MATCH_BULKHEAD_KEY + "." + policy.getName();
   }
 
   @Override
@@ -62,7 +64,14 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
         .build();
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
-
+    if (meterRegistry != null) {
+      TaggedBulkheadMetrics
+          .ofBulkheadRegistry(BulkheadMetricNames.custom()
+              .availableConcurrentCallsMetricName(BulkheadProperties.MATCH_BULKHEAD_KEY + ".available.concurrent.calls")
+              .maxAllowedConcurrentCallsMetricName(
+                  BulkheadProperties.MATCH_BULKHEAD_KEY + ".max.allowed.concurrent.calls").build(), registry)
+          .bindTo(meterRegistry);
+    }
     return new DisposableBulkhead(key, registry, registry.bulkhead(key));
   }
 }

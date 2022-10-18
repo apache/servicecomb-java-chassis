@@ -24,6 +24,8 @@ import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.resilience4j.micrometer.tagged.RateLimiterMetricNames;
+import io.github.resilience4j.micrometer.tagged.TaggedRateLimiterMetrics;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
@@ -62,6 +64,16 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
         .timeoutDuration(Duration.parse(policy.getTimeoutDuration()))
         .build();
     RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.of(config);
+    if (meterRegistry != null) {
+      TaggedRateLimiterMetrics
+          .ofRateLimiterRegistry(RateLimiterMetricNames.custom()
+                  .availablePermissionsMetricName(
+                      RateLimitProperties.MATCH_RATE_LIMIT_KEY + ".available.permissions")
+                  .waitingThreadsMetricName(RateLimitProperties.MATCH_RATE_LIMIT_KEY + ".waiting.threads")
+                  .build(),
+              rateLimiterRegistry)
+          .bindTo(meterRegistry);
+    }
     return new DisposableRateLimiter(key, rateLimiterRegistry.rateLimiter(key), rateLimiterRegistry);
   }
 }

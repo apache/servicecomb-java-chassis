@@ -115,24 +115,24 @@ public class InstanceIsolationTest {
   private void assertMetricsNotFinish() {
     String result = ((PrometheusMeterRegistry) meterRegistry).scrape();
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"open\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"open\",} 1.0"));
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\",} 1.0"));
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",} 1.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",} 1.0"));
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",} 4.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",} 4.0"));
   }
 
   private void assertMetricsFinish() {
     String result = ((PrometheusMeterRegistry) meterRegistry).scrape();
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"closed\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"closed\",} 1.0"));
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\",} 1.0"));
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",} 3.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",} 3.0"));
     Assertions.assertTrue(result.contains(
-        "resilience4j_circuitbreaker_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",} 6.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",} 6.0"));
   }
 }

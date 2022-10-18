@@ -26,6 +26,8 @@ import org.apache.servicecomb.governance.properties.IdentifierRateLimitPropertie
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.resilience4j.micrometer.tagged.RateLimiterMetricNames;
+import io.github.resilience4j.micrometer.tagged.TaggedRateLimiterMetrics;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
@@ -81,13 +83,22 @@ public class IdentifierRateLimitingHandler extends
   private Disposable<RateLimiter> getRateLimiter(String key, IdentifierRateLimitingPolicy policy) {
     LOGGER.info("applying new policy {} for {}", key, policy.toString());
 
-    RateLimiterConfig config;
-    config = RateLimiterConfig.custom()
+    RateLimiterConfig config = RateLimiterConfig.custom()
         .limitForPeriod(policy.getRate())
         .limitRefreshPeriod(Duration.parse(policy.getLimitRefreshPeriod()))
         .timeoutDuration(Duration.parse(policy.getTimeoutDuration()))
         .build();
     RateLimiterRegistry rateLimiterRegistry = RateLimiterRegistry.of(config);
+    if (meterRegistry != null) {
+      TaggedRateLimiterMetrics
+          .ofRateLimiterRegistry(RateLimiterMetricNames.custom()
+                  .availablePermissionsMetricName(
+                      IdentifierRateLimitProperties.MATCH_RATE_LIMIT_KEY + ".available.permissions")
+                  .waitingThreadsMetricName(IdentifierRateLimitProperties.MATCH_RATE_LIMIT_KEY + ".waiting.threads")
+                  .build(),
+              rateLimiterRegistry)
+          .bindTo(meterRegistry);
+    }
     return new DisposableRateLimiter(key, rateLimiterRegistry.rateLimiter(key), rateLimiterRegistry);
   }
 }

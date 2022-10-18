@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
+import io.github.resilience4j.micrometer.tagged.BulkheadMetricNames;
+import io.github.resilience4j.micrometer.tagged.TaggedBulkheadMetrics;
 
 public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead, BulkheadPolicy> {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceBulkheadHandler.class);
@@ -86,7 +88,16 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
         .build();
 
     BulkheadRegistry registry = BulkheadRegistry.of(config);
-
+    if (meterRegistry != null) {
+      TaggedBulkheadMetrics
+          .ofBulkheadRegistry(BulkheadMetricNames.custom()
+                  .availableConcurrentCallsMetricName(
+                      InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY + ".available.concurrent.calls")
+                  .maxAllowedConcurrentCallsMetricName(
+                      InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY + ".max.allowed.concurrent.calls").build(),
+              registry)
+          .bindTo(meterRegistry);
+    }
     return new DisposableBulkhead(key, registry, registry.bulkhead(key, config));
   }
 }
