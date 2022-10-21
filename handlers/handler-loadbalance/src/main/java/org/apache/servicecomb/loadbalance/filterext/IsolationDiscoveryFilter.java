@@ -82,6 +82,10 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
   @Override
   public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
       Invocation invocation) {
+    if (!Configuration.INSTANCE.isIsolationFilterOpen(invocation.getMicroserviceName())) {
+      return servers;
+    }
+
     List<ServiceCombServer> filteredServers = new ArrayList<>();
     Settings settings = createSettings(invocation);
     servers.forEach((server) -> {
