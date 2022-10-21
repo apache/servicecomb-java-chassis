@@ -31,6 +31,7 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,9 +70,17 @@ public class UploadSchema {
     return "fileUploadMulti success, and fileNum is " + files.length;
   }
 
+  @PostMapping(path = "/uploadFileRequestPartAttribute", produces = MediaType.TEXT_PLAIN_VALUE)
+  public String uploadFileRequestPartAttribute(@RequestPart(name = "file") MultipartFile file,
+      @RequestPart(name = "attribute") String attribute) throws IOException {
+    try (InputStream is = file.getInputStream()) {
+      return attribute + " " + IOUtils.toString(is, StandardCharsets.UTF_8);
+    }
+  }
+
   @PostMapping(path = "/uploadFileAndAttribute", produces = MediaType.TEXT_PLAIN_VALUE)
   public String uploadFileAndAttribute(@RequestPart(name = "file") MultipartFile file,
-      @RequestPart(name = "attribute") String attribute) throws IOException {
+      @RequestAttribute(name = "attribute") String attribute) throws IOException {
     try (InputStream is = file.getInputStream()) {
       return attribute + " " + IOUtils.toString(is, StandardCharsets.UTF_8);
     }

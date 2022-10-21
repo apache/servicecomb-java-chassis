@@ -59,6 +59,7 @@ public class TestUploadSchema implements CategorizedTestCase {
     testUploadMultiBigFiles();
     testFileUploadMultiRpc();
     testUploadFileAndAttribute();
+    testUploadFileRequestPartAttribute();
   }
 
   private void testServerStartupSuccess() {
@@ -121,6 +122,22 @@ public class TestUploadSchema implements CategorizedTestCase {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(org.springframework.http.MediaType.MULTIPART_FORM_DATA);
     String result = template.postForObject("servicecomb://springmvc/upload/uploadFileAndAttribute",
+        new HttpEntity<>(map, headers), String.class);
+    TestMgr.check("hi test", result);
+  }
+
+  private void testUploadFileRequestPartAttribute() throws Exception {
+    RestTemplate template = RestTemplateBuilder.create();
+    Map<String, Object> map = new HashMap<>();
+    String message = "hi";
+    File file = File.createTempFile("file", ".txt");
+    FileUtils.writeStringToFile(file, "test", StandardCharsets.UTF_8, false);
+
+    map.put("file", new FileSystemResource(file));
+    map.put("attribute", message);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(org.springframework.http.MediaType.MULTIPART_FORM_DATA);
+    String result = template.postForObject("servicecomb://springmvc/upload/uploadFileRequestPartAttribute",
         new HttpEntity<>(map, headers), String.class);
     TestMgr.check("hi test", result);
   }
