@@ -21,6 +21,8 @@ import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSER
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSERVICE_VERSIONS_META;
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.getMicroserviceVersionsMeta;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
@@ -31,8 +33,12 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Swagger;
 
@@ -40,6 +46,12 @@ import io.swagger.models.Swagger;
  * subscribe event from ServiceRegistry module to create or destroy metas
  */
 public class ServiceRegistryListener {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryListener.class);
+
+  private static final String SHOULD_WOKR_WITH_THIRD_PARTY = "servicecomb.service.registry.workWithThirdParty";
+
+  private static final int SCHEMA_RETRY = 3;
+
   private final SCBEngine scbEngine;
 
   public ServiceRegistryListener(SCBEngine scbEngine) {
@@ -68,7 +80,6 @@ public class ServiceRegistryListener {
   @SubscriberOrder(-1000)
   @Subscribe
   public void onCreateMicroserviceVersion(CreateMicroserviceVersionEvent event) {
-    // TODO:如果失败，应该标记出错，以便删除MicroserviceVersions
     MicroserviceVersion microserviceVersion = event.getMicroserviceVersion();
     Microservice microservice = microserviceVersion.getMicroservice();
 
@@ -87,12 +98,30 @@ public class ServiceRegistryListener {
     // service center better to resolve the problem.
     if (!isServiceCenter) {
       for (String schemaId : microservice.getSchemas()) {
-        Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, microserviceVersion.getInstances(),
-            schemaId);
-        // allow users register schemaId, but without schema contents. This is useful when cooperate with other
-        // non java-chassis framework.
-        if (swagger != null) {
-          microserviceMeta.registerSchemaMeta(schemaId, swagger);
+        for (int i = 0; i <= SCHEMA_RETRY; i++) {
+          Swagger swagger = scbEngine.getSwaggerLoader()
+              .loadSwagger(microservice, microserviceVersion.getInstances(), schemaId);
+          if (swagger != null) {
+            microserviceMeta.registerSchemaMeta(schemaId, swagger);
+            break;
+          }
+          // scenario1:
+          // allow users register schemaId, but without schema contents. This is useful when cooperate with other
+          // non java-chassis framework.
+          // scenario2:
+          // query schema content failed from service center due to some network problems.
+
+          // We do not know if this service do not have schema content or failed to access service center.
+          // And if we need know this, a lot of API in ServiceRegistryClient need refactored.
+          // So we add a configuration if users know will not work with others like Dubbo , or just do a retry
+          // to query the schema to balance the two scenarios.
+          if (!DynamicPropertyFactory.getInstance().getBooleanProperty(SHOULD_WOKR_WITH_THIRD_PARTY, true).get()) {
+            throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+                "swagger can not be empty or load swagger failed");
+          }
+
+          // So we only give a retry to query the schema to balance the two scenarios.
+          LOGGER.warn("load schema id {} failed, and retry times is {}", schemaId, i);
         }
       }
     }
