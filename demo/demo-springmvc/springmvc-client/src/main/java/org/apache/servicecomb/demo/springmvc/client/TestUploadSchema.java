@@ -20,11 +20,15 @@ package org.apache.servicecomb.demo.springmvc.client;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -54,6 +58,7 @@ public class TestUploadSchema implements CategorizedTestCase {
     testServerStartupSuccess();
     testUploadMultiBigFiles();
     testFileUploadMultiRpc();
+    testUploadFileAndAttribute();
   }
 
   private void testServerStartupSuccess() {
@@ -102,5 +107,21 @@ public class TestUploadSchema implements CategorizedTestCase {
     files.add(new FileSystemResource(file2));
     String result = fileUploadMultiInf.fileUploadMultiRpc(files);
     TestMgr.check(result, "fileUploadMulti success, and fileNum is 2");
+  }
+
+  private void testUploadFileAndAttribute() throws Exception {
+    RestTemplate template = RestTemplateBuilder.create();
+    Map<String, Object> map = new HashMap<>();
+    String message = "hi";
+    File file = File.createTempFile("file", ".txt");
+    FileUtils.writeStringToFile(file, "test", StandardCharsets.UTF_8, false);
+
+    map.put("file", new FileSystemResource(file));
+    map.put("attribute", message);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(org.springframework.http.MediaType.MULTIPART_FORM_DATA);
+    String result = template.postForObject("servicecomb://springmvc/upload/uploadFileAndAttribute",
+        new HttpEntity<>(map, headers), String.class);
+    TestMgr.check("hi test", result);
   }
 }
