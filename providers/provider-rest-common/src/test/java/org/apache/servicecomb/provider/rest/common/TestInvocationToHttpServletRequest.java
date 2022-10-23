@@ -38,25 +38,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.net.SocketAddress;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 public class TestInvocationToHttpServletRequest {
-  @Mocked
-  Invocation invocation;
+  Invocation invocation = Mockito.mock(Invocation.class);
 
-  @Mocked
-  OperationMeta operationMeta;
+  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
-  @Mocked
-  RestOperationMeta swaggerOperation;
+  RestOperationMeta swaggerOperation = Mockito.mock(RestOperationMeta.class);
 
   Map<String, Object> args;
 
-  @Mocked
-  SocketAddress socketAddress;
+  SocketAddress socketAddress = Mockito.mock(SocketAddress.class);
 
   Map<String, Object> handlerContext = new HashMap<>();
 
@@ -67,14 +61,8 @@ public class TestInvocationToHttpServletRequest {
     handlerContext.put(Const.REMOTE_ADDRESS, socketAddress);
     args = new HashMap<>();
 
-    new Expectations() {
-      {
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = swaggerOperation;
-      }
-    };
+   Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+   Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerOperation);
 
     request = new InvocationToHttpServletRequest(invocation);
   }
@@ -86,86 +74,54 @@ public class TestInvocationToHttpServletRequest {
 
   @Test
   public void testGetParameterNotFound() {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = null;
-      }
-    };
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(null);
 
     Assertions.assertNull(request.getParameter("name"));
   }
 
   @Test
-  public void testGetParameterNull(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValue(args);
-        result = null;
-      }
-    };
+  public void testGetParameterNull() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValue(args)).thenReturn(null);
 
     Assertions.assertNull(request.getParameter("name"));
   }
 
   @Test
-  public void testGetParameterNormal(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValue(args);
-        result = "value";
-      }
-    };
+  public void testGetParameterNormal() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValue(args)).thenReturn("value");
 
     Assertions.assertEquals("value", request.getParameter("name"));
   }
 
   @Test
   public void testGetParameterValuesNotFound() {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = null;
-      }
-    };
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(null);
 
     Assertions.assertNull(request.getParameterValues("name"));
   }
 
   @Test
-  public void testGetParameterValuesNormal(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValueAsStrings(args);
-        result = new String[] {"value"};
-      }
-    };
+  public void testGetParameterValuesNormal() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValueAsStrings(args)).thenReturn(new String[] {"value"});
 
     MatcherAssert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
   }
 
   @Test
-  public void testGetParameterMap(@Mocked RestParam p1, @Mocked RestParam p2) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamList();
-        result = Arrays.asList(p1, p2);
-        p1.getValueAsStrings(args);
-        result = new String[] {"v1"};
-        p1.getParamName();
-        result = "p1";
-        p2.getValueAsStrings(args);
-        result = new String[] {"v2"};
-        p2.getParamName();
-        result = "p2";
-      }
-    };
+  public void testGetParameterMap() {
+    RestParam p1 = Mockito.mock(RestParam.class);
+    RestParam p2 = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamList()).thenReturn(Arrays.asList(p1, p2));
+    Mockito.when(p1.getValueAsStrings(args)).thenReturn(new String[] {"v1"});
+    Mockito.when(p1.getParamName()).thenReturn("p1");
+    Mockito.when(p2.getValueAsStrings(args)).thenReturn(new String[] {"v2"});
+    Mockito.when(p2.getParamName()).thenReturn("p2");
 
     Map<String, String[]> params = request.getParameterMap();
     MatcherAssert.assertThat(params.size(), Matchers.is(2));
@@ -174,43 +130,28 @@ public class TestInvocationToHttpServletRequest {
   }
 
   @Test
-  public void testGetHeader(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValue(args);
-        result = "value";
-      }
-    };
+  public void testGetHeader() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValue(args)).thenReturn("value");
 
     Assertions.assertEquals("value", request.getHeader("name"));
   }
 
   @Test
-  public void testGetIntHeaderNotFound(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValue(args);
-        result = null;
-      }
-    };
+  public void testGetIntHeaderNotFound() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValue(args)).thenReturn(null);
 
     Assertions.assertEquals(-1, request.getIntHeader("name"));
   }
 
   @Test
-  public void testGetIntHeaderNotNumber(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValue(args);
-        result = "value";
-      }
-    };
+  public void testGetIntHeaderNotNumber() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValue(args)).thenReturn("value");
 
     try {
       request.getIntHeader("name");
@@ -221,55 +162,35 @@ public class TestInvocationToHttpServletRequest {
   }
 
   @Test
-  public void testGetIntHeaderNormal(@Mocked RestParam restParam) {
-    new Expectations() {
-      {
-        swaggerOperation.getParamByName("name");
-        result = restParam;
-        restParam.getValue(args);
-        result = "1";
-      }
-    };
+  public void testGetIntHeaderNormal() {
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(swaggerOperation.getParamByName("name")).thenReturn(restParam);
+    Mockito.when(restParam.getValue(args)).thenReturn("1");
 
     Assertions.assertEquals(1, request.getIntHeader("name"));
   }
 
   @Test
   public void testGetMethod() {
-    new Expectations() {
-      {
-        swaggerOperation.getHttpMethod();
-        result = "GET";
-      }
-    };
+    Mockito.when(swaggerOperation.getHttpMethod()).thenReturn("GET");
 
     Assertions.assertEquals("GET", request.getMethod());
   }
 
   @Test
-  public void testGetPathInfoNormal(@Mocked URLPathBuilder builder) throws Exception {
-    new Expectations() {
-      {
-        swaggerOperation.getPathBuilder();
-        result = builder;
-        builder.createPathString(args);
-        result = "/path";
-      }
-    };
+  public void testGetPathInfoNormal() throws Exception {
+    URLPathBuilder builder = Mockito.mock(URLPathBuilder.class);
+    Mockito.when(swaggerOperation.getPathBuilder()).thenReturn(builder);
+    Mockito.when(builder.createPathString(args)).thenReturn("/path");
 
     Assertions.assertEquals("/path", request.getPathInfo());
   }
 
   @Test
-  public void testGetPathInfoException(@Mocked URLPathBuilder builder) throws Exception {
-    new Expectations() {
-      {
-        swaggerOperation.getPathBuilder();
-        result = builder;
-        builder.createPathString(args);
-        result = new Exception("error");
-      }
-    };
+  public void testGetPathInfoException() throws Exception {
+    URLPathBuilder builder = Mockito.mock(URLPathBuilder.class);
+    Mockito.when(swaggerOperation.getPathBuilder()).thenReturn(builder);
+    Mockito.when(builder.createPathString(args)).thenThrow(new Exception("error"));
 
     try {
       request.getPathInfo();
@@ -282,16 +203,9 @@ public class TestInvocationToHttpServletRequest {
 
   @Test
   public void testGetRemoteAddress() throws Exception {
-    new Expectations() {
-      {
-        socketAddress.host();
-        result = "127.0.0.2";
-        socketAddress.port();
-        result = 8088;
-        invocation.getHandlerContext();
-        result = handlerContext;
-      }
-    };
+    Mockito.when(socketAddress.host()).thenReturn("127.0.0.2");
+    Mockito.when(socketAddress.port()).thenReturn(8088);
+    Mockito.when(invocation.getHandlerContext()).thenReturn(handlerContext);
     String addr = request.getRemoteAddr();
     String host = request.getRemoteHost();
     int port = request.getRemotePort();
@@ -319,7 +233,7 @@ public class TestInvocationToHttpServletRequest {
   }
 
   @Test
-  public void testGetContextPath(@Mocked Invocation invocation) throws Exception {
+  public void testGetContextPath() {
     InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
     Assertions.assertEquals("", request.getContextPath());
   }
