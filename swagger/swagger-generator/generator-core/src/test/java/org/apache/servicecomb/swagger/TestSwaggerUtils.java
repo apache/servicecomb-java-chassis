@@ -32,8 +32,8 @@ import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
-import mockit.Expectations;
-import mockit.Mocked;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class TestSwaggerUtils {
 
@@ -47,45 +47,35 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void swaggerToStringException(@Mocked Swagger swagger) {
-    new Expectations() {
-      {
-        swagger.getBasePath();
-        result = new RuntimeExceptionWithoutStackTrace();
-      }
-    };
+  public void swaggerToStringException() {
+    Swagger swagger = Mockito.mock(Swagger.class);
+    Mockito.when(swagger.getBasePath()).thenThrow(new RuntimeExceptionWithoutStackTrace());
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
             () -> SwaggerUtils.swaggerToString(swagger));
     Assertions.assertEquals("Convert swagger to string failed, ", exception.getMessage());
   }
 
   @Test
-  public void parseSwaggerUrlNormal(@Mocked URL url) throws IOException {
+  public void parseSwaggerUrlNormal() throws IOException {
     String content = "swagger: \"2.0\"";
-    new Expectations(IOUtils.class) {
-      {
-        IOUtils.toString(url, StandardCharsets.UTF_8);
-        result = content;
-      }
-    };
-
-    Swagger swagger = Yaml.mapper().readValue(content, Swagger.class);
-    Swagger result = SwaggerUtils.parseSwagger(url);
-    Assertions.assertEquals(swagger, result);
+    URL url = Mockito.mock(URL.class);
+    try (MockedStatic<IOUtils> ioUtilsMockedStatic = Mockito.mockStatic(IOUtils.class)) {
+      ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8)).thenReturn(content);
+      Swagger swagger = Yaml.mapper().readValue(content, Swagger.class);
+      Swagger result = SwaggerUtils.parseSwagger(url);
+      Assertions.assertEquals(swagger, result);
+    }
   }
 
   @Test
-  public void parseSwaggerUrlException(@Mocked URL url) throws IOException {
-    new Expectations(IOUtils.class) {
-      {
-        IOUtils.toString(url, StandardCharsets.UTF_8);
-        result = new RuntimeExceptionWithoutStackTrace("failed");
-      }
-    };
-
-    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> SwaggerUtils.parseSwagger(url));
-    Assertions.assertTrue(exception.getMessage().contains("Parse swagger from url failed, "));
+  public void parseSwaggerUrlException() throws IOException {
+    URL url = Mockito.mock(URL.class);
+    try (MockedStatic<IOUtils> ioUtilsMockedStatic = Mockito.mockStatic(IOUtils.class)) {
+      ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8)).thenThrow(new RuntimeExceptionWithoutStackTrace("failed"));
+      ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
+              () -> SwaggerUtils.parseSwagger(url));
+      Assertions.assertTrue(exception.getMessage().contains("Parse swagger from url failed, "));
+    }
   }
 
   @Test
