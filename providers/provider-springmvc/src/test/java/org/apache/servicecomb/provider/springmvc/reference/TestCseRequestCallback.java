@@ -20,14 +20,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 import org.springframework.web.client.RequestCallback;
-
-import mockit.Injectable;
-import mockit.Mocked;
 
 public class TestCseRequestCallback {
   @Test
-  public void testNormal(@Mocked RequestCallback callback) throws IOException {
+  public void testNormal() throws IOException {
+    RequestCallback callback = Mockito.mock(RequestCallback.class);
     CseClientHttpRequest request = new CseClientHttpRequest();
     CseRequestCallback cb = new CseRequestCallback(null, callback, null);
     cb.doWithRequest(request);
@@ -36,8 +35,9 @@ public class TestCseRequestCallback {
   }
 
   @Test
-  public void testCseEntity(@Injectable CseHttpEntity<?> entity,
-      @Mocked RequestCallback callback) throws IOException {
+  public void testCseEntity() throws IOException {
+    CseHttpEntity<?> entity = Mockito.mock(CseHttpEntity.class);
+    RequestCallback callback = Mockito.mock(RequestCallback.class);
     CseClientHttpRequest request = new CseClientHttpRequest();
 
     entity.addContext("c1", "c2");
