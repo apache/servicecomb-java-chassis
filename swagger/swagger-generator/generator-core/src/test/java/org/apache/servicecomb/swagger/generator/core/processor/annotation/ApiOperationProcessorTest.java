@@ -29,11 +29,11 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
-import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
@@ -41,7 +41,7 @@ import java.util.Map;
 public class ApiOperationProcessorTest {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     swaggerOperations = null;
   }

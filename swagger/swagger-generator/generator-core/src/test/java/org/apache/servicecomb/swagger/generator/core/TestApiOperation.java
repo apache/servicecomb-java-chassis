@@ -27,8 +27,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
-import org.junit.AfterClass;
-import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Extension;
@@ -42,12 +40,14 @@ import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestApiOperation {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiOperationAnnotation.class);
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     swaggerOperations = null;
   }

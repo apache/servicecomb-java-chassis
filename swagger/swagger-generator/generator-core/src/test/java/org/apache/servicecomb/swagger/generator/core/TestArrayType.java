@@ -20,12 +20,12 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-import org.junit.Test;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.properties.ByteArrayProperty;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestArrayType {
   @Test

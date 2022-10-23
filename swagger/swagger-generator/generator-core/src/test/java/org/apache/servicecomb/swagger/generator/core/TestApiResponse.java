@@ -19,8 +19,6 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-import org.junit.AfterClass;
-import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -28,12 +26,14 @@ import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Response;
 import io.swagger.models.properties.Property;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestApiResponse {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
 
-  @AfterClass
+  @AfterAll
   public static void teardown() {
     swaggerOperations = null;
   }
