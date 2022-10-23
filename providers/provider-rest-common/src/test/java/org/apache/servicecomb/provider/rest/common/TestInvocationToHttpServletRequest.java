@@ -33,12 +33,12 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import io.vertx.core.net.SocketAddress;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestInvocationToHttpServletRequest {
@@ -56,7 +56,7 @@ public class TestInvocationToHttpServletRequest {
 
   HttpServletRequest request;
 
-  @Before
+  @BeforeEach
   public void setup() {
     handlerContext.put(Const.REMOTE_ADDRESS, socketAddress);
     args = new HashMap<>();
@@ -67,7 +67,7 @@ public class TestInvocationToHttpServletRequest {
     request = new InvocationToHttpServletRequest(invocation);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
 
   }
