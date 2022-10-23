@@ -28,9 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.context.ApplicationContext;
-
-import mockit.Injectable;
 
 public class TestRpcReferenceProcessor {
   RpcReferenceProcessor consumers = new RpcReferenceProcessor();
@@ -52,7 +49,7 @@ public class TestRpcReferenceProcessor {
   }
 
   @Test
-  public void testReference(@Injectable ApplicationContext applicationContext) {
+  public void testReference() {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
 
     PersonReference bean = new PersonReference();
@@ -68,7 +65,7 @@ public class TestRpcReferenceProcessor {
   }
 
   @Test
-  public void testNoReference(@Injectable ApplicationContext applicationContext) {
+  public void testNoReference() {
     Person bean = new Person();
 
     Assertions.assertNull(bean.name);

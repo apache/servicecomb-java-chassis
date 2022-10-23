@@ -21,9 +21,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestPojoSchemaMeta {
 
@@ -42,10 +41,10 @@ public class TestPojoSchemaMeta {
   }
 
   @Test
-  public void testGetImplementation(@Mocked PojoProducers producers)
-      throws Exception {
+  public void testGetImplementation() {
+    PojoProducers producers = Mockito.mock(PojoProducers.class);
     lPojoSchemaMeta.setImplementation("implementation");
-    Deencapsulation.setField(lPojoSchemaMeta, "pojoProducers", producers);
+    lPojoSchemaMeta.setPojoProducers(producers);
     lPojoSchemaMeta.afterPropertiesSet();
     Assertions.assertEquals("implementation", lPojoSchemaMeta.getImplementation());
   }
