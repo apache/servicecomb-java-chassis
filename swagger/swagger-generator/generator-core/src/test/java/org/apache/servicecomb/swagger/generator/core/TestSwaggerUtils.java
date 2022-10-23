@@ -51,7 +51,6 @@ import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
-import mockit.Expectations;
 
 public class TestSwaggerUtils {
 
@@ -259,13 +258,8 @@ public class TestSwaggerUtils {
   @Test
   public void noParameterName() {
     Method method = ReflectUtils.findMethod(Schema.class, "testint");
-    Parameter parameter = method.getParameters()[0];
-    new Expectations(parameter) {
-      {
-        parameter.isNamePresent();
-        result = false;
-      }
-    };
+    Parameter parameter = Mockito.spy(method.getParameters()[0]);
+    Mockito.when(parameter.isNamePresent()).thenReturn(false);
 
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
             () -> SwaggerGeneratorUtils.collectParameterName(parameter));
