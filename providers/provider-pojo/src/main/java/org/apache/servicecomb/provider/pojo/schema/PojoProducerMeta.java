@@ -19,6 +19,7 @@ package org.apache.servicecomb.provider.pojo.schema;
 
 import javax.inject.Inject;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -29,6 +30,11 @@ public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
   private String implementation;
 
   private String schemaInterfaceName;
+
+  @VisibleForTesting
+  void setPojoProducers(PojoProducers pojoProducers) {
+    this.pojoProducers = pojoProducers;
+  }
 
   public String getImplementation() {
     return implementation;

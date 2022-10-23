@@ -17,10 +17,13 @@
 
 package org.apache.servicecomb.provider.pojo.instance;
 
-import org.apache.servicecomb.provider.common.MockUtil;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.pojo.PojoConst;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
 
 public class TestSpringInstanceFactory {
 
@@ -28,11 +31,14 @@ public class TestSpringInstanceFactory {
   public void testInitException() {
 
     SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
-    MockUtil.getInstance().mockBeanUtils();
-    try {
-      lSpringInstanceFactory.create("TestSpringInstanceFactory");
-    } catch (Error e) {
-      Assertions.assertEquals("Fail to find bean:TestSpringInstanceFactory", e.getMessage());
+    try (MockedStatic<BeanUtils> beanUtilsMockedStatic = Mockito.mockStatic(BeanUtils.class)) {
+      beanUtilsMockedStatic.when(BeanUtils::getContext).thenReturn(Mockito.mock(ApplicationContext.class));
+      beanUtilsMockedStatic.when(() -> BeanUtils.getBean(Mockito.anyString())).thenReturn(null);
+      try {
+        lSpringInstanceFactory.create("TestSpringInstanceFactory");
+      } catch (Error e) {
+        Assertions.assertEquals("Fail to find bean:TestSpringInstanceFactory", e.getMessage());
+      }
     }
   }
 
@@ -40,9 +46,12 @@ public class TestSpringInstanceFactory {
   public void testInit() {
 
     SpringInstanceFactory lSpringInstanceFactory = new SpringInstanceFactory();
-    MockUtil.getInstance().mockBeanUtils();
-    MockUtil.getInstance().mockBeanUtilsObject();
-    lSpringInstanceFactory.create("org.apache.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
-    Assertions.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
+    try (MockedStatic<BeanUtils> beanUtilsMockedStatic = Mockito.mockStatic(BeanUtils.class)) {
+      beanUtilsMockedStatic.when(BeanUtils::getContext).thenReturn(Mockito.mock(ApplicationContext.class));
+      beanUtilsMockedStatic.when(() -> BeanUtils.getBean(Mockito.anyString())).thenReturn(new Object());
+
+      lSpringInstanceFactory.create("org.apache.servicecomb.provider.pojo.instance.TestPojoInstanceFactory");
+      Assertions.assertEquals(PojoConst.SPRING, lSpringInstanceFactory.getImplName());
+    }
   }
 }
