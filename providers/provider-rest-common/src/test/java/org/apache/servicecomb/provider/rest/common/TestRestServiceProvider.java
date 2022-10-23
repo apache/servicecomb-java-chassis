@@ -21,25 +21,20 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
-
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestRestServiceProvider {
   @Test
-  public void testInit(@Mocked ApplicationContext context) {
-    new Expectations(BeanUtils.class) {
-      {
-        BeanUtils.getContext();
-        result = context;
-        context.getBean(RestProducers.class);
-        result = new RestProducers();
-      }
-    };
-
-    RestProducerProvider restProducerProvider = new RestProducerProvider();
-    restProducerProvider.init();
-    Assertions.assertEquals(RestConst.REST, restProducerProvider.getName());
+  public void testInit() {
+    ApplicationContext context = Mockito.mock(ApplicationContext.class);
+    Mockito.when(context.getBean(RestProducers.class)).thenReturn(new RestProducers());
+    try (MockedStatic<BeanUtils> beanUtilsMockedStatic = Mockito.mockStatic(BeanUtils.class)) {
+      beanUtilsMockedStatic.when(BeanUtils::getContext).thenReturn(context);
+      RestProducerProvider restProducerProvider = new RestProducerProvider();
+      restProducerProvider.init();
+      Assertions.assertEquals(RestConst.REST, restProducerProvider.getName());
+    }
   }
 }

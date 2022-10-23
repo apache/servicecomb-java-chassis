@@ -28,46 +28,35 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 public class TestProducerHttpRequestArgMapper {
-  @Mocked
-  Invocation invocation;
+  Invocation invocation = Mockito.mock(Invocation.class);
 
   ProducerHttpRequestArgMapper mapper = new ProducerHttpRequestArgMapper("test", "test");
 
   @Test
-  public void testGetFromContext(@Mocked HttpServletRequest request) {
+  public void testGetFromContext() {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
     Map<String, Object> context = new HashMap<>();
     context.put(RestConst.REST_REQUEST, request);
 
-    new Expectations() {
-      {
-        invocation.getHandlerContext();
-        result = context;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(context);
 
     Assertions.assertSame(request, mapper.createContextArg(invocation));
   }
 
   @Test
-  public void testCreateFromInvocation(@Mocked HttpServletRequest request, @Mocked OperationMeta operationMeta,
-      @Mocked RestOperationMeta swaggerOperation) {
+  public void testCreateFromInvocation() {
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    RestOperationMeta swaggerOperation = Mockito.mock(RestOperationMeta.class);
     Map<String, Object> context = new HashMap<>();
 
-    new Expectations() {
-      {
-        invocation.getHandlerContext();
-        result = context;
-        invocation.getOperationMeta();
-        result = operationMeta;
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = swaggerOperation;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(context);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerOperation);
 
     Assertions.assertEquals(InvocationToHttpServletRequest.class, mapper.createContextArg(invocation).getClass());
   }
