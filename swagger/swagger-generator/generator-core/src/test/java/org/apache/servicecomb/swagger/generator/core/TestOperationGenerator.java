@@ -98,8 +98,8 @@ public class TestOperationGenerator {
 
     Response response = swaggerOperation.getOperation().getResponses().get("200");
     Assertions.assertEquals("200 is ok............", response.getDescription());
-    Assertions.assertNotNull(response.getHeaders().get("x-user-domain"));
-    Assertions.assertNull(response.getHeaders().get("x-user-name"));
+    Assertions.assertNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
     Assertions.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
   }
 
