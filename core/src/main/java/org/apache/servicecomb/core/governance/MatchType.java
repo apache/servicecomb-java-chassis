@@ -34,8 +34,8 @@ public final class MatchType {
 
     if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
       if (invocation.isConsumer()) {
-        request.setUri(
-            invocation.getSchemaMeta().getSwagger().getBasePath() + invocation.getOperationMeta().getOperationPath());
+        request.setUri(concatAbsolutePath(
+            invocation.getSchemaMeta().getSwagger().getBasePath(), invocation.getOperationMeta().getOperationPath()));
         request.setMethod(invocation.getOperationMeta().getHttpMethod());
         request.setHeaders(getHeaderMap(invocation, true));
         return request;
@@ -61,6 +61,21 @@ public final class MatchType {
     request.setHeaders(getHeaderMap(invocation, true));
 
     return request;
+  }
+
+  /**
+   * Concat the two paths to an absolute path, without end of '/'.
+   *
+   * e.g. "/" + "/ope" = /ope
+   * e.g. "/prefix" + "/ope" = /prefix/ope
+   */
+  private static String concatAbsolutePath(String basePath, String operationPath) {
+    return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath))
+        .replaceAll("/{2,}", "/");
+  }
+
+  private static String nonNullify(String path) {
+    return path == null ? "" : path;
   }
 
   private static Map<String, String> getHeaderMap(Invocation invocation, boolean fromContext) {

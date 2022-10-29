@@ -46,6 +46,13 @@ public class GovernanceEndpoint {
     return restTemplate.getForObject(SERVER + "/governance/hello", String.class);
   }
 
+  @GetMapping("/noPrefixRetry")
+  public String noPrefixRetry(@RequestParam(name = "invocationID") String invocationID) {
+    return restTemplate
+        .getForObject(SERVER + "/noPrefixRetry?invocationID={1}", String.class,
+            invocationID);
+  }
+
   @GetMapping("/retry")
   public String retry(@RequestParam(name = "invocationID") String invocationID) {
     return restTemplate
