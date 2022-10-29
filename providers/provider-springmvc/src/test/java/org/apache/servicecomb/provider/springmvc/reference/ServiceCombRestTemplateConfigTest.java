@@ -20,7 +20,7 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestTemplate;
 
 public class ServiceCombRestTemplateConfigTest {

@@ -20,8 +20,8 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.io.IOException;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 public class TestCseClientHttpResponse {

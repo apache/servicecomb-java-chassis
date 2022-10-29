@@ -29,10 +29,10 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -44,14 +44,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class CseAsyncClientHttpRequestTest {
   static SCBEngine scbEngine;
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new CseAsyncClientHttpRequestTestSchema()).run();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
     DiscoveryManager.renewInstance();
