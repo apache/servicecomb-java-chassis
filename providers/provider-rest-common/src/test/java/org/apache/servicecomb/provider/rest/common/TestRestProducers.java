@@ -18,8 +18,8 @@
 package org.apache.servicecomb.provider.rest.common;
 
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRestProducers {
   @RestSchema(schemaId = "test")
