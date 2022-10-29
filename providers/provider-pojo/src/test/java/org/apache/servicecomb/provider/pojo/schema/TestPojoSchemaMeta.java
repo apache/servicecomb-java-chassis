@@ -17,24 +17,23 @@
 
 package org.apache.servicecomb.provider.pojo.schema;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestPojoSchemaMeta {
 
   PojoProducerMeta lPojoSchemaMeta = null;
 
-  @Before
+  @BeforeEach
   public void setUp()
       throws Exception {
     lPojoSchemaMeta = new PojoProducerMeta();
   }
 
-  @After
+  @AfterEach
   public void tearDown()
       throws Exception {
     lPojoSchemaMeta = null;
