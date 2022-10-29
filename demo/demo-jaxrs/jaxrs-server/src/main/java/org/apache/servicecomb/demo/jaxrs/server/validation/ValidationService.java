@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.jaxrs.server.validation;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class ValidationService {
   @Path("/validate")
   @POST
-  public ValidationModel errorCode(@Valid ValidationModel request) {
+  public ValidationModel errorCode(@NotNull @Valid ValidationModel request) {
     return request;
   }
 
