@@ -41,7 +41,12 @@ public class GovernanceTest implements CategorizedTestCase {
     testRateLimitingRest();
     testRateLimitingRpc();
     testRetryRest();
+    testRetryRestNoPrefix();
     testRetryRpc();
+  }
+
+  private void testRetryRestNoPrefix() {
+    testRetry("/noPrefixRetry");
   }
 
   private void testRetryRest() {

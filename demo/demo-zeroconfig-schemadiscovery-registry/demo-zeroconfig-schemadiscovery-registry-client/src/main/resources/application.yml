@@ -61,6 +61,10 @@ servicecomb:
       matches:
         - apiPath:
             exact: "/governance/retry"
+    demo-retry-no-prefex: |
+      matches:
+        - apiPath:
+            exact: "/noPrefixRetry"
     demo-retry-rpc: |
       matches:
         - apiPath:
@@ -84,6 +88,10 @@ servicecomb:
       services: demo-zeroconfig-schemadiscovery-registry-client
   retry:
     demo-retry: |
+      maxAttempts: 3
+      ## services is optional in configuration file
+      services: demo-zeroconfig-schemadiscovery-registry-client
+    demo-retry-no-prefex: |
       maxAttempts: 3
       ## services is optional in configuration file
       services: demo-zeroconfig-schemadiscovery-registry-client

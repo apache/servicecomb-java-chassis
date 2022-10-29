@@ -165,7 +165,12 @@ public class RestOperationMeta {
     this.operationMeta = operationMeta;
   }
 
-  // 输出b/c/形式的url
+  /**
+   * Concat the two paths to an absolute path, end of '/' added.
+   *
+   * e.g. "/" + "/ope" = /ope/
+   * e.g. "/prefix" + "/ope" = /prefix/ope/
+   */
   private String concatPath(String basePath, String operationPath) {
     return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath) + "/")
         .replaceAll("/{2,}", "/");
