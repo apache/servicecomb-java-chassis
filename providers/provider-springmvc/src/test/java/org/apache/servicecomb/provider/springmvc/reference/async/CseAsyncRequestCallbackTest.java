@@ -20,9 +20,8 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 import org.springframework.http.HttpEntity;
-
-import mockit.Injectable;
 
 public class CseAsyncRequestCallbackTest {
   @Test
@@ -34,18 +33,20 @@ public class CseAsyncRequestCallbackTest {
   }
 
   @Test
-  public void testHttpEntity(@Injectable HttpEntity<String> entity) {
-    CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
+  public void testHttpEntity() {
+    HttpEntity<?> entity = Mockito.mock(HttpEntity.class);
+    CseAsyncRequestCallback<?> cb = new CseAsyncRequestCallback<>(entity);
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     cb.doWithRequest(request);
     Assertions.assertEquals(entity.getBody(), request.getBody());
   }
 
   @Test
-  public void testCseEntity(@Injectable CseHttpEntity<String> entity) {
+  public void testCseEntity() {
+    CseHttpEntity<?> entity = Mockito.mock(CseHttpEntity.class);
     CseAsyncClientHttpRequest request = new CseAsyncClientHttpRequest();
     entity.addContext("c1", "c2");
-    CseAsyncRequestCallback<String> cb = new CseAsyncRequestCallback<>(entity);
+    CseAsyncRequestCallback<?> cb = new CseAsyncRequestCallback<>(entity);
     cb.doWithRequest(request);
     Assertions.assertEquals(entity.getContext(), request.getContext());
   }

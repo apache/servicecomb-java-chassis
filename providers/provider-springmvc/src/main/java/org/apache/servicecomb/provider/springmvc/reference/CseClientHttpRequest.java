@@ -94,7 +94,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return requestMeta;
   }
 
-  protected void setRequestMeta(RequestMeta requestMeta) {
+  @VisibleForTesting
+  public void setRequestMeta(RequestMeta requestMeta) {
     this.requestMeta = requestMeta;
   }
 

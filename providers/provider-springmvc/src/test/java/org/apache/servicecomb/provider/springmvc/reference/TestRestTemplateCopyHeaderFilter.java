@@ -29,28 +29,22 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
-
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestRestTemplateCopyHeaderFilter {
   RestTemplateCopyHeaderFilter filter = new RestTemplateCopyHeaderFilter();
 
+  Invocation invocation = Mockito.mock(Invocation.class);
   @Test
   public void getOrder() {
     Assertions.assertEquals(-10000, filter.getOrder());
   }
 
   @Test
-  public void beforeSendRequestNoHeader(@Mocked Invocation invocation) throws ExecutionException, InterruptedException {
+  public void beforeSendRequestNoHeader() throws ExecutionException, InterruptedException {
     Map<String, Object> context = new HashMap<>();
-    new Expectations() {
-      {
-        invocation.getHandlerContext();
-        result = context;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(context);
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequestAsync(invocation, requestEx).get();
@@ -58,7 +52,7 @@ public class TestRestTemplateCopyHeaderFilter {
   }
 
   @Test
-  public void beforeSendRequestWithNullHeader(@Mocked Invocation invocation)
+  public void beforeSendRequestWithNullHeader()
       throws ExecutionException, InterruptedException {
     Map<String, Object> context = new HashMap<>(1);
     HttpHeaders httpHeaders = new HttpHeaders();
@@ -66,12 +60,7 @@ public class TestRestTemplateCopyHeaderFilter {
     httpHeaders.add("headerName0", "headerValue0");
     httpHeaders.add("headerName1", null);
     httpHeaders.add("headerName2", "headerValue2");
-    new Expectations() {
-      {
-        invocation.getHandlerContext();
-        result = context;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(context);
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequestAsync(invocation, requestEx).get();
@@ -81,19 +70,14 @@ public class TestRestTemplateCopyHeaderFilter {
   }
 
   @Test
-  public void beforeSendRequestHaveHeader(@Mocked Invocation invocation)
+  public void beforeSendRequestHaveHeader()
       throws ExecutionException, InterruptedException {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("name", "value");
 
     Map<String, Object> context = new HashMap<>();
     context.put(RestConst.CONSUMER_HEADER, httpHeaders);
-    new Expectations() {
-      {
-        invocation.getHandlerContext();
-        result = context;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(context);
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequestAsync(invocation, requestEx).get();
@@ -101,19 +85,14 @@ public class TestRestTemplateCopyHeaderFilter {
   }
 
   @Test
-  public void beforeSendRequestSkipContentLength(@Mocked Invocation invocation)
+  public void beforeSendRequestSkipContentLength()
       throws ExecutionException, InterruptedException {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add(HttpHeaders.CONTENT_LENGTH, "0");
 
     Map<String, Object> context = new HashMap<>();
     context.put(RestConst.CONSUMER_HEADER, httpHeaders);
-    new Expectations() {
-      {
-        invocation.getHandlerContext();
-        result = context;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(context);
 
     HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
     filter.beforeSendRequestAsync(invocation, requestEx).get();

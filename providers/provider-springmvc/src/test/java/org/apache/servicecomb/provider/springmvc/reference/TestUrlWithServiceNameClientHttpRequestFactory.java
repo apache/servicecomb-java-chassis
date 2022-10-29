@@ -24,19 +24,15 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory.UrlWithServiceNameClientHttpRequest;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.http.HttpMethod;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestUrlWithServiceNameClientHttpRequestFactory {
   UrlWithServiceNameClientHttpRequestFactory factory = new UrlWithServiceNameClientHttpRequestFactory();
@@ -53,8 +49,12 @@ public class TestUrlWithServiceNameClientHttpRequestFactory {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void invoke_checkPath(@Mocked Invocation invocation, @Mocked RequestMeta requestMeta) {
-    Map<String, String> handlerContext = new HashMap<>();
+  public void invoke_checkPath() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    RequestMeta requestMeta = Mockito.mock(RequestMeta.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(requestMeta.getOperationMeta()).thenReturn(operationMeta);
+    Map<String, Object> handlerContext = new HashMap<>();
     UrlWithServiceNameClientHttpRequest request = new UrlWithServiceNameClientHttpRequest(uri, HttpMethod.GET) {
       @Override
       protected Response doInvoke(Invocation invocation) {
@@ -62,21 +62,15 @@ public class TestUrlWithServiceNameClientHttpRequestFactory {
       }
     };
 
-    new Expectations(InvocationFactory.class) {
-      {
-        invocation.getHandlerContext();
-        result = handlerContext;
-        InvocationFactory.forConsumer((ReferenceConfig) any, (OperationMeta) any, (InvocationRuntimeType) any,
-            (Map<String, Object>) any);
-        result = invocation;
-      }
-    };
+    Mockito.when(invocation.getHandlerContext()).thenReturn(handlerContext);
+    try (MockedStatic<InvocationFactory> invocationFactoryMockedStatic = Mockito.mockStatic(InvocationFactory.class)) {
+      invocationFactoryMockedStatic.when(() -> InvocationFactory.forConsumer(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+              .thenReturn(invocation);
+      request.setRequestMeta(requestMeta);
+      request.setPath(request.findUriPath(uri));
+      request.invoke(new HashMap<>());
 
-    Deencapsulation.setField(request, "requestMeta", requestMeta);
-    Deencapsulation.setField(request, "path", request.findUriPath(uri));
-
-    request.invoke(new HashMap<>());
-
-    Assertions.assertEquals("/ms/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
+      Assertions.assertEquals("/ms/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
+    }
   }
 }
