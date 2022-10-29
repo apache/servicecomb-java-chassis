@@ -45,8 +45,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -95,7 +95,7 @@ public class TestRestTemplateWrapper {
 
   private final List<HttpMethod> httpMethods = asList(GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE);
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     when(underlying.isAcceptable(url)).thenReturn(true);
     when(underlying.isAcceptable(uri)).thenReturn(true);

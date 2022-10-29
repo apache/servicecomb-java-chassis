@@ -23,7 +23,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import java.net.URI;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestTemplate;
 
 import com.seanyinx.github.unit.scaffolding.Randomness;

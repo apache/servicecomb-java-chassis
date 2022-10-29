@@ -18,8 +18,8 @@
 package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpEntity;
 

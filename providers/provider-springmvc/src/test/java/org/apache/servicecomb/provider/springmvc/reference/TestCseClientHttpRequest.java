@@ -26,10 +26,10 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TestCseClientHttpRequest {
   static SCBEngine scbEngine;
 
-  @BeforeClass
+  @BeforeAll
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
 
@@ -48,7 +48,7 @@ public class TestCseClientHttpRequest {
         .addProducerMeta("sid1", new SpringmvcImpl()).run();
   }
 
-  @AfterClass
+  @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
     DiscoveryManager.renewInstance();

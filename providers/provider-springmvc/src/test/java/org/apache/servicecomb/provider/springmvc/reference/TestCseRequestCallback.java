@@ -18,8 +18,8 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.IOException;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.client.RequestCallback;
 
