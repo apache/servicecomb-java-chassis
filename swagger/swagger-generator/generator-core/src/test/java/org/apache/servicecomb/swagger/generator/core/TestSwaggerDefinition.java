@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.junit.Test;
 
 import io.swagger.annotations.Contact;
 import io.swagger.annotations.Extension;
@@ -34,6 +33,7 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSwaggerDefinition {
   @SwaggerDefinition(

@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -35,6 +34,7 @@ import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
+import org.junit.jupiter.api.Test;
 
 public class ConverterMgrTest {
   static Swagger swagger = SwaggerUtils

@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import io.swagger.models.Operation;
@@ -32,6 +31,7 @@ import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -158,11 +158,13 @@ public class TestSwaggerUtils {
     Assertions.assertEquals("response of 200", response.getDescription());
   }
 
-  @Test(expected = ServiceCombException.class)
+  @Test
   public void testInvalidate() {
     URL resource = TestSwaggerUtils.class.getResource("/swagger1.yaml");
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
-    SwaggerUtils.validateSwagger(swagger);
+    Assertions.assertThrows(ServiceCombException.class, () -> {
+      SwaggerUtils.validateSwagger(swagger);
+    });
   }
 
   @Test

@@ -24,11 +24,11 @@ import javax.ws.rs.Path;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.junit.Test;
 
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.parameters.PathParameter;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @SwaggerDefinition
 public class TestClassUtils {

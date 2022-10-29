@@ -17,10 +17,10 @@
 package org.apache.servicecomb.swagger.generator.core.model;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import io.swagger.models.Swagger;
+import org.junit.jupiter.api.Test;
 
 public class TestSwaggerOperations {
 

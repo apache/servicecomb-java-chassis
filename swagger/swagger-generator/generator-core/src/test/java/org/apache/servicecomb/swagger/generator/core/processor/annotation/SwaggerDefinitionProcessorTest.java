@@ -25,7 +25,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiKeyAuthDefinition;
@@ -44,6 +43,7 @@ import io.swagger.annotations.SwaggerDefinition.Scheme;
 import io.swagger.annotations.Tag;
 import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SwaggerDefinitionProcessorTest {
   @Api(consumes = MediaType.APPLICATION_XML, produces = MediaType.APPLICATION_XML)

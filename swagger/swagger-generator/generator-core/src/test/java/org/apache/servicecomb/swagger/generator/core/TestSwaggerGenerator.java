@@ -24,8 +24,8 @@ import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSwaggerGenerator {
   @BeforeClass

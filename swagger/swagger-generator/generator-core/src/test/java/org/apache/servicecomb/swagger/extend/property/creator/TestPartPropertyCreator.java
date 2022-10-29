@@ -21,9 +21,9 @@ import javax.servlet.http.Part;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 
 import io.swagger.models.properties.FileProperty;
+import org.junit.jupiter.api.Test;
 
 
 public class TestPartPropertyCreator {
