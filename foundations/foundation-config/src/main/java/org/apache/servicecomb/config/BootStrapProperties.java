@@ -63,8 +63,6 @@ public class BootStrapProperties {
 
   public static final String OLD_CONFIG_SERVICE_INSTANCE_INITIAL_STATUS = "instance_description.initialStatus";
 
-  private static final String OLD_CONFIG_SERVICE_INSTANCE_TAGS = "instance_description.properties.tags";
-
   // service definition keys of new version
   public static final String CONFIG_SERVICE_APPLICATION = "servicecomb.service.application";
 
@@ -92,8 +90,6 @@ public class BootStrapProperties {
   public static final String CONFIG_SERVICE_INSTANCE_ENVIRONMENT = "servicecomb.instance.environment";
 
   public static final String CONFIG_SERVICE_INSTANCE_INITIAL_STATUS = "servicecomb.instance.initialStatus";
-
-  private static final String CONFIG_SERVICE_INSTANCE_TAGS = "servicecomb.instance.properties.tags";
 
   // configuration default values
   public static final String DEFAULT_APPLICATION = "default";
@@ -235,16 +231,6 @@ public class BootStrapProperties {
 
   public static String readServiceInstanceInitialStatus() {
     return readServiceInstanceInitialStatus(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceInstanceTags(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_INSTANCE_TAGS,
-        OLD_CONFIG_SERVICE_INSTANCE_TAGS,
-        null);
-  }
-
-  public static String readServiceInstanceTags() {
-    return readServiceInstanceTags(BootStrapProperties.configuration);
   }
 
   private static String readStringValue(Configuration configuration, String newKey, String oldKey,

@@ -106,10 +106,6 @@ public class KieConfig {
     return BootStrapProperties.readServiceName(finalConfig);
   }
 
-  public String getTags() {
-    return BootStrapProperties.readServiceInstanceTags(finalConfig);
-  }
-
   public String getEnvironment() {
     return BootStrapProperties.readServiceEnvironment(finalConfig);
   }
