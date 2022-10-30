@@ -29,6 +29,10 @@
   <artifactId>demo-parent</artifactId>
   <name>Java Chassis::Demo</name>
 
+  <properties>
+    <demo.main></demo.main>
+  </properties>
+
   <packaging>pom</packaging>
   <modules>
     <module>docker-build-config</module>

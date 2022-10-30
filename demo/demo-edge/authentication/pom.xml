@@ -44,19 +44,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>com.github.odavid.maven.plugins</groupId>
-        <artifactId>mixin-maven-plugin</artifactId>
-        <configuration>
-          <mixins>
-            <mixin>
-              <groupId>org.apache.servicecomb.demo</groupId>
-              <artifactId>docker-build-config</artifactId>
-              <version>${project.version}</version>
-            </mixin>
-          </mixins>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -72,6 +59,19 @@
           <plugin>
             <groupId>org.commonjava.maven.plugins</groupId>
             <artifactId>directory-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>com.github.odavid.maven.plugins</groupId>
+            <artifactId>mixin-maven-plugin</artifactId>
+            <configuration>
+              <mixins>
+                <mixin>
+                  <groupId>org.apache.servicecomb.demo</groupId>
+                  <artifactId>docker-build-config</artifactId>
+                  <version>${project.version}</version>
+                </mixin>
+              </mixins>
+            </configuration>
           </plugin>
         </plugins>
       </build>
