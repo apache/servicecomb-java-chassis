@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.mockito.Mockito;
 
 public class AbstractAddressManagerTest {
 
@@ -82,7 +81,12 @@ public class AbstractAddressManagerTest {
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
-    AbstractAddressManager addressManager = Mockito.spy(new AbstractAddressManager(addresses));
+    AbstractAddressManager addressManager = new AbstractAddressManager(addresses) {
+      @Override
+      protected boolean telnetTest(String address) {
+        return true;
+      }
+    };
 
     addressManager.refreshEndpoint(event, "TEST");
 
@@ -115,8 +119,6 @@ public class AbstractAddressManagerTest {
         .build();
     cache.put("http://127.0.0.3:30100", true);
 
-    // mock the address telnetTest is access
-    Mockito.when(addressManager.telnetTest("http://127.0.0.3:30100")).thenReturn(true);
     addressManager.setAddressIsolationStatus(cache);
     Cache<String, Boolean> result = addressManager.getAddressIsolationStatus();
     Assertions.assertEquals(true, result.get("http://127.0.0.3:30100", () -> false));
@@ -130,7 +132,7 @@ public class AbstractAddressManagerTest {
 
 
   @Test
-  public void testMiltiThread() throws Exception {
+  public void testMultipleThread() throws Exception {
 
     AbstractAddressManager addressManager = new AbstractAddressManager(addresses);
     String address = "http://127.0.0.3:30100";
