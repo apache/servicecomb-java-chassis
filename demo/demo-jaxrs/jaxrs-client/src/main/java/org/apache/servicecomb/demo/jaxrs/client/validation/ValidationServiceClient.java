@@ -71,6 +71,15 @@ public class ValidationServiceClient {
       TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.members"), true);
     }
 
+    try {
+      template.postForObject(urlPrefix + "/validate", null, ValidationModel.class);
+      TestMgr.check(false, true);
+    } catch (InvocationException e) {
+      TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request"), true);
+    }
+
     String strResult = template.getForObject(urlPrefix + "/validateQuery?name=a", String.class);
     TestMgr.check(strResult, "a");
 
@@ -83,19 +92,14 @@ public class ValidationServiceClient {
       TestMgr.check(e.getErrorData().toString().contains("Parameter is not valid for operation"), true);
     }
 
-    try {
-      Teacher teacher = new Teacher();
-      teacher.setName("teacher");
-      teacher.setAge("20");
-      Teacher response = template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
-      TestMgr.check(response.getName(), "teacher");
-    } catch (InvocationException e) {
-      TestMgr.check(400, e.getStatus().getStatusCode());
-      TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
-    }
+    Teacher teacher = new Teacher();
+    teacher.setName("teacher");
+    teacher.setAge("20");
+    Teacher response = template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
+    TestMgr.check(response.getName(), "teacher");
 
     try {
-      Teacher teacher = new Teacher();
+      teacher = new Teacher();
       teacher.setAge("20");
       template.postForObject(urlPrefix + "/sayTeacherInfo", teacher, Teacher.class);
       TestMgr.fail("Name should not empty");
@@ -104,5 +108,7 @@ public class ValidationServiceClient {
       TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
     }
 
+    response = template.postForObject(urlPrefix + "/sayTeacherInfo", null, Teacher.class);
+    TestMgr.check(null, response);
   }
 }
