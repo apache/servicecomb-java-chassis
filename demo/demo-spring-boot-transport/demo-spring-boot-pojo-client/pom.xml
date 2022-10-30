@@ -31,25 +31,6 @@
   <properties>
     <demo.main>org.apache.servicecomb.springboot.pojo.client.PojoClient</demo.main>
   </properties>
-  <dependencies>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.github.odavid.maven.plugins</groupId>
-        <artifactId>mixin-maven-plugin</artifactId>
-        <configuration>
-          <mixins>
-            <mixin>
-              <groupId>org.apache.servicecomb.demo</groupId>
-              <artifactId>docker-run-config</artifactId>
-              <version>${project.version}</version>
-            </mixin>
-          </mixins>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <profiles>
     <profile>
@@ -62,6 +43,19 @@
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>com.github.odavid.maven.plugins</groupId>
+            <artifactId>mixin-maven-plugin</artifactId>
+            <configuration>
+              <mixins>
+                <mixin>
+                  <groupId>org.apache.servicecomb.demo</groupId>
+                  <artifactId>docker-run-config</artifactId>
+                  <version>${project.version}</version>
+                </mixin>
+              </mixins>
+            </configuration>
           </plugin>
         </plugins>
       </build>
