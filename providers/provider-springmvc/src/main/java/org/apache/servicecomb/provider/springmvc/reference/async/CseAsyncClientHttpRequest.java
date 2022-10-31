@@ -60,7 +60,7 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements A
   protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
     CompletableFuture<ClientHttpResponse> completableFuture = new CompletableFuture<>();
     InvokerUtils.reactiveInvoke(invocation, (Response response) -> {
-      if (response.isSuccessed()) {
+      if (response.isSucceed()) {
         completableFuture.complete(new CseClientHttpResponse(response));
       } else {
         completableFuture.completeExceptionally(response.getResult());

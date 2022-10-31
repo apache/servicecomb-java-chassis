@@ -119,7 +119,7 @@ public class TestInvokerUtils {
         return response;
       }
     };
-    Mockito.when(response.isSuccessed()).thenReturn(false);
+    Mockito.when(response.isSucceed()).thenReturn(false);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
     Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("test");
@@ -176,7 +176,7 @@ public class TestInvokerUtils {
     Holder<Response> holder = new Holder<>();
     InvokerUtils.reactiveInvoke(invocation, ar -> holder.value = ar);
 
-    Assert.assertFalse(holder.value.isSuccessed());
+    Assert.assertFalse(holder.value.isSucceed());
     Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
     Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
     Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());

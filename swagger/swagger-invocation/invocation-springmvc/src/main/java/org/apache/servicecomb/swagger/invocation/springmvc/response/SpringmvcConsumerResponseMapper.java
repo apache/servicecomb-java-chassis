@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.swagger.invocation.springmvc.response;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -25,6 +23,8 @@ import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerRespo
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import io.vertx.core.MultiMap;
 
 public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
   private ConsumerResponseMapper realMapper;
@@ -37,15 +37,15 @@ public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
   public Object mapResponse(Response response) {
     HttpStatus status = HttpStatus.valueOf(response.getStatusCode());
 
-    HttpHeaders httpHeaders = null;
-    Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-    if (headers != null) {
-      httpHeaders = new HttpHeaders();
-      for (Entry<String, List<Object>> entry : headers.entrySet()) {
-        for (Object value : entry.getValue()) {
-          httpHeaders.add(entry.getKey(), String.valueOf(value));
-        }
-      }
+    MultiMap headers = response.getHeaders();
+    if (headers == null) {
+      Object realResult = realMapper.mapResponse(response);
+      return new ResponseEntity<>(realResult, null, status);
+    }
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    for (Entry<String, String> entry : headers.entries()) {
+      httpHeaders.add(entry.getKey(), entry.getValue());
     }
 
     Object realResult = realMapper.mapResponse(response);

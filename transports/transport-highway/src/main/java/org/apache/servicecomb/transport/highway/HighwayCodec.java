@@ -80,7 +80,7 @@ public final class HighwayCodec {
     Object body = bodySchema.readObject(tcpData.getBodyBuffer());
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
-    response.setHeaders(header.getHeaders());
+    response.setHeaders(header.toMultiMap());
 
     return response;
   }

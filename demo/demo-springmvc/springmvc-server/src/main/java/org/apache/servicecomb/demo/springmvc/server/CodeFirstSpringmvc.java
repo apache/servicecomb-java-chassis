@@ -55,7 +55,6 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -159,11 +158,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/cseResponse", method = RequestMethod.GET)
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+    response.setHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+    response.setHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
 
     return response;
   }

@@ -36,7 +36,6 @@ import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -54,11 +53,10 @@ public class CodeFirstJaxrs extends SomeAbstractJaxrsRestEndpoint {
   @GET
   public Response response(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().toString());
+    response.setHeader("h1", "h1v " + c1.getContext().toString());
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().toString());
+    response.setHeader("h2", "h2v " + c2.getContext().toString());
 
     return response;
   }

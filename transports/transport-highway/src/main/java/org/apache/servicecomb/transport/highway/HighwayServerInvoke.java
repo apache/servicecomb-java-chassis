@@ -141,7 +141,7 @@ public class HighwayServerInvoke {
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());
     header.setContext(context);
-    header.setHeaders(response.getHeaders());
+    header.fromMultiMap(response.getHeaders());
 
     WrapSchema bodySchema = operationProtobuf.findResponseSchema(response.getStatusCode());
     Object body = response.getResult();

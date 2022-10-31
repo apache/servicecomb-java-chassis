@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class TestJaxrsConsumerResponseMapper {
 
   Object entity;
 
-  Map<String, Object> headers = new LinkedHashMap<>();
+  Map<String, List<Object>> headers = new LinkedHashMap<>();
 
   ResponseBuilder responseBuilder;
 
@@ -69,7 +70,10 @@ public class TestJaxrsConsumerResponseMapper {
 
       @Mock
       ResponseBuilder header(String name, Object value) {
-        headers.put(name, value);
+        if (headers.get(name) == null) {
+          headers.put(name, new ArrayList<>());
+        }
+        headers.get(name).add(value);
         return responseBuilder;
       }
     }.getMockInstance();
@@ -86,13 +90,13 @@ public class TestJaxrsConsumerResponseMapper {
   @Test
   public void mapResponse_withHeaders() {
     Response response = Response.create(Status.OK, "ret");
-    response.getHeaders().addHeader("h", "v");
+    response.addHeader("h", "v");
     mapper.mapResponse(response);
 
     Assert.assertEquals(Status.OK.getStatusCode(), status);
     Assert.assertEquals("ret", entity);
     Assert.assertEquals(1, headers.size());
-    Assert.assertThat((List<Object>) headers.get("h"), Matchers.contains("v"));
+    Assert.assertThat(headers.get("h"), Matchers.contains("v"));
   }
 
   @Test

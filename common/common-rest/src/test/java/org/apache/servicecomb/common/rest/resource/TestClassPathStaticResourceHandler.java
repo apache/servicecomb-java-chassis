@@ -53,8 +53,8 @@ public class TestClassPathStaticResourceHandler {
       Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("<html></html>"));
     }
     Assert.assertEquals("text/html", part.getContentType());
-    Assert.assertEquals("text/html", response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
-    Assert.assertEquals("inline", response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals("text/html", response.getHeader(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
   }
 
   @Test

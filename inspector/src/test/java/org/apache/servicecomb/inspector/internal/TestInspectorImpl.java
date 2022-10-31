@@ -228,8 +228,8 @@ public class TestInspectorImpl {
 
     Part part = response.getResult();
     Assert.assertEquals(schemaId + ".yaml", part.getSubmittedFileName());
-    Assert.assertEquals("inline", response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
       Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is, StandardCharsets.UTF_8));
@@ -249,8 +249,8 @@ public class TestInspectorImpl {
 
     Part part = response.getResult();
     Assert.assertEquals(schemaId + ".yaml", part.getSubmittedFileName());
-    Assert.assertNull(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
+    Assert.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
       Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is, StandardCharsets.UTF_8));
@@ -268,8 +268,8 @@ public class TestInspectorImpl {
 
     Part part = response.getResult();
     Assert.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assert.assertEquals("inline", response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
       Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
@@ -287,8 +287,8 @@ public class TestInspectorImpl {
 
     Part part = response.getResult();
     Assert.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assert.assertNull(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
+    Assert.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
       Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
@@ -312,8 +312,8 @@ public class TestInspectorImpl {
     Response response = inspector.getStaticResource("index.html");
 
     Part part = response.getResult();
-    Assert.assertEquals("inline", response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
       Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
