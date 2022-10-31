@@ -155,30 +155,6 @@ public class TestInspectorImpl {
   }
 
   @Test
-  public void downloadSchemas_html(@Mocked Microservice microservice) throws IOException {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
-        microservice.getServiceName();
-        result = "ms";
-      }
-    };
-
-    Response response = inspector.downloadSchemas(SchemaFormat.HTML);
-    Part part = response.getResult();
-    Assert.assertEquals("ms.html.zip", part.getSubmittedFileName());
-
-    try (InputStream is = part.getInputStream()) {
-      Map<String, String> unziped = unzip(is);
-
-      Assert.assertEquals(schemas.size(), unziped.size());
-      Assert.assertTrue(unziped.get("schema1.html").endsWith("</html>"));
-      Assert.assertTrue(unziped.get("schema2.html").endsWith("</html>"));
-    }
-  }
-
-  @Test
   public void downloadSchemas_failed() {
     SchemaFormat format = SchemaFormat.SWAGGER;
     new Expectations(format) {
@@ -258,44 +234,6 @@ public class TestInspectorImpl {
   }
 
   @Test
-  public void getSchemaContentById_view_html() throws IOException {
-    testViewHtmlById("schema1");
-    testViewHtmlById("schema2");
-  }
-
-  private void testViewHtmlById(String schemaId) throws IOException {
-    Response response = inspector.getSchemaContentById(schemaId, SchemaFormat.HTML, false);
-
-    Part part = response.getResult();
-    Assert.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assert.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
-
-    try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
-    }
-  }
-
-  @Test
-  public void getSchemaContentById_download_html() throws IOException {
-    testDownloadHtmlById("schema1");
-    testDownloadHtmlById("schema2");
-  }
-
-  private void testDownloadHtmlById(String schemaId) throws IOException {
-    Response response = inspector.getSchemaContentById(schemaId, SchemaFormat.HTML, true);
-
-    Part part = response.getResult();
-    Assert.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assert.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assert.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
-
-    try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
-    }
-  }
-
-  @Test
   public void getStaticResource_notExist() throws IOException {
     Response response = inspector.getStaticResource("notExist");
 
@@ -329,14 +267,13 @@ public class TestInspectorImpl {
 
     List<DynamicPropertyView> views = inspector.dynamicProperties();
     Assert.assertThat(views.stream().map(DynamicPropertyView::getCallbackCount).collect(Collectors.toList()),
-        Matchers.contains(1, 0, 0, 0));
+        Matchers.contains(1, 0, 0));
     Assert.assertThat(views.stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
-        Matchers.contains("yyy", "zzz", "servicecomb.inspector.enabled",
-            "servicecomb.inspector.swagger.html.asciidoctorCss"));
+        Matchers.contains("yyy", "zzz", "servicecomb.inspector.enabled"));
 
     ConfigUtil.getAllDynamicProperties().remove("yyy");
     ConfigUtil.getAllDynamicProperties().remove("zzz");
-    Assert.assertEquals(2, ConfigUtil.getAllDynamicProperties().size());
+    Assert.assertEquals(1, ConfigUtil.getAllDynamicProperties().size());
   }
 
   @Test
