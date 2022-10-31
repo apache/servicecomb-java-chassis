@@ -68,7 +68,7 @@ public class TestConsumer {
         oExecutor.setResponse(Response.succResp("success"));
       }
     });
-    Assert.assertEquals(true, oExecutor.waitResponse().isSuccessed());
+    Assert.assertEquals(true, oExecutor.waitResponse().isSucceed());
   }
 
   @Test

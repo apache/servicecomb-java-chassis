@@ -41,7 +41,7 @@ public class TestResponse {
   @Test
   public void testAr() {
     ar.success(Status.ACCEPTED, 1);
-    Assert.assertEquals(true, response.isSuccessed());
+    Assert.assertEquals(true, response.isSucceed());
     Assert.assertEquals(false, response.isFailed());
     Assert.assertEquals(1, (int) response.getResult());
     Assert.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatusCode());

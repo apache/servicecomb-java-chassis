@@ -59,7 +59,7 @@ public class TestSpringmvcConsumerResponseMapper {
 
   @Test
   public void mapResponse_withHeader() {
-    response.getHeaders().addHeader("h", "v");
+    response.setHeader("h", "v");
 
     @SuppressWarnings("unchecked")
     ResponseEntity<Integer> responseEntity = (ResponseEntity<Integer>) mapper.mapResponse(response);

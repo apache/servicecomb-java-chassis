@@ -17,14 +17,16 @@
 
 package org.apache.servicecomb.transport.highway.message;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
@@ -92,5 +94,31 @@ public class ResponseHeader {
 
   public void writeObject(ProtobufOutput output) throws Exception {
     responseHeaderSchema.writeObject(output, this);
+  }
+
+  public void fromMultiMap(MultiMap multiMap) {
+    if (multiMap == null) {
+      return;
+    }
+
+    for (Entry<String, String> entry : multiMap.entries()) {
+      headers.addHeader(entry.getKey(), entry.getValue());
+    }
+  }
+
+  public MultiMap toMultiMap() {
+    MultiMap multiMap = MultiMap.caseInsensitiveMultiMap();
+    Map<String, List<Object>> headerMap = headers.getHeaderMap();
+    if (headerMap == null) {
+      return multiMap;
+    }
+
+    for (Entry<String, List<Object>> entry : headerMap.entrySet()) {
+      String key = entry.getKey();
+      for (Object value : entry.getValue()) {
+        multiMap.add(key, value.toString());
+      }
+    }
+    return multiMap;
   }
 }

@@ -88,7 +88,7 @@ public class TestSpringmvcProducerResponseMapper {
         new ResponseEntity<>(arrResult, headers, org.springframework.http.HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);
 
-    List<Object> hv = response.getHeaders().getHeader("h");
+    List<String> hv = response.getHeaders("h");
     Assert.assertThat(hv, Matchers.contains("v"));
   }
 }

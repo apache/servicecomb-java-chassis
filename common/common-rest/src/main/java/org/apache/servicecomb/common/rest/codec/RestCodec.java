@@ -17,7 +17,11 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
+import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
+
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
@@ -25,11 +29,14 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
+
+import io.vertx.core.MultiMap;
 
 public final class RestCodec {
   private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);
@@ -65,7 +72,8 @@ public final class RestCodec {
         paramValues[idx] = param.getParamProcessor().getValue(request);
       } catch (Exception e) {
         // Avoid information leak of user input, and add option for debug use.
-        String message = String.format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+        String message = String.format(
+            "Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
             restOperation.getOperationMeta().getMicroserviceQualifiedName(),
             param.getParamName(),
             param.getParamProcessor().getProcessorType());
@@ -81,5 +89,17 @@ public final class RestCodec {
     }
 
     return paramValues;
+  }
+
+  public static void copyHeadersToHttpResponse(MultiMap headers, HttpServletResponseEx responseEx) {
+    if (headers == null) {
+      return;
+    }
+
+    headers.remove(CONTENT_LENGTH);
+    headers.remove(TRANSFER_ENCODING);
+    for (Entry<String, String> entry : headers.entries()) {
+      responseEx.addHeader(entry.getKey(), entry.getValue());
+    }
   }
 }
