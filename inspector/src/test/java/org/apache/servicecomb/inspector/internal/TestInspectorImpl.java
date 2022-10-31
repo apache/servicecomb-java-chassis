@@ -57,9 +57,6 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.servlet.ServletRestTransport;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-
-import com.netflix.config.DynamicProperty;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -67,6 +64,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
+
+import com.netflix.config.DynamicProperty;
 
 public class TestInspectorImpl {
   static Map<String, String> schemas = new LinkedHashMap<>();
@@ -99,7 +98,6 @@ public class TestInspectorImpl {
 
     scbEngine.run();
     InspectorImpl inspector = new InspectorImpl()
-        .setInspectorConfig(scbEngine.getPriorityPropertyManager().createConfigObject(InspectorConfig.class))
         .setSchemas(schemas);
     inspector.correctBasePathForOnlineTest(scbEngine);
     return inspector;
@@ -159,27 +157,6 @@ public class TestInspectorImpl {
       Assertions.assertEquals(schemas.size(), unziped.size());
       Assertions.assertEquals(schemas.get("schema1"), unziped.get("schema1.yaml"));
       Assertions.assertEquals(schemas.get("schema2"), unziped.get("schema2.yaml"));
-    }
-  }
-
-  @Test
-  public void downloadSchemas_html() throws IOException {
-    Microservice microservice = Mockito.mock(Microservice.class);
-    RegistrationManager spy = Mockito.spy(RegistrationManager.INSTANCE);
-    RegistrationManager.setINSTANCE(spy);
-    Mockito.when(spy.getMicroservice()).thenReturn(microservice);
-    Mockito.when(microservice.getServiceName()).thenReturn("ms");
-
-    Response response = inspector.downloadSchemas(SchemaFormat.HTML);
-    Part part = response.getResult();
-    Assertions.assertEquals("ms.html.zip", part.getSubmittedFileName());
-
-    try (InputStream is = part.getInputStream()) {
-      Map<String, String> unziped = unzip(is);
-
-      Assertions.assertEquals(schemas.size(), unziped.size());
-      Assertions.assertTrue(unziped.get("schema1.html").endsWith("</html>"));
-      Assertions.assertTrue(unziped.get("schema2.html").endsWith("</html>"));
     }
   }
 
@@ -258,45 +235,6 @@ public class TestInspectorImpl {
     }
   }
 
-  // create AsciiDoctor, cost seconds
-  @Test
-  public void getSchemaContentById_view_html() throws IOException {
-    testViewHtmlById("schema1");
-    testViewHtmlById("schema2");
-  }
-
-  private void testViewHtmlById(String schemaId) throws IOException {
-    Response response = inspector.getSchemaContentById(schemaId, SchemaFormat.HTML, false);
-
-    Part part = response.getResult();
-    Assertions.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assertions.assertEquals("inline", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
-
-    try (InputStream is = part.getInputStream()) {
-      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
-    }
-  }
-
-  @Test
-  public void getSchemaContentById_download_html() throws IOException {
-    testDownloadHtmlById("schema1");
-    testDownloadHtmlById("schema2");
-  }
-
-  private void testDownloadHtmlById(String schemaId) throws IOException {
-    Response response = inspector.getSchemaContentById(schemaId, SchemaFormat.HTML, true);
-
-    Part part = response.getResult();
-    Assertions.assertEquals(schemaId + ".html", part.getSubmittedFileName());
-    Assertions.assertNull(response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
-    Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeader(HttpHeaders.CONTENT_TYPE));
-
-    try (InputStream is = part.getInputStream()) {
-      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
-    }
-  }
-
   @Test
   public void getStaticResource_notExist() throws IOException {
     Response response = inspector.getStaticResource("notExist");
@@ -334,8 +272,6 @@ public class TestInspectorImpl {
         .collect(Collectors.toMap(DynamicPropertyView::getKey, Function.identity()));
     Assertions.assertEquals(1, viewMap.get("yyy").getCallbackCount());
     Assertions.assertEquals(0, viewMap.get("zzz").getCallbackCount());
-    Assertions.assertEquals(0, viewMap.get("servicecomb.inspector.enabled").getCallbackCount());
-    Assertions.assertEquals(0, viewMap.get("servicecomb.inspector.swagger.html.asciidoctorCss").getCallbackCount());
 
     int count = ConfigUtil.getAllDynamicProperties().size();
     ConfigUtil.getAllDynamicProperties().remove("yyy");

@@ -42,7 +42,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandler;
 import org.apache.servicecomb.common.rest.resource.StaticResourceHandler;
@@ -56,32 +55,20 @@ import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
-import org.apache.servicecomb.inspector.internal.swagger.AppendStyleProcessor;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Asciidoctor.Factory;
-import org.asciidoctor.Attributes;
-import org.asciidoctor.Options;
-import org.asciidoctor.OptionsBuilder;
-import org.asciidoctor.SafeMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Ordering;
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicProperty;
 
-import io.github.swagger2markup.Swagger2MarkupConfig;
-import io.github.swagger2markup.Swagger2MarkupConverter;
-import io.github.swagger2markup.Swagger2MarkupConverter.Builder;
-import io.github.swagger2markup.builder.Swagger2MarkupConfigBuilder;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
 
 @Path("/inspector")
 public class InspectorImpl {
@@ -91,18 +78,9 @@ public class InspectorImpl {
 
   private final StaticResourceHandler resourceHandler = new ClassPathStaticResourceHandler();
 
-  private InspectorConfig inspectorConfig;
-
   private Map<String, String> schemas;
 
   private PriorityPropertyFactory propertyFactory;
-
-  private volatile Asciidoctor asciidoctor;
-
-  public InspectorImpl setInspectorConfig(InspectorConfig inspectorConfig) {
-    this.inspectorConfig = inspectorConfig;
-    return this;
-  }
 
   public InspectorImpl setPropertyFactory(PriorityPropertyFactory propertyFactory) {
     this.propertyFactory = propertyFactory;
@@ -172,9 +150,6 @@ public class InspectorImpl {
         zos.putNextEntry(new ZipEntry(entry.getKey() + format.getSuffix()));
 
         String content = entry.getValue();
-        if (SchemaFormat.HTML.equals(format)) {
-          content = swaggerToHtml(content);
-        }
         zos.write(content.getBytes(StandardCharsets.UTF_8));
         zos.closeEntry();
       }
@@ -204,13 +179,7 @@ public class InspectorImpl {
       format = SchemaFormat.SWAGGER;
     }
 
-    byte[] bytes;
-    if (SchemaFormat.HTML.equals(format)) {
-      String html = swaggerToHtml(swaggerContent);
-      bytes = html.getBytes(StandardCharsets.UTF_8);
-    } else {
-      bytes = swaggerContent.getBytes(StandardCharsets.UTF_8);
-    }
+    byte[] bytes = swaggerContent.getBytes(StandardCharsets.UTF_8);
 
     Part part = new InputStreamPart(null, new ByteArrayInputStream(bytes))
         .setSubmittedFileName(schemaId + format.getSuffix());
@@ -221,49 +190,6 @@ public class InspectorImpl {
     }
     response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_HTML);
     return response;
-  }
-
-  // swagger not support cookie parameter
-  // so if swaggerContent contains cookie parameter, will cause problem.
-  private String swaggerToHtml(String swaggerContent) {
-    if (asciidoctor == null) {
-      synchronized (this) {
-        if (asciidoctor == null) {
-          // very slow, need a few seconds
-          LOGGER.info("create AsciiDoctor start.");
-          asciidoctor = Factory.create();
-          asciidoctor.javaExtensionRegistry().docinfoProcessor(AppendStyleProcessor.class);
-          LOGGER.info("create AsciiDoctor end.");
-        }
-      }
-    }
-
-    // swagger to markup
-    Builder markupBuilder = Swagger2MarkupConverter.from(SwaggerUtils.parseSwagger(swaggerContent));
-    // default not support cookie parameter
-    // so must customize config
-    Swagger2MarkupConfig markupConfig = new Swagger2MarkupConfigBuilder()
-        .withParameterOrdering(Ordering
-            .explicit("path", "query", "header", "cookie", "formData", "body")
-            .onResultOf(Parameter::getIn))
-        .build();
-    String markup = markupBuilder.withConfig(markupConfig).build().toString();
-
-    // markup to html
-    OptionsBuilder builder = Options.builder();
-    builder.docType("book")
-        .backend("html5")
-        .headerFooter(true)
-        .safe(SafeMode.UNSAFE)
-        .attributes(Attributes.builder()
-            .attribute("toclevels", 3)
-            .attribute(Attributes.TOC_2, true)
-            .attribute(Attributes.TOC_POSITION, "left")
-            .attribute(Attributes.LINK_CSS, true)
-            .attribute(Attributes.STYLESHEET_NAME, inspectorConfig.getAsciidoctorCss())
-            .attribute(Attributes.SECTION_NUMBERS, true)
-            .attribute(Attributes.SECT_NUM_LEVELS, 4).build());
-    return asciidoctor.convert(markup, builder.build());
   }
 
   @Path("/{path : .+}")

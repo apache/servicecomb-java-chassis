@@ -30,17 +30,6 @@
   <artifactId>inspector</artifactId>
   <name>Java Chassis::Inspector</name>
 
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>jcenter-releases</id>
-      <name>jcenter</name>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -49,14 +38,6 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.asciidoctor</groupId>
-      <artifactId>asciidoctorj</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.github.swagger2markup</groupId>
-      <artifactId>swagger2markup</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

@@ -51,7 +51,6 @@ public class InspectorBootListener implements BootListener {
 
     // will not register this schemas to service registry
     InspectorImpl inspector = new InspectorImpl()
-        .setInspectorConfig(inspectorConfig)
         .setPropertyFactory(propertyFactory)
         .setSchemas(RegistrationManager.INSTANCE.getMicroservice().getSchemaMap())
         .correctBasePathForOnlineTest(event.getScbEngine());
