@@ -35,15 +35,6 @@
       <artifactId>wiremock-standalone</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- zipkin dependencies -->
-    <dependency>
-      <groupId>io.zipkin.zipkin2</groupId>
-      <artifactId>zipkin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.zipkin.zipkin2</groupId>
-      <artifactId>zipkin-junit</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
