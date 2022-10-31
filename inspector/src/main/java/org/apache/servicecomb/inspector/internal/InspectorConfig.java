@@ -24,22 +24,11 @@ public class InspectorConfig {
   @InjectProperty(keys = "enabled", defaultValue = "true")
   private boolean enabled;
 
-  @InjectProperty(keys = "swagger.html.asciidoctorCss", defaultValue = "https://cdnjs.cloudflare.com/ajax/libs/asciidoctor.js/1.5.9/css/asciidoctor.css")
-  private String asciidoctorCss;
-
   public boolean isEnabled() {
     return enabled;
   }
 
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
-  }
-
-  public String getAsciidoctorCss() {
-    return asciidoctorCss;
-  }
-
-  public void setAsciidoctorCss(String asciidoctorCss) {
-    this.asciidoctorCss = asciidoctorCss;
   }
 }
