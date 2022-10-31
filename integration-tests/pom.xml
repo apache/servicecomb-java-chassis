@@ -134,7 +134,15 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
-
+    <!-- zipkin dependencies -->
+    <dependency>
+      <groupId>io.zipkin.zipkin2</groupId>
+      <artifactId>zipkin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.zipkin.zipkin2</groupId>
+      <artifactId>zipkin-junit</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-core</artifactId>
