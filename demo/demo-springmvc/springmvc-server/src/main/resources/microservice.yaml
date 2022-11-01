@@ -87,7 +87,8 @@ servicecomb:
     availableZone: my-Zone
   codec.printErrorMessage: true
 #########SSL options
-ssl.protocols: TLSv1.2
+ssl.protocols: TLSv1.3
+ssl.ciphers: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384
 ssl.authPeer: true
 ssl.checkCN.host: true
 

@@ -214,10 +214,10 @@ public final class SSLManager {
     return r;
   }
 
-  public static String[] getEnabledCiphers(String enabledCiphers) {
+  public static String[] getEnabledCiphers(SSLOption sslOption) {
     SSLOption option = new SSLOption();
-    option.setProtocols("TLSv1.2");
-    option.setCiphers(enabledCiphers);
+    option.setProtocols(sslOption.getProtocols());
+    option.setCiphers(sslOption.getCiphers());
     SSLCustom custom = SSLCustom.defaultSSLCustom();
     SSLSocket socket = createSSLSocket(option, custom);
     return socket.getEnabledCipherSuites();
