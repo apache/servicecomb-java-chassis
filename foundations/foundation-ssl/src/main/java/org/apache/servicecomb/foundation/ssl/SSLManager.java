@@ -34,6 +34,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * 根据传递的SSLOption构造SSL上下文。请参考JSSE获取相关API的层次参考。
  *
@@ -216,7 +218,11 @@ public final class SSLManager {
 
   public static String[] getEnabledCiphers(SSLOption sslOption) {
     SSLOption option = new SSLOption();
-    option.setProtocols(sslOption.getProtocols());
+    if (StringUtils.isNotEmpty(sslOption.getProtocols())) {
+      option.setProtocols(sslOption.getProtocols());
+    } else {
+      option.setProtocols("TLSv1.2");
+    }
     option.setCiphers(sslOption.getCiphers());
     SSLCustom custom = SSLCustom.defaultSSLCustom();
     SSLSocket socket = createSSLSocket(option, custom);
