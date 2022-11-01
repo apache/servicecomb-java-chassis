@@ -108,6 +108,8 @@ public class CseAsyncClientHttpRequestTest {
             return completableFuture;
           }
         };
+    byte[] body = "abc".getBytes();
+    client.setRequestBody(body);
     ListenableFuture<ClientHttpResponse> future = client.executeAsync();
     future.addCallback(
         new ListenableFutureCallback<ClientHttpResponse>() {
