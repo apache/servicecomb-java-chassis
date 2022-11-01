@@ -70,4 +70,12 @@ public class AnnotationsTest {
     }
     return user;
   }
+
+  @RequestMapping(path = "/testRequiredBody", method = RequestMethod.POST)
+  public String testRequiredBody(@RequestBody(required = true) Person user) {
+    if (user == null) {
+      return "Should not happen";
+    }
+    return user.getName();
+  }
 }

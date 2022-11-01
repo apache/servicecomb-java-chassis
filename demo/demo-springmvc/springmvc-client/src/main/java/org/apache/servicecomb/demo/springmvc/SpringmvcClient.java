@@ -403,6 +403,15 @@ public class SpringmvcClient {
             "test",
             String.class,
             "ha"));
+
+    try {
+      template.postForObject(prefix + "/annotations/testRequiredBody",
+          null,
+          String.class);
+      TestMgr.fail("should fail");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
   }
 
   private static void testSpringMvcDefaultValuesRest(RestTemplate template, String microserviceName) {
