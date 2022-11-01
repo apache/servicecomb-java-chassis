@@ -48,14 +48,3 @@ jobs:
       run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage
     - name: publish coverage report
       run: bash <(curl -s https://codecov.io/bash)
-    - name: Collect integration-tests logs
-      if: failure()
-      continue-on-error: true
-      uses: ./.github/actions/copy-integration-tests-logs
-    - name: Upload Surefire reports
-      uses: actions/upload-artifact@v3
-      if: failure()
-      continue-on-error: true
-      with:
-        name: integration-tests-logs
-        path: integration-tests-logs

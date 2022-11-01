@@ -550,7 +550,6 @@
       <id>it</id>
       <modules>
         <module>demo</module>
-        <module>integration-tests</module>
       </modules>
     </profile>
     <profile>
