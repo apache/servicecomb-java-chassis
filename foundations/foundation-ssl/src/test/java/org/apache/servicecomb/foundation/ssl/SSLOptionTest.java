@@ -59,12 +59,12 @@ public class SSLOptionTest {
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
-    Assertions.assertEquals("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
+    Assertions.assertEquals("TLSv1.3,TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello", protocols);
 
     String ciphers = option.getCiphers();
     option.setCiphers(ciphers);
     Assertions.assertEquals(
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
+        "TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
             +
             "A,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA",
         ciphers);

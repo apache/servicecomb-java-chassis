@@ -154,7 +154,7 @@ public final class VertxTLSBuilder {
     tcpClientOptions
         .setEnabledSecureTransportProtocols(new HashSet<>(Arrays.asList(sslOption.getProtocols().split(","))));
 
-    for (String cipher : SSLManager.getEnabledCiphers(sslOption.getCiphers())) {
+    for (String cipher : SSLManager.getEnabledCiphers(sslOption)) {
       tcpClientOptions.addEnabledCipherSuite(cipher);
     }
 

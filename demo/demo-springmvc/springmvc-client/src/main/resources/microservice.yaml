@@ -145,6 +145,9 @@ cse:
     - rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi
 
 #########SSL options
+# open jdk 8 now TLSv1.3 not available
+# ssl.protocols: TLSv1.3
+# ssl.ciphers: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384
 ssl.protocols: TLSv1.2
 ssl.authPeer: true
 ssl.checkCN.host: false

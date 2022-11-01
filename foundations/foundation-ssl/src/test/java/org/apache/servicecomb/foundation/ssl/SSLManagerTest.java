@@ -34,12 +34,12 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class SSLManagerTest {
   private final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -122,12 +122,12 @@ public class SSLManagerTest {
     serverSocket.bind(new InetSocketAddress("127.0.0.1", 8886));
     String[] protos = serverSocket.getEnabledCipherSuites();
     String[] protosExpected =
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+        "TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
     Assertions.assertArrayEquals(protos, protosExpected);
     String[] ciphers = serverSocket.getEnabledCipherSuites();
     String[] ciphersExpected =
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+        "TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
     Assertions.assertArrayEquals(ciphers, ciphersExpected);
     Assertions.assertTrue(serverSocket.getNeedClientAuth());
@@ -136,12 +136,12 @@ public class SSLManagerTest {
     SSLSocket clientsocket = SSLManager.createSSLSocket(clientoption, custom);
     String[] clientprotos = clientsocket.getEnabledCipherSuites();
     String[] clientprotosExpected =
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+        "TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
     Assertions.assertArrayEquals(clientprotos, clientprotosExpected);
     String[] clientciphers = clientsocket.getEnabledCipherSuites();
     String[] clientciphersExpected =
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
+        "TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA"
             .split(",");
     Assertions.assertArrayEquals(clientciphers, clientciphersExpected);
     Assertions.assertFalse(clientsocket.getNeedClientAuth());
@@ -460,7 +460,10 @@ public class SSLManagerTest {
 
   @Test
   public void testGetSupportedCiphers() {
-    String[] ciphers = SSLManager.getEnabledCiphers("TLS_RSA_WITH_AES_128_GCM_SHA256");
+    SSLOption option = new SSLOption();
+    option.setCiphers("TLS_RSA_WITH_AES_128_GCM_SHA256");
+    option.setProtocols("TLSv1.2");
+    String[] ciphers = SSLManager.getEnabledCiphers(option);
     Assertions.assertEquals(ciphers[0], "TLS_RSA_WITH_AES_128_GCM_SHA256");
   }
 }
