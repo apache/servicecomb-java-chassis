@@ -30,15 +30,15 @@
   <packaging>pom</packaging>
 
   <properties>
-    <!-- Dependency versions -->
+    <!-- Dependency versions: sort by alphabetic order -->
     <activation.version>1.2.2</activation.version>
     <archaius.version>0.7.7</archaius.version>
     <asciidoctorj.version>2.5.3</asciidoctorj.version>
     <aspectj.version>1.9.9.1</aspectj.version>
-    <awaitility.version>4.2.0</awaitility.version>
     <assertj.version>3.23.1</assertj.version>
+    <awaitility.version>4.2.0</awaitility.version>
     <brave.version>5.14.1</brave.version>
-    <classmate.version>1.5.1</classmate.version>
+    <bytebuddy.version>1.12.18</bytebuddy.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.11.0</commons-io.version>
@@ -46,12 +46,13 @@
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-logging.version>1.2</commons-logging.version>
     <commons-text.version>1.10.0</commons-text.version>
+    <classmate.version>1.5.1</classmate.version>
     <esotericsoftware.version>4.0.2</esotericsoftware.version>
+    <failureaccess.version>1.0.1</failureaccess.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
     <governator-api.version>1.17.12</governator-api.version>
     <guava.version>31.1-jre</guava.version>
-    <failureaccess.version>1.0.1</failureaccess.version>
     <guice.version>5.1.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.12</hdr-histogram.version>
@@ -71,14 +72,14 @@
     <log4j.version>1.2.17</log4j.version>
     <log4j2.version>2.19.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
-    <mockito.version>4.0.0</mockito.version>
+    <maven-model.version>3.8.6</maven-model.version>
+    <micrometer.version>1.9.5</micrometer.version>
+    <mockito.version>4.8.1</mockito.version>
     <mock-server.version>5.14.0</mock-server.version>
+    <nacos-client.version>2.1.1</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.84.Final</netty.version>
     <okhttp3.version>4.10.0</okhttp3.version>
-    <maven-model.version>3.8.6</maven-model.version>
-    <micrometer.version>1.9.5</micrometer.version>
-    <nacos-client.version>2.1.1</nacos-client.version>
     <prometheus.version>0.16.0</prometheus.version>
     <protobuf.version>3.21.9</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
@@ -691,6 +692,12 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${bytebuddy.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
