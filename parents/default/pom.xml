@@ -56,6 +56,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.seanyinx</groupId>
       <artifactId>unit-scaffolding</artifactId>
       <scope>test</scope>
