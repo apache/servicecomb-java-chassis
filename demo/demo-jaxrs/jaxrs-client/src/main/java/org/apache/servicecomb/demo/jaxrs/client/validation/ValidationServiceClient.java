@@ -89,7 +89,7 @@ public class ValidationServiceClient {
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(e.getErrorData().toString().contains("Parameter is not valid for operation"), true);
+      TestMgr.check(e.getErrorData().toString().contains("Parameter is required."), true);
     }
 
     Teacher teacher = new Teacher();
@@ -108,6 +108,7 @@ public class ValidationServiceClient {
       TestMgr.check(e.getErrorData().toString().contains("must not be blank"), true);
     }
 
+    // jax-rs body default required = false
     response = template.postForObject(urlPrefix + "/sayTeacherInfo", null, Teacher.class);
     TestMgr.check(null, response);
   }

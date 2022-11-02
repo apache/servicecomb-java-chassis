@@ -27,13 +27,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import io.vertx.core.buffer.impl.BufferImpl;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -41,10 +44,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.buffer.impl.BufferImpl;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 
 public class TestBodyProcessor {
@@ -79,7 +80,6 @@ public class TestBodyProcessor {
       return null;
     }).when(clientRequest).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
-
     Mockito.when(clientRequest.getHeaders()).thenReturn(headers);
   }
 
@@ -112,8 +112,7 @@ public class TestBodyProcessor {
   public void testGetValueNoAttrNoStream() throws Exception {
     createProcessor(String.class);
     Mockito.when(request.getInputStream()).thenReturn(null);
-    Object result = processor.getValue(request);
-    Assertions.assertNull(result);
+    Assertions.assertThrows(InvocationException.class, () -> processor.getValue(request));
   }
 
   @Test

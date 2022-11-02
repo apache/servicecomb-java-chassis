@@ -26,6 +26,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +100,14 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
+      Object result = getValueImpl(request);
+      if (result == null && this.isRequired) {
+        throw new InvocationException(Status.BAD_REQUEST, "Body parameter is required.");
+      }
+      return result;
+    }
+
+    private Object getValueImpl(HttpServletRequest request) throws IOException {
       Object body = request.getAttribute(RestConst.BODY_PARAMETER);
       if (body != null) {
         return convertValue(body, targetType);
