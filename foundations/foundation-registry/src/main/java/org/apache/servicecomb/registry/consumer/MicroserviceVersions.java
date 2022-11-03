@@ -229,10 +229,10 @@ public class MicroserviceVersions {
       // clear cache
       versions.forEach((key, value) -> value.setInstances(new ArrayList<>()));
       for (Entry<String, List<MicroserviceInstance>> entry : mergedInstances.microserviceIdMap.entrySet()) {
-        // ensure microserviceVersion exists
-        versions.computeIfAbsent(entry.getKey(),
-            microserviceId -> createMicroserviceVersion(microserviceId, entry.getValue()))
-            .setInstances(entry.getValue());
+        // always update microservice versions, because we allow microservice info override, like schema info
+        MicroserviceVersion newVersion = createMicroserviceVersion(entry.getKey(), entry.getValue());
+        newVersion.setInstances(entry.getValue());
+        versions.put(entry.getKey(), newVersion);
       }
 
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
