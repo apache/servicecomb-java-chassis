@@ -218,13 +218,13 @@
                     -->
                     <tcp>
                       <ports>
-                        <port>18080</port>
+                        <port>18090</port>
                       </ports>
                     </tcp>
                     <time>120000</time>
                   </wait>
                   <ports>
-                    <port>18080:18080</port>
+                    <port>18090:18090</port>
                   </ports>
                   <dependsOn>
                     <container>service-center</container>

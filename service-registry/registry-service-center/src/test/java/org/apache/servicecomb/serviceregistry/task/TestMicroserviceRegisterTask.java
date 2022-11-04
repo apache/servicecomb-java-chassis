@@ -32,13 +32,13 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceRegisterTask {
   private EventBus eventBus;
@@ -225,7 +225,8 @@ public class TestMicroserviceRegisterTask {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testAlreadyRegisteredSchemaIdSetNotMatch(@Mocked ServiceRegistryClient srClient) {
+  public void testAlreadyRegisteredSchemaIdSetNotMatch(@Mocked ServiceRegistryClient srClient,
+      @Mocked ServiceRegistryConfig config) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -240,6 +241,8 @@ public class TestMicroserviceRegisterTask {
     schemaResponse.setSchemaId("s1");
     new Expectations() {
       {
+        config.isAlwaysOverrideSchema();
+        result = false;
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
@@ -366,7 +369,7 @@ public class TestMicroserviceRegisterTask {
    * There is schema in service center which is different from local schema.
    */
   @Test(expected = IllegalStateException.class)
-  public void testReRegisteredSetForProd(@Mocked ServiceRegistryClient srClient) {
+  public void testReRegisteredSetForProd(@Mocked ServiceRegistryClient srClient, @Mocked ServiceRegistryConfig config) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -382,6 +385,8 @@ public class TestMicroserviceRegisterTask {
 
     new Expectations() {
       {
+        config.isAlwaysOverrideSchema();
+        result = false;
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
@@ -401,7 +406,8 @@ public class TestMicroserviceRegisterTask {
    * env = production and there are schemas only existing in service center
    */
   @Test(expected = IllegalStateException.class)
-  public void testReRegisterForProductAndLocalSchemasAreLess(@Mocked ServiceRegistryClient srClient) {
+  public void testReRegisterForProductAndLocalSchemasAreLess(@Mocked ServiceRegistryClient srClient,
+      @Mocked ServiceRegistryConfig config) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -420,6 +426,8 @@ public class TestMicroserviceRegisterTask {
 
     new Expectations() {
       {
+        config.isAlwaysOverrideSchema();
+        result = false;
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
@@ -489,8 +497,8 @@ public class TestMicroserviceRegisterTask {
    * There is schema in service center which is different from local schema.
    */
   @Test
-  public void testLocalSchemaAndServiceCenterSchemaDiff(@Mocked ServiceRegistryClient srClient) {
-
+  public void testLocalSchemaAndServiceCenterSchemaDiff(@Mocked ServiceRegistryClient srClient,
+      @Mocked ServiceRegistryConfig config) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -506,6 +514,8 @@ public class TestMicroserviceRegisterTask {
 
     new Expectations() {
       {
+        config.isAlwaysOverrideSchema();
+        result = false;
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
@@ -602,7 +612,8 @@ public class TestMicroserviceRegisterTask {
       registerTask.run();
     } catch (IllegalStateException exception) {
       isIllegalException = true;
-      List<LoggingEvent> events = collector.getEvents().stream().filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
+      List<LoggingEvent> events = collector.getEvents().stream()
+          .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
 
       Assertions.assertEquals("service center schema and local schema both are different:\n" +
           " service center schema:\n" +
