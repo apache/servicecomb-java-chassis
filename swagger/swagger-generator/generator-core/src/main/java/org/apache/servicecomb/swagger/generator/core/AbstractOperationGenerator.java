@@ -71,6 +71,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
@@ -166,7 +168,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodAnnotation() {
-    for (Annotation annotation : method.getAnnotations()) {
+    for (Annotation annotation : Arrays.stream(method.getAnnotations())
+            .sorted(Comparator.comparing(a -> a.annotationType().getName()))
+            .collect(Collectors.toList())
+    ) {
       MethodAnnotationProcessor<Annotation> processor = findMethodAnnotationProcessor(annotation.annotationType());
       if (processor == null) {
         continue;
