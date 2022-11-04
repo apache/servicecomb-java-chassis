@@ -43,8 +43,8 @@ public interface FailurePredictor {
           .put(IOException.class, Collections.singletonList("Connection reset by peer"))
           .put(VertxException.class, Collections.singletonList("Connection was closed"))
           .put(NoRouteToHostException.class, Collections.emptyList())
-          .put(SSLHandshakeException.class, Arrays.asList())
-          .put(SslHandshakeTimeoutException.class, Arrays.asList())
+          .put(SSLHandshakeException.class, Collections.emptyList())
+          .put(SslHandshakeTimeoutException.class, Collections.emptyList())
           .build();
 
   boolean isFailedResult(List<String> statusList, Object result);
