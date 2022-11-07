@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import com.google.common.collect.ImmutableMap;
 
 import io.vertx.core.VertxException;
+import io.netty.handler.ssl.SslHandshakeTimeoutException;
 
 public interface FailurePredictor {
   Map<Class<? extends Throwable>, List<String>> STRICT_RETRIABLE =
@@ -40,6 +43,8 @@ public interface FailurePredictor {
           .put(IOException.class, Collections.singletonList("Connection reset by peer"))
           .put(VertxException.class, Collections.singletonList("Connection was closed"))
           .put(NoRouteToHostException.class, Collections.emptyList())
+          .put(SSLHandshakeException.class, Collections.emptyList())
+          .put(SslHandshakeTimeoutException.class, Collections.emptyList())
           .build();
 
   boolean isFailedResult(List<String> statusList, Object result);
