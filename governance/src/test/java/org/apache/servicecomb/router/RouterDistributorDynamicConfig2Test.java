@@ -45,6 +45,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class RouterDistributorDynamicConfig2Test {
   private static final String TARGET_SERVICE_NAME = "test_server";
 
+  public static final String CONFIG_KEY = RouterRuleCache.ROUTE_RULE_PREFIX + TARGET_SERVICE_NAME;
+
   private static final String RULE_STRING = ""
       + "      - precedence: 2\n"
       + "        route:\n"
@@ -53,10 +55,10 @@ public class RouterDistributorDynamicConfig2Test {
       + "              version: 2.0\n"
       + "      - precedence: 1\n"
       + "        match:\n"
-      + "          headers:          #header匹配\n"
+      + "          headers:\n"
       + "            appId:\n"
       + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+      + "              caseInsensitive: false\n"
       + "            userId:\n"
       + "              exact: 01\n"
       + "        route:\n"
@@ -108,10 +110,14 @@ public class RouterDistributorDynamicConfig2Test {
           }
         });
 
-    dynamicValues.put(RouterRuleCache.ROUTE_RULE_PREFIX + TARGET_SERVICE_NAME, RULE_STRING);
+    dynamicValues.put(CONFIG_KEY, RULE_STRING);
 
+    postConfigurationChangedEvent();
+  }
+
+  private void postConfigurationChangedEvent() {
     Set<String> changedKeys = new HashSet<>();
-    changedKeys.add(RouterRuleCache.ROUTE_RULE_PREFIX + TARGET_SERVICE_NAME);
+    changedKeys.add(CONFIG_KEY);
     GovernanceConfigurationChangedEvent newEvent = new GovernanceConfigurationChangedEvent(changedKeys);
     GovernanceEventManager.post(newEvent);
   }
@@ -133,6 +139,126 @@ public class RouterDistributorDynamicConfig2Test {
     List<ServiceIns> resultServerList = mainFilter(serverList, headers);
     Assertions.assertEquals(1, resultServerList.size());
     Assertions.assertEquals("01", resultServerList.get(0).getId());
+  }
+
+  @Test
+  public void testCaseSensitiveNotMatch() {
+    String rule = ""
+        + "      - precedence: 1\n"
+        + "        route:\n"
+        + "          - weight: 100\n"
+        + "            tags:\n"
+        + "              version: 2.0\n"
+        + "      - precedence: 2\n"
+        + "        match:\n"
+        + "          headers:\n"
+        + "            userId:\n"
+        + "              exact: user01\n"
+        + "              caseInsensitive: false\n"
+        + "        route:\n"
+        + "          - weight: 100\n"
+        + "            tags:\n"
+        + "              version: 1.0\n";
+    dynamicValues.put(CONFIG_KEY, rule);
+    postConfigurationChangedEvent();
+
+    Map<String, String> headers = new HashMap<>();
+    headers.put("userId", "User01");
+
+    List<ServiceIns> serverList = new ArrayList<>();
+    ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
+    ins1.setVersion("2.0");
+    ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME);
+    ins2.setVersion("1.0");
+    serverList.add(ins1);
+    serverList.add(ins2);
+
+    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    Assertions.assertEquals(1, resultServerList.size());
+    Assertions.assertEquals("01", resultServerList.get(0).getId());
+    Assertions.assertEquals("2.0", resultServerList.get(0).getVersion());
+  }
+
+  @Test
+  public void testNoneMatch() {
+    String rule = ""
+        + "      - precedence: 1\n"
+        + "        match:\n"
+        + "          headers:\n"
+        + "            userId:\n"
+        + "              regex: user02\n"
+        + "        route:\n"
+        + "          - weight: 100\n"
+        + "            tags:\n"
+        + "              version: 2.0\n"
+        + "      - precedence: 2\n"
+        + "        match:\n"
+        + "          headers:\n"
+        + "            userId:\n"
+        + "              exact: user01\n"
+        + "              caseInsensitive: false\n"
+        + "        route:\n"
+        + "          - weight: 100\n"
+        + "            tags:\n"
+        + "              version: 1.0\n";
+    dynamicValues.put(CONFIG_KEY, rule);
+    postConfigurationChangedEvent();
+
+    Map<String, String> headers = new HashMap<>();
+    headers.put("userId", "User01");
+    headers.put("appId", "App01");
+
+    List<ServiceIns> serverList = new ArrayList<>();
+    ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
+    ins1.setVersion("2.0");
+    ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME);
+    ins2.setVersion("1.0");
+    serverList.add(ins1);
+    serverList.add(ins2);
+
+    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    Assertions.assertEquals(2, resultServerList.size());
+  }
+
+  @Test
+  public void testOneMatchButNoInstance() {
+    String rule = ""
+        + "      - precedence: 1\n"
+        + "        match:\n"
+        + "          headers:\n"
+        + "            appId:\n"
+        + "              regex: app02\n"
+        + "        route:\n"
+        + "          - weight: 100\n"
+        + "            tags:\n"
+        + "              version: 2.0\n"
+        + "      - precedence: 2\n"
+        + "        match:\n"
+        + "          headers:\n"
+        + "            userId:\n"
+        + "              exact: user01\n"
+        + "              caseInsensitive: false\n"
+        + "        route:\n"
+        + "          - weight: 100\n"
+        + "            tags:\n"
+        + "              version: 1.0\n";
+    dynamicValues.put(CONFIG_KEY, rule);
+    postConfigurationChangedEvent();
+
+    Map<String, String> headers = new HashMap<>();
+    headers.put("userId", "user01");
+    headers.put("appId", "app02");
+
+    List<ServiceIns> serverList = new ArrayList<>();
+    ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
+    ins1.setVersion("1.0");
+    ServiceIns ins2 = new ServiceIns("02", TARGET_SERVICE_NAME);
+    ins2.setVersion("1.0");
+    serverList.add(ins1);
+    serverList.add(ins2);
+
+    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    Assertions.assertEquals(2, resultServerList.size());
   }
 
   private List<ServiceIns> mainFilter(List<ServiceIns> serverList, Map<String, String> headers) {
