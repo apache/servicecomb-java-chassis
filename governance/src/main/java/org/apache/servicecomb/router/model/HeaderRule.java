@@ -30,11 +30,7 @@ public class HeaderRule {
 
   private String regex;
 
-  /**
-   * false distinct
-   * true Ignore
-   */
-  private Boolean caseInsensitive = false;
+  private boolean caseInsensitive = true;
 
   private String exact;
 
@@ -49,7 +45,7 @@ public class HeaderRule {
       throw new RouterIllegalParamException(
           "route management regex and exact can not br null at same time.");
     }
-    if (!caseInsensitive) {
+    if (caseInsensitive) {
       str = str.toLowerCase();
       exact = exact == null ? null : exact.toLowerCase();
       regex = regex == null ? null : regex.toLowerCase();
@@ -76,11 +72,11 @@ public class HeaderRule {
     this.regex = regex;
   }
 
-  public Boolean getCaseInsensitive() {
+  public boolean isCaseInsensitive() {
     return caseInsensitive;
   }
 
-  public void setCaseInsensitive(Boolean caseInsensitive) {
+  public void setCaseInsensitive(boolean caseInsensitive) {
     this.caseInsensitive = caseInsensitive;
   }
 
