@@ -150,6 +150,7 @@ public class ServiceCenterRegistration extends AbstractTask {
           if (isSwaggerDifferent(newMicroservice)) {
             if (serviceCenterConfiguration.isCanOverwriteSwagger()) {
               LOGGER.warn("Service has already registered, but schema ids not equal, try to register it again");
+              eventBus.post(new MicroserviceRegistrationEvent(true));
               startTask(new RegisterSchemaTask(0));
               return;
             }
