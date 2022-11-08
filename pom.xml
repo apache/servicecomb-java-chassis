@@ -60,7 +60,7 @@
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
     <maven-project-info-reports-plugin.version>3.4.1</maven-project-info-reports-plugin.version>
     <maven-remote-resources-plugin.version>3.0.0</maven-remote-resources-plugin.version>
-    <os-maven-plugin.version>1.7.0</os-maven-plugin.version>
+    <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
     <protoc3-maven-plugin.version>3.19.2</protoc3-maven-plugin.version>
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
