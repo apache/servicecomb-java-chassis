@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.injection;
 
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 import org.slf4j.Logger;

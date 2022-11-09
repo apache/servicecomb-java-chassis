@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
-
-import static org.apache.servicecomb.injection.AbortFault.ABORTED_ERROR_MSG;
+package org.apache.servicecomb.governance.processor.injection;
 
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 
@@ -29,7 +27,7 @@ public interface Fault {
       if (fault.injectFault()) {
         if (FaultInjectionConst.FALLBACK_THROWEXCEPTION.equals(fault.getPolicy().getFallbackType())) {
           throw new FaultInjectionException(
-              FaultResponse.createFail(fault.getPolicy().getErrorCode(), ABORTED_ERROR_MSG));
+              FaultResponse.createFail(fault.getPolicy().getErrorCode(), AbortFault.ABORTED_ERROR_MSG));
         } else {
           return null;
         }

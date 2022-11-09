@@ -15,16 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.loadbanlance;
+package org.apache.servicecomb.governance.processor.injection;
 
-public class LoadBalanceImpl implements LoadBalance {
-  private final String rule;
+import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 
-  public LoadBalanceImpl(String rule) {
-    this.rule = rule;
+public abstract class AbstractFault implements Fault {
+  protected String key;
+
+  protected FaultInjectionPolicy policy;
+
+  public AbstractFault(String key, FaultInjectionPolicy policy) {
+    this.key = key;
+    this.policy = policy;
   }
 
-  public String getRule() {
-    return rule;
+  @Override
+  public boolean injectFault() {
+    if (policy.isForceClosed()) {
+      return false;
+    }
+    FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
+    return injectFault(faultParam);
+  }
+
+  @Override
+  public String getKey() {
+    return key;
+  }
+
+  @Override
+  public FaultInjectionPolicy getPolicy() {
+    return policy;
   }
 }

@@ -81,6 +81,10 @@ servicecomb:
       matches:
         - apiPath:
             contains: "/faultInjectAbort"
+    demo-mapper: |
+      matches:
+        - apiPath:
+            prefix: "/mapper"
   rateLimiting:
     demo-rateLimiting: |
       rate: 1
@@ -166,6 +170,11 @@ servicecomb:
       rule: Random
     demo-loadbalance-roundRobin: |
       rule: RoundRobin
+  mapper:
+    demo-mapper: |
+      target:
+        host: 127.0.0.1
+        port: 8080
   routeRule:
     test_server1: |                              # 服务名
       - precedence: 1                        # 优先级，数字越大，优先级越高。

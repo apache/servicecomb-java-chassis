@@ -15,16 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.loadbanlance;
+package org.apache.servicecomb.governance.processor.injection;
 
-import org.apache.servicecomb.governance.policy.LoadBalancerPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface LoadBalance {
+/**
+ * Fault injection parameters which decides the fault injection condition.
+ */
+public class FaultParam {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FaultParam.class);
 
-  static LoadBalance getLoadBalance(String key, LoadBalancerPolicy policy) {
-    LoadBalance loadBalance = new LoadBalanceImpl(policy.getRule());
-    return loadBalance;
+  private final long reqCount;
+
+  private Sleepable sleepable = (delay) -> {
+    try {
+      Thread.sleep(delay);
+    } catch (InterruptedException e) {
+      LOGGER.info("Interrupted exception is received");
+    }
+  };
+
+  public long getReqCount() {
+    return reqCount;
   }
 
-  String getRule();
+  public FaultParam(long reqCount) {
+    this.reqCount = reqCount;
+  }
+
+  public Sleepable getSleepable() {
+    return sleepable;
+  }
+
+  public void setSleepable(Sleepable sleepable) {
+    this.sleepable = sleepable;
+  }
 }

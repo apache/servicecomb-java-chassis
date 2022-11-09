@@ -26,6 +26,7 @@ import org.apache.servicecomb.governance.handler.IdentifierRateLimitingHandler;
 import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.LoadBalanceHandler;
+import org.apache.servicecomb.governance.handler.MapperHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
@@ -45,6 +46,7 @@ import org.apache.servicecomb.governance.properties.IdentifierRateLimitPropertie
 import org.apache.servicecomb.governance.properties.InstanceBulkheadProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.LoadBalanceProperties;
+import org.apache.servicecomb.governance.properties.MapperProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
@@ -109,6 +111,11 @@ public class GovernanceConfiguration {
     return new LoadBalanceProperties();
   }
 
+  @Bean
+  public MapperProperties mapperProperties() {
+    return new MapperProperties();
+  }
+
   // handlers configuration
   @Bean
   public BulkheadHandler bulkheadHandler(BulkheadProperties bulkheadProperties) {
@@ -157,6 +164,11 @@ public class GovernanceConfiguration {
   @Bean
   public FaultInjectionHandler faultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
     return new FaultInjectionHandler(faultInjectionProperties);
+  }
+
+  @Bean
+  public MapperHandler mapperHandler(MapperProperties mapperProperties) {
+    return new MapperHandler(mapperProperties);
   }
 
   // request processor

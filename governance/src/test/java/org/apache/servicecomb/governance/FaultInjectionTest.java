@@ -23,10 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.injection.Fault;
-import org.apache.servicecomb.injection.FaultInjectionDecorators;
-import org.apache.servicecomb.injection.FaultInjectionDecorators.FaultInjectionDecorateCheckedSupplier;
-import org.apache.servicecomb.injection.FaultInjectionException;
+import org.apache.servicecomb.governance.processor.injection.Fault;
+import org.apache.servicecomb.governance.processor.injection.FaultInjectionDecorators;
+import org.apache.servicecomb.governance.processor.injection.FaultInjectionDecorators.FaultInjectionDecorateCheckedSupplier;
+import org.apache.servicecomb.governance.processor.injection.FaultInjectionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
