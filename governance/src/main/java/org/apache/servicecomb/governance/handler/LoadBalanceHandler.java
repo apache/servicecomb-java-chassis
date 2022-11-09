@@ -20,7 +20,7 @@ package org.apache.servicecomb.governance.handler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.LoadBalancerPolicy;
 import org.apache.servicecomb.governance.properties.LoadBalanceProperties;
-import org.apache.servicecomb.loadbanlance.LoadBalance;
+import org.apache.servicecomb.governance.processor.loadbanlance.LoadBalance;
 
 public class LoadBalanceHandler extends AbstractGovernanceHandler<LoadBalance, LoadBalancerPolicy> {
 

@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.governance;
 
-import org.apache.servicecomb.governance.handler.LoadBalanceHandler;
+import org.apache.servicecomb.governance.handler.MapperHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.processor.loadbanlance.LoadBalance;
-import org.junit.Assert;
+import org.apache.servicecomb.governance.processor.mapping.Mapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,33 +28,21 @@ import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
 @ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
-public class LoadBalancerTest {
-  private LoadBalanceHandler loadBalanceHandler;
+public class MapperTest {
+  private MapperHandler mapperHandler;
 
   @Autowired
-  public void setLoadBalanceHandler(LoadBalanceHandler loadBalanceHandler) {
-    this.loadBalanceHandler = loadBalanceHandler;
-  }
-
-  public LoadBalancerTest() {
-
+  public void setMapperHandler(MapperHandler mapperHandler) {
+    this.mapperHandler = mapperHandler;
   }
 
   @Test
-  public void test_loadbalance_random() {
+  public void test_mapper_work() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/loadrandom");
-    request.setServiceName("loadrandom");
-    LoadBalance loadBalance = loadBalanceHandler.getActuator(request);
-    Assert.assertEquals("Random", loadBalance.getRule());
-  }
-
-  @Test
-  public void test_loadbalance_roundRobin() {
-    GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/loadroundRobin");
-    request.setServiceName("loadroundRobin");
-    LoadBalance loadBalance = loadBalanceHandler.getActuator(request);
-    Assert.assertEquals("RoundRobin", loadBalance.getRule());
+    request.setUri("/mapper/v1");
+    Mapper mapper = mapperHandler.getActuator(request);
+    Assertions.assertEquals(2, mapper.target().size());
+    Assertions.assertEquals("127.0.0.1", mapper.target().get("host"));
+    Assertions.assertEquals("8080", mapper.target().get("port"));
   }
 }

@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.loadbanlance;
 
-public class FaultInjectionException extends RuntimeException {
-  private static final long serialVersionUID = 1675558351029273343L;
+public class LoadBalanceImpl implements LoadBalance {
+  private final String rule;
 
-  private final FaultResponse faultResponse;
-
-  public FaultInjectionException(FaultResponse faultResponse) {
-    super(faultResponse.getErrorMsg());
-    this.faultResponse = faultResponse;
+  public LoadBalanceImpl(String rule) {
+    this.rule = rule;
   }
 
-  public FaultResponse getFaultResponse() {
-    return faultResponse;
+  public String getRule() {
+    return rule;
   }
 }

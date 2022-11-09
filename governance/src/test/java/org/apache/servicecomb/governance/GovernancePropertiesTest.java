@@ -34,6 +34,7 @@ import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
 import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
+import org.apache.servicecomb.governance.processor.injection.FaultInjectionConst;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
@@ -42,7 +43,6 @@ import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
-import org.apache.servicecomb.injection.FaultInjectionConst;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -164,13 +164,12 @@ public class GovernancePropertiesTest {
 
   @Test
   public void test_all_bean_is_loaded() {
-    Assertions.assertEquals(9, propertiesList.size());
+    Assertions.assertEquals(10, propertiesList.size());
   }
 
   @Test
   public void test_match_properties_successfully_loaded() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(14, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());
@@ -188,17 +187,17 @@ public class GovernancePropertiesTest {
   @Test
   public void test_match_properties_delete() {
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(14, markers.size());
+    Assertions.assertEquals(null, markers.get("test"));
     dynamicValues.put("servicecomb.matchGroup.test", "matches:\n"
         + "  - apiPath:\n"
         + "      exact: \"/hello2\"\n"
         + "    name: match0");
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(15, markers.size());
+    Assertions.assertEquals(1, markers.get("test").getMatches().size());
     tearDown();
     markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(14, markers.size());
+    Assertions.assertEquals(null, markers.get("test"));
   }
 
   @Test
@@ -215,7 +214,6 @@ public class GovernancePropertiesTest {
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
     Map<String, TrafficMarker> markers = matchProperties.getParsedEntity();
-    Assertions.assertEquals(15, markers.size());
     TrafficMarker demoRateLimiting = markers.get("demo-rateLimiting");
     List<Matcher> matchers = demoRateLimiting.getMatches();
     Assertions.assertEquals(1, matchers.size());

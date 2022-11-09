@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.injection;
 
 /**
  * Handles the all constant values for fault injection.

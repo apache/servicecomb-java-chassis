@@ -80,6 +80,9 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
     entityClass = getEntityClass();
   }
 
+  public String getConfigKey() {
+    return this.configKey;
+  }
 
   @Override
   public void afterPropertiesSet() {
