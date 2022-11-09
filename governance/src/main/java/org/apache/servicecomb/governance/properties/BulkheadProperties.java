@@ -26,6 +26,10 @@ public class BulkheadProperties extends PolicyProperties<BulkheadPolicy> {
     super(MATCH_BULKHEAD_KEY);
   }
 
+  public BulkheadProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<BulkheadPolicy> getEntityClass() {
     return BulkheadPolicy.class;

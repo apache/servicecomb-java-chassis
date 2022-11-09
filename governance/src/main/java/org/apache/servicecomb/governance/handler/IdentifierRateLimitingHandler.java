@@ -49,14 +49,14 @@ public class IdentifierRateLimitingHandler extends
       LOGGER.info("identifier rate limiting is not properly configured, identifier is empty.");
       return null;
     }
-    return IdentifierRateLimitProperties.MATCH_RATE_LIMIT_KEY
+    return this.rateLimitProperties.getConfigKey()
         + "." + policy.getName()
         + "." + governanceRequest.getHeader(policy.getIdentifier());
   }
 
   @Override
   protected void onConfigurationChanged(String key) {
-    if (key.startsWith(IdentifierRateLimitProperties.MATCH_RATE_LIMIT_KEY)) {
+    if (key.startsWith(this.rateLimitProperties.getConfigKey())) {
       for (String processorKey : processors.keySet()) {
         if (processorKey.startsWith(key)) {
           Disposable<RateLimiter> processor = processors.remove(processorKey);
@@ -93,8 +93,8 @@ public class IdentifierRateLimitingHandler extends
       TaggedRateLimiterMetrics
           .ofRateLimiterRegistry(RateLimiterMetricNames.custom()
                   .availablePermissionsMetricName(
-                      IdentifierRateLimitProperties.MATCH_RATE_LIMIT_KEY + ".available.permissions")
-                  .waitingThreadsMetricName(IdentifierRateLimitProperties.MATCH_RATE_LIMIT_KEY + ".waiting.threads")
+                      this.rateLimitProperties.getConfigKey() + ".available.permissions")
+                  .waitingThreadsMetricName(this.rateLimitProperties.getConfigKey() + ".waiting.threads")
                   .build(),
               rateLimiterRegistry)
           .bindTo(meterRegistry);

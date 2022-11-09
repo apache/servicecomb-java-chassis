@@ -17,6 +17,16 @@
 
 package org.apache.servicecomb.governance;
 
+import org.apache.servicecomb.governance.handler.BulkheadHandler;
+import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
+import org.apache.servicecomb.governance.handler.MapperHandler;
+import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
+import org.apache.servicecomb.governance.properties.BulkheadProperties;
+import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
+import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
+import org.apache.servicecomb.governance.properties.MapperProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,5 +58,48 @@ public class MockConfiguration {
   @Bean
   public PrometheusMeterRegistry meterRegistry() {
     return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+  }
+
+  @Bean
+  public MapperProperties mapperProperties2() {
+    return new MapperProperties(MapperProperties.MATCH_MAPPER_KEY + "2");
+  }
+
+  @Bean
+  public MapperHandler mapperHandler2(@Qualifier("mapperProperties2") MapperProperties mapperProperties) {
+    return new MapperHandler(mapperProperties);
+  }
+
+  @Bean
+  public BulkheadProperties bulkheadProperties2() {
+    return new BulkheadProperties(BulkheadProperties.MATCH_BULKHEAD_KEY + "2");
+  }
+
+  @Bean
+  public BulkheadHandler bulkheadHandler2(@Qualifier("bulkheadProperties2") BulkheadProperties bulkheadProperties) {
+    return new BulkheadHandler(bulkheadProperties);
+  }
+
+  @Bean
+  public CircuitBreakerProperties circuitBreakerProperties2() {
+    return new CircuitBreakerProperties(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + "2");
+  }
+
+  @Bean
+  public CircuitBreakerHandler circuitBreakerHandler2(
+      @Qualifier("circuitBreakerProperties2") CircuitBreakerProperties circuitBreakerProperties,
+      AbstractCircuitBreakerExtension circuitBreakerExtension) {
+    return new CircuitBreakerHandler(circuitBreakerProperties, circuitBreakerExtension);
+  }
+
+  @Bean
+  public FaultInjectionProperties faultInjectionProperties2() {
+    return new FaultInjectionProperties(FaultInjectionProperties.MATCH_FAULT_INJECTION_KEY + "2");
+  }
+
+  @Bean
+  public FaultInjectionHandler faultInjectionHandler2(
+      @Qualifier("faultInjectionProperties2") FaultInjectionProperties faultInjectionProperties) {
+    return new FaultInjectionHandler(faultInjectionProperties);
   }
 }
