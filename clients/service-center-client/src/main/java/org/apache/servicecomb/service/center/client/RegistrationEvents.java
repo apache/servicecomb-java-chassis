@@ -17,38 +17,56 @@
 
 package org.apache.servicecomb.service.center.client;
 
-public abstract class RegistrationEvents {
-  protected boolean success;
+import org.apache.servicecomb.service.center.client.model.Microservice;
+import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 
-  protected RegistrationEvents(boolean success) {
+public abstract class RegistrationEvents {
+  protected final boolean success;
+
+  protected final Microservice microservice;
+
+  protected RegistrationEvents(boolean success, Microservice microservice) {
     this.success = success;
+    this.microservice = microservice;
   }
 
   public boolean isSuccess() {
     return this.success;
   }
 
+  public Microservice getMicroservice() {
+    return microservice;
+  }
+
   public static class MicroserviceRegistrationEvent extends RegistrationEvents {
-    public MicroserviceRegistrationEvent(boolean success) {
-      super(success);
+    public MicroserviceRegistrationEvent(boolean success, Microservice microservice) {
+      super(success, microservice);
     }
   }
 
   public static class SchemaRegistrationEvent extends RegistrationEvents {
-    public SchemaRegistrationEvent(boolean success) {
-      super(success);
+    public SchemaRegistrationEvent(boolean success, Microservice microservice) {
+      super(success, microservice);
     }
   }
 
   public static class MicroserviceInstanceRegistrationEvent extends RegistrationEvents {
-    public MicroserviceInstanceRegistrationEvent(boolean success) {
-      super(success);
+    protected final MicroserviceInstance microserviceInstance;
+
+    public MicroserviceInstanceRegistrationEvent(boolean success, Microservice microservice,
+        MicroserviceInstance microserviceInstance) {
+      super(success, microservice);
+      this.microserviceInstance = microserviceInstance;
     }
   }
 
   public static class HeartBeatEvent extends RegistrationEvents {
-    public HeartBeatEvent(boolean success) {
-      super(success);
+    protected final MicroserviceInstance microserviceInstance;
+
+    public HeartBeatEvent(boolean success, Microservice microservice,
+        MicroserviceInstance microserviceInstance) {
+      super(success, microservice);
+      this.microserviceInstance = microserviceInstance;
     }
   }
 }
