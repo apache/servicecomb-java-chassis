@@ -30,6 +30,7 @@ import org.apache.servicecomb.governance.processor.injection.FaultInjectionExcep
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -38,9 +39,13 @@ import org.springframework.test.context.ContextConfiguration;
 public class FaultInjectionTest {
   private FaultInjectionHandler faultInjectionHandler;
 
+  private FaultInjectionHandler faultInjectionHandler2;
+
   @Autowired
-  public void setFaultInjectionHandler(FaultInjectionHandler faultInjectionHandler) {
+  public void setFaultInjectionHandler(FaultInjectionHandler faultInjectionHandler,
+      @Qualifier("faultInjectionHandler2") FaultInjectionHandler faultInjectionHandler2) {
     this.faultInjectionHandler = faultInjectionHandler;
+    this.faultInjectionHandler2 = faultInjectionHandler2;
   }
 
   public FaultInjectionTest() {
@@ -174,5 +179,27 @@ public class FaultInjectionTest {
     Fault fault = faultInjectionHandler.getActuator(request);
     ds.withFaultInjection(fault);
     Assertions.assertEquals("test", ds.get());
+  }
+
+  @Test
+  public void test_fallback_ThrowException_work_handler2() throws Throwable {
+    FaultInjectionDecorateCheckedSupplier<Object> ds =
+        FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
+
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/throwException");
+    request.setServiceName("ThrowException");
+
+    Fault fault = faultInjectionHandler2.getActuator(request);
+    ds.withFaultInjection(fault);
+    boolean expected = false;
+    try {
+      ds.get();
+    } catch (FaultInjectionException e) {
+      if (e.getFaultResponse().getErrorCode() == 500) {
+        expected = true;
+      }
+    }
+    Assertions.assertEquals(true, expected);
   }
 }

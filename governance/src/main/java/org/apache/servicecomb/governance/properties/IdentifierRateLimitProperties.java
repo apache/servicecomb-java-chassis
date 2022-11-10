@@ -25,6 +25,10 @@ public class IdentifierRateLimitProperties extends PolicyProperties<IdentifierRa
     super(MATCH_RATE_LIMIT_KEY);
   }
 
+  public IdentifierRateLimitProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<IdentifierRateLimitingPolicy> getEntityClass() {
     return IdentifierRateLimitingPolicy.class;

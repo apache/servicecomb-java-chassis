@@ -54,7 +54,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY
+    return this.instanceIsolationProperties.getConfigKey()
         + "." + policy.getName()
         + "." + governanceRequest.getServiceName()
         + "." + governanceRequest.getInstanceId();
@@ -62,7 +62,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
 
   @Override
   protected void onConfigurationChanged(String key) {
-    if (key.startsWith(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY)) {
+    if (key.startsWith(this.instanceIsolationProperties.getConfigKey())) {
       for (String processorKey : processors.keySet()) {
         if (processorKey.startsWith(key)) {
           Disposable<CircuitBreaker> circuitBreaker = processors.remove(processorKey);
@@ -110,14 +110,14 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
     if (meterRegistry != null) {
       TaggedCircuitBreakerMetrics
           .ofCircuitBreakerRegistry(CircuitBreakerMetricNames.custom()
-              .callsMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".calls")
+              .callsMetricName(this.instanceIsolationProperties.getConfigKey() + ".calls")
               .notPermittedCallsMetricName(
-                  InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".not.permitted.calls")
-              .stateMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".state")
-              .bufferedCallsMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".buffered.calls")
-              .slowCallsMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".slow.calls")
-              .failureRateMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".failure.rate")
-              .slowCallRateMetricName(InstanceIsolationProperties.MATCH_INSTANCE_ISOLATION_KEY + ".slow.call.rate")
+                  this.instanceIsolationProperties.getConfigKey() + ".not.permitted.calls")
+              .stateMetricName(this.instanceIsolationProperties.getConfigKey() + ".state")
+              .bufferedCallsMetricName(this.instanceIsolationProperties.getConfigKey() + ".buffered.calls")
+              .slowCallsMetricName(this.instanceIsolationProperties.getConfigKey() + ".slow.calls")
+              .failureRateMetricName(this.instanceIsolationProperties.getConfigKey() + ".failure.rate")
+              .slowCallRateMetricName(this.instanceIsolationProperties.getConfigKey() + ".slow.call.rate")
               .build(), circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }

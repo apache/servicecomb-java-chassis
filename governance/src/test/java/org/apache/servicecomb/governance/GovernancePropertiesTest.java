@@ -164,7 +164,7 @@ public class GovernancePropertiesTest {
 
   @Test
   public void test_all_bean_is_loaded() {
-    Assertions.assertEquals(10, propertiesList.size());
+    Assertions.assertEquals(14, propertiesList.size());
   }
 
   @Test

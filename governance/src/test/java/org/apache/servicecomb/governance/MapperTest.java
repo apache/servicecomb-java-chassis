@@ -23,6 +23,7 @@ import org.apache.servicecomb.governance.processor.mapping.Mapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -31,9 +32,12 @@ import org.springframework.test.context.ContextConfiguration;
 public class MapperTest {
   private MapperHandler mapperHandler;
 
+  private MapperHandler mapperHandler2;
+
   @Autowired
-  public void setMapperHandler(MapperHandler mapperHandler) {
+  public void setMapperHandler(MapperHandler mapperHandler, @Qualifier("mapperHandler2") MapperHandler mapperHandler2) {
     this.mapperHandler = mapperHandler;
+    this.mapperHandler2 = mapperHandler2;
   }
 
   @Test
@@ -44,5 +48,15 @@ public class MapperTest {
     Assertions.assertEquals(2, mapper.target().size());
     Assertions.assertEquals("127.0.0.1", mapper.target().get("host"));
     Assertions.assertEquals("8080", mapper.target().get("port"));
+  }
+
+  @Test
+  public void test_mapper2_work() {
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/mapper/v1");
+    Mapper mapper = mapperHandler2.getActuator(request);
+    Assertions.assertEquals(2, mapper.target().size());
+    Assertions.assertEquals("127.0.0.1", mapper.target().get("host"));
+    Assertions.assertEquals("9090", mapper.target().get("port"));
   }
 }

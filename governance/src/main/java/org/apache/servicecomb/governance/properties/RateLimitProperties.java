@@ -26,6 +26,10 @@ public class RateLimitProperties extends PolicyProperties<RateLimitingPolicy> {
     super(MATCH_RATE_LIMIT_KEY);
   }
 
+  public RateLimitProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<RateLimitingPolicy> getEntityClass() {
     return RateLimitingPolicy.class;

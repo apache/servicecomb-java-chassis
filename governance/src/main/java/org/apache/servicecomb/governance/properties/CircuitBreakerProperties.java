@@ -25,6 +25,10 @@ public class CircuitBreakerProperties extends PolicyProperties<CircuitBreakerPol
     super(MATCH_CIRCUITBREAKER_KEY);
   }
 
+  public CircuitBreakerProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<CircuitBreakerPolicy> getEntityClass() {
     return CircuitBreakerPolicy.class;

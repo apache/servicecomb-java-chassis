@@ -42,7 +42,7 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
-    return BulkheadProperties.MATCH_BULKHEAD_KEY + "." + policy.getName();
+    return bulkheadProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
@@ -67,9 +67,9 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
     if (meterRegistry != null) {
       TaggedBulkheadMetrics
           .ofBulkheadRegistry(BulkheadMetricNames.custom()
-              .availableConcurrentCallsMetricName(BulkheadProperties.MATCH_BULKHEAD_KEY + ".available.concurrent.calls")
+              .availableConcurrentCallsMetricName(bulkheadProperties.getConfigKey() + ".available.concurrent.calls")
               .maxAllowedConcurrentCallsMetricName(
-                  BulkheadProperties.MATCH_BULKHEAD_KEY + ".max.allowed.concurrent.calls").build(), registry)
+                  bulkheadProperties.getConfigKey() + ".max.allowed.concurrent.calls").build(), registry)
           .bindTo(meterRegistry);
     }
     return new DisposableBulkhead(key, registry, registry.bulkhead(key));

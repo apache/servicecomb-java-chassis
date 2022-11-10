@@ -20,7 +20,7 @@ package org.apache.servicecomb.governance.properties;
 import org.apache.servicecomb.governance.policy.MapperPolicy;
 
 public class MapperProperties extends PolicyProperties<MapperPolicy> {
-  private static final String MATCH_MAPPER_KEY = "servicecomb.mapper";
+  public static final String MATCH_MAPPER_KEY = "servicecomb.mapper";
 
   public MapperProperties() {
     super(MATCH_MAPPER_KEY);

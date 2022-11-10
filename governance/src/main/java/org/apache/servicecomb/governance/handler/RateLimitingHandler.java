@@ -41,7 +41,7 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
-    return RateLimitProperties.MATCH_RATE_LIMIT_KEY + "." + policy.getName();
+    return this.rateLimitProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
@@ -68,8 +68,8 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
       TaggedRateLimiterMetrics
           .ofRateLimiterRegistry(RateLimiterMetricNames.custom()
                   .availablePermissionsMetricName(
-                      RateLimitProperties.MATCH_RATE_LIMIT_KEY + ".available.permissions")
-                  .waitingThreadsMetricName(RateLimitProperties.MATCH_RATE_LIMIT_KEY + ".waiting.threads")
+                      this.rateLimitProperties.getConfigKey() + ".available.permissions")
+                  .waitingThreadsMetricName(this.rateLimitProperties.getConfigKey() + ".waiting.threads")
                   .build(),
               rateLimiterRegistry)
           .bindTo(meterRegistry);

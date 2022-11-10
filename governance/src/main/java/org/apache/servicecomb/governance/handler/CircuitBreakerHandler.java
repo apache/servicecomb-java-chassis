@@ -46,7 +46,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
-    return CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + "." + policy.getName();
+    return this.circuitBreakerProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
@@ -79,13 +79,13 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
     if (meterRegistry != null) {
       TaggedCircuitBreakerMetrics
           .ofCircuitBreakerRegistry(CircuitBreakerMetricNames.custom()
-              .callsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".calls")
-              .notPermittedCallsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".not.permitted.calls")
-              .stateMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".state")
-              .bufferedCallsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".buffered.calls")
-              .slowCallsMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".slow.calls")
-              .failureRateMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".failure.rate")
-              .slowCallRateMetricName(CircuitBreakerProperties.MATCH_CIRCUITBREAKER_KEY + ".slow.call.rate")
+              .callsMetricName(this.circuitBreakerProperties.getConfigKey() + ".calls")
+              .notPermittedCallsMetricName(this.circuitBreakerProperties.getConfigKey() + ".not.permitted.calls")
+              .stateMetricName(this.circuitBreakerProperties.getConfigKey() + ".state")
+              .bufferedCallsMetricName(this.circuitBreakerProperties.getConfigKey() + ".buffered.calls")
+              .slowCallsMetricName(this.circuitBreakerProperties.getConfigKey() + ".slow.calls")
+              .failureRateMetricName(this.circuitBreakerProperties.getConfigKey() + ".failure.rate")
+              .slowCallRateMetricName(this.circuitBreakerProperties.getConfigKey() + ".slow.call.rate")
               .build(), circuitBreakerRegistry)
           .bindTo(meterRegistry);
     }

@@ -43,7 +43,7 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
-    return InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY
+    return this.bulkheadProperties.getConfigKey()
         + "." + policy.getName()
         + "." + governanceRequest.getServiceName()
         + "." + governanceRequest.getInstanceId();
@@ -51,7 +51,7 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
 
   @Override
   protected void onConfigurationChanged(String key) {
-    if (key.startsWith(InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY)) {
+    if (key.startsWith(this.bulkheadProperties.getConfigKey())) {
       for (String processorKey : processors.keySet()) {
         if (processorKey.startsWith(key)) {
           Disposable<Bulkhead> processor = processors.remove(processorKey);
@@ -92,9 +92,9 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
       TaggedBulkheadMetrics
           .ofBulkheadRegistry(BulkheadMetricNames.custom()
                   .availableConcurrentCallsMetricName(
-                      InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY + ".available.concurrent.calls")
+                      this.bulkheadProperties.getConfigKey() + ".available.concurrent.calls")
                   .maxAllowedConcurrentCallsMetricName(
-                      InstanceBulkheadProperties.MATCH_INSTANCE_BULKHEAD_KEY + ".max.allowed.concurrent.calls").build(),
+                      this.bulkheadProperties.getConfigKey() + ".max.allowed.concurrent.calls").build(),
               registry)
           .bindTo(meterRegistry);
     }

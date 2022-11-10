@@ -26,6 +26,10 @@ public class InstanceBulkheadProperties extends PolicyProperties<BulkheadPolicy>
     super(MATCH_INSTANCE_BULKHEAD_KEY);
   }
 
+  public InstanceBulkheadProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<BulkheadPolicy> getEntityClass() {
     return BulkheadPolicy.class;
