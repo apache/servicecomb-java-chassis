@@ -31,11 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-/**
- * 功能描述
- *
- * @since 2022-09-21
- */
 public class TimeLimiterHandler extends AbstractGovernanceHandler<TimeLimiter, TimeLimiterPolicy> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeLimiterHandler.class);

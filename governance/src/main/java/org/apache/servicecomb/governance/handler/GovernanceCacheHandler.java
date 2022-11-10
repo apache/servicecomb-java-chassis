@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.governance.handler;
 
-import org.apache.servicecomb.governance.GovernanceCache;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.policy.GovernanceCachePolicy;
 import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
+import org.apache.servicecomb.governance.service.GovernanceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +28,6 @@ import java.time.Duration;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-/**
- * 功能描述
- *
- * @since 2022-08-26
- */
 public class GovernanceCacheHandler<K, V>
     extends AbstractGovernanceHandler<GovernanceCache<K, V>, GovernanceCachePolicy> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceCacheHandler.class);

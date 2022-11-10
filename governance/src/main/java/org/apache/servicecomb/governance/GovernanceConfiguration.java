@@ -29,6 +29,7 @@ import org.apache.servicecomb.governance.handler.LoadBalanceHandler;
 import org.apache.servicecomb.governance.handler.MapperHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
+import org.apache.servicecomb.governance.handler.TimeLimiterHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
 import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
@@ -40,6 +41,8 @@ import org.apache.servicecomb.governance.marker.operator.MatchOperator;
 import org.apache.servicecomb.governance.marker.operator.PrefixOperator;
 import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
+import org.apache.servicecomb.governance.properties.TimeLimiterProperties;
+import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.governance.properties.IdentifierRateLimitProperties;
@@ -102,6 +105,12 @@ public class GovernanceConfiguration {
   }
 
   @Bean
+  public TimeLimiterProperties timeLimiterProperties() {return new TimeLimiterProperties();}
+
+  @Bean
+  public GovernanceCacheProperties cacheProperties() {return new GovernanceCacheProperties();}
+
+  @Bean
   public FaultInjectionProperties faultInjectionProperties() {
     return new FaultInjectionProperties();
   }
@@ -159,6 +168,11 @@ public class GovernanceConfiguration {
   @Bean
   public RetryHandler retryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
     return new RetryHandler(retryProperties, retryExtension);
+  }
+
+  @Bean
+  public TimeLimiterHandler timeLimiterHandler(TimeLimiterProperties timeLimiterProperties){
+    return new TimeLimiterHandler(timeLimiterProperties);
   }
 
   @Bean

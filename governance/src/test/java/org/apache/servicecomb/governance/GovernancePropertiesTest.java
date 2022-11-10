@@ -28,21 +28,9 @@ import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEve
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
 import org.apache.servicecomb.governance.marker.Matcher;
 import org.apache.servicecomb.governance.marker.TrafficMarker;
-import org.apache.servicecomb.governance.policy.AbstractPolicy;
-import org.apache.servicecomb.governance.policy.BulkheadPolicy;
-import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
-import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
-import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
-import org.apache.servicecomb.governance.policy.RetryPolicy;
+import org.apache.servicecomb.governance.policy.*;
 import org.apache.servicecomb.governance.processor.injection.FaultInjectionConst;
-import org.apache.servicecomb.governance.properties.BulkheadProperties;
-import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
-import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
-import org.apache.servicecomb.governance.properties.GovernanceProperties;
-import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
-import org.apache.servicecomb.governance.properties.MatchProperties;
-import org.apache.servicecomb.governance.properties.RateLimitProperties;
-import org.apache.servicecomb.governance.properties.RetryProperties;
+import org.apache.servicecomb.governance.properties.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +52,10 @@ public class GovernancePropertiesTest {
   private BulkheadProperties bulkheadProperties;
 
   private CircuitBreakerProperties circuitBreakerProperties;
+
+  private TimeLimiterProperties timeLimiterProperties;
+
+  private GovernanceCacheProperties governanceCacheProperties;
 
   private InstanceIsolationProperties instanceIsolationProperties;
 
@@ -93,6 +85,16 @@ public class GovernancePropertiesTest {
   @Autowired
   public void setCircuitBreakerProperties(CircuitBreakerProperties circuitBreakerProperties) {
     this.circuitBreakerProperties = circuitBreakerProperties;
+  }
+
+  @Autowired
+  public void setTimeLimiterProperties(TimeLimiterProperties timeLimiterProperties){
+    this.timeLimiterProperties = timeLimiterProperties;
+  }
+
+  @Autowired
+  public void setGovernanceCacheProperties(GovernanceCacheProperties governanceCacheProperties){
+    this.governanceCacheProperties = governanceCacheProperties;
   }
 
   @Autowired
@@ -164,7 +166,7 @@ public class GovernancePropertiesTest {
 
   @Test
   public void test_all_bean_is_loaded() {
-    Assertions.assertEquals(14, propertiesList.size());
+    Assertions.assertEquals(16, propertiesList.size());
   }
 
   @Test
@@ -290,6 +292,57 @@ public class GovernancePropertiesTest {
     BulkheadPolicy policy = policies.get("demo-bulkhead");
     Assertions.assertEquals(1, policy.getMaxConcurrentCalls());
     Assertions.assertEquals(3000, Duration.parse(policy.getMaxWaitDuration()).toMillis());
+  }
+
+  @Test
+  public  void test_timelimiter_properties_successfully_loaded(){
+    Map<String, TimeLimiterPolicy> policies = timeLimiterProperties.getParsedEntity();
+    Assertions.assertEquals(2,policies.size());
+    TimeLimiterPolicy timeLimiterPolicy = policies.get("demo-timeLimiter-other");
+    Assertions.assertEquals(2000,Duration.parse(timeLimiterPolicy.getTimeoutDuration()).toMillis());
+    Assertions.assertEquals(false,timeLimiterPolicy.isCancelRunningFuture());
+  }
+
+  @Test
+  public void test_timelimiter_properties_bound() {
+    dynamicValues.put("servicecomb.timeLimiter.name1", "rules:\n"
+            + "timeoutDuration: 5000\n"
+            + "cancelRunningFuture: false");
+
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+
+    Map<String, TimeLimiterPolicy> policies = timeLimiterProperties.getParsedEntity();
+    Assertions.assertEquals(3, policies.size());
+    TimeLimiterPolicy policy = policies.get("name1");
+    Assertions.assertEquals(false, policy.isCancelRunningFuture());
+    Assertions.assertEquals(5000, Duration.parse(policy.getTimeoutDuration()).toMillis());
+  }
+
+  @Test
+  public  void test_governanceCache_properties_successfully_loaded(){
+    Map<String, GovernanceCachePolicy> policies = governanceCacheProperties.getParsedEntity();
+    Assertions.assertEquals(2,policies.size());
+    GovernanceCachePolicy governanceCachePolicy = policies.get("demo-governanceCache-other");
+    Assertions.assertEquals(15,governanceCachePolicy.getConcurrencyLevel());
+    Assertions.assertEquals(50000,governanceCachePolicy.getMaximumSize());
+    Assertions.assertEquals(666666,Duration.parse(governanceCachePolicy.getTtl()).toMillis());
+  }
+
+  @Test
+  public void test_governanceCache_properties_bound() {
+    dynamicValues.put("servicecomb.cache.name1", "rules:\n"
+            + "ttl: 3000000\n"
+            + "maximumSize: 2000\n"
+            +"concurrencyLevel: 6");
+
+    GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
+
+    Map<String, GovernanceCachePolicy> policies = governanceCacheProperties.getParsedEntity();
+    Assertions.assertEquals(3, policies.size());
+    GovernanceCachePolicy policy = policies.get("name1");
+    Assertions.assertEquals(3000000, Duration.parse(policy.getTtl()).toMillis());
+    Assertions.assertEquals(2000, policy.getMaximumSize());
+    Assertions.assertEquals(6, policy.getConcurrencyLevel());
   }
 
   @Test

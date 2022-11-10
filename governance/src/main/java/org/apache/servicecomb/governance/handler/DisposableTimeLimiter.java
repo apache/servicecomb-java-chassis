@@ -19,11 +19,6 @@ package org.apache.servicecomb.governance.handler;
 import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 
-/**
- * 功能描述
- *
- * @since 2022-10-29
- */
 public class DisposableTimeLimiter extends Disposable<TimeLimiter>{
     private final String key;
 

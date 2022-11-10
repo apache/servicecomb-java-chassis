@@ -14,33 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.handler;
+package org.apache.servicecomb.governance.properties;
 
 
-import org.apache.servicecomb.governance.service.GovernanceCache;
+import org.apache.servicecomb.governance.policy.TimeLimiterPolicy;
 
-public class DisposableGovernanceCache<K,V> extends Disposable<GovernanceCache<K,V>> {
-    private final String key;
+public class TimeLimiterProperties extends PolicyProperties<TimeLimiterPolicy> {
+  public static final String MATCH_TIMELIMITER_KEY = "servicecomb.timeLimiter";
 
-    private final GovernanceCache<K,V> governanceCache;
+  public TimeLimiterProperties() {
+    super(MATCH_TIMELIMITER_KEY);
+  }
 
-    public DisposableGovernanceCache(String key, GovernanceCache<K,V> governanceCache) {
-        this.key = key;
-        this.governanceCache = governanceCache;
-    }
-
-    @Override
-    public void dispose() {
-        return;
-    }
-
-    @Override
-    public GovernanceCache<K,V> getValue() {
-        return governanceCache;
-    }
-
-    @Override
-    public String getKey() {
-        return key;
-    }
+  @Override
+  public Class<TimeLimiterPolicy> getEntityClass() {
+    return TimeLimiterPolicy.class;
+  }
 }

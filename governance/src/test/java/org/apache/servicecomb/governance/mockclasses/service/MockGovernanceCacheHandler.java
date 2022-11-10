@@ -14,33 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.handler;
+package org.apache.servicecomb.governance.mockclasses.service;
 
+import org.apache.servicecomb.governance.handler.GovernanceCacheHandler;
+import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import org.apache.servicecomb.governance.service.GovernanceCache;
+@Configuration
+public class MockGovernanceCacheHandler {
 
-public class DisposableGovernanceCache<K,V> extends Disposable<GovernanceCache<K,V>> {
-    private final String key;
-
-    private final GovernanceCache<K,V> governanceCache;
-
-    public DisposableGovernanceCache(String key, GovernanceCache<K,V> governanceCache) {
-        this.key = key;
-        this.governanceCache = governanceCache;
+    @Bean("responseCacheHandler")
+    public GovernanceCacheHandler<String, Object> getResponseCacheHandler(GovernanceCacheProperties cacheProperties) {
+        return new GovernanceCacheHandler<String,Object>(cacheProperties);
     }
 
-    @Override
-    public void dispose() {
-        return;
-    }
-
-    @Override
-    public GovernanceCache<K,V> getValue() {
-        return governanceCache;
-    }
-
-    @Override
-    public String getKey() {
-        return key;
-    }
 }

@@ -14,33 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.handler;
 
+package org.apache.servicecomb.governance.service;
 
-import org.apache.servicecomb.governance.service.GovernanceCache;
+import java.util.Objects;
 
-public class DisposableGovernanceCache<K,V> extends Disposable<GovernanceCache<K,V>> {
-    private final String key;
-
-    private final GovernanceCache<K,V> governanceCache;
-
-    public DisposableGovernanceCache(String key, GovernanceCache<K,V> governanceCache) {
-        this.key = key;
-        this.governanceCache = governanceCache;
+public interface GovernanceCache<K, V> {
+    static <K, V> GovernanceCache<K, V> of(com.google.common.cache.Cache<K, V> cache) {
+        Objects.requireNonNull(cache, "Cache must not be null");
+        return new GovernanceCacheImpl<>(cache);
     }
 
-    @Override
-    public void dispose() {
-        return;
-    }
+    V getValueFromCache(K cacheKey);
 
-    @Override
-    public GovernanceCache<K,V> getValue() {
-        return governanceCache;
-    }
-
-    @Override
-    public String getKey() {
-        return key;
-    }
+    void putValueIntoCache(K cacheKey, V value);
 }
