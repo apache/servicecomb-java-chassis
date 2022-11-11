@@ -17,15 +17,17 @@
 
 package org.apache.servicecomb.governance.service;
 
+import com.google.common.cache.Cache;
+
 import java.util.Objects;
 
 public interface GovernanceCache<K, V> {
-    static <K, V> GovernanceCache<K, V> of(com.google.common.cache.Cache<K, V> cache) {
-        Objects.requireNonNull(cache, "Cache must not be null");
-        return new GovernanceCacheImpl<>(cache);
-    }
+  static <K, V> GovernanceCache<K, V> of(Cache<K, V> cache) {
+    Objects.requireNonNull(cache, "Cache must not be null");
+    return new GovernanceCacheImpl<>(cache);
+  }
 
-    V getValueFromCache(K cacheKey);
+  V getValueFromCache(K cacheKey);
 
-    void putValueIntoCache(K cacheKey, V value);
+  void putValueIntoCache(K cacheKey, V value);
 }

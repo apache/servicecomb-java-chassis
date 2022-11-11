@@ -19,31 +19,31 @@ package org.apache.servicecomb.governance.handler;
 import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 
-public class DisposableTimeLimiter extends Disposable<TimeLimiter>{
-    private final String key;
+public class DisposableTimeLimiter extends Disposable<TimeLimiter> {
+  private final String key;
 
-    private final TimeLimiterRegistry timeLimiterRegistry;
+  private final TimeLimiterRegistry timeLimiterRegistry;
 
-    private final TimeLimiter timeLimiter;
+  private final TimeLimiter timeLimiter;
 
-    public DisposableTimeLimiter(String key, TimeLimiterRegistry registry, TimeLimiter timeLimiter) {
-        this.key = key;
-        this.timeLimiterRegistry = registry;
-        this.timeLimiter = timeLimiter;
-    }
+  public DisposableTimeLimiter(String key, TimeLimiterRegistry registry, TimeLimiter timeLimiter) {
+    this.key = key;
+    this.timeLimiterRegistry = registry;
+    this.timeLimiter = timeLimiter;
+  }
 
-    @Override
-    public void dispose() {
-        timeLimiterRegistry.remove(key);
-    }
+  @Override
+  public void dispose() {
+    timeLimiterRegistry.remove(key);
+  }
 
-    @Override
-    public TimeLimiter getValue() {
-        return timeLimiter;
-    }
+  @Override
+  public TimeLimiter getValue() {
+    return timeLimiter;
+  }
 
-    @Override
-    public String getKey() {
-        return key;
-    }
+  @Override
+  public String getKey() {
+    return key;
+  }
 }

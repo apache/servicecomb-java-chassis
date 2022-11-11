@@ -26,6 +26,10 @@ public class TimeLimiterProperties extends PolicyProperties<TimeLimiterPolicy> {
     super(MATCH_TIMELIMITER_KEY);
   }
 
+  public TimeLimiterProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<TimeLimiterPolicy> getEntityClass() {
     return TimeLimiterPolicy.class;

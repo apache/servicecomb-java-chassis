@@ -30,39 +30,39 @@ import com.google.common.cache.CacheBuilder;
 
 public class GovernanceCacheHandler<K, V>
     extends AbstractGovernanceHandler<GovernanceCache<K, V>, GovernanceCachePolicy> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceCacheHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GovernanceCacheHandler.class);
 
-    private final GovernanceCacheProperties cacheProperties;
+  private final GovernanceCacheProperties cacheProperties;
 
-    public GovernanceCacheHandler(GovernanceCacheProperties cacheProperties) {
-        this.cacheProperties = cacheProperties;
-    }
+  public GovernanceCacheHandler(GovernanceCacheProperties cacheProperties) {
+    this.cacheProperties = cacheProperties;
+  }
 
-    @Override
-    public GovernanceCachePolicy matchPolicy(GovernanceRequest governanceRequest) {
-        return matchersManager.match(governanceRequest, cacheProperties.getParsedEntity());
-    }
+  @Override
+  public GovernanceCachePolicy matchPolicy(GovernanceRequest governanceRequest) {
+    return matchersManager.match(governanceRequest, cacheProperties.getParsedEntity());
+  }
 
-    @Override
-    protected String createKey(GovernanceRequest governanceRequest, GovernanceCachePolicy policy) {
-        return GovernanceCacheProperties.MATCH_CACHE_KEY + "." + policy.getName();
-    }
+  @Override
+  protected String createKey(GovernanceRequest governanceRequest, GovernanceCachePolicy policy) {
+    return cacheProperties.getConfigKey() + "." + policy.getName();
+  }
 
-    @Override
-    protected Disposable<GovernanceCache<K, V>> createProcessor(String key, GovernanceRequest governanceRequest,
-        GovernanceCachePolicy policy) {
-        return getGovernanceCache(key, policy);
-    }
+  @Override
+  protected Disposable<GovernanceCache<K, V>> createProcessor(String key, GovernanceRequest governanceRequest,
+      GovernanceCachePolicy policy) {
+    return getGovernanceCache(key, policy);
+  }
 
-    protected Disposable<GovernanceCache<K, V>> getGovernanceCache(String key, GovernanceCachePolicy policy) {
-        LOGGER.info("applying new policy {} for {}", key, policy.toString());
-        Cache<K,
-            V> cache = CacheBuilder.newBuilder()
-                .expireAfterWrite(Duration.parse(policy.getTtl()))
-                .maximumSize(policy.getMaximumSize())
-                .concurrencyLevel(policy.getConcurrencyLevel())
-                .build();
-        GovernanceCache<K, V> governanceCache = GovernanceCache.of(cache);
-        return new DisposableGovernanceCache<K, V>(key, governanceCache);
-    }
+  protected Disposable<GovernanceCache<K, V>> getGovernanceCache(String key, GovernanceCachePolicy policy) {
+    LOGGER.info("applying new policy {} for {}", key, policy.toString());
+    Cache<K,
+        V> cache = CacheBuilder.newBuilder()
+        .expireAfterWrite(Duration.parse(policy.getTtl()))
+        .maximumSize(policy.getMaximumSize())
+        .concurrencyLevel(policy.getConcurrencyLevel())
+        .build();
+    GovernanceCache<K, V> governanceCache = GovernanceCache.of(cache);
+    return new DisposableHolder<>(key, governanceCache);
+  }
 }

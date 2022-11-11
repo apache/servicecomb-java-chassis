@@ -19,35 +19,33 @@ package org.apache.servicecomb.governance;
 
 import org.apache.servicecomb.governance.handler.GovernanceCacheHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.governance.mockclasses.service.MockGovernanceCacheHandler;
 import org.apache.servicecomb.governance.policy.GovernanceCachePolicy;
 import org.apache.servicecomb.governance.service.GovernanceCache;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class, MockGovernanceCacheHandler.class})
+@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
 public class GovernanceCacheHandlerTest {
-    private GovernanceCacheHandler<String,Object> governanceCacheHandler;
+  private GovernanceCacheHandler<String, Object> governanceCacheHandler;
 
-    @Autowired
-    public void setInstanceIsolationHandler(@Autowired(required = false) @Qualifier("responseCacheHandler") GovernanceCacheHandler<String,Object> governanceCacheHandler) {
-        this.governanceCacheHandler = governanceCacheHandler;
-    }
+  @Autowired
+  public void setInstanceIsolationHandler(@Autowired GovernanceCacheHandler<String, Object> governanceCacheHandler) {
+    this.governanceCacheHandler = governanceCacheHandler;
+  }
 
-    @Test
-    public void testMatchPriorityPolicy() {
-        GovernanceRequest request = new GovernanceRequest();
-        request.setUri("/governanceCache");
-        GovernanceCachePolicy policy = governanceCacheHandler.matchPolicy(request);
-        Assertions.assertEquals("demo-governanceCache", policy.getName());
-        GovernanceCache<String, Object> governanceCache = governanceCacheHandler.getActuator(request);
-        governanceCache.putValueIntoCache("governance","Cache");
-        Object cache = governanceCache.getValueFromCache("governance");
-        Assertions.assertEquals("Cache",cache);
-    }
+  @Test
+  public void testMatchPriorityPolicy() {
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/governanceCache");
+    GovernanceCachePolicy policy = governanceCacheHandler.matchPolicy(request);
+    Assertions.assertEquals("demo-governanceCache", policy.getName());
+    GovernanceCache<String, Object> governanceCache = governanceCacheHandler.getActuator(request);
+    governanceCache.putValueIntoCache("governance", "Cache");
+    Object cache = governanceCache.getValueFromCache("governance");
+    Assertions.assertEquals("Cache", cache);
+  }
 }

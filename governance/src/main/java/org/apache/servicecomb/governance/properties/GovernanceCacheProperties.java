@@ -18,21 +18,19 @@ package org.apache.servicecomb.governance.properties;
 
 import org.apache.servicecomb.governance.policy.GovernanceCachePolicy;
 
-
-/**
- * 功能描述
- *
- * @since 2022-08-26
- */
 public class GovernanceCacheProperties extends PolicyProperties<GovernanceCachePolicy> {
-    public static final String MATCH_CACHE_KEY = "servicecomb.cache";
+  public static final String MATCH_CACHE_KEY = "servicecomb.cache";
 
-    public GovernanceCacheProperties() {
-        super(MATCH_CACHE_KEY);
-    }
+  public GovernanceCacheProperties() {
+    super(MATCH_CACHE_KEY);
+  }
 
-    @Override
-    public Class<GovernanceCachePolicy> getEntityClass() {
-        return GovernanceCachePolicy.class;
-    }
+  public GovernanceCacheProperties(String key) {
+    super(key);
+  }
+
+  @Override
+  public Class<GovernanceCachePolicy> getEntityClass() {
+    return GovernanceCachePolicy.class;
+  }
 }

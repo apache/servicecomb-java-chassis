@@ -17,36 +17,38 @@
 
 package org.apache.servicecomb.governance.service;
 
+import com.google.common.cache.Cache;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GovernanceCacheImpl<K, V> implements GovernanceCache<K, V> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GovernanceCacheImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(GovernanceCacheImpl.class);
 
-    private final com.google.common.cache.Cache<K, V> cache;
+  private final Cache<K, V> cache;
 
-    public GovernanceCacheImpl(com.google.common.cache.Cache<K, V> cache) {
-        this.cache = cache;
+  public GovernanceCacheImpl(Cache<K, V> cache) {
+    this.cache = cache;
+  }
+
+  public V getValueFromCache(K cacheKey) {
+    try {
+      return cache.getIfPresent(cacheKey);
+    } catch (Exception exception) {
+      LOG.warn("Failed to get a value from Cache", exception);
+      return null;
     }
+  }
 
-    public V getValueFromCache(K cacheKey) {
-        try {
-            return cache.getIfPresent(cacheKey);
-        } catch (Exception exception) {
-            LOG.warn("Failed to get a value from Cache", exception);
-            return null;
-        }
+  @Override
+  public void putValueIntoCache(K cacheKey, V value) {
+    try {
+      if (value != null) {
+        cache.put(cacheKey, value);
+      }
+    } catch (Exception exception) {
+      LOG.warn("Failed to put a value into Cache {}", exception);
     }
-
-    @Override
-    public void putValueIntoCache(K cacheKey, V value) {
-        try {
-            if (value != null) {
-                cache.put(cacheKey, value);
-            }
-        } catch (Exception exception) {
-            LOG.warn("Failed to put a value into Cache {}", exception);
-        }
-    }
+  }
 }

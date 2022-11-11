@@ -32,21 +32,21 @@ import io.github.resilience4j.timelimiter.TimeLimiter;
 @SpringBootTest
 @ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
 public class TimeLimiterHandlerTest {
-    private TimeLimiterHandler timeLimiterHandler;
+  private TimeLimiterHandler timeLimiterHandler;
 
-    @Autowired
-    public void setInstanceIsolationHandler(TimeLimiterHandler timeLimiterHandler) {
-        this.timeLimiterHandler = timeLimiterHandler;
-    }
+  @Autowired
+  public void setInstanceIsolationHandler(TimeLimiterHandler timeLimiterHandler) {
+    this.timeLimiterHandler = timeLimiterHandler;
+  }
 
-    @Test
-    public void testMatchPriorityPolicy() {
-        GovernanceRequest request = new GovernanceRequest();
-        request.setUri("/timeLimiter");
-        TimeLimiterPolicy policy = timeLimiterHandler.matchPolicy(request);
-        Assertions.assertEquals("demo-timeLimiter", policy.getName());
-        TimeLimiter timeLimiter = timeLimiterHandler.getActuator(request);
-        Duration timeoutDuration = timeLimiter.getTimeLimiterConfig().getTimeoutDuration();
-        Assertions.assertEquals(2000,timeoutDuration.toMillis());
-    }
+  @Test
+  public void testMatchPriorityPolicy() {
+    GovernanceRequest request = new GovernanceRequest();
+    request.setUri("/timeLimiter");
+    TimeLimiterPolicy policy = timeLimiterHandler.matchPolicy(request);
+    Assertions.assertEquals("demo-timeLimiter", policy.getName());
+    TimeLimiter timeLimiter = timeLimiterHandler.getActuator(request);
+    Duration timeoutDuration = timeLimiter.getTimeLimiterConfig().getTimeoutDuration();
+    Assertions.assertEquals(2000, timeoutDuration.toMillis());
+  }
 }

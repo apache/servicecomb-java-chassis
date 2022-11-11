@@ -88,12 +88,12 @@ public class GovernancePropertiesTest {
   }
 
   @Autowired
-  public void setTimeLimiterProperties(TimeLimiterProperties timeLimiterProperties){
+  public void setTimeLimiterProperties(TimeLimiterProperties timeLimiterProperties) {
     this.timeLimiterProperties = timeLimiterProperties;
   }
 
   @Autowired
-  public void setGovernanceCacheProperties(GovernanceCacheProperties governanceCacheProperties){
+  public void setGovernanceCacheProperties(GovernanceCacheProperties governanceCacheProperties) {
     this.governanceCacheProperties = governanceCacheProperties;
   }
 
@@ -295,19 +295,19 @@ public class GovernancePropertiesTest {
   }
 
   @Test
-  public  void test_timelimiter_properties_successfully_loaded(){
+  public void test_timelimiter_properties_successfully_loaded() {
     Map<String, TimeLimiterPolicy> policies = timeLimiterProperties.getParsedEntity();
-    Assertions.assertEquals(2,policies.size());
+    Assertions.assertEquals(2, policies.size());
     TimeLimiterPolicy timeLimiterPolicy = policies.get("demo-timeLimiter-other");
-    Assertions.assertEquals(2000,Duration.parse(timeLimiterPolicy.getTimeoutDuration()).toMillis());
-    Assertions.assertEquals(false,timeLimiterPolicy.isCancelRunningFuture());
+    Assertions.assertEquals(2000, Duration.parse(timeLimiterPolicy.getTimeoutDuration()).toMillis());
+    Assertions.assertEquals(false, timeLimiterPolicy.isCancelRunningFuture());
   }
 
   @Test
   public void test_timelimiter_properties_bound() {
     dynamicValues.put("servicecomb.timeLimiter.name1", "rules:\n"
-            + "timeoutDuration: 5000\n"
-            + "cancelRunningFuture: false");
+        + "timeoutDuration: 5000\n"
+        + "cancelRunningFuture: false");
 
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 
@@ -319,21 +319,21 @@ public class GovernancePropertiesTest {
   }
 
   @Test
-  public  void test_governanceCache_properties_successfully_loaded(){
+  public void test_governanceCache_properties_successfully_loaded() {
     Map<String, GovernanceCachePolicy> policies = governanceCacheProperties.getParsedEntity();
-    Assertions.assertEquals(2,policies.size());
+    Assertions.assertEquals(2, policies.size());
     GovernanceCachePolicy governanceCachePolicy = policies.get("demo-governanceCache-other");
-    Assertions.assertEquals(15,governanceCachePolicy.getConcurrencyLevel());
-    Assertions.assertEquals(50000,governanceCachePolicy.getMaximumSize());
-    Assertions.assertEquals(666666,Duration.parse(governanceCachePolicy.getTtl()).toMillis());
+    Assertions.assertEquals(15, governanceCachePolicy.getConcurrencyLevel());
+    Assertions.assertEquals(50000, governanceCachePolicy.getMaximumSize());
+    Assertions.assertEquals(666666, Duration.parse(governanceCachePolicy.getTtl()).toMillis());
   }
 
   @Test
   public void test_governanceCache_properties_bound() {
     dynamicValues.put("servicecomb.cache.name1", "rules:\n"
-            + "ttl: 3000000\n"
-            + "maximumSize: 2000\n"
-            +"concurrencyLevel: 6");
+        + "ttl: 3000000\n"
+        + "maximumSize: 2000\n"
+        + "concurrencyLevel: 6");
 
     GovernanceEventManager.post(new GovernanceConfigurationChangedEvent(new HashSet<>(dynamicValues.keySet())));
 

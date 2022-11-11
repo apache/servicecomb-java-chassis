@@ -33,43 +33,42 @@ import java.time.Duration;
 
 public class TimeLimiterHandler extends AbstractGovernanceHandler<TimeLimiter, TimeLimiterPolicy> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TimeLimiterHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TimeLimiterHandler.class);
 
-    private final TimeLimiterProperties timeLimiterProperties;
+  private final TimeLimiterProperties timeLimiterProperties;
 
-    public TimeLimiterHandler(TimeLimiterProperties timeLimiterProperties) {
-        this.timeLimiterProperties = timeLimiterProperties;
+  public TimeLimiterHandler(TimeLimiterProperties timeLimiterProperties) {
+    this.timeLimiterProperties = timeLimiterProperties;
+  }
+
+  @Override
+  protected String createKey(GovernanceRequest governanceRequest, TimeLimiterPolicy policy) {
+    return timeLimiterProperties.getConfigKey() + "." + policy.getName();
+  }
+
+  @Override
+  public TimeLimiterPolicy matchPolicy(GovernanceRequest governanceRequest) {
+    return matchersManager.match(governanceRequest, timeLimiterProperties.getParsedEntity());
+  }
+
+  @Override
+  public Disposable<TimeLimiter> createProcessor(String key, GovernanceRequest governanceRequest,
+      TimeLimiterPolicy policy) {
+    return getTimeLimiter(key, policy);
+  }
+
+  private Disposable<TimeLimiter> getTimeLimiter(String key, TimeLimiterPolicy policy) {
+    LOGGER.info("applying new policy {} for {}", key, policy);
+    TimeLimiterConfig timeLimiterConfig = TimeLimiterConfig.custom()
+        .timeoutDuration(Duration.parse(policy.getTimeoutDuration()))
+        .cancelRunningFuture(policy.isCancelRunningFuture())
+        .build();
+    TimeLimiterRegistry timeLimiterRegistry = TimeLimiterRegistry.of(timeLimiterConfig);
+    if (meterRegistry != null) {
+      TaggedTimeLimiterMetrics.ofTimeLimiterRegistry(TimeLimiterMetricNames.custom()
+          .callsMetricName(timeLimiterProperties.getConfigKey() + ".calls")
+          .build(), timeLimiterRegistry).bindTo(meterRegistry);
     }
-
-    @Override
-    protected String createKey(GovernanceRequest governanceRequest, TimeLimiterPolicy policy) {
-        return TimeLimiterProperties.MATCH_TIMELIMITER_KEY + "." + policy.getName();
-    }
-
-    @Override
-    public TimeLimiterPolicy matchPolicy(GovernanceRequest governanceRequest) {
-        return matchersManager.match(governanceRequest, timeLimiterProperties.getParsedEntity());
-    }
-
-    @Override
-    public Disposable<TimeLimiter> createProcessor(String key, GovernanceRequest governanceRequest,
-        TimeLimiterPolicy policy) {
-        return getTimeLimiter(key, policy);
-    }
-
-    private Disposable<TimeLimiter> getTimeLimiter(String key, TimeLimiterPolicy policy) {
-        LOGGER.info("applying new policy {} for {}", key, policy);
-        TimeLimiterConfig timeLimiterConfig = TimeLimiterConfig.custom()
-            .timeoutDuration(Duration.parse(policy.getTimeoutDuration()))
-            .cancelRunningFuture(policy.isCancelRunningFuture())
-            .build();
-        TimeLimiterRegistry timeLimiterRegistry = TimeLimiterRegistry.of(timeLimiterConfig);
-        if (meterRegistry != null) {
-            TaggedTimeLimiterMetrics.ofTimeLimiterRegistry(TimeLimiterMetricNames.custom()
-                .callsMetricName(TimeLimiterProperties.MATCH_TIMELIMITER_KEY + ".calls")
-                .build(), timeLimiterRegistry).bindTo(meterRegistry);
-        }
-        return new DisposableTimeLimiter(key, timeLimiterRegistry, timeLimiterRegistry.timeLimiter(key));
-    }
-
+    return new DisposableTimeLimiter(key, timeLimiterRegistry, timeLimiterRegistry.timeLimiter(key));
+  }
 }
