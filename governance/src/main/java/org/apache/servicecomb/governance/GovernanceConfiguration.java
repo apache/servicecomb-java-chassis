@@ -19,7 +19,18 @@ package org.apache.servicecomb.governance;
 
 import java.util.Map;
 
-import org.apache.servicecomb.governance.handler.*;
+import org.apache.servicecomb.governance.handler.BulkheadHandler;
+import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
+import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
+import org.apache.servicecomb.governance.handler.GovernanceCacheHandler;
+import org.apache.servicecomb.governance.handler.IdentifierRateLimitingHandler;
+import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
+import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
+import org.apache.servicecomb.governance.handler.LoadBalanceHandler;
+import org.apache.servicecomb.governance.handler.MapperHandler;
+import org.apache.servicecomb.governance.handler.RateLimitingHandler;
+import org.apache.servicecomb.governance.handler.RetryHandler;
+import org.apache.servicecomb.governance.handler.TimeLimiterHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
 import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
@@ -170,7 +181,7 @@ public class GovernanceConfiguration {
   }
 
   @Bean
-  public GovernanceCacheHandler<String, Object> getResponseCacheHandler(GovernanceCacheProperties cacheProperties) {
+  public GovernanceCacheHandler<String, Object> governanceCacheHandler(GovernanceCacheProperties cacheProperties) {
     return new GovernanceCacheHandler<String, Object>(cacheProperties);
   }
 

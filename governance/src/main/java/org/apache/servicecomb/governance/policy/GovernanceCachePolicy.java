@@ -20,45 +20,45 @@ package org.apache.servicecomb.governance.policy;
 import java.time.Duration;
 
 public class GovernanceCachePolicy extends AbstractPolicy {
-    public static final Duration DEFAULT_TTL = Duration.ofMillis(21600000);
+  public static final Duration DEFAULT_TTL = Duration.ofMillis(21600000);
 
-    public static final Long DEFAULT_MAXIMUM_SIZE = 60000L;
+  public static final long DEFAULT_MAXIMUM_SIZE = 60000;
 
-    public static final int DEFAULT_CONCURRENCY_LEVEL = 8;
+  public static final int DEFAULT_CONCURRENCY_LEVEL = 8;
 
-    private String ttl = DEFAULT_TTL.toString();
+  private String ttl = DEFAULT_TTL.toString();
 
-    private Long maximumSize = DEFAULT_MAXIMUM_SIZE;
+  private long maximumSize = DEFAULT_MAXIMUM_SIZE;
 
-    private int concurrencyLevel = DEFAULT_CONCURRENCY_LEVEL;
+  private int concurrencyLevel = DEFAULT_CONCURRENCY_LEVEL;
 
-    public String getTtl() {
-        return ttl;
-    }
+  public String getTtl() {
+    return ttl;
+  }
 
-    public void setTtl(String ttl) {
-        this.ttl = stringOfDuration(ttl, DEFAULT_TTL);
-    }
+  public void setTtl(String ttl) {
+    this.ttl = stringOfDuration(ttl, DEFAULT_TTL);
+  }
 
-    public Long getMaximumSize() {
-        return maximumSize;
-    }
+  public Long getMaximumSize() {
+    return maximumSize;
+  }
 
-    public void setMaximumSize(Long maximumSize) {
-        this.maximumSize = maximumSize;
-    }
+  public void setMaximumSize(Long maximumSize) {
+    this.maximumSize = maximumSize;
+  }
 
-    public int getConcurrencyLevel() {
-        return concurrencyLevel;
-    }
+  public int getConcurrencyLevel() {
+    return concurrencyLevel;
+  }
 
-    public void setConcurrencyLevel(int concurrencyLevel) {
-        this.concurrencyLevel = concurrencyLevel;
-    }
+  public void setConcurrencyLevel(int concurrencyLevel) {
+    this.concurrencyLevel = concurrencyLevel;
+  }
 
-    @Override
-    public String toString() {
-        return "CachePolicy{" + "ttl=" + ttl + ",concurrencyLevel=" + concurrencyLevel + ", maximumSize=" + maximumSize
-            + '}';
-    }
+  @Override
+  public String toString() {
+    return "CachePolicy{" + "ttl=" + ttl + ",concurrencyLevel=" + concurrencyLevel + ", maximumSize=" + maximumSize
+        + '}';
+  }
 }

@@ -19,27 +19,27 @@ package org.apache.servicecomb.governance.policy;
 import java.time.Duration;
 
 public class TimeLimiterPolicy extends AbstractPolicy {
-    public static final Duration DEFAULT_TIMEOUT_DURATION = Duration.ofMillis(1000);
+  public static final Duration DEFAULT_TIMEOUT_DURATION = Duration.ofMillis(1000);
 
-    public static final boolean DEFAULT_CANCEL_RUNNING_FUTURE = true;
+  public static final boolean DEFAULT_CANCEL_RUNNING_FUTURE = true;
 
-    private String timeoutDuration = DEFAULT_TIMEOUT_DURATION.toString();
+  private String timeoutDuration = DEFAULT_TIMEOUT_DURATION.toString();
 
-    private boolean cancelRunningFuture = DEFAULT_CANCEL_RUNNING_FUTURE;
+  private boolean cancelRunningFuture = DEFAULT_CANCEL_RUNNING_FUTURE;
 
-    public String getTimeoutDuration() {
-        return timeoutDuration;
-    }
+  public String getTimeoutDuration() {
+    return timeoutDuration;
+  }
 
-    public void setTimeoutDuration(String timeoutDuration) {
-        this.timeoutDuration = stringOfDuration(timeoutDuration, DEFAULT_TIMEOUT_DURATION);
-    }
+  public void setTimeoutDuration(String timeoutDuration) {
+    this.timeoutDuration = stringOfDuration(timeoutDuration, DEFAULT_TIMEOUT_DURATION);
+  }
 
-    public boolean isCancelRunningFuture() {
-        return cancelRunningFuture;
-    }
+  public boolean isCancelRunningFuture() {
+    return cancelRunningFuture;
+  }
 
-    public void setCancelRunningFuture(boolean cancelRunningFuture) {
-        this.cancelRunningFuture = cancelRunningFuture;
-    }
+  public void setCancelRunningFuture(boolean cancelRunningFuture) {
+    this.cancelRunningFuture = cancelRunningFuture;
+  }
 }

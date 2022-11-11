@@ -44,9 +44,7 @@ public class GovernanceCacheImpl<K, V> implements GovernanceCache<K, V> {
   @Override
   public void putValueIntoCache(K cacheKey, V value) {
     try {
-      if (value != null) {
-        cache.put(cacheKey, value);
-      }
+      cache.put(cacheKey, value);
     } catch (Exception exception) {
       LOG.warn("Failed to put a value into Cache {}", exception);
     }

@@ -47,5 +47,8 @@ public class GovernanceCacheHandlerTest {
     governanceCache.putValueIntoCache("governance", "Cache");
     Object cache = governanceCache.getValueFromCache("governance");
     Assertions.assertEquals("Cache", cache);
+    governanceCache.putValueIntoCache("response", null);
+    Object response = governanceCache.getValueFromCache("response");
+    Assertions.assertNull(response);
   }
 }
