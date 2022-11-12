@@ -17,6 +17,14 @@
 
 servicecomb:
   matchGroup:
+    demo-timeLimiter: |
+      matches:
+        - apiPath:
+            prefix: "/timeLimiter"
+    demo-governanceCache: |
+      matches:
+        - apiPath:
+            prefix: "/governanceCache"
     demo-loadbalance-random: |
       matches:
         - serviceName: "loadrandom"
@@ -99,6 +107,22 @@ servicecomb:
     demo-rateLimiting-servicename: |
       rate: 1
       identifier: test
+  timeLimiter:
+    demo-timeLimiter: |
+      timeoutDuration: 2000
+      cancelRunningFuture: true
+    demo-timeLimiter-other: |
+      timeoutDuration: 2000
+      cancelRunningFuture: false
+  cache:
+    demo-governanceCache: |
+      ttl: 36000000
+      maximumSize: 50000
+      concurrencyLevel: 10
+    demo-governanceCache-other: |
+      ttl: 666666
+      maximumSize: 50000
+      concurrencyLevel: 15
   retry:
     demo-retry: |
       maxAttempts: 3
