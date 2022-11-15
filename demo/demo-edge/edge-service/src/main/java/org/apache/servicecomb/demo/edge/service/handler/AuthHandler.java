@@ -21,11 +21,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +35,6 @@ public class AuthHandler implements Handler {
 
   static {
     auth = Invoker.createProxy("auth", "auth", Auth.class);
-  }
-
-  @Override
-  public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
   }
 
   @Override
