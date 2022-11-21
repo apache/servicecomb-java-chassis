@@ -98,7 +98,7 @@
     <spring-boot.version>2.6.7</spring-boot.version>
     <swagger.version>1.6.9</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <vertx.version>4.3.4</vertx.version>
+    <vertx.version>4.3.5</vertx.version>
     <zipkin.version>2.23.19</zipkin.version>
     <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
     <!-- Base dir of main -->
