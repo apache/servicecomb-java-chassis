@@ -1,13 +1,13 @@
-# Java Chassis [中文](README_ZH.md) [![Build Status](https://travis-ci.org/apache/servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/servicecomb-java-chassis?branch=master) [![Coverage Status](https://coveralls.io/repos/github/apache/servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/servicecomb-java-chassis?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Gitter](https://img.shields.io/badge/ServiceComb-Gitter-ff69b4.svg)](https://gitter.im/ServiceCombUsers/Lobby)  
+# Java Chassis [中文](README_ZH.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
 
 # releases
 
-| Release Train | Latest Version  | Compiled JDK Version | Tested JDK Version            |
-|---------------|-----------------|----------------------|-------------------------------|
-| 2.x.x         | 2.8.0           | OpenJDK 8            | OpenJDK 8, 11, 17 | 
-| 1.x.x         | 1.3.8           | OpenJDK 8             | OpenJDK 8                        |
+| Release Train | Latest Version | Compiled JDK Version | Tested JDK Version            |
+|---------------|----------------|----------------------|-------------------------------|
+| 2.x.x         | 2.8.3          | OpenJDK 8            | OpenJDK 8, 11, 17 | 
+| 1.x.x         | 1.3.10         | OpenJDK 8            | OpenJDK 8         |
 
 # Why use Java Chassis
 
@@ -82,12 +82,6 @@ The first build may take a longer than expected as Maven downloads all the depen
   If you are using docker machine, please use the following command
 
       mvn clean install -Pdocker -Pit -Pdocker-machine -Pdemo-run-release
-
-
-# Get The Latest Release
-
-[Download Java-Chassis](http://servicecomb.apache.org/release/java-chassis-downloads/)
-
 
 # Contact
 
