@@ -1,4 +1,4 @@
-# Java Chassis | [English](README.md) [![Build Status](https://travis-ci.org/apache/servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/servicecomb-java-chassis?branch=master) [![Coverage Status](https://coveralls.io/repos/github/apache/servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/servicecomb-java-chassis?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Gitter](https://img.shields.io/badge/ServiceComb-Gitter-ff69b4.svg)](https://gitter.im/ServiceCombUsers/Lobby)  
+# Java Chassis | [English](README.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) 
 
 Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的JAVA SDK。它包含如下特性：
 
@@ -12,10 +12,10 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 # releases
 
-| 版本火车  | 最新版本  | 编译的JDK版本  | 支持的JDK版本 |
-|-------|-------|-----------|-------------------|
-| 2.x.x | 2.8.0 | OpenJDK 8 | OpenJDK 8, 11, 17 | 
-| 1.x.x | 1.3.8 | OpenJDK 8 | OpenJDK 8         |
+| 版本火车  | 最新版本   | 编译的JDK版本  | 支持的JDK版本 |
+|-------|--------|-----------|-------------------|
+| 2.x.x | 2.8.3  | OpenJDK 8 | OpenJDK 8, 11, 17 | 
+| 1.x.x | 1.3.10 | OpenJDK 8 | OpenJDK 8         |
 
 # 为什么使用Java Chassis
 
@@ -85,17 +85,11 @@ public class HelloWorldConsumer  {
 
       mvn clean install -Pdocker -Pit -Pdocker-machine -Pdemo-run-release
 
-
-# 获取最新版本
-
-[下载链接](http://servicecomb.apache.org/cn/release/java-chassis-downloads/)
-
 # 联系我们
 
 报告缺陷: [issues](https://issues.apache.org/jira/browse/SCB)
 
 邮件列表: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
-
 
 # 参与代码提交
 
