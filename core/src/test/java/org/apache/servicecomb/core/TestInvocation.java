@@ -252,7 +252,7 @@ public class TestInvocation {
       }
     };
 
-    MatcherAssert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.contains(gen1, gen3));
+    MatcherAssert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.containsInAnyOrder(gen1, gen3));
   }
 
   InvocationBaseEvent invocationBaseEvent;

@@ -43,6 +43,7 @@ import io.vertx.core.Context;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestRestClientRequestImpl {
   private HttpClientRequest request;
@@ -66,7 +67,7 @@ public class TestRestClientRequestImpl {
     restClientRequest.addForm("def", "world");
     restClientRequest.addForm("ghi", null);
     Buffer buffer = restClientRequest.getBodyBuffer();
-    Assertions.assertEquals("abc=Hello&def=world&", buffer.toString());
+    assertThat(buffer.toString()).isIn("def=world&abc=Hello&", "abc=Hello&def=world&");
   }
 
   @Test
@@ -76,6 +77,10 @@ public class TestRestClientRequestImpl {
       map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
       return null;
     }).when(request).putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+    Mockito.doAnswer(invocation -> {
+      map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+      return null;
+    }).when(request).putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "region=china-north; sessionid=abcdefghijklmnopqrstuvwxyz; ");
     Mockito.when(request.headers()).thenReturn(map);
 
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
