@@ -142,8 +142,9 @@ public class RestServerCodecFilterTest {
     Response response = codecFilter.onFilter(invocation, nextNode).get();
 
     assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-    assertThat(Json.encode(response.getResult()))
-        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"mock encode request failed\"}");
+    assertThat(Json.encode(response.getResult())).
+            isIn("{\"code\":\"SCB.50000000\",\"message\":\"mock encode request failed\"}",
+                    "{\"message\":\"mock encode request failed\",\"code\":\"SCB.50000000\"}");
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {
