@@ -48,7 +48,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
 
   @Override
   protected String createKey(GovernanceRequest governanceRequest, RetryPolicy policy) {
-    return RetryProperties.MATCH_RETRY_KEY + "." + policy.getName();
+    return this.retryProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
@@ -76,7 +76,7 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
     if (meterRegistry != null) {
       TaggedRetryMetrics
           .ofRetryRegistry(RetryMetricNames.custom()
-                  .callsMetricName(RetryProperties.MATCH_RETRY_KEY + ".calls")
+                  .callsMetricName(this.retryProperties.getConfigKey() + ".calls")
                   .build(),
               registry)
           .bindTo(meterRegistry);

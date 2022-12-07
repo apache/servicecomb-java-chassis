@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.injection;
 
-public class FaultResponse {
-
-  private int errorCode;
-
-  private String errorMsg;
-
-  public static FaultResponse createFail(int errorCode, String errorMsg) {
-    FaultResponse faultResponse = new FaultResponse();
-    faultResponse.setErrorCode(errorCode);
-    faultResponse.setErrorMsg(errorMsg);
-    return faultResponse;
-  }
-
-  public int getErrorCode() {
-    return errorCode;
-  }
-
-  public void setErrorCode(int errorCode) {
-    this.errorCode = errorCode;
-  }
-
-  public String getErrorMsg() {
-    return errorMsg;
-  }
-
-  public void setErrorMsg(String errorMsg) {
-    this.errorMsg = errorMsg;
-  }
+public interface Sleepable {
+  /**
+   * sleep some time
+   * @param delay time unit is millisecond
+   */
+  void sleep(long delay);
 }

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
@@ -46,7 +47,7 @@ public class TestFileUploadPart {
 
   @BeforeAll
   public static void classSetup() throws IOException {
-    file = File.createTempFile("upload", ".txt");
+    file = Files.createTempFile("upload", ".txt").toFile();
     file.deleteOnExit();
     FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8, false);
   }

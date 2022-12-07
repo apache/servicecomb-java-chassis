@@ -26,6 +26,10 @@ public class LoadBalanceProperties extends PolicyProperties<LoadBalancerPolicy> 
     super(MATCH_LOADBANLANCER_KEY);
   }
 
+  public LoadBalanceProperties(String key) {
+    super(key);
+  }
+
   @Override
   protected Class<LoadBalancerPolicy> getEntityClass() {
     return LoadBalancerPolicy.class;

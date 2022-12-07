@@ -26,6 +26,10 @@ public class InstanceIsolationProperties extends PolicyProperties<CircuitBreaker
     super(MATCH_INSTANCE_ISOLATION_KEY);
   }
 
+  public InstanceIsolationProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<CircuitBreakerPolicy> getEntityClass() {
     return CircuitBreakerPolicy.class;

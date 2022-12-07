@@ -15,31 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.loadbanlance;
 
-import io.vavr.CheckedFunction0;
+public class LoadBalanceImpl implements LoadBalance {
+  private final String rule;
 
-public interface FaultInjectionDecorators {
-  static <T> FaultInjectionDecorateCheckedSupplier<T> ofCheckedSupplier(CheckedFunction0<T> supplier) {
-    return new FaultInjectionDecorateCheckedSupplier<>(supplier);
+  public LoadBalanceImpl(String rule) {
+    this.rule = rule;
   }
 
-  class FaultInjectionDecorateCheckedSupplier<T> {
-
-    private CheckedFunction0<T> supplier;
-
-    protected FaultInjectionDecorateCheckedSupplier(CheckedFunction0<T> supplier) {
-      this.supplier = supplier;
-    }
-
-    public FaultInjectionDecorateCheckedSupplier<T> withFaultInjection(Fault fault) {
-      supplier = Fault.decorateCheckedSupplier(fault, supplier);
-      return this;
-    }
-
-    public T get() throws Throwable {
-      return supplier.apply();
-    }
+  public String getRule() {
+    return rule;
   }
-
 }

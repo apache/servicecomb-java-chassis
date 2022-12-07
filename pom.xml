@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>27</version>
+    <version>28</version>
   </parent>
 
 
@@ -47,7 +47,7 @@
     <!-- sort by alpha -->
     <checkstyle-maven-plugin.version>3.2.0</checkstyle-maven-plugin.version>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
-    <dependency-check-maven-plugin.version>7.3.0</dependency-check-maven-plugin.version>
+    <dependency-check-maven-plugin.version>7.3.2</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.40.2</docker-maven-plugin.version>
     <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
     <gmavenplus-plugin.version>2.1.0</gmavenplus-plugin.version>
@@ -60,15 +60,15 @@
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
     <maven-project-info-reports-plugin.version>3.4.1</maven-project-info-reports-plugin.version>
     <maven-remote-resources-plugin.version>3.0.0</maven-remote-resources-plugin.version>
-    <os-maven-plugin.version>1.7.0</os-maven-plugin.version>
+    <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
     <protoc3-maven-plugin.version>3.19.2</protoc3-maven-plugin.version>
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
-    <puppycrawl-checkstyle.version>10.4</puppycrawl-checkstyle.version>
+    <puppycrawl-checkstyle.version>10.5.0</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
     <site-maven-plugin.version>3.12.1</site-maven-plugin.version>
     <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
-    <spotbug-maven-plugin.version>4.7.2.1</spotbug-maven-plugin.version>
+    <spotbug-maven-plugin.version>4.7.3.0</spotbug-maven-plugin.version>
     <spring-boot-maven-plugin.version>2.7.0</spring-boot-maven-plugin.version>
     <surefire-maven-plugin.version>3.0.0-M7</surefire-maven-plugin.version>
     <!-- plugin version end -->

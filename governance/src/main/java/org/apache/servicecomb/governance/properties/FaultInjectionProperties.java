@@ -26,6 +26,10 @@ public class FaultInjectionProperties extends PolicyProperties<FaultInjectionPol
     super(MATCH_FAULT_INJECTION_KEY);
   }
 
+  public FaultInjectionProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<FaultInjectionPolicy> getEntityClass() {
     return FaultInjectionPolicy.class;

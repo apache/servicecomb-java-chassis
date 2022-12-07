@@ -19,7 +19,7 @@ package org.apache.servicecomb.governance;
 
 import org.apache.servicecomb.governance.handler.LoadBalanceHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
-import org.apache.servicecomb.loadbanlance.LoadBalance;
+import org.apache.servicecomb.governance.processor.loadbanlance.LoadBalance;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

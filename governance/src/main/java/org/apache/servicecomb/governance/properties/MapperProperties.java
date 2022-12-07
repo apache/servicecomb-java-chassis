@@ -15,16 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.loadbanlance;
+package org.apache.servicecomb.governance.properties;
 
-public class LoadBalanceImpl implements LoadBalance {
-  private final String rule;
+import org.apache.servicecomb.governance.policy.MapperPolicy;
 
-  public LoadBalanceImpl(String rule) {
-    this.rule = rule;
+public class MapperProperties extends PolicyProperties<MapperPolicy> {
+  public static final String MATCH_MAPPER_KEY = "servicecomb.mapper";
+
+  public MapperProperties() {
+    super(MATCH_MAPPER_KEY);
   }
 
-  public String getRule() {
-    return rule;
+  public MapperProperties(String key) {
+    super(key);
+  }
+
+  @Override
+  protected Class<MapperPolicy> getEntityClass() {
+    return MapperPolicy.class;
   }
 }

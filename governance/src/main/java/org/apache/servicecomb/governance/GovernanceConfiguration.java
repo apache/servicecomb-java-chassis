@@ -22,12 +22,15 @@ import java.util.Map;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.FaultInjectionHandler;
+import org.apache.servicecomb.governance.handler.GovernanceCacheHandler;
 import org.apache.servicecomb.governance.handler.IdentifierRateLimitingHandler;
 import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.LoadBalanceHandler;
+import org.apache.servicecomb.governance.handler.MapperHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
+import org.apache.servicecomb.governance.handler.TimeLimiterHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
 import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
@@ -39,12 +42,15 @@ import org.apache.servicecomb.governance.marker.operator.MatchOperator;
 import org.apache.servicecomb.governance.marker.operator.PrefixOperator;
 import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
+import org.apache.servicecomb.governance.properties.TimeLimiterProperties;
+import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.governance.properties.IdentifierRateLimitProperties;
 import org.apache.servicecomb.governance.properties.InstanceBulkheadProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.apache.servicecomb.governance.properties.LoadBalanceProperties;
+import org.apache.servicecomb.governance.properties.MapperProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
@@ -100,6 +106,16 @@ public class GovernanceConfiguration {
   }
 
   @Bean
+  public TimeLimiterProperties timeLimiterProperties() {
+    return new TimeLimiterProperties();
+  }
+
+  @Bean
+  public GovernanceCacheProperties cacheProperties() {
+    return new GovernanceCacheProperties();
+  }
+
+  @Bean
   public FaultInjectionProperties faultInjectionProperties() {
     return new FaultInjectionProperties();
   }
@@ -107,6 +123,11 @@ public class GovernanceConfiguration {
   @Bean
   public LoadBalanceProperties loadBalanceProperties() {
     return new LoadBalanceProperties();
+  }
+
+  @Bean
+  public MapperProperties mapperProperties() {
+    return new MapperProperties();
   }
 
   // handlers configuration
@@ -155,8 +176,23 @@ public class GovernanceConfiguration {
   }
 
   @Bean
+  public TimeLimiterHandler timeLimiterHandler(TimeLimiterProperties timeLimiterProperties) {
+    return new TimeLimiterHandler(timeLimiterProperties);
+  }
+
+  @Bean
+  public GovernanceCacheHandler<String, Object> governanceCacheHandler(GovernanceCacheProperties cacheProperties) {
+    return new GovernanceCacheHandler<String, Object>(cacheProperties);
+  }
+
+  @Bean
   public FaultInjectionHandler faultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
     return new FaultInjectionHandler(faultInjectionProperties);
+  }
+
+  @Bean
+  public MapperHandler mapperHandler(MapperProperties mapperProperties) {
+    return new MapperHandler(mapperProperties);
   }
 
   // request processor

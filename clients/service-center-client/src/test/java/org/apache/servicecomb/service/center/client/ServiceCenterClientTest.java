@@ -36,6 +36,7 @@ import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.ArgumentMatchers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,7 +117,8 @@ public class ServiceCenterClientTest {
     objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
     Mockito.when(serviceCenterRawClient
-        .postHttpRequest("/registry/microservices", null, objectMapper.writeValueAsString(microservice)))
+        .postHttpRequest(ArgumentMatchers.eq("/registry/microservices"), ArgumentMatchers.eq(null),
+        Mockito.anyString()))
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
@@ -250,8 +252,9 @@ public class ServiceCenterClientTest {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
-    Mockito.when(serviceCenterRawClient.postHttpRequest("/registry/microservices/222222/instances", null,
-        mapper.writeValueAsString(instance)))
+    Mockito.when(serviceCenterRawClient.postHttpRequest(ArgumentMatchers.eq("/registry/microservices/222222/instances"),
+        ArgumentMatchers.eq(null),
+        Mockito.anyString()))
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
@@ -387,7 +390,8 @@ public class ServiceCenterClientTest {
         .when(serviceCenterRawClient.putHttpRequest("/registry/microservices/111/instances/222/heartbeat", null, null))
         .thenReturn(httpResponse);
     Mockito.when(serviceCenterRawClient
-        .putHttpRequest("/registry/heartbeats", null, mapper.writeValueAsString(heartbeatsRequest)))
+        .putHttpRequest(ArgumentMatchers.eq("/registry/heartbeats"), ArgumentMatchers.eq(null),
+        Mockito.anyString()))
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);

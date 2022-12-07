@@ -25,6 +25,10 @@ public class RetryProperties extends PolicyProperties<RetryPolicy> {
     super(MATCH_RETRY_KEY);
   }
 
+  public RetryProperties(String key) {
+    super(key);
+  }
+
   @Override
   public Class<RetryPolicy> getEntityClass() {
     return RetryPolicy.class;

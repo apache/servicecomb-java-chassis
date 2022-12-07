@@ -14,17 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.governance.handler;
 
-package org.apache.servicecomb.loadbanlance;
+import io.github.resilience4j.timelimiter.TimeLimiter;
+import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 
-import org.apache.servicecomb.governance.policy.LoadBalancerPolicy;
+public class DisposableTimeLimiter extends Disposable<TimeLimiter> {
+  private final String key;
 
-public interface LoadBalance {
+  private final TimeLimiterRegistry timeLimiterRegistry;
 
-  static LoadBalance getLoadBalance(String key, LoadBalancerPolicy policy) {
-    LoadBalance loadBalance = new LoadBalanceImpl(policy.getRule());
-    return loadBalance;
+  private final TimeLimiter timeLimiter;
+
+  public DisposableTimeLimiter(String key, TimeLimiterRegistry registry, TimeLimiter timeLimiter) {
+    this.key = key;
+    this.timeLimiterRegistry = registry;
+    this.timeLimiter = timeLimiter;
   }
 
-  String getRule();
+  @Override
+  public void dispose() {
+    timeLimiterRegistry.remove(key);
+  }
+
+  @Override
+  public TimeLimiter getValue() {
+    return timeLimiter;
+  }
+
+  @Override
+  public String getKey() {
+    return key;
+  }
 }

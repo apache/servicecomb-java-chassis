@@ -17,6 +17,14 @@
 
 servicecomb:
   matchGroup:
+    demo-timeLimiter: |
+      matches:
+        - apiPath:
+            prefix: "/timeLimiter"
+    demo-governanceCache: |
+      matches:
+        - apiPath:
+            prefix: "/governanceCache"
     demo-loadbalance-random: |
       matches:
         - serviceName: "loadrandom"
@@ -81,6 +89,10 @@ servicecomb:
       matches:
         - apiPath:
             contains: "/faultInjectAbort"
+    demo-mapper: |
+      matches:
+        - apiPath:
+            prefix: "/mapper"
   rateLimiting:
     demo-rateLimiting: |
       rate: 1
@@ -95,6 +107,22 @@ servicecomb:
     demo-rateLimiting-servicename: |
       rate: 1
       identifier: test
+  timeLimiter:
+    demo-timeLimiter: |
+      timeoutDuration: 2000
+      cancelRunningFuture: true
+    demo-timeLimiter-other: |
+      timeoutDuration: 2000
+      cancelRunningFuture: false
+  cache:
+    demo-governanceCache: |
+      ttl: 36000000
+      maximumSize: 50000
+      concurrencyLevel: 10
+    demo-governanceCache-other: |
+      ttl: 666666
+      maximumSize: 50000
+      concurrencyLevel: 15
   retry:
     demo-retry: |
       maxAttempts: 3
@@ -161,11 +189,25 @@ servicecomb:
     wrongIngored: |
       delayTime: -1
       type: ERROR
+  faultInjection2:
+    demo-fallback-ThrowException: |
+      type: abort
+      percentage: 100
   loadbalance:
     demo-loadbalance-random: |
       rule: Random
     demo-loadbalance-roundRobin: |
       rule: RoundRobin
+  mapper:
+    demo-mapper: |
+      target:
+        host: 127.0.0.1
+        port: 8080
+  mapper2:
+    demo-mapper: |
+      target:
+        host: 127.0.0.1
+        port: 9090
   routeRule:
     test_server1: |                              # 服务名
       - precedence: 1                        # 优先级，数字越大，优先级越高。

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.injection;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;

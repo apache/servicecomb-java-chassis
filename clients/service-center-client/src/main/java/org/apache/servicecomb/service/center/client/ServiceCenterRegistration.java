@@ -121,14 +121,14 @@ public class ServiceCenterRegistration extends AbstractTask {
           RegisteredMicroserviceResponse response = serviceCenterClient.registerMicroservice(microservice);
           if (StringUtils.isEmpty(response.getServiceId())) {
             LOGGER.error("register microservice failed, and will try again.");
-            eventBus.post(new MicroserviceRegistrationEvent(false));
+            eventBus.post(new MicroserviceRegistrationEvent(false, microservice));
             startTask(new BackOffSleepTask(failedCount + 1, new RegisterMicroserviceTask(failedCount + 1)));
             return;
           }
           microservice.setServiceId(response.getServiceId());
           microserviceInstance.setServiceId(response.getServiceId());
           microserviceInstance.setMicroservice(microservice);
-          eventBus.post(new MicroserviceRegistrationEvent(true));
+          eventBus.post(new MicroserviceRegistrationEvent(true, microservice));
           startTask(new RegisterSchemaTask(0));
         } else {
           Microservice newMicroservice = serviceCenterClient.getMicroserviceByServiceId(serviceResponse.getServiceId());
@@ -136,12 +136,14 @@ public class ServiceCenterRegistration extends AbstractTask {
           Map<String, String> propertiesTemp = microservice.getProperties();
           microservice.setProperties(newMicroservice.getProperties());
           microservice.getProperties().putAll(propertiesTemp);
-          if (serviceCenterClient.updateMicroserviceProperties(serviceResponse.getServiceId(), microservice.getProperties())) {
-            LOGGER.info("microservice is already registered. Update microservice properties successfully. properties=[{}]",
-                    microservice.getProperties());
+          if (serviceCenterClient.updateMicroserviceProperties(serviceResponse.getServiceId(),
+              microservice.getProperties())) {
+            LOGGER.info(
+                "microservice is already registered. Update microservice properties successfully. properties=[{}]",
+                microservice.getProperties());
           } else {
             LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}]",
-                    microservice.getProperties());
+                microservice.getProperties());
           }
 
           microservice.setServiceId(serviceResponse.getServiceId());
@@ -150,24 +152,26 @@ public class ServiceCenterRegistration extends AbstractTask {
           if (isSwaggerDifferent(newMicroservice)) {
             if (serviceCenterConfiguration.isCanOverwriteSwagger()) {
               LOGGER.warn("Service has already registered, but schema ids not equal, try to register it again");
+              eventBus.post(new MicroserviceRegistrationEvent(true, microservice));
               startTask(new RegisterSchemaTask(0));
               return;
             }
             if (serviceCenterConfiguration.isIgnoreSwaggerDifferent()) {
               LOGGER.warn("Service has already registered, but schema ids not equal. Ignore and continue to register");
             } else {
-              throw new IllegalStateException("Service has already registered, but schema ids not equal, stop register. "
+              throw new IllegalStateException(
+                  "Service has already registered, but schema ids not equal, stop register. "
                       + "Change the microservice version or delete the old microservice info and try again.");
             }
           }
-          eventBus.post(new MicroserviceRegistrationEvent(true));
+          eventBus.post(new MicroserviceRegistrationEvent(true, microservice));
           startTask(new RegisterMicroserviceInstanceTask(0));
         }
       } catch (IllegalStateException e) {
         throw e;
       } catch (Exception e) {
         LOGGER.error("register microservice failed, and will try again.", e);
-        eventBus.post(new MicroserviceRegistrationEvent(false));
+        eventBus.post(new MicroserviceRegistrationEvent(false, microservice));
         startTask(new BackOffSleepTask(failedCount + 1, new RegisterMicroserviceTask(failedCount + 1)));
       }
     }
@@ -193,7 +197,7 @@ public class ServiceCenterRegistration extends AbstractTask {
       try {
         if (schemaInfos == null || schemaInfos.isEmpty()) {
           LOGGER.warn("no schemas defined for this microservice.");
-          eventBus.post(new SchemaRegistrationEvent(true));
+          eventBus.post(new SchemaRegistrationEvent(true, microservice));
           startTask(new RegisterMicroserviceInstanceTask(0));
           return;
         }
@@ -204,18 +208,18 @@ public class ServiceCenterRegistration extends AbstractTask {
           request.setSummary(schemaInfo.getSummary());
           if (!serviceCenterClient.registerSchema(microservice.getServiceId(), schemaInfo.getSchemaId(), request)) {
             LOGGER.error("register schema content failed, and will try again.");
-            eventBus.post(new SchemaRegistrationEvent(false));
+            eventBus.post(new SchemaRegistrationEvent(false, microservice));
             // back off by multiply
             startTask(new BackOffSleepTask(failedCount + 1, new RegisterSchemaTask((failedCount + 1) * 2)));
             return;
           }
         }
 
-        eventBus.post(new SchemaRegistrationEvent(true));
+        eventBus.post(new SchemaRegistrationEvent(true, microservice));
         startTask(new RegisterMicroserviceInstanceTask(0));
       } catch (Exception e) {
         LOGGER.error("register schema content failed, and will try again.", e);
-        eventBus.post(new SchemaRegistrationEvent(false));
+        eventBus.post(new SchemaRegistrationEvent(false, microservice));
         // back off by multiply
         startTask(new BackOffSleepTask(failedCount + 1, new RegisterSchemaTask((failedCount + 1) * 2)));
       }
@@ -236,18 +240,18 @@ public class ServiceCenterRegistration extends AbstractTask {
             .registerMicroserviceInstance(microserviceInstance);
         if (instance == null) {
           LOGGER.error("register microservice instance failed, and will try again.");
-          eventBus.post(new MicroserviceInstanceRegistrationEvent(false));
+          eventBus.post(new MicroserviceInstanceRegistrationEvent(false, microservice, microserviceInstance));
           startTask(new BackOffSleepTask(failedCount + 1, new RegisterMicroserviceInstanceTask(failedCount + 1)));
         } else {
           microserviceInstance.setInstanceId(instance.getInstanceId());
           LOGGER.info("register microservice successfully, service id={}, instance id={}", microservice.getServiceId(),
               microserviceInstance.getInstanceId());
-          eventBus.post(new MicroserviceInstanceRegistrationEvent(true));
+          eventBus.post(new MicroserviceInstanceRegistrationEvent(true, microservice, microserviceInstance));
           startTask(new SendHeartBeatTask(0));
         }
       } catch (Exception e) {
         LOGGER.error("register microservice instance failed, and will try again.", e);
-        eventBus.post(new MicroserviceInstanceRegistrationEvent(false));
+        eventBus.post(new MicroserviceInstanceRegistrationEvent(false, microservice, microserviceInstance));
         startTask(new BackOffSleepTask(failedCount + 1, new RegisterMicroserviceInstanceTask(failedCount + 1)));
       }
     }
@@ -266,24 +270,24 @@ public class ServiceCenterRegistration extends AbstractTask {
     public void execute() {
       try {
         if (failedCount >= FAILED_RETRY) {
-          eventBus.post(new HeartBeatEvent(false));
+          eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
           startTask(new RegisterMicroserviceTask(0));
           return;
         }
 
         if (!serviceCenterClient.sendHeartBeat(microservice.getServiceId(), microserviceInstance.getInstanceId())) {
           LOGGER.error("send heart failed, and will try again.");
-          eventBus.post(new HeartBeatEvent(false));
+          eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
           startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));
         } else {
           // wait 10 * 3000 ms and send heart beat again.
-          eventBus.post(new HeartBeatEvent(true));
+          eventBus.post(new HeartBeatEvent(true, microservice, microserviceInstance));
           startTask(
               new BackOffSleepTask(Math.max(heartBeatInterval, heartBeatRequestTimeout), new SendHeartBeatTask(0)));
         }
       } catch (Exception e) {
         LOGGER.error("send heart failed, and will try again.", e);
-        eventBus.post(new HeartBeatEvent(false));
+        eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
         startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));
       }
     }

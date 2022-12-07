@@ -38,7 +38,7 @@
     <assertj.version>3.23.1</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <brave.version>5.14.1</brave.version>
-    <bytebuddy.version>1.12.18</bytebuddy.version>
+    <bytebuddy.version>1.12.19</bytebuddy.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.11.0</commons-io.version>
@@ -59,7 +59,7 @@
     <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.13</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
-    <jackson.version>2.13.4.20221013</jackson.version>
+    <jackson.version>2.14.1</jackson.version>
     <java-websocket.version>1.5.3</java-websocket.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
@@ -73,12 +73,12 @@
     <log4j2.version>2.19.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
     <maven-model.version>3.8.6</maven-model.version>
-    <micrometer.version>1.9.5</micrometer.version>
-    <mockito.version>4.8.1</mockito.version>
+    <micrometer.version>1.10.2</micrometer.version>
+    <mockito.version>4.9.0</mockito.version>
     <mock-server.version>5.14.0</mock-server.version>
     <nacos-client.version>2.1.1</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
-    <netty.version>4.1.84.Final</netty.version>
+    <netty.version>4.1.85.Final</netty.version>
     <okhttp3.version>4.10.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
     <protobuf.version>3.21.9</protobuf.version>
@@ -93,10 +93,10 @@
     <servlet-api.version>4.0.4</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>1.33</snakeyaml.version>
-    <spectator.version>1.3.9</spectator.version>
-    <spring.version>5.3.23</spring.version>
+    <spectator.version>1.4.1</spectator.version>
+    <spring.version>5.3.24</spring.version>
     <spring-boot.version>2.6.7</spring-boot.version>
-    <swagger.version>1.6.8</swagger.version>
+    <swagger.version>1.6.9</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
     <vertx.version>4.3.4</vertx.version>
     <zipkin.version>2.23.19</zipkin.version>

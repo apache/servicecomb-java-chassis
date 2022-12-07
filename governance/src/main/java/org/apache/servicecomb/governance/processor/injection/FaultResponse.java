@@ -15,36 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.injection;
 
-import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
+public class FaultResponse {
 
-public abstract class AbstractFault implements Fault {
-  protected String key;
+  private int errorCode;
 
-  protected FaultInjectionPolicy policy;
+  private String errorMsg;
 
-  public AbstractFault(String key, FaultInjectionPolicy policy) {
-    this.key = key;
-    this.policy = policy;
+  public static FaultResponse createFail(int errorCode, String errorMsg) {
+    FaultResponse faultResponse = new FaultResponse();
+    faultResponse.setErrorCode(errorCode);
+    faultResponse.setErrorMsg(errorMsg);
+    return faultResponse;
   }
 
-  @Override
-  public boolean injectFault() {
-    if (policy.isForceClosed()) {
-      return false;
-    }
-    FaultParam faultParam = FaultInjectionUtil.initFaultParam(key);
-    return injectFault(faultParam);
+  public int getErrorCode() {
+    return errorCode;
   }
 
-  @Override
-  public String getKey() {
-    return key;
+  public void setErrorCode(int errorCode) {
+    this.errorCode = errorCode;
   }
 
-  @Override
-  public FaultInjectionPolicy getPolicy() {
-    return policy;
+  public String getErrorMsg() {
+    return errorMsg;
+  }
+
+  public void setErrorMsg(String errorMsg) {
+    this.errorMsg = errorMsg;
   }
 }

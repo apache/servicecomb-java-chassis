@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.processor.injection;
 
-public class FaultInjectionException extends RuntimeException {
-  private static final long serialVersionUID = 1675558351029273343L;
+/**
+ * Handles the all constant values for fault injection.
+ */
+public class FaultInjectionConst {
 
-  private final FaultResponse faultResponse;
+  public static final int FAULT_INJECTION_DEFAULT_VALUE = -1;
 
-  public FaultInjectionException(FaultResponse faultResponse) {
-    super(faultResponse.getErrorMsg());
-    this.faultResponse = faultResponse;
-  }
+  public static final String TYPE_DELAY = "delay";
 
-  public FaultResponse getFaultResponse() {
-    return faultResponse;
-  }
+  public static final String TYPE_ABORT = "abort";
+
+  public static final String FALLBACK_THROWEXCEPTION = "ThrowException";
+
+  public static final String FALLBACK_RETURNNULL = "ReturnNull";
+
+  public static final int ERROR_CODE_MIN = 200;
+
+  public static final int ERROR_CODE_MAX = 600;
 }

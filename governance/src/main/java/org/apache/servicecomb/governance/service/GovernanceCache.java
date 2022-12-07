@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.injection;
+package org.apache.servicecomb.governance.service;
 
-/**
- * Handles the all constant values for fault injection.
- */
-public class FaultInjectionConst {
+import com.google.common.cache.Cache;
 
-  public static final int FAULT_INJECTION_DEFAULT_VALUE = -1;
+import java.util.Objects;
 
-  public static final String TYPE_DELAY = "delay";
+public interface GovernanceCache<K, V> {
+  static <K, V> GovernanceCache<K, V> of(Cache<K, V> cache) {
+    Objects.requireNonNull(cache, "Cache must not be null");
+    return new GovernanceCacheImpl<>(cache);
+  }
 
-  public static final String TYPE_ABORT = "abort";
+  V getValueFromCache(K cacheKey);
 
-  public static final String FALLBACK_THROWEXCEPTION = "ThrowException";
-
-  public static final String FALLBACK_RETURNNULL = "ReturnNull";
-
-  public static final int ERROR_CODE_MIN = 200;
-
-  public static final int ERROR_CODE_MAX = 600;
+  void putValueIntoCache(K cacheKey, V value);
 }
