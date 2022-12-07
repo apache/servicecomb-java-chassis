@@ -44,9 +44,15 @@ import io.swagger.models.Swagger;
 
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
+  
+  private static final String pattern = "/%s/%s.yaml";
 
   @Override
   public void onAfterTransport(BootEvent event) {
+    boolean exportToFile = DynamicPropertyFactory.getInstance()
+            .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, false).get();
+    String filePath = DynamicPropertyFactory.getInstance()
+            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, "/tmp/microservices").get() + pattern;
     // register schema to microservice;
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
@@ -63,6 +69,9 @@ public class ProducerBootListener implements BootListener {
       Swagger swagger = schemaMeta.getSwagger();
       swagger.addScheme(Scheme.forValue(swaggerSchema));
       String content = SwaggerUtils.swaggerToString(swagger);
+      if (exportToFile) {
+        exportToFile(String.format(filePath, microservice.getServiceName(), schemaMeta.getSchemaId()), content);
+      }
       LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
           microserviceMeta.getAppId(),
           microserviceMeta.getMicroserviceName(),
@@ -121,6 +130,25 @@ public class ProducerBootListener implements BootListener {
 
       LOGGER.warn("Executor {} do not support close or shutdown, it may block service shutdown.",
           operationMeta.getExecutor().getClass().getName());
+    }
+  }
+  
+  private void exportToFile(String fileName, String content) {
+    File file = new File(fileName);
+    if (!file.getParentFile().exists()) {
+      if (!file.getParentFile().mkdirs()) {
+        LOGGER.error("create file directory failed");
+      }
+    }
+    if (file.exists()) {
+      file.delete();
+    }
+    try {
+      file.createNewFile();
+      FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8, false);
+      file.setReadOnly();
+    } catch (IOException e) {
+      LOGGER.error("export swagger content to file failed, message: {}", e.getMessage());
     }
   }
 }
