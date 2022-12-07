@@ -44,5 +44,4 @@ public interface DefinitionConst {
   String SWAGGER_EXPORT_ENABLED = "servicecomb.swagger.export.enabled";
 
   String SWAGGER_DIRECTORY = "servicecomb.swagger.directory";
-
 }
