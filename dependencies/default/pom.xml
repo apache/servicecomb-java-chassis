@@ -443,6 +443,13 @@
         <groupId>io.swagger</groupId>
         <artifactId>swagger-core</artifactId>
         <version>${swagger.version}</version>
+        <exclusions>
+          <!-- use jakarta.validation-api -->
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
