@@ -18,10 +18,14 @@
 package org.apache.servicecomb.core.provider.producer;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -44,15 +48,17 @@ import io.swagger.models.Swagger;
 
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
-  
-  private static final String pattern = "/%s/%s.yaml";
+
+  private static final String pattern = File.separator + "%s" + File.separator +"%s.yaml";
+
+  private static final String tmpDir = System.getProperty("java.io.tmpdir") + File.separator + "microservices";
 
   @Override
   public void onAfterTransport(BootEvent event) {
     boolean exportToFile = DynamicPropertyFactory.getInstance()
             .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, false).get();
     String filePath = DynamicPropertyFactory.getInstance()
-            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, "/tmp/microservices").get() + pattern;
+            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, tmpDir).get() + pattern;
     // register schema to microservice;
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
@@ -132,7 +138,7 @@ public class ProducerBootListener implements BootListener {
           operationMeta.getExecutor().getClass().getName());
     }
   }
-  
+
   private void exportToFile(String fileName, String content) {
     File file = new File(fileName);
     if (!file.getParentFile().exists()) {
