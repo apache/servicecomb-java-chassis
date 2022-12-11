@@ -49,7 +49,7 @@ import io.swagger.models.Swagger;
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
 
-  private static final String pattern = File.separator + "%s" + File.separator +"%s.yaml";
+  private static final String pattern = File.separator + "%s" + File.separator + "%s.yaml";
 
   private static final String tmpDir = System.getProperty("java.io.tmpdir") + File.separator + "microservices";
 
