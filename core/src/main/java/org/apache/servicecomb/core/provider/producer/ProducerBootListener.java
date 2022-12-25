@@ -49,16 +49,17 @@ import io.swagger.models.Swagger;
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
 
-  private static final String pattern = File.separator + "%s" + File.separator + "%s.yaml";
+  private static final String PATTERN = File.separator + "microservices"
+          + File.separator + "%s" + File.separator + "%s.yaml";
 
-  private static final String tmpDir = System.getProperty("java.io.tmpdir") + File.separator + "microservices";
+  private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 
   @Override
   public void onAfterTransport(BootEvent event) {
     boolean exportToFile = DynamicPropertyFactory.getInstance()
-            .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, false).get();
+            .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, true).get();
     String filePath = DynamicPropertyFactory.getInstance()
-            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, tmpDir).get() + pattern;
+            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, TMP_DIR).get() + PATTERN;
     // register schema to microservice;
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
@@ -144,6 +145,7 @@ public class ProducerBootListener implements BootListener {
     if (!file.getParentFile().exists()) {
       if (!file.getParentFile().mkdirs()) {
         LOGGER.error("create file directory failed");
+        return;
       }
     }
     if (file.exists()) {
