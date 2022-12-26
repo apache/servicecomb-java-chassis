@@ -68,7 +68,7 @@ public class TestVertxMetersInitializer {
     @Override
     public void start(Promise<Void> startPromise) {
       Router mainRouter = Router.router(vertx);
-      mainRouter.route("/").handler(context -> context.response().end(context.body().buffer()));
+      mainRouter.route("/").handler(context -> context.response().end(body));
 
       HttpServer server = vertx.createHttpServer();
       server.requestHandler(mainRouter);
@@ -171,13 +171,13 @@ public class TestVertxMetersInitializer {
       expect = expect + "    client.endpoints:\n"
           + "      connectCount disconnectCount queue         connections requests latency send(Bps) receive(Bps) remote\n";
       expect +=
-          "      1            0               0             1           1        %-7s 4         21           http://127.0.0.1:%-"
+          "      1            0               0             1           1        %-7s 4         4            http://127.0.0.1:%-"
               + portSize + "s\n";
     }
     expect += ""
         + "    server.endpoints:\n"
         + "      connectCount disconnectCount rejectByLimit connections requests latency send(Bps) receive(Bps) listen\n"
-        + "      1            0               0             1           1        %-7s 21        4            0.0.0.0:0\n\n";
+        + "      1            0               0             1           1        %-7s 4         4            0.0.0.0:0\n\n";
 
     if (printDetail) {
       expect = String

@@ -19,11 +19,11 @@ package org.apache.servicecomb.foundation.vertx;
 
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
-
-import io.netty.buffer.ByteBuf;
-import io.vertx.core.buffer.Buffer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.netty.buffer.ByteBuf;
+import io.vertx.core.buffer.impl.VertxByteBufAllocator;
 
 public class TestStream {
 
@@ -31,7 +31,7 @@ public class TestStream {
 
   @Test
   public void testBufferInputStream() {
-    ByteBuf obuf = Buffer.buffer(DIRECT_BUFFER_SIZE).getByteBuf();
+    ByteBuf obuf = VertxByteBufAllocator.DEFAULT.heapBuffer(DIRECT_BUFFER_SIZE, Integer.MAX_VALUE);
     obuf.writeBytes(("testss").getBytes());
     @SuppressWarnings("resource")
     BufferInputStream oBufferInputStream = new BufferInputStream(obuf);
@@ -51,5 +51,11 @@ public class TestStream {
     oBufferOutputStream.write(1);
     oBufferOutputStream.write(true);
     Assertions.assertTrue((1 < oBufferOutputStream.length()));
+
+    @SuppressWarnings("resource")
+    BufferInputStream oBufferInputStream = new BufferInputStream(oBufferOutputStream.getByteBuf());
+    Assertions.assertEquals("test", oBufferInputStream.readString());
+    Assertions.assertEquals(1, oBufferInputStream.readByte());
+    Assertions.assertEquals(true, oBufferInputStream.readBoolean());
   }
 }
