@@ -22,36 +22,21 @@ import java.nio.charset.StandardCharsets;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.buffer.impl.VertxByteBufAllocator;
 
 /**
- * BufferOutputStream
+ * BufferOutputStream.
  *
- *
+ * Notice: will not release the underlining ByteBuffer, the user is responsible to release it.
  */
 public class BufferOutputStream extends OutputStream {
   private static final int DIRECT_BUFFER_SIZE = 1024;
 
   protected ByteBuf byteBuf;
 
-  private boolean needReleaseBuffer;
-
   public BufferOutputStream() {
-    // TODO:默认大小加配置项
-    // TODO:如何与pool配合起来，vertx中默认都是unpool的，我们的阻塞模式下，申请与释放也不在一个线程，估计更用不上？
-    //        后续通道没问题了，再来验证这个问题
-    //        this(PooledByteBufAllocator.DEFAULT.directBuffer());
-
-    //        this(PooledByteBufAllocator.DEFAULT.directBuffer(DIRECT_BUFFER_SIZE));
-
-    //        this(UnpooledByteBufAllocator.DEFAULT.directBuffer(DIRECT_BUFFER_SIZE));
-    //        needReleaseBuffer = false;
-
-    //                this(UnpooledByteBufAllocator.DEFAULT.heapBuffer(DIRECT_BUFFER_SIZE));
-
-    this(Buffer.buffer(DIRECT_BUFFER_SIZE).getByteBuf());
-    needReleaseBuffer = false;
+    this(VertxByteBufAllocator.DEFAULT.heapBuffer(DIRECT_BUFFER_SIZE, Integer.MAX_VALUE));
   }
-
 
   public BufferOutputStream(ByteBuf buffer) {
     this.byteBuf = buffer;
@@ -116,9 +101,7 @@ public class BufferOutputStream extends OutputStream {
 
   @Override
   public void close() {
-    if (needReleaseBuffer && byteBuf != null) {
-      byteBuf.release();
-    }
+    // Do no release byteBuf, the target BufferedInputStream will release it.
   }
 
   public int writerIndex() {

@@ -24,7 +24,6 @@ import java.util.Set;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -46,6 +45,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
@@ -212,7 +212,7 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private CorsHandler getCorsHandler(String corsAllowedOrigin) {
-    return CorsHandler.create(corsAllowedOrigin);
+    return CorsHandler.create().addOrigin(corsAllowedOrigin);
   }
 
   private void initDispatcher(Router mainRouter) {
