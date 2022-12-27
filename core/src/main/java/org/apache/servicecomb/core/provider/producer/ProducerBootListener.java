@@ -18,10 +18,14 @@
 package org.apache.servicecomb.core.provider.producer;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -45,8 +49,17 @@ import io.swagger.models.Swagger;
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
 
+  private static final String PATTERN = File.separator + "microservices"
+          + File.separator + "%s" + File.separator + "%s.yaml";
+
+  private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
+
   @Override
   public void onAfterTransport(BootEvent event) {
+    boolean exportToFile = DynamicPropertyFactory.getInstance()
+            .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, true).get();
+    String filePath = DynamicPropertyFactory.getInstance()
+            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, TMP_DIR).get() + PATTERN;
     // register schema to microservice;
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
@@ -63,6 +76,9 @@ public class ProducerBootListener implements BootListener {
       Swagger swagger = schemaMeta.getSwagger();
       swagger.addScheme(Scheme.forValue(swaggerSchema));
       String content = SwaggerUtils.swaggerToString(swagger);
+      if (exportToFile) {
+        exportToFile(String.format(filePath, microservice.getServiceName(), schemaMeta.getSchemaId()), content);
+      }
       LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
           microserviceMeta.getAppId(),
           microserviceMeta.getMicroserviceName(),
@@ -121,6 +137,26 @@ public class ProducerBootListener implements BootListener {
 
       LOGGER.warn("Executor {} do not support close or shutdown, it may block service shutdown.",
           operationMeta.getExecutor().getClass().getName());
+    }
+  }
+
+  private void exportToFile(String fileName, String content) {
+    File file = new File(fileName);
+    if (!file.getParentFile().exists()) {
+      if (!file.getParentFile().mkdirs()) {
+        LOGGER.error("create file directory failed");
+        return;
+      }
+    }
+    if (file.exists()) {
+      file.delete();
+    }
+    try {
+      file.createNewFile();
+      FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8, false);
+      file.setReadOnly();
+    } catch (IOException e) {
+      LOGGER.error("export swagger content to file failed, message: {}", e.getMessage());
     }
   }
 }

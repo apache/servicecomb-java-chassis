@@ -40,4 +40,8 @@ public interface DefinitionConst {
   String REGISTRY_APP_ID = "default";
 
   String REGISTRY_SERVICE_NAME = "SERVICECENTER";
+
+  String SWAGGER_EXPORT_ENABLED = "servicecomb.swagger.export.enabled";
+
+  String SWAGGER_DIRECTORY = "servicecomb.swagger.export.directory";
 }
