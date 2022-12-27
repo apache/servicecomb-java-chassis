@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.edge.consumer;
 
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
+import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
@@ -39,5 +41,17 @@ public class ConsumerMain {
     new Consumer().run("http");
 
     System.out.println("All test case finished.");
+
+    runCategorizedTest();
+
+    TestMgr.summary();
+    if (!TestMgr.errors().isEmpty()) {
+      throw new IllegalStateException("tests failed");
+    }
+  }
+
+  private static void runCategorizedTest() throws Exception {
+    CategorizedTestCaseRunner
+        .runCategorizedTestCase("edge");
   }
 }

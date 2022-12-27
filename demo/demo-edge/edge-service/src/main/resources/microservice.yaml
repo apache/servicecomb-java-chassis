@@ -39,9 +39,9 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: auth,loadbalance
+        default: auth,loadbalance,instance-isolation-consumer,instance-bulkhead-consumer
         service:
-          auth: loadbalance
+          auth: loadbalance,instance-isolation-consumer,instance-bulkhead-consumer
   http:
     dispatcher:
       edge:
@@ -81,3 +81,37 @@ servicecomb:
               path: "/http/business/v1/dec.*"
               microserviceName: business
               versionRule: 1.1.0
+
+# 服务治理配置
+  matchGroup:
+    testEdgeServiceRetry: |
+      matches:
+        - apiPath:
+            exact: "/business/v2/testEdgeServiceRetry"
+    testEdgeServiceInstanceIsolation: |
+      matches:
+        - apiPath:
+            exact: "/business/v2/testEdgeServiceInstanceIsolation"
+    testEdgeServiceInstanceBulkhead: |
+      matches:
+        - apiPath:
+            exact: "/business/v2/testEdgeServiceInstanceBulkhead"
+# retry not supported now
+#  retry:
+#    testEdgeServiceRetry: |
+#      maxAttempts: 2
+#      retryOnSame: 0
+  instanceIsolation:
+    testEdgeServiceInstanceIsolation: |
+      minimumNumberOfCalls: 10
+      slidingWindowSize: 20
+      slidingWindowType: COUNT_BASED
+      failureRateThreshold: 50
+      slowCallRateThreshold: 100
+      slowCallDurationThreshold: 3000
+      waitDurationInOpenState: 10000 
+      permittedNumberOfCallsInHalfOpenState: 10
+  instanceBulkhead:
+    testEdgeServiceInstanceBulkhead: |
+      maxConcurrentCalls: 1
+      maxWaitDuration: 1
