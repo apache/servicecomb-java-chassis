@@ -27,7 +27,7 @@
   <name>Java Chassis::Demo::Edge::Service</name>
 
   <properties>
-    <demo.main>org.apache.servicecomb.demo.edge.service.EdgeMain</demo.main>
+    <demo.main>org.apache.servicecomb.demo.edge.EdgeMain</demo.main>
   </properties>
 
   <dependencies>
@@ -38,6 +38,10 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-loadbalance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-governance</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.edge.service;
+package org.apache.servicecomb.demo.edge;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;

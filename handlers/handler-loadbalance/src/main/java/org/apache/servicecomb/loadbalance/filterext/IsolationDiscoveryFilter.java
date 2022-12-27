@@ -75,7 +75,7 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ISOLATION_FILTER_ENABLED, true)
+        .getBooleanProperty(ISOLATION_FILTER_ENABLED, false)
         .get();
   }
 

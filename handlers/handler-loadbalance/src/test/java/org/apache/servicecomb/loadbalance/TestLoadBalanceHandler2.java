@@ -73,6 +73,7 @@ public class TestLoadBalanceHandler2 {
   public static void beforeClass() {
     ConfigUtil.installDynamicConfig();
     ArchaiusUtils.setProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", "true");
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.enabled", "true");
     scbEngine = SCBBootstrap.createSCBEngineForTest().run();
   }
 
