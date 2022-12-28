@@ -82,7 +82,7 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
     }
   }
 
-  void pullInstance(String revisionId) {
+  private void pullInstance(String revisionId) {
     MicroserviceInstances serviceInstances = pullInstanceFromServiceCenter(revisionId);
 
     if (serviceInstances == null) {
@@ -112,7 +112,7 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
         key.getAppId(),
         key.getServiceName(),
         key.getVersionRule(),
-        this.revisionId,
+        revisionId,
         serviceInstances.getRevision());
     for (MicroserviceInstance instance : instances) {
       LOGGER.info("service id={}, instance id={}, endpoints={}",
@@ -217,17 +217,15 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
     this.emptyInstanceProtectionEnabled = emptyInstanceProtectionEnabled;
   }
 
-  void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent event) {
-    if (!microserviceMatched(event)) {
-      return;
-    }
-    refresh();
-  }
-
-  private boolean microserviceMatched(MicroserviceInstanceChangedEvent event) {
-    return (key.getAppId().equals(event.getKey().getAppId())) // appId matched
-            && (key.getServiceName().equals(event.getKey().getServiceName()) // microserviceName matched
-            || key.getServiceName().equals(event.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + event.getKey().getServiceName()
-    ));
+  public boolean isAcceptableEvent(MicroserviceInstanceChangedEvent event) {
+    return (
+        // appId matched
+        key.getAppId().equals(event.getKey().getAppId()))
+        && (
+        // microserviceName matched
+        key.getServiceName().equals(event.getKey().getServiceName()) ||
+            key.getServiceName().equals(
+                event.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR
+                    + event.getKey().getServiceName()));
   }
 }

@@ -20,7 +20,6 @@ package org.apache.servicecomb.serviceregistry.registry.cache;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -133,14 +132,26 @@ public class RefreshableServiceRegistryCache implements ServiceRegistryCache {
   }
 
   public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent event) {
-    List<MicroserviceCache> refreshedCaches =
-        microserviceCache.entrySet().stream()
-            .peek(cacheEntry -> cacheEntry.getValue().onMicroserviceInstanceChanged(event))
-            .filter(cacheEntry -> isRefreshedMicroserviceCache(cacheEntry.getValue()))
-            .map(Entry::getValue)
-            .collect(Collectors.toList());
+    if (!refreshLock.tryLock()) {
+      LOGGER.info("ignore concurrent refresh request");
+      return;
+    }
 
-    notifyWatcher(refreshedCaches);
+    try {
+      List<MicroserviceCache> refreshedCaches =
+          microserviceCache.values().stream()
+              .filter(cache -> cache.isAcceptableEvent(event))
+              .peek(RefreshableMicroserviceCache::refresh)
+              .filter(this::isRefreshedMicroserviceCache)
+              .peek(this::removeCacheIfServiceNotFound)
+              .collect(Collectors.toList());
+
+      notifyWatcher(refreshedCaches);
+    } catch (Exception e) {
+      LOGGER.error("failed to refresh caches", e);
+    } finally {
+      refreshLock.unlock();
+    }
   }
 
   @Override

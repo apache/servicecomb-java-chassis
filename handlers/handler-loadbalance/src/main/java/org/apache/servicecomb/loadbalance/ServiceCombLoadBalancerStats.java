@@ -140,7 +140,7 @@ public class ServiceCombLoadBalancerStats {
             .removalListener(
                 (RemovalListener<ServiceCombServer, ServiceCombServerStats>) notification -> {
                   ServiceCombServer server = notification.getKey();
-                  LOGGER.info("stats of instance {} removed, host is {}",
+                  LOGGER.debug("stats of instance {} removed, host is {}",
                       server.getInstance().getInstanceId(), server.getHost());
                   pingView.remove(notification.getKey());
                   serviceCombServers.remove(notification.getKey());
