@@ -50,16 +50,20 @@ public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
 
   private static final String PATTERN = File.separator + "microservices"
-          + File.separator + "%s" + File.separator + "%s.yaml";
+      + File.separator + "%s" + File.separator + "%s.yaml";
 
   private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 
   @Override
   public void onAfterTransport(BootEvent event) {
     boolean exportToFile = DynamicPropertyFactory.getInstance()
-            .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, true).get();
+        .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, true).get();
     String filePath = DynamicPropertyFactory.getInstance()
-            .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, TMP_DIR).get() + PATTERN;
+        .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, TMP_DIR).get() + PATTERN;
+
+    if (exportToFile) {
+      LOGGER.info("export microservice swagger file to path {}", filePath);
+    }
     // register schema to microservice;
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
@@ -78,13 +82,13 @@ public class ProducerBootListener implements BootListener {
       String content = SwaggerUtils.swaggerToString(swagger);
       if (exportToFile) {
         exportToFile(String.format(filePath, microservice.getServiceName(), schemaMeta.getSchemaId()), content);
+      } else {
+        LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
+            microserviceMeta.getAppId(),
+            microserviceMeta.getMicroserviceName(),
+            schemaMeta.getSchemaId(),
+            content);
       }
-      LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
-          microserviceMeta.getAppId(),
-          microserviceMeta.getMicroserviceName(),
-          schemaMeta.getSchemaId(),
-          content);
-
       RegistrationManager.INSTANCE.addSchema(schemaMeta.getSchemaId(), content);
     }
 
