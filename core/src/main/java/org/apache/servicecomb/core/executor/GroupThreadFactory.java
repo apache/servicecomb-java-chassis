@@ -32,9 +32,7 @@ public class GroupThreadFactory implements ThreadFactory {
   public GroupThreadFactory(String prefix) {
     Objects.requireNonNull(prefix);
 
-    SecurityManager s = System.getSecurityManager();
-    group = (s != null) ? s.getThreadGroup() :
-        Thread.currentThread().getThreadGroup();
+    group = Thread.currentThread().getThreadGroup();
 
     namePrefix = prefix + "-" + poolNumber.getAndIncrement() + "-thread-";
   }
