@@ -21,10 +21,10 @@ name: rat check
 on:
   push:
     branches:
-      - master
+      - 2.8.x
   pull_request:
     branches:
-      - master
+      - 2.8.x
 
 jobs:
   rat_check:

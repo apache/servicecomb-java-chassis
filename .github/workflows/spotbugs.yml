@@ -21,7 +21,7 @@ name: spot bugs
 on:
   pull_request:
     branches:
-      - master
+      - 2.8.x
 
 jobs:
   spotbugs:
