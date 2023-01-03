@@ -22,7 +22,7 @@ name: Unit Test Jdk17
 on:
   pull_request:
     branches:
-      - master
+      - 2.8.x
 
 jobs:
   unit-tests:
