@@ -41,7 +41,7 @@ import mockit.MockUp;
 import org.junit.jupiter.api.Assertions;
 
 public class TestPumpFromPart {
-  String src = RandomStringUtils.random(100);
+  String src = RandomStringUtils.random(100, true, true);
 
   boolean inputStreamClosed;
 
