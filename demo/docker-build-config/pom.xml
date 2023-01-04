@@ -42,7 +42,7 @@
                 <name>${project.artifactId}:${project.version}</name>
                 <alias>${project.artifactId}</alias>
                 <build>
-                  <from>openjdk:8-jre-alpine</from>
+                  <from>openjdk:17-alpine</from>
                   <ports>
                     <port>7070</port>
                     <port>8080</port>

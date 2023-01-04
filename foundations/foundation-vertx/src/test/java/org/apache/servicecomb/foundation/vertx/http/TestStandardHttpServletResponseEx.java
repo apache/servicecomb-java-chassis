@@ -32,21 +32,19 @@ import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExcep
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import io.vertx.core.buffer.Buffer;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+
 
 public class TestStandardHttpServletResponseEx {
-  @Mocked
   HttpServletResponse response;
 
   StandardHttpServletResponseEx responseEx;
 
   @Before
   public void setup() {
+    response = Mockito.mock(HttpServletResponse.class);
     responseEx = new StandardHttpServletResponseEx(response);
   }
 
@@ -99,16 +97,12 @@ public class TestStandardHttpServletResponseEx {
       }
 
       @Override
-      public void write(int b) throws IOException {
+      public void write(int b) {
         buffer.appendByte((byte) b);
       }
     };
-    response = new MockUp<HttpServletResponse>() {
-      @Mock
-      ServletOutputStream getOutputStream() {
-        return output;
-      }
-    }.getMockInstance();
+
+    Mockito.when(response.getOutputStream()).thenReturn(output);
     responseEx = new StandardHttpServletResponseEx(response);
 
     // no body
@@ -129,23 +123,28 @@ public class TestStandardHttpServletResponseEx {
 
   @Test
   public void sendPart_succ() throws Throwable {
-    String src = RandomStringUtils.random(100);
+    String src = RandomStringUtils.random(100, true, true);
     InputStream inputStream = new ByteArrayInputStream(src.getBytes());
     Part part = new InputStreamPart("name", inputStream);
     Buffer buffer = Buffer.buffer();
-    ServletOutputStream outputStream = new MockUp<ServletOutputStream>() {
-      @Mock
-      void write(int b) {
+
+    ServletOutputStream outputStream = new ServletOutputStream() {
+      @Override
+      public boolean isReady() {
+        return false;
+      }
+
+      @Override
+      public void setWriteListener(WriteListener writeListener) {
+
+      }
+
+      @Override
+      public void write(int b) {
         buffer.appendByte((byte) b);
       }
-    }.getMockInstance();
-
-    new Expectations() {
-      {
-        response.getOutputStream();
-        result = outputStream;
-      }
     };
+    Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 
     responseEx.sendPart(part).get();
 
@@ -153,14 +152,10 @@ public class TestStandardHttpServletResponseEx {
   }
 
   @Test
-  public void sendPart_failed(@Mocked Part part) throws Throwable {
+  public void sendPart_failed() throws Throwable {
+    Part part = Mockito.mock(Part.class);
     RuntimeException error = new RuntimeExceptionWithoutStackTrace();
-    new Expectations() {
-      {
-        response.getOutputStream();
-        result = error;
-      }
-    };
+    Mockito.when(response.getOutputStream()).thenThrow(error);
 
     Assertions.assertThrows(RuntimeException.class, () -> responseEx.sendPart(part).get());
   }

@@ -83,6 +83,7 @@ public class TrustManagerExtTest {
     }
   }
 
+  @SuppressWarnings("deprecation")
   static class MyX509Certificate extends X509Certificate {
     private static final long serialVersionUID = -3585440601605666276L;
 
