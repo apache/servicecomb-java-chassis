@@ -272,11 +272,7 @@ public final class Configuration {
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD,
         PROP_ROOT + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD);
     try {
-      int result = Integer.parseInt(p);
-      if (result > 0) {
-        return result;
-      }
-      return defaultValue;
+      return Integer.parseInt(p);
     } catch (NumberFormatException e) {
       return defaultValue;
     }
