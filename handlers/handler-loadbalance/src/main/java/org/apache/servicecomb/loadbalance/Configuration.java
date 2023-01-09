@@ -213,11 +213,7 @@ public final class Configuration {
         ROOT + microservice + "." + FILTER_ISOLATION + threshold,
         ROOT + FILTER_ISOLATION + threshold);
     try {
-      int result = Integer.parseInt(p);
-      if (result > 0) {
-        return result;
-      }
-      return defaultValue;
+      return Integer.parseInt(p);
     } catch (NumberFormatException e) {
       return defaultValue;
     }
