@@ -329,7 +329,12 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
       EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) propertySource;
       for (String propertyName : enumerablePropertySource.getPropertyNames()) {
         try {
-          configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
+          Object propertyValue = environment.getProperty(propertyName, Object.class);
+          if (propertyValue == null) {
+            LOGGER.error("The value of a configuration item is null, please check whether there is any impact, config item key: {}", propertyName);
+            continue;
+          }
+          configFromSpringBoot.put(propertyName, propertyValue);
         } catch (Exception e) {
           throw new RuntimeException(
               "set up spring property source failed.If you still want to start up the application and ignore errors, you can set servicecomb.config.ignoreResolveFailure to true.",
