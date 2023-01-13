@@ -329,6 +329,10 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
       EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) propertySource;
       for (String propertyName : enumerablePropertySource.getPropertyNames()) {
         try {
+          if (environment.getProperty(propertyName, Object.class) == null) {
+            LOGGER.info("The environment variable" + propertyName + "is null , please check the project environment");
+            continue;
+          }
           configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
         } catch (Exception e) {
           throw new RuntimeException(
