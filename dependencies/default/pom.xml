@@ -38,7 +38,7 @@
     <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <brave.version>5.14.1</brave.version>
-    <bytebuddy.version>1.12.20</bytebuddy.version>
+    <bytebuddy.version>1.12.22</bytebuddy.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.11.0</commons-io.version>
