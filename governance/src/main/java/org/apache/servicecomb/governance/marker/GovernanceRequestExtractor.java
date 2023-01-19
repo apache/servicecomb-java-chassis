@@ -14,10 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.governance.service;
+package org.apache.servicecomb.governance.marker;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
+public interface GovernanceRequestExtractor {
+  String uri();
 
-public interface MatchersService {
-  boolean checkMatch(GovernanceRequestExtractor governanceRequest, String key);
+  String method();
+
+  String header(String key);
+
+  String instanceId();
+
+  String serviceName();
+
+  Object sourceRequest();
 }

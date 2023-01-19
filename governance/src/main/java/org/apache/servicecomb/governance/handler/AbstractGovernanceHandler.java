@@ -20,7 +20,7 @@ package org.apache.servicecomb.governance.handler;
 import org.apache.servicecomb.governance.MatchersManager;
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +56,13 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     this.meterRegistry = meterRegistry;
   }
 
-  public PROCESSOR getActuator(GovernanceRequest governanceRequest) {
-    POLICY policy = matchPolicy(governanceRequest);
+  public PROCESSOR getActuator(GovernanceRequestExtractor requestExtractor) {
+    POLICY policy = matchPolicy(requestExtractor);
     if (policy == null) {
       return null;
     }
 
-    String key = createKey(governanceRequest, policy);
+    String key = createKey(requestExtractor, policy);
     if (key == null) {
       return null;
     }
@@ -72,7 +72,7 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
       synchronized (lock) {
         processor = processors.get(key);
         if (processor == null) {
-          processor = createProcessor(key, governanceRequest, policy);
+          processor = createProcessor(key, requestExtractor, policy);
           processors.put(key, processor);
         }
       }
@@ -81,11 +81,11 @@ public abstract class AbstractGovernanceHandler<PROCESSOR, POLICY extends Abstra
     return processor.get();
   }
 
-  protected abstract String createKey(GovernanceRequest governanceRequest, POLICY policy);
+  protected abstract String createKey(GovernanceRequestExtractor requestExtractor, POLICY policy);
 
-  protected abstract POLICY matchPolicy(GovernanceRequest governanceRequest);
+  protected abstract POLICY matchPolicy(GovernanceRequestExtractor requestExtractor);
 
-  protected abstract Disposable<PROCESSOR> createProcessor(String key, GovernanceRequest governanceRequest,
+  protected abstract Disposable<PROCESSOR> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       POLICY policy);
 
   protected void onConfigurationChanged(String key) {

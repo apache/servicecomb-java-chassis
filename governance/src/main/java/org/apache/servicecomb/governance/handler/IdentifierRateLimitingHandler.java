@@ -20,7 +20,7 @@ package org.apache.servicecomb.governance.handler;
 import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.IdentifierRateLimitingPolicy;
 import org.apache.servicecomb.governance.properties.IdentifierRateLimitProperties;
 import org.slf4j.Logger;
@@ -43,15 +43,15 @@ public class IdentifierRateLimitingHandler extends
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, IdentifierRateLimitingPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, IdentifierRateLimitingPolicy policy) {
     if (StringUtils.isEmpty(policy.getIdentifier()) ||
-        StringUtils.isEmpty(governanceRequest.getHeader(policy.getIdentifier()))) {
+        StringUtils.isEmpty(requestExtractor.header(policy.getIdentifier()))) {
       LOGGER.info("identifier rate limiting is not properly configured, identifier is empty.");
       return null;
     }
     return this.rateLimitProperties.getConfigKey()
         + "." + policy.getName()
-        + "." + governanceRequest.getHeader(policy.getIdentifier());
+        + "." + requestExtractor.header(policy.getIdentifier());
   }
 
   @Override
@@ -70,12 +70,12 @@ public class IdentifierRateLimitingHandler extends
   }
 
   @Override
-  public IdentifierRateLimitingPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, rateLimitProperties.getParsedEntity());
+  public IdentifierRateLimitingPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, rateLimitProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<RateLimiter> createProcessor(String key, GovernanceRequest governanceRequest,
+  public Disposable<RateLimiter> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       IdentifierRateLimitingPolicy policy) {
     return getRateLimiter(key, policy);
   }

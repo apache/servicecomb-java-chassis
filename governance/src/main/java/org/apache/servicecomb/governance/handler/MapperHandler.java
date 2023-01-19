@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.governance.handler;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.MapperPolicy;
 import org.apache.servicecomb.governance.processor.mapping.Mapper;
 import org.apache.servicecomb.governance.properties.MapperProperties;
@@ -33,17 +33,17 @@ public class MapperHandler extends AbstractGovernanceHandler<Mapper, MapperPolic
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, MapperPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, MapperPolicy policy) {
     return mapperProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public MapperPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, mapperProperties.getParsedEntity());
+  public MapperPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, mapperProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<Mapper> createProcessor(String key, GovernanceRequest governanceRequest,
+  public Disposable<Mapper> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       MapperPolicy policy) {
     return getMapper(key, policy);
   }

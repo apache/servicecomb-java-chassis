@@ -19,7 +19,7 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
 import org.slf4j.Logger;
@@ -41,17 +41,17 @@ public class BulkheadHandler extends AbstractGovernanceHandler<Bulkhead, Bulkhea
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, BulkheadPolicy policy) {
     return bulkheadProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public BulkheadPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, bulkheadProperties.getParsedEntity());
+  public BulkheadPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, bulkheadProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<Bulkhead> createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  public Disposable<Bulkhead> createProcessor(String key, GovernanceRequestExtractor requestExtractor, BulkheadPolicy policy) {
     return getBulkhead(key, policy);
   }
 

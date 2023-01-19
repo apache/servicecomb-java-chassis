@@ -28,7 +28,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -59,7 +59,7 @@ public class ProviderGovernanceHandler implements Handler {
 
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     addRateLimiting(dcs, request);
     addCircuitBreaker(dcs, request);
@@ -91,21 +91,21 @@ public class ProviderGovernanceHandler implements Handler {
     });
   }
 
-  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
+  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
     Bulkhead bulkhead = bulkheadHandler.getActuator(request);
     if (bulkhead != null) {
       dcs.withBulkhead(bulkhead);
     }
   }
 
-  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
+  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
     CircuitBreaker circuitBreaker = circuitBreakerHandler.getActuator(request);
     if (circuitBreaker != null) {
       dcs.withCircuitBreaker(circuitBreaker);
     }
   }
 
-  private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
+  private void addRateLimiting(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
     RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
     if (rateLimiter != null) {
       dcs.withRateLimiter(rateLimiter);

@@ -17,50 +17,85 @@
 
 package org.apache.servicecomb.core.governance;
 
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 
 public final class MatchType {
+  private static class GovernanceRequestExtractorImpl implements GovernanceRequestExtractor {
+    private final Invocation invocation;
+
+    private GovernanceRequestExtractorImpl(Invocation invocation) {
+      this.invocation = invocation;
+    }
+
+    @Override
+    public String uri() {
+      if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
+        if (invocation.isConsumer()) {
+          return concatAbsolutePath(invocation.getSchemaMeta().getSwagger().getBasePath(),
+              invocation.getOperationMeta().getOperationPath());
+        }
+        // not highway
+        if (invocation.getRequestEx() != null) {
+          return invocation.getRequestEx().getRequestURI();
+        }
+      }
+      return invocation.getOperationMeta().getMicroserviceQualifiedName();
+    }
+
+    @Override
+    public String method() {
+      return invocation.getOperationMeta().getHttpMethod();
+    }
+
+    @Override
+    public String header(String key) {
+      Map<String, Object> arguments = invocation.getSwaggerArguments();
+      if (arguments != null && arguments.get(key) != null) {
+        return arguments.get(key).toString();
+      }
+
+      if (invocation.getContext(key) != null) {
+        return invocation.getContext(key);
+      }
+
+      if (invocation.getRequestEx() != null) {
+        return invocation.getRequestEx().getHeader(key);
+      }
+
+      return null;
+    }
+
+    @Override
+    public String instanceId() {
+      if (invocation.isConsumer()) {
+        return invocation.getEndpoint().getMicroserviceInstance().getInstanceId();
+      }
+      return null;
+    }
+
+    @Override
+    public String serviceName() {
+      if (invocation.isConsumer()) {
+        return invocation.getMicroserviceName();
+      }
+      return null;
+    }
+
+    @Override
+    public Object sourceRequest() {
+      return invocation;
+    }
+  }
+
   public static final String REST = "rest";
 
   public static final String RPC = "rpc";
 
-  public static GovernanceRequest createGovHttpRequest(Invocation invocation) {
-    GovernanceRequest request = new GovernanceRequest();
-
-    if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
-      if (invocation.isConsumer()) {
-        request.setUri(concatAbsolutePath(
-            invocation.getSchemaMeta().getSwagger().getBasePath(), invocation.getOperationMeta().getOperationPath()));
-        request.setMethod(invocation.getOperationMeta().getHttpMethod());
-        request.setHeaders(getHeaderMap(invocation, true));
-        return request;
-      }
-
-      // not highway
-      if (invocation.getRequestEx() != null) {
-        request.setUri(invocation.getRequestEx().getRequestURI());
-        request.setMethod(invocation.getRequestEx().getMethod());
-        request.setHeaders(getHeaderMap(invocation, false));
-        return request;
-      }
-
-      // maybe highway
-    }
-
-    if (invocation.isConsumer()) {
-      request.setUri(invocation.getOperationMeta().getMicroserviceQualifiedName());
-    } else {
-      request.setUri(invocation.getOperationMeta().getSchemaQualifiedName());
-    }
-    request.setMethod(invocation.getOperationMeta().getHttpMethod());
-    request.setHeaders(getHeaderMap(invocation, true));
-
-    return request;
+  public static GovernanceRequestExtractor createGovHttpRequest(Invocation invocation) {
+    return new GovernanceRequestExtractorImpl(invocation);
   }
 
   /**
@@ -76,30 +111,5 @@ public final class MatchType {
 
   private static String nonNullify(String path) {
     return path == null ? "" : path;
-  }
-
-  private static Map<String, String> getHeaderMap(Invocation invocation, boolean fromContext) {
-    Map<String, String> headers = new HashMap<>();
-    if (fromContext) {
-      headers.putAll(invocation.getContext());
-    } else {
-      Enumeration<String> names = invocation.getRequestEx().getHeaderNames();
-      while (names.hasMoreElements()) {
-        String name = names.nextElement();
-        if (invocation.getRequestEx().getHeader(name) != null) {
-          headers.put(name, invocation.getRequestEx().getHeader(name));
-        }
-      }
-    }
-
-    Map<String, Object> arguments = invocation.getSwaggerArguments();
-    if (arguments != null) {
-      arguments.forEach((k, v) -> {
-        if (v != null) {
-          headers.put(k, v.toString());
-        }
-      });
-    }
-    return headers;
   }
 }

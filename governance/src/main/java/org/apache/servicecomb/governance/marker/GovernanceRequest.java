@@ -20,52 +20,53 @@ import java.util.Map;
 
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-public class GovernanceRequest {
+public class GovernanceRequest implements GovernanceRequestExtractor {
   /**
-   headers with this request, maybe null.
-   For provider: headers indicates the request headers to me.
-   For consumer: headers indicates the request headers to the target.
+   * headers with this request, maybe null.
+   * For provider: headers indicates the request headers to me.
+   * For consumer: headers indicates the request headers to the target.
    */
   private Map<String, String> headers;
 
   /**
-   uri with this request, maybe null.
-   For provider: uri indicates the request uri to me.
-   For consumer: uri indicates the request uri to the target.
+   * uri with this request, maybe null.
+   * For provider: uri indicates the request uri to me.
+   * For consumer: uri indicates the request uri to the target.
    */
   private String uri;
 
   /**
-   method with this request, maybe null.
-   For provider: method indicates the request method to me.
-   For consumer: method indicates the request method to the target.
+   * method with this request, maybe null.
+   * For provider: method indicates the request method to me.
+   * For consumer: method indicates the request method to the target.
    */
   private String method;
 
   /**
-   instance id with this request, maybe null.
-   For provider: instanceId indicates who calls me.
-   For consumer: instanceId indicates the target instance.
+   * instance id with this request, maybe null.
+   * For provider: instanceId indicates who calls me.
+   * For consumer: instanceId indicates the target instance.
    */
   private String instanceId;
 
   /**
-   microservice id (microservice name or application name + microservice name) with this request, maybe null.
-   For provider: serviceName indicates who calls me.
-   For consumer: serviceName indicates the target service.
+   * microservice id (microservice name or application name + microservice name) with this request, maybe null.
+   * For provider: serviceName indicates who calls me.
+   * For consumer: serviceName indicates the target service.
    */
   private String serviceName;
 
   /**
-   sourceRequest the source request for creating this governanceRequest
-   For provider: uri indicates the request to me.
-   For consumer: uri indicates the request to the target.
-   the type of sourceRequest could be ClientRequest, ServerWebExchange, HttpRequest, HttpServletRequest and so on,
-   it is desided by user. user will use this request to extract the information he need
+   * sourceRequest the source request for creating this governanceRequest
+   * For provider: uri indicates the request to me.
+   * For consumer: uri indicates the request to the target.
+   * the type of sourceRequest could be ClientRequest, ServerWebExchange, HttpRequest, HttpServletRequest and so on,
+   * User will use this request to extract the information he need
    */
   private Object sourceRequest;
 
-  public String getHeader(String key) {
+  @Override
+  public String header(String key) {
     return headers.get(key);
   }
 
@@ -79,7 +80,8 @@ public class GovernanceRequest {
     this.headers = temp;
   }
 
-  public String getUri() {
+  @Override
+  public String uri() {
     return uri;
   }
 
@@ -87,7 +89,8 @@ public class GovernanceRequest {
     this.uri = uri;
   }
 
-  public String getMethod() {
+  @Override
+  public String method() {
     return method;
   }
 
@@ -95,8 +98,8 @@ public class GovernanceRequest {
     this.method = method;
   }
 
-
-  public String getInstanceId() {
+  @Override
+  public String instanceId() {
     return instanceId;
   }
 
@@ -104,7 +107,8 @@ public class GovernanceRequest {
     this.instanceId = instanceId;
   }
 
-  public String getServiceName() {
+  @Override
+  public String serviceName() {
     return serviceName;
   }
 
@@ -112,7 +116,8 @@ public class GovernanceRequest {
     this.serviceName = serviceName;
   }
 
-  public Object getSourceRequest() {
+  @Override
+  public Object sourceRequest() {
     return sourceRequest;
   }
 
