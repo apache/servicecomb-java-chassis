@@ -94,7 +94,7 @@ public class RequestProcessor implements ApplicationContextAware {
     if (matcher.getApiPath() == null) {
       return true;
     }
-    return operatorMatch(request.uri(), matcher.getApiPath());
+    return operatorMatch(request.apiPath(), matcher.getApiPath());
   }
 
   private boolean methodMatch(GovernanceRequestExtractor request, Matcher matcher) {

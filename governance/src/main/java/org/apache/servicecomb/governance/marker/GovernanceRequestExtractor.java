@@ -17,7 +17,7 @@
 package org.apache.servicecomb.governance.marker;
 
 public interface GovernanceRequestExtractor {
-  String uri();
+  String apiPath();
 
   String method();
 

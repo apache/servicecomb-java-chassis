@@ -43,7 +43,7 @@ public class MapperTest {
   @Test
   public void test_mapper_work() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/mapper/v1");
+    request.setApiPath("/mapper/v1");
     Mapper mapper = mapperHandler.getActuator(request);
     Assertions.assertEquals(2, mapper.target().size());
     Assertions.assertEquals("127.0.0.1", mapper.target().get("host"));
@@ -53,7 +53,7 @@ public class MapperTest {
   @Test
   public void test_mapper2_work() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/mapper/v1");
+    request.setApiPath("/mapper/v1");
     Mapper mapper = mapperHandler2.getActuator(request);
     Assertions.assertEquals(2, mapper.target().size());
     Assertions.assertEquals("127.0.0.1", mapper.target().get("host"));

@@ -42,7 +42,7 @@ public class TimeLimiterHandlerTest {
   @Test
   public void testMatchPriorityPolicy() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/timeLimiter");
+    request.setApiPath("/timeLimiter");
     TimeLimiterPolicy policy = timeLimiterHandler.matchPolicy(request);
     Assertions.assertEquals("demo-timeLimiter", policy.getName());
     TimeLimiter timeLimiter = timeLimiterHandler.getActuator(request);

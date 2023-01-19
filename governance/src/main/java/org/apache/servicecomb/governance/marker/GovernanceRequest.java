@@ -29,11 +29,11 @@ public class GovernanceRequest implements GovernanceRequestExtractor {
   private Map<String, String> headers;
 
   /**
-   * uri with this request, maybe null.
+   * api path with this request, maybe null. For REST, e.g. /foo/bar; For RPC, e.g. MySchema.sayHello
    * For provider: uri indicates the request uri to me.
    * For consumer: uri indicates the request uri to the target.
    */
-  private String uri;
+  private String apiPath;
 
   /**
    * method with this request, maybe null.
@@ -81,12 +81,12 @@ public class GovernanceRequest implements GovernanceRequestExtractor {
   }
 
   @Override
-  public String uri() {
-    return uri;
+  public String apiPath() {
+    return apiPath;
   }
 
-  public void setUri(String uri) {
-    this.uri = uri;
+  public void setApiPath(String apiPath) {
+    this.apiPath = apiPath;
   }
 
   @Override

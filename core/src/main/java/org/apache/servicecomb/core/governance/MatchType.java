@@ -31,7 +31,7 @@ public final class MatchType {
     }
 
     @Override
-    public String uri() {
+    public String apiPath() {
       if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
         if (invocation.isConsumer()) {
           return concatAbsolutePath(invocation.getSchemaMeta().getSwagger().getBasePath(),
@@ -42,7 +42,11 @@ public final class MatchType {
           return invocation.getRequestEx().getRequestURI();
         }
       }
-      return invocation.getOperationMeta().getMicroserviceQualifiedName();
+
+      if (invocation.isConsumer()) {
+        return invocation.getOperationMeta().getMicroserviceQualifiedName();
+      }
+      return invocation.getOperationMeta().getSchemaQualifiedName();
     }
 
     @Override
