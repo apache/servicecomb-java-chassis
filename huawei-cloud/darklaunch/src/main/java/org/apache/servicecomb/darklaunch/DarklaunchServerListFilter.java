@@ -30,7 +30,6 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public class DarklaunchServerListFilter implements ServerListFilterExt {
-  private static final String POLICY_CSE = "cse.darklaunch.policy.%s";
 
   private static final String POLICY_SERVICE_COMB = "servicecomb.darklaunch.policy.%s";
 
@@ -56,10 +55,6 @@ public class DarklaunchServerListFilter implements ServerListFilterExt {
     DynamicStringProperty ruleStr = DynamicPropertyFactory.getInstance().getStringProperty(
         String.format(POLICY_SERVICE_COMB, invocation.getMicroserviceName()), null
     );
-    if (ruleStr == null) {
-      ruleStr = DynamicPropertyFactory.getInstance().getStringProperty(
-          String.format(POLICY_CSE, invocation.getMicroserviceName()), null);
-    }
     DarklaunchRule rule = DarklaunchRule.parse(ruleStr.get());
     if (rule == null) {
       return serverList;

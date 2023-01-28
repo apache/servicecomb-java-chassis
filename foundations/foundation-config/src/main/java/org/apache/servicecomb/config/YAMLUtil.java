@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.config;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_CSE_PREFIX;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
-
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -112,10 +109,6 @@ public final class YAMLUtil {
         result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
       } else {
         String key = prefix + entry.getKey();
-        if (key.startsWith(CONFIG_CSE_PREFIX)) {
-          String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
-          result.put(servicecombKey, entry.getValue());
-        }
         result.put(key, entry.getValue());
       }
     }
