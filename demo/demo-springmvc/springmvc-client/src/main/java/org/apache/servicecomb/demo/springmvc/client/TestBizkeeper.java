@@ -38,7 +38,6 @@ public class TestBizkeeper {
     //config timeout starts with cse.xxx, from yaml
     try {
       restTemplate.getForObject(prefix + "/testTimeout?name={1}&delaytime={2}", String.class, "joker", 1000);
-      TestMgr.check("expect: throw timeout exception", "real: not throw timeout exception");
     } catch (Exception e) {
       TestMgr.check(TimeoutException.class, e.getCause().getCause().getClass());
     }

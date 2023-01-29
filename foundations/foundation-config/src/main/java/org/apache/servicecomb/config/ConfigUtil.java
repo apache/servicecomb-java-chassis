@@ -17,9 +17,7 @@
 
 package org.apache.servicecomb.config;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_CSE_PREFIX;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,7 +31,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
@@ -175,32 +172,9 @@ public final class ConfigUtil {
     return source;
   }
 
-  // inject a copy of servicecomb.xxx for cse.xxx
-  @VisibleForTesting
-  static void duplicateCseConfigToServicecomb(AbstractConfiguration source) {
-    Iterator<String> keys = source.getKeys();
-    while (keys.hasNext()) {
-      String key = keys.next();
-      if (!key.startsWith(CONFIG_CSE_PREFIX)) {
-        continue;
-      }
-
-      String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
-      if (!source.containsKey(servicecombKey)) {
-        source.addProperty(servicecombKey, source.getProperty(key));
-      } else {
-        LOGGER
-            .warn(
-                "Key {} with an ambiguous item {} exists, it's recommended to use only one of them.",
-                key, servicecombKey);
-      }
-    }
-  }
-
   private static void duplicateCseConfigToServicecomb(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
-    duplicateCseConfigToServicecomb(source);
 
     compositeConfiguration.addConfiguration(source, sourceName);
   }
@@ -208,7 +182,6 @@ public final class ConfigUtil {
   private static void duplicateCseConfigToServicecombAtFront(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
-    duplicateCseConfigToServicecomb(source);
 
     compositeConfiguration.addConfigurationAtFront(source, sourceName);
   }
@@ -236,7 +209,6 @@ public final class ConfigUtil {
 
     DynamicWatchedConfigurationExt configFromConfigCenter =
         new DynamicWatchedConfigurationExt(configCenterConfigurationSource);
-    duplicateCseConfigToServicecomb(configFromConfigCenter);
     localConfiguration.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
   }
 
@@ -289,37 +261,6 @@ public final class ConfigUtil {
 
     @Override
     public void updateConfiguration(WatchedUpdateResult watchedUpdateResult) {
-      Map<String, Object> adds = watchedUpdateResult.getAdded();
-      if (adds != null) {
-        for (Map.Entry<String, Object> entry : adds.entrySet()) {
-          String add = entry.getKey();
-          if (add.startsWith(CONFIG_CSE_PREFIX)) {
-            String key = CONFIG_SERVICECOMB_PREFIX + add.substring(add.indexOf(".") + 1);
-            injectConfig.addProperty(key, entry.getValue());
-          }
-        }
-      }
-
-      Map<String, Object> deletes = watchedUpdateResult.getDeleted();
-      if (deletes != null) {
-        for (String delete : deletes.keySet()) {
-          if (delete.startsWith(CONFIG_CSE_PREFIX)) {
-            injectConfig.clearProperty(CONFIG_SERVICECOMB_PREFIX + delete.substring(delete.indexOf(".") + 1));
-          }
-        }
-      }
-
-      Map<String, Object> changes = watchedUpdateResult.getChanged();
-      if (changes != null) {
-        for (Map.Entry<String, Object> entry : changes.entrySet()) {
-          String change = entry.getKey();
-          if (change.startsWith(CONFIG_CSE_PREFIX)) {
-            String key = CONFIG_SERVICECOMB_PREFIX + change.substring(change.indexOf(".") + 1);
-            injectConfig.setProperty(key, entry.getValue());
-          }
-        }
-      }
-
       EventManager.post(new DynamicConfigurationChangedEvent(watchedUpdateResult));
     }
   }

@@ -362,12 +362,8 @@ public class SpringmvcClient {
     // and the expected value is not quite determined. But will not get wrong value like 'older,newer' or 'newer,older'
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate2", "wrong").get(),
         "newer");
-    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate2", "wrong").get(),
-        "newer");
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate1", "wrong").get(),
         "older");
-    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
-        "newer");
   }
 
   private static void testRequiredBody(RestTemplate template, String microserviceName) {
