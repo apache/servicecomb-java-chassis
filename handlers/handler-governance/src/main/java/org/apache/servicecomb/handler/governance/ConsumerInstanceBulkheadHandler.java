@@ -26,7 +26,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.InstanceBulkheadHandler;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -52,9 +52,7 @@ public class ConsumerInstanceBulkheadHandler implements Handler {
     }
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
-    request.setServiceName(invocation.getMicroserviceName());
-    request.setInstanceId(invocation.getEndpoint().getMicroserviceInstance().getInstanceId());
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     addBulkhead(dcs, request);
 
@@ -76,7 +74,7 @@ public class ConsumerInstanceBulkheadHandler implements Handler {
     });
   }
 
-  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
+  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
     Bulkhead bulkhead = instanceBulkheadHandler.getActuator(request);
     if (bulkhead != null) {
       dcs.withBulkhead(bulkhead);

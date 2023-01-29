@@ -52,6 +52,7 @@ public class Multicast {
 
   private final DatagramPacket recvPacket = new DatagramPacket(recvBuffer, recvBuffer.length);
 
+  @SuppressWarnings("deprecation")
   public Multicast(Config config) throws IOException {
     this.bindAddress = initBindAddress(config);
     this.group = initGroup(config);

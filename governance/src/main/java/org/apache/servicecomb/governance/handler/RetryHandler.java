@@ -19,7 +19,7 @@ package org.apache.servicecomb.governance.handler;
 import java.time.Duration;
 
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.RetryPolicy;
 import org.apache.servicecomb.governance.properties.RetryProperties;
 import org.apache.servicecomb.governance.utils.GovernanceUtils;
@@ -47,17 +47,18 @@ public class RetryHandler extends AbstractGovernanceHandler<Retry, RetryPolicy> 
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, RetryPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, RetryPolicy policy) {
     return this.retryProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public RetryPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, retryProperties.getParsedEntity());
+  public RetryPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, retryProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<Retry> createProcessor(String key, GovernanceRequest governanceRequest, RetryPolicy policy) {
+  public Disposable<Retry> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
+      RetryPolicy policy) {
     return getRetry(key, policy);
   }
 

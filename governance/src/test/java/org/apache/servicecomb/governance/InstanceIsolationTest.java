@@ -69,7 +69,7 @@ public class InstanceIsolationTest {
     GovernanceRequest request = new GovernanceRequest();
     request.setInstanceId("instance01");
     request.setServiceName("service01");
-    request.setUri("/test");
+    request.setApiPath("/test");
 
     CircuitBreaker circuitBreaker = instanceIsolationHandler.getActuator(request);
     ds.withCircuitBreaker(circuitBreaker);
@@ -89,7 +89,7 @@ public class InstanceIsolationTest {
     GovernanceRequest request2 = new GovernanceRequest();
     request2.setInstanceId("instance02");
     request2.setServiceName("service01");
-    request2.setUri("/test");
+    request2.setApiPath("/test");
 
     CircuitBreaker circuitBreaker2 = instanceIsolationHandler.getActuator(request2);
     ds2.withCircuitBreaker(circuitBreaker2);

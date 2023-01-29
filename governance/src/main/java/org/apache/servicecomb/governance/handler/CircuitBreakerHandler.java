@@ -19,7 +19,7 @@ package org.apache.servicecomb.governance.handler;
 import java.time.Duration;
 
 import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.slf4j.Logger;
@@ -45,17 +45,17 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, CircuitBreakerPolicy policy) {
     return this.circuitBreakerProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public CircuitBreakerPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, circuitBreakerProperties.getParsedEntity());
+  public CircuitBreakerPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, circuitBreakerProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<CircuitBreaker> createProcessor(String key, GovernanceRequest governanceRequest,
+  public Disposable<CircuitBreaker> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       CircuitBreakerPolicy policy) {
     return getCircuitBreaker(key, policy);
   }
