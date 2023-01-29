@@ -75,7 +75,7 @@
     <maven-model.version>3.8.7</maven-model.version>
     <micrometer.version>1.10.2</micrometer.version>
     <mockito.version>5.0.0</mockito.version>
-    <mock-server.version>5.14.0</mock-server.version>
+    <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.2.0</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.87.Final</netty.version>
