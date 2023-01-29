@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.governance.handler;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.LoadBalancerPolicy;
 import org.apache.servicecomb.governance.processor.loadbanlance.LoadBalance;
 import org.apache.servicecomb.governance.properties.LoadBalanceProperties;
@@ -31,17 +31,17 @@ public class LoadBalanceHandler extends AbstractGovernanceHandler<LoadBalance, L
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, LoadBalancerPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, LoadBalancerPolicy policy) {
     return this.loadBalanceProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public LoadBalancerPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, loadBalanceProperties.getParsedEntity());
+  public LoadBalancerPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, loadBalanceProperties.getParsedEntity());
   }
 
   @Override
-  protected DisposableHolder<LoadBalance> createProcessor(String key, GovernanceRequest governanceRequest,
+  protected DisposableHolder<LoadBalance> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       LoadBalancerPolicy policy) {
     return new DisposableHolder<>(key, LoadBalance.getLoadBalance(key, policy));
   }

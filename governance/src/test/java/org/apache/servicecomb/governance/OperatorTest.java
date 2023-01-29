@@ -46,7 +46,7 @@ public class OperatorTest {
   @Test
   public void test_unknown_operator() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/test");
+    request.setApiPath("/test");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("unknown", "/test");
@@ -57,7 +57,7 @@ public class OperatorTest {
   @Test
   public void test_exact_api_path_match() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead");
+    request.setApiPath("/bulkhead");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("exact", "/bulkhead");
@@ -68,7 +68,7 @@ public class OperatorTest {
   @Test
   public void test_prefix_api_path_match() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead/hello");
+    request.setApiPath("/bulkhead/hello");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("prefix", "/bulkhead");
@@ -79,7 +79,7 @@ public class OperatorTest {
   @Test
   public void test_prefix_api_path_not_match_null() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead/hello");
+    request.setApiPath("/bulkhead/hello");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("prefix", null);
@@ -90,7 +90,7 @@ public class OperatorTest {
   @Test
   public void test_suffix_api_path_match() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/api/bulkhead");
+    request.setApiPath("/api/bulkhead");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("suffix", "/bulkhead");
@@ -101,7 +101,7 @@ public class OperatorTest {
   @Test
   public void test_suffix_api_path_not_match_null() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/api/bulkhead");
+    request.setApiPath("/api/bulkhead");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("suffix", null);
@@ -112,18 +112,18 @@ public class OperatorTest {
   @Test
   public void test_exact_api_path_not_match() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead/");
+    request.setApiPath("/bulkhead/");
     Matcher matcher = new Matcher();
     RawOperator apiPath = new RawOperator();
     apiPath.put("exact", "/bulkhead");
     matcher.setApiPath(apiPath);
     Assertions.assertFalse(requestProcessor.match(request, matcher));
 
-    request.setUri("/bulkhead");
-    request.setUri(null);
+    request.setApiPath("/bulkhead");
+    request.setApiPath(null);
     Assertions.assertFalse(requestProcessor.match(request, matcher));
 
-    request.setUri("/bulkhead");
+    request.setApiPath("/bulkhead");
     apiPath.clear();
     matcher.setApiPath(apiPath);
     Assertions.assertFalse(requestProcessor.match(request, matcher));
@@ -132,7 +132,7 @@ public class OperatorTest {
   @Test
   public void test_exact_api_path_match_header_match() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead");
+    request.setApiPath("/bulkhead");
     request.setMethod("GET");
     Map<String, String> reqHeaders = new HashMap<>();
     reqHeaders.put("header1", "value1");
@@ -153,7 +153,7 @@ public class OperatorTest {
   @Test
   public void test_exact_api_path_match_header_not_match() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead");
+    request.setApiPath("/bulkhead");
     request.setMethod("GET");
     Map<String, String> reqHeaders = new HashMap<>();
     reqHeaders.put("header1", "value2");

@@ -39,7 +39,7 @@ public class BulkheadHandlerTest {
   @Test
   public void testMatchPriorityPolicy() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead");
+    request.setApiPath("/bulkhead");
     BulkheadPolicy policy = bulkheadHandler.matchPolicy(request);
     Assertions.assertEquals("demo-bulkhead-priority", policy.getName());
   }

@@ -16,14 +16,14 @@
  */
 package org.apache.servicecomb.governance.handler;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import java.time.Duration;
+
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.GovernanceCachePolicy;
 import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
 import org.apache.servicecomb.governance.service.GovernanceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Duration;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -39,17 +39,17 @@ public class GovernanceCacheHandler<K, V>
   }
 
   @Override
-  public GovernanceCachePolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, cacheProperties.getParsedEntity());
+  public GovernanceCachePolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, cacheProperties.getParsedEntity());
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, GovernanceCachePolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, GovernanceCachePolicy policy) {
     return cacheProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  protected Disposable<GovernanceCache<K, V>> createProcessor(String key, GovernanceRequest governanceRequest,
+  protected Disposable<GovernanceCache<K, V>> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       GovernanceCachePolicy policy) {
     return getGovernanceCache(key, policy);
   }

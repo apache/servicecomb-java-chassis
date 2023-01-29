@@ -57,7 +57,7 @@ public class FaultInjectionTest {
         FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/faultInjectDelay");
+    request.setApiPath("/faultInjectDelay");
     request.setServiceName("srcService");
 
     Fault fault = faultInjectionHandler.getActuator(request);
@@ -99,7 +99,7 @@ public class FaultInjectionTest {
         FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/faultInjectAbort");
+    request.setApiPath("/faultInjectAbort");
     request.setServiceName("srcService");
 
     Fault fault = faultInjectionHandler.getActuator(request);
@@ -137,7 +137,7 @@ public class FaultInjectionTest {
         FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/returnNull");
+    request.setApiPath("/returnNull");
     request.setServiceName("returnNull");
 
     Fault fault = faultInjectionHandler.getActuator(request);
@@ -151,7 +151,7 @@ public class FaultInjectionTest {
         FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/throwException");
+    request.setApiPath("/throwException");
     request.setServiceName("ThrowException");
 
     Fault fault = faultInjectionHandler.getActuator(request);
@@ -173,7 +173,7 @@ public class FaultInjectionTest {
         FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/forceClosed");
+    request.setApiPath("/forceClosed");
     request.setServiceName("forceClosed");
 
     Fault fault = faultInjectionHandler.getActuator(request);
@@ -187,7 +187,7 @@ public class FaultInjectionTest {
         FaultInjectionDecorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/throwException");
+    request.setApiPath("/throwException");
     request.setServiceName("ThrowException");
 
     Fault fault = faultInjectionHandler2.getActuator(request);

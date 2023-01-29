@@ -18,7 +18,7 @@ package org.apache.servicecomb.governance.handler;
 
 import java.time.Duration;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.RateLimitingPolicy;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.slf4j.Logger;
@@ -40,17 +40,17 @@ public class RateLimitingHandler extends AbstractGovernanceHandler<RateLimiter, 
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, RateLimitingPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, RateLimitingPolicy policy) {
     return this.rateLimitProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public RateLimitingPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, rateLimitProperties.getParsedEntity());
+  public RateLimitingPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, rateLimitProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<RateLimiter> createProcessor(String key, GovernanceRequest governanceRequest,
+  public Disposable<RateLimiter> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       RateLimitingPolicy policy) {
     return getRateLimiter(key, policy);
   }
