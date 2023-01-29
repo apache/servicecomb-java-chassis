@@ -39,7 +39,7 @@ public class TrafficMarker extends Configurable {
     this.matches = matches;
   }
 
-  public boolean checkMatch(GovernanceRequest governanceRequest, RequestProcessor requestProcessor) {
-    return this.matches.stream().anyMatch(match -> requestProcessor.match(governanceRequest, match));
+  public boolean checkMatch(GovernanceRequestExtractor extractor, RequestProcessor requestProcessor) {
+    return this.matches.stream().anyMatch(match -> requestProcessor.match(extractor, match));
   }
 }

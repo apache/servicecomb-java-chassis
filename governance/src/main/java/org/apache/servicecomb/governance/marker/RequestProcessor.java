@@ -34,12 +34,14 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * Request Processor checks if a request matches a configuration.
  */
-public class RequestProcessor implements ApplicationContextAware{
+public class RequestProcessor implements ApplicationContextAware {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RequestProcessor.class);
 
   public static final String errorMessageForNotImplements = " didn't implement interface org.apache.servicecomb.governance.utils.CustomMatch";
+
   public static final String errorMessageForAbstractClass = " should be a instantiable class rather than abstract class or other else";
+
   public static final String infoMessageForCreatingClass = "is not in spring container, create one and register it to spring container";
 
   private static final String OPERATOR_SUFFIX = "Operator";
@@ -52,7 +54,7 @@ public class RequestProcessor implements ApplicationContextAware{
     this.operatorMap = operatorMap;
   }
 
-  public boolean match(GovernanceRequest request, Matcher matcher) {
+  public boolean match(GovernanceRequestExtractor request, Matcher matcher) {
     if (!methodMatch(request, matcher)) {
       return false;
     }
@@ -68,38 +70,38 @@ public class RequestProcessor implements ApplicationContextAware{
     return customMatch(request, matcher);
   }
 
-  private boolean serviceNameMatch(GovernanceRequest request, Matcher matcher) {
+  private boolean serviceNameMatch(GovernanceRequestExtractor request, Matcher matcher) {
     if (matcher.getServiceName() == null) {
       return true;
     }
-    return matcher.getServiceName().equals(request.getServiceName());
+    return matcher.getServiceName().equals(request.serviceName());
   }
 
-  private boolean headersMatch(GovernanceRequest request, Matcher matcher) {
+  private boolean headersMatch(GovernanceRequestExtractor request, Matcher matcher) {
     if (matcher.getHeaders() == null) {
       return true;
     }
     for (Entry<String, RawOperator> entry : matcher.getHeaders().entrySet()) {
-      if (request.getHeader(entry.getKey()) == null ||
-          !operatorMatch(request.getHeader(entry.getKey()), entry.getValue())) {
+      if (request.header(entry.getKey()) == null ||
+          !operatorMatch(request.header(entry.getKey()), entry.getValue())) {
         return false;
       }
     }
     return true;
   }
 
-  private boolean apiPathMatch(GovernanceRequest request, Matcher matcher) {
+  private boolean apiPathMatch(GovernanceRequestExtractor request, Matcher matcher) {
     if (matcher.getApiPath() == null) {
       return true;
     }
-    return operatorMatch(request.getUri(), matcher.getApiPath());
+    return operatorMatch(request.apiPath(), matcher.getApiPath());
   }
 
-  private boolean methodMatch(GovernanceRequest request, Matcher matcher) {
+  private boolean methodMatch(GovernanceRequestExtractor request, Matcher matcher) {
     if (matcher.getMethod() == null) {
       return true;
     }
-    return matcher.getMethod().contains(request.getMethod());
+    return matcher.getMethod().contains(request.method());
   }
 
   private boolean operatorMatch(String str, RawOperator rawOperator) {
@@ -120,7 +122,7 @@ public class RequestProcessor implements ApplicationContextAware{
     return true;
   }
 
-  private boolean customMatch(GovernanceRequest request, Matcher matcher) {
+  private boolean customMatch(GovernanceRequestExtractor request, Matcher matcher) {
     if (matcher.getCustomMatcher() == null) {
       return true;
     }
@@ -172,8 +174,8 @@ public class RequestProcessor implements ApplicationContextAware{
     BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
     registry.registerBeanDefinition(customMatcherHandler, builder.getBeanDefinition());
     try {
-      extractObject  = (CustomMatch) applicationContext.getBean(customMatcherHandler);
-      return  extractObject;
+      extractObject = (CustomMatch) applicationContext.getBean(customMatcherHandler);
+      return extractObject;
     } catch (BeansException e) {
       LOGGER.error(e.getMessage(), e);
       throw new RuntimeException(customMatcherHandler + errorMessageForAbstractClass, e);

@@ -49,7 +49,7 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.apache.servicecomb.governance.handler.ext.FailurePredictor;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -190,7 +190,7 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static Response innerSyncInvoke(Invocation invocation) {
-    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     return decorateSyncRetry(invocation, request);
   }
@@ -245,7 +245,7 @@ public final class InvokerUtils {
         new RetryContext(GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName())));
   }
 
-  private static Response decorateSyncRetry(Invocation invocation, GovernanceRequest request) {
+  private static Response decorateSyncRetry(Invocation invocation, GovernanceRequestExtractor request) {
     try {
       // governance implementations.
       RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
@@ -306,7 +306,7 @@ public final class InvokerUtils {
 
     Supplier<CompletionStage<Response>> next = reactiveInvokeImpl(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     decorateReactiveRetry(invocation, dcs, request);
 
@@ -327,7 +327,7 @@ public final class InvokerUtils {
   }
 
   private static void decorateReactiveRetry(Invocation invocation, DecorateCompletionStage<Response> dcs,
-      GovernanceRequest request) {
+      GovernanceRequestExtractor request) {
     // governance implementations.
     RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
     Retry retry = retryHandler.getActuator(request);
@@ -402,7 +402,7 @@ public final class InvokerUtils {
   public static CompletableFuture<Response> invoke(Invocation invocation) {
     Supplier<CompletionStage<Response>> next = invokeImpl(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     decorateReactiveRetry(invocation, dcs, request);
 

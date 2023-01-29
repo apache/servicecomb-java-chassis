@@ -26,7 +26,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.registry.api.MicroserviceKey;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
@@ -55,9 +55,7 @@ public class ConsumerInstanceIsolationHandler implements Handler {
     }
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequest request = MatchType.createGovHttpRequest(invocation);
-    request.setServiceName(invocation.getMicroserviceName());
-    request.setInstanceId(invocation.getEndpoint().getMicroserviceInstance().getInstanceId());
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     addCircuitBreaker(dcs, request);
 
@@ -89,7 +87,7 @@ public class ConsumerInstanceIsolationHandler implements Handler {
     return event;
   }
 
-  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequest request) {
+  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
     CircuitBreaker circuitBreaker = instanceIsolationHandler.getActuator(request);
     if (circuitBreaker != null) {
       dcs.withCircuitBreaker(circuitBreaker);

@@ -52,7 +52,7 @@ public class FlowControlTest {
     DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/hello");
+    request.setApiPath("/hello");
 
     RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);
     ds.withRateLimiter(rateLimiter);
@@ -90,7 +90,7 @@ public class FlowControlTest {
     DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/helloServiceName");
+    request.setApiPath("/helloServiceName");
     request.setServiceName("srcService");
 
     RateLimiter rateLimiter = rateLimitingHandler.getActuator(request);

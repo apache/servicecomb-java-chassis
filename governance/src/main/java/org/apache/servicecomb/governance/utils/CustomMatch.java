@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.governance.utils;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 
 public interface CustomMatch {
-    boolean matchRequest(GovernanceRequest request, String parameters);
+  boolean matchRequest(GovernanceRequestExtractor requestExtractor, String parameters);
 }

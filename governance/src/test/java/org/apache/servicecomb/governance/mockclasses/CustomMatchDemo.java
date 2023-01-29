@@ -17,17 +17,17 @@
 
 package org.apache.servicecomb.governance.mockclasses;
 
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.utils.CustomMatch;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
 
 public class CustomMatchDemo implements CustomMatch {
 
-    private CustomMatchDemo() {
+  private CustomMatchDemo() {
 
-    }
+  }
 
-    @Override
-    public boolean matchRequest(GovernanceRequest request, String parameters) {
-        return true;
-    }
+  @Override
+  public boolean matchRequest(GovernanceRequestExtractor requestExtractor, String parameters) {
+    return true;
+  }
 }
