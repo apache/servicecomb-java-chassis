@@ -18,11 +18,9 @@
 package org.apache.servicecomb.demo.edge.business;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class BusinessMain_V1_1_0 {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
   }
 }

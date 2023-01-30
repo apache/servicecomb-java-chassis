@@ -20,7 +20,6 @@ package org.apache.servicecomb.demo.filter;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,6 @@ public class FilterClient {
 
   public static void main(String[] args) throws Exception {
     try {
-      Log4jUtils.init();
       BeanUtils.init();
 
       run();

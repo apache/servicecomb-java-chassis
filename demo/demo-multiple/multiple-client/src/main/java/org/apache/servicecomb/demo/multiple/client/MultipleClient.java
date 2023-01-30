@@ -20,11 +20,9 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.multiple.a.client.AClient;
 import org.apache.servicecomb.demo.multiple.b.client.BClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class MultipleClient {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
 
     AClient aClient = BeanUtils.getContext().getBean(AClient.class);
