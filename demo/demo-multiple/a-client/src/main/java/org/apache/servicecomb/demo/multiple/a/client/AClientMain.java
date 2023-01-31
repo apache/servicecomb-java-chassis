@@ -19,11 +19,9 @@ package org.apache.servicecomb.demo.multiple.a.client;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class AClientMain {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
 
     AClient client = BeanUtils.getContext().getBean(AClient.class);

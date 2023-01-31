@@ -30,7 +30,6 @@ import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringmvc;
 import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
@@ -64,7 +63,6 @@ public class SpringmvcClient {
 
   public static void main(String[] args) throws Exception {
     try {
-      Log4jUtils.init();
       BeanUtils.init();
 
       run();

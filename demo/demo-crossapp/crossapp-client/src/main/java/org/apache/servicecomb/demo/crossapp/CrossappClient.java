@@ -23,7 +23,6 @@ import java.util.TreeSet;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -41,7 +40,6 @@ public class CrossappClient {
 
   public static void main(String[] args) throws Exception {
     System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-    Log4jUtils.init();
     BeanUtils.init();
 
     run();

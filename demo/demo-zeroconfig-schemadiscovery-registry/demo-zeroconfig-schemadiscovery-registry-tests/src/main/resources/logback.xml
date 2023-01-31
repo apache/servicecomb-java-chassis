@@ -17,27 +17,7 @@
   -->
 
 <configuration scan="true">
-  <appender name="STDOUT-TRACING" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- If applicable, can use ch.qos.logback.classic.filter.MarkerFilter -->
-    <filter class="org.apache.servicecomb.foundation.logback.MarkerFilter">
-      <Marker>SERVICECOMB_MARKER</Marker>
-      <OnMismatch>DENY</OnMismatch>
-      <OnMatch>ACCEPT</OnMatch>
-    </filter>
-
-    <encoder>
-      <pattern>%d [%level] [%thread][%X{SERVICECOMB_TRACE_ID}] - %msg (%F:%L\)%n</pattern>
-    </encoder>
-  </appender>
-
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- If applicable, can use ch.qos.logback.classic.filter.MarkerFilter -->
-    <filter class="org.apache.servicecomb.foundation.logback.MarkerFilter">
-      <Marker>SERVICECOMB_MARKER</Marker>
-      <OnMismatch>ACCEPT</OnMismatch>
-      <OnMatch>DENY</OnMatch>
-    </filter>
-
     <encoder>
       <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
     </encoder>
@@ -45,6 +25,5 @@
 
   <root level="info">
     <appender-ref ref="STDOUT"/>
-    <appender-ref ref="STDOUT-TRACING"/>
   </root>
 </configuration>

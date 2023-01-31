@@ -38,7 +38,6 @@ import org.apache.servicecomb.demo.smartcare.Application;
 import org.apache.servicecomb.demo.smartcare.Group;
 import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
@@ -76,7 +75,6 @@ public class PojoClient {
   }
 
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
 
     try {
