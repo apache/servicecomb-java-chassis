@@ -17,105 +17,23 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public final class BeanUtils {
-  private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
-
   public static final String DEFAULT_BEAN_CORE_RESOURCE = "classpath*:META-INF/spring/scb-core-bean.xml";
 
   public static final String DEFAULT_BEAN_NORMAL_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
 
-  public static final String[] DEFAULT_BEAN_RESOURCE = new String[] {DEFAULT_BEAN_CORE_RESOURCE
-      , DEFAULT_BEAN_NORMAL_RESOURCE};
-
-  public static final String SCB_SCAN_PACKAGE = "scb-scan-package";
-
-  private static final String SCB_PACKAGE = "org.apache.servicecomb";
-
   private static ApplicationContext context;
 
   private BeanUtils() {
-  }
-
-  public static void init() {
-    init(DEFAULT_BEAN_RESOURCE);
-  }
-
-  public static void init(String... configLocations) {
-    prepareServiceCombScanPackage();
-
-    Set<String> locationSet = new LinkedHashSet<>();
-    addBeanLocation(locationSet, DEFAULT_BEAN_RESOURCE);
-    addBeanLocation(locationSet, configLocations);
-    context = new ClassPathXmlApplicationContext(locationSet.toArray(new String[0]));
-  }
-
-  public static void addBeanLocation(Set<String> locationSet, String... location) {
-    Arrays.stream(location).forEach(loc -> addBeanLocation(locationSet, loc));
-  }
-
-  public static void addBeanLocation(Set<String> locationSet, String location) {
-    if (location == null) {
-      return;
-    }
-
-    location = location.trim();
-    if (StringUtils.isNotEmpty(location)) {
-      locationSet.add(location);
-    }
-  }
-
-  private static void addItem(Set<String> set, String item) {
-    for (String it : set) {
-      if (item.startsWith(it)) {
-        return;
-      }
-    }
-    set.add(item);
-  }
-
-  public static void prepareServiceCombScanPackage() {
-    Set<String> scanPackages = new LinkedHashSet<>();
-    // add exists settings
-    String exists = System.getProperty(SCB_SCAN_PACKAGE);
-    if (exists != null) {
-      for (String exist : exists.trim().split(",")) {
-        if (!exist.isEmpty()) {
-          addItem(scanPackages, exist.trim());
-        }
-      }
-    }
-
-    // ensure servicecomb package exist
-    addItem(scanPackages, SCB_PACKAGE);
-
-    // add main class package
-    for (Class<?> mainClass : new Class<?>[] {JvmUtils.findMainClass(), JvmUtils.findMainClassByStackTrace()}) {
-      if (mainClass != null && mainClass.getPackage() != null) {
-        String pkg = mainClass.getPackage().getName();
-        addItem(scanPackages, pkg);
-      }
-    }
-
-    // finish
-    String scbScanPackages = StringUtils.join(scanPackages, ",");
-    System.setProperty(SCB_SCAN_PACKAGE, scbScanPackages);
-    LOGGER.info("Scb scan package list: " + scbScanPackages);
   }
 
   public static ApplicationContext getContext() {

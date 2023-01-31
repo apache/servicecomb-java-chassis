@@ -41,14 +41,16 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
-@Component
+@EnableServiceComb
 public class PojoClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
@@ -75,7 +77,7 @@ public class PojoClient {
   }
 
   public static void main(String[] args) throws Exception {
-    BeanUtils.init();
+    new SpringApplicationBuilder(PojoClient.class).web(WebApplicationType.NONE).run(args);
 
     try {
       run();

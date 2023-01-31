@@ -19,10 +19,14 @@ package org.apache.servicecomb.demo.multiple.b.client;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class BClientMain {
   public static void main(String[] args) throws Exception {
-    BeanUtils.init();
+    new SpringApplicationBuilder(BClientMain.class).web(WebApplicationType.NONE).run(args);
 
     BClient client = BeanUtils.getContext().getBean(BClient.class);
     client.run();

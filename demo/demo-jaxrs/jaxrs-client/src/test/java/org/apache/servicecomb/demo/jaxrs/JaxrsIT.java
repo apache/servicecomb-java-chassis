@@ -21,7 +21,12 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = JaxrsClient.class)
 public class JaxrsIT {
 
   @BeforeEach
@@ -31,7 +36,7 @@ public class JaxrsIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    JaxrsClient.main(new String[0]);
+    JaxrsClient.run();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

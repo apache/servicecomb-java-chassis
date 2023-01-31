@@ -45,7 +45,7 @@
       <artifactId>demo-schema</artifactId>
     </dependency>
   </dependencies>
-
+  
   <profiles>
     <profile>
       <id>docker</id>

@@ -40,7 +40,7 @@
   <properties>
     <demo.main>org.apache.servicecomb.demo.multiple.client.MultipleClient</demo.main>
   </properties>
-
+  
   <profiles>
     <profile>
       <id>docker</id>

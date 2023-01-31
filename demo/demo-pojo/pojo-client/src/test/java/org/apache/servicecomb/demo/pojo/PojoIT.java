@@ -22,7 +22,12 @@ import org.apache.servicecomb.demo.pojo.client.PojoClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = PojoClient.class)
 public class PojoIT {
 
   @BeforeEach
@@ -32,7 +37,7 @@ public class PojoIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    PojoClient.main(new String[0]);
+    PojoClient.run();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

@@ -22,7 +22,12 @@ import org.apache.servicecomb.demo.filter.FilterClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = FilterClient.class)
 public class FilterClientIT {
 
   @BeforeEach
@@ -32,7 +37,7 @@ public class FilterClientIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    FilterClient.main(new String[0]);
+    FilterClient.run();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

@@ -19,16 +19,19 @@ package org.apache.servicecomb.demo.filter;
 
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class FilterClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(FilterClient.class);
 
   public static void main(String[] args) throws Exception {
     try {
-      BeanUtils.init();
+      new SpringApplicationBuilder(FilterClient.class).web(WebApplicationType.NONE).run(args);
 
       run();
     } catch (Throwable e) {

@@ -17,10 +17,13 @@
 
 package org.apache.servicecomb.demo.pojo.server;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class PojoServer {
   public static void main(String[] args) throws Exception {
-    BeanUtils.init();
+    new SpringApplicationBuilder(PojoServer.class).web(WebApplicationType.NONE).run(args);
   }
 }

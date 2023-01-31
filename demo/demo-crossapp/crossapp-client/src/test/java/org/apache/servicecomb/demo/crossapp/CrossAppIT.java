@@ -21,7 +21,12 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = CrossappClient.class)
 public class CrossAppIT {
 
   @BeforeEach
@@ -31,7 +36,7 @@ public class CrossAppIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    CrossappClient.main(new String[0]);
+    CrossappClient.run();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

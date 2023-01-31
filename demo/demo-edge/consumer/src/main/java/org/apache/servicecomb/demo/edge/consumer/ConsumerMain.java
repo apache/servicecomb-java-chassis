@@ -20,12 +20,19 @@ package org.apache.servicecomb.demo.edge.consumer;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class ConsumerMain {
   public static void main(String[] args) throws Exception {
-    BeanUtils.init();
+    new SpringApplicationBuilder(ConsumerMain.class).web(WebApplicationType.NONE).run(args);
 
+    runTest();
+  }
+
+  public static void runTest() throws Exception {
     new Consumer().testEncrypt();
     new Consumer().invokeBusiness("cse://business/business/v1", new ChannelRequestBase());
 

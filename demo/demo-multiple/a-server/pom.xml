@@ -31,4 +31,5 @@
   <properties>
     <demo.main>org.apache.servicecomb.demo.multiple.a.server.AServerMain</demo.main>
   </properties>
+
 </project>

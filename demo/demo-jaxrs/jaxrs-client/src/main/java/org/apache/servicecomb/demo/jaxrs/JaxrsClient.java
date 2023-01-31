@@ -36,13 +36,15 @@ import org.apache.servicecomb.demo.jaxrs.client.CodeFirstRestTemplateJaxrs;
 import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceClient;
 import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -51,12 +53,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@EnableServiceComb
 public class JaxrsClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsClient.class);
 
   private static RestTemplate templateNew = RestTemplateBuilder.create();
 
   public static void main(String[] args) throws Exception {
+    new SpringApplicationBuilder(JaxrsClient.class).web(WebApplicationType.NONE).run(args);
+
     init();
 
     try {
@@ -72,7 +77,6 @@ public class JaxrsClient {
   }
 
   public static void init() throws Exception {
-    BeanUtils.init();
     RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
     RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
   }

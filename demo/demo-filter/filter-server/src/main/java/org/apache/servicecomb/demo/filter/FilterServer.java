@@ -17,10 +17,13 @@
 
 package org.apache.servicecomb.demo.filter;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class FilterServer {
   public static void main(String[] args) throws Exception {
-    BeanUtils.init();
+    new SpringApplicationBuilder(FilterServer.class).web(WebApplicationType.NONE).run(args);
   }
 }

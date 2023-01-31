@@ -20,13 +20,16 @@ package org.apache.servicecomb.demo.jaxrs;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapperNotWriteNull;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class JaxrsServer {
   public static void main(String[] args) throws Exception {
+    new SpringApplicationBuilder(JaxrsServer.class).web(WebApplicationType.NONE).run(args);
+
     RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
     RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
-
-    BeanUtils.init();
   }
 }

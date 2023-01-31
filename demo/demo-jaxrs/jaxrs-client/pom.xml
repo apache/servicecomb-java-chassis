@@ -49,19 +49,11 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-governance</artifactId>
     </dependency>
-    <!-- can be added in local test -->
-    <!-- This jar will add an environment version={project.version}, and may cause spring boot application
-       startup fail -->
-    <!--    <dependency>-->
-    <!--      <groupId>org.apache.servicecomb</groupId>-->
-    <!--      <artifactId>config-nacos</artifactId>-->
-    <!--    </dependency>-->
   </dependencies>
 
   <properties>
     <demo.main>org.apache.servicecomb.demo.jaxrs.JaxrsClient</demo.main>
   </properties>
-
   <profiles>
     <profile>
       <id>docker</id>

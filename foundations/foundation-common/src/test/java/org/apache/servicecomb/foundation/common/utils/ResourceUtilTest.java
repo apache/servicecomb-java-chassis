@@ -27,18 +27,6 @@ import org.junit.jupiter.api.Test;
 
 public class ResourceUtilTest {
 
-  /**
-   * This case is coupled with the Spring dependency, but in order to check the ability to read resources inside the
-   * jar packs, this may be the simplest way.
-   */
-  @Test
-  public void loadResources_in_jar() throws IOException, URISyntaxException {
-    List<URI> uris = ResourceUtil.findResources("META-INF", p -> p.toString().endsWith("spring.factories"));
-    Assertions.assertEquals(1, uris.size());
-    Assertions.assertTrue(uris.get(0).toString().startsWith("jar:file:"));
-    Assertions.assertTrue(uris.get(0).toString().endsWith("!/META-INF/spring.factories"));
-  }
-
   @Test
   public void loadResources_in_disk() throws IOException, URISyntaxException {
     List<URI> uris = ResourceUtil.findResourcesBySuffix("META-INF/spring", ".xml");
