@@ -29,7 +29,6 @@ import java.util.Map;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.bizkeeper.BizkeeperExceptionUtils;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
@@ -73,8 +72,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestContentType testContentType = new TestContentType();
 
-  private TestBizkeeper testBizkeeper = new TestBizkeeper();
-
   @Override
   protected void testOnlyRest(String microservcieName, RestTemplate template, String cseUrlPrefix) {
     try {
@@ -84,7 +81,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     }
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestFormRest(template, cseUrlPrefix);
-    testFallback(template, cseUrlPrefix);
 
     testResponse.runRest();
     testObject.runRest();
@@ -110,10 +106,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testObject.runAllTransport();
     testGeneric.runAllTransport();
     testRestTemplate.runAllTest();
-    testBizkeeper.runAllTest();
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);
-    testFallback(template, cseUrlPrefix);
 
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
@@ -175,40 +169,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         cseUrlPrefix + "/upload",
         new HttpEntity<>(map),
         String.class);
-  }
-
-  private void testFallback(RestTemplate template, String cseUrlPrefix) {
-    long start = System.currentTimeMillis();
-    String result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/hello", String.class);
-    TestMgr.check(result, "hello");
-    result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/throwexception", String.class);
-    TestMgr.check(result, null);
-
-    result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/hello", String.class);
-    TestMgr.check(result, "hello");
-    try {
-      result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/throwexception", String.class);
-      TestMgr.check(false, true);
-    } catch (Exception e) {
-      TestMgr.check(e.getCause().getMessage(),
-          BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
-              null,
-              "springmvc.codeFirst.fallbackThrowException").getMessage());
-    }
-
-    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/hello", String.class);
-    TestMgr.check(result, "hello");
-    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/hello", String.class);
-    TestMgr.check(result, "hello");
-    result = template.getForObject(cseUrlPrefix + "/fallback/fromcache/throwexception", String.class);
-    TestMgr.check(result, "hello");
-
-    result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
-    TestMgr.check(result, "mockedreslut");
-
-    // This test case is fallback testing and will return null if failed.
-    // In order to check if failed due to some unexpected timeout exception, check the time.
-    TestMgr.check(System.currentTimeMillis() - start < 10000, true);
   }
 
   private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {

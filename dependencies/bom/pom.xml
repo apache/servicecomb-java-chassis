@@ -205,11 +205,6 @@
       <!-- ServiceComb： handlers -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-bizkeeper</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-fault-injection</artifactId>
         <version>${project.version}</version>
       </dependency>

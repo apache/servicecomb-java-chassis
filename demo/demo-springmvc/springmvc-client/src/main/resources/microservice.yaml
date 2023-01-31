@@ -43,7 +43,7 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: loadbalance,fault-injection-consumer,bizkeeper-consumer
+        default: loadbalance,fault-injection-consumer
   invocation:
     timeout:
       check:
