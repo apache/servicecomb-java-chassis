@@ -466,6 +466,9 @@
   <profiles>
     <profile>
       <id>release</id>
+      <modules>
+        <module>distribution</module>
+      </modules>
       <properties>
         <skip-remote-resource>false</skip-remote-resource>
       </properties>
@@ -550,15 +553,6 @@
       <id>it</id>
       <modules>
         <module>demo</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>distribution</id>
-      <properties>
-        <skip-remote-resource>false</skip-remote-resource>
-      </properties>
-      <modules>
-        <module>distribution</module>
       </modules>
     </profile>
     <profile>
