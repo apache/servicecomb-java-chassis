@@ -53,10 +53,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-bizkeeper</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-loadbalance</artifactId>
     </dependency>
     <dependency>

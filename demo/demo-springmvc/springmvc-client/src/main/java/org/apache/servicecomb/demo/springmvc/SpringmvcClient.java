@@ -170,8 +170,6 @@ public class SpringmvcClient {
       TestMgr.check(true,
           content.contains(
               "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.sayHello"));
-      TestMgr.check(true, content.contains(
-          "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.fallbackFromCache"));
       TestMgr.check(true,
           content
               .contains("servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.isTrue"));

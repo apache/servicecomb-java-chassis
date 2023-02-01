@@ -28,10 +28,6 @@ servicecomb:
       maxFormAttributeSize: 1024
   highway:
     address: 0.0.0.0:7070
-  handler:
-    chain:
-      Provider:
-        default: bizkeeper-provider
   uploads:
     directory: target
 
