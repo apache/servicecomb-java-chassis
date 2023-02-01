@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>springmvc-server</artifactId>
+      <artifactId>demo-schema</artifactId>
     </dependency>
   </dependencies>
   <build>

@@ -21,7 +21,12 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = SpringmvcClient.class)
 public class SpringmvcClientIT {
   @BeforeEach
   public void setUp() throws Exception {
@@ -31,7 +36,7 @@ public class SpringmvcClientIT {
   @Test
   public void clientGetsNoError() throws Exception {
     try {
-      SpringmvcClient.main(new String[0]);
+      SpringmvcClient.runTest();
 
       Assertions.assertTrue(TestMgr.errors().isEmpty());
     } catch (Throwable e) {

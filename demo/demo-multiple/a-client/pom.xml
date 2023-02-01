@@ -30,4 +30,5 @@
   <properties>
     <demo.main>org.apache.servicecomb.demo.multiple.a.client.AClientMain</demo.main>
   </properties>
+
 </project>

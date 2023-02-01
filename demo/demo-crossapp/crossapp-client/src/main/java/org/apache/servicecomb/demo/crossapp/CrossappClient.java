@@ -22,34 +22,33 @@ import java.util.TreeSet;
 
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+@EnableServiceComb
 public class CrossappClient {
   @RpcReference(microserviceName = "appServer:appService", schemaId = "helloworld")
   private static HelloWorld helloWorld;
 
   public static void main(String[] args) throws Exception {
-    System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-    BeanUtils.init();
+    new SpringApplicationBuilder(CrossappClient.class).web(WebApplicationType.NONE).run(args);
 
     run();
-
-    TestMgr.summary();
-    System.setProperty("sun.net.http.allowRestrictedHeaders", "false");
   }
 
   @SuppressWarnings({"deprecation"})
   public static void run() {
+    System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+
     Object result = InvokerUtils.syncInvoke("appServer:appService", "helloworld", "sayHello", null);
     TestMgr.check("hello world", result);
 
@@ -63,6 +62,9 @@ public class CrossappClient {
     TestMgr.check("hello world", result);
 
     testCorsHandler();
+
+    TestMgr.summary();
+    System.setProperty("sun.net.http.allowRestrictedHeaders", "false");
   }
 
   private static void testCorsHandler() {

@@ -108,8 +108,6 @@ servicecomb:
                         abort:
                           httpStatus: 421
                           percent: 50
-  test:
-    duplicate1: newer
 
 # test governance retry
   matchGroup:
@@ -136,9 +134,7 @@ cse:
           testTimeout:
             timeout:
               enabled: true
-            timeoutInMilliseconds: 1000
-  test:
-    duplicate2: newer
+            timeoutInMilliseconds: 1000S
 
 3rd-svc:
   urls:

@@ -18,11 +18,16 @@
 package org.apache.servicecomb.springboot.pojo.client;
 
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.demo.pojo.client.PojoClientTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.SpringApplication;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = PojoClient.class)
 public class PojoClientIT {
 
   @BeforeEach
@@ -32,8 +37,7 @@ public class PojoClientIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    SpringApplication.run(PojoClient.class);
-
+    PojoClientTest.runTest();
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

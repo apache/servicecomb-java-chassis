@@ -26,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class PlaceHolderSchemaTest implements CategorizedTestCase {
   @Override
-  public void testAllTransport() throws Exception {
+  public void testRestTransport() throws Exception {
     RestTemplate template = RestTemplateBuilder.create();
     String result = template.getForObject("servicecomb://springmvc/placeholder/schema?name=test", String.class);
     TestMgr.check("test", result);

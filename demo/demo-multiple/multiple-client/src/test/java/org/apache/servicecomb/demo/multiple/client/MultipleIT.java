@@ -14,18 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.transport.rest.servlet;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
+package org.apache.servicecomb.demo.multiple.client;
 
-public class CseDispatcherServlet extends DispatcherServlet {
-  private static final long serialVersionUID = 5755456289644038012L;
+import org.apache.servicecomb.demo.TestMgr;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-  @Override
-  protected WebApplicationContext createWebApplicationContext(ApplicationContext parent) {
-    setContextClass(CseXmlWebApplicationContext.class);
-    return super.createWebApplicationContext(parent);
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = MultipleClient.class)
+public class MultipleIT {
+
+  @BeforeEach
+  public void setUp() {
+    TestMgr.errors().clear();
+  }
+
+  @Test
+  public void clientGetsNoError() throws Exception {
+    MultipleClient.runTest();
+
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

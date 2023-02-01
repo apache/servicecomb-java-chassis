@@ -40,11 +40,12 @@
   <properties>
     <demo.main>org.apache.servicecomb.demo.multiple.server.MultipleServer</demo.main>
   </properties>
+
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

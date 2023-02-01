@@ -20,11 +20,19 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.multiple.a.client.AClient;
 import org.apache.servicecomb.demo.multiple.b.client.BClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class MultipleClient {
   public static void main(String[] args) throws Exception {
-    BeanUtils.init();
+    new SpringApplicationBuilder(MultipleClient.class).web(WebApplicationType.NONE).run(args);
 
+    runTest();
+  }
+
+  public static void runTest() {
     AClient aClient = BeanUtils.getContext().getBean(AClient.class);
     BClient bClient = BeanUtils.getContext().getBean(BClient.class);
 

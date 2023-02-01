@@ -68,8 +68,7 @@ public final class ResourceUtil {
     Enumeration<URL> dirURLs = JvmUtils.findClassLoader().getResources(resourceLocation);
     while (dirURLs.hasMoreElements()) {
       URL dirURL = dirURLs.nextElement();
-
-      if (dirURL.getProtocol().equals("file")) {
+      if ("file".equals(dirURL.getProtocol())) {
         Path dirPath = Paths.get(dirURL.toURI());
         collectResourcesFromPath(dirPath, filter, result);
         continue;
@@ -77,7 +76,16 @@ public final class ResourceUtil {
 
       try (FileSystem fileSystem = FileSystems.newFileSystem(dirURL.toURI(), Collections.emptyMap())) {
         Path dirPath = fileSystem.getPath(resourceLocation);
-        collectResourcesFromPath(dirPath, filter, result);
+        if (Files.exists(dirPath)) {
+          // normal jar files like : xxx.jar!/resourceLocation
+          collectResourcesFromPath(dirPath, filter, result);
+        } else {
+          // spring boot fat jar files like : xxx.jar!/BOOT-INF/!classes/resourceLocation
+          dirPath = fileSystem.getPath("BOOT-INF", "classes", resourceLocation);
+          if (Files.exists(dirPath)) {
+            collectResourcesFromPath(dirPath, filter, result);
+          }
+        }
       }
     }
 
