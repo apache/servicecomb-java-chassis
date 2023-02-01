@@ -17,6 +17,10 @@
 
 APPLICATION_ID: springmvcboottest
 
+service_description:
+  name: springmvcclient
+  version: 0.0.3
+
 server:
   port: 8999
 servicecomb:

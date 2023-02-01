@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.springboot.springmvc.client;
 
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
@@ -36,7 +37,11 @@ public class SpringmvcClient {
 
     new SpringApplicationBuilder().sources(SpringmvcClient.class).web(WebApplicationType.SERVLET).build().run(args);
 
-    org.apache.servicecomb.demo.springmvc.SpringmvcClient.run();
+    runTest();
+  }
+
+  public static void runTest() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("springmvc");
 
     TestMgr.summary();
   }

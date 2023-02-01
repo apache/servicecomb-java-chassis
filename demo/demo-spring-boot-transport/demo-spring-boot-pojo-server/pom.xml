@@ -31,6 +31,7 @@
   <properties>
     <demo.main>org.apache.servicecomb.springboot.pojo.server.PojoServer</demo.main>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>jakarta.ws.rs</groupId>
@@ -40,8 +41,8 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>inspector</artifactId>
     </dependency>
-
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
