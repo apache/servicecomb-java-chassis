@@ -29,24 +29,6 @@
   <packaging>pom</packaging>
   <dependencies>
     <!-- sort by project directory name, easy to check if the module is missed -->
-    <!-- archetypes -->
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-jaxrs-archetype</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-pojo-archetype</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-spring-boot2-starter-archetype</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-springmvc-archetype</artifactId>
-    </dependency>
-
     <!-- clients -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
