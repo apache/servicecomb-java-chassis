@@ -23,7 +23,6 @@ import java.util.Objects;
 
 import javax.ws.rs.core.Response.Status;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
@@ -44,6 +43,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
@@ -111,7 +111,6 @@ public class LoadbalanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     AsyncResponse response = asyncResp;
     asyncResp = async -> {
-      ServiceCombServerStats.checkAndReleaseTryingChance(invocation);
       response.handle(async);
     };
 
@@ -197,10 +196,8 @@ public class LoadbalanceHandler implements Handler {
       if (isFailedResponse(resp)) {
         // this stats is for SessionStickinessRule
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
-        ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
       } else {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
-        ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
       }
       asyncResp.handle(resp);
     });
