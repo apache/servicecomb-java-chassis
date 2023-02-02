@@ -23,13 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.validator.Student;
-import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
-import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -84,17 +78,5 @@ public class TestClientTimeout implements CategorizedTestCase {
     }
 
     TestMgr.check(true, failed);
-  }
-
-  private static ServiceCombServerStats getServiceCombServerStats() {
-    InstanceCache instanceCache = DiscoveryManager.INSTANCE.getInstanceCacheManager()
-        .getOrCreate(RegistrationManager.INSTANCE.getAppId(),
-            "jaxrs", "0+");
-    org.apache.servicecomb.registry.api.registry.MicroserviceInstance microserviceInstance = instanceCache
-        .getInstanceMap().values().iterator().next();
-    ServiceCombServer serviceCombServer = ServiceCombLoadBalancerStats.INSTANCE
-        .getServiceCombServer(microserviceInstance);
-    return ServiceCombLoadBalancerStats.INSTANCE
-        .getServiceCombServerStats(serviceCombServer);
   }
 }

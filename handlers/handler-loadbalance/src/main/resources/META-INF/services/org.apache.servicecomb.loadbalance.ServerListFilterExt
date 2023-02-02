@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.loadbalance.filterext.IsolationDiscoveryFilter
 org.apache.servicecomb.loadbalance.filterext.ZoneAwareDiscoveryFilter
