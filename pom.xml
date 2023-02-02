@@ -152,7 +152,6 @@
     <module>edge</module>
     <module>metrics</module>
     <module>dynamic-config</module>
-    <module>archetypes</module>
     <module>spring-boot</module>
     <module>inspector</module>
     <module>solutions</module>
