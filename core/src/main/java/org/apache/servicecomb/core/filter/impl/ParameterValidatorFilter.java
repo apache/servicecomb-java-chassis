@@ -29,10 +29,12 @@ import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
@@ -59,6 +61,11 @@ public class ParameterValidatorFilter implements ProducerFilter, InitializingBea
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1000;
   }
 
   @Override

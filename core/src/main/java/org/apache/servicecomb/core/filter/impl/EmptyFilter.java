@@ -21,12 +21,12 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.InternalFilter;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 // just for test
-public class EmptyFilter implements InternalFilter {
+public class EmptyFilter implements Filter {
   @Nonnull
   @Override
   public String getName() {

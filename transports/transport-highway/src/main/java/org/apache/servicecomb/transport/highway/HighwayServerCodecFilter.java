@@ -24,10 +24,13 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.springframework.stereotype.Component;
@@ -42,6 +45,16 @@ public class HighwayServerCodecFilter implements ProducerFilter {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1000;
+  }
+
+  @Override
+  public boolean isEnabledForTransport(String transport) {
+    return Const.HIGHWAY.equals(transport);
   }
 
   @Override

@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.core.filter;
 
-import static org.apache.servicecomb.core.Const.HIGHWAY;
-import static org.apache.servicecomb.core.Const.RESTFUL;
 import static org.apache.servicecomb.core.filter.FilterNode.buildChain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -34,11 +32,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
-import org.apache.servicecomb.core.filter.impl.TransportFilters;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -148,72 +144,9 @@ public class FilterChainTest {
     CompletableFuture<Response> future = buildChain(retryFilter, recordThreadFilter, exceptionFilter)
         .onFilter(invocation);
     assertThat(future)
-            .failsWithin(Duration.ofSeconds(1))
-            .withThrowableOfType(ExecutionException.class)
-            .withCauseExactlyInstanceOf(IOException.class)
-            .withMessage("java.io.IOException: net error");
-  }
-
-  @Test
-  public void should_build_chain_with_TransportFilters(@Mocked Transport transport)
-      throws ExecutionException, InterruptedException {
-    mockInvocation();
-    new Expectations() {
-      {
-        invocation.getTransport();
-        result = transport;
-      }
-    };
-    TransportFilters transportFilters = new TransportFilters();
-    transportFilters.getChainByTransport().put(RESTFUL, buildChain(recordThreadFilter));
-    transportFilters.getChainByTransport().put(HIGHWAY, buildChain(recordThreadFilter, scheduler, recordThreadFilter));
-
-    FilterNode chain = buildChain(transportFilters, recordThreadFilter);
-
-    checkRestChain(transport, chain);
-    checkHighwayChain(transport, chain);
-    checkUnknownTransportChain(transport, chain);
-  }
-
-  private void checkUnknownTransportChain(Transport transport, FilterNode chain)
-      throws ExecutionException, InterruptedException {
-    msg.clear();
-    new Expectations() {
-      {
-        transport.getName();
-        result = "abc";
-      }
-    };
-    chain.onFilter(invocation)
-        .get();
-    assertThat(msg).containsExactly("main");
-  }
-
-  private void checkRestChain(Transport transport, FilterNode chain)
-      throws InterruptedException, ExecutionException {
-    msg.clear();
-    new Expectations() {
-      {
-        transport.getName();
-        result = RESTFUL;
-      }
-    };
-    chain.onFilter(invocation)
-        .get();
-    assertThat(msg).containsExactly("main", "main");
-  }
-
-  private void checkHighwayChain(Transport transport, FilterNode chain)
-      throws InterruptedException, ExecutionException {
-    msg.clear();
-    new Expectations() {
-      {
-        transport.getName();
-        result = HIGHWAY;
-      }
-    };
-    chain.onFilter(invocation)
-        .get();
-    assertThat(msg).containsExactly("main", THREAD_NAME, THREAD_NAME);
+        .failsWithin(Duration.ofSeconds(1))
+        .withThrowableOfType(ExecutionException.class)
+        .withCauseExactlyInstanceOf(IOException.class)
+        .withMessage("java.io.IOException: net error");
   }
 }

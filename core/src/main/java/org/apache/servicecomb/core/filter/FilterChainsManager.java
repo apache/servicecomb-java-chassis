@@ -20,30 +20,28 @@ import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.
 import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.deleteLast;
 
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.core.filter.config.FilterChainsConfig;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 @Component
 public class FilterChainsManager {
-  private final FilterChainsConfig chainsConfig = new FilterChainsConfig();
+  private final InvocationFilterChains consumerChains = new InvocationFilterChains(InvocationType.CONSUMER);
 
-  private final InvocationFilterChains consumerChains = new InvocationFilterChains();
-
-  private final InvocationFilterChains producerChains = new InvocationFilterChains();
+  private final InvocationFilterChains producerChains = new InvocationFilterChains(InvocationType.PRODUCER);
 
   @Autowired
   public FilterChainsManager addFilters(List<Filter> filters) {
     for (Filter filter : filters) {
-      if (filter.getInvocationTypes().contains(InvocationType.CONSUMER)) {
+      if (filter.isEnabledForInvocationType(InvocationType.CONSUMER)) {
         consumerChains.addFilter(filter);
       }
 
-      if (filter.getInvocationTypes().contains(InvocationType.PRODUCER)) {
+      if (filter.isEnabledForInvocationType(InvocationType.PRODUCER)) {
         producerChains.addFilter(filter);
       }
     }
@@ -52,16 +50,12 @@ public class FilterChainsManager {
   }
 
   public FilterChainsManager init() {
-    chainsConfig.load();
-
-    consumerChains.resolve(chainsConfig.getResolver(), chainsConfig.getConsumer());
-    producerChains.resolve(chainsConfig.getResolver(), chainsConfig.getProducer());
-
     return this;
   }
 
   public boolean isEnabled() {
-    return chainsConfig.isEnabled();
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.filter-chains.enabled", false).get();
   }
 
   public FilterNode findConsumerChain(String microserviceName) {
@@ -77,28 +71,16 @@ public class FilterChainsManager {
 
     appendLine(sb, "consumer: ");
     appendLine(sb, "  filters: %s", collectFilterNames(consumerChains));
-    collectChainsByInvocationType(sb, consumerChains);
 
     appendLine(sb, "producer: ");
     appendLine(sb, "  filters: %s", collectFilterNames(producerChains));
-    collectChainsByInvocationType(sb, producerChains);
 
     return deleteLast(sb, 1).toString();
   }
 
-  public List<String> collectFilterNames(InvocationFilterChains chains) {
+  private List<String> collectFilterNames(InvocationFilterChains chains) {
     return chains.getFilters().stream()
-        .filter(filter -> !(filter instanceof InternalFilter))
         .map(Filter::getName)
         .collect(Collectors.toList());
-  }
-
-  private void collectChainsByInvocationType(StringBuilder sb, InvocationFilterChains chains) {
-    appendLine(sb, "  chains:");
-    appendLine(sb, "    framework: %s", chains.getResolvedFrameworkConfig());
-    appendLine(sb, "    default  : %s", chains.getResolvedDefaultConfig());
-    for (Entry<String, List<Object>> entry : chains.getResolvedMicroserviceConfig().entrySet()) {
-      appendLine(sb, "    %s: %s", entry.getKey(), entry.getValue());
-    }
   }
 }

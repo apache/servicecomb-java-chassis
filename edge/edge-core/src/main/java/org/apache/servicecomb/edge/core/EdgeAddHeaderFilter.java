@@ -22,7 +22,9 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.rest.client.RestClientTransportContext;
 import org.springframework.stereotype.Component;
@@ -40,8 +42,13 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
   }
 
   @Override
-  public boolean isEnabled() {
+  public boolean isEnabledForTransport(String transport) {
     return filter.enabled();
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1000;
   }
 
   @Override

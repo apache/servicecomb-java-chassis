@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
@@ -56,8 +54,25 @@ import org.apache.servicecomb.swagger.invocation.Response;
  * </pre>
  */
 public interface Filter {
-  default boolean isEnabled() {
+  int PRODUCER_SCHEDULE_FILTER_ORDER = -1;
+
+  int CONSUMER_LOAD_BALANCE_ORDER = -1;
+
+  default boolean isEnabledForInvocationType(InvocationType invocationType) {
     return true;
+  }
+
+  default boolean isEnabledForTransport(String transport) {
+    return true;
+  }
+
+  default boolean isEnabledForMicroservice(String microservice) {
+    //TODO read configuration and check if filter enabled.
+    return true;
+  }
+
+  default int getOrder(InvocationType invocationType, String microservice) {
+    return 0;
   }
 
   default boolean isInEventLoop() {
@@ -67,15 +82,6 @@ public interface Filter {
   @Nonnull
   default String getName() {
     throw new IllegalStateException("must provide filter name.");
-  }
-
-  /**
-   *
-   * @return can be used for the specific invocation type
-   */
-  @Nonnull
-  default List<InvocationType> getInvocationTypes() {
-    return Arrays.asList(InvocationType.CONSUMER, InvocationType.PRODUCER);
   }
 
   /**
