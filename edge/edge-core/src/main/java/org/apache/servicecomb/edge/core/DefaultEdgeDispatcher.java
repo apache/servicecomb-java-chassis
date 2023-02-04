@@ -101,10 +101,6 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     requestByHandler(context, microserviceName, versionRule, path);
   }
 
-  protected boolean isFilterChainEnabled() {
-    return SCBEngine.getInstance().isFilterChainEnabled();
-  }
-
   @Nullable
   private String extractMicroserviceName(RoutingContext context) {
     return context.pathParam(MICROSERVICE_NAME);

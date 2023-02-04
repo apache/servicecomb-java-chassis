@@ -21,7 +21,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -48,7 +47,8 @@ public class EdgeServerCodecFilter extends RestServerCodecFilter {
 
   @Override
   public boolean isEnabledForTransport(String transport) {
-    return Const.RESTFUL.equals(transport);
+    // For edge service, this filter executed before load balancer and transport is always null.
+    return true;
   }
 
   @Override

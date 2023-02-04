@@ -26,12 +26,12 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @EnableServiceComb
-public class FilterServer {
-  private static final Logger LOGGER = LoggerFactory.getLogger(FilterServer.class);
+public class FilterEdge {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FilterEdge.class);
 
   public static void main(String[] args) throws Exception {
     try {
-      new SpringApplicationBuilder(FilterServer.class).web(WebApplicationType.NONE).run(args);
+      new SpringApplicationBuilder(FilterEdge.class).web(WebApplicationType.NONE).run(args);
 
       run();
     } catch (Throwable e) {
@@ -44,6 +44,6 @@ public class FilterServer {
   }
 
   public static void run() throws Exception {
-    CategorizedTestCaseRunner.runCategorizedTestCase("filterServer");
+    CategorizedTestCaseRunner.runCategorizedTestCase("filterEdge");
   }
 }

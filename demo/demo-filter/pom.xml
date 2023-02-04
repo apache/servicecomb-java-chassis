@@ -30,6 +30,8 @@
   <modules>
     <module>filter-server</module>
     <module>filter-client</module>
+    <module>filter-edge</module>
+    <module>filter-tests</module>
   </modules>
   <dependencies>
     <dependency>
