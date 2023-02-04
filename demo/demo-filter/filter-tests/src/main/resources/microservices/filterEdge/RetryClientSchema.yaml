@@ -1,0 +1,32 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for org.apache.servicecomb.demo.filter.retry.RetryClientSchema"
+  x-java-interface: "gen.swagger.RetryClientSchemaIntf"
+basePath: "/retry"
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /governance/successWhenRetry:
+    get:
+      operationId: "successWhenRetry"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "boolean"
+  /governance/successWhenRetryAsync:
+    get:
+      operationId: "successWhenRetryAsync"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "boolean"

@@ -18,7 +18,7 @@
 servicecomb:
   service:
     application: filtertest
-    name: filterClient
+    name: filterEdge
     version: 0.0.1
 
     registry:
@@ -36,24 +36,28 @@ servicecomb:
         watch: true
 
   rest:
-    address: 0.0.0.0:8082
+    address: 0.0.0.0:9090
     server:
       compression: true
-  highway:
-    address: 0.0.0.0:7072
 
   filter-chains:
     enabled: true
   invocation:
     exception:
       print-stack-trace: true
-  # test governance retry
-  matchGroup:
-    retry-governance: |
-      matches:
-        - apiPath:
-            prefix: "/retry/governance/"
-  retry:
-    retry-governance: |
-      maxAttempts: 2
-      retryOnResponseStatus: [500]
+
+  http:
+    dispatcher:
+      edge:
+        default:
+          enabled: true
+          prefix: service
+          withVersion: false
+          prefixSegmentCount: 2
+        url:
+          enabled: true
+          mappings:
+            filterClient:
+              prefixSegmentCount: 0
+              path: "/retry/.*"
+              microserviceName: filterClient

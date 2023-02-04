@@ -1,0 +1,9 @@
+filterEdge:
+  - id: "001"
+    version: "1.0"
+    appid: filtertest
+    schemaIds:
+      - RetryClientSchema
+    instances:
+      - endpoints:
+          - rest://127.0.0.1:9090

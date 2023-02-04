@@ -18,7 +18,7 @@
 servicecomb:
   service:
     application: filtertest
-    name: filterClient
+    name: filterTests
     version: 0.0.1
 
     registry:
@@ -35,13 +35,6 @@ servicecomb:
           interval: 90
         watch: true
 
-  rest:
-    address: 0.0.0.0:8082
-    server:
-      compression: true
-  highway:
-    address: 0.0.0.0:7072
-
   filter-chains:
     enabled: true
   invocation:
@@ -57,3 +50,19 @@ servicecomb:
     retry-governance: |
       maxAttempts: 2
       retryOnResponseStatus: [500]
+
+
+#########SSL options
+ssl.protocols: TLSv1.2
+ssl.authPeer: true
+ssl.checkCN.host: false
+
+#########certificates config
+ssl.trustStore: trust.jks
+ssl.trustStoreType: JKS
+ssl.trustStoreValue: Changeme_123
+ssl.keyStore: server.p12
+ssl.keyStoreType: PKCS12
+ssl.keyStoreValue: Changeme_123
+ssl.crl: revoke.crl
+ssl.sslCustomClass: org.apache.servicecomb.demo.DemoSSLCustom

@@ -18,7 +18,7 @@
 package org.apache.servicecomb.demo.filter.retry;
 
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.demo.filter.FilterClient;
+import org.apache.servicecomb.demo.filter.FilterTests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = FilterClient.class)
-public class FilterClientIT {
+@SpringBootTest(classes = FilterTests.class)
+public class FilterTestsIT {
 
   @BeforeEach
   public void setUp() {
@@ -37,7 +37,7 @@ public class FilterClientIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    FilterClient.run();
+    FilterTests.run();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
