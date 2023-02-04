@@ -20,9 +20,12 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +37,16 @@ public class RestClientSenderFilter implements ConsumerFilter {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public boolean isEnabledForTransport(String transport) {
+    return Const.RESTFUL.equals(transport);
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1010;
   }
 
   @Override

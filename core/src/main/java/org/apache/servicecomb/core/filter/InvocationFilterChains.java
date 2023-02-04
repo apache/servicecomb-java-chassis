@@ -17,29 +17,24 @@
 package org.apache.servicecomb.core.filter;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.core.filter.config.InvocationFilterChainsConfig;
-import org.apache.servicecomb.core.filter.config.TransportChainsConfig;
-import org.apache.servicecomb.core.filter.impl.TransportFilters;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 public class InvocationFilterChains {
   private final Map<String, Filter> filters = new HashMap<>();
 
-  private List<Object> resolvedFrameworkConfig;
-
-  private List<Object> resolvedDefaultConfig;
-
-  private final Map<String, List<Object>> resolvedMicroserviceConfig = new HashMap<>();
-
-  private FilterNode defaultChain;
-
   private final Map<String, FilterNode> microserviceChains = new HashMap<>();
+
+  private final InvocationType invocationType;
+
+  public InvocationFilterChains(InvocationType invocationType) {
+    this.invocationType = invocationType;
+  }
 
   public Collection<Filter> getFilters() {
     return filters.values();
@@ -49,65 +44,17 @@ public class InvocationFilterChains {
     filters.put(filter.getName(), filter);
   }
 
-  public List<Object> getResolvedFrameworkConfig() {
-    return resolvedFrameworkConfig;
-  }
-
-  public List<Object> getResolvedDefaultConfig() {
-    return resolvedDefaultConfig;
-  }
-
-  public Map<String, List<Object>> getResolvedMicroserviceConfig() {
-    return resolvedMicroserviceConfig;
-  }
-
-  public void resolve(Function<List<String>, List<Object>> resolver,
-      InvocationFilterChainsConfig config) {
-    resolvedFrameworkConfig = resolver.apply(config.getFrameworkChain());
-    resolvedDefaultConfig = resolver.apply(config.getDefaultChain());
-
-    defaultChain = createChain(resolvedDefaultConfig);
-    for (Entry<String, List<String>> entry : config.getMicroserviceChains().entrySet()) {
-      List<Object> resolveConfig = resolver.apply(entry.getValue());
-
-      resolvedMicroserviceConfig.put(entry.getKey(), resolveConfig);
-      microserviceChains.put(entry.getKey(), createChain(resolveConfig));
-    }
-  }
-
-  private <T> FilterNode createChain(List<T> chain) {
-    List<Filter> filters = createFilters(chain);
-    return FilterNode.buildChain(filters);
-  }
-
-  private <T> List<Filter> createFilters(List<T> chain) {
-    return chain.stream()
-        .map(this::findFilter)
-        .collect(Collectors.toList());
-  }
-
-  private Filter findFilter(Object filterConfig) {
-    if (filterConfig instanceof TransportChainsConfig) {
-      return createTransportFilter((TransportChainsConfig) filterConfig);
-    }
-
-    Filter filter = filters.get(filterConfig);
-    if (filter == null) {
-      throw new IllegalStateException("failed to find filter, name=" + filterConfig);
-    }
-    return filter;
-  }
-
-  private Filter createTransportFilter(TransportChainsConfig config) {
-    TransportFilters transportFilters = new TransportFilters();
-    for (Entry<String, List<String>> entry : config.getChainByTransport().entrySet()) {
-      List<Filter> filters = createFilters(entry.getValue());
-      transportFilters.getChainByTransport().put(entry.getKey(), FilterNode.buildChain(filters));
-    }
-    return transportFilters;
-  }
-
   public FilterNode findChain(String microserviceName) {
-    return microserviceChains.getOrDefault(microserviceName, defaultChain);
+    FilterNode filterNode = microserviceChains.get(microserviceName);
+    if (filterNode == null) {
+      List<Filter> serviceFilters = filters.entrySet().stream()
+          .filter(e -> e.getValue().isEnabledForMicroservice(microserviceName))
+          .map(e -> e.getValue())
+          .collect(Collectors.toList());
+      serviceFilters.sort(Comparator.comparingInt(a -> a.getOrder(invocationType, microserviceName)));
+      filterNode = FilterNode.buildChain(serviceFilters);
+      microserviceChains.put(microserviceName, filterNode);
+    }
+    return filterNode;
   }
 }

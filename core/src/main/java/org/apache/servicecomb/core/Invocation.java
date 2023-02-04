@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -60,6 +59,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.annotations.VisibleForTesting;
 
 public class Invocation extends SwaggerInvocation {
   private static final Collection<TraceIdGenerator> TRACE_ID_GENERATORS = loadTraceIdGenerators();
@@ -147,6 +147,13 @@ public class Invocation extends SwaggerInvocation {
     this.handlerList = getHandlerChain();
     handlerIndex = 0;
     traceIdLogger = new TraceIdLogger(this);
+  }
+
+  public String getTransportName() {
+    if (endpoint == null || endpoint.getTransport() == null) {
+      return null;
+    }
+    return endpoint.getTransport().getName();
   }
 
   public Transport getTransport() {

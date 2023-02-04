@@ -16,9 +16,6 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -26,7 +23,7 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 public interface ProducerFilter extends Filter {
   @Nonnull
   @Override
-  default List<InvocationType> getInvocationTypes() {
-    return Collections.singletonList(InvocationType.PRODUCER);
+  default boolean isEnabledForInvocationType(InvocationType invocationType) {
+    return invocationType == InvocationType.PRODUCER;
   }
 }
