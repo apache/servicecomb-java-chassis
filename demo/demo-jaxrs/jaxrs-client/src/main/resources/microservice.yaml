@@ -22,18 +22,9 @@ servicecomb:
     version: 0.0.1
     registry:
       address: http://127.0.0.1:30100
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance,instance-isolation-consumer,instance-bulkhead-consumer
-  loadbalance:
-    strategy:
-      name: mycustomrule
-    retryEnabled: true
 
-    filter:
-      isolation:
-        enabled: false
+  filter-chains:
+    enabled: true
 
   matchGroup:
     instanceIsolationTest: |

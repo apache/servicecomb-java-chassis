@@ -18,6 +18,7 @@
 package org.apache.servicecomb.demo.jaxrs;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
@@ -389,13 +390,15 @@ public class JaxrsClient {
       if (e.getErrorData() instanceof CommonExceptionData) {
         // highway decode/encode 'Object' with special type information, got runtime type
         CommonExceptionData data = (CommonExceptionData) e.getErrorData();
-        TestMgr.check(
-            true, data.getMessage().contains("propertyPath=add.b"));
+        TestMgr.check("invalid parameters.", data.getMessage());
+        TestMgr.check("add.b",
+            ((Map) ((List<?>) data.getDynamic("validateDetail")).get(0)).get("propertyPath").toString());
       } else {
         // rest decode/encode 'Object' using json without type information, got map. Users can got runtime type by adding @JsonTypeInfo to the model.
         Map data = (Map) e.getErrorData();
-        TestMgr.check(
-            true, data.get("message").toString().contains("propertyPath=add.b"));
+        TestMgr.check("invalid parameters.", data.get("message").toString());
+        TestMgr.check("add.b",
+            ((Map) ((List<?>) data.get("validateDetail")).get(0)).get("propertyPath").toString());
       }
     }
 
@@ -423,12 +426,14 @@ public class JaxrsClient {
       if (e.getErrorData() instanceof CommonExceptionData) {
         // highway decode/encode 'Object' with special type information, got runtime type
         CommonExceptionData data = (CommonExceptionData) e.getErrorData();
-        TestMgr.check(
-            true, data.getMessage().contains("propertyPath=sayHi.name"));
+        TestMgr.check("invalid parameters.", data.getMessage());
+        TestMgr.check("sayHi.name",
+            ((Map) ((List<?>) data.getDynamic("validateDetail")).get(0)).get("propertyPath").toString());
       } else {
         Map data = (Map) e.getErrorData();
-        TestMgr.check(
-            true, data.get("message").toString().contains("propertyPath=sayHi.name"));
+        TestMgr.check("invalid parameters.", data.get("message").toString());
+        TestMgr.check("sayHi.name",
+            ((Map) ((List<?>) data.get("validateDetail")).get(0)).get("propertyPath").toString());
       }
     }
     TestMgr.check(true, isExcep);
@@ -463,12 +468,14 @@ public class JaxrsClient {
       if (e.getErrorData() instanceof CommonExceptionData) {
         // highway decode/encode 'Object' with special type information, got runtime type
         CommonExceptionData data = (CommonExceptionData) e.getErrorData();
-        TestMgr.check(
-            true, data.getMessage().contains("propertyPath=sayHello.student.age"));
+        TestMgr.check("invalid parameters.", data.getMessage());
+        TestMgr.check("sayHello.student.age",
+            ((Map) ((List<?>) data.getDynamic("validateDetail")).get(0)).get("propertyPath").toString());
       } else {
         Map data = (Map) e.getErrorData();
-        TestMgr.check(
-            true, data.get("message").toString().contains("propertyPath=sayHello.student.age"));
+        TestMgr.check("invalid parameters.", data.get("message").toString());
+        TestMgr.check("sayHello.student.age",
+            ((Map) ((List<?>) data.get("validateDetail")).get(0)).get("propertyPath").toString());
       }
     }
     TestMgr.check(true, isExcep);

@@ -50,7 +50,7 @@ public class FilterInvocationCaller implements InvocationCaller {
   }
 
   protected PojoInvocation logCreateInvocationException(Method method, Throwable throwable) {
-    LOGGER.error("failed to create invocation, method {}", method);
-    throw Exceptions.consumer("SCB_PROVIDER_POJO.400000001", "failed to create invocation.", throwable);
+    LOGGER.error("failed to create invocation, method {}", method, throwable);
+    throw Exceptions.consumer("SCB_PROVIDER_POJO.400000001", throwable.getMessage(), throwable);
   }
 }

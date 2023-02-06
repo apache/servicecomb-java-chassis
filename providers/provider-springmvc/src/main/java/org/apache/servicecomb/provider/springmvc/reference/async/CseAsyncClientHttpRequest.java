@@ -27,7 +27,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
-import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.concurrent.CompletableToListenableFutureAdapter;
@@ -62,11 +61,11 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
 
   protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
     CompletableFuture<ClientHttpResponse> completableFuture = new CompletableFuture<>();
-    InvokerUtils.reactiveInvoke(invocation, (Response response) -> {
-      if (response.isSucceed()) {
-        completableFuture.complete(new CseClientHttpResponse(response));
+    InvokerUtils.invoke(invocation).whenComplete((r, e) -> {
+      if (e == null) {
+        completableFuture.complete(new CseClientHttpResponse(r));
       } else {
-        completableFuture.completeExceptionally(response.getResult());
+        completableFuture.completeExceptionally(e);
       }
     });
     return completableFuture;
