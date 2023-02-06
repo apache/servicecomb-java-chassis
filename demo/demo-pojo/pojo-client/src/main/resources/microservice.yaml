@@ -32,10 +32,9 @@ servicecomb:
   rest.client.enabled: false # using only http2
   swagger:
     disableDataTypeCheck: true
-  handler:
-    chain:
-      Consumer:
-        default: qps-flowcontrol-consumer,auth-consumer,loadbalance
+  filter-chains:
+    enabled: true
+
   isolation:
     Consumer:
       enabled: false

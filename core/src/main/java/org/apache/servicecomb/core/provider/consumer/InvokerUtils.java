@@ -122,6 +122,7 @@ public final class InvokerUtils {
         schemaId, operationId, swaggerArguments, responseType);
   }
 
+  @Deprecated
   public static void reactiveInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments, Type responseType,
       AsyncResponse asyncResp) {
@@ -235,27 +236,12 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-    invocation.setSync(false);
-
-    Supplier<CompletionStage<Response>> next = reactiveInvokeImpl(invocation);
-    DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
-
-    decorateReactiveRetry(invocation, dcs, request);
-
-    dcs.get().whenComplete((r, e) -> {
+    invoke(invocation).whenComplete((r, e) -> {
       if (e == null) {
         asyncResp.complete(r);
-        return;
+      } else {
+        asyncResp.consumerFail(e);
       }
-
-      String message = String.format("invoke failed, operation %s, trace id %s",
-          invocation.getMicroserviceQualifiedName(),
-          invocation.getTraceId());
-      LOGGER.error(message, e);
-      Response response = Response.createConsumerFail(e, message);
-      invocation.onFinish(response);
-      asyncResp.complete(response);
     });
   }
 
