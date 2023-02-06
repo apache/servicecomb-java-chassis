@@ -45,6 +45,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: Compilation and Installation
-      run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage
+      run: mvn clean install -Dcheckstyle.skip -Dspotbugs.skip=true -B -Pdocker -Pjacoco -Pit -Pcoverage
     - name: publish coverage report
       run: bash <(curl -s https://codecov.io/bash)

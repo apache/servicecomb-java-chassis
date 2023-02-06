@@ -38,4 +38,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: rat check
-        run: mvn apache-rat:check -B -Pit,distribution
+        run: mvn apache-rat:check -B -Pit,release

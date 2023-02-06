@@ -1,7 +1,7 @@
 This module contains integrated test cases. Running these test cases, should include profile 
 
 ```shell script
--Pdocker -Pdemo-run-release
+-Pdocker
 ```
 
 [java-chassis-samples][java-chassis-samples] project provides a lot of samples.

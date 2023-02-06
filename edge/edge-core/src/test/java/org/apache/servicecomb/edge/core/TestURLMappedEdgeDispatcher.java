@@ -19,21 +19,21 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.Map;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.web.RequestBody;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
-
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.web.RoutingContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.ext.web.RequestBody;
+import io.vertx.ext.web.RoutingContext;
 
 public class TestURLMappedEdgeDispatcher {
   @BeforeEach
@@ -49,7 +49,12 @@ public class TestURLMappedEdgeDispatcher {
   public void testConfigurations() {
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.enabled", true);
 
-    URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher();
+    URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher() {
+      @Override
+      protected boolean isFilterChainEnabled() {
+        return false;
+      }
+    };
     Map<String, URLMappedConfigurationItem> items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 0);
 

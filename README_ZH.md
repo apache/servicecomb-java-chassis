@@ -79,11 +79,11 @@ public class HelloWorldConsumer  {
 
 开发者需要预先安装docker。
 
-      mvn clean install -Pdocker -Pit  -Pdemo-run-release
+      mvn clean install -Pdocker -Pit
 
 使用docker machine。
 
-      mvn clean install -Pdocker -Pit -Pdocker-machine -Pdemo-run-release
+      mvn clean install -Pdocker -Pit -Pdocker-machine
 
 # 联系我们
 

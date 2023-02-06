@@ -18,7 +18,6 @@
 package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -54,8 +53,6 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private final CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
 
-  private String prefix;
-
   private boolean withVersion;
 
   private int prefixSegmentCount;
@@ -72,7 +69,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public void init(Router router) {
-    prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
+    String prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
     withVersion = DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_WITH_VERSION, true).get();
     prefixSegmentCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PREFIX_SEGMENT_COUNT, 1).get();
     String regex = generateRouteRegex(prefix, withVersion);
