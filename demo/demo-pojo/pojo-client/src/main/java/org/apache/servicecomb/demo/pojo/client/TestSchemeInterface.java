@@ -20,6 +20,8 @@ package org.apache.servicecomb.demo.pojo.client;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,12 +36,12 @@ public class TestSchemeInterface implements CategorizedTestCase {
     try {
       pojo.echoError("hello");
       TestMgr.failed("should throw exception", new Exception());
-    } catch (Exception e) {
+    } catch (InvocationException e) {
       TestMgr.check(
           "Consumer method org.apache.servicecomb.demo.pojo.client.SchemaInterface:"
               + "echoError not exist in contract, microserviceName=pojo, "
               + "schemaId=SchemaInterface; new producer not running or not deployed.",
-          e.getMessage());
+          ((CommonExceptionData) e.getErrorData()).getMessage());
     }
   }
 }
