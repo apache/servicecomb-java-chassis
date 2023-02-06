@@ -54,9 +54,9 @@ import org.apache.servicecomb.swagger.invocation.Response;
  * </pre>
  */
 public interface Filter {
-  int PRODUCER_SCHEDULE_FILTER_ORDER = -1;
+  int PRODUCER_SCHEDULE_FILTER_ORDER = 0;
 
-  int CONSUMER_LOAD_BALANCE_ORDER = -1;
+  int CONSUMER_LOAD_BALANCE_ORDER = 0;
 
   default boolean isEnabledForInvocationType(InvocationType invocationType) {
     return true;

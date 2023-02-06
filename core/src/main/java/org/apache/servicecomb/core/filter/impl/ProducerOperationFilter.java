@@ -45,7 +45,7 @@ public class ProducerOperationFilter implements ProducerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1000;
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 2000;
   }
 
   @Override

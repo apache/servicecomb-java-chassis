@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.jaxrs.client;
 
+import java.util.Map;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -26,13 +28,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class TestReactiveSchema implements CategorizedTestCase {
+  @SuppressWarnings("rawtypes")
   public void testRestTransport() throws Exception {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     try {
-      restTemplate.getForObject("cse://jaxrs/reactive/add?a=1&b=2", int.class);
+      restTemplate.getForObject("cse://jaxrs/reactive/testSyncInvokeInEventLoop?a=1&b=2", int.class);
       TestMgr.check(true, false);
     } catch (InvocationException e) {
-      TestMgr.check(e.getStatusCode(), 490);
+      TestMgr.check(e.getStatusCode(), 500);
+      TestMgr.check(((Map) e.getErrorData()).get("message"), "Can not execute sync logic in event loop.");
     }
   }
 }

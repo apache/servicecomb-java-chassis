@@ -70,17 +70,17 @@ public class FilterChainsManager {
     StringBuilder sb = new StringBuilder();
 
     appendLine(sb, "consumer: ");
-    appendLine(sb, "  filters: %s", collectFilterNames(consumerChains));
+    appendLine(sb, "  filters: %s", collectFilterNames(consumerChains, InvocationType.CONSUMER));
 
     appendLine(sb, "producer: ");
-    appendLine(sb, "  filters: %s", collectFilterNames(producerChains));
+    appendLine(sb, "  filters: %s", collectFilterNames(producerChains, InvocationType.PRODUCER));
 
     return deleteLast(sb, 1).toString();
   }
 
-  private List<String> collectFilterNames(InvocationFilterChains chains) {
+  private List<String> collectFilterNames(InvocationFilterChains chains, InvocationType invocationType) {
     return chains.getFilters().stream()
-        .map(Filter::getName)
+        .map(filter -> filter.getName() + "(" + filter.getOrder(invocationType, null) + ")")
         .collect(Collectors.toList());
   }
 }

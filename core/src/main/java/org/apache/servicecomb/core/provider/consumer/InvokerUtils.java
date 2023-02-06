@@ -66,8 +66,6 @@ import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
-import io.vavr.CheckedFunction0;
-import io.vavr.control.Try;
 import io.vertx.core.Context;
 
 public final class InvokerUtils {
@@ -190,42 +188,10 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static Response innerSyncInvoke(Invocation invocation) {
-    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
-
-    return decorateSyncRetry(invocation, request);
-  }
-
-  private static Response innerSyncInvokeImpl(Invocation invocation) throws Throwable {
     if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
-      throw new IllegalStateException("Can not execute sync logic in event loop. ");
+      throw new IllegalStateException("Can not execute sync logic in event loop.");
     }
-    invocation.onStart(null, System.nanoTime());
-    updateRetryStatus(invocation);
-    SyncResponseExecutor respExecutor = new SyncResponseExecutor();
-    invocation.setResponseExecutor(respExecutor);
-
-    invocation.onStartHandlersRequest();
-    invocation.next(respExecutor::setResponse);
-
-    Response response = respExecutor.waitResponse(invocation);
-    invocation.getInvocationStageTrace().finishHandlersResponse();
-    invocation.onFinish(response);
-
-    if (response.isFailed()) {
-      // re-throw exception to make sure retry based on exception
-      // for InvocationException, users can configure status code for retry
-      // for 490, details error are wrapped, need re-throw
-
-      if (!(response.getResult() instanceof InvocationException)) {
-        throw (Throwable) response.getResult();
-      }
-
-      if (((InvocationException) response.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
-        throw (Throwable) response.getResult();
-      }
-    }
-
-    return response;
+    return AsyncUtils.toSync(invoke(invocation));
   }
 
   private static void updateRetryStatus(Invocation invocation) {
@@ -243,39 +209,6 @@ public final class InvokerUtils {
 
     invocation.addLocalContext(RetryContext.RETRY_CONTEXT,
         new RetryContext(GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName())));
-  }
-
-  private static Response decorateSyncRetry(Invocation invocation, GovernanceRequestExtractor request) {
-    try {
-      // governance implementations.
-      RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
-      Retry retry = retryHandler.getActuator(request);
-      if (retry != null) {
-        CheckedFunction0<Response> supplier = Retry
-            .decorateCheckedSupplier(retry, () -> innerSyncInvokeImpl(invocation));
-        return Try.of(supplier).get();
-      }
-
-      if (isCompatibleRetryEnabled(invocation)) {
-        // compatible implementation for retry in load balance module in old versions.
-        retry = getOrCreateCompatibleRetry(invocation);
-        CheckedFunction0<Response> supplier = Retry
-            .decorateCheckedSupplier(retry, () -> innerSyncInvokeImpl(invocation));
-        return Try.of(supplier).get();
-      }
-
-      // retry not enabled
-      return innerSyncInvokeImpl(invocation);
-    } catch (Throwable e) {
-      String message = String.format("invoke failed, operation %s, trace id %s",
-          invocation.getMicroserviceQualifiedName(),
-          invocation.getTraceId());
-      LOGGER.error(message, e);
-
-      Response response = Response.createConsumerFail(e, message);
-      invocation.onFinish(response);
-      return response;
-    }
   }
 
   private static boolean isCompatibleRetryEnabled(Invocation invocation) {

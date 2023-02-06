@@ -23,6 +23,8 @@ import java.util.List;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -52,12 +54,12 @@ public class TestSchemeInterfaceJaxrs implements CategorizedTestCase {
     try {
       jaxrs.reduce(1, 3);
       TestMgr.failed("should throw exception", new Exception());
-    } catch (Exception e) {
+    } catch (InvocationException e) {
       TestMgr.check(
           "Consumer method org.apache.servicecomb.demo.jaxrs.client.SchemeInterfaceJaxrs:reduce "
               + "not exist in contract, microserviceName=jaxrs, schemaId=SchemeInterfaceJaxrs; "
               + "new producer not running or not deployed.",
-          e.getMessage());
+          ((CommonExceptionData) e.getError()).getMessage());
     }
   }
 }

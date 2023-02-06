@@ -74,6 +74,9 @@ public class Exceptions {
   }
 
   public static InvocationException consumer(String code, String msg, Throwable cause) {
+    if (cause instanceof InvocationException) {
+      return (InvocationException) cause;
+    }
     return create(BAD_REQUEST, code, msg, cause);
   }
 
