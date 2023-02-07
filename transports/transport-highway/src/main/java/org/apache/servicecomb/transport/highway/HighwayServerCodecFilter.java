@@ -49,7 +49,8 @@ public class HighwayServerCodecFilter implements ProducerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1000;
+    // almost time, should be the first filter.
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 2000;
   }
 
   @Override

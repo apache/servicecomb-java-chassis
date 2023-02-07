@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.authentication;
 
-import org.apache.servicecomb.AuthHandlerBoot;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
@@ -33,7 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestAuthHandlerBoot {
+public class TestAuthenticationBootListener {
   private SCBEngine engine;
 
   @BeforeEach
@@ -54,20 +53,20 @@ public class TestAuthHandlerBoot {
     Microservice microservice = new Microservice();
     microservice.setInstance(microserviceInstance);
 
-    AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
+    AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
-    authHandlerBoot.onBootEvent(bootEvent);
+    authenticationBootListener.onBootEvent(bootEvent);
     Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
     Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
   }
 
   @Test
   public void testMicroserviceInstancePublicKey() {
-    AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
+    AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
-    authHandlerBoot.onBootEvent(bootEvent);
+    authenticationBootListener.onBootEvent(bootEvent);
     String publicKey = RegistrationManager.INSTANCE.getMicroserviceInstance().
         getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
     Assertions.assertNotNull(publicKey);

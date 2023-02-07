@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.authentication.provider;
+
+package org.apache.servicecomb.qps;
 
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
@@ -28,29 +28,45 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.stereotype.Component;
 
-public class ProviderAuthFilter implements ProducerFilter {
-  private final RSAProviderTokenManager authenticationTokenManager = new RSAProviderTokenManager();
+import com.google.common.annotations.VisibleForTesting;
+
+@Component
+public class ProviderFlowControlFilter implements ProducerFilter {
+  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1010;
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1990;
   }
 
   @Nonnull
   @Override
   public String getName() {
-    return "provider-public-key";
+    return "provider-flow-control";
   }
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    String token = invocation.getContext(Const.AUTH_TOKEN);
-    if (null != token && authenticationTokenManager.valid(token)) {
+    if (!Config.INSTANCE.isProviderEnabled()) {
       return nextNode.onFilter(invocation);
     }
-    return CompletableFuture.failedFuture(
-        new InvocationException(Status.UNAUTHORIZED, "public key authorization failed."));
+
+    String microserviceName = invocation.getContext(Const.SRC_MICROSERVICE);
+    QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(microserviceName, invocation);
+    if (qpsStrategy.isLimitNewRequest()) {
+      CommonExceptionData errorData = new CommonExceptionData(
+          "provider request rejected by flow control.");
+      return CompletableFuture.failedFuture(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
+    }
+    return nextNode.onFilter(invocation);
+  }
+
+  @VisibleForTesting
+  public QpsControllerManager getQpsControllerMgr() {
+    return qpsControllerMgr;
   }
 }

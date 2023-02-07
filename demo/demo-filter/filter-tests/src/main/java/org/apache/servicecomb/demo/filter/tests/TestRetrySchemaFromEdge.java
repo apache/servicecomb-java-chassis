@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.filter.retry;
+package org.apache.servicecomb.demo.filter.tests;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -26,27 +26,32 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class TestRetrySchemaFromClient implements CategorizedTestCase {
+public class TestRetrySchemaFromEdge implements CategorizedTestCase {
   interface RetrySchemaInf {
     boolean successWhenRetry();
 
     CompletableFuture<Boolean> successWhenRetryAsync();
   }
 
-  @RpcReference(microserviceName = "filterClient", schemaId = "RetryClientSchema")
+  @RpcReference(microserviceName = "filterEdge", schemaId = "RetryClientSchema")
   private RetrySchemaInf retrySchemaInf;
 
   RestTemplate restTemplate = RestTemplateBuilder.create();
 
-  private static final String SERVER = "servicecomb://filterClient";
+  RestTemplate springRestTemplate = new RestTemplate();
+
+  private static final String SERVER = "servicecomb://filterEdge";
+
+  private static final String EDGE_SERVER = "http://127.0.0.1:9090";
 
   @Override
   public String getMicroserviceName() {
-    return "filterClient";
+    return "filterEdge";
   }
 
   @Override
-  public void testAllTransport() throws Exception {
+  public void testRestTransport() throws Exception {
+    testRetryGovernanceFromEdgeDefaultDispatcher();
     testRetryGovernanceRestTemplate();
     testRetryGovernanceRpc();
   }
@@ -60,7 +65,16 @@ public class TestRetrySchemaFromClient implements CategorizedTestCase {
   }
 
   private void testRetryGovernanceRestTemplate() {
-    TestMgr.check(restTemplate.getForObject(SERVER + "/retry/governance/successWhenRetry", boolean.class), true);
-    TestMgr.check(restTemplate.getForObject(SERVER + "/retry/governance/successWhenRetry", boolean.class), true);
+    TestMgr.check(restTemplate.getForObject(
+        SERVER + "/retry/governance/successWhenRetry", boolean.class), true);
+    TestMgr.check(restTemplate.getForObject(
+        SERVER + "/retry/governance/successWhenRetry", boolean.class), true);
+  }
+
+  private void testRetryGovernanceFromEdgeDefaultDispatcher() {
+    TestMgr.check(springRestTemplate.getForObject(
+        EDGE_SERVER + "/service/filterClient/retry/governance/successWhenRetry", boolean.class), true);
+    TestMgr.check(springRestTemplate.getForObject(
+        EDGE_SERVER + "/service/filterClient/retry/governance/successWhenRetry", boolean.class), true);
   }
 }

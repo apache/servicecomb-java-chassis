@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,12 @@ public class FilterInvocationCaller implements InvocationCaller {
 
   protected CompletableFuture<Object> doCall(@Nonnull PojoInvocation invocation) {
     return InvokerUtils.invoke(invocation)
-        .thenApply(invocation::convertResponse);
+        .thenApply(response -> {
+          if (response.isSucceed()) {
+            return invocation.convertResponse(response);
+          }
+          throw ExceptionFactory.convertConsumerException(response.getResult());
+        });
   }
 
   protected PojoInvocation logCreateInvocationException(Method method, Throwable throwable) {

@@ -25,6 +25,7 @@ import java.util.function.Function;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
@@ -64,11 +65,13 @@ public class TestFlowControl implements CategorizedTestCase {
             }
           } catch (InvocationException e) {
             TestMgr.check(e.getStatusCode(), 429);
-            TestMgr.check(e.getMessage(),
-                "InvocationException: code=429;msg=CommonExceptionData [message=" + role
-                    + " request rejected by qps flowcontrol]");
+            TestMgr.check(((CommonExceptionData) e.getErrorData()).getMessage(),
+                role + " request rejected by flow control.");
             failed.set(true);
             break;
+          } catch (Throwable e) {
+            e.printStackTrace();
+            TestMgr.fail("not expected error " + e.getMessage());
           }
         }
         countDownLatch.countDown();

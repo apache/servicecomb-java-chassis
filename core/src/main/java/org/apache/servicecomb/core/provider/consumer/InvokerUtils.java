@@ -327,6 +327,8 @@ public final class InvokerUtils {
 
     CompletableFuture<Response> result = new CompletableFuture<>();
     dcs.get().whenComplete((r, e) -> {
+      ContextUtils.setInvocationContext(invocation.getParentContext());
+
       if (e == null) {
         result.complete(r);
         return;

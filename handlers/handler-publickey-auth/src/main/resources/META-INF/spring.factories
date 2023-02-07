@@ -15,38 +15,5 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-servicecomb:
-  service:
-    application: filtertest
-    name: filterTests
-    version: 0.0.1
-
-    registry:
-      address: http://127.0.0.1:30100
-      autodiscovery: true
-      client:
-        timeout:
-          idle: 60
-          watch: 60
-      instance:
-        healthCheck:
-          interval: 3
-        pull:
-          interval: 90
-        watch: true
-
-  filter-chains:
-    enabled: true
-  invocation:
-    exception:
-      print-stack-trace: true
-  # test governance retry
-  matchGroup:
-    retry-governance: |
-      matches:
-        - apiPath:
-            prefix: "/retry/governance/"
-  retry:
-    retry-governance: |
-      maxAttempts: 2
-      retryOnResponseStatus: [500]
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.apache.servicecomb.authentication.AuthenticationConfiguration
