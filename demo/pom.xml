@@ -138,6 +138,11 @@
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>

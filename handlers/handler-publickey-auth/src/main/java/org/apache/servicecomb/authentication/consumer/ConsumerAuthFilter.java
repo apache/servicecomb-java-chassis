@@ -30,9 +30,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ConsumerAuthFilter implements ConsumerFilter {
   private RSAConsumerTokenManager authenticationTokenManager = new RSAConsumerTokenManager();
 

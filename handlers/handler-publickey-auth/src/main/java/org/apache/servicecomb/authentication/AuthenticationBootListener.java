@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb;
+package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
@@ -22,18 +22,11 @@ import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.springframework.stereotype.Component;
 
 /**
- *
  * initialize public and private key pair when system boot before registry instance to service center
- *
- *
  */
-@Component
-public class AuthHandlerBoot implements BootListener {
-
-
+public class AuthenticationBootListener implements BootListener {
   @Override
   public void onBootEvent(BootEvent event) {
     if (!EventType.BEFORE_REGISTRY.equals(event.getEventType())) {

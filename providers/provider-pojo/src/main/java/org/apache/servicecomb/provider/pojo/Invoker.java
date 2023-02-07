@@ -24,6 +24,22 @@ import java.lang.reflect.Proxy;
 import org.apache.servicecomb.core.SCBEngine;
 
 public class Invoker implements InvocationHandler {
+  public static final Method METHOD_HASH_CODE;
+
+  public static final Method METHOD_EQUALS;
+
+  public static final Method METHOD_TO_STRING;
+
+  static {
+    try {
+      METHOD_HASH_CODE = Object.class.getDeclaredMethod("hashCode");
+      METHOD_EQUALS = Object.class.getDeclaredMethod("equals", Object.class);
+      METHOD_TO_STRING = Object.class.getDeclaredMethod("toString");
+    } catch (NoSuchMethodException e) {
+      throw new Error(e);
+    }
+  }
+
   protected final PojoConsumerMetaRefresher metaRefresher;
 
   protected final PojoInvocationCreator invocationCreator;
@@ -66,6 +82,16 @@ public class Invoker implements InvocationHandler {
       return defaultMethodMeta.getOrCreateMethodHandle(proxy, method)
           .invokeWithArguments(args);
     }
+    if (METHOD_HASH_CODE.equals(method)) {
+      return objectHashCode(proxy);
+    }
+    if (METHOD_EQUALS.equals(method)) {
+      return objectEquals(proxy, args[0]);
+    }
+    if (METHOD_TO_STRING.equals(method)) {
+      return objectToString(proxy);
+    }
+
     SCBEngine.getInstance().ensureStatusUp();
     prepareInvocationCaller();
     return invocationCaller.call(method, metaRefresher, invocationCreator, args);
@@ -77,5 +103,21 @@ public class Invoker implements InvocationHandler {
     }
 
     this.invocationCaller = createInvocationCaller();
+  }
+
+  private String objectClassName(Object obj) {
+    return obj.getClass().getName();
+  }
+
+  private int objectHashCode(Object obj) {
+    return System.identityHashCode(obj);
+  }
+
+  private boolean objectEquals(Object obj, Object other) {
+    return obj == other;
+  }
+
+  private String objectToString(Object obj) {
+    return objectClassName(obj) + '@' + Integer.toHexString(objectHashCode(obj));
   }
 }
