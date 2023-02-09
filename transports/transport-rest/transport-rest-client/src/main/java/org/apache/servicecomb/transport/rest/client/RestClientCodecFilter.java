@@ -83,6 +83,7 @@ public class RestClientCodecFilter implements ConsumerFilter {
     return CompletableFuture.completedFuture(null)
         .thenCompose(v -> transportContextFactory.createHttpClientRequest(invocation).toCompletionStage())
         .thenAccept(httpClientRequest -> prepareTransportContext(invocation, httpClientRequest))
+        .thenAccept(v -> invocation.onStartSendRequest())
         .thenAccept(v -> encoder.encode(invocation))
         .thenCompose(v -> nextNode.onFilter(invocation))
         .thenApply(response -> decoder.decode(invocation, response))

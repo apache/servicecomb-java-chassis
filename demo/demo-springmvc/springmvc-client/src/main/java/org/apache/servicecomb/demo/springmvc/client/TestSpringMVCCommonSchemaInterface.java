@@ -44,7 +44,10 @@ public class TestSpringMVCCommonSchemaInterface implements CategorizedTestCase {
 
   private void testInvocationTimeoutInClientWait() {
     try {
-      client.testInvocationTimeoutInClientWait(500, "hello");
+      long begin = System.currentTimeMillis();
+      String result = client.testInvocationTimeoutInClientWait(1000, "hello");
+      System.out.println("test code from testInvocationTimeoutInClientWait: "
+          + (System.currentTimeMillis() - begin) + ":" + result);
       TestMgr.fail("should timeout");
     } catch (InvocationException e) {
       TestMgr.check(408, e.getStatusCode());
@@ -67,8 +70,12 @@ public class TestSpringMVCCommonSchemaInterface implements CategorizedTestCase {
     try {
       InvocationContext context = new InvocationContext();
       context.addLocalContext(ProcessingTimeStrategy.CHAIN_START_TIME, System.nanoTime());
-      context.addLocalContext(ProcessingTimeStrategy.CHAIN_PROCESSING, TimeUnit.SECONDS.toNanos(1));
-      client.testInvocationTimeout(context, 1, "hello");
+      context.addLocalContext(ProcessingTimeStrategy.CHAIN_PROCESSING, TimeUnit.SECONDS.toNanos(2));
+
+      long begin = System.currentTimeMillis();
+      String result = client.testInvocationTimeout(context, 10, "hello");
+      System.out.println("testInvocationAlreadyTimeoutInClient from invocation timeout: "
+          + (System.currentTimeMillis() - begin) + ":" + result);
       TestMgr.fail("should timeout");
     } catch (InvocationException e) {
       TestMgr.check(408, e.getStatusCode());

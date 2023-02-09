@@ -32,7 +32,9 @@ public class TestContentType {
   private RestTemplate restTemplate = RestTemplateBuilder.create();
 
   public void runAllTest() {
-    testGlobalSetting();
+    for(int i=0; i<10; i++) {
+      testGlobalSetting();
+    }
     testApiOperation();
     testRequestMapping();
     testResponseTypeOverwrite();

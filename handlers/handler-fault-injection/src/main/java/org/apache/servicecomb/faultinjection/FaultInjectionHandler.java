@@ -18,7 +18,6 @@
 package org.apache.servicecomb.faultinjection;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
@@ -45,14 +44,7 @@ public class FaultInjectionHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-
-    // prepare the key and lookup for request count.
-    String key = invocation.getTransport().getName() + invocation.getMicroserviceQualifiedName();
-    AtomicLong reqCount = FaultInjectionUtil.getOperMetTotalReq(key);
-    // increment the request count here after checking the delay/abort condition.
-    long reqCountCurrent = reqCount.getAndIncrement();
-
-    FaultParam param = new FaultParam(reqCountCurrent);
+    FaultParam param = new FaultParam();
     Context currentContext = Vertx.currentContext();
     if (currentContext != null && currentContext.isEventLoopContext()) {
       param.setVertx(currentContext.owner());

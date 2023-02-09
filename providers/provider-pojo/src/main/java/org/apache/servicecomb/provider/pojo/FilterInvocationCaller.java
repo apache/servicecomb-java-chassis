@@ -23,26 +23,20 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
-import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FilterInvocationCaller implements InvocationCaller {
-  private static final Logger LOGGER = LoggerFactory.getLogger(FilterInvocationCaller.class);
-
   // if not a sync method, should never throw exception directly
   @Override
   public Object call(Method method, PojoConsumerMetaRefresher metaRefresher, PojoInvocationCreator invocationCreator,
       Object[] args) {
-    CompletableFuture<Object> future = AsyncUtils
-        .tryCatchSupplier(() -> invocationCreator.create(method, metaRefresher, args))
-        .exceptionally(throwable -> logCreateInvocationException(method, throwable))
+    PojoInvocation invocation = invocationCreator.create(method, metaRefresher, args);
+    CompletableFuture<Object> future = CompletableFuture.completedFuture(invocation)
         .thenCompose(this::doCall);
 
-    return isAsyncMethod(method) ? future : AsyncUtils.toSync(future);
+    return isAsyncMethod(method) ? future : InvokerUtils.toSync(future, invocation.getWaitTime());
   }
 
   protected CompletableFuture<Object> doCall(@Nonnull PojoInvocation invocation) {
@@ -53,10 +47,5 @@ public class FilterInvocationCaller implements InvocationCaller {
           }
           throw ExceptionFactory.convertConsumerException(response.getResult());
         });
-  }
-
-  protected PojoInvocation logCreateInvocationException(Method method, Throwable throwable) {
-    LOGGER.error("failed to create invocation, method {}", method, throwable);
-    throw Exceptions.consumer("SCB_PROVIDER_POJO.400000001", throwable.getMessage(), throwable);
   }
 }

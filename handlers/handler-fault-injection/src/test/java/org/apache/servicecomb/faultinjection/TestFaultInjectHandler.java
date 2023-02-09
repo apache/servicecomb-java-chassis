@@ -19,7 +19,7 @@ package org.apache.servicecomb.faultinjection;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
@@ -117,9 +117,6 @@ public class TestFaultInjectHandler {
     handler.setFaultFeature(faultInjectionFeatureList);
 
     handler.handle(invocation, asyncResp);
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("highwayMicroserviceQualifiedName1");
-    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -140,9 +137,6 @@ public class TestFaultInjectHandler {
     handler.setFaultFeature(faultInjectionFeatureList);
 
     handler.handle(invocation, asyncResp);
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName2");
-    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -167,13 +161,14 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    handler.handle(invocation, ar -> {
-      //this case no delay/no abort so reponse is null, it should not enter this in this block.
-      isDelay = true;
-      isAbort = true;
-    });
-    Assertions.assertFalse(isDelay);
-    Assertions.assertFalse(isAbort);
+    AtomicInteger count = new AtomicInteger(0);
+
+    for (int i = 0; i < 100; i++) {
+      handler.handle(invocation, ar -> {
+        count.getAndIncrement();
+      });
+    }
+    Assertions.assertTrue(count.get() >= 5 && count.get() <= 20, "actual is " + count.get());
 
     System.getProperties()
         .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
@@ -181,9 +176,6 @@ public class TestFaultInjectHandler {
     System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
         .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName3");
-    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -208,21 +200,19 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    handler.handle(invocation, ar -> {
-      //this case no delay/no abort so reponse is null, it should not enter this in this block.
-      isDelay = true;
-      isAbort = true;
-    });
-    Assertions.assertFalse(isDelay);
-    Assertions.assertFalse(isAbort);
+    AtomicInteger count = new AtomicInteger(0);
+
+    for (int i = 0; i < 100; i++) {
+      handler.handle(invocation, ar -> {
+        count.getAndIncrement();
+      });
+    }
+    Assertions.assertTrue(count.get() >= 5 && count.get() <= 20, "actual is " + count.get());
 
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent");
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.percent");
     System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName4");
-    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -255,13 +245,15 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    handler.handle(invocation, ar -> {
-      //this case no delay/no abort so reponse is null, it should not enter this in this block.
-      isDelay = true;
-      isAbort = true;
-    });
-    Assertions.assertFalse(isDelay);
-    Assertions.assertFalse(isAbort);
+    AtomicInteger count = new AtomicInteger(0);
+
+    for (int i = 0; i < 100; i++) {
+      handler.handle(invocation, ar -> {
+        // 10% aborted
+        count.getAndIncrement();
+      });
+    }
+    Assertions.assertTrue(count.get() >= 5 && count.get() <= 20, "actual is " + count.get());
 
     System.getProperties()
         .remove(
@@ -273,9 +265,6 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove(
             "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName5");
-    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -308,14 +297,14 @@ public class TestFaultInjectHandler {
     List<Fault> faultInjectionFeatureList = Arrays.asList(abortFault, delayFault);
     handler.setFaultFeature(faultInjectionFeatureList);
 
-    handler.handle(invocation, ar -> {
-      //this case no delay/no abort so reponse is null, it should not enter this in this block.
-      isDelay = true;
-      isAbort = true;
-    });
+    AtomicInteger count = new AtomicInteger(0);
 
-    Assertions.assertFalse(isDelay);
-    Assertions.assertFalse(isAbort);
+    for (int i = 0; i < 100; i++) {
+      handler.handle(invocation, ar -> {
+        count.getAndIncrement();
+      });
+    }
+    Assertions.assertTrue(count.get() >= 5 && count.get() <= 20, "actual is " + count.get());
 
     System.getProperties()
         .remove(
@@ -329,9 +318,6 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove(
             "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName6");
-    Assertions.assertEquals(2, count.get());
   }
 
   /**
@@ -395,9 +381,6 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove(
             "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName7");
-    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -465,9 +448,6 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove(
             "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName8");
-    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -534,9 +514,6 @@ public class TestFaultInjectHandler {
     System.getProperties()
         .remove(
             "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName9");
-    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -598,9 +575,6 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName10");
-    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -659,9 +633,6 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName11");
-    Assertions.assertEquals(3, count.get());
   }
 
   /**
@@ -683,7 +654,7 @@ public class TestFaultInjectHandler {
     Mockito.when(invocation.getMicroserviceName()).thenReturn("carts6");
 
     DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam(3);
+    FaultParam faultParam = new FaultParam();
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
     faultParam.setVertx(vertx);
 
@@ -692,8 +663,5 @@ public class TestFaultInjectHandler {
         .remove("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent");
-
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    Assertions.assertEquals(1, count.get());
   }
 }

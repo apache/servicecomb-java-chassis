@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnProperty(value = AuthenticationConfiguration.ACCESS_CONTROL_ENABLED,
-    havingValue = "true", matchIfMissing = false)
+    havingValue = "true")
 public class AuthenticationConfiguration {
   public static final String ACCESS_CONTROL_PREFIX = "servicecomb.publicKey.accessControl";
 

@@ -44,6 +44,8 @@ servicecomb:
           interval: 10
         watch: true
       autodiscovery: true
+  filter-chains:
+    enabled: true
   uploads:
     directory: target
   http:
@@ -66,10 +68,7 @@ servicecomb:
         timeout: 1000
       testInvocationTimeoutWithInvocation:
         timeout: 1000
-  handler:
-    chain:
-      Provider:
-        default: test-provider, qps-flowcontrol-provider
+
   flowcontrol:
     strategy: MyStrategy
     Provider:
