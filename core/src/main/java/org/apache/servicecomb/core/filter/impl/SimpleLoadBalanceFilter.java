@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
-import org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -50,7 +49,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SimpleLoadBalanceFilter implements ConsumerFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceFilter.class);
 
   public static final String NAME = "simple-load-balance";
 
