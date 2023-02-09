@@ -17,14 +17,14 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -34,9 +34,7 @@ import org.mockito.Mockito;
 
 import com.netflix.config.DynamicProperty;
 
-import io.vertx.core.Vertx;
-
-public class DelayFaultTest {
+public class TestConsumerDelayFaultFilter {
   private Invocation invocation;
 
   @BeforeEach
@@ -66,7 +64,7 @@ public class DelayFaultTest {
   }
 
   @Test
-  public void injectFaultVertxDelay() throws InterruptedException {
+  public void injectFaultVertxDelay() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
     ArchaiusUtils
@@ -79,24 +77,16 @@ public class DelayFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
-    DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    CountDownLatch latch = new CountDownLatch(1);
-    delayFault.injectFault(invocation, faultParam, response -> {
-      resultHolder.value = response.getResult();
-      latch.countDown();
-    });
-
-    latch.await(10, TimeUnit.SECONDS);
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = delayFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 
   @Test
-  public void injectFaultSystemDelay() throws InterruptedException {
+  public void injectFaultSystemDelay() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
     ArchaiusUtils
@@ -109,22 +99,16 @@ public class DelayFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
-    DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam();
-
-    Holder<String> resultHolder = new Holder<>();
-    CountDownLatch latch = new CountDownLatch(1);
-    delayFault.injectFault(invocation, faultParam, response -> {
-      resultHolder.value = response.getResult();
-      latch.countDown();
-    });
-
-    latch.await(10, TimeUnit.SECONDS);
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = delayFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 
   @Test
-  public void injectFaultNotDelay() throws InterruptedException {
+  public void injectFaultNotDelay() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
     ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "0");
@@ -136,24 +120,16 @@ public class DelayFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
-    DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    CountDownLatch latch = new CountDownLatch(1);
-    delayFault.injectFault(invocation, faultParam, response -> {
-      resultHolder.value = response.getResult();
-      latch.countDown();
-    });
-
-    latch.await(3, TimeUnit.SECONDS);
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = delayFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 
   @Test
-  public void injectFaultNoPercentageConfig() {
+  public void injectFaultNoPercentageConfig() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
 
@@ -161,19 +137,16 @@ public class DelayFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
-    DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    delayFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
-
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = delayFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 
   @Test
-  public void injectFaultNoDelayMsConfig() {
+  public void injectFaultNoDelayMsConfig() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
 
@@ -181,14 +154,11 @@ public class DelayFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
         .getString());
 
-    DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    delayFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
-
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = delayFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 }
