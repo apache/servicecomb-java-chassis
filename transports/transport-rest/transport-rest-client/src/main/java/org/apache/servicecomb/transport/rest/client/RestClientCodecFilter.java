@@ -16,10 +16,12 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
@@ -97,8 +99,27 @@ public class RestClientCodecFilter implements ConsumerFilter {
   protected void prepareTransportContext(Invocation invocation, HttpClientRequest httpClientRequest) {
     invocation.getInvocationStageTrace().finishGetConnection();
 
+    copyExtraHttpHeaders(invocation, httpClientRequest);
+
     RestClientTransportContext transportContext = transportContextFactory.create(invocation, httpClientRequest);
     invocation.setTransportContext(transportContext);
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void copyExtraHttpHeaders(Invocation invocation, HttpClientRequest httpClientRequest) {
+    Map<String, String> httpHeaders = (Map<String, String>) invocation.getHandlerContext()
+        .get(RestConst.CONSUMER_HEADER);
+    if (httpHeaders == null) {
+      return;
+    }
+    httpHeaders.forEach((key, value) -> {
+      if ("Content-Length".equalsIgnoreCase(key)) {
+        return;
+      }
+      if (null != value) {
+        httpClientRequest.putHeader(key, value);
+      }
+    });
   }
 
   protected void finishClientFiltersResponse(Invocation invocation) {

@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -49,6 +48,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.annotations.VisibleForTesting;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
 
@@ -224,7 +224,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
       invocation.setSuccessResponseType(TypeFactory.defaultInstance().constructType(responseType));
     }
 
-    invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
+    invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders.toSingleValueMap());
     return invocation;
   }
 
