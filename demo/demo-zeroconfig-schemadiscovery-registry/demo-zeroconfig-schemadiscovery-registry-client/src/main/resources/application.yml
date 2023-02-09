@@ -36,12 +36,9 @@ servicecomb:
       refreshMode: 0
       # refresh_interval: 5000
       # refreshPort: 30114
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
-      Provider:
-        default: governance-provider
+
+  filter-chains:
+    enabled: true
 
   governance:
     GovernanceEndpoint.helloRpc:

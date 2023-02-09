@@ -24,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
-import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
 public class FilterInvocationCaller implements InvocationCaller {

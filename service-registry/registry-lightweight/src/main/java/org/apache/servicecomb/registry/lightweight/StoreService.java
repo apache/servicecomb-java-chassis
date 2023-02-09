@@ -67,11 +67,11 @@ public class StoreService {
       return;
     }
 
-    LOGGER.error("register instance failed, serviceId={}, instanceId={}, endpoints={}, message={}.",
+    LOGGER.error("register instance failed, serviceId={}, instanceId={}, endpoints={}.",
         request.getServiceId(),
         request.getInstanceId(),
         request.getEndpoints(),
-        throwable.getMessage());
+        throwable);
   }
 
   private CompletableFuture<InstanceStore> doRegisterAsync(RegisterRequest request) {
