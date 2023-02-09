@@ -21,3 +21,4 @@ org.apache.servicecomb.core.exception.converter.IllegalArgumentExceptionConverte
 org.apache.servicecomb.core.exception.converter.TimeoutExceptionConverter
 org.apache.servicecomb.core.exception.converter.ConnectTimeoutExceptionConverter
 org.apache.servicecomb.core.exception.converter.DefaultExceptionConverter
+org.apache.servicecomb.core.exception.converter.ServiceCombExceptionConverter

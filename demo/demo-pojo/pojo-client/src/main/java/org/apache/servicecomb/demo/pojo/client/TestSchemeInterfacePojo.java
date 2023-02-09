@@ -40,7 +40,7 @@ public class TestSchemeInterfacePojo implements CategorizedTestCase {
       TestMgr.check(
           "Consumer method org.apache.servicecomb.demo.pojo.client.SchemeInterfacePojo:"
               + "add not exist in contract, microserviceName=pojo, "
-              + "schemaId=SchemeInterfacePojoImpl; new producer not running or not deployed.",
+              + "schemaId=SchemeInterfacePojoImpl.",
           ((CommonExceptionData) e.getErrorData()).getMessage());
     }
   }
