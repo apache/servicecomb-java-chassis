@@ -28,7 +28,5 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
+  filter-chains:
+    enabled: true
