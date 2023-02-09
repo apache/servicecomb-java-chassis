@@ -17,11 +17,16 @@
 
 package org.apache.servicecomb.faultinjection;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -32,9 +37,7 @@ import org.mockito.Mockito;
 
 import com.netflix.config.DynamicProperty;
 
-import io.vertx.core.Vertx;
-
-public class AbortFaultTest {
+public class TestConsumerAbortFaultFilter {
   private Invocation invocation;
 
   @BeforeEach
@@ -77,14 +80,18 @@ public class AbortFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
-    AbortFault abortFault = new AbortFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
+    ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
+
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
 
     Holder<InvocationException> resultHolder = new Holder<>();
-    abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
-
+    CompletableFuture<Response> result = abortFault.onFilter(invocation, filterNode);
+    result.whenComplete((r, e) -> {
+      if (e != null) {
+        resultHolder.value = (InvocationException) e;
+      }
+    });
+    Assertions.assertThrows(ExecutionException.class, () -> result.get());
     Assertions.assertEquals(421, resultHolder.value.getStatusCode());
     Assertions.assertEquals("aborted by fault inject", resultHolder.value.getReasonPhrase());
     Assertions.assertEquals("CommonExceptionData [message=aborted by fault inject]",
@@ -92,7 +99,7 @@ public class AbortFaultTest {
   }
 
   @Test
-  public void injectFaultNoError() {
+  public void injectFaultNoError() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
     ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "0");
@@ -104,19 +111,16 @@ public class AbortFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
-    AbortFault abortFault = new AbortFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
-
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = abortFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 
   @Test
-  public void injectFaultNoPercentageConfig() {
+  public void injectFaultNoPercentageConfig() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
 
@@ -124,19 +128,16 @@ public class AbortFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
-    AbortFault abortFault = new AbortFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
-
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = abortFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 
   @Test
-  public void injectFaultNoErrorCodeConfig() {
+  public void injectFaultNoErrorCodeConfig() throws Exception {
     ArchaiusUtils
         .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
 
@@ -144,14 +145,11 @@ public class AbortFaultTest {
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
         .getString());
 
-    AbortFault abortFault = new AbortFault();
-    FaultParam faultParam = new FaultParam();
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
-    faultParam.setVertx(vertx);
-
-    Holder<String> resultHolder = new Holder<>();
-    abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
-
-    Assertions.assertEquals("success", resultHolder.value);
+    ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
+    FilterNode filterNode = Mockito.mock(FilterNode.class);
+    Mockito.when(filterNode.onFilter(invocation))
+        .thenReturn(CompletableFuture.completedFuture(Response.succResp("success")));
+    CompletableFuture<Response> result = abortFault.onFilter(invocation, filterNode);
+    Assertions.assertEquals("success", result.get().getResult());
   }
 }

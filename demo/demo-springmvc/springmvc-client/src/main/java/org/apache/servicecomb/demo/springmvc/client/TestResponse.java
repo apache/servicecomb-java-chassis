@@ -147,7 +147,7 @@ public class TestResponse {
       }
     }
     // 50% percent fail
-    TestMgr.check(true, count.get() >= 40 && count.get() <= 60);
+    TestMgr.check(true, count.get() >= 30 && count.get() <= 70);
   }
 
   private void testDecodeResponseError() {

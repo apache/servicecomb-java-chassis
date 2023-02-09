@@ -31,9 +31,6 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-
 public class ConsumerAbortFaultFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerAbortFaultFilter.class);
 
@@ -54,12 +51,6 @@ public class ConsumerAbortFaultFilter implements ConsumerFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    FaultParam param = new FaultParam();
-    Context currentContext = Vertx.currentContext();
-    if (currentContext != null && currentContext.isEventLoopContext()) {
-      param.setVertx(currentContext.owner());
-    }
-
     if (!shouldAbort(invocation)) {
       return nextNode.onFilter(invocation);
     }

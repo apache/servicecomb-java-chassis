@@ -48,12 +48,6 @@ public class ConsumerDelayFaultFilter implements ConsumerFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    FaultParam param = new FaultParam();
-    Context currentContext = Vertx.currentContext();
-    if (currentContext != null && currentContext.isEventLoopContext()) {
-      param.setVertx(currentContext.owner());
-    }
-
     if (!shouldDelay(invocation)) {
       return nextNode.onFilter(invocation);
     }
@@ -66,15 +60,15 @@ public class ConsumerDelayFaultFilter implements ConsumerFilter {
       return nextNode.onFilter(invocation);
     }
 
-    return executeDelay(param, invocation, nextNode, delay);
+    return executeDelay(invocation, nextNode, delay);
   }
 
-  private CompletableFuture<Response> executeDelay(FaultParam faultParam, Invocation invocation, FilterNode nextNode,
+  private CompletableFuture<Response> executeDelay(Invocation invocation, FilterNode nextNode,
       long delay) {
-    Vertx vertx = faultParam.getVertx();
-    if (vertx != null) {
+    Context currentContext = Vertx.currentContext();
+    if (currentContext != null && currentContext.isEventLoopContext()) {
       CompletableFuture<Response> result = new CompletableFuture<>();
-      vertx.setTimer(delay, timeID -> nextNode.onFilter(invocation).whenComplete((r, e) -> {
+      currentContext.owner().setTimer(delay, timeID -> nextNode.onFilter(invocation).whenComplete((r, e) -> {
             if (e == null) {
               result.complete(r);
             } else {
