@@ -22,18 +22,14 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.core.governance.MatchType;
-import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
+import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
-import org.apache.servicecomb.registry.api.MicroserviceKey;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -42,43 +38,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 
-public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInstanceIsolationFilter.class);
+public class ProviderBulkheadFilter implements ProducerFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderBulkheadFilter.class);
 
-  private final InstanceIsolationHandler instanceIsolationHandler;
+  private final BulkheadHandler bulkheadHandler;
 
   @Autowired
-  public ConsumerInstanceIsolationFilter(InstanceIsolationHandler instanceIsolationHandler) {
-    this.instanceIsolationHandler = instanceIsolationHandler;
+  public ProviderBulkheadFilter(BulkheadHandler bulkheadHandler) {
+    this.bulkheadHandler = bulkheadHandler;
   }
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1050;
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1880;
   }
 
   @Nonnull
   @Override
   public String getName() {
-    return "instance-isolation";
+    return "provider-bulkhead";
   }
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    if (invocation.getEndpoint() == null) {
-      return CompletableFuture.failedFuture(new InvocationException(Status.INTERNAL_SERVER_ERROR,
-          new CommonExceptionData("instance isolation should work after load balancer.")));
-    }
+
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation, nextNode);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
-    addCircuitBreaker(dcs, request);
+    addBulkhead(dcs, request);
 
     CompletableFuture<Response> future = new CompletableFuture<>();
 
@@ -88,12 +81,11 @@ public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
         return;
       }
 
-      if (e instanceof CallNotPermittedException) {
-        LOGGER.warn("instance isolation circuitBreaker is open by policy : {}", e.getMessage());
-        ServiceCenterEventBus.getEventBus().post(createMicroserviceInstanceChangedEvent(invocation));
-        // return 503 so that consumer can retry
-        future.complete(Response.failResp(new InvocationException(Status.SERVICE_UNAVAILABLE,
-            new CommonExceptionData("instance isolation circuitBreaker is open."))));
+      if (e instanceof BulkheadFullException) {
+        future.completeExceptionally(
+            new InvocationException(429, "bulkhead is full and does not permit further calls.",
+                new CommonExceptionData("bulkhead is full and does not permit further calls.")));
+        LOGGER.warn("bulkhead is full and does not permit further calls by policy : {}", e.getMessage());
       } else {
         future.completeExceptionally(e);
       }
@@ -102,19 +94,10 @@ public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
     return future;
   }
 
-  private Object createMicroserviceInstanceChangedEvent(Invocation invocation) {
-    MicroserviceInstanceChangedEvent event = new MicroserviceInstanceChangedEvent();
-    MicroserviceKey key = new MicroserviceKey();
-    key.setAppId(invocation.getAppId());
-    key.setServiceName(invocation.getMicroserviceName());
-    event.setKey(key);
-    return event;
-  }
-
-  private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
-    CircuitBreaker circuitBreaker = instanceIsolationHandler.getActuator(request);
-    if (circuitBreaker != null) {
-      dcs.withCircuitBreaker(circuitBreaker);
+  private void addBulkhead(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
+    Bulkhead bulkhead = bulkheadHandler.getActuator(request);
+    if (bulkhead != null) {
+      dcs.withBulkhead(bulkhead);
     }
   }
 
