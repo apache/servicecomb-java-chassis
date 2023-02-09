@@ -27,3 +27,5 @@ service_description:
 servicecomb:
   rest:
     address: 0.0.0.0:8080
+  filter-chains:
+    enabled: true

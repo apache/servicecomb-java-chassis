@@ -25,7 +25,5 @@ service_description:
   name: demo-local-registry-client
   version: 0.0.1
 servicecomb:
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
+  filter-chains:
+    enabled: true
