@@ -26,9 +26,12 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -53,6 +56,7 @@ import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -192,7 +196,7 @@ public final class InvokerUtils {
     if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
       throw new IllegalStateException("Can not execute sync logic in event loop.");
     }
-    return AsyncUtils.toSync(invoke(invocation));
+    return toSync(invoke(invocation), invocation.getWaitTime());
   }
 
   private static void updateRetryStatus(Invocation invocation) {
@@ -226,7 +230,7 @@ public final class InvokerUtils {
             + GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName()) + 1)
         .retryOnResult(InvokerUtils::canRetryForStatusCode)
         .retryOnException(InvokerUtils::canRetryForException)
-        .waitDuration(Duration.ofMillis(0))
+        .waitDuration(Duration.ofMillis(1))
         .build();
     RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
     return retryRegistry.retry(invocation.getMicroserviceName());
@@ -261,50 +265,6 @@ public final class InvokerUtils {
     }
   }
 
-  private static Supplier<CompletionStage<Response>> reactiveInvokeImpl(Invocation invocation) {
-    return () -> {
-      CompletableFuture<Response> result = new CompletableFuture<>();
-      try {
-        invocation.onStart(null, System.nanoTime());
-        updateRetryStatus(invocation);
-
-        ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
-        invocation.setResponseExecutor(respExecutor);
-        invocation.onStartHandlersRequest();
-        invocation.next(ar -> {
-          ContextUtils.setInvocationContext(invocation.getParentContext());
-
-          invocation.getInvocationStageTrace().finishHandlersResponse();
-          invocation.onFinish(ar);
-          try {
-            if (ar.isFailed()) {
-              // re-throw exception to make sure retry based on exception
-              // for InvocationException, users can configure status code for retry
-              // for 490, details error are wrapped, need re-throw
-
-              if (!(ar.getResult() instanceof InvocationException)) {
-                result.completeExceptionally(ar.getResult());
-                return;
-              }
-
-              if (((InvocationException) ar.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
-                result.completeExceptionally(ar.getResult());
-                return;
-              }
-            }
-
-            result.complete(ar);
-          } finally {
-            ContextUtils.removeInvocationContext();
-          }
-        });
-      } catch (Throwable e) {
-        result.completeExceptionally(e);
-      }
-      return result;
-    };
-  }
-
   public static boolean isSyncMethod(@Nonnull Method method) {
     return !isAsyncMethod(method);
   }
@@ -312,6 +272,22 @@ public final class InvokerUtils {
   public static boolean isAsyncMethod(@Nonnull Method method) {
     // currently only support CompletableFuture for async method definition
     return method.getReturnType().equals(CompletableFuture.class);
+  }
+
+  public static <T> T toSync(CompletableFuture<T> future, long waitInMillis) {
+    try {
+      if (waitInMillis > 0) {
+        return future.get(waitInMillis, TimeUnit.MILLISECONDS);
+      }
+      return future.get();
+    } catch (ExecutionException executionException) {
+      throw AsyncUtils.rethrow(executionException.getCause());
+    } catch (TimeoutException timeoutException) {
+      throw new InvocationException(Status.REQUEST_TIMEOUT,
+          new CommonExceptionData("Invocation Timeout."), timeoutException);
+    } catch (Throwable e) {
+      throw AsyncUtils.rethrow(e);
+    }
   }
 
   /**
@@ -367,12 +343,11 @@ public final class InvokerUtils {
       // for 490, details error are wrapped, need re-throw
 
       if (!(ar.getResult() instanceof InvocationException)) {
-        AsyncUtils.rethrow(ar.getResult());
-        return;
+        throw AsyncUtils.rethrow(ar.getResult());
       }
 
       if (((InvocationException) ar.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
-        AsyncUtils.rethrow(ar.getResult());
+        throw AsyncUtils.rethrow(ar.getResult());
       }
     }
   }
@@ -389,10 +364,9 @@ public final class InvokerUtils {
   @VisibleForTesting
   static boolean canRetryForStatusCode(Object response) {
     // retry on status code 503
-    if (!(response instanceof Response)) {
+    if (!(response instanceof Response resp)) {
       return false;
     }
-    Response resp = (Response) response;
     if (!resp.isFailed()) {
       return false;
     }

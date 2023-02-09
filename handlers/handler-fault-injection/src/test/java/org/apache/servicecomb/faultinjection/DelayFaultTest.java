@@ -19,7 +19,6 @@ package org.apache.servicecomb.faultinjection;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
@@ -40,12 +39,10 @@ import io.vertx.core.Vertx;
 public class DelayFaultTest {
   private Invocation invocation;
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
   public void before() {
     ArchaiusUtils.resetConfig();
     FaultInjectionConfig.getCfgCallback().clear();
-    FaultInjectionUtil.getRequestCount().clear();
     FaultInjectionUtil.getConfigCenterValue().clear();
 
     invocation = Mockito.mock(Invocation.class);
@@ -83,7 +80,7 @@ public class DelayFaultTest {
         .getString());
 
     DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam(1);
+    FaultParam faultParam = new FaultParam();
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
     faultParam.setVertx(vertx);
 
@@ -95,8 +92,6 @@ public class DelayFaultTest {
     });
 
     latch.await(10, TimeUnit.SECONDS);
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    Assertions.assertEquals(1, count.get());
     Assertions.assertEquals("success", resultHolder.value);
   }
 
@@ -115,7 +110,7 @@ public class DelayFaultTest {
         .getString());
 
     DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam(1);
+    FaultParam faultParam = new FaultParam();
 
     Holder<String> resultHolder = new Holder<>();
     CountDownLatch latch = new CountDownLatch(1);
@@ -125,8 +120,6 @@ public class DelayFaultTest {
     });
 
     latch.await(10, TimeUnit.SECONDS);
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    Assertions.assertEquals(1, count.get());
     Assertions.assertEquals("success", resultHolder.value);
   }
 
@@ -144,7 +137,7 @@ public class DelayFaultTest {
         .getString());
 
     DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam(1);
+    FaultParam faultParam = new FaultParam();
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
     faultParam.setVertx(vertx);
 
@@ -156,8 +149,6 @@ public class DelayFaultTest {
     });
 
     latch.await(3, TimeUnit.SECONDS);
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    Assertions.assertEquals(1, count.get());
     Assertions.assertEquals("success", resultHolder.value);
   }
 
@@ -171,15 +162,13 @@ public class DelayFaultTest {
         .getString());
 
     DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam(1);
+    FaultParam faultParam = new FaultParam();
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
     faultParam.setVertx(vertx);
 
     Holder<String> resultHolder = new Holder<>();
     delayFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    Assertions.assertEquals(1, count.get());
     Assertions.assertEquals("success", resultHolder.value);
   }
 
@@ -193,15 +182,13 @@ public class DelayFaultTest {
         .getString());
 
     DelayFault delayFault = new DelayFault();
-    FaultParam faultParam = new FaultParam(10);
+    FaultParam faultParam = new FaultParam();
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
     faultParam.setVertx(vertx);
 
     Holder<String> resultHolder = new Holder<>();
     delayFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
-    AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    Assertions.assertEquals(1, count.get());
     Assertions.assertEquals("success", resultHolder.value);
   }
 }

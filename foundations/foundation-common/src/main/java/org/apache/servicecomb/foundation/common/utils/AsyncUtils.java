@@ -17,6 +17,7 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 public final class AsyncUtils {
@@ -47,30 +48,24 @@ public final class AsyncUtils {
   }
 
   /**
-   * throws {@code exception} as unchecked exception, without wrapping exception.
+   * throws {@code exception} as RuntimeException.
    *
    * @param exception exception which will be rethrow
-   * @throws T {@code exception} as unchecked exception
    */
-  @SuppressWarnings("unchecked")
-  public static <T extends Throwable> void rethrow(Throwable exception) throws T {
-    throw (T) exception;
+  public static RuntimeException rethrow(Throwable exception) {
+    if (exception instanceof RuntimeException) {
+      return (RuntimeException) exception;
+    }
+    return new RuntimeException(exception);
   }
 
   public static <T> T toSync(CompletableFuture<T> future) {
     try {
       return future.get();
+    } catch (ExecutionException executionException) {
+      throw rethrow(executionException.getCause());
     } catch (Throwable e) {
-      rethrow(e.getCause());
-      return null;
-    }
-  }
-
-  public static void waitQuietly(CompletableFuture<?> future) {
-    try {
-      future.get();
-    } catch (Exception e) {
-      // just eat the exception
+      throw rethrow(e);
     }
   }
 }

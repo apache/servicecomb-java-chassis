@@ -18,6 +18,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
@@ -25,6 +26,7 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.ResponseEntity;
 
@@ -133,20 +135,19 @@ public class TestResponse {
   }
 
   private void testAbort() {
-    StringBuilder result = new StringBuilder();
-    for (int i = 0; i < 4; ++i) {
-      String response;
+    AtomicInteger count = new AtomicInteger(0);
+    for (int i = 0; i < 100; ++i) {
       try {
-        response = intf.testAbort();
+        String response = intf.testAbort();
+        count.incrementAndGet();
+        TestMgr.check("OK", response);
       } catch (InvocationException e) {
-        response = e.getMessage();
+        TestMgr.check(421, e.getStatusCode());
+        TestMgr.check("aborted by fault inject", ((CommonExceptionData) e.getErrorData()).getMessage());
       }
-      result.append(response).append("|");
     }
-    TestMgr.check(
-        "OK|InvocationException: code=421;msg=CommonExceptionData [message=aborted by fault inject]|"
-            + "OK|InvocationException: code=421;msg=CommonExceptionData [message=aborted by fault inject]|",
-        result.toString());
+    // 50% percent fail
+    TestMgr.check(true, count.get() >= 40 && count.get() <= 60);
   }
 
   private void testDecodeResponseError() {

@@ -72,7 +72,7 @@ public class FilterNode {
 
   private Response rethrowExceptionInResponse(Response response) {
     if (response.isFailed() && response.getResult() instanceof Throwable) {
-      AsyncUtils.rethrow(response.getResult());
+      throw AsyncUtils.rethrow(response.getResult());
     }
 
     return response;

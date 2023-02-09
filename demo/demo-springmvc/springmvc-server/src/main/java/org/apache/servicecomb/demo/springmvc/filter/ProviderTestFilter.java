@@ -14,22 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.springmvc.handler;
+package org.apache.servicecomb.demo.springmvc.filter;
 
 
-import org.apache.servicecomb.core.Handler;
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
+@Component
+public class ProviderTestFilter implements ProducerFilter {
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1800;
+  }
 
-public class ProviderTestHandler implements Handler {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTestHandler.class);
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-provider";
+  }
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     invocation.addContext("k", "v");
-    invocation.next(asyncResp);
+    return nextNode.onFilter(invocation);
   }
 }

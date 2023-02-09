@@ -498,10 +498,23 @@ public class Invocation extends SwaggerInvocation {
   // ensure sync consumer invocation response flow not run in eventLoop
   public <T> CompletableFuture<T> optimizeSyncConsumerThread(CompletableFuture<T> future) {
     if (sync && !InvokerUtils.isInEventLoop()) {
-      AsyncUtils.waitQuietly(future);
+      return AsyncUtils.tryCatchSupplier(() -> InvokerUtils.toSync(future, getWaitTime()));
     }
 
     return future;
+  }
+
+  public long getWaitTime() {
+    if (getOperationMeta().getConfig().getMsInvocationTimeout() > 0) {
+      // if invocation timeout configured, use it.
+      return getOperationMeta().getConfig().getMsInvocationTimeout();
+    }
+
+    // In invocation handlers, may call other microservices, invocation
+    // timeout may be much longer than request timeout.
+    // But this is quite rare, for simplicity, default two times of request timeout.
+    // If users need longer timeout, can configure invocation timeout.
+    return getOperationMeta().getConfig().getMsRequestTimeout() * 2;
   }
 
   /**

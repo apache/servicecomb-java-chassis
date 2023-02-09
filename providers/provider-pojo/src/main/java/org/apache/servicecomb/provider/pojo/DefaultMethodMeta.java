@@ -49,8 +49,7 @@ public class DefaultMethodMeta {
 
       return createForJava8(proxy, method);
     } catch (Exception e) {
-      AsyncUtils.rethrow(e);
-      return null;
+      throw AsyncUtils.rethrow(e);
     }
   }
 

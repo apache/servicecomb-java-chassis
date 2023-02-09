@@ -14,29 +14,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.faultinjection;
 
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
-public class DelayFault extends AbstractFault {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DelayFault.class);
+public class ConsumerDelayFaultFilter implements ConsumerFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDelayFaultFilter.class);
 
   @Override
-  public int getOrder() {
-    return 100;
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1030;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "consumer-delay-fault";
   }
 
   @Override
-  public void injectFault(Invocation invocation, FaultParam faultParam, AsyncResponse asynResponse) {
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    FaultParam param = new FaultParam();
+    Context currentContext = Vertx.currentContext();
+    if (currentContext != null && currentContext.isEventLoopContext()) {
+      param.setVertx(currentContext.owner());
+    }
+
     if (!shouldDelay(invocation)) {
-      asynResponse.success(SUCCESS_RESPONSE);
-      return;
+      return nextNode.onFilter(invocation);
     }
 
     LOGGER.debug("Fault injection: delay is added for the request by fault inject handler");
@@ -44,18 +63,26 @@ public class DelayFault extends AbstractFault {
         "delay.fixedDelay");
     if (delay == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: delay is not configured");
-      asynResponse.success(SUCCESS_RESPONSE);
-      return;
+      return nextNode.onFilter(invocation);
     }
 
-    executeDelay(faultParam, asynResponse, delay);
+    return executeDelay(param, invocation, nextNode, delay);
   }
 
-  private void executeDelay(FaultParam faultParam, AsyncResponse asynResponse, long delay) {
+  private CompletableFuture<Response> executeDelay(FaultParam faultParam, Invocation invocation, FilterNode nextNode,
+      long delay) {
     Vertx vertx = faultParam.getVertx();
     if (vertx != null) {
-      vertx.setTimer(delay, timeID -> asynResponse.success(SUCCESS_RESPONSE));
-      return;
+      CompletableFuture<Response> result = new CompletableFuture<>();
+      vertx.setTimer(delay, timeID -> nextNode.onFilter(invocation).whenComplete((r, e) -> {
+            if (e == null) {
+              result.complete(r);
+            } else {
+              result.completeExceptionally(e);
+            }
+          }
+      ));
+      return result;
     }
 
     try {
@@ -63,7 +90,7 @@ public class DelayFault extends AbstractFault {
     } catch (InterruptedException e) {
       LOGGER.info("Interrupted exception is received");
     }
-    asynResponse.success(SUCCESS_RESPONSE);
+    return nextNode.onFilter(invocation);
   }
 
   private boolean shouldDelay(Invocation invocation) {

@@ -96,8 +96,7 @@ public class HighwayClientFilter implements ConsumerFilter {
     try {
       return HighwayCodec.decodeResponse(invocation, operationProtobuf, tcpData);
     } catch (Exception e) {
-      AsyncUtils.rethrow(e);
-      return null;
+      throw AsyncUtils.rethrow(e);
     }
   }
 

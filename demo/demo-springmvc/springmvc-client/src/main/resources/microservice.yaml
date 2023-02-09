@@ -34,16 +34,15 @@ servicecomb:
         pull:
           interval: 90
         watch: true
+  filter-chains:
+    enabled: true
   rest:
     client:
       connection:
         compression: true
   references:
     version-rule: 0+
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance,fault-injection-consumer
+
   invocation:
     timeout:
       check:
@@ -86,6 +85,10 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
+
+  faultInjection:
+    enabled: true
+
   governance:
     Consumer:
       springmvc:
