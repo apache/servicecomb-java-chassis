@@ -30,9 +30,5 @@ servicecomb:
       mode: multicast
   rest:
     address: 0.0.0.0:8080
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
-      Provider:
-        default: governance-provider
+  filter-chains:
+    enabled: true

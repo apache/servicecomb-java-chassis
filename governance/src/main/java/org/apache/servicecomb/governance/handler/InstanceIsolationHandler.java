@@ -79,7 +79,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   public CircuitBreakerPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
     if (StringUtils.isEmpty(requestExtractor.serviceName()) || StringUtils.isEmpty(
         requestExtractor.instanceId())) {
-      LOGGER.info("Isolation is not properly configured, service id or instance id is empty.");
+      LOGGER.debug("Isolation is not properly configured, service id or instance id is empty.");
       return null;
     }
     return matchersManager.match(requestExtractor, instanceIsolationProperties.getParsedEntity());
