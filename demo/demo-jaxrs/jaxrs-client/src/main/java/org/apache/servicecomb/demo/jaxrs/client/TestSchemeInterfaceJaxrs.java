@@ -57,8 +57,7 @@ public class TestSchemeInterfaceJaxrs implements CategorizedTestCase {
     } catch (InvocationException e) {
       TestMgr.check(
           "Consumer method org.apache.servicecomb.demo.jaxrs.client.SchemeInterfaceJaxrs:reduce "
-              + "not exist in contract, microserviceName=jaxrs, schemaId=SchemeInterfaceJaxrs; "
-              + "new producer not running or not deployed.",
+              + "not exist in contract, microserviceName=jaxrs, schemaId=SchemeInterfaceJaxrs.",
           ((CommonExceptionData) e.getError()).getMessage());
     }
   }

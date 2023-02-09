@@ -87,8 +87,6 @@ public class PojoClient {
       LOGGER.error("", e);
       LOGGER.error("-------------- test failed -------------");
     }
-
-    TestMgr.summary();
   }
 
   private static void testContextClassLoaderIsNull() throws Exception {
@@ -165,6 +163,8 @@ public class PojoClient {
 
       testTraceIdOnContextContainsTraceId();
     }
+
+    TestMgr.summary();
   }
 
   private static void testHttpClientsIsOk() {

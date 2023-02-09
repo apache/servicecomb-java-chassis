@@ -27,10 +27,8 @@ servicecomb:
     registry-serverB:
       address: http://127.0.0.1:40100
 
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
+  filter-chains:
+    enabled: true
 
   transport:
     eventloop:

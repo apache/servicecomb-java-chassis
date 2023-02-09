@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -30,6 +31,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class PojoConsumerMeta {
   private final MicroserviceReferenceConfig microserviceReferenceConfig;
@@ -80,10 +82,9 @@ public class PojoConsumerMeta {
   public PojoConsumerOperationMeta ensureFindOperationMeta(Method method) {
     PojoConsumerOperationMeta pojoConsumerOperationMeta = operationMetas.get(method);
     if (pojoConsumerOperationMeta == null) {
-      throw new IllegalStateException(
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
           String.format(
-              "Consumer method %s:%s not exist in contract, microserviceName=%s, schemaId=%s; "
-                  + "new producer not running or not deployed.",
+              "Consumer method %s:%s not exist in contract, microserviceName=%s, schemaId=%s.",
               method.getDeclaringClass().getName(),
               method.getName(),
               schemaMeta.getMicroserviceName(),

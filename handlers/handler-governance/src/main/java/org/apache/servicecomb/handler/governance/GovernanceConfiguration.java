@@ -23,7 +23,9 @@ import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration("handlerGovernanceConfiguration")
 @ConditionalOnProperty(value = GovernanceConfiguration.GOVERNANCE_ENABLED,
     havingValue = "true", matchIfMissing = true)
 public class GovernanceConfiguration {

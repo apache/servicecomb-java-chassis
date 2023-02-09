@@ -39,8 +39,7 @@ public class TestSchemeInterface implements CategorizedTestCase {
     } catch (InvocationException e) {
       TestMgr.check(
           "Consumer method org.apache.servicecomb.demo.pojo.client.SchemaInterface:"
-              + "echoError not exist in contract, microserviceName=pojo, "
-              + "schemaId=SchemaInterface; new producer not running or not deployed.",
+              + "echoError not exist in contract, microserviceName=pojo, schemaId=SchemaInterface.",
           ((CommonExceptionData) e.getErrorData()).getMessage());
     }
   }

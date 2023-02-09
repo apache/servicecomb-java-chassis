@@ -20,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+
 public final class AsyncUtils {
   private AsyncUtils() {
   }
@@ -56,7 +58,7 @@ public final class AsyncUtils {
     if (exception instanceof RuntimeException) {
       return (RuntimeException) exception;
     }
-    return new RuntimeException(exception);
+    return new ServiceCombException("Not declared exception", exception);
   }
 
   public static <T> T toSync(CompletableFuture<T> future) {

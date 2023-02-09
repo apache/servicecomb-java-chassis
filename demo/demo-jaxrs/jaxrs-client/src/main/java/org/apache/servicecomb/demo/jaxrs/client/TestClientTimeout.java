@@ -71,10 +71,6 @@ public class TestClientTimeout implements CategorizedTestCase {
       // Request Timeout or Invocation Timeout
       TestMgr.check(true,
           e.getErrorData().toString().contains("Timeout."));
-      // TODO: 这个测试用例失败不会影响当前功能。 需要在完成 SCB-2213重试重构、实例统计状态基于事件重构（当前
-      //  在LoadbalanceHandler进行实例统计信息更新，应该基于服务执行完成事件更新，重试也应该在调用层重试。）
-      // 等功能后，才能够启用这个测试用例检查。
-      // TestMgr.check(serviceCombServerStats.getContinuousFailureCount(), failures + 1);
     }
 
     TestMgr.check(true, failed);
