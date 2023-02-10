@@ -20,6 +20,8 @@ package org.apache.servicecomb.demo.springmvc.client;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,12 +35,12 @@ public class TestSchemeInterfaceSpringmvc implements CategorizedTestCase {
     try {
       springmvc.reduce(1, 3);
       TestMgr.failed("should throw exception", new Exception());
-    } catch (Exception e) {
+    } catch (InvocationException e) {
       TestMgr.check(
           "Consumer method org.apache.servicecomb.demo.springmvc.client.SchemeInterfaceSpringmvc:reduce not "
               + "exist in contract, microserviceName=springmvc, "
-              + "schemaId=SchemeInterfaceSpringmvc; new producer not running or not deployed.",
-          e.getMessage());
+              + "schemaId=SchemeInterfaceSpringmvc.",
+          ((CommonExceptionData) e.getErrorData()).getMessage());
     }
   }
 }
