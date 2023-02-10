@@ -24,6 +24,3 @@ APPLICATION_ID: demo-local-registry
 service_description:
   name: demo-local-registry-client
   version: 0.0.1
-servicecomb:
-  filter-chains:
-    enabled: true

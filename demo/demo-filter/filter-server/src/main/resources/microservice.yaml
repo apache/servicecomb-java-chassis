@@ -43,9 +43,6 @@ servicecomb:
   highway:
     address: 0.0.0.0:7070
 
-  filter-chains:
-    enabled: true
-
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

@@ -59,16 +59,10 @@ public class ServletRestDispatcher {
     HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);
 
-    if (SCBEngine.getInstance().isFilterChainEnabled()) {
-      ((StandardHttpServletRequestEx) requestEx).setCacheRequest(true);
-      InvocationCreator creator = new RestServletProducerInvocationCreator(microserviceMeta, transport.getEndpoint(),
-          requestEx, responseEx);
-      new RestProducerInvocationFlow(creator, requestEx, responseEx)
-          .run();
-      return;
-    }
-
-    RestServletProducerInvocation restProducerInvocation = new RestServletProducerInvocation();
-    restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
+    ((StandardHttpServletRequestEx) requestEx).setCacheRequest(true);
+    InvocationCreator creator = new RestServletProducerInvocationCreator(microserviceMeta, transport.getEndpoint(),
+        requestEx, responseEx);
+    new RestProducerInvocationFlow(creator, requestEx, responseEx)
+        .run();
   }
 }

@@ -49,12 +49,7 @@ public class TestURLMappedEdgeDispatcher {
   public void testConfigurations() {
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.enabled", true);
 
-    URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher() {
-      @Override
-      protected boolean isFilterChainEnabled() {
-        return false;
-      }
-    };
+    URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher();
     Map<String, URLMappedConfigurationItem> items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 0);
 

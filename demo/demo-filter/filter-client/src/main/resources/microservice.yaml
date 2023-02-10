@@ -42,8 +42,6 @@ servicecomb:
   highway:
     address: 0.0.0.0:7072
 
-  filter-chains:
-    enabled: true
   invocation:
     exception:
       print-stack-trace: true

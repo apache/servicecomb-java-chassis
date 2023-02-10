@@ -27,14 +27,3 @@ servicecomb:
     address: 0.0.0.0:8080
   highway:
     address: 0.0.0.0:7070
-  #executors:
-    #default: test 
-    #Provider: 
-      #server: test
-      #server.wrapParam: test
-  filter-chains:
-    consumer:
-      default: empty
-    producer:
-      default: empty
-

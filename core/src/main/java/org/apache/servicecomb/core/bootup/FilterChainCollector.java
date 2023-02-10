@@ -24,10 +24,6 @@ public class FilterChainCollector implements BootUpInformationCollector {
   @Override
   public String collect(SCBEngine engine) {
     FilterChainsManager mgr = engine.getFilterChainsManager();
-    if (!mgr.isEnabled()) {
-      return null;
-    }
-
     return mgr.collectResolvedChains();
   }
 

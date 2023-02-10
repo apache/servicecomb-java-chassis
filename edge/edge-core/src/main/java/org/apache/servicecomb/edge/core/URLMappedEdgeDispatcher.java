@@ -126,12 +126,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
     String path = Utils.findActualPath(context.request().path(), configurationItem.getPrefixSegmentCount());
 
-    if (isFilterChainEnabled()) {
-      requestByFilter(context, configurationItem, path);
-      return;
-    }
-
-    requestByHandler(context, configurationItem, path);
+    requestByFilter(context, configurationItem, path);
   }
 
   protected void requestByFilter(RoutingContext context, URLMappedConfigurationItem configurationItem, String path) {
@@ -141,15 +136,6 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
         configurationItem.getMicroserviceName(), configurationItem.getVersionRule(), path);
     new RestProducerInvocationFlow(creator, requestEx, responseEx)
         .run();
-  }
-
-  private void requestByHandler(RoutingContext context, URLMappedConfigurationItem configurationItem, String path) {
-    EdgeInvocation edgeInvocation = createEdgeInvocation();
-    if (configurationItem.getVersionRule() != null) {
-      edgeInvocation.setVersionRule(configurationItem.getVersionRule());
-    }
-    edgeInvocation.init(configurationItem.getMicroserviceName(), context, path, httpServerFilters);
-    edgeInvocation.edgeInvoke();
   }
 
   private URLMappedConfigurationItem findConfigurationItem(String path) {

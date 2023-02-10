@@ -32,8 +32,6 @@ servicecomb:
   rest.client.enabled: false # using only http2
   swagger:
     disableDataTypeCheck: true
-  filter-chains:
-    enabled: true
 
   isolation:
     Consumer:

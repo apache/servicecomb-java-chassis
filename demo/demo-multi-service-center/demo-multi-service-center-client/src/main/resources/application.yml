@@ -27,9 +27,6 @@ servicecomb:
     registry-serverB:
       address: http://127.0.0.1:40100
 
-  filter-chains:
-    enabled: true
-
   transport:
     eventloop:
       size: 6

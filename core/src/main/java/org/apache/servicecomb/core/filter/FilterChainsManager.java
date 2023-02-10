@@ -26,8 +26,6 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 @Component
 public class FilterChainsManager {
   private final InvocationFilterChains consumerChains = new InvocationFilterChains(InvocationType.CONSUMER);
@@ -51,11 +49,6 @@ public class FilterChainsManager {
 
   public FilterChainsManager init() {
     return this;
-  }
-
-  public boolean isEnabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.filter-chains.enabled", false).get();
   }
 
   public FilterNode findConsumerChain(String microserviceName) {

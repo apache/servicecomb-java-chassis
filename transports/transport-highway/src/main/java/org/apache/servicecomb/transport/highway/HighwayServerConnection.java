@@ -125,17 +125,9 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
-    if (SCBEngine.getInstance().isFilterChainEnabled()) {
-      InvocationCreator creator = () -> createInvocation(msgId, header, bodyBuffer);
-      new HighwayProducerInvocationFlow(creator, this, msgId)
-          .run();
-      return;
-    }
-
-    HighwayServerInvoke invoke = new HighwayServerInvoke(endpoint);
-    if (invoke.init(this, msgId, header, bodyBuffer)) {
-      invoke.execute();
-    }
+    InvocationCreator creator = () -> createInvocation(msgId, header, bodyBuffer);
+    new HighwayProducerInvocationFlow(creator, this, msgId)
+        .run();
   }
 
   public CompletableFuture<Invocation> createInvocation(long msgId, RequestHeader header, Buffer bodyBuffer) {

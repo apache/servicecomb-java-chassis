@@ -69,10 +69,6 @@ public class Invoker implements InvocationHandler {
   }
 
   protected InvocationCaller createInvocationCaller() {
-    if (SCBEngine.getInstance().isFilterChainEnabled()) {
-      return new FilterInvocationCaller();
-    }
-
     return new HandlerInvocationCaller();
   }
 
