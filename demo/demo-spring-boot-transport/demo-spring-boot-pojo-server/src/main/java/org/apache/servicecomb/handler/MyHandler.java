@@ -17,30 +17,47 @@
 
 package org.apache.servicecomb.handler;
 
-import org.apache.servicecomb.core.Handler;
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-public class MyHandler implements Handler {
+@Component
+public class MyHandler implements ProducerFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MyHandler.class);
 
   public static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 100;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-my-filter";
+  }
+
+  @Override
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     LOGGER.info("If you see this log, that means this demo project has been converted to ServiceComb framework.");
 
-    invocation.next(response -> {
+    return nextNode.onFilter(invocation).whenComplete((response, throwable) -> {
       if (invocation.getOperationMeta().getSchemaQualifiedName().equals("server.splitParam")) {
         User user = response.getResult();
         user.setName(user.getName() + SPLITPARAM_RESPONSE_USER_SUFFIX);
-        asyncResp.handle(response);
-      } else {
-        asyncResp.handle(response);
       }
     });
   }
