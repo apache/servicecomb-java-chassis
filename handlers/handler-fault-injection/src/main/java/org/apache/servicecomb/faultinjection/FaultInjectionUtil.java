@@ -130,7 +130,10 @@ public class FaultInjectionUtil {
    * @return true: delay/abort is needed. false: delay/abort is not needed.
    */
   public static boolean isFaultNeedToInject(int percentage) {
-    return ThreadLocalRandom.current().nextInt(100) <= percentage;
+    if (percentage > 0) {
+      return ThreadLocalRandom.current().nextInt(100) < percentage;
+    }
+    return false;
   }
 
   @VisibleForTesting
