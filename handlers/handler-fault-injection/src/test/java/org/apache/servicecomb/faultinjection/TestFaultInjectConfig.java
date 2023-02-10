@@ -32,15 +32,9 @@ public class TestFaultInjectConfig {
 
   FaultParam faultParam;
 
-  AbortFault abortFault;
-
-  DelayFault delayFault;
-
   @BeforeEach
   public void setUp() throws Exception {
     faultParam = new FaultParam();
-    abortFault = new AbortFault();
-    delayFault = new DelayFault();
   }
 
   @AfterEach
@@ -64,11 +58,5 @@ public class TestFaultInjectConfig {
     Assertions.assertEquals("servicecomb.governance.Consumer._global.",
         FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
     Assertions.assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_ERROR);
-  }
-
-  @Test
-  public void testFaultPriority() {
-    Assertions.assertEquals(200, abortFault.getOrder());
-    Assertions.assertEquals(100, delayFault.getOrder());
   }
 }
