@@ -36,10 +36,6 @@ servicecomb:
       refreshMode: 0
       # refresh_interval: 5000
       # refreshPort: 30114
-
-  filter-chains:
-    enabled: true
-
   governance:
     GovernanceEndpoint.helloRpc:
       matchType: rpc

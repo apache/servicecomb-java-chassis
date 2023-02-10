@@ -44,8 +44,7 @@ servicecomb:
           interval: 10
         watch: true
       autodiscovery: true
-  filter-chains:
-    enabled: true
+
   uploads:
     directory: target
   http:

@@ -40,8 +40,6 @@ servicecomb:
     server:
       compression: true
 
-  filter-chains:
-    enabled: true
   invocation:
     exception:
       print-stack-trace: true

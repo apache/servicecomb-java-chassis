@@ -26,7 +26,6 @@ import org.apache.servicecomb.common.rest.AbstractRestInvocation;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
-import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -206,17 +205,10 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
 
-    if (SCBEngine.getInstance().isFilterChainEnabled()) {
-      InvocationCreator creator = new RestVertxProducerInvocationCreator(context,
-          microserviceMeta, transport.getEndpoint(),
-          requestEx, responseEx);
-      new RestProducerInvocationFlow(creator, requestEx, responseEx)
-          .run();
-      return;
-    }
-
-    VertxRestInvocation vertxRestInvocation = new VertxRestInvocation();
-    context.put(RestConst.REST_PRODUCER_INVOCATION, vertxRestInvocation);
-    vertxRestInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
+    InvocationCreator creator = new RestVertxProducerInvocationCreator(context,
+        microserviceMeta, transport.getEndpoint(),
+        requestEx, responseEx);
+    new RestProducerInvocationFlow(creator, requestEx, responseEx)
+        .run();
   }
 }

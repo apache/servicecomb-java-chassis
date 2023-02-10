@@ -51,12 +51,7 @@ public class TestDefaultEdgeDispatcher {
   @Test
   @SuppressWarnings("unchecked")
   public void testOnRequest() {
-    DefaultEdgeDispatcher dispatcher = new DefaultEdgeDispatcher() {
-      @Override
-      protected boolean isFilterChainEnabled() {
-        return false;
-      }
-    };
+    DefaultEdgeDispatcher dispatcher = new DefaultEdgeDispatcher();
     Router router = Mockito.mock(Router.class);
     Route route = Mockito.mock(Route.class);
     RoutingContext context = Mockito.mock(RoutingContext.class);

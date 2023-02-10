@@ -31,9 +31,6 @@ servicecomb:
   uploads:
     directory: target
 
-  filter-chains:
-    enabled: true
-
   codec:
     printErrorMessage: true
 

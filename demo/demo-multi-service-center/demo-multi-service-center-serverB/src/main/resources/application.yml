@@ -30,8 +30,6 @@ servicecomb:
       address: http://127.0.0.1:40100
   rest:
     address: 0.0.0.0:8082
-  filter-chains:
-    enabled: true
 
 demo.multi.service.center.serverB:
   key1: key1-boot

@@ -33,9 +33,6 @@ servicecomb:
   swagger:
     disableDataTypeCheck: true
 
-  filter-chains:
-    enabled: true
-
   flowcontrol:
     Provider:
       qps:

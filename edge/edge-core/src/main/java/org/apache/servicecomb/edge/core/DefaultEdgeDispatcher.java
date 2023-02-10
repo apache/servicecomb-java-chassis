@@ -90,12 +90,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     String versionRule = extractVersionRule(context);
     String path = Utils.findActualPath(context.request().path(), prefixSegmentCount);
 
-    if (isFilterChainEnabled()) {
-      requestByFilter(context, microserviceName, versionRule, path);
-      return;
-    }
-
-    requestByHandler(context, microserviceName, versionRule, path);
+    requestByFilter(context, microserviceName, versionRule, path);
   }
 
   @Nullable
@@ -119,12 +114,5 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
         microserviceName, versionRule, path);
     new RestProducerInvocationFlow(creator, requestEx, responseEx)
         .run();
-  }
-
-  private void requestByHandler(RoutingContext context, String microserviceName, String versionRule, String path) {
-    EdgeInvocation edgeInvocation = createEdgeInvocation();
-    edgeInvocation.setVersionRule(versionRule);
-    edgeInvocation.init(microserviceName, context, path, httpServerFilters);
-    edgeInvocation.edgeInvoke();
   }
 }

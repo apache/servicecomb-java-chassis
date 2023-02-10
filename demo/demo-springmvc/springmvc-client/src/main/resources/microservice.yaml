@@ -34,8 +34,7 @@ servicecomb:
         pull:
           interval: 90
         watch: true
-  filter-chains:
-    enabled: true
+
   rest:
     client:
       connection:

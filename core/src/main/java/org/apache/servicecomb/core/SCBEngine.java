@@ -190,10 +190,6 @@ public class SCBEngine {
     return this;
   }
 
-  public boolean isFilterChainEnabled() {
-    return filterChainsManager.isEnabled();
-  }
-
   public ConsumerHandlerManager getConsumerHandlerManager() {
     return consumerHandlerManager;
   }

@@ -23,9 +23,6 @@ servicecomb:
     registry:
       address: http://127.0.0.1:30100
 
-  filter-chains:
-    enabled: true
-
   matchGroup:
     instanceIsolationTest: |
       matches:

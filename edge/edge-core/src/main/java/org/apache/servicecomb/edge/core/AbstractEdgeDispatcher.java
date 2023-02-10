@@ -21,7 +21,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.vertx.AbstractVertxHttpDispatcher;
 import org.slf4j.Logger;
@@ -37,10 +36,6 @@ public abstract class AbstractEdgeDispatcher extends AbstractVertxHttpDispatcher
 
   protected EdgeInvocation createEdgeInvocation() {
     return new EdgeInvocation();
-  }
-
-  protected boolean isFilterChainEnabled() {
-    return SCBEngine.getInstance().isFilterChainEnabled();
   }
 
   protected void onFailure(RoutingContext context) {
