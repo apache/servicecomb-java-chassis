@@ -17,22 +17,14 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.RequestBody;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
-import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
@@ -51,11 +43,13 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestVertxRestDispatcher {
   @Mocked
@@ -67,8 +61,6 @@ public class TestVertxRestDispatcher {
   VertxRestDispatcher dispatcher;
 
   Throwable throwable;
-
-  boolean invoked;
 
   @Before
   public void setUp() {
@@ -85,7 +77,6 @@ public class TestVertxRestDispatcher {
       @Mock
       void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
           List<HttpServerFilter> httpServerFilters) {
-        invoked = true;
       }
     };
 
@@ -167,7 +158,8 @@ public class TestVertxRestDispatcher {
 
     MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
     MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getStatusCode()));
-    MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
+    MatcherAssert.assertThat(response.responseStatusMessage,
+        Matchers.is(Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
     MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase() + "\"}"));
     Assertions.assertTrue(response.responseEnded);
@@ -221,36 +213,11 @@ public class TestVertxRestDispatcher {
 
     MatcherAssert.assertThat(response.responseHeader, Matchers.hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD));
     MatcherAssert.assertThat(response.responseStatusCode, Matchers.is(Status.INTERNAL_SERVER_ERROR.getStatusCode()));
-    MatcherAssert.assertThat(response.responseStatusMessage, Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    MatcherAssert.assertThat(response.responseStatusMessage,
+        Matchers.is(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     MatcherAssert.assertThat(response.responseChunk,
         Matchers.is("{\"message\":\"" + Status.INTERNAL_SERVER_ERROR.getReasonPhrase() + "\"}"));
     Assertions.assertTrue(response.responseEnded);
-  }
-
-  @Test
-  public void onRequest(@Mocked Vertx vertx, @Mocked Context context) {
-    RequestBody requestBody = Mockito.mock(RequestBody.class);
-    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
-    Map<String, Object> map = new HashMap<>();
-    RoutingContext mockRoutingContext = Mockito.mock(RoutingContext.class);
-    Mockito.when(mockRoutingContext.body()).thenReturn(requestBody);
-    Mockito.when(mockRoutingContext.request()).thenReturn(request);
-    Mockito.doAnswer(invocation -> {
-      map.put(invocation.getArgument(0), invocation.getArgument(1));
-      return null;
-    }).when(mockRoutingContext).put(Mockito.anyString(), Mockito.any());
-
-    new Expectations() {
-      {
-        Vertx.currentContext();
-        result = context;
-      }
-    };
-
-    dispatcher.onRequest(mockRoutingContext);
-
-    Assertions.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
-    Assertions.assertTrue(invoked);
   }
 
   @Test

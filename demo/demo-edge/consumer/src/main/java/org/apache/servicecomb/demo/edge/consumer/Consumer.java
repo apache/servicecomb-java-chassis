@@ -173,7 +173,7 @@ public class Consumer {
       Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
     } catch (HttpServerErrorException e) {
       Assert.isTrue(e.getRawStatusCode() == 500, "x99");
-      Assert.isTrue(e.getResponseBodyAsString().contains("Unexpected exception when processing the request"), "x99");
+      Assert.isTrue(e.getResponseBodyAsString().contains("un expected NPE test."), "x99");
     }
 
     try {

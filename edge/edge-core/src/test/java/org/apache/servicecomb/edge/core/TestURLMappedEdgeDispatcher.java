@@ -25,14 +25,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.web.RequestBody;
 import io.vertx.ext.web.RoutingContext;
 
 public class TestURLMappedEdgeDispatcher {
@@ -80,23 +75,5 @@ public class TestURLMappedEdgeDispatcher {
     Assertions.assertEquals(item.getPrefixSegmentCount(), 2);
     Assertions.assertEquals(item.getStringPattern(), "/a/b/c/.*");
     Assertions.assertEquals(item.getVersionRule(), "2.0.0+");
-
-    URLMappedConfigurationItem finalItem = item;
-    try (MockedStatic<Vertx> vertxMockedStatic = Mockito.mockStatic(Vertx.class)) {
-      vertxMockedStatic.when(Vertx::currentContext).thenReturn(Mockito.mock(Context.class));
-      dispatcher = Mockito.spy(dispatcher);
-      RequestBody body = Mockito.mock(RequestBody.class);
-      Mockito.when(context.body()).thenReturn(body);
-      Mockito.when(body.buffer()).thenReturn(Mockito.mock(Buffer.class));
-      Mockito.when(context.get(RestBodyHandler.BYPASS_BODY_HANDLER)).thenReturn(Boolean.FALSE);
-      Mockito.when(context.get(URLMappedEdgeDispatcher.CONFIGURATION_ITEM)).thenReturn(finalItem);
-      Mockito.when(context.request()).thenReturn(request);
-      Mockito.when(request.path()).thenReturn("/a/b/c/d/e");
-      Mockito.when(dispatcher.createEdgeInvocation()).thenReturn(invocation);
-      invocation.setVersionRule("2.0.0+");
-      invocation.init("serviceName", context, "/c/d/e", dispatcher.getHttpServerFilters());
-      Mockito.doNothing().when(invocation).edgeInvoke();
-      dispatcher.onRequest(context);
-    }
   }
 }

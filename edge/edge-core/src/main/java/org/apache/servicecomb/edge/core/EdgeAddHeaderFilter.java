@@ -48,14 +48,18 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1000;
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1991;
   }
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     RestClientTransportContext transportContext = invocation.getTransportContext();
-    return CompletableFuture.completedFuture(null)
-        .thenAccept(v -> filter.addHeaders(invocation, transportContext.getHttpClientRequest()::putHeader))
-        .thenCompose(v -> nextNode.onFilter(invocation));
+    if (transportContext != null) {
+      return CompletableFuture.completedFuture(null)
+          .thenAccept(v -> filter.addHeaders(invocation, transportContext.getHttpClientRequest()::putHeader))
+          .thenCompose(v -> nextNode.onFilter(invocation));
+    }
+    // normal consumer in edge process
+    return nextNode.onFilter(invocation);
   }
 }

@@ -17,13 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,8 +31,6 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.ext.web.Router;
 import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestAbstractVertxHttpDispatcher {
@@ -63,20 +56,6 @@ public class TestAbstractVertxHttpDispatcher {
   @AfterClass
   public static void teardown() {
     ArchaiusUtils.resetConfig();
-  }
-
-  @Test
-  public void construct(@Mocked HttpServerFilter filter) {
-    List<HttpServerFilter> filters = Arrays.asList(filter);
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getSortedService(HttpServerFilter.class);
-        result = filters;
-      }
-    };
-
-    AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
-    Assertions.assertSame(filters, dispatcher.httpServerFilters);
   }
 
   @Test

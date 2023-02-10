@@ -19,9 +19,15 @@ package org.apache.servicecomb.demo.edge.service;
 
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.edge.core.AbstractEdgeDispatcher;
 import org.apache.servicecomb.edge.core.CompatiblePathVersionMapper;
-import org.apache.servicecomb.edge.core.EdgeInvocation;
+import org.apache.servicecomb.edge.core.EdgeInvocationCreator;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -48,10 +54,15 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
     String pathVersion = pathParams.get("param1");
     String path = context.request().path().substring(4);
 
-    EdgeInvocation edgeInvocation = new EdgeInvocation();
-    edgeInvocation.setVersionRule(versionMapper.getOrCreate(pathVersion).getVersionRule());
+    requestByFilter(context, microserviceName, versionMapper.getOrCreate(pathVersion).getVersionRule(), path);
+  }
 
-    edgeInvocation.init(microserviceName, context, path, httpServerFilters);
-    edgeInvocation.edgeInvoke();
+  protected void requestByFilter(RoutingContext context, String microserviceName, String versionRule, String path) {
+    HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
+    HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+    InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
+        microserviceName, versionRule, path);
+    new RestProducerInvocationFlow(creator, requestEx, responseEx)
+        .run();
   }
 }
