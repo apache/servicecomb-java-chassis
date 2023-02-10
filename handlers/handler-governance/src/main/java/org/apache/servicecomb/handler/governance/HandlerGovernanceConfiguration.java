@@ -25,10 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration("handlerGovernanceConfiguration")
-@ConditionalOnProperty(value = GovernanceConfiguration.GOVERNANCE_ENABLED,
+@Configuration
+@ConditionalOnProperty(value = HandlerGovernanceConfiguration.GOVERNANCE_ENABLED,
     havingValue = "true", matchIfMissing = true)
-public class GovernanceConfiguration {
+public class HandlerGovernanceConfiguration {
   public static final String GOVERNANCE_PREFIX = "servicecomb.governance";
 
   public static final String GOVERNANCE_ENABLED = GOVERNANCE_PREFIX + ".enabled";
