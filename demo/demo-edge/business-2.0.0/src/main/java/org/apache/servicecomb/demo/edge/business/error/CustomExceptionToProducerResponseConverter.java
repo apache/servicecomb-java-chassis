@@ -17,18 +17,19 @@
 
 package org.apache.servicecomb.demo.edge.business.error;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.StatusType;
 
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionToProducerResponseConverter;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class CustomExceptionToProducerResponseConverter implements
-    ExceptionToProducerResponseConverter<IllegalStateException> {
+    ExceptionConverter<IllegalStateException> {
   @Override
-  public Class<IllegalStateException> getExceptionClass() {
-    return IllegalStateException.class;
+  public boolean canConvert(Throwable throwable) {
+    return throwable instanceof IllegalStateException;
   }
 
   @Override
@@ -37,12 +38,12 @@ public class CustomExceptionToProducerResponseConverter implements
   }
 
   @Override
-  public Response convert(SwaggerInvocation swaggerInvocation, IllegalStateException e) {
+  public InvocationException convert(@Nullable Invocation invocation, IllegalStateException e,
+      StatusType genericStatus) {
     IllegalStateErrorData data = new IllegalStateErrorData();
     data.setId(500);
     data.setMessage(e.getMessage());
     data.setState(e.getMessage());
-    InvocationException state = new InvocationException(Status.INTERNAL_SERVER_ERROR, data);
-    return Response.failResp(state);
+    return new InvocationException(Status.INTERNAL_SERVER_ERROR, data);
   }
 }

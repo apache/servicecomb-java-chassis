@@ -53,7 +53,7 @@ public class EdgeServerCodecFilter extends RestServerCodecFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1000;
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 2000;
   }
 
   @Override

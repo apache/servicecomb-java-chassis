@@ -20,48 +20,61 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.demo.edge.service.encrypt.EncryptContext;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
-public class EdgeSignatureRequestFilter implements HttpServerFilter {
+@Component
+public class EdgeSignatureRequestFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeSignatureRequestFilter.class);
 
   @Override
-  public int getOrder() {
-    return -10000;
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1800;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-edge-signature-request";
   }
 
   @Override
-  public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     EncryptContext encryptContext = (EncryptContext) invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT);
     if (encryptContext == null) {
-      return null;
+      return nextNode.onFilter(invocation);
     }
     Hcr hcr = encryptContext.getHcr();
 
     // signature for query and form
-    List<String> names = Collections.list(requestEx.getParameterNames());
+    List<String> names = Collections.list(invocation.getRequestEx().getParameterNames());
     names.sort(Comparator.naturalOrder());
 
     Hasher hasher = Hashing.sha256().newHasher();
     hasher.putString(hcr.getSignatureKey(), StandardCharsets.UTF_8);
     for (String name : names) {
       hasher.putString(name, StandardCharsets.UTF_8);
-      hasher.putString(requestEx.getParameter(name), StandardCharsets.UTF_8);
+      hasher.putString(invocation.getRequestEx().getParameter(name), StandardCharsets.UTF_8);
     }
     LOGGER.info("afterReceiveRequest signature: {}", hasher.hash());
 
-    return null;
+    return nextNode.onFilter(invocation);
   }
 }

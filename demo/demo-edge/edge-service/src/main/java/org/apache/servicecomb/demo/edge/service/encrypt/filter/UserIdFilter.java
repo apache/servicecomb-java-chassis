@@ -16,31 +16,45 @@
  */
 package org.apache.servicecomb.demo.edge.service.encrypt.filter;
 
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.demo.edge.service.encrypt.EncryptContext;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
-public class UserIdFilter implements HttpServerFilter {
+@Component
+public class UserIdFilter implements ConsumerFilter {
   @Override
-  public int getOrder() {
-    return -8000;
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1790;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-edge-user-id";
   }
 
   @Override
-  public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     EncryptContext encryptContext = (EncryptContext) invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT);
     if (encryptContext == null) {
-      return null;
+      return nextNode.onFilter(invocation);
     }
 
     String userId = encryptContext.getUserId();
     if (userId != null) {
-      requestEx.setParameter("userId", userId);
+      invocation.getRequestEx().setParameter("userId", userId);
     }
 
-    return null;
+    return nextNode.onFilter(invocation);
   }
 }
