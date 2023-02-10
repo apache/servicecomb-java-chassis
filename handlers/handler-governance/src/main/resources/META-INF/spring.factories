@@ -16,4 +16,4 @@
 ## ---------------------------------------------------------------------------
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.apache.servicecomb.handler.governance.GovernanceConfiguration
+  org.apache.servicecomb.handler.governance.HandlerGovernanceConfiguration
