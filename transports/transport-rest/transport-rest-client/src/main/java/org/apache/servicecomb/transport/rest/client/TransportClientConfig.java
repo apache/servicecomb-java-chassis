@@ -86,6 +86,34 @@ public final class TransportClientConfig {
         .get();
   }
 
+  public static int getHttp1ConnectionKeepAliveTimeoutInSeconds() {
+    int result = DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.rest.client.http1.connection.keepAliveTimeoutInSeconds", -1)
+            .get();
+    if (result >= 0) {
+      return result;
+    }
+    result = getConnectionIdleTimeoutInSeconds();
+    if (result > 1) {
+      return result - 1;
+    }
+    return result;
+  }
+
+  public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
+    int result = DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds", -1)
+            .get();
+    if (result >= 0) {
+      return result;
+    }
+    result = getHttp2ConnectionIdleTimeoutInSeconds();
+    if (result > 1) {
+      return result - 1;
+    }
+    return result;
+  }
+
   public static boolean getConnectionCompression() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.client.connection.compression",

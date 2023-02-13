@@ -77,7 +77,7 @@ public class RestTransportClient {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
         .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
-        .setKeepAliveTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setKeepAliveTimeout(TransportClientConfig.getHttp1ConnectionKeepAliveTimeoutInSeconds())
         .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
         .setTryUseCompression(TransportClientConfig.getConnectionCompression())
         .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize())
@@ -97,7 +97,7 @@ public class RestTransportClient {
         .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize())
         .setTryUseCompression(TransportClientConfig.getConnectionCompression())
         .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize())
-        .setKeepAliveTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
+        .setKeepAliveTimeout(TransportClientConfig.getHttp2ConnectionKeepAliveTimeoutInSeconds());
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
   }
