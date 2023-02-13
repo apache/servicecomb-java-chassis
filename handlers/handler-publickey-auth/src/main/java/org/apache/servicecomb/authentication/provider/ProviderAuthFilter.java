@@ -31,7 +31,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ProviderAuthFilter implements ProducerFilter {
-  private final RSAProviderTokenManager authenticationTokenManager = new RSAProviderTokenManager();
+  private final ProviderTokenManager authenticationTokenManager = new ProviderTokenManager();
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
