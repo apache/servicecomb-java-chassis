@@ -66,4 +66,9 @@ public class Http2TransportHttpClientOptionsSPI extends HttpTransportHttpClientO
   public int getIdleTimeoutInSeconds() {
     return TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds();
   }
+
+  @Override
+  public int getKeepAliveTimeout() {
+    return TransportClientConfig.getHttp2ConnectionKeepAliveTimeoutInSeconds();
+  }
 }
