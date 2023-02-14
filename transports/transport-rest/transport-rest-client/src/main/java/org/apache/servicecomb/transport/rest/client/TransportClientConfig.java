@@ -103,7 +103,23 @@ public final class TransportClientConfig {
     }
     result = getConnectionIdleTimeoutInSeconds();
     if (result > 1) {
-      return result - 1; // a bit shorter than ConnectionIdleTimeoutInSeconds
+      // a bit shorter than ConnectionIdleTimeoutInSeconds
+      return result - 1;
+    }
+    return result;
+  }
+
+  public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
+    int result = DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds", -1)
+            .get();
+    if (result >= 0) {
+      return result;
+    }
+    result = getHttp2ConnectionIdleTimeoutInSeconds();
+    if (result > 1) {
+      // a bit shorter than ConnectionIdleTimeoutInSeconds
+      return result - 1;
     }
     return result;
   }
