@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
-import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
+import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
-import org.apache.servicecomb.foundation.common.utils.RSAUtils;
+import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
+import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
+import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-public class TestRSAProviderTokenManager {
+public class TestProviderTokenManager {
 
 
   @BeforeEach
@@ -58,7 +58,7 @@ public class TestRSAProviderTokenManager {
   public void testTokenExpired() {
     String tokenStr =
         "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ@WBYouF6hXYrXzBA31HC3VX8Bw9PNgJUtVqOPAaeW9ye3q/D7WWb0M+XMouBIWxWY6v9Un1dGu5Rkjlx6gZbnlHkb2VO8qFR3Y6lppooWCirzpvEBRjlJQu8LPBur0BCfYGq8XYrEZA2NU6sg2zXieqCSiX6BnMnBHNn4cR9iZpk=";
-    RSAProviderTokenManager tokenManager = new RSAProviderTokenManager();
+    ProviderTokenManager tokenManager = new ProviderTokenManager();
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     Map<String, String> properties = new HashMap<>();
     microserviceInstance.setProperties(properties);
@@ -74,7 +74,7 @@ public class TestRSAProviderTokenManager {
     String tokenStr =
         "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ@WBYouF6hXYrXzBA31HC3VX8Bw9PNgJUtVqOPAaeW9ye3q/D7WWb0M+XMouBIWxWY6v9Un1dGu5Rkjlx6gZbnlHkb2VO8qFR3Y6lppooWCirzpvEBRjlJQu8LPBur0BCfYGq8XYrEZA2NU6sg2zXieqCSiX6BnMnBHNn4cR9iZpk=";
     RSAAuthenticationToken token = Mockito.spy(RSAAuthenticationToken.fromStr(tokenStr));
-    RSAProviderTokenManager tokenManager = Mockito.spy(new RSAProviderTokenManager() {
+    ProviderTokenManager tokenManager = Mockito.spy(new ProviderTokenManager() {
       @Override
       protected int getExpiredTime() {
         return 500;
@@ -98,34 +98,34 @@ public class TestRSAProviderTokenManager {
 
   @Test
   public void testTokenFromValidatePool() {
-    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
-    RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
-    RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
-    RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
+    KeyPairEntry keyPairEntry = KeyPairUtils.generateALGKeyPair();
+    Keypair4Auth.INSTANCE.setPrivateKey(keyPairEntry.getPrivateKey());
+    Keypair4Auth.INSTANCE.setPublicKey(keyPairEntry.getPublicKey());
+    Keypair4Auth.INSTANCE.setPublicKeyEncoded(keyPairEntry.getPublicKeyEncoded());
     String serviceId = "c8636e5acf1f11e7b701286ed488fc20";
     String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
-    RSAConsumerTokenManager rsaConsumerTokenManager = new RSAConsumerTokenManager();
+    ConsumerTokenManager consumerTokenManager = new ConsumerTokenManager();
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     microserviceInstance.setInstanceId(instanceId);
     Map<String, String> properties = new HashMap<>();
     microserviceInstance.setProperties(properties);
-    properties.put(DefinitionConst.INSTANCE_PUBKEY_PRO, rsaKeyPairEntry.getPublicKeyEncoded());
+    properties.put(DefinitionConst.INSTANCE_PUBKEY_PRO, keyPairEntry.getPublicKeyEncoded());
     Microservice microservice = new Microservice();
     microservice.setServiceId(serviceId);
     RegistrationManager.INSTANCE = Mockito.spy(RegistrationManager.INSTANCE);
     Mockito.when(RegistrationManager.INSTANCE.getMicroservice()).thenReturn(microservice);
     Mockito.when(RegistrationManager.INSTANCE.getMicroserviceInstance()).thenReturn(microserviceInstance);
     //Test Consumer first create token
-    String token = rsaConsumerTokenManager.getToken();
+    String token = consumerTokenManager.getToken();
     Assertions.assertNotNull(token);
     // use cache token
-    Assertions.assertEquals(token, rsaConsumerTokenManager.getToken());
+    Assertions.assertEquals(token, consumerTokenManager.getToken());
     try (MockedStatic<MicroserviceInstanceCache> microserviceInstanceCacheMockedStatic = Mockito.mockStatic(MicroserviceInstanceCache.class)) {
       microserviceInstanceCacheMockedStatic.when(() -> MicroserviceInstanceCache.getOrCreate(serviceId, instanceId))
               .thenReturn(microserviceInstance);
       microserviceInstanceCacheMockedStatic.when(() -> MicroserviceInstanceCache.getOrCreate(serviceId))
               .thenReturn(microservice);
-      RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
+      ProviderTokenManager rsaProviderTokenManager = new ProviderTokenManager();
       //first validate need to verify use RSA
       Assertions.assertTrue(rsaProviderTokenManager.valid(token));
       // second validate use validated pool

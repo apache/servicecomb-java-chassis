@@ -21,7 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 
-import org.apache.servicecomb.foundation.common.utils.RSAUtils;
+import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +45,7 @@ public class TestRSAAuthenticationToken {
         sign);
     String pubKey =
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxKl5TNUTec7fL2degQcCk6vKf3c0wsfNK5V6elKzjWxm0MwbRj/UeR20VSnicBmVIOWrBS9LiERPPvjmmWUOSS2vxwr5XfhBhZ07gCAUNxBOTzgMo5nE45DhhZu5Jzt5qSV6o10Kq7+fCCBlDZ1UoWxZceHkUt5AxcrhEDulFjQIDAQAB";
-    Assertions.assertTrue(RSAUtils.verify(pubKey, sign, contents));
+    Assertions.assertTrue(KeyPairUtils.verify(pubKey, sign, contents));
   }
 
 

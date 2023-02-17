@@ -34,15 +34,20 @@ import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RSAUtils {
+import com.netflix.config.DynamicPropertyFactory;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RSAUtils.class);
+public class KeyPairUtils {
 
-  private static final String RSA_ALG = "RSA";
+  private static final Logger LOGGER = LoggerFactory.getLogger(KeyPairUtils.class);
 
-  private static final String SIGN_ALG = "SHA256withRSA";
+  private static final String KEY_GENERATOR_ALGORITHM = DynamicPropertyFactory.getInstance()
+      .getStringProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA").get();;
 
-  private static final int KEY_SIZE = 2048;
+  private static final String SIGN_ALG = DynamicPropertyFactory.getInstance()
+      .getStringProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA").get();
+
+  private static final int KEY_SIZE = DynamicPropertyFactory.getInstance()
+      .getIntProperty("servicecomb.publicKey.accessControl.keySize", 2048).get();
 
   private static final Base64.Encoder encoder = Base64.getEncoder();
 
@@ -53,20 +58,20 @@ public class RSAUtils {
   static {
 
     try {
-      kf = KeyFactory.getInstance(RSA_ALG);
+      kf = KeyFactory.getInstance(KEY_GENERATOR_ALGORITHM);
     } catch (NoSuchAlgorithmException e) {
       LOGGER.error("init keyfactory error");
     }
   }
 
-  public static RSAKeyPairEntry generateRSAKeyPair() {
+  public static KeyPairEntry generateALGKeyPair() {
     try {
-      KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(RSA_ALG);
+      KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(KEY_GENERATOR_ALGORITHM);
       keyGenerator.initialize(KEY_SIZE, new SecureRandom());
       KeyPair keyPair = keyGenerator.generateKeyPair();
       PublicKey pubKey = keyPair.getPublic();
       PrivateKey privKey = keyPair.getPrivate();
-      return new RSAKeyPairEntry(privKey, pubKey, encoder.encodeToString(pubKey.getEncoded()));
+      return new KeyPairEntry(privKey, pubKey, encoder.encodeToString(pubKey.getEncoded()));
     } catch (NoSuchAlgorithmException e) {
       LOGGER.error("generate rsa keypair faild");
       throw new IllegalStateException("perhaps error occurred on jre");
@@ -100,7 +105,7 @@ public class RSAUtils {
   public static boolean verify(String publicKey, String sign, String content)
       throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
     if (null == kf) {
-      throw new NoSuchAlgorithmException(RSA_ALG + " KeyFactory not available");
+      throw new NoSuchAlgorithmException(KEY_GENERATOR_ALGORITHM + " KeyFactory not available");
     }
     byte[] bytes = decoder.decode(publicKey);
     X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);

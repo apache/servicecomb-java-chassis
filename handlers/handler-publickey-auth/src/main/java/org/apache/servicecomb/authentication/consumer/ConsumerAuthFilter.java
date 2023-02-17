@@ -32,7 +32,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ConsumerAuthFilter implements ConsumerFilter {
-  private RSAConsumerTokenManager authenticationTokenManager = new RSAConsumerTokenManager();
+  private ConsumerTokenManager authenticationTokenManager = new ConsumerTokenManager();
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {

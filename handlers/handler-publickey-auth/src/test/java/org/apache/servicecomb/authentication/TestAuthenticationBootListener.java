@@ -22,7 +22,7 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
+import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -57,8 +57,8 @@ public class TestAuthenticationBootListener {
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
     authenticationBootListener.onBootEvent(bootEvent);
-    Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPrivateKey());
-    Assertions.assertNotNull(RSAKeypair4Auth.INSTANCE.getPublicKey());
+    Assertions.assertNotNull(Keypair4Auth.INSTANCE.getPrivateKey());
+    Assertions.assertNotNull(Keypair4Auth.INSTANCE.getPublicKey());
   }
 
   @Test

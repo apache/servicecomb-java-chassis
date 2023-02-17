@@ -23,7 +23,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
-import org.apache.servicecomb.foundation.common.utils.RSAUtils;
+import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -34,9 +34,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public class RSAProviderTokenManager {
+public class ProviderTokenManager {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTokenManager.class);
 
   private final Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
@@ -76,7 +76,7 @@ public class RSAProviderTokenManager {
     String sign = rsaToken.getSign();
     String content = rsaToken.plainToken();
     String publicKey = getPublicKeyFromInstance(rsaToken.getInstanceId(), rsaToken.getServiceId());
-    return RSAUtils.verify(publicKey, sign, content);
+    return KeyPairUtils.verify(publicKey, sign, content);
   }
 
   protected int getExpiredTime() {
