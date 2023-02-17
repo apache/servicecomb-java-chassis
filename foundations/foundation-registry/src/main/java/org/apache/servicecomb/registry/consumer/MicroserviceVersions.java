@@ -42,6 +42,8 @@ import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class MicroserviceVersions {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
 
@@ -120,13 +122,18 @@ public class MicroserviceVersions {
     return shortName;
   }
 
+  @VisibleForTesting
   public Map<String, MicroserviceVersion> getVersions() {
-    return versions;
+    synchronized (lock) {
+      return versions;
+    }
   }
 
   @SuppressWarnings("unchecked")
   public <T extends MicroserviceVersion> T getVersion(String serviceId) {
-    return (T) versions.get(serviceId);
+    synchronized (lock) {
+      return (T) versions.get(serviceId);
+    }
   }
 
   public String getRevision() {
@@ -318,10 +325,11 @@ public class MicroserviceVersions {
   }
 
   public void destroy() {
-    for (MicroserviceVersion microserviceVersion : versions.values()) {
-      microserviceVersion.destroy();
+    synchronized (lock) {
+      for (MicroserviceVersion microserviceVersion : versions.values()) {
+        microserviceVersion.destroy();
+      }
     }
-
     appManager.getEventBus().post(new DestroyMicroserviceEvent(this));
   }
 }
