@@ -22,7 +22,7 @@ package org.apache.servicecomb.authentication;
  * token: instanceId@@generateTime@randomCode@sign(instanceId@@generateTime@randomCode)
  *
  */
-public class RSAAuthenticationToken {
+public class AuthenticationToken {
 
   public static final long TOKEN_ACTIVE_TIME = 24 * 60 * 60 * 1000;
 
@@ -40,7 +40,7 @@ public class RSAAuthenticationToken {
 
   private final String plainToken;
 
-  public RSAAuthenticationToken(String instanceId, String serviceId, long generateTime,
+  public AuthenticationToken(String instanceId, String serviceId, long generateTime,
       String randomCode, String sign) {
     this.instanceId = instanceId;
     this.generateTime = generateTime;
@@ -79,12 +79,12 @@ public class RSAAuthenticationToken {
     return tokenFormat;
   }
 
-  public static RSAAuthenticationToken fromStr(String token) {
+  public static AuthenticationToken fromStr(String token) {
     String[] tokenArr = token.split("@");
     if (tokenArr.length != 5) {
       return null;
     }
-    return new RSAAuthenticationToken(tokenArr[0], tokenArr[1],
+    return new AuthenticationToken(tokenArr[0], tokenArr[1],
         Long.parseLong(tokenArr[2]), tokenArr[3], tokenArr[4]);
   }
 
@@ -94,10 +94,10 @@ public class RSAAuthenticationToken {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof RSAAuthenticationToken)) {
+    if (!(obj instanceof AuthenticationToken)) {
       return false;
     }
-    RSAAuthenticationToken token = (RSAAuthenticationToken) obj;
+    AuthenticationToken token = (AuthenticationToken) obj;
     if (!token.plainToken().equals(this.plainToken())) {
       return false;
     }

@@ -17,9 +17,9 @@
 package org.apache.servicecomb;
 
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
-import org.apache.servicecomb.foundation.common.utils.RSAUtils;
-import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
+import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
+import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
+import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.stereotype.Component;
@@ -39,11 +39,11 @@ public class AuthHandlerBoot implements BootListener {
     if (!EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
       return;
     }
-    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
-    RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
-    RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
-    RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
+    KeyPairEntry keyPairEntry = KeyPairUtils.generateRSAKeyPair();
+    Keypair4Auth.INSTANCE.setPrivateKey(keyPairEntry.getPrivateKey());
+    Keypair4Auth.INSTANCE.setPublicKey(keyPairEntry.getPublicKey());
+    Keypair4Auth.INSTANCE.setPublicKeyEncoded(keyPairEntry.getPublicKeyEncoded());
     RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
-        rsaKeyPairEntry.getPublicKeyEncoded());
+        keyPairEntry.getPublicKeyEncoded());
   }
 }

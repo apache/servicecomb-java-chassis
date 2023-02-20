@@ -29,14 +29,14 @@ public class TestRSAUtil {
   @Test
   public void testSignVerify()
       throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, SignatureException {
-    RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
+    KeyPairEntry keyPairEntry = KeyPairUtils.generateRSAKeyPair();
 
-    Assertions.assertNotNull(rsaKeyPairEntry.getPublicKeyEncoded());
-    Assertions.assertNotNull(rsaKeyPairEntry.getPrivateKey());
-    Assertions.assertNotNull(rsaKeyPairEntry.getPublicKey());
+    Assertions.assertNotNull(keyPairEntry.getPublicKeyEncoded());
+    Assertions.assertNotNull(keyPairEntry.getPrivateKey());
+    Assertions.assertNotNull(keyPairEntry.getPublicKey());
     String testContent = "instance-id@201711201930@randomstr";
-    String signstr = RSAUtils.sign(testContent, rsaKeyPairEntry.getPrivateKey());
-    Assertions.assertTrue(RSAUtils.verify(rsaKeyPairEntry.getPublicKeyEncoded(), signstr, testContent));
+    String signstr = KeyPairUtils.sign(testContent, keyPairEntry.getPrivateKey());
+    Assertions.assertTrue(KeyPairUtils.verify(keyPairEntry.getPublicKeyEncoded(), signstr, testContent));
   }
 
   @Test
@@ -48,6 +48,6 @@ public class TestRSAUtil {
         "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ";
     String pubKey =
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxKl5TNUTec7fL2degQcCk6vKf3c0wsfNK5V6elKzjWxm0MwbRj/UeR20VSnicBmVIOWrBS9LiERPPvjmmWUOSS2vxwr5XfhBhZ07gCAUNxBOTzgMo5nE45DhhZu5Jzt5qSV6o10Kq7+fCCBlDZ1UoWxZceHkUt5AxcrhEDulFjQIDAQAB";
-    Assertions.assertTrue(RSAUtils.verify(pubKey, sign, content));
+    Assertions.assertTrue(KeyPairUtils.verify(pubKey, sign, content));
   }
 }
