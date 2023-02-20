@@ -34,7 +34,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  */
 public class ConsumerAuthHandler implements Handler {
 
-  private RSAConsumerTokenManager authenticationTokenManager = new RSAConsumerTokenManager();
+  private ConsumerTokenManager authenticationTokenManager = new ConsumerTokenManager();
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -49,7 +49,7 @@ public class ConsumerAuthHandler implements Handler {
     invocation.next(asyncResp);
   }
 
-  public void setAuthenticationTokenManager(RSAConsumerTokenManager authenticationTokenManager) {
+  public void setAuthenticationTokenManager(ConsumerTokenManager authenticationTokenManager) {
     this.authenticationTokenManager = authenticationTokenManager;
   }
 }

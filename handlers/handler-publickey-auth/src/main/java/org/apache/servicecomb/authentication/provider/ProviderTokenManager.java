@@ -22,8 +22,8 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.authentication.RSAAuthenticationToken;
-import org.apache.servicecomb.foundation.common.utils.RSAUtils;
+import org.apache.servicecomb.authentication.AuthenticationToken;
+import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -34,11 +34,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public class RSAProviderTokenManager {
+public class ProviderTokenManager {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTokenManager.class);
 
-  private final Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
+  private final Cache<AuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
       .build();
 
@@ -46,7 +46,7 @@ public class RSAProviderTokenManager {
 
   public boolean valid(String token) {
     try {
-      RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
+      AuthenticationToken rsaToken = AuthenticationToken.fromStr(token);
       if (null == rsaToken) {
         LOGGER.error("token format is error, perhaps you need to set auth handler at consumer");
         return false;
@@ -71,21 +71,21 @@ public class RSAProviderTokenManager {
     }
   }
 
-  public boolean isValidToken(RSAAuthenticationToken rsaToken)
+  public boolean isValidToken(AuthenticationToken rsaToken)
       throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
     String sign = rsaToken.getSign();
     String content = rsaToken.plainToken();
     String publicKey = getPublicKeyFromInstance(rsaToken.getInstanceId(), rsaToken.getServiceId());
-    return RSAUtils.verify(publicKey, sign, content);
+    return KeyPairUtils.verify(publicKey, sign, content);
   }
 
   protected int getExpiredTime() {
     return 60 * 60 * 1000;
   }
 
-  private boolean tokenExpired(RSAAuthenticationToken rsaToken) {
+  private boolean tokenExpired(AuthenticationToken rsaToken) {
     long generateTime = rsaToken.getGenerateTime();
-    long expired = generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME + 15 * 60 * 1000;
+    long expired = generateTime + AuthenticationToken.TOKEN_ACTIVE_TIME + 15 * 60 * 1000;
     long now = System.currentTimeMillis();
     return now > expired;
   }
@@ -101,7 +101,7 @@ public class RSAProviderTokenManager {
   }
 
   @VisibleForTesting
-  Cache<RSAAuthenticationToken, Boolean> getValidatedToken() {
+  Cache<AuthenticationToken, Boolean> getValidatedToken() {
     return validatedToken;
   }
 }

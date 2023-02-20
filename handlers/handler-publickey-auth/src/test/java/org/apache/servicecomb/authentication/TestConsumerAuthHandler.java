@@ -17,7 +17,7 @@
 package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.authentication.consumer.ConsumerAuthHandler;
-import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
+import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,11 +30,11 @@ public class TestConsumerAuthHandler {
 
   AsyncResponse asyncResp = null;
 
-  RSAConsumerTokenManager tokenManager = null;
+  ConsumerTokenManager tokenManager = null;
 
   @Test
   public void testHandler() throws Exception {
-    tokenManager = Mockito.mock(RSAConsumerTokenManager.class);
+    tokenManager = Mockito.mock(ConsumerTokenManager.class);
     Mockito.when(tokenManager.getToken()).thenReturn("testtoken");
     ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
     consumerAuthHandler.setAuthenticationTokenManager(tokenManager);
@@ -44,7 +44,7 @@ public class TestConsumerAuthHandler {
 
   @Test
   public void testHandlerException() throws Exception {
-    tokenManager = Mockito.mock(RSAConsumerTokenManager.class);
+    tokenManager = Mockito.mock(ConsumerTokenManager.class);
     Mockito.when(tokenManager.getToken()).thenReturn(null);
     ConsumerAuthHandler consumerAuthHandler = new ConsumerAuthHandler();
     consumerAuthHandler.setAuthenticationTokenManager(tokenManager);

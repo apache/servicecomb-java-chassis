@@ -14,34 +14,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.common.utils;
+
+package org.apache.servicecomb.foundation.token;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-public final class RSAKeyPairEntry {
+/**
+ * 进程级别公私钥对
+ *
+ */
+public class Keypair4Auth {
 
-  private final PrivateKey privateKey;
-
-  private final PublicKey publicKey;
-
-  private final String publicKeyEncoded;
-
-  public RSAKeyPairEntry(PrivateKey privateKey, PublicKey publicKey, String publicKeyEncoded) {
-    this.privateKey = privateKey;
-    this.publicKey = publicKey;
-    this.publicKeyEncoded = publicKeyEncoded;
+  private Keypair4Auth() {
   }
+
+  private PrivateKey privateKey;
+
+  private PublicKey publicKey;
+
+  private String publicKeyEncoded;
+
 
   public PrivateKey getPrivateKey() {
     return privateKey;
   }
 
+
+  public void setPrivateKey(PrivateKey privateKey) {
+    this.privateKey = privateKey;
+  }
+
+
   public PublicKey getPublicKey() {
     return publicKey;
   }
 
+
+  public void setPublicKey(PublicKey publicKey) {
+    this.publicKey = publicKey;
+  }
+
+
   public String getPublicKeyEncoded() {
     return publicKeyEncoded;
   }
+
+
+  public void setPublicKeyEncoded(String publicKeyEncoded) {
+    this.publicKeyEncoded = publicKeyEncoded;
+  }
+
+  public static Keypair4Auth INSTANCE = new Keypair4Auth();
 }
