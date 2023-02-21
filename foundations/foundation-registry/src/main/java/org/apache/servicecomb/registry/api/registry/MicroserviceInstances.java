@@ -65,16 +65,13 @@ public class MicroserviceInstances {
   public void mergeMicroserviceInstances(MicroserviceInstances other) {
     mergeNeedRefresh(other.needRefresh);
     mergeMicroserviceNotExist(other.microserviceNotExist);
-    mergeRevision(other.revision);
+    mergeRevision(other);
     mergeInstanceResponse(other.getInstancesResponse());
   }
 
-  private void mergeRevision(String revision) {
-    if (revision == null) {
-      return;
-    }
-    if (this.revision == null || this.revision.compareTo(revision) < 0) {
-      this.revision = revision;
+  private void mergeRevision(MicroserviceInstances other) {
+    if (!other.isMicroserviceNotExist() && other.needRefresh) {
+      this.revision = other.getRevision();
     }
   }
 

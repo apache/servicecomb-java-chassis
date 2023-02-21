@@ -45,6 +45,8 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
 
   protected AppManager appManager;
 
+  protected String revision;
+
   @Autowired
   public AbstractLightweightDiscovery setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
@@ -120,8 +122,11 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
 
   // ignore versionRule, instances only filter by consumer logic
   @Override
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String uselessVersionRule,
-      String revision) {
-    return store.findServiceInstances(appId, serviceName, revision);
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String uselessVersionRule) {
+    MicroserviceInstances microserviceInstances = store.findServiceInstances(appId, serviceName, this.revision);
+    if (!microserviceInstances.isMicroserviceNotExist() && microserviceInstances.isNeedRefresh()) {
+      this.revision = microserviceInstances.getRevision();
+    }
+    return microserviceInstances;
   }
 }
