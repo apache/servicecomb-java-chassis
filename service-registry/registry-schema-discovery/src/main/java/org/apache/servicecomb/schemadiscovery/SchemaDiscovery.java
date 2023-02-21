@@ -103,8 +103,7 @@ public class SchemaDiscovery implements Discovery {
   }
 
   @Override
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule,
-      String revision) {
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     microserviceInstances.setMicroserviceNotExist(true);
     return microserviceInstances;
