@@ -73,9 +73,8 @@ public class LocalDiscovery implements Discovery {
   }
 
   @Override
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule,
-      String revision) {
-    return localDiscoveryStore.findServiceInstances(appId, serviceName, versionRule, revision);
+  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
+    return localDiscoveryStore.findServiceInstances(appId, serviceName, versionRule);
   }
 
   @Override
