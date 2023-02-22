@@ -26,7 +26,7 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>filter-tests</artifactId>
-  <name>Java Chassis::Demo::Filter::Client</name>
+  <name>Java Chassis::Demo::Filter::Tests</name>
 
   <dependencies>
     <dependency>
