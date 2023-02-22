@@ -29,13 +29,11 @@ import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.http.HttpTracing;
 
-@Component
 public class ZipkinTracingFilter implements Filter {
   public static final String NAME = "zipkin";
 
