@@ -56,7 +56,7 @@
     <javadoc-maven-plugin.version>3.5.0</javadoc-maven-plugin.version>
     <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0-M8</maven-failsafe-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M9</maven-failsafe-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
     <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
     <maven-remote-resources-plugin.version>3.0.0</maven-remote-resources-plugin.version>
