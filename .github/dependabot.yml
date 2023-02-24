@@ -45,15 +45,6 @@ updates:
       - dependency-name: "jakarta.ws.rs-api"
         versions:
           - "3.x"
-      - dependency-name: "jersey"
-        versions:
-          - "3.x"
-      - dependency-name: "jersey-client"
-        versions:
-          - "3.x"
-      - dependency-name: "jersey-common"
-        versions:
-          - "3.x"
       - dependency-name: "logback-classic"
         # logback new versions needs java11 now
       - dependency-name: "logback-core"
