@@ -73,7 +73,7 @@
     <log4j2.version>2.19.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
     <maven-model.version>3.8.7</maven-model.version>
-    <micrometer.version>1.10.3</micrometer.version>
+    <micrometer.version>1.10.4</micrometer.version>
     <mockito.version>5.1.1</mockito.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.2.0</nacos-client.version>
