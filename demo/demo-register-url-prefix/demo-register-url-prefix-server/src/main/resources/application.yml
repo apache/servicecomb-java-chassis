@@ -33,8 +33,3 @@ servicecomb:
       registerUrlPrefix: true
   rest:
     address: 0.0.0.0:8080
-
-  handler:
-    chain:
-      Provider:
-        default: custom-access-log
