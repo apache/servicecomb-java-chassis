@@ -57,7 +57,7 @@ public class TestTransportConfigUtils {
     LogCollector collector = new LogCollector();
     Assertions.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("thread-count is ambiguous, and deprecated, recommended to use verticle-count.",
-        collector.getEvents().get(0).getMessage());
+        collector.getEvent(0).getMessage().getFormattedMessage());
     collector.teardown();
   }
 

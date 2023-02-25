@@ -60,6 +60,10 @@ public class LogCollector implements Closeable {
     return events;
   }
 
+  public LogEvent getEvent(int index) {
+    return events.get(index);
+  }
+
   public LogEvent getLastEvents() {
     return events.get(events.size() - 1);
   }
