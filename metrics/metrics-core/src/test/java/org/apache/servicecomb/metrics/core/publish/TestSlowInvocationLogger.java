@@ -145,7 +145,7 @@ public class TestSlowInvocationLogger {
             + "    wake consumer          : 0.0 ms\n"
             + "    client filters response: 0.0 ms\n"
             + "    handlers response      : 0.0 ms",
-        logCollector.getEvents().get(0).getMessage());
+        logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 
   @Test
@@ -195,7 +195,7 @@ public class TestSlowInvocationLogger {
             + "    handlers response      : 0.0 ms\n"
             + "    server filters response: 0.0 ms\n"
             + "    send response          : 0.0 ms",
-        logCollector.getEvents().get(0).getMessage());
+        logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 
   @Test
@@ -239,6 +239,6 @@ public class TestSlowInvocationLogger {
             + "    handlers response      : 0.0 ms\n"
             + "    server filters response: 0.0 ms\n"
             + "    send response          : 0.0 ms",
-        logCollector.getEvents().get(0).getMessage());
+        logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 }

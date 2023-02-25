@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import mockit.Expectations;
+import mockit.Mocked;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -34,11 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestMicroserviceRegisterTask {
   private EventBus eventBus;
