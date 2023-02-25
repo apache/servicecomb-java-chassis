@@ -29,7 +29,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;

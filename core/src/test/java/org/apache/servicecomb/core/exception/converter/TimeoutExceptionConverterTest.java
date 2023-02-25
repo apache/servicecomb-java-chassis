@@ -50,7 +50,7 @@ class TimeoutExceptionConverterTest {
     try (LogCollector logCollector = new LogCollector()) {
       convert();
 
-      assertThat(logCollector.getLastEvents().getRenderedMessage())
+      assertThat(logCollector.getLastEvents().getMessage().getFormattedMessage())
           .isEqualTo(
               "Request timeout, Details: The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080.");
     }

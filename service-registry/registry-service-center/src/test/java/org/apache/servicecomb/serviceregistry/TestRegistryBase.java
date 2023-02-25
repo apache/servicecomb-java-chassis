@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.serviceregistry;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -63,8 +63,9 @@ public class TestRegistryBase {
   public void setup() {
     ConfigUtil.installDynamicConfig();
 
+
     // avoid write too many logs
-    Logger.getRootLogger().setLevel(Level.OFF);
+    Configurator.setRootLevel(Level.OFF);
 
     serviceRegistry = LocalServiceRegistryFactory.createLocal("registry.yaml");
     serviceRegistry.init();
@@ -78,7 +79,7 @@ public class TestRegistryBase {
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    Logger.getRootLogger().setLevel(Level.INFO);
+    Configurator.setRootLevel(Level.INFO);
   }
 
   @AfterClass

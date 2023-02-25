@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -612,7 +612,7 @@ public class TestMicroserviceRegisterTask {
       registerTask.run();
     } catch (IllegalStateException exception) {
       isIllegalException = true;
-      List<LoggingEvent> events = collector.getEvents().stream()
+      List<LogEvent> events = collector.getEvents().stream()
           .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
 
       Assertions.assertEquals("service center schema and local schema both are different:\n" +

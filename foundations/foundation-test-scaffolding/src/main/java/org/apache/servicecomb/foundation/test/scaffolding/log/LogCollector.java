@@ -16,70 +16,74 @@
  */
 package org.apache.servicecomb.foundation.test.scaffolding.log;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-
 public class LogCollector implements Closeable {
-  List<LoggingEvent> events = new ArrayList<>();
+  List<LogEvent> events = new ArrayList<>();
 
-  Appender appender = new AppenderSkeleton() {
+  Appender appender = new AbstractAppender("LogCollector", null, PatternLayout.createDefaultLayout()) {
     @Override
-    public void append(LoggingEvent event) {
+    public void append(LogEvent event) {
       events.add(event);
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    @Override
-    public boolean requiresLayout() {
-      return false;
     }
   };
 
   public LogCollector() {
-    Logger.getRootLogger().addAppender(appender);
+    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+    Configuration config = ctx.getConfiguration();
+    appender.start();
+    config.getRootLogger().addAppender(appender, Level.ALL, null);
+    ctx.updateLoggers(config);
   }
 
   public LogCollector setLogLevel(String logName, Level level) {
-    Logger.getLogger(logName).setLevel(level);
+    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+    Configuration config = ctx.getConfiguration();
+    config.getLoggerConfig(logName).setLevel(level);
     return this;
   }
 
-  public List<LoggingEvent> getEvents() {
+  public List<LogEvent> getEvents() {
     return events;
   }
 
-  public LoggingEvent getLastEvents() {
+  public LogEvent getLastEvents() {
     return events.get(events.size() - 1);
   }
 
   public List<Throwable> getThrowables() {
     return events.stream()
-        .filter(e -> e.getThrowableInformation() != null)
-        .map(e -> e.getThrowableInformation().getThrowable())
+        .map(LogEvent::getThrown)
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
   public List<String> getThrowableMessages() {
     return events.stream()
-        .filter(e -> e.getThrowableInformation() != null)
-        .map(e -> e.getThrowableInformation().getThrowable().getMessage())
+        .filter(e -> e.getThrown() != null)
+        .map(e -> e.getThrown().getMessage())
         .collect(Collectors.toList());
   }
 
   public void teardown() {
-    Logger.getRootLogger().removeAppender(appender);
+    LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+    Configuration config = ctx.getConfiguration();
+    appender.stop();
+    config.getRootLogger().removeAppender("LogCollector");
+    ctx.updateLoggers(config);
   }
 
   public void clear() {
