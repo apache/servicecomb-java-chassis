@@ -41,8 +41,7 @@
     <java.version>17</java.version>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
-    <werror.properties>-Werror</werror.properties>
-    <test.additional.args/>
+    <werror.properties></werror.properties>
     <!-- plugin version start -->
     <!-- sort by alpha -->
     <checkstyle-maven-plugin.version>3.2.1</checkstyle-maven-plugin.version>
@@ -283,7 +282,28 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-maven-plugin.version}</version>
         <configuration>
-          <argLine>${test.additional.args}</argLine>
+          <argLine>
+            -Djdk.attach.allowAttachSelf
+            --add-opens java.base/java.io=ALL-UNNAMED
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens java.base/java.net=ALL-UNNAMED
+            --add-opens java.base/java.nio=ALL-UNNAMED
+            --add-opens java.base/java.nio.channels.spi=ALL-UNNAMED
+            --add-opens java.base/java.nio.file=ALL-UNNAMED
+            --add-opens java.base/java.util=ALL-UNNAMED
+            --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+            --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
+            --add-opens java.base/java.util.jar=ALL-UNNAMED
+            --add-opens java.base/java.util.stream=ALL-UNNAMED
+            --add-opens java.base/java.time=ALL-UNNAMED
+            --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+            --add-opens java.base/sun.net.dns=ALL-UNNAMED
+            --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+            --add-opens java.base/sun.security.jca=ALL-UNNAMED
+            --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED
+            --add-reads java.base=java.desktop
+          </argLine>
           <skip>${maven.test.skip}</skip>
           <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
           <excludes>
@@ -642,51 +662,6 @@
           </plugin>
         </plugins>
       </reporting>
-    </profile>
-    <profile>
-      <id>jdk11</id>
-      <activation>
-        <jdk>[11,17)</jdk>
-      </activation>
-      <properties>
-        <werror.properties/>
-        <test.additional.args>
-          -Djdk.attach.allowAttachSelf
-          --add-opens java.base/java.lang=ALL-UNNAMED
-          --add-reads java.base=java.desktop
-        </test.additional.args>
-      </properties>
-    </profile>
-    <profile>
-      <id>jdk17</id>
-      <activation>
-        <jdk>[17,)</jdk>
-      </activation>
-      <properties>
-        <werror.properties/>
-        <test.additional.args>
-          -Djdk.attach.allowAttachSelf
-          --add-opens java.base/java.io=ALL-UNNAMED
-          --add-opens java.base/java.lang=ALL-UNNAMED
-          --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-          --add-opens java.base/java.net=ALL-UNNAMED
-          --add-opens java.base/java.nio=ALL-UNNAMED
-          --add-opens java.base/java.nio.channels.spi=ALL-UNNAMED
-          --add-opens java.base/java.nio.file=ALL-UNNAMED
-          --add-opens java.base/java.util=ALL-UNNAMED
-          --add-opens java.base/java.util.concurrent=ALL-UNNAMED
-          --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
-          --add-opens java.base/java.util.jar=ALL-UNNAMED
-          --add-opens java.base/java.util.stream=ALL-UNNAMED
-          --add-opens java.base/java.time=ALL-UNNAMED
-          --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
-          --add-opens java.base/sun.net.dns=ALL-UNNAMED
-          --add-opens java.base/sun.nio.ch=ALL-UNNAMED
-          --add-opens java.base/sun.security.jca=ALL-UNNAMED
-          --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED
-          --add-reads java.base=java.desktop
-        </test.additional.args>
-      </properties>
     </profile>
   </profiles>
 
