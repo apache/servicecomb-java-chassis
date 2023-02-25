@@ -73,7 +73,7 @@ public class TestTransportConfigUtils {
     LogCollector collector = new LogCollector();
     Assertions.assertEquals(7, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("verticle-count not defined, set to 7.",
-        collector.getLastEvents().getMessage());
+        collector.getLastEvents().getMessage().getFormattedMessage());
     collector.teardown();
   }
 
@@ -90,13 +90,13 @@ public class TestTransportConfigUtils {
     LogCollector collector = new LogCollector();
     Assertions.assertEquals(8, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("verticle-count not defined, set to 8.",
-        collector.getLastEvents().getMessage());
+        collector.getLastEvents().getMessage().getFormattedMessage());
 
     count.set(9);
     collector.clear();
     Assertions.assertEquals(8, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("verticle-count not defined, set to 8.",
-        collector.getLastEvents().getMessage());
+        collector.getLastEvents().getMessage().getFormattedMessage());
 
     collector.teardown();
   }

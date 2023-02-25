@@ -170,7 +170,7 @@ public class TestInspectorImpl {
       Response response = inspector.downloadSchemas(format);
 
       Assertions.assertEquals("failed to create schemas zip file, format=SWAGGER.",
-          logCollector.getLastEvents().getMessage());
+          logCollector.getLastEvents().getMessage().getFormattedMessage());
 
       InvocationException invocationException = response.getResult();
       Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());
