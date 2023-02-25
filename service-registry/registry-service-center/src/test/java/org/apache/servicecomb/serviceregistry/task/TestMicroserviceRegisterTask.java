@@ -613,7 +613,7 @@ public class TestMicroserviceRegisterTask {
     } catch (IllegalStateException exception) {
       isIllegalException = true;
       List<LogEvent> events = collector.getEvents().stream()
-          .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
+          .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).toList();
 
       Assertions.assertEquals("service center schema and local schema both are different:\n" +
           " service center schema:\n" +
@@ -693,7 +693,8 @@ public class TestMicroserviceRegisterTask {
           "        type: \"integer\"\n" +
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]",
+              events.get(5).getMessage().getFormattedMessage());
 
       Assertions.assertEquals("The difference in local schema:\n" +
           "[type: \"string\"\n" +
@@ -709,7 +710,8 @@ public class TestMicroserviceRegisterTask {
           "        type: \"integer\"\n" +
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(6).getMessage());
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]",
+              events.get(6).getMessage().getFormattedMessage());
     }
 
     Assertions.assertTrue(isIllegalException);
