@@ -86,8 +86,8 @@ public class TestMicroservicePaths {
       paths.printPaths();
 
       StringBuilder sb = new StringBuilder();
-      collector.getEvents().stream()
-          .forEach(e -> sb.append(e.getMessage()).append("\n"));
+      collector.getEvents()
+          .forEach(e -> sb.append(e.getMessage().getFormattedMessage()).append("\n"));
       Assertions.assertEquals(
           "Swagger mapped \"{[/static/], method=[POST], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.postStatic()\n"
               + "Swagger mapped \"{[/static/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStatic()\n"

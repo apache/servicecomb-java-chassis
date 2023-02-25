@@ -113,7 +113,7 @@ public class TestProducerBootListener {
       Assertions.assertEquals(
           "Executor org.apache.servicecomb.core.provider.producer.TestProducerBootListener$UnCloseableExecutor "
               + "do not support close or shutdown, it may block service shutdown.",
-          logCollector.getLastEvents().getMessage());
+          logCollector.getLastEvents().getMessage().getFormattedMessage());
     }
   }
 

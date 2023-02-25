@@ -90,7 +90,7 @@ public class TestClassPathStaticResourceHandler {
       Response response = handler.handle("index.html");
 
       Assertions.assertEquals("failed to process static resource, path=web-root/index.html",
-          logCollector.getLastEvents().getMessage());
+          logCollector.getLastEvents().getMessage().getFormattedMessage());
 
       InvocationException invocationException = response.getResult();
       Assertions.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());

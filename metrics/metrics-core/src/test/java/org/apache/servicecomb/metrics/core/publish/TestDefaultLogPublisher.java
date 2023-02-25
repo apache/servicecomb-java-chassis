@@ -16,14 +16,14 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.log4j.spi.LoggingEvent;
+import com.google.common.eventbus.EventBus;
+import com.netflix.spectator.api.Measurement;
+import io.vertx.core.impl.VertxImpl;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
@@ -49,14 +49,10 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
 
-import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.Measurement;
-
-import io.vertx.core.impl.VertxImpl;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
+import javax.ws.rs.core.Response.Status;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestDefaultLogPublisher {
@@ -129,9 +125,9 @@ public class TestDefaultLogPublisher {
   public void onPolledEvent_failed() {
     publisher.onPolledEvent(null);
 
-    LoggingEvent event = collector.getEvents().get(0);
-    Assertions.assertEquals("Failed to print perf log.", event.getMessage());
-    Assertions.assertEquals(NullPointerException.class, event.getThrowableInformation().getThrowable().getClass());
+    LogEvent event = collector.getEvents().get(0);
+    Assertions.assertEquals("Failed to print perf log.", event.getMessage().getFormattedMessage());
+    Assertions.assertEquals(NullPointerException.class, event.getThrown().getClass());
   }
 
   @Test
@@ -234,9 +230,9 @@ public class TestDefaultLogPublisher {
         }
       };
       publisher.onPolledEvent(new PolledEvent(Collections.emptyList(), Collections.emptyList()));
-      List<LoggingEvent> events = collector.getEvents().stream()
-          .filter(e -> DefaultLogPublisher.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
-      LoggingEvent event = events.get(0);
+      List<LogEvent> events = collector.getEvents().stream()
+          .filter(e -> DefaultLogPublisher.class.getName().equals(e.getLoggerName())).toList();
+      LogEvent event = events.get(0);
       Assertions.assertEquals("\n"
               + "os:\n"
               + "  cpu:\n"
@@ -284,7 +280,7 @@ public class TestDefaultLogPublisher {
               + "        cFiltersReq : 3000.000/30000.000 sendReq     : 3000.000/30000.000 getConnect  : 3000.000/30000.000 writeBuf    : 3000.000/30000.000\n"
               + "        waitResp    : 3000.000/30000.000 wakeConsumer: 3000.000/30000.000 cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
               + "        sFiltersResp: 3000.000/30000.000 sendResp    : 3000.000/30000.000\n",
-          event.getMessage());
+          event.getMessage().getFormattedMessage());
     } catch (Exception e) {
       e.printStackTrace();
       Assertions.fail("unexpected error happen. " + e.getMessage());

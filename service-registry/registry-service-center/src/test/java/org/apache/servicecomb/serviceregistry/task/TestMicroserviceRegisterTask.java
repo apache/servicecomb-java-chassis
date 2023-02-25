@@ -16,11 +16,11 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.log4j.spi.LoggingEvent;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import mockit.Expectations;
+import mockit.Mocked;
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -34,11 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestMicroserviceRegisterTask {
   private EventBus eventBus;
@@ -612,8 +609,8 @@ public class TestMicroserviceRegisterTask {
       registerTask.run();
     } catch (IllegalStateException exception) {
       isIllegalException = true;
-      List<LoggingEvent> events = collector.getEvents().stream()
-          .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
+      List<LogEvent> events = collector.getEvents().stream()
+          .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).toList();
 
       Assertions.assertEquals("service center schema and local schema both are different:\n" +
           " service center schema:\n" +
@@ -693,7 +690,8 @@ public class TestMicroserviceRegisterTask {
           "        type: \"integer\"\n" +
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]",
+              events.get(5).getMessage().getFormattedMessage());
 
       Assertions.assertEquals("The difference in local schema:\n" +
           "[type: \"string\"\n" +
@@ -709,7 +707,8 @@ public class TestMicroserviceRegisterTask {
           "        type: \"integer\"\n" +
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(6).getMessage());
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]",
+              events.get(6).getMessage().getFormattedMessage());
     }
 
     Assertions.assertTrue(isIllegalException);

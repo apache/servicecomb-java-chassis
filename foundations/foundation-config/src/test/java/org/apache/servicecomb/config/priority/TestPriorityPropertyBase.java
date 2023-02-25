@@ -16,13 +16,12 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import com.netflix.config.DynamicPropertyFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public class TestPriorityPropertyBase {
   protected PriorityPropertyManager priorityPropertyManager;
@@ -32,7 +31,7 @@ public class TestPriorityPropertyBase {
   @BeforeEach
   public void setup() {
     // avoid write too many logs
-    Logger.getRootLogger().setLevel(Level.OFF);
+    Configurator.setRootLevel(Level.OFF);
 
     ArchaiusUtils.resetConfig();
 
@@ -43,7 +42,7 @@ public class TestPriorityPropertyBase {
     propertyFactory = new PriorityPropertyFactory();
     priorityPropertyManager = new PriorityPropertyManager(new ConfigObjectFactory(propertyFactory));
 
-    Logger.getRootLogger().setLevel(Level.INFO);
+    Configurator.setRootLevel(Level.INFO);
   }
 
   @AfterEach

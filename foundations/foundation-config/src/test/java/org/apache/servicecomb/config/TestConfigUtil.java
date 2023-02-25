@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -64,7 +64,7 @@ public class TestConfigUtil {
 
   @BeforeClass
   public static void beforeTest() {
-    Logger.getRootLogger().setLevel(Level.OFF);
+    Configurator.setRootLevel(Level.OFF);
 
     ArchaiusUtils.resetConfig();
 
@@ -78,7 +78,7 @@ public class TestConfigUtil {
 
     ConfigUtil.installDynamicConfig();
 
-    Logger.getRootLogger().setLevel(Level.INFO);
+    Configurator.setRootLevel(Level.INFO);
   }
 
   @AfterClass
