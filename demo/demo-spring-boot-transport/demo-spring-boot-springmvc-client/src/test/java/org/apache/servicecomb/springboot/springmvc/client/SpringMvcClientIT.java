@@ -17,32 +17,31 @@
 
 package org.apache.servicecomb.springboot.springmvc.client;
 
-import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-/**
- * SpringmvcClient
- *
- *
- */
-@SpringBootApplication
-@EnableServiceComb
-public class SpringmvcClient {
-
-  public static void main(final String[] args) throws Exception {
-
-    new SpringApplicationBuilder().sources(SpringmvcClient.class).web(WebApplicationType.SERVLET).build().run(args);
-
-    runTest();
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = SpringMvcClient.class)
+public class SpringMvcClientIT {
+  @BeforeEach
+  public void setUp() throws Exception {
+    TestMgr.errors().clear();
   }
 
-  public static void runTest() throws Exception {
-    CategorizedTestCaseRunner.runCategorizedTestCase("springmvc");
+  @Test
+  public void clientGetsNoError() throws Exception {
+    try {
+      SpringMvcClient.runTest();
 
-    TestMgr.summary();
+      Assertions.assertTrue(TestMgr.errors().isEmpty());
+    } catch (Throwable e) {
+      e.printStackTrace();
+      Assertions.fail("test case failed, message=" + e.getMessage());
+    }
   }
 }
