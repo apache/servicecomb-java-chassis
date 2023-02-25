@@ -274,7 +274,7 @@ public class TestRestClientInvocation {
 
     Assertions.assertEquals(
         "Failed to encode and set cseContext, message=cause:RuntimeExceptionWithoutStackTrace,message:null.",
-        logCollector.getEvents().get(0).getMessage());
+        logCollector.getEvent(0).getMessage().getFormattedMessage());
     logCollector.teardown();
   }
 
