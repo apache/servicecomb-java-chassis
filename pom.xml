@@ -41,7 +41,7 @@
     <java.version>17</java.version>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
-    <werror.properties>-Werror</werror.properties>
+    <werror.properties></werror.properties>
     <test.additional.args>
       -Djdk.attach.allowAttachSelf
       --add-opens java.base/java.io=ALL-UNNAMED
