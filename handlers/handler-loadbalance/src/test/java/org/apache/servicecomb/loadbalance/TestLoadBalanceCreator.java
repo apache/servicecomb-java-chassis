@@ -71,7 +71,7 @@ public class TestLoadBalanceCreator {
 
     new Expectations() {
       {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST);
         result = servers;
       }
     };
@@ -118,7 +118,7 @@ public class TestLoadBalanceCreator {
     lb.setFilters(filters);
     new Expectations() {
       {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST);
         result = servers;
       }
     };
@@ -170,7 +170,7 @@ public class TestLoadBalanceCreator {
     lb.setFilters(filters);
     new Expectations() {
       {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST);
         result = servers;
       }
     };
@@ -205,7 +205,7 @@ public class TestLoadBalanceCreator {
     lb.setFilters(new ArrayList<>());
     new Expectations() {
       {
-        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST);
         result = servers;
       }
     };

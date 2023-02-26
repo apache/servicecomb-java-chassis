@@ -55,7 +55,7 @@ public class LoadBalancer {
   }
 
   public ServiceCombServer chooseServer(Invocation invocation) {
-    List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+    List<ServiceCombServer> servers = invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST);
     int serversCount = servers.size();
     for (ServerListFilterExt filterExt : filters) {
       if (!filterExt.enabled()) {

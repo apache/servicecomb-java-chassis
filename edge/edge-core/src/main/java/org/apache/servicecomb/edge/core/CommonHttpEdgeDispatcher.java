@@ -26,8 +26,8 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.loadbalance.ExtensionsManager;
+import org.apache.servicecomb.loadbalance.LoadBalanceFilter;
 import org.apache.servicecomb.loadbalance.LoadBalancer;
-import org.apache.servicecomb.loadbalance.LoadbalanceHandler;
 import org.apache.servicecomb.loadbalance.RuleExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
@@ -162,24 +162,26 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
     httpClient
         .request(requestOptions).compose(httpClientRequest -> {
-      context.request().headers().forEach((header) -> httpClientRequest.headers().set(header.getKey(), header.getValue()));
+          context.request().headers()
+              .forEach((header) -> httpClientRequest.headers().set(header.getKey(), header.getValue()));
 
-      context.request().resume();
-      context.request().handler(httpClientRequest::write);
-      context.request().endHandler((v) -> httpClientRequest.end());
+          context.request().resume();
+          context.request().handler(httpClientRequest::write);
+          context.request().endHandler((v) -> httpClientRequest.end());
 
-      return httpClientRequest.response().compose(httpClientResponse -> {
-        context.response().setStatusCode(httpClientResponse.statusCode());
-        httpClientResponse.headers().forEach((header) -> context.response().headers().set(header.getKey(), header.getValue()));
-        httpClientResponse.handler(this.responseHandler(context));
-        httpClientResponse.endHandler((v) -> context.response().end());
-        return Future.succeededFuture();
-      });
-    }).onFailure(failure -> {
-      LOG.warn("send request to target {}:{} failed, cause {}", endpointObject.getHostOrIp(), endpointObject.getPort(),
-          failure.getMessage());
-      serverNotReadyResponse(context);
-    });
+          return httpClientRequest.response().compose(httpClientResponse -> {
+            context.response().setStatusCode(httpClientResponse.statusCode());
+            httpClientResponse.headers()
+                .forEach((header) -> context.response().headers().set(header.getKey(), header.getValue()));
+            httpClientResponse.handler(this.responseHandler(context));
+            httpClientResponse.endHandler((v) -> context.response().end());
+            return Future.succeededFuture();
+          });
+        }).onFailure(failure -> {
+          LOG.warn("send request to target {}:{} failed, cause {}", endpointObject.getHostOrIp(), endpointObject.getPort(),
+              failure.getMessage());
+          serverNotReadyResponse(context);
+        });
   }
 
   private void serverNotReadyResponse(RoutingContext context) {
@@ -199,7 +201,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
         RegistrationManager.INSTANCE.getMicroservice().getAppId(),
         microserviceName,
         versionRule);
-    invocation.addLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
+    invocation.addLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
     return loadBalancerMap
         .computeIfAbsent(microserviceName, name -> createLoadBalancer(microserviceName));
   }

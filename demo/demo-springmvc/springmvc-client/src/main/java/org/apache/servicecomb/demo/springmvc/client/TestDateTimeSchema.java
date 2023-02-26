@@ -31,7 +31,7 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
-import org.apache.servicecomb.loadbalance.LoadbalanceHandler;
+import org.apache.servicecomb.loadbalance.LoadBalanceFilter;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -131,12 +131,12 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
     for (String endpoint : enpoints) {
       InvocationContext invocationContext = new InvocationContext();
-      invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, endpoint);
+      invocationContext.addLocalContext(LoadBalanceFilter.SERVICECOMB_SERVER_ENDPOINT, endpoint);
       Date date = new Date();
       TestMgr.check(date.getTime(), dateTimeSchemaWithContextInf.getDate(invocationContext, date).getTime());
 
       invocationContext = new InvocationContext();
-      invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, parseEndpoint(endpoint));
+      invocationContext.addLocalContext(LoadBalanceFilter.SERVICECOMB_SERVER_ENDPOINT, parseEndpoint(endpoint));
       date = new Date();
       TestMgr.check(date.getTime(), dateTimeSchemaWithContextInf.getDate(invocationContext, date).getTime());
     }
@@ -158,7 +158,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
     for (String endpoint : enpoints) {
       CseHttpEntity<?> entity = new CseHttpEntity<>(null);
       InvocationContext invocationContext = new InvocationContext();
-      invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, endpoint);
+      invocationContext.addLocalContext(LoadBalanceFilter.SERVICECOMB_SERVER_ENDPOINT, endpoint);
       entity.setContext(invocationContext);
 
       Date date = new Date();
@@ -170,7 +170,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
       entity = new CseHttpEntity<>(null);
       invocationContext = new InvocationContext();
-      invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, parseEndpoint(endpoint));
+      invocationContext.addLocalContext(LoadBalanceFilter.SERVICECOMB_SERVER_ENDPOINT, parseEndpoint(endpoint));
       entity.setContext(invocationContext);
 
       date = new Date();

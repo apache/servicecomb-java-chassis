@@ -46,7 +46,6 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -58,7 +57,7 @@ import org.mockito.Mockito;
 import mockit.Mock;
 import mockit.MockUp;
 
-public class TestLoadBalanceHandler2 {
+public class TestLoadBalanceFilter2 {
   private static SCBEngine scbEngine;
 
   @BeforeClass
@@ -153,18 +152,18 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
+    LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
@@ -232,11 +231,11 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
+    LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
@@ -320,18 +319,18 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
+    LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
@@ -410,32 +409,30 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
+    LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
-    handler = new LoadbalanceHandler(discoveryTree);
+    handler = new LoadBalanceFilter(discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
@@ -508,128 +505,36 @@ public class TestLoadBalanceHandler2 {
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
-    LoadbalanceHandler handler = null;
+    LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree();
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
-    handler = new LoadbalanceHandler(discoveryTree);
+    handler = new LoadBalanceFilter(discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadbalanceHandler();
+    handler = new LoadBalanceFilter();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    handler.handle(invocation, (response) -> Assertions.assertEquals("OK", response.getResult()));
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
-  }
-
-  @Test
-  public void testConfigEndpoint() {
-    ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
-    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-    InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
-    SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
-    when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
-    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
-    when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-    when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
-    when(microserviceMeta.getAppId()).thenReturn("testApp");
-    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
-    when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    TransportManager transportManager = Mockito.mock(TransportManager.class);
-    Transport transport = Mockito.mock(Transport.class);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
-
-    // set up data
-    MicroserviceInstance myself = new MicroserviceInstance();
-
-    MicroserviceInstance findInstance = new MicroserviceInstance();
-    List<String> findEndpoint = new ArrayList<>();
-    findEndpoint.add("rest://localhost:9092");
-    findInstance.setEndpoints(findEndpoint);
-    findInstance.setInstanceId("findInstance");
-
-    Map<String, MicroserviceInstance> data = new HashMap<>();
-    DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
-    scbEngine.setTransportManager(transportManager);
-    SCBEngine.getInstance().setTransportManager(transportManager);
-
-    LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
-    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-        .thenReturn(parent);
-    when(transportManager.findTransport("rest")).thenReturn(transport);
-
-    data.put("findInstance", findInstance);
-    parent.cacheVersion(1);
-    LoadbalanceHandler handler = new LoadbalanceHandler();
-    try {
-      handler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-
-    }
-    Assertions.assertEquals("rest://localhost:9092", invocation.getEndpoint().getEndpoint());
-
-    // reset
-    invocation.setEndpoint(null);
-
-    //success
-    invocation.addLocalContext("scb-endpoint", "rest://127.0.0.1:8080?sslEnabled=true&protocol=http2");
-    try {
-      handler.handle(invocation, asyncResp);
-    } catch (Exception e) {
-
-    }
-    Assertions.assertEquals("rest://127.0.0.1:8080?sslEnabled=true&protocol=http2",
-        invocation.getEndpoint().getEndpoint());
-
-    // reset
-    invocation.setEndpoint(null);
-
-    //endpoint format is not correct
-    invocation.addLocalContext("scb-endpoint", "127.0.0.1:8080");
-    try {
-      handler.handle(invocation, asyncResp);
-      Assertions.assertEquals("endpoint's format is not correct, throw exception", " but not throw exception");
-    } catch (Exception e) {
-      Assertions.assertTrue(e.getMessage()
-          .contains("Illegal character in scheme name"));
-    }
-
-    // reset
-    invocation.setEndpoint(null);
-
-    //transport is not find
-    invocation.addLocalContext("scb-endpoint", "my://127.0.0.1:8080?sslEnabled=true&protocol=http2");
-    try {
-      handler.handle(invocation, asyncResp);
-      Assertions.assertEquals("endpoint's transport not found, throw exception", "but not throw exception");
-    } catch (Exception e) {
-      Assertions.assertTrue(e.getMessage().contains("the endpoint's transport is not found."));
-    }
   }
 
   private void mockUpInstanceCacheManager(InstanceCacheManager instanceCacheManager) {
