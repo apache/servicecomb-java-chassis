@@ -14,21 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.loadbalance;
 
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -36,7 +39,7 @@ import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -46,10 +49,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 
-/**
- *  Load balance handler.
- */
-public class LoadbalanceHandler implements Handler {
+public class LoadBalanceFilter implements ConsumerFilter {
   public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
 
   // Enough times to make sure to choose a different server in high volume.
@@ -65,7 +65,7 @@ public class LoadbalanceHandler implements Handler {
       DynamicPropertyFactory.getInstance()
           .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalanceFilter.class);
 
   private DiscoveryTree discoveryTree = new DiscoveryTree();
 
@@ -76,11 +76,11 @@ public class LoadbalanceHandler implements Handler {
 
   private String strategy = null;
 
-  public LoadbalanceHandler(DiscoveryTree discoveryTree) {
+  public LoadBalanceFilter(DiscoveryTree discoveryTree) {
     this.discoveryTree = discoveryTree;
   }
 
-  public LoadbalanceHandler() {
+  public LoadBalanceFilter() {
     preCheck();
     discoveryTree.loadFromSPI(DiscoveryFilter.class);
     discoveryTree.addFilter(new ServerDiscoveryFilter());
@@ -108,16 +108,27 @@ public class LoadbalanceHandler implements Handler {
   }
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    AsyncResponse response = asyncResp;
-    asyncResp = async -> {
-      response.handle(async);
-    };
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER;
+  }
 
-    if (handleSuppliedEndpoint(invocation, asyncResp)) {
-      invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, false);
-      return;
+  @Nonnull
+  @Override
+  public String getName() {
+    return "load-balance";
+  }
+
+  @Override
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    try {
+      if (handleSuppliedEndpoint(invocation)) {
+        invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, false);
+        return nextNode.onFilter(invocation);
+      }
+    } catch (Exception e) {
+      return CompletableFuture.failedFuture(e);
     }
+
     invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, true);
 
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
@@ -131,20 +142,18 @@ public class LoadbalanceHandler implements Handler {
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
 
-    send(invocation, asyncResp, loadBalancer);
+    return send(invocation, nextNode, loadBalancer);
   }
 
   // user's can invoke a service by supplying target Endpoint.
   // in this case, we do not using load balancer, and no stats of server calculated, no retrying.
-  private boolean handleSuppliedEndpoint(Invocation invocation,
-      AsyncResponse asyncResp) throws Exception {
+  private boolean handleSuppliedEndpoint(Invocation invocation) throws Exception {
     if (invocation.getEndpoint() != null) {
-      invocation.next(asyncResp);
       return true;
     }
 
     if (supportDefinedEndpoint) {
-      return defineEndpointAndHandle(invocation, asyncResp);
+      return defineEndpointAndHandle(invocation);
     }
 
     return false;
@@ -161,7 +170,7 @@ public class LoadbalanceHandler implements Handler {
     return new Endpoint(transport, endpointUri);
   }
 
-  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+  private boolean defineEndpointAndHandle(Invocation invocation) throws Exception {
     Object endpoint = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
     if (endpoint == null) {
       return false;
@@ -172,7 +181,6 @@ public class LoadbalanceHandler implements Handler {
     }
 
     invocation.setEndpoint((Endpoint) endpoint);
-    invocation.next(asyncResp);
     return true;
   }
 
@@ -181,25 +189,24 @@ public class LoadbalanceHandler implements Handler {
   }
 
   @VisibleForTesting
-  void send(Invocation invocation, AsyncResponse asyncResp, LoadBalancer chosenLB) throws Exception {
+  CompletableFuture<Response> send(Invocation invocation, FilterNode filterNode, LoadBalancer chosenLB) {
     long time = System.currentTimeMillis();
     ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {
-      asyncResp.consumerFail(new InvocationException(Status.INTERNAL_SERVER_ERROR, "No available address found."));
-      return;
+      return CompletableFuture.failedFuture(
+          new InvocationException(Status.INTERNAL_SERVER_ERROR, "No available address found."));
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
-    invocation.next(resp -> {
-      // this stats is for WeightedResponseTimeRule
+    return filterNode.onFilter(invocation).whenComplete((r, e) -> {
+      // The stats are for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
-      if (isFailedResponse(resp)) {
-        // this stats is for SessionStickinessRule
+      if (e != null || isFailedResponse(r)) {
+        // The stats are for SessionStickinessRule
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
       } else {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
       }
-      asyncResp.handle(resp);
     });
   }
 

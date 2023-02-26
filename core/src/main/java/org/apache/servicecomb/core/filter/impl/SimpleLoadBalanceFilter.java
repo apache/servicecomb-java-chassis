@@ -42,12 +42,10 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * build-in round robin LB, for demo scenes
  */
-@Component
 public class SimpleLoadBalanceFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceFilter.class);
 
