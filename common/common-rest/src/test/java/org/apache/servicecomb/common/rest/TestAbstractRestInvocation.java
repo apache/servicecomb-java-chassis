@@ -47,7 +47,6 @@ import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -59,7 +58,6 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -70,7 +68,6 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -874,26 +871,6 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void doInvoke() throws Throwable {
-    Response response = Response.ok("ok");
-    Handler handler = (invocation, asyncResp) -> asyncResp.complete(response);
-    invocation.setHandlerList(Arrays.asList(handler));
-
-    Holder<Response> result = new Holder<>();
-    restInvocation = new AbstractRestInvocationForTest() {
-      @Override
-      protected void sendResponse(Response response) {
-        result.value = response;
-      }
-    };
-    restInvocation.invocation = invocation;
-
-    restInvocation.doInvoke();
-
-    Assertions.assertSame(response, result.value);
-  }
-
-  @Test
   public void scheduleInvocation_invocationContextDeserializeError() {
     AsyncContext asyncContext = Mockito.mock(AsyncContext.class);
     requestEx = new AbstractHttpServletRequest() {
@@ -935,52 +912,6 @@ public class TestAbstractRestInvocation {
 
     Assertions.assertEquals(Integer.valueOf(590), status.value);
     Assertions.assertEquals("Unexpected producer error, please check logs for details", reasonPhrase.value);
-    Assertions.assertEquals(Integer.valueOf(1), endCount.value);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void scheduleInvocation_flowControlReject() {
-    operationMeta = Mockito.spy(operationMeta);
-    Mockito.when(operationMeta.getProviderQpsFlowControlHandler())
-        .thenReturn((invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
-            new HttpStatus(429, "Too Many Requests"),
-            new CommonExceptionData("rejected by qps flowcontrol"))));
-    restOperation = Mockito.spy(restOperation);
-    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
-    Holder<Integer> status = new Holder<>();
-    Holder<String> reasonPhrase = new Holder<>();
-    Holder<Integer> endCount = new Holder<>(0);
-    Holder<String> responseBody = new Holder<>();
-    responseEx = new AbstractHttpServletResponse() {
-      @SuppressWarnings("deprecation")
-      @Override
-      public void setStatus(int sc, String sm) {
-        status.value = sc;
-        reasonPhrase.value = sm;
-      }
-
-      @Override
-      public void flushBuffer() {
-        endCount.value = endCount.value + 1;
-      }
-
-      @Override
-      public void setContentType(String type) {
-        Assertions.assertEquals("application/json; charset=utf-8", type);
-      }
-
-      @Override
-      public void setBodyBuffer(Buffer bodyBuffer) {
-        responseBody.value = bodyBuffer.toString();
-      }
-    };
-    initRestInvocation();
-    restInvocation.scheduleInvocation();
-
-    Assertions.assertEquals(Integer.valueOf(429), status.value);
-    Assertions.assertEquals("Too Many Requests", reasonPhrase.value);
-    Assertions.assertEquals("{\"message\":\"rejected by qps flowcontrol\"}", responseBody.value);
     Assertions.assertEquals(Integer.valueOf(1), endCount.value);
   }
 }
