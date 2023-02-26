@@ -16,16 +16,14 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import org.apache.servicecomb.core.filter.impl.SimpleLoadBalanceFilter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CoreFilterConfiguration {
-  @Bean
-  @ConditionalOnMissingBean(name = "loadBalanceFilter")
-  public ConsumerFilter loadBalanceFilter() {
-    return new SimpleLoadBalanceFilter();
-  }
+  //TODO: need remove all component scan or will cause bean conflict with load balance module
+//  @Bean
+//  @ConditionalOnMissingBean(name = "loadBalanceFilter")
+//  public ConsumerFilter loadBalanceFilter() {
+//    return new SimpleLoadBalanceFilter();
+//  }
 }
