@@ -38,11 +38,9 @@ import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -180,11 +178,6 @@ public abstract class AbstractRestInvocation {
     invocation.getInvocationStageTrace().startSchedule();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
-    Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
-    if (qpsFlowControlReject.value) {
-      return;
-    }
-
     try {
       operationMeta.getExecutor().execute(() -> {
         synchronized (this.requestEx) {
@@ -215,26 +208,6 @@ public abstract class AbstractRestInvocation {
       LOGGER.error("failed to schedule invocation, message={}, executor={}.", e.getMessage(), e.getClass().getName());
       sendFailResponse(e);
     }
-  }
-
-  private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
-    Holder<Boolean> qpsFlowControlReject = new Holder<>(false);
-    @SuppressWarnings("deprecation")
-    Handler providerQpsFlowControlHandler = operationMeta.getProviderQpsFlowControlHandler();
-    if (null != providerQpsFlowControlHandler) {
-      try {
-        providerQpsFlowControlHandler.handle(invocation, response -> {
-          qpsFlowControlReject.value = true;
-          produceProcessor = ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor();
-          sendResponse(response);
-        });
-      } catch (Throwable e) {
-        LOGGER.error("failed to execute ProviderQpsFlowControlHandler", e);
-        qpsFlowControlReject.value = true;
-        sendFailResponse(e);
-      }
-    }
-    return qpsFlowControlReject;
   }
 
   private boolean isInQueueTimeout() {
