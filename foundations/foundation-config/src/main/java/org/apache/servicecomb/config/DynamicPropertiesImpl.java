@@ -24,7 +24,6 @@ import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
@@ -36,7 +35,6 @@ import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-@Component
 class DynamicPropertiesImpl implements DynamicProperties {
   public DynamicPropertiesImpl() {
   }

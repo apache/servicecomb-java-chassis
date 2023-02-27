@@ -27,11 +27,9 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.ConfigurationManager;
 
-@Component
 public class PriorityPropertyFactory {
   private final AbstractConfiguration configuration;
 

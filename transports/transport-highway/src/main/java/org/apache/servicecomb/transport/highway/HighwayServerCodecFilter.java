@@ -33,11 +33,9 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.buffer.Buffer;
 
-@Component
 public class HighwayServerCodecFilter implements ProducerFilter {
   public static final String NAME = "highway-server-codec";
 

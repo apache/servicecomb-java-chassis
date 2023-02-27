@@ -14,19 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.foundation.auth;
 
-public class ShaAKSKCipher implements Cipher {
-  public static final String CIPHER_NAME = "ShaAKSKCipher";
+import org.springframework.context.annotation.Configuration;
 
-  @Override
-  public String name() {
-    return CIPHER_NAME;
-  }
-
-  @Override
-  public char[] decrypt(char[] encrypted) {
-    return encrypted;
+@Configuration
+public class FoundationCommonAuthConfiguration {
+  public ShaAKSKCipher shaAKSKCipher() {
+    return new ShaAKSKCipher();
   }
 }
