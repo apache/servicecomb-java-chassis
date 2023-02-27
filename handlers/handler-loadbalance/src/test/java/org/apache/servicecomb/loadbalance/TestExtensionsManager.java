@@ -21,8 +21,6 @@ import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-
-import mockit.Deencapsulation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +30,10 @@ public class TestExtensionsManager {
   @BeforeEach
   public void setUp() {
     ConfigUtil.createLocalConfig();
-    Deencapsulation.setField(ExtensionsManager.class, "extentionFactories", new ArrayList<>());
   }
 
   @AfterEach
   public void tearDown() {
-    Deencapsulation.setField(ExtensionsManager.class, "extentionFactories", new ArrayList<>());
     ArchaiusUtils.resetConfig();
   }
 
@@ -48,34 +44,22 @@ public class TestExtensionsManager {
     System.setProperty("servicecomb.loadbalance.mytest3.strategy.name", "WeightedResponse");
     System.setProperty("servicecomb.loadbalance.mytest4.strategy.name", "SessionStickiness");
 
-    BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
-    Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
-    holder.init();
+    ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
     Assertions.assertEquals(RoundRobinRuleExt.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest1").getClass().getName());
+        extensionsManager.createLoadBalancerRule("mytest1").getClass().getName());
     Assertions.assertEquals(RandomRuleExt.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
+        extensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
     Assertions.assertEquals(WeightedResponseTimeRuleExt.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
+        extensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
     Assertions.assertEquals(SessionStickinessRule.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
+        extensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
 
     System.getProperties().remove("servicecomb.loadbalance.mytest1.strategy.name");
     System.getProperties().remove("servicecomb.loadbalance.mytest2.strategy.name");
     System.getProperties().remove("servicecomb.loadbalance.mytest3.strategy.name");
     System.getProperties().remove("servicecomb.loadbalance.mytest4.strategy.name");
-  }
-
-
-  @Test
-  public void testRuleClassName() {
-    BeansHolder holder = new BeansHolder();
-    List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
-    extensionsFactories.add(new RuleNameExtentionsFactory());
-    Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
-    holder.init();
   }
 }

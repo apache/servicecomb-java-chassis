@@ -18,9 +18,14 @@ package org.apache.servicecomb.demo.multiple.server;
 
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
 
+@SpringBootApplication
 @EnableServiceComb
+@ComponentScan(basePackages = {"org.apache.servicecomb.demo.multiple.a.server",
+    "org.apache.servicecomb.demo.multiple.b.server"})
 public class MultipleServer {
   public static void main(String[] args) throws Exception {
     new SpringApplicationBuilder(MultipleServer.class).web(WebApplicationType.NONE).run(args);

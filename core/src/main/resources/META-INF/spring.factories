@@ -19,4 +19,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   org.apache.servicecomb.core.filter.CoreFilterConfiguration,\
   org.apache.servicecomb.core.invocation.CoreInvocationConfiguration,\
   org.apache.servicecomb.core.governance.CoreGovernanceConfiguration,\
-  org.apache.servicecomb.core.exception.CoreExceptionConfiguration
+  org.apache.servicecomb.core.exception.CoreExceptionConfiguration,\
+  org.apache.servicecomb.core.ServiceCombCoreConfiguration

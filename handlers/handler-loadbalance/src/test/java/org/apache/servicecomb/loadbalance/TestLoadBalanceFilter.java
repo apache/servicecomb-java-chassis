@@ -105,13 +105,11 @@ public class TestLoadBalanceFilter {
       }
     };
 
-    BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
-    Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
-    holder.init();
+    ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(extensionsManager);
     loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
   }
 

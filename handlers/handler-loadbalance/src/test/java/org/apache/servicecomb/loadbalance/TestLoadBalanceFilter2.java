@@ -156,14 +156,14 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
@@ -235,7 +235,7 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
@@ -323,14 +323,14 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
@@ -415,14 +415,14 @@ public class TestLoadBalanceFilter2 {
     DiscoveryTree discoveryTree = new DiscoveryTree();
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
-    handler = new LoadBalanceFilter(discoveryTree);
+    handler = new LoadBalanceFilter(discoveryTree, new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
@@ -510,14 +510,14 @@ public class TestLoadBalanceFilter2 {
     DiscoveryTree discoveryTree = new DiscoveryTree();
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
-    handler = new LoadBalanceFilter(discoveryTree);
+    handler = new LoadBalanceFilter(discoveryTree, new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter();
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()));
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
