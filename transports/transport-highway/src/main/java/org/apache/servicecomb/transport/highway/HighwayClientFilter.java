@@ -35,9 +35,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class HighwayClientFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientFilter.class);
 

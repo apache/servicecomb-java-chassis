@@ -28,7 +28,6 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -42,7 +41,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  * ${} or ${not-exist-key} is valid key in archaius<br>
  * so this wrapper mechanism will not throw exception even can not find value by placeholder
  */
-@Component
 public class ConfigObjectFactory {
   private final PriorityPropertyFactory propertyFactory;
 

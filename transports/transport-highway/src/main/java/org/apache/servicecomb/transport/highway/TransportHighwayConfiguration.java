@@ -14,19 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.transport.highway;
 
-package org.apache.servicecomb.foundation.auth;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class ShaAKSKCipher implements Cipher {
-  public static final String CIPHER_NAME = "ShaAKSKCipher";
-
-  @Override
-  public String name() {
-    return CIPHER_NAME;
+@Configuration
+public class TransportHighwayConfiguration {
+  @Bean
+  public HighwayServerCodecFilter highwayServerCodecFilter() {
+    return new HighwayServerCodecFilter();
   }
 
-  @Override
-  public char[] decrypt(char[] encrypted) {
-    return encrypted;
+  @Bean
+  public HighwayClientFilter highwayClientFilter() {
+    return new HighwayClientFilter();
   }
 }

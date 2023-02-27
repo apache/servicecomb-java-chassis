@@ -23,9 +23,7 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 
-@Component
 public class InjectBeanPostProcessor implements BeanPostProcessor {
   private final PriorityPropertyManager priorityPropertyManager;
 
