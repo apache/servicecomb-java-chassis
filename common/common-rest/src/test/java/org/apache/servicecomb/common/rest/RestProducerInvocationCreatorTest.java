@@ -131,7 +131,6 @@ public class RestProducerInvocationCreatorTest {
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.when(microserviceMeta.getHandlerChain()).thenReturn(new ArrayList<>());
 
       InvocationException throwable = (InvocationException) catchThrowable(() -> creator.createAsync().join());
       CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
@@ -152,7 +151,6 @@ public class RestProducerInvocationCreatorTest {
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.when(microserviceMeta.getHandlerChain()).thenReturn(new ArrayList<>());
       Mockito.doNothing().when(creator).initProduceProcessor();
 
       Invocation invocation = creator.createAsync().join();
@@ -172,7 +170,6 @@ public class RestProducerInvocationCreatorTest {
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.when(microserviceMeta.getHandlerChain()).thenReturn(new ArrayList<>());
       Mockito.doNothing().when(creator).initProduceProcessor();
 
       creator.createAsync().join();
@@ -191,7 +188,6 @@ public class RestProducerInvocationCreatorTest {
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.when(microserviceMeta.getHandlerChain()).thenReturn(new ArrayList<>());
       Mockito.doNothing().when(creator).initProduceProcessor();
       Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn("{\"k\":\"v\"}");
 

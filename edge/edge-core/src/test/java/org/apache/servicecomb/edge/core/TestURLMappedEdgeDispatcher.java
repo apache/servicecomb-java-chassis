@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 public class TestURLMappedEdgeDispatcher {
@@ -49,8 +48,6 @@ public class TestURLMappedEdgeDispatcher {
     Assertions.assertEquals(items.size(), 0);
 
     RoutingContext context = Mockito.mock(RoutingContext.class);
-    HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
-    EdgeInvocation invocation = Mockito.mock(EdgeInvocation.class);
     Mockito.when(context.get(RestBodyHandler.BYPASS_BODY_HANDLER)).thenReturn(Boolean.TRUE);
     dispatcher.onRequest(context);
 

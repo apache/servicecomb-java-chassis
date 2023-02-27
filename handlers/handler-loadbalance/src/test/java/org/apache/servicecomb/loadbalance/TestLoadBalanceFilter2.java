@@ -350,8 +350,7 @@ public class TestLoadBalanceFilter2 {
 
   @Test
   public void testZoneAwareFilterUsingMockedInvocationWorks() throws Exception {
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
-        (inv, aysnc) -> aysnc.success("OK"));
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+");
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -445,8 +444,7 @@ public class TestLoadBalanceFilter2 {
   public void testStatusFilterUsingMockedInvocationWorks() throws Exception {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.status.enabled", "false");
 
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
-        (inv, aysnc) -> aysnc.success("OK"));
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+");
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);

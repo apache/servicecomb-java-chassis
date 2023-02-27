@@ -22,8 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 
-import org.apache.servicecomb.common.rest.AbstractRestInvocation;
-import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
 import org.apache.servicecomb.core.Const;
@@ -85,7 +83,6 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   protected void failureHandler(RoutingContext context) {
     LOGGER.error("http server failed.", context.failure());
 
-    AbstractRestInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
     Throwable e = context.failure();
     if (e instanceof ErrorDataDecoderException) {
       Throwable cause = e.getCause();
@@ -96,20 +93,13 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
     // only when unexpected exception happens, it will run into here.
     // the connection should be closed.
-    handleFailureAndClose(context, restProducerInvocation, e);
+    handleFailureAndClose(context, e);
   }
 
   /**
    * Try to find out the failure information and send it in response.
    */
-  private void handleFailureAndClose(RoutingContext context, AbstractRestInvocation restProducerInvocation,
-      Throwable e) {
-    if (null != restProducerInvocation) {
-      // if there is restProducerInvocation, let it send exception in response. The exception is allowed to be null.
-      sendFailResponseByInvocation(context, restProducerInvocation, e);
-      return;
-    }
-
+  private void handleFailureAndClose(RoutingContext context, Throwable e) {
     if (null != e) {
       // if there exists exception, try to send this exception by RoutingContext
       sendExceptionByRoutingContext(context, e);
@@ -186,15 +176,6 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
       return false;
     }
     return true;
-  }
-
-  /**
-   * Use restProducerInvocation to send failure message. The throwable is allowed to be null.
-   */
-  private void sendFailResponseByInvocation(RoutingContext context, AbstractRestInvocation restProducerInvocation,
-      Throwable e) {
-    restProducerInvocation.sendFailResponse(e);
-    context.response().close();
   }
 
   protected void onRequest(RoutingContext context) {
