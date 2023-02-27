@@ -24,7 +24,7 @@ import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.http.HttpEntity;

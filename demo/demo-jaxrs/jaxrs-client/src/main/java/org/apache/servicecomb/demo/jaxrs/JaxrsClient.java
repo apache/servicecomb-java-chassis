@@ -39,7 +39,7 @@ import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClie
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;

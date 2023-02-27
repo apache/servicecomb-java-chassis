@@ -18,7 +18,7 @@
 package org.apache.servicecomb.springboot.pojo.client;
 
 import org.apache.servicecomb.demo.pojo.client.PojoClientTest;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

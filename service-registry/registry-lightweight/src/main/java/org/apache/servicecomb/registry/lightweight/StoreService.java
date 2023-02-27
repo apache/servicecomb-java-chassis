@@ -28,11 +28,9 @@ import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 
-@Component
 public class StoreService {
   private static final Logger LOGGER = LoggerFactory.getLogger(StoreService.class);
 

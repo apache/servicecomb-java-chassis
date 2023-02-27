@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot2.starter.servlet;
+package org.apache.servicecomb.springboot.starter.servlet;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -32,11 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@Component
 public class RestServletInitializer
     implements WebServerFactoryCustomizer<AbstractConfigurableWebServerFactory>, ServletContextInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInitializer.class);

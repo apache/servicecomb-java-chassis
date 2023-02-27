@@ -14,5 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.springboot.starter.servlet;
 
-package org.apache.servicecomb.springboot2.starter.servlet;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SpringBootStarterServletConfiguration {
+  @Bean
+  public RestServletInitializer restServletInitializer() {
+    return new RestServletInitializer();
+  }
+}

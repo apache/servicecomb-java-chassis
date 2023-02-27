@@ -28,11 +28,9 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.springframework.stereotype.Component;
 
 import com.google.common.base.Ticker;
 
-@Component
 public class Store {
   private Ticker ticker = Ticker.systemTicker();
 

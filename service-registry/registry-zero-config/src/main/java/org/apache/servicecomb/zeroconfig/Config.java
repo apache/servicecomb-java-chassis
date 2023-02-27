@@ -36,9 +36,7 @@ import java.time.Duration;
 
 import org.apache.servicecomb.config.DynamicProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component("zero-config-model")
 public class Config {
   private DynamicProperties dynamicProperties;
 

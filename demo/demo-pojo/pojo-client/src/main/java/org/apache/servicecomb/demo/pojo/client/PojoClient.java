@@ -41,7 +41,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;

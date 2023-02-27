@@ -25,10 +25,7 @@ import org.apache.servicecomb.registry.lightweight.MessageExecutor;
 import org.apache.servicecomb.zeroconfig.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
-//@Conditional(ConditionOnMulticast.class)
 @SuppressWarnings("unused")
 public class MulticastServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(MulticastServer.class);

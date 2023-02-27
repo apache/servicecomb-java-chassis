@@ -24,13 +24,10 @@ import org.apache.servicecomb.registry.lightweight.RegisterRequest;
 import org.apache.servicecomb.registry.lightweight.UnregisterRequest;
 import org.apache.servicecomb.zeroconfig.AbstractZeroConfigRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * for single node environments
  */
-@Component
-//@Conditional(ConditionOnLocal.class)
 public class LocalRegistration extends AbstractZeroConfigRegistration {
   private static final String NAME = "zero-config-local";
 

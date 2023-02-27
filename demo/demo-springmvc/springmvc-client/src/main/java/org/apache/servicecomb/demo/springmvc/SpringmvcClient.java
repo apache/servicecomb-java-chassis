@@ -36,7 +36,7 @@ import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
