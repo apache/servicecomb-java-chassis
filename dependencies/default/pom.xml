@@ -95,7 +95,7 @@
     <snakeyaml.version>1.33</snakeyaml.version>
     <spectator.version>1.5.3</spectator.version>
     <spring.version>5.3.25</spring.version>
-    <spring-boot.version>2.7.8</spring-boot.version>
+    <spring-boot.version>2.7.9</spring-boot.version>
     <swagger.version>1.6.9</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
     <vertx.version>4.3.8</vertx.version>
