@@ -14,15 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.provider.rest.common;
 
-import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.provider.consumer.AbstractConsumerProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class RestConsumerProvider extends AbstractConsumerProvider {
-  @Override
-  public String getName() {
-    return RestConst.REST;
+@Configuration
+public class ProviderRestCommonConfiguration {
+  @Bean
+  public RestProducers restProducers() {
+    return new RestProducers();
+  }
+
+  @Bean
+  public RestConsumerProvider restConsumerProvider() {
+    return new RestConsumerProvider();
   }
 }

@@ -20,9 +20,7 @@ package org.apache.servicecomb.provider.pojo;
 import static org.apache.servicecomb.provider.pojo.PojoConst.POJO;
 
 import org.apache.servicecomb.core.provider.consumer.AbstractConsumerProvider;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PojoConsumerProvider extends AbstractConsumerProvider {
   @Override
   public String getName() {
