@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.router.custom;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import com.netflix.config.DynamicPropertyFactory;
+@Configuration
+@ConditionalOnProperty(value = ServiceCombRouterConfiguration.ROUTER_ENABLED,
+    havingValue = "true", matchIfMissing = true)
+public class ServiceCombRouterConfiguration {
+  public static final String ROUTER_PREFIX = "servicecomb.router";
 
-public class HealthBootListener implements BootListener {
-  @Override
-  public void onBeforeProducerProvider(BootEvent event) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.health.endpoint.enabled", true).get()) {
-      return;
-    }
+  public static final String ROUTER_ENABLED = ROUTER_PREFIX + ".enabled";
 
-    event.getScbEngine().getProducerProviderManager()
-        .addProducerMeta("healthEndpoint", new HealthCheckerRestPublisher());
+  @Bean
+  public ServiceCombCanaryDistributer serviceCombCanaryDistributer() {
+    return new ServiceCombCanaryDistributer();
   }
 }

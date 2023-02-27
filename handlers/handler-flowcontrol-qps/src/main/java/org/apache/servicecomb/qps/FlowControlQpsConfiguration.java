@@ -14,28 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.loadbalance;
+package org.apache.servicecomb.qps;
 
-import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(value = LoadBalanceConfiguration.LOAD_BALANCE_ENABLED,
+@ConditionalOnProperty(value = FlowControlQpsConfiguration.FLOW_CONTROL_ENABLED,
     havingValue = "true", matchIfMissing = true)
-public class LoadBalanceConfiguration {
-  public static final String LOAD_BALANCE_PREFIX = "servicecomb.loadbalance";
+public class FlowControlQpsConfiguration {
+  public static final String FLOW_CONTROL_PREFIX = "servicecomb.flowcontrol";
 
-  public static final String LOAD_BALANCE_ENABLED = LOAD_BALANCE_PREFIX + ".enabled";
+  public static final String FLOW_CONTROL_ENABLED = FLOW_CONTROL_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerFilter loadBalanceFilter() {
-    return new LoadBalanceFilter();
+  public ProviderFlowControlFilter providerFlowControlFilter() {
+    return new ProviderFlowControlFilter();
   }
 
   @Bean
-  public RuleNameExtentionsFactory ruleNameExtentionsFactory() {
-    return new RuleNameExtentionsFactory();
+  public ConsumerFlowControlFilter consumerFlowControlFilter() {
+    return new ConsumerFlowControlFilter();
   }
 }

@@ -16,19 +16,13 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-public class HealthBootListener implements BootListener {
-  @Override
-  public void onBeforeProducerProvider(BootEvent event) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.health.endpoint.enabled", true).get()) {
-      return;
-    }
-
-    event.getScbEngine().getProducerProviderManager()
-        .addProducerMeta("healthEndpoint", new HealthCheckerRestPublisher());
+@Configuration
+public class MetricsCoreConfiguration {
+  @Bean
+  public HealthBootListener healthBootListener() {
+    return new HealthBootListener();
   }
 }
