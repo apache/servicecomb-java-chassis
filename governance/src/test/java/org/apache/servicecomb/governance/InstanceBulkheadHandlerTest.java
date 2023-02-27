@@ -37,7 +37,7 @@ import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class InstanceBulkheadHandlerTest {
   private InstanceBulkheadHandler instanceBulkheadHandler;
 

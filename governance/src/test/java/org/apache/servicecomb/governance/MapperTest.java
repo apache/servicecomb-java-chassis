@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class MapperTest {
   private MapperHandler mapperHandler;
 

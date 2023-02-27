@@ -35,7 +35,7 @@ import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class FlowControlTest {
   private RateLimitingHandler rateLimitingHandler;
 

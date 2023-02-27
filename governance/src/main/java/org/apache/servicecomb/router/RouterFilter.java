@@ -26,11 +26,8 @@ import org.apache.servicecomb.router.match.RouterRuleMatcher;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-@Component
 public class RouterFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterFilter.class);
@@ -39,7 +36,6 @@ public class RouterFilter {
 
   private final RouterRuleCache routerRuleCache;
 
-  @Autowired
   public RouterFilter(RouterRuleMatcher routerRuleMatcher, RouterRuleCache routerRuleCache) {
     this.routerRuleMatcher = routerRuleMatcher;
     this.routerRuleCache = routerRuleCache;

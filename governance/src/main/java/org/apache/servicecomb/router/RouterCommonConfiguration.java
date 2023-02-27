@@ -14,27 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.match;
-
-import java.util.Map;
+package org.apache.servicecomb.router;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
-import org.apache.servicecomb.router.model.PolicyRuleItem;
+import org.apache.servicecomb.router.match.RouterRuleMatcher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
-public class RouterRuleMatcher {
-  private final RouterRuleCache routerRuleCache;
-
-  public RouterRuleMatcher(RouterRuleCache routerRuleCache) {
-    this.routerRuleCache = routerRuleCache;
+@Configuration
+public class RouterCommonConfiguration {
+  @Bean
+  public RouterRuleCache routerRuleCache(Environment environment) {
+    return new RouterRuleCache(environment);
   }
 
-  public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {
-    for (PolicyRuleItem rule : routerRuleCache.getServiceInfoCacheMap().get(serviceName)
-        .getAllrule()) {
-      if (rule.getMatch() == null || rule.getMatch().match(invokeHeader)) {
-        return rule;
-      }
-    }
-    return null;
+  @Bean
+  public RouterRuleMatcher routerRuleMatcher(RouterRuleCache routerRuleCache) {
+    return new RouterRuleMatcher(routerRuleCache);
+  }
+
+  @Bean
+  public RouterFilter routerFilter(RouterRuleMatcher routerRuleMatcher, RouterRuleCache routerRuleCache) {
+    return new RouterFilter(routerRuleMatcher, routerRuleCache);
   }
 }

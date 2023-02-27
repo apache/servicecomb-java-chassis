@@ -14,14 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.common.rest.codec.query;
+package org.apache.servicecomb.edge.core;
 
-public class QueryCodecCsv extends QueryCodecWithDelimiter {
-  public static final String CODEC_NAME = "csv";
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-  public static final String DELIMITER = ",";
+@Configuration
+public class EdgeCoreConfiguration {
+  @Bean
+  public EdgeBootListener edgeBootListener() {
+    return new EdgeBootListener();
+  }
 
-  public QueryCodecCsv() {
-    super(CODEC_NAME, DELIMITER, DELIMITER);
+  @Bean
+  public EdgeServerCodecFilter edgeServerCodecFilter() {
+    return new EdgeServerCodecFilter();
+  }
+
+  @Bean
+  public EdgeAddHeaderFilter edgeAddHeaderFilter() {
+    return new EdgeAddHeaderFilter();
   }
 }

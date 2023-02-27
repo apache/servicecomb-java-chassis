@@ -59,7 +59,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class GovernancePropertiesTest {
   private List<GovernanceProperties<? extends AbstractPolicy>> propertiesList;
 

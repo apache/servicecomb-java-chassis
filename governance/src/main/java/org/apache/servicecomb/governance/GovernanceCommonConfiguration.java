@@ -63,7 +63,7 @@ import org.springframework.context.annotation.Configuration;
 import io.micrometer.core.instrument.MeterRegistry;
 
 @Configuration
-public class GovernanceConfiguration {
+public class GovernanceCommonConfiguration {
   // properties configuration
   @Bean
   public BulkheadProperties bulkheadProperties() {

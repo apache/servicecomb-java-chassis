@@ -27,9 +27,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.TransportContext;
-import org.springframework.stereotype.Component;
 
-@Component
 public class EdgeServerCodecFilter extends RestServerCodecFilter {
   public static final String NAME = "edge-server-codec";
 
