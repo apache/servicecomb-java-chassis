@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.edge.core;
 
-import static org.apache.servicecomb.edge.core.EdgeInvocation.EDGE_INVOCATION_CONTEXT;
-
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
@@ -35,6 +33,8 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
+  public static final String EDGE_INVOCATION_CONTEXT = "edgeInvocationContext";
+
   protected final String microserviceName;
 
   protected final String versionRule;

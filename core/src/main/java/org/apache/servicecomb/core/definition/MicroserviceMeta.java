@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
@@ -65,15 +64,7 @@ public class MicroserviceMeta {
 
   private final boolean consumer;
 
-  private List<Handler> handlerChain = Collections.singletonList((invocation, ar) -> ar.success(null));
-
   private FilterNode filterChain = FilterNode.EMPTY;
-
-  // providerQpsFlowControlHandler is a temporary field, only for internal usage
-  private Handler providerQpsFlowControlHandler;
-
-  // providerQpsFlowControlHandlerSearched is a temporary field, only for internal usage
-  private boolean providerQpsFlowControlHandlerSearched;
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
@@ -192,39 +183,11 @@ public class MicroserviceMeta {
     return vendorExtensions.get(key);
   }
 
-  public List<Handler> getHandlerChain() {
-    return handlerChain;
-  }
-
-  public void setHandlerChain(List<Handler> handlerChain) {
-    this.handlerChain = handlerChain;
-  }
-
   public FilterNode getFilterChain() {
     return filterChain;
   }
 
   public void setFilterChain(FilterNode filterChain) {
     this.filterChain = filterChain;
-  }
-
-  /**
-   * Only for JavaChassis internal usage.
-   */
-  @Deprecated
-  public Handler getProviderQpsFlowControlHandler() {
-    if (providerQpsFlowControlHandlerSearched) {
-      return providerQpsFlowControlHandler;
-    }
-
-    for (Handler handler : handlerChain) {
-      // matching by class name is more or less better than importing an extra maven dependency
-      if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
-        providerQpsFlowControlHandler = handler;
-        break;
-      }
-    }
-    providerQpsFlowControlHandlerSearched = true;
-    return providerQpsFlowControlHandler;
   }
 }

@@ -22,11 +22,11 @@ import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import com.fasterxml.jackson.databind.JavaType;
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
@@ -47,18 +47,17 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import io.vertx.core.MultiMap;
-import io.vertx.core.json.Json;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.servlet.http.Part;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.vertx.core.MultiMap;
+import io.vertx.core.json.Json;
 
 public class RestServerCodecFilterTest {
   final RestServerCodecFilter codecFilter = new RestServerCodecFilter();
@@ -110,7 +109,6 @@ public class RestServerCodecFilterTest {
   public void setUp() {
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-    Mockito.when(microserviceMeta.getHandlerChain()).thenReturn(new ArrayList<>());
     Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
     Mockito.when(transportContext.getProduceProcessor()).thenReturn(Mockito.mock(ProduceJsonProcessor.class));
     invocation = Mockito.spy(InvocationFactory.forProvider(endpoint, operationMeta, null));

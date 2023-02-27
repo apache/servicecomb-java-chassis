@@ -17,23 +17,16 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import java.util.List;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.RestProducerInvocation;
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -47,8 +40,6 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDec
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestVertxRestDispatcher {
@@ -68,18 +59,6 @@ public class TestVertxRestDispatcher {
     dispatcher = new VertxRestDispatcher();
     dispatcher.init(mainRouter);
 
-    new MockUp<RestProducerInvocation>() {
-      @Mock
-      void sendFailResponse(Throwable throwable) {
-        TestVertxRestDispatcher.this.throwable = throwable;
-      }
-
-      @Mock
-      void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
-          List<HttpServerFilter> httpServerFilters) {
-      }
-    };
-
     SCBBootstrap.createSCBEngineForTest().setTransportManager(transportManager);
   }
 
@@ -92,56 +71,6 @@ public class TestVertxRestDispatcher {
   @Test
   public void getOrder() {
     Assertions.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
-  }
-
-  @Test
-  public void failureHandlerNormal() {
-    RoutingContext context = Mockito.mock(RoutingContext.class);
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
-    Mockito.when(context.get(RestConst.REST_PRODUCER_INVOCATION)).thenReturn(restProducerInvocation);
-    Exception e = new Exception();
-    Mockito.when(context.failure()).thenReturn(e);
-    MockHttpServerResponse response = new MockHttpServerResponse();
-    Mockito.when(context.response()).thenReturn(response);
-
-    dispatcher.failureHandler(context);
-
-    Assertions.assertSame(e, this.throwable);
-    Assertions.assertTrue(response.responseClosed);
-  }
-
-  @Test
-  public void failureHandlerErrorDataWithInvocation() {
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
-    RoutingContext context = Mockito.mock(RoutingContext.class);
-    Mockito.when(context.get(RestConst.REST_PRODUCER_INVOCATION)).thenReturn(restProducerInvocation);
-    InvocationException e = Mockito.mock(InvocationException.class);
-    ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
-    Mockito.when(context.failure()).thenReturn(edde);
-    MockHttpServerResponse response = new MockHttpServerResponse();
-    Mockito.when(context.response()).thenReturn(response);
-
-    dispatcher.failureHandler(context);
-
-    Assertions.assertSame(e, this.throwable);
-    Assertions.assertTrue(response.responseClosed);
-  }
-
-  @Test
-  public void failureHandlerErrorDataWithNormal() {
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
-    RoutingContext context = Mockito.mock(RoutingContext.class);
-    Mockito.when(context.get(RestConst.REST_PRODUCER_INVOCATION)).thenReturn(restProducerInvocation);
-    Exception e = new Exception();
-    ErrorDataDecoderException edde = new ErrorDataDecoderException(e);
-    Mockito.when(context.failure()).thenReturn(edde);
-    MockHttpServerResponse response = new MockHttpServerResponse();
-    Mockito.when(context.response()).thenReturn(response);
-
-    dispatcher.failureHandler(context);
-
-    Assertions.assertSame(edde, this.throwable);
-    Assertions.assertTrue(response.responseClosed);
   }
 
   @Test

@@ -19,7 +19,6 @@ package org.apache.servicecomb.core.definition;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
@@ -153,14 +152,6 @@ public class OperationMeta {
 
   public void setExecutor(Executor executor) {
     this.executor = executor;
-  }
-
-  /**
-   * Only for JavaChassis internal usage.
-   */
-  @Deprecated
-  public Handler getProviderQpsFlowControlHandler() {
-    return getMicroserviceMeta().getProviderQpsFlowControlHandler();
   }
 
   public InvocationRuntimeType buildBaseProviderRuntimeType() {
