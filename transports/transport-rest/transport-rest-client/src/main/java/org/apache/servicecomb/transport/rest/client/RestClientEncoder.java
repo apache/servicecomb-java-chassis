@@ -42,7 +42,6 @@ import org.apache.servicecomb.foundation.common.utils.StringBuilderUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,7 +54,6 @@ import io.vertx.core.http.HttpClientRequest;
 /**
  * encode all send data except upload
  */
-@Component
 public class RestClientEncoder {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientEncoder.class);
 

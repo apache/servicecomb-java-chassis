@@ -30,14 +30,12 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 
-@Component
 public class RestClientTransportContextFactory {
   private BoundaryFactory boundaryFactory = BoundaryFactory.DEFAULT;
 

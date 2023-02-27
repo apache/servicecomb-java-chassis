@@ -29,14 +29,12 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 
-@Component
 public class RestClientDecoder {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientDecoder.class);
 

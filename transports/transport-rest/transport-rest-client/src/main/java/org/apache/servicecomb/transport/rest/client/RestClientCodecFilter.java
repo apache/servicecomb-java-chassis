@@ -30,11 +30,9 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.http.HttpClientRequest;
 
-@Component
 public class RestClientCodecFilter implements ConsumerFilter {
   public static final String NAME = "rest-client-codec";
 
