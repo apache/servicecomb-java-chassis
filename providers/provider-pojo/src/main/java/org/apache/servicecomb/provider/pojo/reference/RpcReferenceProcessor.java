@@ -24,11 +24,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringValueResolver;
 
-@Component
 public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
   private StringValueResolver resolver;
 

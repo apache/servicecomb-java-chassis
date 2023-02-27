@@ -14,15 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.provider.pojo;
 
-package org.apache.servicecomb.provider.rest.common;
+import org.apache.servicecomb.provider.pojo.reference.RpcReferenceProcessor;
+import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.provider.consumer.AbstractConsumerProvider;
+@Configuration
+public class ProviderPojoConfiguration {
+  @Bean
+  public PojoConsumerProvider pojoConsumerProvider() {
+    return new PojoConsumerProvider();
+  }
 
-public class RestConsumerProvider extends AbstractConsumerProvider {
-  @Override
-  public String getName() {
-    return RestConst.REST;
+  @Bean
+  public RpcReferenceProcessor rpcReferenceProcessor() {
+    return new RpcReferenceProcessor();
+  }
+
+  @Bean
+  public PojoProducers pojoProducers() {
+    return new PojoProducers();
   }
 }

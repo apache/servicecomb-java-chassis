@@ -25,9 +25,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 
-@Component
 public class PojoProducers implements BeanPostProcessor {
   private final List<ProducerMeta> producerMetas = new ArrayList<>();
 
