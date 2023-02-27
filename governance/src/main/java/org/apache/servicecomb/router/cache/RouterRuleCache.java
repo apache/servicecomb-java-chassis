@@ -27,9 +27,7 @@ import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.ServiceInfoCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -41,7 +39,6 @@ import org.yaml.snakeyaml.representer.Representer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.Subscribe;
 
-@Component
 public class RouterRuleCache {
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterRuleCache.class);
 
@@ -57,7 +54,6 @@ public class RouterRuleCache {
 
   private final Representer representer = new Representer(new DumperOptions());
 
-  @Autowired
   public RouterRuleCache(Environment environment) {
     this.environment = environment;
     representer.getPropertyUtils().setSkipMissingProperties(true);

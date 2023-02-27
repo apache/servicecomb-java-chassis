@@ -27,9 +27,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.rest.client.RestClientTransportContext;
-import org.springframework.stereotype.Component;
 
-@Component
 public class EdgeAddHeaderFilter implements ConsumerFilter {
   public static final String NAME = "edge-add-headers";
 

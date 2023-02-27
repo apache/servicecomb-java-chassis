@@ -24,11 +24,9 @@ import org.apache.servicecomb.transport.rest.client.TransportClientConfig;
 import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@Component
 public class EdgeBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeBootListener.class);
 

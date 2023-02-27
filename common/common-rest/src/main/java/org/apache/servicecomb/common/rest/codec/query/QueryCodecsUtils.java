@@ -19,9 +19,6 @@ package org.apache.servicecomb.common.rest.codec.query;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class QueryCodecsUtils {
   // create a default instance, so that more friendly to UT
   private static QueryCodecs queryCodecs = QueryCodecs.createForTest();

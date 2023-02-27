@@ -30,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.junit.jupiter.api.Assertions;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class, MockConfigurationForCustomMatcher.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class, MockConfigurationForCustomMatcher.class})
 public class CustomMatchTest {
 
     private RequestProcessor requestProcessor;

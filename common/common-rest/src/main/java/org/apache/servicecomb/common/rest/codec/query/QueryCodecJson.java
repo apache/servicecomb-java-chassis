@@ -25,13 +25,11 @@ import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.Quer
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.apache.servicecomb.core.exception.ExceptionCodes;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-@Component
 public class QueryCodecJson implements QueryCodec {
   public static final String CODEC_NAME = "json";
 

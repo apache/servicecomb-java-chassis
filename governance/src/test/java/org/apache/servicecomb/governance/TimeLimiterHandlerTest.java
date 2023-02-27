@@ -30,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import io.github.resilience4j.timelimiter.TimeLimiter;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class TimeLimiterHandlerTest {
   private TimeLimiterHandler timeLimiterHandler;
 

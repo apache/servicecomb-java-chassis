@@ -45,12 +45,10 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.springframework.stereotype.Component;
 
 import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 
-@Component
 public class RestServerCodecFilter implements ProducerFilter {
   public static final String NAME = "rest-server-codec";
 
