@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.inspector.internal;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
+import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import com.netflix.config.DynamicPropertyFactory;
+@Configuration
+public class InspectorConfiguration {
+  @Bean
+  public InspectorBootListener inspectorBootListener(InspectorConfig inspectorConfig,
+      PriorityPropertyFactory propertyFactory) {
+    return new InspectorBootListener(inspectorConfig, propertyFactory);
+  }
 
-public class HealthBootListener implements BootListener {
-  @Override
-  public void onBeforeProducerProvider(BootEvent event) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.health.endpoint.enabled", true).get()) {
-      return;
-    }
-
-    event.getScbEngine().getProducerProviderManager()
-        .addProducerMeta("healthEndpoint", new HealthCheckerRestPublisher());
+  @Bean
+  public InspectorConfig inspectorConfig() {
+    return new InspectorConfig();
   }
 }

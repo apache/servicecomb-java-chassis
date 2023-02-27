@@ -18,11 +18,8 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.Collection;
 
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 
-@Component
 public class RuleNameExtentionsFactory implements ExtensionsFactory {
   private static final Collection<String> ACCEPT_KEYS = Lists.newArrayList(
       Configuration.RULE_STRATEGY_NAME);

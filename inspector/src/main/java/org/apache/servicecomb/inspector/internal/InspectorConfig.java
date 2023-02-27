@@ -18,9 +18,7 @@ package org.apache.servicecomb.inspector.internal;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
-import org.springframework.stereotype.Component;
 
-@Component
 @InjectProperties(prefix = "servicecomb.inspector")
 public class InspectorConfig {
   @InjectProperty(keys = "enabled", defaultValue = "true")

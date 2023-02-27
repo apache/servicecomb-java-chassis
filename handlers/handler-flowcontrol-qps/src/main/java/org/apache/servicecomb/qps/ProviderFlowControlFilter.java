@@ -30,11 +30,9 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
 
-@Component
 public class ProviderFlowControlFilter implements ProducerFilter {
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 

@@ -19,9 +19,7 @@ package org.apache.servicecomb.router.custom;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ServiceCombCanaryDistributer extends
     AbstractRouterDistributor<ServiceCombServer, Microservice> {
 
