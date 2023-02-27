@@ -20,7 +20,6 @@ package org.apache.servicecomb.core.invocation.timeout;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.invocation.InvocationTimeoutStrategy;
-import org.springframework.stereotype.Component;
 
 import com.google.common.base.Ticker;
 
@@ -56,7 +55,6 @@ import com.google.common.base.Ticker;
  * ......
  * </pre>
  */
-@Component
 public class ProcessingTimeStrategy implements InvocationTimeoutStrategy {
   public static final String NAME = "processing-time";
 

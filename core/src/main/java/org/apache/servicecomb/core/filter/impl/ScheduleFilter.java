@@ -29,9 +29,7 @@ import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ScheduleFilter implements ProducerFilter {
   public static final String NAME = "schedule";
 

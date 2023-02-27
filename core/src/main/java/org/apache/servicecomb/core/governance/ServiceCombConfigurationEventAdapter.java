@@ -26,11 +26,9 @@ import org.apache.servicecomb.config.event.RefreshGovernanceConfigurationEvent;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
-import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.Subscribe;
 
-@Component
 public class ServiceCombConfigurationEventAdapter {
   public ServiceCombConfigurationEventAdapter() {
     EventManager.register(this);

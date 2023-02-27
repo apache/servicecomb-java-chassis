@@ -14,40 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.filter;
+package org.apache.servicecomb.core.governance;
 
-import org.apache.servicecomb.core.filter.impl.ParameterValidatorFilter;
-import org.apache.servicecomb.core.filter.impl.ProducerOperationFilter;
-import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CoreFilterConfiguration {
-  //TODO: need remove all component scan or will cause bean conflict with load balance module
-//  @Bean
-//  @ConditionalOnMissingBean(name = "loadBalanceFilter")
-//  public ConsumerFilter loadBalanceFilter() {
-//    return new SimpleLoadBalanceFilter();
-//  }
-
+public class CoreGovernanceConfiguration {
   @Bean
-  public ProducerFilter producerOperationFilter() {
-    return new ProducerOperationFilter();
+  public ServiceCombCircuitBreakerExtension serviceCombCircuitBreakerExtension() {
+    return new ServiceCombCircuitBreakerExtension();
   }
 
   @Bean
-  public ProducerFilter scheduleFilter() {
-    return new ScheduleFilter();
+  public ServiceCombInstanceIsolationExtension serviceCombInstanceIsolationExtension() {
+    return new ServiceCombInstanceIsolationExtension();
   }
 
   @Bean
-  public FilterChainsManager filterChainsManager() {
-    return new FilterChainsManager();
+  public ServiceCombMicroserviceMeta serviceCombMicroserviceMeta() {
+    return new ServiceCombMicroserviceMeta();
   }
 
   @Bean
-  public ProducerFilter parameterValidatorFilter() {
-    return new ParameterValidatorFilter();
+  public ServiceCombRetryExtension serviceCombRetryExtension() {
+    return new ServiceCombRetryExtension();
+  }
+
+  @Bean
+  public ServiceCombConfigurationEventAdapter serviceCombConfigurationEventAdapter() {
+    return new ServiceCombConfigurationEventAdapter();
   }
 }

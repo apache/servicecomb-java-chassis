@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.invocation.InvocationTimeoutStrategy;
-import org.springframework.stereotype.Component;
 
 /**
  * <pre>
@@ -53,7 +52,6 @@ import org.springframework.stereotype.Component;
  * ......
  * </pre>
  */
-@Component
 public class PassingTimeStrategy implements InvocationTimeoutStrategy {
   public static final String NAME = "passing-time";
 

@@ -14,20 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.core.exception;
 
-package org.apache.servicecomb.core.governance;
+import org.springframework.context.annotation.Configuration;
 
-import org.apache.servicecomb.governance.MicroserviceMeta;
-import org.apache.servicecomb.registry.RegistrationManager;
-
-public class ServiceCombMicroserviceMeta implements MicroserviceMeta {
-  @Override
-  public String getName() {
-    return RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+@Configuration
+public class CoreExceptionConfiguration {
+  public Exceptions exceptions() {
+    return new Exceptions();
   }
 
-  @Override
-  public String getVersion() {
-    return RegistrationManager.INSTANCE.getMicroservice().getVersion();
+  public DefaultExceptionProcessor defaultExceptionProcessor() {
+    return new DefaultExceptionProcessor();
   }
 }

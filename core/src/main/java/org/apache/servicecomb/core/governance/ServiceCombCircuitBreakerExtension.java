@@ -23,9 +23,7 @@ import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExten
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ServiceCombCircuitBreakerExtension extends AbstractCircuitBreakerExtension {
   @Override
   protected String extractStatusCode(Object result) {
