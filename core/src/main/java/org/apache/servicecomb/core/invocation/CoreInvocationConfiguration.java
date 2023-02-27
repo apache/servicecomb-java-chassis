@@ -14,40 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.filter;
+package org.apache.servicecomb.core.invocation;
 
-import org.apache.servicecomb.core.filter.impl.ParameterValidatorFilter;
-import org.apache.servicecomb.core.filter.impl.ProducerOperationFilter;
-import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
+import java.util.List;
+
+import org.apache.servicecomb.core.invocation.timeout.PassingTimeStrategy;
+import org.apache.servicecomb.core.invocation.timeout.ProcessingTimeStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import com.google.common.eventbus.EventBus;
 
 @Configuration
-public class CoreFilterConfiguration {
-  //TODO: need remove all component scan or will cause bean conflict with load balance module
-//  @Bean
-//  @ConditionalOnMissingBean(name = "loadBalanceFilter")
-//  public ConsumerFilter loadBalanceFilter() {
-//    return new SimpleLoadBalanceFilter();
-//  }
-
+public class CoreInvocationConfiguration {
   @Bean
-  public ProducerFilter producerOperationFilter() {
-    return new ProducerOperationFilter();
+  public InvocationTimeoutBootListener invocationTimeoutBootListener(EventBus eventBus,
+      List<InvocationTimeoutStrategy> strategies,
+      Environment environment) {
+    return new InvocationTimeoutBootListener(eventBus, strategies, environment);
   }
 
   @Bean
-  public ProducerFilter scheduleFilter() {
-    return new ScheduleFilter();
+  public PassingTimeStrategy passingTimeStrategy() {
+    return new PassingTimeStrategy();
   }
 
   @Bean
-  public FilterChainsManager filterChainsManager() {
-    return new FilterChainsManager();
-  }
-
-  @Bean
-  public ProducerFilter parameterValidatorFilter() {
-    return new ParameterValidatorFilter();
+  public ProcessingTimeStrategy processingTimeStrategy() {
+    return new ProcessingTimeStrategy();
   }
 }

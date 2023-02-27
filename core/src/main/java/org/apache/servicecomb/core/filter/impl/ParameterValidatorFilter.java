@@ -43,11 +43,9 @@ import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@Component
 public class ParameterValidatorFilter implements ProducerFilter, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 

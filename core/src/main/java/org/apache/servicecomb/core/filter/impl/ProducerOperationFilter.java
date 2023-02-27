@@ -31,9 +31,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ProducerOperationFilter implements ProducerFilter {
   public static final String NAME = "producer-operation";
 

@@ -18,9 +18,7 @@
 package org.apache.servicecomb.core.governance;
 
 import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ServiceCombInstanceIsolationExtension extends AbstractInstanceIsolationExtension {
   private ServiceCombRetryExtension retryExtension = new ServiceCombRetryExtension();
 
