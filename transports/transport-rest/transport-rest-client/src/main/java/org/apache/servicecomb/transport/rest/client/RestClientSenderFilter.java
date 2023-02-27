@@ -27,9 +27,7 @@ import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.springframework.stereotype.Component;
 
-@Component
 public class RestClientSenderFilter implements ConsumerFilter {
   public static final String NAME = "rest-client-sender";
 
