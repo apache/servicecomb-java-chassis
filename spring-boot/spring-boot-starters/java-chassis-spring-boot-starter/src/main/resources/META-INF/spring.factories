@@ -14,4 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-org.springframework.boot.env.EnvironmentPostProcessor=org.apache.servicecomb.springboot2.starter.ConfigurationSpringBootInitializer
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  org.apache.servicecomb.springboot.starter.ConfigurationSpringBootInitializer

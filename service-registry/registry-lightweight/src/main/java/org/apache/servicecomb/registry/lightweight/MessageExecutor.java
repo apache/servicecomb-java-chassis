@@ -26,9 +26,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class MessageExecutor {
   private final Self self;
 

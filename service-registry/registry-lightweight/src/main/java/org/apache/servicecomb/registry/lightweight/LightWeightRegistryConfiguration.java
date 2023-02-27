@@ -14,21 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.springboot2.starter;
+package org.apache.servicecomb.registry.lightweight;
 
-import org.apache.servicecomb.core.ConfigurationSpringInitializer;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.apache.servicecomb.registry.lightweight.store.Store;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * when run with springboot, add microservice.yaml to Environment earlier<br>
- * to affect {@link Conditional}<br>
- */
-public class ConfigurationSpringBootInitializer implements EnvironmentPostProcessor {
-  @Override
-  public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-    ConfigurationSpringInitializer.syncToSpring(environment);
+import com.google.common.eventbus.EventBus;
+
+@Configuration
+public class LightWeightRegistryConfiguration {
+  @Bean
+  public Store store() {
+    return new Store();
+  }
+
+  @Bean
+  public MessageExecutor messageExecutor(Self self, StoreService storeService) {
+    return new MessageExecutor(self, storeService);
+  }
+
+  @Bean
+  public Self self() {
+    return new Self();
+  }
+
+  @Bean
+  public StoreService storeService(EventBus eventBus, Store store, DiscoveryClient discoveryClient) {
+    return new StoreService(eventBus, store, discoveryClient);
   }
 }
+

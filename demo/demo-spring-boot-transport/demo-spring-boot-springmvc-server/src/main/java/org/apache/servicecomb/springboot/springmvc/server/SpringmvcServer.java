@@ -18,7 +18,7 @@
 package org.apache.servicecomb.springboot.springmvc.server;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
