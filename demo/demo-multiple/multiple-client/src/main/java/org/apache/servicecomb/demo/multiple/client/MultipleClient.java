@@ -22,9 +22,14 @@ import org.apache.servicecomb.demo.multiple.b.client.BClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
 
+@SpringBootApplication
 @EnableServiceComb
+@ComponentScan(basePackages = {"org.apache.servicecomb.demo.multiple.a.client",
+    "org.apache.servicecomb.demo.multiple.b.client"})
 public class MultipleClient {
   public static void main(String[] args) throws Exception {
     new SpringApplicationBuilder(MultipleClient.class).web(WebApplicationType.NONE).run(args);

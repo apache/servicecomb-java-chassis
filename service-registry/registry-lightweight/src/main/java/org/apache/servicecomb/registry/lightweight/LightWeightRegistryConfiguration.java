@@ -43,5 +43,15 @@ public class LightWeightRegistryConfiguration {
   public StoreService storeService(EventBus eventBus, Store store, DiscoveryClient discoveryClient) {
     return new StoreService(eventBus, store, discoveryClient);
   }
+
+  @Bean
+  public VirtualDiscoverySvc virtualDiscoverySvc() {
+    return new VirtualDiscoverySvc();
+  }
+
+  @Bean
+  public DiscoveryEndpoint discoveryEndpoint(Self self) {
+    return new DiscoveryEndpoint(self);
+  }
 }
 

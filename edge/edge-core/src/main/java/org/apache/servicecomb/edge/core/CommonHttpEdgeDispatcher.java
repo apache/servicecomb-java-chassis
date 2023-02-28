@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.loadbalance.ExtensionsManager;
 import org.apache.servicecomb.loadbalance.LoadBalanceFilter;
@@ -207,7 +208,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
-    RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+    RuleExt rule = BeanUtils.getBean(ExtensionsManager.class).createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
   }
 

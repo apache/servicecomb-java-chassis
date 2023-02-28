@@ -35,7 +35,7 @@ import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-class DynamicPropertiesImpl implements DynamicProperties {
+public class DynamicPropertiesImpl implements DynamicProperties {
   public DynamicPropertiesImpl() {
   }
 

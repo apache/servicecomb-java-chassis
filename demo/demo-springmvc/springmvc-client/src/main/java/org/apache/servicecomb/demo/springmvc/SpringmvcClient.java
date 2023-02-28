@@ -41,6 +41,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +54,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+@SpringBootApplication
 @EnableServiceComb
 public class SpringmvcClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpringmvcClient.class);

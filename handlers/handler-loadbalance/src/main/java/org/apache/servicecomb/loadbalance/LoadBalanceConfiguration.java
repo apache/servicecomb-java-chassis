@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import java.util.List;
+
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,12 +32,17 @@ public class LoadBalanceConfiguration {
   public static final String LOAD_BALANCE_ENABLED = LOAD_BALANCE_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerFilter loadBalanceFilter() {
-    return new LoadBalanceFilter();
+  public ConsumerFilter loadBalanceFilter(ExtensionsManager extensionsManager) {
+    return new LoadBalanceFilter(extensionsManager);
   }
 
   @Bean
   public RuleNameExtentionsFactory ruleNameExtentionsFactory() {
     return new RuleNameExtentionsFactory();
+  }
+
+  @Bean
+  public ExtensionsManager extensionsManager(List<ExtensionsFactory> extensionsFactories) {
+    return new ExtensionsManager(extensionsFactories);
   }
 }

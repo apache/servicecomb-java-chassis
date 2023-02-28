@@ -74,14 +74,19 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private final Object lock = new Object();
 
+  private final ExtensionsManager extensionsManager;
+
   private String strategy = null;
 
-  public LoadBalanceFilter(DiscoveryTree discoveryTree) {
+  @VisibleForTesting
+  public LoadBalanceFilter(DiscoveryTree discoveryTree, ExtensionsManager extensionsManager) {
     this.discoveryTree = discoveryTree;
+    this.extensionsManager = extensionsManager;
   }
 
-  public LoadBalanceFilter() {
+  public LoadBalanceFilter(ExtensionsManager extensionsManager) {
     preCheck();
+    this.extensionsManager = extensionsManager;
     discoveryTree.loadFromSPI(DiscoveryFilter.class);
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
@@ -275,7 +280,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
-    RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+    RuleExt rule = extensionsManager.createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
   }
 }

@@ -24,11 +24,11 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,8 +42,6 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
   protected EventBus eventBus;
 
   protected Store store;
-
-  protected AppManager appManager;
 
   protected String revision;
 
@@ -59,12 +57,6 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
     return this;
   }
 
-  @Autowired
-  public AbstractLightweightDiscovery setAppManager(AppManager appManager) {
-    this.appManager = appManager;
-    return this;
-  }
-
   @Override
   public void afterPropertiesSet() throws Exception {
     eventBus.register(this);
@@ -74,13 +66,14 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
   @Subscribe
   public void onSchemaChanged(SchemaChangedEvent event) {
     Microservice microservice = event.getMicroservice();
-    appManager.markWaitingDelete(microservice.getAppId(), microservice.getServiceName());
+    DiscoveryManager.INSTANCE.getAppManager().markWaitingDelete(microservice.getAppId(), microservice.getServiceName());
   }
 
   protected void startPullInstances(Duration pullInterval) {
     Executors
         .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, name()))
-        .scheduleAtFixedRate(appManager::safePullInstances, 0, pullInterval.getSeconds(), TimeUnit.SECONDS);
+        .scheduleAtFixedRate(DiscoveryManager.INSTANCE.getAppManager()::safePullInstances, 0, pullInterval.getSeconds(),
+            TimeUnit.SECONDS);
   }
 
   @Override
