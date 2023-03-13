@@ -219,6 +219,15 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
+  public Future<Void> writeEarlyHints(MultiMap headers) {
+    return Future.succeededFuture();
+  }
+
+  @Override
+  public void writeEarlyHints(MultiMap headers, Handler<AsyncResult<Void>> handler) {
+  }
+
+  @Override
   public Future<Void> end(String chunk, String enc) {
     return Future.succeededFuture();
   }

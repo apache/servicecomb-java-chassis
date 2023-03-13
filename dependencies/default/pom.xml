@@ -59,7 +59,7 @@
     <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.14</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
-    <jackson.version>2.14.1</jackson.version>
+    <jackson.version>2.14.2</jackson.version>
     <java-websocket.version>1.5.3</java-websocket.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
@@ -94,11 +94,11 @@
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>1.33</snakeyaml.version>
     <spectator.version>1.4.2</spectator.version>
-    <spring.version>5.3.25</spring.version>
-    <spring-boot.version>2.7.7</spring-boot.version>
+    <spring.version>5.3.27</spring.version>
+    <spring-boot.version>2.7.11</spring-boot.version>
     <swagger.version>1.6.9</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <vertx.version>4.3.7</vertx.version>
+    <vertx.version>4.4.1</vertx.version>
     <zipkin.version>2.24.0</zipkin.version>
     <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
     <!-- Base dir of main -->
