@@ -61,6 +61,7 @@ public final class RestCodec {
       try {
         paramValues.put(param.getParamName(), param.getParamProcessor().getValue(request));
       } catch (InvocationException e) {
+        LOG.debug("hello");
         throw e;
       } catch (Exception e) {
         // Avoid information leak of user input, and add option for debug use.
