@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -109,13 +110,18 @@ public class MicroserviceVersions {
     return microserviceName;
   }
 
+  @VisibleForTesting
   public Map<String, MicroserviceVersion> getVersions() {
-    return versions;
+    synchronized (lock) {
+      return versions;
+    }
   }
 
   @SuppressWarnings("unchecked")
   public <T extends MicroserviceVersion> T getVersion(String serviceId) {
-    return (T) versions.get(serviceId);
+    synchronized (lock) {
+      return (T) versions.get(serviceId);
+    }
   }
 
   public String getRevision() {
@@ -289,8 +295,10 @@ public class MicroserviceVersions {
   }
 
   public void destroy() {
-    for (MicroserviceVersion microserviceVersion : versions.values()) {
-      microserviceVersion.destroy();
+    synchronized (lock) {
+      for (MicroserviceVersion microserviceVersion : versions.values()) {
+        microserviceVersion.destroy();
+      }
     }
   }
 }
