@@ -49,7 +49,7 @@
     <esotericsoftware.version>4.0.2</esotericsoftware.version>
     <failureaccess.version>1.0.1</failureaccess.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
-    <governator-annotations.version>1.17.12</governator-annotations.version>
+    <governator-annotations.version>1.17.13</governator-annotations.version>
     <governator-api.version>1.17.12</governator-api.version>
     <guava.version>31.1-jre</guava.version>
     <guice.version>5.1.0</guice.version>
