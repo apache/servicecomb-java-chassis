@@ -77,7 +77,7 @@
     <nacos-client.version>2.2.2</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.89.Final</netty.version>
-    <okhttp3.version>4.10.0</okhttp3.version>
+    <okhttp3.version>4.11.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
     <protobuf.version>3.22.2</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
