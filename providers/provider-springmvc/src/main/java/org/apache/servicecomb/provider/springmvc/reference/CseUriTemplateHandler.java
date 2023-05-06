@@ -17,158 +17,42 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
-/**
- * 默认不支持下面第1个场景，需要做出修正
- * cse://app:ms/path to cse://app/ms/path
- * cse://ms/path to cse://ms/path
- */
-@SuppressWarnings("deprecation")
-// TODO : upgrade to spring 5 will having warning's , we'll fix it later
-public class CseUriTemplateHandler extends org.springframework.web.util.DefaultUriTemplateHandler {
-  private static final String SCHEME_PATTERN = "([^:/?#]+):";
-
-  private static final String USERINFO_PATTERN = "([^@\\[/?#]*)";
-
-  private static final String HOST_IPV4_PATTERN = "[^\\[/?#:]*";
-
-  private static final String HOST_IPV6_PATTERN = "\\[[\\p{XDigit}:.]*[%\\p{Alnum}]*]";
-
-  private static final String HOST_PATTERN = "(" + HOST_IPV6_PATTERN + "|" + HOST_IPV4_PATTERN + ")";
-
-  private static final String PORT_PATTERN = "(\\d*(?:\\{[^/]+?})?)";
-
-  private static final String PATH_PATTERN = "([^?#]*)";
-
-  private static final String QUERY_PATTERN = "([^#]*)";
-
-  private static final String LAST_PATTERN = "(.*)";
-
-  // Regex patterns that matches URIs. See RFC 3986, appendix B
-  private static final Pattern URI_PATTERN = Pattern.compile(
-      "^(" + SCHEME_PATTERN + ")?" + "(//(" + USERINFO_PATTERN + "@)?" + HOST_PATTERN + "(:" + PORT_PATTERN +
-          ")?" + ")?" + PATH_PATTERN + "(\\?" + QUERY_PATTERN + ")?" + "(#" + LAST_PATTERN + ")?");
+public class CseUriTemplateHandler extends DefaultUriBuilderFactory {
+  public static final String APP_SERVICE_SEPARATOR_INTERNAL = ".";
 
   public CseUriTemplateHandler() {
-    setStrictEncoding(true);
   }
 
   @Override
-  protected URI expandInternal(String uriTemplate, Map<String, ?> uriVariables) {
-    UriComponentsBuilder uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
-    UriComponents uriComponents = expandAndEncode(uriComponentsBuilder, uriVariables);
-    return createUri(uriTemplate, uriComponents);
+  public URI expand(String uriTemplate, Map<String, ?> uriVars) {
+    return super.expand(parseUrl(uriTemplate), uriVars);
   }
 
   @Override
-  protected URI expandInternal(String uriTemplate, Object... uriVariables) {
-    UriComponentsBuilder uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
-    UriComponents uriComponents = expandAndEncode(uriComponentsBuilder, uriVariables);
-    return createUri(uriTemplate, uriComponents);
+  public URI expand(String uriTemplate, Object... uriVars) {
+    return super.expand(parseUrl(uriTemplate), uriVars);
   }
 
-  @Override
-  protected UriComponentsBuilder initUriComponentsBuilder(String uriTemplate) {
-    UriComponentsBuilder builder = fromUriString(uriTemplate);
-    if (shouldParsePath() && !isStrictEncoding()) {
-      List<String> pathSegments = builder.build().getPathSegments();
-      builder.replacePath(null);
-      for (String pathSegment : pathSegments) {
-        builder.pathSegment(pathSegment);
-      }
+  private static String parseUrl(String uriTemplate) {
+    int indexSchema = -1;
+    if (uriTemplate.startsWith(RestConst.URI_PREFIX)) {
+      indexSchema = RestConst.URI_PREFIX.length();
     }
-    return builder;
-  }
-
-  private static UriComponentsBuilder fromUriString(String uri) {
-    Assert.notNull(uri, "URI must not be null");
-    Matcher matcher = URI_PATTERN.matcher(uri);
-    if (matcher.matches()) {
-      UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-      String scheme = matcher.group(2);
-      String userInfo = matcher.group(5);
-      String host = matcher.group(6);
-      String port = matcher.group(8);
-      String path = matcher.group(9);
-      String query = matcher.group(11);
-      String fragment = matcher.group(13);
-      boolean opaque = false;
-      if (StringUtils.hasLength(scheme)) {
-        String rest = uri.substring(scheme.length());
-        if (!rest.startsWith(":/")) {
-          opaque = true;
-        }
-      }
-      builder.scheme(scheme);
-      if (opaque) {
-        String ssp = uri.substring(scheme.length()).substring(1);
-        if (StringUtils.hasLength(fragment)) {
-          ssp = ssp.substring(0, ssp.length() - (fragment.length() + 1));
-        }
-        builder.schemeSpecificPart(ssp);
-      } else {
-        builder.userInfo(userInfo);
-        builder.host(host);
-        if (StringUtils.hasLength(port)) {
-          builder.port(port);
-        }
-        builder.path(path);
-        builder.query(query);
-      }
-      if (StringUtils.hasText(fragment)) {
-        builder.fragment(fragment);
-      }
-      return builder;
-    } else {
-      throw new IllegalArgumentException("[" + uri + "] is not a valid URI");
+    if (uriTemplate.startsWith(RestConst.URI_PREFIX_NEW)) {
+      indexSchema = RestConst.URI_PREFIX_NEW.length();
     }
-  }
-
-  private URI createUri(String uriTemplate, UriComponents uriComponents) {
-    String strUri = uriComponents.toUriString();
-
-    Matcher matcher = URI_PATTERN.matcher(uriTemplate);
-    matcher.matches(); // should always be true
-    String scheme = matcher.group(2);
-    String host = matcher.group(6);
-
-    if (isCrossApp(uriTemplate, scheme, host)) {
-      int idx;
-      if (RestConst.SCHEME.equals(scheme)) {
-        idx = strUri.indexOf('/', RestConst.URI_PREFIX.length());
-      } else {
-        idx = strUri.indexOf('/', RestConst.URI_PREFIX_NEW.length());
-      }
-      strUri = strUri.substring(0, idx) + ":" + strUri.substring(idx + 1);
+    if (indexSchema != -1) {
+      int indexPath = uriTemplate.indexOf("/", indexSchema);
+      String host = uriTemplate.substring(indexSchema, indexPath);
+      host = host.replace(DefinitionConst.APP_SERVICE_SEPARATOR, APP_SERVICE_SEPARATOR_INTERNAL);
+      return uriTemplate.substring(0, indexSchema) + host + uriTemplate.substring(indexPath);
     }
-
-    try {
-      // Avoid further encoding (in the case of strictEncoding=true)
-      return new URI(strUri);
-    } catch (URISyntaxException ex) {
-      throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
-    }
-  }
-
-  private boolean isCrossApp(String uriTemplate, String scheme, String host) {
-    int pos;
-    if (RestConst.SCHEME.equals(scheme)) {
-      pos = RestConst.URI_PREFIX.length() + host.length();
-    } else {
-      pos = RestConst.URI_PREFIX_NEW.length() + host.length();
-    }
-
-    return uriTemplate.charAt(pos) == ':';
+    return uriTemplate;
   }
 }

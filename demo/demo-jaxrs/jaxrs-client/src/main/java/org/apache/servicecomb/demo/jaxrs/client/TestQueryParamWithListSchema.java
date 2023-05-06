@@ -66,10 +66,17 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
   }
 
   private void testSSV() {
-    TestMgr.check("2:[1, 2]",
+    TestMgr.check("1:[1%202]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=1%202", String.class));
-    TestMgr.check("2:[, ]",
+    TestMgr.check("1:[%20]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=%20", String.class));
+    TestMgr.check("1:[]",
+        restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=", String.class));
+
+    TestMgr.check("2:[1, 2]",
+        restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList={1}", String.class, "1 2"));
+    TestMgr.check("2:[, ]",
+        restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList={1}", String.class, " "));
     TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=", String.class));
   }

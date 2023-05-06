@@ -28,16 +28,33 @@ public class TestCseUriTemplateHandler {
   public void testCrossApp() {
     CseUriTemplateHandler handler = new CseUriTemplateHandler();
     URI uri = handler.expand("cse://{ap}{p}:ms/{path}?q={query}", "ap", "p", "path", "query");
-    Assertions.assertEquals("cse://app:ms/path?q=query", uri.toString());
+    Assertions.assertEquals("cse://app.ms/path?q=query", uri.toString());
 
     Map<String, String> vars = new HashMap<>();
     vars.put("app", "app");
     vars.put("path", "path");
     vars.put("q", "query");
     uri = handler.expand("cse://{app}:ms/{path}?q={q}", vars);
-    Assertions.assertEquals("cse://app:ms/path?q=query", uri.toString());
+    Assertions.assertEquals("cse://app.ms/path?q=query", uri.toString());
 
     uri = handler.expand("cse://ms/{path}?q={query}", "path", "query");
     Assertions.assertEquals("cse://ms/path?q=query", uri.toString());
+  }
+
+  @Test
+  public void testCrossAppServiceComb() {
+    CseUriTemplateHandler handler = new CseUriTemplateHandler();
+    URI uri = handler.expand("servicecomb://{ap}{p}:ms/{path}?q={query}", "ap", "p", "path", "query");
+    Assertions.assertEquals("servicecomb://app.ms/path?q=query", uri.toString());
+
+    Map<String, String> vars = new HashMap<>();
+    vars.put("app", "app");
+    vars.put("path", "path");
+    vars.put("q", "query");
+    uri = handler.expand("servicecomb://{app}:ms/{path}?q={q}", vars);
+    Assertions.assertEquals("servicecomb://app.ms/path?q=query", uri.toString());
+
+    uri = handler.expand("servicecomb://ms/{path}?q={query}", "path", "query");
+    Assertions.assertEquals("servicecomb://ms/path?q=query", uri.toString());
   }
 }
