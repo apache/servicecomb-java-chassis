@@ -238,6 +238,14 @@ public class SpringmvcClient {
         template.getForObject(prefix + "/controller/sayhi?name=world",
             String.class));
 
+    TestMgr.check("hi world boot [world boot]",
+        template.getForObject(prefix + "/controller/sayhi?name=world boot",
+            String.class));
+
+    TestMgr.check("hi world boot [world boot]",
+        template.getForObject(prefix + "/controller/sayhi?name=world+boot",
+            String.class));
+
     TestMgr.check("hi world1 [world1]",
         template.getForObject(prefix + "/controller/sayhi?name={name}",
             String.class,
