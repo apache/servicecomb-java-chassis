@@ -123,10 +123,11 @@ public interface HttpClientOptionsSPI {
     }
 
     if (spi.getHttpVersion() == HttpVersion.HTTP_2) {
-      httpClientOptions.setHttp2ClearTextUpgrade(false);
       httpClientOptions.setUseAlpn(spi.isUseAlpn());
+      httpClientOptions.setHttp2ClearTextUpgrade(false);
       httpClientOptions.setHttp2MultiplexingLimit(spi.getHttp2MultiplexingLimit());
       httpClientOptions.setHttp2MaxPoolSize(spi.getHttp2MaxPoolSize());
+      httpClientOptions.setHttp2KeepAliveTimeout(spi.getKeepAliveTimeout());
     }
 
     if (spi.isSsl()) {
