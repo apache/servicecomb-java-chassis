@@ -21,12 +21,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,46 +42,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-public class RouterInvokeFilter implements HttpServerFilter {
+public class RouterAddHeaderFilter implements Filter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RouterInvokeFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RouterAddHeaderFilter.class);
 
   private static final String SERVICECOMB_ROUTER_HEADER = "servicecomb.router.header";
 
   private static List<String> allHeader = new ArrayList<>();
-
-
-  @Override
-  public int getOrder() {
-    return -90;
-  }
-
-  @Override
-  public boolean enabled() {
-    return true;
-  }
-
-  @Override
-  public Response afterReceiveRequest(Invocation invocation,
-      HttpServletRequestEx httpServletRequestEx) {
-    if (!StringUtils.isEmpty(invocation.getContext(RouterServerListFilter.ROUTER_HEADER))) {
-      return null;
-    }
-
-    if (!isHaveHeadersRule()) {
-      return null;
-    }
-    if (loadHeaders()) {
-      Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
-      try {
-        invocation
-            .addContext(RouterServerListFilter.ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
-      } catch (JsonProcessingException e) {
-        LOGGER.error("canary context serialization failed");
-      }
-    }
-    return null;
-  }
 
   /**
    * read config and get Header
@@ -128,5 +101,50 @@ public class RouterInvokeFilter implements HttpServerFilter {
       }
     });
     return headerMap;
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return ProducerFilter.PRODUCER_SCHEDULE_FILTER_ORDER - 1970;
+  }
+
+  @Nonnull
+  @Override
+  public boolean isEnabledForInvocationType(InvocationType invocationType) {
+    // enable for both edge and producer
+    return true;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "router-add-header";
+  }
+
+  @Override
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    if (!invocation.isEdge() && !invocation.isProducer()) {
+      return nextNode.onFilter(invocation);
+    }
+
+    if (!StringUtils.isEmpty(invocation.getContext(RouterServerListFilter.ROUTER_HEADER))) {
+      return nextNode.onFilter(invocation);
+    }
+
+    if (!isHaveHeadersRule()) {
+      return nextNode.onFilter(invocation);
+    }
+
+    if (loadHeaders()) {
+      Map<String, String> headerMap = getHeaderMap(invocation.getRequestEx());
+      try {
+        invocation
+            .addContext(RouterServerListFilter.ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
+      } catch (JsonProcessingException e) {
+        LOGGER.error("canary context serialization failed");
+      }
+    }
+
+    return nextNode.onFilter(invocation);
   }
 }

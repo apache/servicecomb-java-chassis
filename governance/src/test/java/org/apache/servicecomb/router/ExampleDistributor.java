@@ -21,8 +21,8 @@ import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExampleDistributor extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
+public class ExampleDistributor extends AbstractRouterDistributor<ServiceIns> {
   public ExampleDistributor() {
-    init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
+    init(ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
   }
 }

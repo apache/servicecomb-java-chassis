@@ -41,8 +41,8 @@ public class RouterFilter {
     this.routerRuleCache = routerRuleCache;
   }
 
-  public <T, E> List<T> getFilteredListOfServers(List<T> list,
-      String targetServiceName, Map<String, String> headers, RouterDistributor<T, E> distributer) {
+  public <T> List<T> getFilteredListOfServers(List<T> list,
+      String targetServiceName, Map<String, String> headers, RouterDistributor<T> distributor) {
     if (CollectionUtils.isEmpty(list)) {
       return list;
     }
@@ -65,7 +65,7 @@ public class RouterFilter {
     LOGGER.debug("route management match rule success: {}", invokeRule);
 
     // 3.distribute select endpoint
-    List<T> resultList = distributer.distribute(targetServiceName, list, invokeRule);
+    List<T> resultList = distributor.distribute(targetServiceName, list, invokeRule);
 
     LOGGER.debug("route management distribute rule success: {}", resultList);
 

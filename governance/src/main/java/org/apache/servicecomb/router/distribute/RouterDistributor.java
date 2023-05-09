@@ -19,17 +19,18 @@ package org.apache.servicecomb.router.distribute;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 
 /**
  * @Author GuoYl123
  * @Date 2019/10/17
  **/
-public interface RouterDistributor<T, E> {
+public interface RouterDistributor<INSTANCE> {
 
-  void init(Function<T, E> getIns, Function<E, String> getVersion,
-      Function<E, String> getServerName,
-      Function<E, Map<String, String>> getProperties);
+  void init(Function<INSTANCE, String> getVersion,
+      Function<INSTANCE, String> getServerName,
+      Function<INSTANCE, Map<String, String>> getProperties);
 
-  List<T> distribute(String targetServiceName, List<T> list, PolicyRuleItem invokeRule);
+  List<INSTANCE> distribute(String targetServiceName, List<INSTANCE> list, PolicyRuleItem invokeRule);
 }

@@ -29,7 +29,12 @@ public class ServiceCombRouterConfiguration {
   public static final String ROUTER_ENABLED = ROUTER_PREFIX + ".enabled";
 
   @Bean
-  public ServiceCombCanaryDistributer serviceCombCanaryDistributer() {
-    return new ServiceCombCanaryDistributer();
+  public ServiceCombRouterDistributor serviceCombRouterDistributor() {
+    return new ServiceCombRouterDistributor();
+  }
+
+  @Bean
+  public RouterAddHeaderFilter routerAddHeaderFilter() {
+    return new RouterAddHeaderFilter();
   }
 }
