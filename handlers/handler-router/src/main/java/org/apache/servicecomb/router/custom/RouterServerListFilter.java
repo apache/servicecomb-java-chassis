@@ -26,7 +26,6 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.slf4j.Logger;
