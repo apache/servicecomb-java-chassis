@@ -16,20 +16,29 @@
  */
 package org.apache.servicecomb.router.custom;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ServiceCombCanaryDistributer extends
-    AbstractRouterDistributor<ServiceCombServer, Microservice> {
+public class ServiceCombRouterDistributor extends
+    AbstractRouterDistributor<ServiceCombServer> {
 
-  public ServiceCombCanaryDistributer() {
-    init(server -> MicroserviceCache.getInstance()
-            .getService(server.getInstance().getServiceId()),
-        Microservice::getVersion,
-        Microservice::getServiceName,
-        Microservice::getProperties);
+  public ServiceCombRouterDistributor() {
+    init(
+        instance -> MicroserviceCache.getInstance()
+            .getService(instance.getInstance().getServiceId()).getVersion(),
+        instance -> MicroserviceCache.getInstance()
+            .getService(instance.getInstance().getServiceId()).getServiceName(),
+        instance -> {
+          Map<String, String> properties = new HashMap<>();
+          properties.putAll(MicroserviceCache.getInstance()
+              .getService(instance.getInstance().getServiceId()).getProperties());
+          properties.putAll(instance.getInstance().getProperties());
+          return properties;
+        });
   }
 }

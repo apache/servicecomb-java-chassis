@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.router.custom.RouterInvokeFilter
+org.apache.servicecomb.router.custom.RouterAddHeaderFilter

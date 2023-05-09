@@ -36,9 +36,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-public class RouterInvokeFilter implements HttpServerFilter {
+public class RouterAddHeaderFilter implements HttpServerFilter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RouterInvokeFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RouterAddHeaderFilter.class);
 
   private static final String SERVICECOMB_ROUTER_HEADER = "servicecomb.router.header";
 

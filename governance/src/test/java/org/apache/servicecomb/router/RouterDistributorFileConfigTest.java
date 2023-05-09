@@ -36,7 +36,7 @@ public class RouterDistributorFileConfigTest {
 
   private RouterFilter routerFilter;
 
-  private RouterDistributor<ServiceIns, ServiceIns> routerDistributor;
+  private RouterDistributor<ServiceIns> routerDistributor;
 
   @Autowired
   public void setRouterFilter(RouterFilter routerFilter) {
@@ -44,7 +44,7 @@ public class RouterDistributorFileConfigTest {
   }
 
   @Autowired
-  public void setRouterDistributor(RouterDistributor<ServiceIns, ServiceIns> routerDistributor) {
+  public void setRouterDistributor(RouterDistributor<ServiceIns> routerDistributor) {
     this.routerDistributor = routerDistributor;
   }
 
