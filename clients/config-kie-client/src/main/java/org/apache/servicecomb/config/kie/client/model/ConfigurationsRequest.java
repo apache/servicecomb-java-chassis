@@ -80,6 +80,7 @@ public class ConfigurationsRequest implements Comparable<ConfigurationsRequest> 
 
   @Override
   public int compareTo(ConfigurationsRequest o) {
+    // Higher priority, query the last
     return o.getOrder() - this.order;
   }
 }
