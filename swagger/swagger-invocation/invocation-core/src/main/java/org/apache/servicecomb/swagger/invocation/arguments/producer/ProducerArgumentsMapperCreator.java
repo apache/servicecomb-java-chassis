@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
@@ -61,7 +62,8 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected void processUnknownParameter(String parameterName) {
+  protected void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
+      String parameterName) {
     throw new IllegalStateException(String
         .format("failed to find producer parameter in contract, method=%s:%s, parameter name=%s.",
             providerMethod.getDeclaringClass().getName(), providerMethod.getName(), parameterName));
@@ -97,7 +99,11 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected void processBeanParameter(int producerParamIdx, Parameter producerParameter) {
+  protected boolean processBeanParameter(int producerParamIdx, Parameter producerParameter) {
+    JavaType providerType = TypeFactory.defaultInstance().constructType(producerParameter.getParameterizedType());
+    if (!SwaggerUtils.isBean(providerType)) {
+      return false;
+    }
     ProducerBeanParamMapper mapper = new ProducerBeanParamMapper(
         providerMethod.getParameters()[producerParamIdx].getName(), producerParameter.getType());
     JavaType producerType = TypeFactory.defaultInstance().constructType(producerParameter.getParameterizedType());
@@ -117,5 +123,6 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
       processedSwaggerParamters.add(parameterName);
     }
     mappers.add(mapper);
+    return true;
   }
 }
