@@ -61,7 +61,8 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected void processUnknownParameter(String parameterName) {
+  protected void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
+                                         String parameterName) {
     throw new IllegalStateException(String
         .format("failed to find producer parameter in contract, method=%s:%s, parameter name=%s.",
             providerMethod.getDeclaringClass().getName(), providerMethod.getName(), parameterName));

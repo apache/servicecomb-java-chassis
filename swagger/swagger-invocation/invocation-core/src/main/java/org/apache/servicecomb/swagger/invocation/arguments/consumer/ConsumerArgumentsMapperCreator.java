@@ -75,7 +75,21 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected void processUnknownParameter(String parameterName) {
+  protected void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
+      String parameterName) {
+
+    // Make best guess, use the index of swagger to invoke server
+    for (int idx = 0; idx < swaggerParameters.size(); idx++) {
+      if (providerParamIdx == idx) {
+        Parameter parameter = swaggerParameters.get(idx);
+        if (parameter != null) {
+          ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, providerParamIdx);
+          mappers.add(mapper);
+          return;
+        }
+      }
+    }
+
     // real unknown parameter, new consumer invoke old producer, just ignore this parameter
     LOGGER.warn("new consumer invoke old version producer, parameter({}) is not exist in contract, method={}:{}.",
         parameterName, providerMethod.getDeclaringClass().getName(), providerMethod.getName());

@@ -180,7 +180,7 @@ public abstract class AbstractArgumentsMapperCreator {
         continue;
       }
 
-      processUnknownParameter(parameterName);
+      processUnknownParameter(providerParamIdx, providerParameter, parameterName);
     }
 
     for (Parameter parameter : swaggerParameters) {
@@ -264,7 +264,8 @@ public abstract class AbstractArgumentsMapperCreator {
    */
   protected abstract void processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
 
-  protected abstract void processUnknownParameter(String parameterName);
+  protected abstract void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
+                                                  String parameterName);
 
   protected abstract void processPendingSwaggerParameter(Parameter parameter);
 }
