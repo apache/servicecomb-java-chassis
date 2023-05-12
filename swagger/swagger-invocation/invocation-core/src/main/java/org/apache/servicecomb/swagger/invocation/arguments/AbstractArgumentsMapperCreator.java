@@ -28,9 +28,7 @@ import java.util.Set;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
@@ -174,9 +172,7 @@ public abstract class AbstractArgumentsMapperCreator {
         continue;
       }
 
-      JavaType providerType = TypeFactory.defaultInstance().constructType(providerParameter.getParameterizedType());
-      if (SwaggerUtils.isBean(providerType)) {
-        processBeanParameter(providerParamIdx, providerParameter);
+      if (processBeanParameter(providerParamIdx, providerParameter)) {
         continue;
       }
 
@@ -262,10 +258,10 @@ public abstract class AbstractArgumentsMapperCreator {
    * @param providerParamIdx
    * @param providerParameter processing provider parameter
    */
-  protected abstract void processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
+  protected abstract boolean processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
 
   protected abstract void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
-                                                  String parameterName);
+      String parameterName);
 
   protected abstract void processPendingSwaggerParameter(Parameter parameter);
 }

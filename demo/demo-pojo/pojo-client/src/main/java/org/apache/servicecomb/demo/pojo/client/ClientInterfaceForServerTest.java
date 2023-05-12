@@ -17,8 +17,11 @@
 
 package org.apache.servicecomb.demo.pojo.client;
 
+import org.apache.servicecomb.demo.server.TestRequest;
 import org.apache.servicecomb.demo.server.User;
 
 public interface ClientInterfaceForServerTest {
     User splitParam(int nameNotIndex, User user);
+
+    User wrapParam(TestRequest nameNotRequest);
 }
