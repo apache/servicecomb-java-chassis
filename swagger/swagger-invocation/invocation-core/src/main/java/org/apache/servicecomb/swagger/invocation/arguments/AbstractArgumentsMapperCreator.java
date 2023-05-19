@@ -168,7 +168,7 @@ public abstract class AbstractArgumentsMapperCreator {
       String parameterName = collectParameterName(providerParameter);
       if (processKnownParameter(providerParamIdx, providerParameter, parameterName)) {
         processedSwaggerParamters.add(parameterName);
-        notProcessedSwaggerParamIdx ++;
+        notProcessedSwaggerParamIdx++;
         continue;
       }
 
