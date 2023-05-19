@@ -81,7 +81,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
     // Make best guess, use the index of swagger to invoke server.
     // For compatible to old version behavior
-    if (notProcessedSwaggerParamIdx < swaggerParameters.size()) {
+    if (!isSwaggerBodyField && notProcessedSwaggerParamIdx < swaggerParameters.size()) {
       Parameter parameter = swaggerParameters.get(notProcessedSwaggerParamIdx);
       if (parameter != null) {
         ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, notProcessedSwaggerParamIdx);

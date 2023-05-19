@@ -91,6 +91,8 @@ import io.swagger.models.properties.Property;
 public abstract class AbstractArgumentsMapperCreator {
   protected int notProcessedSwaggerParamIdx = 0;
 
+  protected boolean isSwaggerBodyField = false;
+
   protected SerializationConfig serializationConfig;
 
   // key is context class
@@ -172,6 +174,7 @@ public abstract class AbstractArgumentsMapperCreator {
 
       if (processSwaggerBodyField(providerParamIdx, providerParameter, parameterName)) {
         processedSwaggerParamters.add(parameterName);
+        isSwaggerBodyField = true;
         continue;
       }
 

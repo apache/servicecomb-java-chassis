@@ -38,7 +38,7 @@ public class TestCompatible1xTestSchema implements CategorizedTestCase {
   }
 
   private void testParameterNamePartMatchRight() {
-    String result = schema.parameterNamePartMatchLeft(3, 4);
+    String result = schema.parameterNamePartMatchRight(3, 4);
     TestMgr.check("springmvcClient38", result);
   }
 
