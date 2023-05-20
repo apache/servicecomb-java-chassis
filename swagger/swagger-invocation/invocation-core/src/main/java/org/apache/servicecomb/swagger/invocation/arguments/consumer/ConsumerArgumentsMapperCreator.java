@@ -81,12 +81,15 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
     // Make best guess, use the index of swagger to invoke server.
     // For compatible to old version behavior
-    if (providerParamIdx < swaggerParameters.size()) {
-      Parameter parameter = swaggerParameters.get(providerParamIdx);
+    if (!isSwaggerBodyField && notProcessedSwaggerParamIdx < swaggerParameters.size()) {
+      Parameter parameter = swaggerParameters.get(notProcessedSwaggerParamIdx);
       if (parameter != null) {
-        ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, providerParamIdx);
+        ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, notProcessedSwaggerParamIdx);
         mappers.add(mapper);
-        LOGGER.warn("new consumer invoke old version producer, parameter({}) is not exist in contract, method={}:{}.",
+        processedSwaggerParamters.add(parameterName);
+        notProcessedSwaggerParamIdx++;
+        LOGGER.warn("Old consumer invoke new version producer, parameter({}) is not exist in contract, method={}:{}."
+                + " Please change consumer parameter name to match swagger.",
             parameterName, providerMethod.getDeclaringClass().getName(), providerMethod.getName());
         return;
       }
