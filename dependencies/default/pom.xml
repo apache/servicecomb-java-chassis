@@ -46,7 +46,7 @@
     <commons-logging.version>1.2</commons-logging.version>
     <commons-text.version>1.10.0</commons-text.version>
     <classmate.version>1.5.1</classmate.version>
-    <esotericsoftware.version>4.0.2</esotericsoftware.version>
+    <esotericsoftware.version>4.0.3</esotericsoftware.version>
     <failureaccess.version>1.0.1</failureaccess.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
