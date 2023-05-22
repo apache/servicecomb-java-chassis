@@ -46,7 +46,7 @@ public final class HttpUtils {
       }
 
       if (paramName.equalsIgnoreCase(trimValue.substring(0, idx))) {
-        return trimValue.replaceAll("\"", "").substring(idx + 1);
+        return trimValue.replaceAll("\"", "").substring(idx + 1).trim();
       }
     }
     return null;
