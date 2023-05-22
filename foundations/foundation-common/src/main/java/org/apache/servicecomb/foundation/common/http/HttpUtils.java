@@ -39,13 +39,14 @@ public final class HttpUtils {
     }
 
     for (String value : headerValue.split(";")) {
-      int idx = value.indexOf('=');
+      String trimValue = value.trim();
+      int idx = trimValue.indexOf('=');
       if (idx == -1) {
         continue;
       }
 
-      if (paramName.equalsIgnoreCase(value.substring(0, idx))) {
-        return value.substring(idx + 1);
+      if (paramName.equalsIgnoreCase(trimValue.substring(0, idx))) {
+        return trimValue.replaceAll("\"", "").substring(idx + 1);
       }
     }
     return null;

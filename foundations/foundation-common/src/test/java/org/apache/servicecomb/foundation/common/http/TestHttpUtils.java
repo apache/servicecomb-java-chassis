@@ -56,6 +56,21 @@ public class TestHttpUtils {
   }
 
   @Test
+  public void parseParamFromHeaderValue_valueWithQuotationMark() {
+    Assertions.assertEquals("v", HttpUtils.parseParamFromHeaderValue("xx;k=\"v\"", "k"));
+  }
+
+  @Test
+  public void parseParamFromHeaderValue_valueWithBlank() {
+    Assertions.assertEquals("v", HttpUtils.parseParamFromHeaderValue("xx; k=v", "k"));
+  }
+
+  @Test
+  public void parseParamFromHeaderValue_valueWithQuotationMarkAndBlank() {
+    Assertions.assertEquals("v", HttpUtils.parseParamFromHeaderValue("xx;k= \"v\"", "k"));
+  }
+
+  @Test
   public void uriEncode_null() {
     Assertions.assertEquals("", HttpUtils.uriEncodePath(null));
   }
