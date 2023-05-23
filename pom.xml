@@ -68,7 +68,7 @@
     <site-maven-plugin.version>3.12.1</site-maven-plugin.version>
     <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
     <spotbug-maven-plugin.version>4.7.3.4</spotbug-maven-plugin.version>
-    <spring-boot-maven-plugin.version>2.7.11</spring-boot-maven-plugin.version>
+    <spring-boot-maven-plugin.version>3.1.0</spring-boot-maven-plugin.version>
     <surefire-maven-plugin.version>3.0.0-M9</surefire-maven-plugin.version>
     <!-- plugin version end -->
   </properties>
