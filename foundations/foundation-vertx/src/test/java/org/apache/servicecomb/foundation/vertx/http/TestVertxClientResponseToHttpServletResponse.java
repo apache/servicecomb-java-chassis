@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;

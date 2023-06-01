@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 
 public class TestConsumerResponseMapperFactorys {
@@ -43,7 +43,7 @@ public class TestConsumerResponseMapperFactorys {
     Response scbResponse();
 
     @ApiResponse(code = 200, message = "", response = String.class)
-    javax.ws.rs.core.Response jaxrsResponse();
+    jakarta.ws.rs.core.Response jaxrsResponse();
 
     Optional<String> optional();
   }

@@ -22,7 +22,7 @@ import static org.apache.servicecomb.swagger.extend.SwaggerEnum.JDK;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.swagger.extend.SwaggerEnum;

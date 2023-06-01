@@ -20,7 +20,7 @@ package org.apache.servicecomb.swagger.generator.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;

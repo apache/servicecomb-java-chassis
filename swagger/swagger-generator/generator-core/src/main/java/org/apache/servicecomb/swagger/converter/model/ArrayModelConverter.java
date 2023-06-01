@@ -22,7 +22,7 @@ import org.apache.servicecomb.swagger.converter.property.ArrayPropertyConverter;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.ArrayModel;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class ArrayModelConverter extends AbstractModelConverter {
   @Override

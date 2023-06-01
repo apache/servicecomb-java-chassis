@@ -39,7 +39,7 @@ import io.swagger.models.ExternalDocs;
 import io.swagger.models.Info;
 import io.swagger.models.License;
 import io.swagger.models.Scheme;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.Tag;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
@@ -56,7 +56,7 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<Swag
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, SwaggerDefinition definitionAnnotation) {
-    Swagger swagger = swaggerGenerator.getSwagger();
+    Swagger swagger = swaggerGenerator.getOpenAPI();
 
     if (StringUtils.isNotEmpty(definitionAnnotation.basePath())) {
       swaggerGenerator.setBasePath(definitionAnnotation.basePath());

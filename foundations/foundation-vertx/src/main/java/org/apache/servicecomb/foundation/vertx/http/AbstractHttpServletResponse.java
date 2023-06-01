@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl implements HttpServletResponseEx {
   private final Map<String, Object> attributes = new HashMap<>();

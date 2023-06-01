@@ -19,7 +19,7 @@ package org.apache.servicecomb.authentication.provider;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;

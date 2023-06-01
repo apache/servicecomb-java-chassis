@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator.pojo;
 
 import java.lang.annotation.Annotation;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFactory;

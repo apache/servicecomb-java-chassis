@@ -51,19 +51,19 @@
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
     <governator-api.version>1.17.13</governator-api.version>
-    <guava.version>32.1.1-jre</guava.version>
+    <guava.version>32.0.0-jre</guava.version>
     <guice.version>5.1.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.12</hdr-histogram.version>
     <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.14</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
-    <jackson.version>2.15.0</jackson.version>
+    <jackson.version>2.14.2</jackson.version>
     <java-websocket.version>1.5.3</java-websocket.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
     <javax-resource.version>1.5</javax-resource.version>
-    <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
+    <jaxb-api.version>2.3.1</jaxb-api.version>
     <jersey.version>2.39.1</jersey.version>
     <jmockit.version>1.34</jmockit.version>
     <junit.version>4.13.2</junit.version>
@@ -72,14 +72,14 @@
     <log4j2.version>2.20.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
     <maven-model.version>3.9.1</maven-model.version>
-    <micrometer.version>1.11.2</micrometer.version>
+    <micrometer.version>1.11.0</micrometer.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.2.3</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
-    <netty.version>4.1.94.Final</netty.version>
+    <netty.version>4.1.93.Final</netty.version>
     <okhttp3.version>4.11.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
-    <protobuf.version>3.23.4</protobuf.version>
+    <protobuf.version>3.23.2</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
     <protostuff-parser.version>2.2.27</protostuff-parser.version>
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
@@ -91,12 +91,12 @@
     <servlet-api.version>4.0.4</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>1.33</snakeyaml.version>
-    <spectator.version>1.6.6</spectator.version>
-    <spring.version>5.3.27</spring.version>
-    <spring-boot.version>2.7.11</spring-boot.version>
-    <swagger.version>1.6.11</swagger.version>
+    <spectator.version>1.6.5</spectator.version>
+    <spring.version>6.0.9</spring.version>
+    <spring-boot.version>3.0.7</spring-boot.version>
+    <swagger.version>2.2.9</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <vertx.version>4.4.3</vertx.version>
+    <vertx.version>4.4.2</vertx.version>
     <zipkin.version>2.24.1</zipkin.version>
     <zipkin-reporter.version>2.16.4</zipkin-reporter.version>
     <!-- Base dir of main -->
@@ -438,16 +438,9 @@
       </dependency>
 
       <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-core</artifactId>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core-jakarta</artifactId>
         <version>${swagger.version}</version>
-        <exclusions>
-          <!-- use jakarta.validation-api -->
-          <exclusion>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
@@ -548,9 +541,9 @@
       </dependency>
 
       <dependency>
-        <groupId>jakarta.ws.rs</groupId>
-        <artifactId>jakarta.ws.rs-api</artifactId>
-        <version>${jakarta.ws.rs.version}</version>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb-api.version}</version>
       </dependency>
 
       <dependency>

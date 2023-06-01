@@ -26,7 +26,7 @@ import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
 
 import io.protostuff.compiler.model.Proto;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * Manage swagger -> protoBuffer mappings.

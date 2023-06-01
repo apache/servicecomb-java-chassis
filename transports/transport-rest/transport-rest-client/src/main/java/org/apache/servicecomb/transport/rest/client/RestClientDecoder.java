@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.rest.client;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_DECODE_REST_FAIL_RESPONSE;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_DECODE_REST_SUCCESS_RESPONSE;
 
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;

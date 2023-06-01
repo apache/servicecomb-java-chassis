@@ -33,8 +33,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -51,26 +49,18 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Info;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.RefModel;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.ObjectProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.util.Yaml;
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.util.Yaml;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status.Family;
 
 public final class SwaggerUtils {
 
@@ -80,7 +70,7 @@ public final class SwaggerUtils {
   private SwaggerUtils() {
   }
 
-  public static String swaggerToString(Swagger swagger) {
+  public static String swaggerToString(OpenAPI swagger) {
     try {
       return Yaml.mapper().writeValueAsString(swagger);
     } catch (Throwable e) {
@@ -88,7 +78,7 @@ public final class SwaggerUtils {
     }
   }
 
-  public static Swagger parseSwagger(URL url) {
+  public static OpenAPI parseSwagger(URL url) {
     try {
       String swaggerContent = IOUtils.toString(url, StandardCharsets.UTF_8);
       return internalParseSwagger(swaggerContent);
@@ -97,13 +87,13 @@ public final class SwaggerUtils {
     }
   }
 
-  public static Swagger parseAndValidateSwagger(URL url) {
-    Swagger swagger = SwaggerUtils.parseSwagger(url);
+  public static OpenAPI parseAndValidateSwagger(URL url) {
+    OpenAPI swagger = SwaggerUtils.parseSwagger(url);
     SwaggerUtils.validateSwagger(swagger);
     return swagger;
   }
 
-  public static Swagger parseSwagger(String swaggerContent) {
+  public static OpenAPI parseSwagger(String swaggerContent) {
     try {
       return internalParseSwagger(swaggerContent);
     } catch (Throwable e) {
@@ -111,8 +101,8 @@ public final class SwaggerUtils {
     }
   }
 
-  public static Swagger parseAndValidateSwagger(String swaggerContent) {
-    Swagger swagger = SwaggerUtils.parseSwagger(swaggerContent);
+  public static OpenAPI parseAndValidateSwagger(String swaggerContent) {
+    OpenAPI swagger = SwaggerUtils.parseSwagger(swaggerContent);
     SwaggerUtils.validateSwagger(swagger);
     return swagger;
   }
@@ -121,13 +111,13 @@ public final class SwaggerUtils {
    * Provide a method to validate swagger. This method is now implemented to check common errors, and the logic
    * will be changed when necessary. For internal use only.
    */
-  public static void validateSwagger(Swagger swagger) {
-    Map<String, Path> paths = swagger.getPaths();
+  public static void validateSwagger(OpenAPI swagger) {
+    Paths paths = swagger.getPaths();
     if (paths == null) {
       return;
     }
 
-    for (Path path : paths.values()) {
+    for (PathItem path : paths.values()) {
       Operation operation = path.getPost();
       if (operation == null) {
         continue;
@@ -142,8 +132,8 @@ public final class SwaggerUtils {
     }
   }
 
-  private static Swagger internalParseSwagger(String swaggerContent) throws IOException {
-    Swagger swagger = Yaml.mapper().readValue(swaggerContent, Swagger.class);
+  private static OpenAPI internalParseSwagger(String swaggerContent) throws IOException {
+    OpenAPI swagger = Yaml.mapper().readValue(swaggerContent, OpenAPI.class);
     correctResponses(swagger);
     return swagger;
   }
@@ -151,10 +141,10 @@ public final class SwaggerUtils {
   public static void correctResponses(Operation operation) {
     int okCode = Status.OK.getStatusCode();
     String strOkCode = String.valueOf(okCode);
-    Response okResponse = null;
+    ApiResponse okResponse = null;
 
-    for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
-      Response response = responseEntry.getValue();
+    for (Entry<String, ApiResponse> responseEntry : operation.getResponses().entrySet()) {
+      ApiResponse response = responseEntry.getValue();
       if (StringUtils.isEmpty(response.getDescription())) {
         response.setDescription("response of " + responseEntry.getKey());
       }
@@ -173,23 +163,23 @@ public final class SwaggerUtils {
     }
 
     if (okResponse != null) {
-      operation.addResponse(strOkCode, okResponse);
+      operation.getResponses().addApiResponse(strOkCode, okResponse);
     }
   }
 
-  public static void correctResponses(Swagger swagger) {
+  public static void correctResponses(OpenAPI swagger) {
     if (swagger.getPaths() == null) {
       return;
     }
 
-    for (Path path : swagger.getPaths().values()) {
-      for (Operation operation : path.getOperations()) {
+    for (PathItem path : swagger.getPaths().values()) {
+      for (Operation operation : path.readOperations()) {
         correctResponses(operation);
       }
     }
   }
 
-  public static Map<String, Property> getBodyProperties(Swagger swagger, Parameter parameter) {
+  public static Map<String, Property> getBodyProperties(OpenAPI swagger, Parameter parameter) {
     if (!(parameter instanceof BodyParameter)) {
       return null;
     }
@@ -206,13 +196,13 @@ public final class SwaggerUtils {
     return null;
   }
 
-  public static void addDefinitions(Swagger swagger, Type paramType) {
+  public static void addDefinitions(OpenAPI swagger, Type paramType) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(paramType);
     if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
       return;
     }
-    Map<String, Model> models = ModelConverters.getInstance().readAll(javaType);
-    for (Entry<String, Model> entry : models.entrySet()) {
+    Map<String, Schema> models = ModelConverters.getInstance().readAll(javaType);
+    for (Entry<String, Schema> entry : models.entrySet()) {
       if (!modelNotDuplicate(swagger, entry)) {
         LOGGER.warn("duplicate param model: " + entry.getKey());
         throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
@@ -220,8 +210,8 @@ public final class SwaggerUtils {
     }
   }
 
-  private static boolean modelNotDuplicate(Swagger swagger, Entry<String, Model> entry) {
-    if (null == swagger.getDefinitions()) {
+  private static boolean modelNotDuplicate(OpenAPI swagger, Entry<String, Schema> entry) {
+    if (null == swagger.) {
       swagger.addDefinition(entry.getKey(), entry.getValue());
       return true;
     }
@@ -238,13 +228,13 @@ public final class SwaggerUtils {
     return true;
   }
 
-  private static boolean modelOfClassNotDuplicate(Model tempModel, Model model) {
+  private static boolean modelOfClassNotDuplicate(OpenAPI tempModel, Schema model) {
     String tempModelClass = (String) tempModel.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
     String modelClass = (String) model.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
     return tempModelClass.equals(modelClass);
   }
 
-  public static void setParameterType(Swagger swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
+  public static void setParameterType(OpenAPI swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
     addDefinitions(swagger, type);
     Property property = ModelConverters.getInstance().readAsProperty(type);
 
@@ -257,7 +247,7 @@ public final class SwaggerUtils {
     parameter.setProperty(property);
   }
 
-  public static boolean isBean(Model model) {
+  public static boolean isBean(Schema model) {
     return isBean(PropertyModelConverterExt.toProperty(model));
   }
 
@@ -277,7 +267,7 @@ public final class SwaggerUtils {
     return false;
   }
 
-  public static ModelImpl getModelImpl(Swagger swagger, BodyParameter bodyParameter) {
+  public static ModelImpl getModelImpl(OpenAPI swagger, BodyParameter bodyParameter) {
     Model model = bodyParameter.getSchema();
     if (model instanceof ModelImpl) {
       return (ModelImpl) model;
@@ -381,7 +371,7 @@ public final class SwaggerUtils {
     return false;
   }
 
-  public static Class<?> getInterface(Swagger swagger) {
+  public static Class<?> getInterface(OpenAPI swagger) {
     Info info = swagger.getInfo();
     if (info == null) {
       return null;

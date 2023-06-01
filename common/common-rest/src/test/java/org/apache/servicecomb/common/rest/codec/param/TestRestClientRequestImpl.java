@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;

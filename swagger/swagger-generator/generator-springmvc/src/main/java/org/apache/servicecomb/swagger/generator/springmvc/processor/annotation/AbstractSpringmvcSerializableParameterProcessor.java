@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ValueConstants;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 
 public abstract class AbstractSpringmvcSerializableParameterProcessor<SWAGGER_PARAMETER extends AbstractSerializableParameter<?>, ANNOTATION> extends

@@ -38,7 +38,7 @@ public class ResponseHeaderProcessor implements MethodAnnotationProcessor<Respon
     ResponseHeaderConfig config = AnnotationUtils.convert(responseHeader);
     if (config != null) {
       Property property =
-          AnnotationUtils.generateResponseHeaderProperty(swaggerGenerator.getSwagger(), config);
+          AnnotationUtils.generateResponseHeaderProperty(swaggerGenerator.getOpenAPI(), config);
       operationGenerator.addMethodResponseHeader(config.getName(), property);
     }
   }

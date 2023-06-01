@@ -20,7 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 

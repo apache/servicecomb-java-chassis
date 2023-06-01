@@ -30,7 +30,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.PojoAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * <pre>

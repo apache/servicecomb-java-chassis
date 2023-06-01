@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;

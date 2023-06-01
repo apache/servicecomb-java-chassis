@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;

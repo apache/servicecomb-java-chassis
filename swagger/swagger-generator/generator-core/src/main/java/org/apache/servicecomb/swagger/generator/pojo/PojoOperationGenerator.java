@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;

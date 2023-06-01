@@ -26,7 +26,7 @@ import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.Property;
 

@@ -19,8 +19,8 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.util.Collection;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 

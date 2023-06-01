@@ -86,7 +86,7 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
     if (responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType)) {
       responseType = Part.class;
     }
-    SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);
+    SwaggerUtils.addDefinitions(swaggerGenerator.getOpenAPI(), responseType);
     Property property = ModelConverters.getInstance().readAsProperty(responseType);
     return PropertyModelConverterExt.toModel(property);
   }

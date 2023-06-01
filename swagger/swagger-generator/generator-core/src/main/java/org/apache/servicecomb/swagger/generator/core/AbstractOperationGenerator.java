@@ -31,7 +31,7 @@ import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.CookieParameter;
@@ -57,7 +57,7 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -106,7 +106,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
-    this.swagger = swaggerGenerator.getSwagger();
+    this.swagger = swaggerGenerator.getOpenAPI();
     this.clazz = swaggerGenerator.getClazz();
     this.method = method;
     this.httpMethod = swaggerGenerator.getHttpMethod();

@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -387,7 +387,7 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
-      // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
+      // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{jakarta.validation.constraints.Min.message}'}]]
       // ignored
       if (e.getErrorData() instanceof CommonExceptionData) {
         // highway decode/encode 'Object' with special type information, got runtime type

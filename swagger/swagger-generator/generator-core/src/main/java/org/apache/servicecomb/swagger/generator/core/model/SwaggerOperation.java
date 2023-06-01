@@ -21,7 +21,7 @@ import java.util.Map;
 
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class SwaggerOperation {
   private final Swagger swagger;

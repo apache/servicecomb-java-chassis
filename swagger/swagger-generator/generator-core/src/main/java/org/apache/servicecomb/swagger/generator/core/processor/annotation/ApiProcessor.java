@@ -35,8 +35,8 @@ public class ApiProcessor implements ClassAnnotationProcessor<Api> {
   @Override
   public void process(SwaggerGenerator swaggerGenerator, Api api) {
     setTags(swaggerGenerator, api);
-    SwaggerUtils.setCommaConsumes(swaggerGenerator.getSwagger(), api.consumes());
-    SwaggerUtils.setCommaProduces(swaggerGenerator.getSwagger(), api.produces());
+    SwaggerUtils.setCommaConsumes(swaggerGenerator.getOpenAPI(), api.consumes());
+    SwaggerUtils.setCommaProduces(swaggerGenerator.getOpenAPI(), api.produces());
   }
 
   private void setTags(SwaggerGenerator swaggerGenerator, Api api) {

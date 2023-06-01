@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.zeroconfig.server;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;

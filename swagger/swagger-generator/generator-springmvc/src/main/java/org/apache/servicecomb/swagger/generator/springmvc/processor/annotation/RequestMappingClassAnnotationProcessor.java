@@ -25,7 +25,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class RequestMappingClassAnnotationProcessor implements ClassAnnotationProcessor<RequestMapping> {
   @Override
@@ -35,7 +35,7 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, RequestMapping requestMapping) {
-    Swagger swagger = swaggerGenerator.getSwagger();
+    Swagger swagger = swaggerGenerator.getOpenAPI();
 
     this.processMethod(requestMapping.method(), swaggerGenerator);
 

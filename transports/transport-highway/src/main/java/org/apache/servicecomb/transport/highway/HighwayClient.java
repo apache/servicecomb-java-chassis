@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;

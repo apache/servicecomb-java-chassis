@@ -31,7 +31,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

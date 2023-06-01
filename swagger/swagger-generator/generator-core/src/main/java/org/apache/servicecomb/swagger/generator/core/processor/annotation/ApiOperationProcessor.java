@@ -59,7 +59,7 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor<ApiOpera
     SwaggerUtils.setCommaConsumes(operation, apiOperationAnnotation.consumes());
     SwaggerUtils.setCommaProduces(operation, apiOperationAnnotation.produces());
     convertProtocols(apiOperationAnnotation.protocols(), operation);
-    AnnotationUtils.addResponse(swaggerGenerator.getSwagger(),
+    AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
         operation,
         apiOperationAnnotation);
 

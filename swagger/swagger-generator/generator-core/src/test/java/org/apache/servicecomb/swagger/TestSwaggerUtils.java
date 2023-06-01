@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.util.Yaml;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

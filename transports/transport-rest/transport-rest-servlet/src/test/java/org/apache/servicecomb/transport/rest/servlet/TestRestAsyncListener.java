@@ -26,7 +26,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;

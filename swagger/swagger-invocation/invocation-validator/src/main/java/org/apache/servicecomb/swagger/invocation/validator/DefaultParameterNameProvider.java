@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.ParameterNameProvider;
+import jakarta.validation.ParameterNameProvider;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 

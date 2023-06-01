@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;

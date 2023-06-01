@@ -30,7 +30,7 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;

@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.springmvc.model;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

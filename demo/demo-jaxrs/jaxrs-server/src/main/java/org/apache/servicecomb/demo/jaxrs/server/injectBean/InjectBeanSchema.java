@@ -19,8 +19,8 @@ package org.apache.servicecomb.demo.jaxrs.server.injectBean;
 
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.provider.rest.common.RestSchema;

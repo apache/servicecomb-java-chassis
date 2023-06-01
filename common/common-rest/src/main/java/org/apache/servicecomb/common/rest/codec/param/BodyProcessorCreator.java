@@ -24,9 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;

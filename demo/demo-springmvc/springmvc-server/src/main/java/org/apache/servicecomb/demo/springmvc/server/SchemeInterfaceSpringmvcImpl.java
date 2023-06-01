@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 

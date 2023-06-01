@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * SchemaMetaCodec test cases. This test cases covers RestTemplate invoker and producer.

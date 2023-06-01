@@ -45,7 +45,7 @@ public class TestSwaggerGenerator {
     PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
     swaggerGenerator.setBasePath("/a/${var}/b");
 
-    Assertions.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
+    Assertions.assertEquals("/a/varValue/b", swaggerGenerator.getOpenAPI().getBasePath());
   }
 
   @Test

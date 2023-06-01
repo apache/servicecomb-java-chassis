@@ -22,7 +22,7 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.BeanParam;
+import jakarta.ws.rs.BeanParam;
 
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
@@ -32,7 +32,7 @@ import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Defaults;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 
 public class JaxrsOperationGenerator extends RestOperationGenerator {

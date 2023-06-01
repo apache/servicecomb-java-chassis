@@ -34,13 +34,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandler;
@@ -68,7 +68,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicProperty;
 
 import io.swagger.annotations.ApiResponse;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.OpenAPI;
 
 @Path("/inspector")
 public class InspectorImpl {
@@ -116,7 +117,7 @@ public class InspectorImpl {
     }
 
     for (Entry<String, String> entry : schemas.entrySet()) {
-      Swagger swagger = SwaggerUtils.parseSwagger(entry.getValue());
+      OpenAPI swagger = SwaggerUtils.parseSwagger(entry.getValue());
       if (swagger.getBasePath().startsWith(urlPrefix)) {
         continue;
       }

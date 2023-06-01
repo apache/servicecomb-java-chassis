@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.filter.impl;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.DEFAULT_VALIDATE;
 import static org.apache.servicecomb.core.exception.converter.ConstraintViolationExceptionConverter.KEY_CODE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,9 +25,9 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.servicecomb.core.Invocation;

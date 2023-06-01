@@ -20,7 +20,7 @@ import org.apache.servicecomb.swagger.converter.Converter;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class ObjectPropertyConverter implements Converter {
   @Override

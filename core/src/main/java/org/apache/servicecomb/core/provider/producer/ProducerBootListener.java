@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Scheme;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);

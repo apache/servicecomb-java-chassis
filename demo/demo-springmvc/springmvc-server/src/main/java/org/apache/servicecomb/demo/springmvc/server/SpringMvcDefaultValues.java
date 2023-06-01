@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.ws.rs.core.MediaType;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.GetMapping;

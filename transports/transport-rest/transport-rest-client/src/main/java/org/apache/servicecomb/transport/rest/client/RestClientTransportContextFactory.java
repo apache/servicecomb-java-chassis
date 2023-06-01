@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_CREATE_REST_CLIENT_TRANSPORT_CONTEXT;
 
 import org.apache.commons.lang3.StringUtils;

@@ -31,7 +31,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
 import org.junit.Test;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")

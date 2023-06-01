@@ -25,7 +25,7 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.BodyParameter;
 
 public class RawJsonRequestBodyProcessor implements ParameterProcessor<BodyParameter, RawJsonRequestBody> {
