@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public interface ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
   Type getProcessType();

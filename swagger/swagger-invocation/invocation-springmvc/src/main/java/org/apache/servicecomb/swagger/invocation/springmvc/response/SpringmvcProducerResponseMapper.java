@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.springmvc.response;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;

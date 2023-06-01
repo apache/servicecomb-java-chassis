@@ -17,8 +17,8 @@
 package org.apache.servicecomb.swagger.generator.jaxrs.model;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.QueryParam;
 
 public class BeanParamWithPart {
   @QueryParam("queryStr")

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.prefix;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.provider.rest.common.RestSchema;

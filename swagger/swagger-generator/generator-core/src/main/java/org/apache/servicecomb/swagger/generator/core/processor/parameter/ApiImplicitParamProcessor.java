@@ -27,7 +27,7 @@ import com.google.inject.util.Types;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.util.ReflectionUtils;
 

@@ -20,7 +20,7 @@ package org.apache.servicecomb.swagger.converter.model;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class RefModelConverter extends AbstractModelConverter {
   @Override

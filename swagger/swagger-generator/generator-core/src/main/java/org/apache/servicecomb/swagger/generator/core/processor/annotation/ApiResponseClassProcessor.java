@@ -33,6 +33,6 @@ public class ApiResponseClassProcessor implements ClassAnnotationProcessor<ApiRe
   // but support this is not so bad
   @Override
   public void process(SwaggerGenerator swaggerGenerator, ApiResponse apiResponse) {
-    AnnotationUtils.addResponse(swaggerGenerator.getSwagger(), apiResponse);
+    AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(), apiResponse);
   }
 }

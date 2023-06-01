@@ -32,7 +32,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
 import org.junit.Test;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")

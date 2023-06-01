@@ -19,8 +19,8 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.response;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
@@ -44,7 +44,7 @@ public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
     // if produces is text，then can assume to be string, otherwise can only throw exception
     List<String> produces = operationGenerator.getOperation().getProduces();
     if (produces == null) {
-      produces = swaggerGenerator.getSwagger().getProduces();
+      produces = swaggerGenerator.getOpenAPI().getProduces();
     }
     if (produces != null) {
       if (produces.contains(MediaType.TEXT_PLAIN)) {

@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.generator.core.model;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.junit.jupiter.api.Assertions;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Test;
 
 public class TestSwaggerOperations {

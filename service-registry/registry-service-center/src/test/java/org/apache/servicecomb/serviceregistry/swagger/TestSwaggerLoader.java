@@ -44,7 +44,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;

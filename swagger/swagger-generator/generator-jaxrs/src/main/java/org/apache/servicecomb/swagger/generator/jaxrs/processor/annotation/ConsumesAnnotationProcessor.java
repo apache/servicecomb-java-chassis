@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Consumes;
+import jakarta.ws.rs.Consumes;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;

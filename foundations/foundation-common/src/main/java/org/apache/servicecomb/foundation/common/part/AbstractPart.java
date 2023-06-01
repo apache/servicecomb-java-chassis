@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class AbstractPart implements Part {
   private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();

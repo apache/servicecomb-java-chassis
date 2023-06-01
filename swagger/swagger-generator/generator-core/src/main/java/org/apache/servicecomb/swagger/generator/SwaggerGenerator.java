@@ -23,12 +23,12 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public interface SwaggerGenerator {
   Logger LOGGER = LoggerFactory.getLogger(SwaggerGenerator.class);
 
-  static Swagger generate(Class<?> cls) {
+  static OpenAPI generate(Class<?> cls) {
     return create(cls).generate();
   }
 
@@ -50,15 +50,16 @@ public interface SwaggerGenerator {
    * support placeholder
    * @param basePath
    */
+  // TODO: should be set serverss
   void setBasePath(String basePath);
 
   void scanClassAnnotation();
 
-  Swagger generate();
+  OpenAPI generate();
 
   Class<?> getClazz();
 
-  Swagger getSwagger();
+  OpenAPI getOpenAPI();
 
   void setHttpMethod(String httpMethod);
 

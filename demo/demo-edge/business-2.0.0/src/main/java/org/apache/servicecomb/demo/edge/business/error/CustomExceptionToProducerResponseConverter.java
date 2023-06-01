@@ -18,8 +18,8 @@
 package org.apache.servicecomb.demo.edge.business.error;
 
 import javax.annotation.Nullable;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;

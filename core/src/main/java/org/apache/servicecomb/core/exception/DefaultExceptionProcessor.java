@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.core.exception;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.TOO_MANY_REQUESTS;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.TOO_MANY_REQUESTS;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_SERVER;
 import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;

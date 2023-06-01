@@ -18,7 +18,7 @@
 package org.apache.servicecomb.demo.springmvc.server;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestBody;

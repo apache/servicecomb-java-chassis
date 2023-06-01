@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;

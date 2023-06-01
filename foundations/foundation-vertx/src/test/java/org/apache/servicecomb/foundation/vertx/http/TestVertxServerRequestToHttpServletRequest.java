@@ -27,7 +27,7 @@ import java.util.Set;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import io.vertx.ext.web.RequestBody;
 import io.vertx.ext.web.impl.RoutingContextInternal;

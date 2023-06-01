@@ -26,7 +26,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class SwaggerOperations {
   public static SwaggerOperations generate(Class<?> cls) {

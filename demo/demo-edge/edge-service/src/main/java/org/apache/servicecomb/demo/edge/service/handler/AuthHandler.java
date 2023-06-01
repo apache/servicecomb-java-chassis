@@ -20,7 +20,7 @@ package org.apache.servicecomb.demo.edge.service.handler;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;

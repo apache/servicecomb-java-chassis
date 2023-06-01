@@ -29,7 +29,7 @@ import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * should named MicroserviceVersionMeta<br>

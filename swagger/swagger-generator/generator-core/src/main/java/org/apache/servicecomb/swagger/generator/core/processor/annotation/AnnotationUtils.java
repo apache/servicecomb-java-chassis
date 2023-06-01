@@ -37,7 +37,7 @@ import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;

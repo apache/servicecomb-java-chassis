@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import io.vertx.core.http.HttpHeaders;
 

@@ -23,7 +23,7 @@ import org.apache.servicecomb.swagger.converter.ConverterMgr;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.properties.StringProperty;
 
 public class StringPropertyConverter extends AbstractPropertyConverter {

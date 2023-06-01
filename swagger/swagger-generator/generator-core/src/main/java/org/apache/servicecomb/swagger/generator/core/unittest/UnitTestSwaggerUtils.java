@@ -28,7 +28,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.util.Yaml;
 import org.junit.jupiter.api.Assertions;
 

@@ -23,18 +23,10 @@ public class SwaggerGeneratorFeature {
     return featureThreadLocal;
   }
 
-  public static boolean isLocalExtJavaClassInVendor() {
-    SwaggerGeneratorFeature feature = featureThreadLocal.get();
-    return feature != null ? feature.extJavaClassInVendor : true;
-  }
-
   // packageName and extJavaInVender is unnecessary, new invocation mechanism not depend them
   // just remain them for compatible
   private String packageName = "gen.swagger";
 
-  private boolean extJavaClassInVendor = true;
-
-  private boolean extJavaInterfaceInVendor = true;
 
   public String getPackageName() {
     return packageName;
@@ -44,23 +36,4 @@ public class SwaggerGeneratorFeature {
     this.packageName = packageName;
   }
 
-  public boolean isExtJavaClassInVendor() {
-    return extJavaClassInVendor;
-  }
-
-  public SwaggerGeneratorFeature setExtJavaClassInVendor(boolean extJavaClassInVendor) {
-    this.extJavaClassInVendor = extJavaClassInVendor;
-
-    return this;
-  }
-
-  public boolean isExtJavaInterfaceInVendor() {
-    return extJavaInterfaceInVendor;
-  }
-
-  public SwaggerGeneratorFeature setExtJavaInterfaceInVendor(boolean extJavaInterfaceInVendor) {
-    this.extJavaInterfaceInVendor = extJavaInterfaceInVendor;
-
-    return this;
-  }
 }

@@ -31,7 +31,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import io.vertx.ext.web.impl.RoutingContextInternal;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;

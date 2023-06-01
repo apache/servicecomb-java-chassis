@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;

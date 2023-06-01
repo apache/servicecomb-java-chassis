@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.models.ArrayModel;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.BaseIntegerProperty;
 import io.swagger.models.properties.BooleanProperty;

@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.net.URI;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;

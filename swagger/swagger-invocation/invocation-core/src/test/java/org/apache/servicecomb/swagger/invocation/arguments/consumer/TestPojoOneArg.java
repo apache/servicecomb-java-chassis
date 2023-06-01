@@ -29,7 +29,7 @@ import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerOneArg;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoOneArg;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

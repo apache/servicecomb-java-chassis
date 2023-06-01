@@ -42,7 +42,7 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.util.Json;
 
 public class SwaggerEnvironment {

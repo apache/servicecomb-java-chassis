@@ -23,7 +23,7 @@ import org.apache.servicecomb.swagger.converter.property.MapPropertyConverter;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.ModelImpl;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class ModelImplConverter extends AbstractModelConverter {
   @Override

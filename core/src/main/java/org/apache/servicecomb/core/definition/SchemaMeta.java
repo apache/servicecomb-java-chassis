@@ -25,7 +25,7 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class SchemaMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(SchemaMeta.class);

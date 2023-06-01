@@ -26,8 +26,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;

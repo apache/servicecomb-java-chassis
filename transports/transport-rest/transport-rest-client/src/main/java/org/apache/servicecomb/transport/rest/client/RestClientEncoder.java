@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_ENCODE_REST_CLIENT_REQUEST;
 
 import java.net.URLEncoder;
@@ -29,8 +29,8 @@ import java.util.Map.Entry;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;

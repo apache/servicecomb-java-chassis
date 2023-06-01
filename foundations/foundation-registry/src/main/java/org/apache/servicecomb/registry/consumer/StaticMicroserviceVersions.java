@@ -20,19 +20,19 @@ package org.apache.servicecomb.registry.consumer;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.Version;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.foundation.common.Version;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class StaticMicroserviceVersions extends MicroserviceVersions {
   private static final Logger LOGGER = LoggerFactory.getLogger(StaticMicroserviceVersions.class);
@@ -78,7 +78,7 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
   }
 
   protected void addSchema(String schemaId, Class<?> schemaClass) {
-    Swagger swagger = RegistrationManager.INSTANCE.getSwaggerLoader()
+    OpenAPI swagger = RegistrationManager.INSTANCE.getSwaggerLoader()
         .registerSwagger(appId, shortName, schemaId, schemaClass);
     String swaggerContent = SwaggerUtils.swaggerToString(swagger);
     LOGGER.debug("generate swagger for 3rd party service [{}], swagger: {}", microserviceName, swaggerContent);

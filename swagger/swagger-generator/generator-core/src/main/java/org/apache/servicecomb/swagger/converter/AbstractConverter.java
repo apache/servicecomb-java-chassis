@@ -25,7 +25,7 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public abstract class AbstractConverter implements Converter {
   protected abstract Map<String, Object> findVendorExtensions(Object def);

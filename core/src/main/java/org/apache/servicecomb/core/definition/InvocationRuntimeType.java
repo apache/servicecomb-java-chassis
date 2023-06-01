@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.definition;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;

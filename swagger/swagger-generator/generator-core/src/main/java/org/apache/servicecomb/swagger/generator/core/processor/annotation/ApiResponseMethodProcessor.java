@@ -35,7 +35,7 @@ public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<Api
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ApiResponse apiResponse) {
-    AnnotationUtils.addResponse(swaggerGenerator.getSwagger(),
+    AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
         operationGenerator.getOperation(),
         apiResponse);
   }

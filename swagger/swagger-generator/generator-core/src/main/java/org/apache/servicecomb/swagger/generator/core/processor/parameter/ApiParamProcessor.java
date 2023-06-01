@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.models.parameters.Parameter;
 
 public class ApiParamProcessor implements ParameterProcessor<Parameter, ApiParam> {

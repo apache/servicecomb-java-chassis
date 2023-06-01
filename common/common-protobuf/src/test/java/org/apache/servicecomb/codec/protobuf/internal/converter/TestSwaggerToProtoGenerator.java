@@ -17,7 +17,7 @@
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import io.protostuff.compiler.model.Proto;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;

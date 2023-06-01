@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.common.http;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

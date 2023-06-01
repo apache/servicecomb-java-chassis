@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.foundation.common.http;
 
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status.Family;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class HttpStatus implements StatusType {
   public static boolean isSuccess(int code) {

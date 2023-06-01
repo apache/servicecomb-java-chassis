@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.POST;
+import jakarta.ws.rs.POST;
 
 public class PostAnnotationProcessor extends GetAnnotationProcessor {
   @Override

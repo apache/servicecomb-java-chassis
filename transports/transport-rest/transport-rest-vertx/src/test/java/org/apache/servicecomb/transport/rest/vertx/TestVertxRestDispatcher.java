@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;

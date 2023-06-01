@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;

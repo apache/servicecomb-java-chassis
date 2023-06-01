@@ -20,9 +20,9 @@ package org.apache.servicecomb.demo.springmvc.server;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Min;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;

@@ -20,8 +20,8 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HttpMethod;
 
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
