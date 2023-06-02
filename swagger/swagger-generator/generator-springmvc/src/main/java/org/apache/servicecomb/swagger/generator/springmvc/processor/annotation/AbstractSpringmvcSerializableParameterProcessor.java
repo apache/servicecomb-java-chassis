@@ -17,42 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.ValueConstants;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.models.Operation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-
-public abstract class AbstractSpringmvcSerializableParameterProcessor<SWAGGER_PARAMETER extends AbstractSerializableParameter<?>, ANNOTATION> extends
+public abstract class AbstractSpringmvcSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> extends
     AbstractSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
-  @Override
-  public void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, JavaType type,
-      ANNOTATION annotation) {
-    super.fillParameter(swagger, operation, parameter, type, annotation);
-
-    Object defaultValue = parameter.getDefaultValue();
-    if (!ObjectUtils.isEmpty(defaultValue)) {
-      parameter.setRequired(false);
-      return;
-    }
-    parameter.setRequired(readRequired(annotation));
-  }
-
-  protected abstract boolean readRequired(ANNOTATION annotation);
-
-  @Override
-  protected String readDefaultValue(ANNOTATION annotation) {
-    String defaultValue = pureReadDefaultValue(annotation);
-    if (StringUtils.isEmpty(defaultValue) || defaultValue.equals(ValueConstants.DEFAULT_NONE)) {
-      return "";
-    }
-    return defaultValue;
-  }
-
-  protected abstract String pureReadDefaultValue(ANNOTATION annotation);
 }

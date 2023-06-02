@@ -22,7 +22,11 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import io.swagger.models.parameters.HeaderParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public class RequestHeaderAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<HeaderParameter, RequestHeader> {
@@ -46,12 +50,8 @@ public class RequestHeaderAnnotationProcessor extends
   }
 
   @Override
-  protected boolean readRequired(RequestHeader requestHeader) {
-    return requestHeader.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestHeader requestHeader) {
-    return requestHeader.defaultValue();
+  public void fillParameter(OpenAPI swagger, Operation operation, HeaderParameter headerParameter, JavaType type,
+      RequestHeader requestHeader) {
+    // TODO: not complete
   }
 }

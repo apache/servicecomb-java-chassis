@@ -23,49 +23,50 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.PathItem.HttpMethod;
+import io.swagger.v3.oas.models.Paths;
 
 public class SwaggerOperations {
   public static SwaggerOperations generate(Class<?> cls) {
-    Swagger swagger = SwaggerGenerator.create(cls).generate();
+    OpenAPI swagger = SwaggerGenerator.create(cls).generate();
     return new SwaggerOperations(swagger);
   }
 
-  private final Swagger swagger;
+  private final OpenAPI swagger;
 
   // key is operationId
   private final Map<String, SwaggerOperation> operations = new HashMap<>();
 
-  public SwaggerOperations(Swagger swagger) {
+  public SwaggerOperations(OpenAPI swagger) {
     this.swagger = swagger;
-    Map<String, Path> paths = swagger.getPaths();
-    if (paths == null) {
+    Paths paths = swagger.getPaths();
+    if (paths == null || paths.isEmpty()) {
       return;
     }
 
-    for (Entry<String, Path> pathEntry : paths.entrySet()) {
-      for (Entry<HttpMethod, Operation> operationEntry : pathEntry.getValue().getOperationMap().entrySet()) {
-        Operation operation = operationEntry.getValue();
-        if (StringUtils.isEmpty(operation.getOperationId())) {
+    for (Entry<String, PathItem> pathEntry : paths.entrySet()) {
+      for (Entry<HttpMethod, Operation> operationEntry : pathEntry.getValue().readOperationsMap().entrySet()) {
+        if (StringUtils.isEmpty(operationEntry.getValue().getOperationId())) {
           throw new IllegalStateException(String
               .format("OperationId can not be empty, path=%s, httpMethod=%s.",
                   pathEntry.getKey(), operationEntry.getKey()));
         }
 
         SwaggerOperation swaggerOperation = new SwaggerOperation(swagger, pathEntry.getKey(), operationEntry.getKey(),
-            operation);
-        if (operations.putIfAbsent(operation.getOperationId(), swaggerOperation) != null) {
+            operationEntry.getValue());
+        if (operations.putIfAbsent(operationEntry.getValue().getOperationId(), swaggerOperation) != null) {
           throw new IllegalStateException(
-              "please make sure operationId is unique, duplicated operationId is " + operation.getOperationId());
+              "please make sure operationId is unique, duplicated operationId is " + operationEntry.getValue()
+                  .getOperationId());
         }
       }
     }
   }
 
-  public Swagger getSwagger() {
+  public OpenAPI getSwagger() {
     return swagger;
   }
 

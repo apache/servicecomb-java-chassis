@@ -19,14 +19,21 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.FormParam;
-
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
-import io.swagger.models.parameters.FormParameter;
+import com.fasterxml.jackson.databind.JavaType;
 
-public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<FormParameter, FormParam> {
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.core.MediaType;
+
+public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<RequestBody, FormParam> {
   @Override
   public Type getProcessType() {
     return FormParam.class;
@@ -39,6 +46,16 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
 
   @Override
   public HttpParameterType getHttpParameterType(FormParam parameterAnnotation) {
-    return HttpParameterType.FORM;
+    return HttpParameterType.BODY;
+  }
+
+  @Override
+  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
+      FormParam formParam) {
+    // TODO: not complete
+    Schema schema = new Schema();
+    schema.addProperty(formParam.value(), new StringSchema());
+    requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
+        new io.swagger.v3.oas.models.media.MediaType().schema(schema)));
   }
 }

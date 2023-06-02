@@ -22,10 +22,18 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
-import io.swagger.models.parameters.FormParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
 
 public class RequestAttributeAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<FormParameter, RequestAttribute> {
+    AbstractSpringmvcSerializableParameterProcessor<RequestBody, RequestAttribute> {
   @Override
   public Type getProcessType() {
     return RequestAttribute.class;
@@ -42,16 +50,16 @@ public class RequestAttributeAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(RequestAttribute parameterAnnotation) {
-    return HttpParameterType.FORM;
+    return HttpParameterType.BODY;
   }
 
   @Override
-  protected boolean readRequired(RequestAttribute requestAttribute) {
-    return requestAttribute.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestAttribute requestAttribute) {
-    return null;
+  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
+      RequestAttribute requestAttribute) {
+    // TODO: not complete
+    Schema schema = new Schema();
+    schema.addProperty(requestAttribute.value(), new StringSchema());
+    requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
+        new io.swagger.v3.oas.models.media.MediaType().schema(schema)));
   }
 }

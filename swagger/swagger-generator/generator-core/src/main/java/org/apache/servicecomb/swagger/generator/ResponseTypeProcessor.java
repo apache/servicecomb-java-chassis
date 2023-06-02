@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator;
 
 import java.lang.reflect.Type;
 
-import io.swagger.models.Model;
+import io.swagger.v3.oas.models.media.Schema;
 
 public interface ResponseTypeProcessor {
   Type getProcessType();
@@ -37,5 +37,5 @@ public interface ResponseTypeProcessor {
     return extractResponseType(null, null, genericResponseType);
   }
 
-  Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Type genericResponseType);
+  Schema process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Type genericResponseType);
 }

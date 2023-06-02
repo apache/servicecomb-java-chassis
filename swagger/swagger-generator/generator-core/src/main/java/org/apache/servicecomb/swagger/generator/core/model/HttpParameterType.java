@@ -25,7 +25,6 @@ public enum HttpParameterType {
   QUERY,
   HEADER,
   COOKIE,
-  FORM,
   BODY;
 
   public static HttpParameterType parse(String value) {

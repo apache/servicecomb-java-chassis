@@ -19,12 +19,15 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.CookieParam;
-
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
-import io.swagger.models.parameters.CookieParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.CookieParameter;
+import jakarta.ws.rs.CookieParam;
 
 public class CookieParamAnnotationProcessor extends
     AbstractSerializableParameterProcessor<CookieParameter, CookieParam> {
@@ -41,5 +44,11 @@ public class CookieParamAnnotationProcessor extends
   @Override
   public HttpParameterType getHttpParameterType(CookieParam parameterAnnotation) {
     return HttpParameterType.COOKIE;
+  }
+
+  @Override
+  public void fillParameter(OpenAPI swagger, Operation operation, CookieParameter cookieParameter, JavaType type,
+      CookieParam cookieParam) {
+    // TODO: not complete
   }
 }

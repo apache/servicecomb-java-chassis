@@ -30,9 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.StringProperty;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
 
 public class RequestPartAnnotationProcessorTest {
   private static Method producerMethod;
@@ -78,83 +80,87 @@ public class RequestPartAnnotationProcessorTest {
   @Test
   public void getHttpParameterType() {
     MatcherAssert.assertThat(requestPartAnnotationProcessor.getHttpParameterType(null),
-        Matchers.is(HttpParameterType.FORM));
+        Matchers.is(HttpParameterType.BODY));
   }
 
   @Test
   public void fillParameter_simpleType() {
     Parameter param = producerMethod.getParameters()[0];
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
+    RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("string"));
+    MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("stringParam"), Matchers.is(StringSchema.class));
   }
 
   @Test
   public void fillParameter_simpleType_arrayPart() {
     Parameter param = producerMethod.getParameters()[2];
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
+    RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
+    MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("stringParamArray"), Matchers.is(ArraySchema.class));
+    MatcherAssert.assertThat(((ArraySchema) formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("stringParamArray")).getItems(), Matchers.is(StringSchema.class));
   }
 
   @Test
   public void fillParameter_simpleType_collectionPart() {
     Parameter param = producerMethod.getParameters()[3];
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
+    RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
+    MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("stringParamCollection"), Matchers.is(ArraySchema.class));
+    MatcherAssert.assertThat(((ArraySchema) formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("stringParamCollection")).getItems(), Matchers.is(StringSchema.class));
   }
 
   @Test
   public void fillParameter_uploadFile() {
     Parameter param = producerMethod.getParameters()[4];
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
+    RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("file"));
+    MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("file"), Matchers.is(FileSchema.class));
   }
 
   @Test
   public void fillParameter_uploadFile_arrayPart() {
     Parameter param = producerMethod.getParameters()[5];
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
+    RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("fileArray"), Matchers.is(ArraySchema.class));
+    MatcherAssert.assertThat(((ArraySchema) formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("fileArray")).getItems(), Matchers.is(FileSchema.class));
   }
 
   @Test
   public void fillParameter_uploadFile_collectionPart() {
     Parameter param = producerMethod.getParameters()[6];
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
+    RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
         .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
 
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("fileCollection"), Matchers.is(ArraySchema.class));
+    MatcherAssert.assertThat(((ArraySchema) formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
+        .getSchema().getProperties().get("fileCollection")).getItems(), Matchers.is(FileSchema.class));
   }
 
   public static class DemoRest {

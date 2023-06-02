@@ -22,7 +22,12 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.CookieValue;
 
-import io.swagger.models.parameters.CookieParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.CookieParameter;
+
 
 public class CookieValueAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<CookieParameter, CookieValue> {
@@ -46,12 +51,14 @@ public class CookieValueAnnotationProcessor extends
   }
 
   @Override
-  protected boolean readRequired(CookieValue cookieValue) {
-    return cookieValue.required();
+  public void fillParameter(OpenAPI swagger, Operation operation, CookieParameter cookieParameter, JavaType type,
+      CookieValue cookieValue) {
+
   }
 
   @Override
-  protected String pureReadDefaultValue(CookieValue cookieValue) {
-    return cookieValue.defaultValue();
+  public void fillParameter(OpenAPI swagger, Operation operation, CookieParameter cookieParameter, Type type,
+      CookieValue cookieValue) {
+    super.fillParameter(swagger, operation, cookieParameter, type, cookieValue);
   }
 }

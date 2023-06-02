@@ -19,12 +19,12 @@ package org.apache.servicecomb.swagger.generator.core.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem.HttpMethod;
 
 public class SwaggerOperation {
-  private final Swagger swagger;
+  private final OpenAPI swagger;
 
   private final String path;
 
@@ -34,7 +34,7 @@ public class SwaggerOperation {
 
   private final Map<String, Integer> parameterIndexes = new HashMap<>();
 
-  public SwaggerOperation(Swagger swagger, String path, HttpMethod httpMethod, Operation operation) {
+  public SwaggerOperation(OpenAPI swagger, String path, HttpMethod httpMethod, Operation operation) {
     this.swagger = swagger;
     this.path = path;
     this.httpMethod = httpMethod;
@@ -45,7 +45,7 @@ public class SwaggerOperation {
     }
   }
 
-  public Swagger getSwagger() {
+  public OpenAPI getSwagger() {
     return swagger;
   }
 
@@ -63,9 +63,5 @@ public class SwaggerOperation {
 
   public String getOperationId() {
     return operation.getOperationId();
-  }
-
-  public Integer findPrameterIndex(String name) {
-    return parameterIndexes.get(name);
   }
 }

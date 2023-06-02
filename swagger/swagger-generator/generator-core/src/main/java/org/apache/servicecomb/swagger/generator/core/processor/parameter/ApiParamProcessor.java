@@ -21,30 +21,30 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.annotations.ApiParam;
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
-public class ApiParamProcessor implements ParameterProcessor<Parameter, ApiParam> {
+public class ApiParamProcessor implements ParameterProcessor<Parameter,
+    io.swagger.v3.oas.annotations.Parameter> {
   @Override
   public Class<?> getProcessType() {
-    return ApiParam.class;
+    return io.swagger.v3.oas.annotations.Parameter.class;
   }
 
   @Override
-  public String getParameterName(ApiParam parameterAnnotation) {
+  public String getParameterName(io.swagger.v3.oas.annotations.Parameter parameterAnnotation) {
     return parameterAnnotation.name();
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(ApiParam parameterAnnotation) {
+  public HttpParameterType getHttpParameterType(io.swagger.v3.oas.annotations.Parameter parameterAnnotation) {
     return null;
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, JavaType type,
-      ApiParam annotation) {
-    // no need fill, will process by io.swagger.util.ParameterProcessor.applyAnnotations
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      io.swagger.v3.oas.annotations.Parameter parameter2) {
+    // TODO: not complete
   }
 }

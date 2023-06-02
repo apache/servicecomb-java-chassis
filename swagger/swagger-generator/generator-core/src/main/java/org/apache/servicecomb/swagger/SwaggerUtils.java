@@ -40,8 +40,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +52,11 @@ import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.servers.Server;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.Response.Status.Family;
 
@@ -68,6 +66,26 @@ public final class SwaggerUtils {
 
 
   private SwaggerUtils() {
+  }
+
+  /**
+   * Only ones servers and contains only base path.
+   */
+  public static String getBasePath(OpenAPI swagger) {
+    if (swagger.getServers() == null || swagger.getServers().size() == 0) {
+      return null;
+    }
+    return swagger.getServers().get(0).getUrl();
+  }
+
+  /**
+   * Only ones servers and contains only base path.
+   */
+  public static void setBasePath(OpenAPI swagger, String basePath) {
+    if (swagger.getServers() == null || swagger.getServers().size() == 0) {
+      swagger.setServers(Arrays.asList(new Server()));
+    }
+    swagger.getServers().get(0).setUrl(basePath);
   }
 
   public static String swaggerToString(OpenAPI swagger) {
@@ -89,7 +107,6 @@ public final class SwaggerUtils {
 
   public static OpenAPI parseAndValidateSwagger(URL url) {
     OpenAPI swagger = SwaggerUtils.parseSwagger(url);
-    SwaggerUtils.validateSwagger(swagger);
     return swagger;
   }
 
@@ -103,33 +120,7 @@ public final class SwaggerUtils {
 
   public static OpenAPI parseAndValidateSwagger(String swaggerContent) {
     OpenAPI swagger = SwaggerUtils.parseSwagger(swaggerContent);
-    SwaggerUtils.validateSwagger(swagger);
     return swagger;
-  }
-
-  /**
-   * Provide a method to validate swagger. This method is now implemented to check common errors, and the logic
-   * will be changed when necessary. For internal use only.
-   */
-  public static void validateSwagger(OpenAPI swagger) {
-    Paths paths = swagger.getPaths();
-    if (paths == null) {
-      return;
-    }
-
-    for (PathItem path : paths.values()) {
-      Operation operation = path.getPost();
-      if (operation == null) {
-        continue;
-      }
-
-      for (Parameter parameter : operation.getParameters()) {
-        if (BodyParameter.class.isInstance(parameter) &&
-            ((BodyParameter) parameter).getSchema() == null) {
-          throw new ServiceCombException("swagger validator: body parameter schema is empty.");
-        }
-      }
-    }
   }
 
   private static OpenAPI internalParseSwagger(String swaggerContent) throws IOException {
@@ -179,22 +170,6 @@ public final class SwaggerUtils {
     }
   }
 
-  public static Map<String, Property> getBodyProperties(OpenAPI swagger, Parameter parameter) {
-    if (!(parameter instanceof BodyParameter)) {
-      return null;
-    }
-
-    Model model = ((BodyParameter) parameter).getSchema();
-    if (model instanceof RefModel) {
-      model = swagger.getDefinitions().get(((RefModel) model).getSimpleRef());
-    }
-
-    if (model instanceof ModelImpl) {
-      return model.getProperties();
-    }
-
-    return null;
-  }
 
   public static void addDefinitions(OpenAPI swagger, Type paramType) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(paramType);
@@ -203,112 +178,11 @@ public final class SwaggerUtils {
     }
     Map<String, Schema> models = ModelConverters.getInstance().readAll(javaType);
     for (Entry<String, Schema> entry : models.entrySet()) {
-      if (!modelNotDuplicate(swagger, entry)) {
+      Schema schema = swagger.getComponents().getSchemas().put(entry.getKey(), entry.getValue());
+      if (schema != entry.getValue()) {
         LOGGER.warn("duplicate param model: " + entry.getKey());
         throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
       }
-    }
-  }
-
-  private static boolean modelNotDuplicate(OpenAPI swagger, Entry<String, Schema> entry) {
-    if (null == swagger.) {
-      swagger.addDefinition(entry.getKey(), entry.getValue());
-      return true;
-    }
-    Model tempModel = swagger.getDefinitions().get(entry.getKey());
-    if (null != tempModel && !tempModel.equals(entry.getValue())) {
-      if (modelOfClassNotDuplicate(tempModel, entry.getValue())) {
-        swagger.addDefinition(entry.getKey(), tempModel);
-        return true;
-      } else {
-        return false;
-      }
-    }
-    swagger.addDefinition(entry.getKey(), entry.getValue());
-    return true;
-  }
-
-  private static boolean modelOfClassNotDuplicate(OpenAPI tempModel, Schema model) {
-    String tempModelClass = (String) tempModel.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
-    String modelClass = (String) model.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
-    return tempModelClass.equals(modelClass);
-  }
-
-  public static void setParameterType(OpenAPI swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
-    addDefinitions(swagger, type);
-    Property property = ModelConverters.getInstance().readAsProperty(type);
-
-    if (isComplexProperty(property)) {
-      // cannot set a simple parameter(header, query, etc.) as complex type
-      String msg = String
-          .format("not allow complex type for %s parameter, type=%s.", parameter.getIn(), type.toCanonical());
-      throw new IllegalStateException(msg);
-    }
-    parameter.setProperty(property);
-  }
-
-  public static boolean isBean(Schema model) {
-    return isBean(PropertyModelConverterExt.toProperty(model));
-  }
-
-  public static boolean isBean(Property property) {
-    return property instanceof RefProperty || property instanceof ObjectProperty;
-  }
-
-  public static boolean isComplexProperty(Property property) {
-    if (property instanceof RefProperty || property instanceof ObjectProperty || property instanceof MapProperty) {
-      return true;
-    }
-
-    if (ArrayProperty.class.isInstance(property)) {
-      return isComplexProperty(((ArrayProperty) property).getItems());
-    }
-
-    return false;
-  }
-
-  public static ModelImpl getModelImpl(OpenAPI swagger, BodyParameter bodyParameter) {
-    Model model = bodyParameter.getSchema();
-    if (model instanceof ModelImpl) {
-      return (ModelImpl) model;
-    }
-
-    if (!(model instanceof RefModel)) {
-      return null;
-    }
-
-    String simpleRef = ((RefModel) model).getSimpleRef();
-    Model targetModel = swagger.getDefinitions().get(simpleRef);
-    return targetModel instanceof ModelImpl ? (ModelImpl) targetModel : null;
-  }
-
-  public static void setCommaConsumes(Swagger swagger, String commaConsumes) {
-    if (StringUtils.isEmpty(commaConsumes)) {
-      return;
-    }
-
-    setConsumes(swagger, commaConsumes.split(","));
-  }
-
-  public static void setCommaConsumes(Operation operation, String commaConsumes) {
-    if (StringUtils.isEmpty(commaConsumes)) {
-      return;
-    }
-
-    setConsumes(operation, commaConsumes.split(","));
-  }
-
-  public static void setConsumes(Operation operation, String... consumes) {
-    List<String> consumeList = convertConsumesOrProduces(consumes);
-    if (!consumeList.isEmpty()) {
-      operation.setConsumes(consumeList);
-    }
-  }
-
-  public static void setConsumes(Swagger swagger, String... consumes) {
-    List<String> consumeList = convertConsumesOrProduces(consumes);
-    if (!consumeList.isEmpty()) {
-      swagger.setConsumes(consumeList);
     }
   }
 
@@ -317,36 +191,6 @@ public final class SwaggerUtils {
         .map(String::trim)
         .filter(StringUtils::isNotEmpty)
         .collect(Collectors.toList());
-  }
-
-  public static void setCommaProduces(Swagger swagger, String commaProduces) {
-    if (StringUtils.isEmpty(commaProduces)) {
-      return;
-    }
-
-    setProduces(swagger, commaProduces.split(","));
-  }
-
-  public static void setCommaProduces(Operation operation, String commaProduces) {
-    if (StringUtils.isEmpty(commaProduces)) {
-      return;
-    }
-
-    setProduces(operation, commaProduces.split(","));
-  }
-
-  public static void setProduces(Operation operation, String... produces) {
-    List<String> produceList = convertConsumesOrProduces(produces);
-    if (!produceList.isEmpty()) {
-      operation.setProduces(produceList);
-    }
-  }
-
-  public static void setProduces(Swagger swagger, String... produces) {
-    List<String> produceList = convertConsumesOrProduces(produces);
-    if (!produceList.isEmpty()) {
-      swagger.setProduces(produceList);
-    }
   }
 
   public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {
@@ -363,26 +207,12 @@ public final class SwaggerUtils {
     return false;
   }
 
-  public static boolean isRawJsonType(Parameter param) {
-    Object rawJson = param.getVendorExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
+  public static boolean isRawJsonType(RequestBody param) {
+    Object rawJson = param.getExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
     if (rawJson instanceof Boolean) {
       return (boolean) rawJson;
     }
     return false;
-  }
-
-  public static Class<?> getInterface(OpenAPI swagger) {
-    Info info = swagger.getInfo();
-    if (info == null) {
-      return null;
-    }
-
-    String name = getInterfaceName(info.getVendorExtensions());
-    if (StringUtils.isEmpty(name)) {
-      return null;
-    }
-
-    return ReflectUtils.getClassByName(name);
   }
 
   public static String getClassName(Map<String, Object> vendorExtensions) {
@@ -400,6 +230,11 @@ public final class SwaggerUtils {
     }
 
     return (T) vendorExtensions.get(key);
+  }
+
+  public static boolean isBean(RequestBody body) {
+    MediaType type = body.getContent().values().iterator().next();
+    return type.getSchema().get$ref() != null;
   }
 
   public static boolean isBean(Type type) {
@@ -424,23 +259,5 @@ public final class SwaggerUtils {
         && cls != File.class
         && !cls.getName().equals("org.springframework.web.multipart.MultipartFile")
         && !Part.class.isAssignableFrom(cls));
-  }
-
-  public static boolean isFileParameter(Parameter parameter) {
-    if (!(parameter instanceof FormParameter)) {
-      return false;
-    }
-
-    FormParameter formParameter = (FormParameter) parameter;
-    if (FileProperty.isType(formParameter.getType(), formParameter.getFormat())) {
-      return true;
-    }
-
-    Property property = formParameter.getItems();
-    if (!ArrayProperty.isType(formParameter.getType()) || property == null) {
-      return false;
-    }
-
-    return FileProperty.isType(property.getType(), property.getFormat());
   }
 }

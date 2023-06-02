@@ -21,7 +21,8 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 
 public class ApiResponseClassProcessor implements ClassAnnotationProcessor<ApiResponse> {
   @Override

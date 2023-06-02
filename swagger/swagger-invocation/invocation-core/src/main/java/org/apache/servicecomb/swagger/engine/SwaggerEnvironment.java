@@ -42,13 +42,13 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.util.Json;
 
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
 
-  public SwaggerConsumer createConsumer(Class<?> consumerIntf, Swagger swagger) {
+  public SwaggerConsumer createConsumer(Class<?> consumerIntf, OpenAPI swagger) {
     Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
         .getOrLoadSortedService(ConsumerContextArgumentMapperFactory.class)
         .stream()
@@ -99,11 +99,11 @@ public class SwaggerEnvironment {
     return MethodUtils.findSwaggerMethodName(consumerMethod);
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
+  public SwaggerProducer createProducer(Object producerInstance, OpenAPI swagger) {
     return createProducer(producerInstance, null, swagger);
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Class<?> schemaInterface, Swagger swagger) {
+  public SwaggerProducer createProducer(Object producerInstance, Class<?> schemaInterface, OpenAPI swagger) {
     Class<?> producerCls = targetSwaggerClass(producerInstance, schemaInterface);
 
     swagger = checkAndGenerateSwagger(producerCls, swagger);
@@ -160,7 +160,7 @@ public class SwaggerEnvironment {
     return producer;
   }
 
-  private Swagger checkAndGenerateSwagger(Class<?> swaggerClass, Swagger swagger) {
+  private OpenAPI checkAndGenerateSwagger(Class<?> swaggerClass, OpenAPI swagger) {
     if (swagger == null) {
       swagger = SwaggerGenerator.generate(swaggerClass);
     }
