@@ -26,12 +26,14 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.FileProperty;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
 
-public class PartProcessor implements ParameterProcessor<FormParameter, Annotation> {
+public class PartProcessor implements ParameterProcessor<RequestBody, Annotation> {
   @Override
   public Type getProcessType() {
     return Part.class;
@@ -44,12 +46,14 @@ public class PartProcessor implements ParameterProcessor<FormParameter, Annotati
 
   @Override
   public HttpParameterType getHttpParameterType(Annotation parameterAnnotation) {
-    return HttpParameterType.FORM;
+    return HttpParameterType.BODY;
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, FormParameter parameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
       Annotation annotation) {
-    parameter.setType(new FileProperty().getType());
+    // TODO: not complete
+    parameter.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
+        new io.swagger.v3.oas.models.media.MediaType().schema(new FileSchema())));
   }
 }

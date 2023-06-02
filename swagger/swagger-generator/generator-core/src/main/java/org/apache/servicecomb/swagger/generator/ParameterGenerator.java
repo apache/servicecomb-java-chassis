@@ -27,7 +27,8 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class ParameterGenerator {
   private final String parameterName;
@@ -43,6 +44,8 @@ public class ParameterGenerator {
 
   private Parameter generatedParameter;
 
+  private RequestBody requestBody;
+
   public ParameterGenerator(String parameterName, List<Annotation> annotations, JavaType genericType,
       HttpParameterType httpParameterType, Parameter generatedParameter) {
     this.parameterName = parameterName;
@@ -50,6 +53,15 @@ public class ParameterGenerator {
     this.genericType = genericType;
     this.httpParameterType = httpParameterType;
     this.generatedParameter = generatedParameter;
+  }
+
+  public ParameterGenerator(String parameterName, List<Annotation> annotations, JavaType genericType,
+      HttpParameterType httpParameterType, RequestBody requestBody) {
+    this.parameterName = parameterName;
+    this.annotations = annotations;
+    this.genericType = genericType;
+    this.httpParameterType = httpParameterType;
+    this.requestBody = requestBody;
   }
 
   public ParameterGenerator(Executable executable, Map<String, List<Annotation>> methodAnnotationMap,
@@ -108,5 +120,13 @@ public class ParameterGenerator {
 
   public void setGeneratedParameter(Parameter generatedParameter) {
     this.generatedParameter = generatedParameter;
+  }
+
+  public void setRequestBody(RequestBody requestBody) {
+    this.requestBody = requestBody;
+  }
+
+  public RequestBody getRequestBody() {
+    return this.requestBody;
   }
 }

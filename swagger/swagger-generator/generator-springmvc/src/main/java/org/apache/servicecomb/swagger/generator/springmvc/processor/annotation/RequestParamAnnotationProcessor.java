@@ -22,7 +22,11 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.models.parameters.QueryParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class RequestParamAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<QueryParameter, RequestParam> {
@@ -46,12 +50,8 @@ public class RequestParamAnnotationProcessor extends
   }
 
   @Override
-  protected boolean readRequired(RequestParam requestParam) {
-    return requestParam.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestParam requestParam) {
-    return requestParam.defaultValue();
+  public void fillParameter(OpenAPI swagger, Operation operation, QueryParameter queryParameter, JavaType type,
+      RequestParam requestParam) {
+    // TODO: not complete
   }
 }

@@ -22,7 +22,11 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import io.swagger.models.parameters.PathParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.PathParameter;
 
 public class PathVariableAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<PathParameter, PathVariable> {
@@ -46,14 +50,8 @@ public class PathVariableAnnotationProcessor extends
   }
 
   @Override
-  protected boolean readRequired(PathVariable pathVariable) {
-    // path always is required
-    return true;
-  }
-
-  @Override
-  protected String pureReadDefaultValue(PathVariable pathVariable) {
-    // no default for path
-    return "";
+  public void fillParameter(OpenAPI swagger, Operation operation, PathParameter pathParameter, JavaType type,
+      PathVariable pathVariable) {
+    // TODO: not complete
   }
 }

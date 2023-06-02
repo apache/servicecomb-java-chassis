@@ -18,56 +18,42 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
 import java.lang.reflect.Type;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.google.inject.util.Types;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.util.ReflectionUtils;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
-public class ApiImplicitParamProcessor implements ParameterProcessor<Parameter, ApiImplicitParam> {
+
+public class ApiImplicitParamProcessor implements ParameterProcessor<Parameter,
+    io.swagger.v3.oas.annotations.Parameter> {
   @Override
   public Class<?> getProcessType() {
-    return ApiImplicitParam.class;
+    return io.swagger.v3.oas.annotations.Parameter.class;
   }
 
   @Override
-  public String getParameterName(ApiImplicitParam apiImplicitParam) {
+  public String getParameterName(io.swagger.v3.oas.annotations.Parameter apiImplicitParam) {
     return apiImplicitParam.name();
   }
 
   @Override
-  public Type getGenericType(ApiImplicitParam apiImplicitParam) {
-    Type dataTypeClass = apiImplicitParam.dataTypeClass();
-    if (ReflectionUtils.isVoid(dataTypeClass)) {
-      if (StringUtils.isEmpty(apiImplicitParam.dataType())) {
-        return null;
-      }
-
-      dataTypeClass = ReflectionUtils.typeFromString(apiImplicitParam.dataType());
-    }
-
-    if ("array".equals(apiImplicitParam.type())) {
-      return Types.arrayOf(dataTypeClass);
-    }
-
-    return dataTypeClass;
+  public Type getGenericType(io.swagger.v3.oas.annotations.Parameter apiImplicitParam) {
+    // TODO: not complete
+    return null;
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(ApiImplicitParam apiImplicitParam) {
-    return HttpParameterType.parse(apiImplicitParam.paramType());
+  public HttpParameterType getHttpParameterType(io.swagger.v3.oas.annotations.Parameter apiImplicitParam) {
+    return HttpParameterType.parse(apiImplicitParam.in().name());
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, JavaType type,
-      ApiImplicitParam apiImplicitParam) {
-    // no need fill, will process by io.swagger.util.ParameterProcessor.applyAnnotations
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      io.swagger.v3.oas.annotations.Parameter parameter2) {
+    // TODO: not complete
   }
 }

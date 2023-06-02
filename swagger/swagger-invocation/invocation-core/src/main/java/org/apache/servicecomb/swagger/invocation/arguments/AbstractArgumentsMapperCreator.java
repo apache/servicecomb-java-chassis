@@ -30,9 +30,8 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 
 import com.fasterxml.jackson.databind.SerializationConfig;
 
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 /**
  * <pre>
@@ -112,9 +111,7 @@ public abstract class AbstractArgumentsMapperCreator {
   // body index in swagger parameters
   protected int swaggerBodyIdx;
 
-  protected BodyParameter bodyParameter;
-
-  protected Map<String, Property> swaggerBodyProperties;
+  protected RequestBody bodyParameter;
 
   protected Set<String> processedSwaggerParamters;
 
@@ -127,23 +124,10 @@ public abstract class AbstractArgumentsMapperCreator {
     this.providerMethod = providerMethod;
     this.swaggerOperation = swaggerOperation;
 
-    this.swaggerParameters = new ArrayList<>(this.swaggerOperation.getOperation().getParameters());
+    this.swaggerParameters = this.swaggerOperation.getOperation().getParameters();
 
-    bodyParameter = findSwaggerBodyParameter();
-    swaggerBodyProperties = SwaggerUtils.getBodyProperties(swaggerOperation.getSwagger(), bodyParameter);
+    bodyParameter = this.swaggerOperation.getOperation().getRequestBody();
     processedSwaggerParamters = new HashSet<>();
-  }
-
-  private BodyParameter findSwaggerBodyParameter() {
-    for (int idx = 0; idx < swaggerParameters.size(); idx++) {
-      Parameter parameter = swaggerParameters.get(idx);
-      if (parameter instanceof BodyParameter) {
-        swaggerBodyIdx = idx;
-        return (BodyParameter) parameter;
-      }
-    }
-
-    return null;
   }
 
   protected Integer findSwaggerParameterIndex(String name) {
@@ -228,7 +212,7 @@ public abstract class AbstractArgumentsMapperCreator {
     if (bodyParameter != null &&
         !SwaggerUtils.isBean(providerParameter.getType()) &&
         swaggerIdx == swaggerBodyIdx &&
-        SwaggerUtils.isBean(bodyParameter.getSchema())) {
+        SwaggerUtils.isBean(bodyParameter)) {
       return false;
     }
 
@@ -241,15 +225,6 @@ public abstract class AbstractArgumentsMapperCreator {
 
   protected boolean processSwaggerBodyField(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
       String parameterName) {
-    if (swaggerBodyProperties == null) {
-      return false;
-    }
-
-    Property property = swaggerBodyProperties.get(parameterName);
-    if (property == null) {
-      return false;
-    }
-
     ArgumentMapper mapper = createSwaggerBodyFieldMapper(providerParamIdx, parameterName, swaggerBodyIdx);
     mappers.add(mapper);
     return true;

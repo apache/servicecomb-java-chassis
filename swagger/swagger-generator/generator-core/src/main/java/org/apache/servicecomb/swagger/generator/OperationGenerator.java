@@ -16,8 +16,9 @@
  */
 package org.apache.servicecomb.swagger.generator;
 
-import io.swagger.models.Operation;
-import io.swagger.models.properties.Property;
+
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public interface OperationGenerator {
   Operation getOperation();
@@ -26,7 +27,7 @@ public interface OperationGenerator {
 
   String getHttpMethod();
 
-  void addMethodResponseHeader(String name, Property property);
+  void addMethodResponseHeader(String name, HeaderParameter property);
 
   void addOperationToSwagger();
 

@@ -27,7 +27,7 @@ public class SwaggerProducer {
 
   private Object producerInstance;
 
-  private Swagger swagger;
+  private OpenAPI swagger;
 
   // key is operationId
   private final Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
@@ -48,11 +48,11 @@ public class SwaggerProducer {
     this.producerInstance = producerInstance;
   }
 
-  public Swagger getSwagger() {
+  public OpenAPI getSwagger() {
     return swagger;
   }
 
-  public void setSwagger(Swagger swagger) {
+  public void setSwagger(OpenAPI swagger) {
     this.swagger = swagger;
   }
 

@@ -19,12 +19,16 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.HeaderParam;
-
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
-import io.swagger.models.parameters.HeaderParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import jakarta.ws.rs.HeaderParam;
+
 
 public class HeaderParamAnnotationProcessor extends
     AbstractSerializableParameterProcessor<HeaderParameter, HeaderParam> {
@@ -41,5 +45,11 @@ public class HeaderParamAnnotationProcessor extends
   @Override
   public HttpParameterType getHttpParameterType(HeaderParam parameterAnnotation) {
     return HttpParameterType.HEADER;
+  }
+
+  @Override
+  public void fillParameter(OpenAPI swagger, Operation operation, HeaderParameter headerParameter, JavaType type,
+      HeaderParam headerParam) {
+    // TODO: not complete
   }
 }

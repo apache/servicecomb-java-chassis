@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.BodyParameter;
+import io.swagger.v3.oas.models.Operation;
 
-public class RequestBodyAnnotationProcessor implements ParameterProcessor<BodyParameter, RequestBody> {
+public class RequestBodyAnnotationProcessor implements
+    ParameterProcessor<io.swagger.v3.oas.models.parameters.RequestBody, RequestBody> {
   @Override
   public Type getProcessType() {
     return RequestBody.class;
@@ -46,7 +46,8 @@ public class RequestBodyAnnotationProcessor implements ParameterProcessor<BodyPa
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, BodyParameter bodyParameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation,
+      io.swagger.v3.oas.models.parameters.RequestBody bodyParameter, JavaType type,
       RequestBody requestBody) {
     bodyParameter.setRequired(requestBody.required());
   }

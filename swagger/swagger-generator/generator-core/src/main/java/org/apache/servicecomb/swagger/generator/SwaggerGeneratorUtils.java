@@ -43,8 +43,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.util.Json;
+import io.swagger.v3.core.util.Json;
 
 public final class SwaggerGeneratorUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGeneratorUtils.class);
@@ -181,7 +180,7 @@ public final class SwaggerGeneratorUtils {
     //   it's ambiguous to use different name in different annotation
     //   so we only read the first available name
     for (Annotation annotation : annotations) {
-      ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterProcessor<?, Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor == null) {
         continue;
       }
@@ -215,7 +214,7 @@ public final class SwaggerGeneratorUtils {
   public static Type collectGenericType(List<Annotation> annotations, Type defaultType) {
     Type genericType = null;
     for (Annotation annotation : annotations) {
-      ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterProcessor<?, Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor == null) {
         continue;
       }
@@ -258,7 +257,7 @@ public final class SwaggerGeneratorUtils {
   }
 
   private static HttpParameterType collectHttpParameterType(Annotation parameterAnnotation, Type type) {
-    ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(type);
+    ParameterProcessor<?, Annotation> processor = findParameterProcessors(type);
     if (processor == null) {
       return null;
     }

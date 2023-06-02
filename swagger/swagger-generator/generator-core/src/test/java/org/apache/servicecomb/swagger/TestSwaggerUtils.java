@@ -25,35 +25,27 @@ import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.util.Yaml;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import io.swagger.v3.core.util.Yaml;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 
 public class TestSwaggerUtils {
 
   @Test
   public void swaggerToStringNormal() {
-    Swagger swagger = new Swagger();
+    OpenAPI swagger = new OpenAPI();
     String content = SwaggerUtils.swaggerToString(swagger);
 
-    Swagger newSwagger = SwaggerUtils.parseSwagger(content);
+    OpenAPI newSwagger = SwaggerUtils.parseSwagger(content);
     Assertions.assertEquals(swagger, newSwagger);
   }
 
-  @Test
-  public void swaggerToStringException() {
-    Swagger swagger = Mockito.mock(Swagger.class);
-    Mockito.when(swagger.getBasePath()).thenThrow(new RuntimeExceptionWithoutStackTrace());
-    ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> SwaggerUtils.swaggerToString(swagger));
-    Assertions.assertEquals("Convert swagger to string failed, ", exception.getMessage());
-  }
 
   @Test
   public void parseSwaggerUrlNormal() throws IOException {
@@ -61,8 +53,8 @@ public class TestSwaggerUtils {
     URL url = Mockito.mock(URL.class);
     try (MockedStatic<IOUtils> ioUtilsMockedStatic = Mockito.mockStatic(IOUtils.class)) {
       ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8)).thenReturn(content);
-      Swagger swagger = Yaml.mapper().readValue(content, Swagger.class);
-      Swagger result = SwaggerUtils.parseSwagger(url);
+      OpenAPI swagger = Yaml.mapper().readValue(content, OpenAPI.class);
+      OpenAPI result = SwaggerUtils.parseSwagger(url);
       Assertions.assertEquals(swagger, result);
     }
   }
@@ -71,9 +63,10 @@ public class TestSwaggerUtils {
   public void parseSwaggerUrlException() throws IOException {
     URL url = Mockito.mock(URL.class);
     try (MockedStatic<IOUtils> ioUtilsMockedStatic = Mockito.mockStatic(IOUtils.class)) {
-      ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8)).thenThrow(new RuntimeExceptionWithoutStackTrace("failed"));
+      ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8))
+          .thenThrow(new RuntimeExceptionWithoutStackTrace("failed"));
       ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-              () -> SwaggerUtils.parseSwagger(url));
+          () -> SwaggerUtils.parseSwagger(url));
       Assertions.assertTrue(exception.getMessage().contains("Parse swagger from url failed, "));
     }
   }
@@ -81,16 +74,16 @@ public class TestSwaggerUtils {
   @Test
   public void parseSwaggerContentException() {
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> SwaggerUtils.parseSwagger(""));
+        () -> SwaggerUtils.parseSwagger(""));
     Assertions.assertEquals("Parse swagger from content failed, ", exception.getMessage());
   }
 
   @Test
   public void correctResponsesOperationFixEmptyDescription() {
-    Response response = new Response();
+    ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
-    operation.addResponse("200", response);
+    operation.getResponses().addApiResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
     Assertions.assertEquals("response of 200", response.getDescription());
@@ -98,11 +91,11 @@ public class TestSwaggerUtils {
 
   @Test
   public void correctResponsesOperationNotChangeExistDescription() {
-    Response response = new Response();
+    ApiResponse response = new ApiResponse();
     response.setDescription("description");
 
     Operation operation = new Operation();
-    operation.addResponse("200", response);
+    operation.getResponses().addApiResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
     Assertions.assertEquals("description", response.getDescription());
@@ -110,10 +103,10 @@ public class TestSwaggerUtils {
 
   @Test
   public void correctResponsesOperationDefaultTo200() {
-    Response response = new Response();
+    ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
-    operation.addResponse("default", response);
+    operation.getResponses().addApiResponse("default", response);
 
     SwaggerUtils.correctResponses(operation);
     Assertions.assertSame(response, operation.getResponses().get("200"));
@@ -121,56 +114,32 @@ public class TestSwaggerUtils {
 
   @Test
   public void correctResponsesOperation2xxTo200() {
-    Response response = new Response();
+    ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
-    operation.addResponse("default", new Response());
-    operation.addResponse("201", response);
-    operation.addResponse("301", new Response());
+    operation.getResponses().addApiResponse("default", new ApiResponse());
+    operation.getResponses().addApiResponse("201", response);
+    operation.getResponses().addApiResponse("301", new ApiResponse());
 
     SwaggerUtils.correctResponses(operation);
     Assertions.assertSame(response, operation.getResponses().get("200"));
   }
 
   @Test
-  public void correctResponsesNoPaths() {
-    Swagger swagger = new Swagger();
-
-    // not throw exception
-    SwaggerUtils.correctResponses(swagger);
-  }
-
-  @Test
   public void correctResponsesHavePaths() {
-    Response response = new Response();
+    ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
-    operation.addResponse("200", response);
+    operation.getResponses().addApiResponse("200", response);
 
-    Path path = new Path();
-    path.set("get", operation);
+    PathItem path = new PathItem();
+    path.get(operation);
 
-    Swagger swagger = new Swagger();
+    OpenAPI swagger = new OpenAPI();
     swagger.path("/base", path);
 
     SwaggerUtils.correctResponses(swagger);
 
     Assertions.assertEquals("response of 200", response.getDescription());
-  }
-
-  @Test
-  public void testInvalidate() {
-    URL resource = TestSwaggerUtils.class.getResource("/swagger1.yaml");
-    Swagger swagger = SwaggerUtils.parseSwagger(resource);
-    Assertions.assertThrows(ServiceCombException.class, () -> {
-      SwaggerUtils.validateSwagger(swagger);
-    });
-  }
-
-  @Test
-  public void testInvalidateValid() {
-    URL resource = TestSwaggerUtils.class.getResource("/swagger2.yaml");
-    Swagger swagger = SwaggerUtils.parseSwagger(resource);
-    SwaggerUtils.validateSwagger(swagger);
   }
 }

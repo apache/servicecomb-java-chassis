@@ -20,6 +20,7 @@ package org.apache.servicecomb.swagger.generator.core;
 import static org.hamcrest.Matchers.contains;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
@@ -45,7 +46,7 @@ public class TestSwaggerGenerator {
     PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
     swaggerGenerator.setBasePath("/a/${var}/b");
 
-    Assertions.assertEquals("/a/varValue/b", swaggerGenerator.getOpenAPI().getBasePath());
+    Assertions.assertEquals("/a/varValue/b", SwaggerUtils.getBasePath(swaggerGenerator.getOpenAPI()));
   }
 
   @Test

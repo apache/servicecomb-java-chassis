@@ -20,15 +20,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
+
 
 public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotation> {
 
@@ -48,7 +48,7 @@ public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotati
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
       Annotation annotation) {
     if (!(annotation instanceof JsonView)) {
       throw new IllegalArgumentException(
@@ -59,6 +59,7 @@ public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotati
       throw new IllegalArgumentException(
           "@JsonView only supported for exactly 1 class argument ");
     }
-    parameter.getVendorExtensions().put(SwaggerConst.EXT_JSON_VIEW, jvValue[0].getName());
+//    parameter.getVendorExtensions().put(SwaggerConst.EXT_JSON_VIEW, jvValue[0].getName());
+    // TODO: not complete
   }
 }

@@ -18,12 +18,14 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation.model
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtils;
 
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.Response;
+import io.swagger.v3.oas.models.examples.Example;
+import io.swagger.v3.oas.models.headers.Header;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 
 /**
  * Response的数据源太多，单单是标注都有N个
@@ -35,7 +37,7 @@ public class ResponseConfig extends ResponseConfigBase {
   private List<ResponseHeaderConfig> responseHeaders;
 
   // 根据本config生成的response
-  private Response response;
+  private ApiResponse response;
 
   private Example examples;
 
@@ -51,10 +53,10 @@ public class ResponseConfig extends ResponseConfigBase {
     return responseHeaders;
   }
 
-  public void setResponseHeaders(ResponseHeader[] responseHeaders) {
+  public void setResponseHeaders(Map<String, Header> responseHeaders) {
     this.responseHeaders = new ArrayList<>();
-    for (ResponseHeader header : responseHeaders) {
-      ResponseHeaderConfig config = AnnotationUtils.convert(header);
+    for (Entry<String, Header> header : responseHeaders.entrySet()) {
+      ResponseHeaderConfig config = AnnotationUtils.convert(header.getValue());
       if (config != null) {
         this.responseHeaders.add(config);
       }
@@ -65,11 +67,11 @@ public class ResponseConfig extends ResponseConfigBase {
     }
   }
 
-  public Response getResponse() {
+  public ApiResponse getResponse() {
     return response;
   }
 
-  public void setResponse(Response response) {
+  public void setResponse(ApiResponse response) {
     this.response = response;
   }
 

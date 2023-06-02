@@ -17,30 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.models.Operation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-
-public abstract class AbstractSerializableParameterProcessor<SWAGGER_PARAMETER extends AbstractSerializableParameter<?>, ANNOTATION> implements
+public abstract class AbstractSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> implements
     ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
-  @Override
-  public void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, JavaType type,
-      ANNOTATION annotation) {
-    SwaggerUtils.setParameterType(swagger, type, parameter);
-
-    String defaultValue = readDefaultValue(annotation);
-    if (StringUtils.isNotEmpty(defaultValue)) {
-      parameter.setDefaultValue(defaultValue);
-    }
-  }
-
-  protected String readDefaultValue(ANNOTATION annotation) {
-    return "";
-  }
 }

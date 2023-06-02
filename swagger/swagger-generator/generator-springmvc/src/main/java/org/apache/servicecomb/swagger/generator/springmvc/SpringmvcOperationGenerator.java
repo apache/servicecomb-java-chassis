@@ -28,8 +28,6 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
 
-import io.swagger.models.parameters.AbstractSerializableParameter;
-
 public class SpringmvcOperationGenerator extends RestOperationGenerator {
   public SpringmvcOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     super(swaggerGenerator, method);
@@ -44,9 +42,6 @@ public class SpringmvcOperationGenerator extends RestOperationGenerator {
         .forEach(pg -> {
           pg.setHttpParameterType(HttpParameterType.QUERY);
           pg.setGeneratedParameter(createParameter(HttpParameterType.QUERY));
-          SwaggerUtils.setParameterType(swagger,
-              pg.getGenericType(),
-              (AbstractSerializableParameter<?>) pg.getGeneratedParameter());
         });
   }
 

@@ -22,10 +22,17 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
 
-import io.swagger.models.parameters.FormParameter;
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
 
 public class RequestPartAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<FormParameter, RequestPart> {
+    AbstractSpringmvcSerializableParameterProcessor<RequestBody, RequestPart> {
   @Override
   public Type getProcessType() {
     return RequestPart.class;
@@ -42,16 +49,14 @@ public class RequestPartAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(RequestPart parameterAnnotation) {
-    return HttpParameterType.FORM;
+    return HttpParameterType.BODY;
   }
 
   @Override
-  protected boolean readRequired(RequestPart requestPart) {
-    return requestPart.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestPart requestPart) {
-    return null;
+  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
+      RequestPart requestPart) {
+    // TODO: not complete
+    requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
+        new io.swagger.v3.oas.models.media.MediaType().schema(new FileSchema())));
   }
 }

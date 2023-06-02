@@ -26,7 +26,7 @@ public class TestSwaggerOperations {
 
   @Test
   public void emptyOperationId() {
-    Swagger swagger = SwaggerUtils.parseSwagger(this.getClass().getResource("/schemas/boolean.yaml"));
+    OpenAPI swagger = SwaggerUtils.parseSwagger(this.getClass().getResource("/schemas/boolean.yaml"));
     swagger.getPaths().values().stream()
         .findFirst().get()
         .getPost().setOperationId("");

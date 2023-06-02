@@ -24,13 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.ws.rs.HttpMethod;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
@@ -38,18 +34,19 @@ import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.RefModel;
+import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.HttpMethod;
 
 public class PojoOperationGenerator extends AbstractOperationGenerator {
-  protected ModelImpl bodyModel;
+  protected Schema bodyModel;
 
-  protected BodyParameter bodyParameter;
+  protected RequestBody bodyParameter;
 
   public PojoOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     super(swaggerGenerator, method);
@@ -82,8 +79,8 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   private void wrapParametersToBody(List<ParameterGenerator> bodyFields) {
     String simpleRef = MethodUtils.findSwaggerMethodName(method) + "Body";
 
-    bodyModel = new ModelImpl();
-    bodyModel.setType(ModelImpl.OBJECT);
+    bodyModel = new Schema();
+
     for (ParameterGenerator parameterGenerator : bodyFields) {
       // to collect all information by swagger mechanism
       // must have a parameter type
@@ -92,34 +89,20 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
       scanMethodParameter(parameterGenerator);
 
-      Property property = ModelConverters.getInstance().readAsProperty(parameterGenerator.getGenericType());
-      property.setDescription(parameterGenerator.getGeneratedParameter().getDescription());
-      bodyModel.addProperty(parameterGenerator.getParameterName(), property);
-
+      Map<String, Schema> property = ModelConverters.getInstance().read(parameterGenerator.getGenericType());
+      property.forEach(bodyModel::addProperty);
       parameterGenerator.setHttpParameterType(null);
     }
-    swagger.addDefinition(simpleRef, bodyModel);
+    swagger.getComponents().addSchemas(simpleRef, bodyModel);
 
-    SwaggerGeneratorFeature feature = swaggerGenerator.getSwaggerGeneratorFeature();
-    // bodyFields.size() > 1 is no reason, just because old version do this......
-    // if not care for this, then can just delete all logic about EXT_JAVA_CLASS/EXT_JAVA_INTF
-    if (feature.isExtJavaClassInVendor()
-        && bodyFields.size() > 1
-        && StringUtils.isNotEmpty(feature.getPackageName())) {
-      bodyModel.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, feature.getPackageName() + "." + simpleRef);
-    }
-
-    RefModel refModel = new RefModel();
-    refModel.setReference("#/definitions/" + simpleRef);
-
-    bodyParameter = new BodyParameter();
-    bodyParameter.name(simpleRef);
-    bodyParameter.setSchema(refModel);
-    bodyParameter.setName(parameterGenerators.size() == 1 ? parameterGenerators.get(0).getParameterName() : simpleRef);
+    bodyParameter = new RequestBody();
+    MediaType mediaType = new MediaType().schema(bodyModel);
+    bodyParameter.setContent(new Content()
+        .addMediaType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON, mediaType));
 
     List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
     newParameterGenerators.add(new ParameterGenerator(
-        bodyParameter.getName(),
+        null,
         Collections.emptyList(),
         null,
         HttpParameterType.BODY,
@@ -134,7 +117,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   @Override
-  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
+  protected void fillParameter(OpenAPI swagger, Parameter parameter, String parameterName, JavaType type,
       List<Annotation> annotations) {
     if (isWrapBody(parameter)) {
       return;

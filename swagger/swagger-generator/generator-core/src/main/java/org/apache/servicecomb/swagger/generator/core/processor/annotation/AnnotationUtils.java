@@ -29,42 +29,34 @@ import org.apache.servicecomb.swagger.generator.core.processor.annotation.models
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfigBase;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ExampleProperty;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.util.ReflectionUtils;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.headers.Header;
+import io.swagger.v3.oas.models.media.Schema;
 
 public final class AnnotationUtils {
   private AnnotationUtils() {
 
   }
 
-  public static void appendDefinition(Swagger swagger, Map<String, Model> newDefinitions) {
+  public static void appendDefinition(OpenAPI swagger, Map<String, Schema> newDefinitions) {
     if (newDefinitions.isEmpty()) {
       return;
     }
 
-    Map<String, Model> definitions = swagger.getDefinitions();
+    Map<String, Schema> definitions = swagger.getComponents().getSchemas();
     if (definitions == null) {
       definitions = new LinkedHashMap<>();
-      swagger.setDefinitions(definitions);
+      swagger.getComponents().schemas(definitions);
     }
 
     definitions.putAll(newDefinitions);
   }
 
-  private static ResponseConfig convert(ApiOperation apiOperation) {
+  private static ResponseConfig convert(io.swagger.v3.oas.annotations.Operation apiOperation) {
     ResponseConfig responseConfig = new ResponseConfig();
-    responseConfig.setCode(apiOperation.code());
+    responseConfig.setCode(apiOperation.responses()[0].responseCode());
     responseConfig.setResponseClass(apiOperation.response());
     responseConfig.setResponseContainer(apiOperation.responseContainer());
     responseConfig.setResponseReference(apiOperation.responseReference());
@@ -84,32 +76,33 @@ public final class AnnotationUtils {
     return responseConfig;
   }
 
-  public static ResponseHeaderConfig convert(ResponseHeader responseHeader) {
-    if (StringUtils.isEmpty(responseHeader.name())) {
+  public static ResponseHeaderConfig convert(Header responseHeader) {
+    if (StringUtils.isEmpty(responseHeader.getSchema().getName())) {
       return null;
     }
 
     ResponseHeaderConfig config = new ResponseHeaderConfig();
-    config.setName(responseHeader.name());
-    config.setDescription(responseHeader.description());
-    config.setResponseClass(responseHeader.response());
+    config.setName(responseHeader.getSchema().getName());
+    config.setDescription(responseHeader.getSchema().getDescription());
+    config.setResponseClass(responseHeader.getSchema().);
     config.setResponseContainer(responseHeader.responseContainer());
     return config;
   }
 
-  public static void addResponse(Swagger swagger, Operation operation, ApiOperation apiOperation) {
+  public static void addResponse(OpenAPI swagger, Operation operation
+      , io.swagger.v3.oas.annotations.Operation apiOperation) {
     ResponseConfig responseConfig = convert(apiOperation);
     generateResponse(swagger, responseConfig);
     mergeResponse(operation, responseConfig);
   }
 
-  public static void addResponse(Swagger swagger, ApiResponse apiResponse) {
+  public static void addResponse(OpenAPI swagger, ApiResponse apiResponse) {
     ResponseConfig responseConfig = convert(apiResponse);
     generateResponse(swagger, responseConfig);
     swagger.response(String.valueOf(responseConfig.getCode()), responseConfig.getResponse());
   }
 
-  public static void addResponse(Swagger swagger, Operation operation, ApiResponse apiResponse) {
+  public static void addResponse(OpenAPI swagger, Operation operation, ApiResponse apiResponse) {
     ResponseConfig responseConfig = convert(apiResponse);
     generateResponse(swagger, responseConfig);
     mergeResponse(operation, responseConfig);
@@ -143,8 +136,8 @@ public final class AnnotationUtils {
     }
   }
 
-  private static void generateResponse(Swagger swagger, ResponseConfig responseConfig) {
-    Response response = new Response();
+  private static void generateResponse(OpenAPI swagger, ResponseConfig responseConfig) {
+    ApiResponse response = new ApiResponse();
 
     Property property = generateResponseProperty(swagger, responseConfig);
     if (property != null) {
