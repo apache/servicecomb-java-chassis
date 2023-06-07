@@ -20,7 +20,6 @@ package org.apache.servicecomb.common.rest.codec.param;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
@@ -32,9 +31,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.properties.ArrayProperty;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
+import jakarta.ws.rs.core.Response.Status;
 
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "query";
@@ -57,10 +57,11 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     private final QueryCodec queryCodec;
 
     public QueryProcessor(QueryParameter queryParameter, JavaType targetType) {
-      super(queryParameter.getName(), targetType, queryParameter.getDefaultValue(), queryParameter.getRequired());
+      super(queryParameter.getName(), targetType, queryParameter.getSchema().getDefault(),
+          queryParameter.getRequired());
 
-      this.repeatedType = ArrayProperty.isType(queryParameter.getType());
-      this.queryCodec = QueryCodecsUtils.find(queryParameter.getCollectionFormat());
+      this.repeatedType = queryParameter.getSchema() instanceof ArraySchema;
+      this.queryCodec = QueryCodecsUtils.find(queryParameter.getStyle().name());
     }
 
     @Override

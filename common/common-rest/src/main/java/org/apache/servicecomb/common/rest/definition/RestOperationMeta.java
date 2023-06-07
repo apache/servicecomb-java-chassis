@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
@@ -39,22 +36,24 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.MimeTypesUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.StringProperty;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+
 
 public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
@@ -91,12 +90,9 @@ public class RestOperationMeta {
   public void init(OperationMeta operationMeta) {
     this.operationMeta = operationMeta;
 
-    Swagger swagger = operationMeta.getSchemaMeta().getSwagger();
+    OpenAPI swagger = operationMeta.getSchemaMeta().getSwagger();
     Operation operation = operationMeta.getSwaggerOperation();
-    this.produces = operation.getProduces();
-    if (produces == null) {
-      this.produces = swagger.getProduces();
-    }
+    this.produces = operation.getResponses().getDefault().getContent().keySet().stream().toList();
 
     this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
@@ -111,12 +107,12 @@ public class RestOperationMeta {
 
       Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
           .getSwaggerParameterTypes().get(parameter.getName()) : null;
-      type = correctFormBodyType(parameter, type);
+      type = correctFormBodyType(operation.getRequestBody(), type);
       RestParam param = new RestParam(parameter, type);
       addParam(param);
     }
 
-    setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
+    setAbsolutePath(concatPath(SwaggerUtils.getBasePath(swagger), operationMeta.getOperationPath()));
   }
 
   /**
@@ -126,20 +122,15 @@ public class RestOperationMeta {
    * @param type the resolved param type
    * @return the corrected param type
    */
-  private Type correctFormBodyType(Parameter parameter, Type type) {
-    if (null != type || !(parameter instanceof BodyParameter)) {
+  private Type correctFormBodyType(RequestBody parameter, Type type) {
+    if (null != type || parameter == null) {
       return type;
     }
-    final BodyParameter bodyParameter = (BodyParameter) parameter;
-    if (!(bodyParameter.getSchema() instanceof ModelImpl)) {
-      return type;
+    if (!(parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema() instanceof MapSchema)) {
+      return null;
     }
-    final Property additionalProperties = ((ModelImpl) bodyParameter.getSchema()).getAdditionalProperties();
-    if (additionalProperties instanceof StringProperty) {
-      type = RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
-          .constructMapType(Map.class, String.class, String.class);
-    }
-    return type;
+    return RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
+        .constructMapType(Map.class, String.class, String.class);
   }
 
   public boolean isDownloadFile() {
@@ -147,11 +138,10 @@ public class RestOperationMeta {
   }
 
   private boolean checkDownloadFileFlag() {
-    Response response = operationMeta.getSwaggerOperation().getResponses().get("200");
+    ApiResponse response = operationMeta.getSwaggerOperation().getResponses().get("200");
     if (response != null) {
-      Model model = response.getResponseSchema();
-      return model instanceof ModelImpl &&
-          FileProperty.isType(((ModelImpl) model).getType(), ((ModelImpl) model).getFormat());
+      Schema model = response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema();
+      return model instanceof FileSchema;
     }
 
     return false;

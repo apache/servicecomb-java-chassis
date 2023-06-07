@@ -128,11 +128,16 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
 
   @Override
   protected Parameter createParameter(ParameterGenerator parameterGenerator) {
+    return super.createParameter(parameterGenerator);
+  }
+
+  @Override
+  protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
     if (isWrapBody(parameterGenerator.getGeneratedParameter())) {
       return bodyParameter;
     }
 
-    return super.createParameter(parameterGenerator);
+    return super.createRequestBody(parameterGenerator);
   }
 
   @Override

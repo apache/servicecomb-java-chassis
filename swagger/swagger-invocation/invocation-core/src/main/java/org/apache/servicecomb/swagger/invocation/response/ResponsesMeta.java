@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.swagger.invocation.response;
 
-import static io.swagger.util.ReflectionUtils.isVoid;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -33,9 +32,10 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
+import io.swagger.v3.core.util.ReflectionUtils;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 
 /**
  * <pre>
@@ -74,14 +74,14 @@ public class ResponsesMeta {
 
   private JavaType defaultResponse;
 
-  public void init(Swagger swagger, Operation operation) {
+  public void init(OpenAPI swagger, Operation operation) {
     if (responseMap.isEmpty()) {
       responseMap.put(Status.OK.getStatusCode(), OBJECT_JAVA_TYPE);
       initGlobalDefaultMapper();
     }
 
-    for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
-      JavaType javaType = ConverterMgr.findJavaType(swagger, entry.getValue().getResponseSchema());
+    for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
+      JavaType javaType = ConverterMgr.findJavaType(swagger, entry.getValue().getContent().get(MediaType.APPLICATION_JSON));
 
       if ("default".equals(entry.getKey())) {
         defaultResponse = javaType;
@@ -90,7 +90,7 @@ public class ResponsesMeta {
 
       Integer statusCode = Integer.parseInt(entry.getKey());
       JavaType existing = responseMap.get(statusCode);
-      if (existing == null || !isVoid(javaType)) {
+      if (existing == null || !ReflectionUtils.isVoid(javaType)) {
         responseMap.put(statusCode, javaType);
       }
     }

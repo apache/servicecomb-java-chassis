@@ -24,11 +24,11 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.BodyParameter;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
-public class RawJsonRequestBodyProcessor implements ParameterProcessor<BodyParameter, RawJsonRequestBody> {
+public class RawJsonRequestBodyProcessor implements ParameterProcessor<RequestBody, RawJsonRequestBody> {
   @Override
   public Class<?> getProcessType() {
     return RawJsonRequestBody.class;
@@ -51,9 +51,9 @@ public class RawJsonRequestBodyProcessor implements ParameterProcessor<BodyParam
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, BodyParameter parameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
       RawJsonRequestBody annotation) {
-    parameter.setVendorExtension("x-raw-json", true);
+    parameter.getExtensions().put("x-raw-json", true);
     parameter.setRequired(annotation.required());
   }
 }

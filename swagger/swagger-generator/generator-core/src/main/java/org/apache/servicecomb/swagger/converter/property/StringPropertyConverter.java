@@ -24,11 +24,11 @@ import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.properties.StringProperty;
+import io.swagger.v3.oas.models.media.StringSchema;
 
 public class StringPropertyConverter extends AbstractPropertyConverter {
 
-  public static boolean isEnum(StringProperty stringProperty) {
+  public static boolean isEnum(StringSchema stringProperty) {
     return isEnum(stringProperty.getEnum());
   }
 
@@ -37,8 +37,8 @@ public class StringPropertyConverter extends AbstractPropertyConverter {
   }
 
   @Override
-  public JavaType doConvert(Swagger swagger, Object property) {
-    StringProperty stringProperty = (StringProperty) property;
+  public JavaType doConvert(OpenAPI swagger, Object property) {
+    StringSchema stringProperty = (StringSchema) property;
 
     List<String> enums = stringProperty.getEnum();
     if (!isEnum(enums)) {

@@ -21,8 +21,6 @@ import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSER
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSERVICE_VERSIONS_META;
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.getMicroserviceVersionsMeta;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
@@ -41,6 +39,7 @@ import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  * subscribe event from ServiceRegistry module to create or destroy metas
@@ -98,7 +97,7 @@ public class ServiceRegistryListener {
     if (!isServiceCenter) {
       for (String schemaId : microservice.getSchemas()) {
         for (int i = 0; i <= SCHEMA_RETRY; i++) {
-          Swagger swagger = scbEngine.getSwaggerLoader()
+          OpenAPI swagger = scbEngine.getSwaggerLoader()
               .loadSwagger(microservice, microserviceVersion.getInstances(), schemaId);
           if (swagger != null) {
             microserviceMeta.registerSchemaMeta(schemaId, swagger);

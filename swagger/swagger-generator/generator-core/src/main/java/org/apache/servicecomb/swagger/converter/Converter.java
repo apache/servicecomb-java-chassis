@@ -29,5 +29,5 @@ public interface Converter {
 
   // def can be property or model
   // def can not be null
-  JavaType convert(Swagger swagger, Object def);
+  JavaType convert(OpenAPI swagger, Object def);
 }

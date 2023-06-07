@@ -24,7 +24,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 
 public class ObjectPropertyConverter implements Converter {
   @Override
-  public JavaType convert(Swagger swagger, Object def) {
+  public JavaType convert(OpenAPI swagger, Object def) {
     return OBJECT_JAVA_TYPE;
   }
 }

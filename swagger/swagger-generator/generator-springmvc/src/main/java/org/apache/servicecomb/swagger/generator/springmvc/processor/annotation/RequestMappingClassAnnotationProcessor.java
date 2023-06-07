@@ -19,13 +19,10 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import io.swagger.v3.oas.models.OpenAPI;
 
 public class RequestMappingClassAnnotationProcessor implements ClassAnnotationProcessor<RequestMapping> {
   @Override
@@ -35,15 +32,11 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, RequestMapping requestMapping) {
-    Swagger swagger = swaggerGenerator.getOpenAPI();
-
     this.processMethod(requestMapping.method(), swaggerGenerator);
 
     // path/value是等同的
     this.processPath(requestMapping.path(), swaggerGenerator);
     this.processPath(requestMapping.value(), swaggerGenerator);
-    SwaggerUtils.setConsumes(swagger, requestMapping.consumes());
-    SwaggerUtils.setProduces(swagger, requestMapping.produces());
   }
 
   protected void processPath(String[] paths, SwaggerGenerator swaggerGenerator) {

@@ -32,14 +32,18 @@ import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormP
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.ArrayProperty;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
+
 public class TestFormProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
@@ -54,15 +58,21 @@ public class TestFormProcessor {
   private FormProcessor createProcessor(String name, Type type, String defaultValue, boolean required) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
 
-    FormParameter formParameter = new FormParameter();
-    formParameter.name(name)
-        .required(required)
-        .setDefaultValue(defaultValue);
+    RequestBody formParameter = new RequestBody();
+    Content content = new Content();
+    StringSchema schema = new StringSchema();
+    schema.setDefault(defaultValue);
+    io.swagger.v3.oas.models.media.MediaType mediaType = new io.swagger.v3.oas.models.media.MediaType();
+    mediaType.schema(schema);
+    content.addMediaType(MediaType.APPLICATION_FORM_URLENCODED,
+        new io.swagger.v3.oas.models.media.MediaType().schema(schema));
+    formParameter.content(content)
+        .required(required);
 
     if (javaType.isContainerType()) {
-      formParameter.type(ArrayProperty.TYPE);
+      mediaType.schema(new ArraySchema());
     }
-    return new FormProcessor(formParameter, javaType);
+    return new FormProcessor(name, formParameter, javaType);
   }
 
   @Test

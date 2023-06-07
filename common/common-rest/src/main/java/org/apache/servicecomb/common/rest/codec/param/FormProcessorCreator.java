@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
@@ -37,11 +36,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.inject.util.Types;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "formData";
@@ -49,10 +49,13 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static class FormProcessor extends AbstractParamProcessor {
     private final boolean repeatedType;
 
-    public FormProcessor(FormParameter formParameter, JavaType targetType) {
-      super(formParameter.getName(), targetType, formParameter.getDefaultValue(), formParameter.getRequired());
+    public FormProcessor(String paraName, RequestBody formParameter, JavaType targetType) {
+      super(paraName, targetType,
+          formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema().getDefault(),
+          formParameter.getRequired());
 
-      this.repeatedType = ArrayProperty.isType(formParameter.getType());
+      this.repeatedType = formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof
+          ArraySchema;
     }
 
     @Override
@@ -98,31 +101,32 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(String paramName, RequestBody parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor((FormParameter) parameter, genericParamType);
+      return new PartProcessor(paramName, parameter, genericParamType);
     }
-    return new FormProcessor((FormParameter) parameter, targetType);
+    return new FormProcessor(paramName, parameter, targetType);
   }
 
-  private boolean isPart(Parameter parameter) {
-    // no need to check Part[][] and so on
-    FormParameter formParameter = (FormParameter) parameter;
-    if ("array".equals(formParameter.getType())) {
-      Property items = formParameter.getItems();
-      return new FileProperty().getType().equals(items.getType());
+  private boolean isPart(RequestBody parameter) {
+    if (parameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema()
+        instanceof ArraySchema) {
+      Schema items = ((ArraySchema) parameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED)
+          .getSchema()).getItems();
+      return items instanceof FileSchema;
     }
-    return new FileProperty().getType().equals(formParameter.getType());
+    return parameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof FileSchema;
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
     private static final Type partListType = Types.newParameterizedType(List.class, Part.class);
 
     // key is target type
-    private static final Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
+    private static final Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(
+            Converter.class)
         .stream()
         .filter(c -> partListType.equals(c.getSrcType()))
         .collect(Collectors.toMap(Converter::getTargetType, Function.identity()));
@@ -139,11 +143,14 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
 
     private Converter converter;
 
-    PartProcessor(FormParameter formParameter, Type genericParamType) {
-      super(formParameter.getName(), null, formParameter.getDefaultValue(), formParameter.getRequired());
+    PartProcessor(String paramName, RequestBody formParameter, Type genericParamType) {
+      super(paramName, null,
+          formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema().getDefault(),
+          formParameter.getRequired());
 
       this.genericParamType = genericParamType;
-      this.repeatedType = ArrayProperty.isType(formParameter.getType());
+      this.repeatedType = formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED)
+          .getSchema() instanceof ArraySchema;
       initConverter(genericParamType);
     }
 

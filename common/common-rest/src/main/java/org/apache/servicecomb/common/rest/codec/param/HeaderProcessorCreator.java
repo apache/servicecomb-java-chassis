@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -34,9 +33,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.ws.rs.core.Response.Status;
 
 public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(HeaderProcessorCreator.class);
@@ -51,9 +51,10 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
     private final boolean repeatedType;
 
     public HeaderProcessor(HeaderParameter headerParameter, JavaType targetType) {
-      super(headerParameter.getName(), targetType, headerParameter.getDefaultValue(), headerParameter.getRequired());
+      super(headerParameter.getName(), targetType, headerParameter.getSchema().getDefault(),
+          headerParameter.getRequired());
 
-      this.repeatedType = ArrayProperty.isType(headerParameter.getType());
+      this.repeatedType = headerParameter.getSchema() instanceof ArraySchema;
     }
 
     @Override

@@ -28,9 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.base.EnumUtils;
 
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
-import io.swagger.util.Json;
+import io.swagger.v3.core.util.Json;
+
 
 public enum SwaggerEnum {
   JDK {
@@ -88,16 +87,7 @@ public enum SwaggerEnum {
   }
 
   private String readDescription(Annotation[] annotations, String defaultDescription) {
-    ApiModelProperty apiModelProperty = findAnnotation(annotations, ApiModelProperty.class);
-    if (apiModelProperty != null && StringUtils.isNotEmpty(apiModelProperty.value())) {
-      return apiModelProperty.value();
-    }
-
-    ApiParam apiParam = findAnnotation(annotations, ApiParam.class);
-    if (apiParam != null && StringUtils.isNotEmpty(apiParam.value())) {
-      return apiParam.value();
-    }
-
-    return defaultDescription;
+    // TODO not complete
+    throw new IllegalStateException("not implemented.");
   }
 }
