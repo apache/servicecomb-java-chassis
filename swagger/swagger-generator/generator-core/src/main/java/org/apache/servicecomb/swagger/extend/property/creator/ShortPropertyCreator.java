@@ -17,17 +17,16 @@
 
 package org.apache.servicecomb.swagger.extend.property.creator;
 
-import org.apache.servicecomb.swagger.extend.property.ShortProperty;
-
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.IntegerSchema;
+import io.swagger.v3.oas.models.media.Schema;
 
 public class ShortPropertyCreator implements PropertyCreator {
 
   private final Class<?>[] classes = {Short.class, short.class};
 
   @Override
-  public Property createProperty() {
-    return new ShortProperty();
+  public Schema createProperty() {
+    return new IntegerSchema();
   }
 
   @Override

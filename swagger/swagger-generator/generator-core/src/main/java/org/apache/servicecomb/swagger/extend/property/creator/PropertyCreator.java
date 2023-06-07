@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.swagger.extend.property.creator;
 
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.Schema;
 
 public interface PropertyCreator {
-  Property createProperty();
+  Schema createProperty();
 
   Class<?>[] classes();
 }

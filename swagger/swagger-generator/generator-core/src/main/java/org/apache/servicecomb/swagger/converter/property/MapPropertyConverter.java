@@ -25,18 +25,21 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
 
 public class MapPropertyConverter extends AbstractPropertyConverter {
   @Override
-  public JavaType doConvert(Swagger swagger, Object property) {
-    MapProperty mapProperty = (MapProperty) property;
-    Property valueProperty = mapProperty.getAdditionalProperties();
-    return findJavaType(swagger, valueProperty);
+  public JavaType doConvert(OpenAPI swagger, Object property) {
+    MapSchema mapProperty = (MapSchema) property;
+    Object valueProperty = mapProperty.getAdditionalProperties();
+    if (valueProperty instanceof Boolean) {
+      return TypeFactory.defaultInstance().constructType(Boolean.class);
+    }
+    return findJavaType(swagger, (Schema) valueProperty);
   }
 
-  public static JavaType findJavaType(Swagger swagger, Property valueProperty) {
+  public static JavaType findJavaType(OpenAPI swagger, Schema valueProperty) {
     JavaType valueJavaType = ConverterMgr.findJavaType(swagger, valueProperty);
     return TypeFactory.defaultInstance().constructMapType(Map.class, STRING_JAVA_TYPE, valueJavaType);
   }

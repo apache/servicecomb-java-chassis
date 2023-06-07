@@ -22,8 +22,6 @@ import static org.apache.servicecomb.swagger.extend.SwaggerEnum.JDK;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.swagger.extend.SwaggerEnum;
 import org.apache.servicecomb.swagger.generator.OperationPostProcessor;
@@ -34,7 +32,9 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.AbstractSerializableParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 public class EnumPostProcessor implements OperationPostProcessor {
   @Override
@@ -46,7 +46,7 @@ public class EnumPostProcessor implements OperationPostProcessor {
   @Override
   public void process(AbstractSwaggerGenerator swaggerGenerator, AbstractOperationGenerator operationGenerator) {
     for (ParameterGenerator parameterGenerator : operationGenerator.getParameterGenerators()) {
-      if (parameterGenerator.getGeneratedParameter() instanceof AbstractSerializableParameter) {
+      if (parameterGenerator.getGeneratedParameter() != null) {
         processParameterDescription(parameterGenerator);
       }
     }
@@ -59,7 +59,7 @@ public class EnumPostProcessor implements OperationPostProcessor {
     Annotation[] annotations = parameterGenerator.getAnnotations().toArray(new Annotation[0]);
     String description = generateDescription(genericType, annotations);
     if (description != null) {
-      AbstractSerializableParameter<?> parameter = (AbstractSerializableParameter<?>) parameterGenerator
+      Parameter parameter = parameterGenerator
           .getGeneratedParameter();
       parameter.setDescription(description);
     }
@@ -86,7 +86,7 @@ public class EnumPostProcessor implements OperationPostProcessor {
     String description = generateDescription(operationGenerator.getMethod().getReturnType(), null);
     if (description != null) {
       operationGenerator.getOperation().getResponses().get(String.valueOf(Status.OK.getStatusCode()))
-          .getResponseSchema()
+          .getContent().get(MediaType.APPLICATION_JSON).getSchema()
           .setDescription(description);
     }
   }

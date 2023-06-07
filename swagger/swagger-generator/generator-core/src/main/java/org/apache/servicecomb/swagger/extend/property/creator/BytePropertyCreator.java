@@ -17,17 +17,17 @@
 
 package org.apache.servicecomb.swagger.extend.property.creator;
 
-import org.apache.servicecomb.swagger.extend.property.ByteProperty;
 
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.IntegerSchema;
+import io.swagger.v3.oas.models.media.Schema;
 
 public class BytePropertyCreator implements PropertyCreator {
 
   private final Class<?>[] classes = {Byte.class, byte.class};
 
   @Override
-  public Property createProperty() {
-    return new ByteProperty();
+  public Schema createProperty() {
+    return new IntegerSchema();
   }
 
   @Override

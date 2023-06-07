@@ -20,32 +20,30 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 import java.lang.reflect.Type;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-public class ApiProcessor implements ClassAnnotationProcessor<Api> {
+public class ApiProcessor implements ClassAnnotationProcessor<OpenAPIDefinition> {
   @Override
   public Type getProcessType() {
-    return Api.class;
+    return OpenAPIDefinition.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, Api api) {
+  public void process(SwaggerGenerator swaggerGenerator, OpenAPIDefinition api) {
     setTags(swaggerGenerator, api);
-    SwaggerUtils.setCommaConsumes(swaggerGenerator.getOpenAPI(), api.consumes());
-    SwaggerUtils.setCommaProduces(swaggerGenerator.getOpenAPI(), api.produces());
   }
 
-  private void setTags(SwaggerGenerator swaggerGenerator, Api api) {
-    String[] tags = api.tags();
-    for (String tagName : tags) {
-      if (StringUtils.isEmpty(tagName)) {
+  private void setTags(SwaggerGenerator swaggerGenerator, OpenAPIDefinition api) {
+    Tag[] tags = api.tags();
+    for (Tag tagName : tags) {
+      if (StringUtils.isEmpty(tagName.name())) {
         continue;
       }
-      swaggerGenerator.addDefaultTag(tagName);
+      swaggerGenerator.addDefaultTag(tagName.name());
     }
   }
 }

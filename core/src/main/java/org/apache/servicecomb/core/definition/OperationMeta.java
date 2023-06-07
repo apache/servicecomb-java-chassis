@@ -24,7 +24,8 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
-import io.swagger.models.Operation;
+import io.swagger.v3.oas.models.Operation;
+
 
 public class OperationMeta {
   private SchemaMeta schemaMeta;

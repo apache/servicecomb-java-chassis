@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
@@ -40,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.OpenAPI;
 
 public class ProducerProviderManager {
@@ -124,11 +124,11 @@ public class ProducerProviderManager {
   // By default, user's do not need context prefix, e.g. restTemplate.getForObejct("cse://serviceName/health")
   private void registerUrlPrefixToSwagger(OpenAPI swagger) {
     String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
-    if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
+    if (!StringUtils.isEmpty(urlPrefix) && !SwaggerUtils.getBasePath(swagger).startsWith(urlPrefix)
         && DynamicPropertyFactory.getInstance()
         .getBooleanProperty(DefinitionConst.REGISTER_URL_PREFIX, false).get()) {
-      LOGGER.info("Add swagger base path prefix for {} with {}", swagger.getBasePath(), urlPrefix);
-      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+      LOGGER.info("Add swagger base path prefix for {} with {}", SwaggerUtils.getBasePath(swagger), urlPrefix);
+      SwaggerUtils.setBasePath(swagger, urlPrefix + SwaggerUtils.getBasePath(swagger));
     }
   }
 }

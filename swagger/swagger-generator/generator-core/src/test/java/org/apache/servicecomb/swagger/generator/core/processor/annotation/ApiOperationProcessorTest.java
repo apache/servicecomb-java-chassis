@@ -19,24 +19,26 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
+import java.util.Map;
+
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.MediaType;
 
-import io.swagger.models.properties.Property;
-import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
-import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-
-import io.swagger.annotations.ApiOperation;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Map;
 
 public class ApiOperationProcessorTest {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
@@ -47,32 +49,38 @@ public class ApiOperationProcessorTest {
   }
 
   private static class TestClass {
-    @ApiOperation(value = "value1", tags = {"tag1", "tag2"})
+    @Operation(operationId = "value1", tags = {"tag1", "tag2"})
     public void function() {
     }
 
-    @ApiOperation(value = "value2")
+    @Operation(operationId = "value2")
     public void functionWithNoTag() {
     }
 
-    @ApiOperation(value = "testSingleMediaType", consumes = MediaType.TEXT_PLAIN, produces = MediaType.APPLICATION_XML)
+    @Operation(operationId = "testSingleMediaType",
+        responses = {@ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_XML))},
+        requestBody = @RequestBody(content = @Content(mediaType = MediaType.TEXT_PLAIN)))
     public String testSingleMediaType(String input) {
       return input;
     }
 
-    @ApiOperation(value = "testMultiMediaType",
-        consumes = MediaType.APPLICATION_JSON + "," + MediaType.TEXT_PLAIN,
-        produces = MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML)
+    @Operation(operationId = "testMultiMediaType",
+        responses = {
+            @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON + "," + MediaType.TEXT_PLAIN))},
+        requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON + ","
+            + MediaType.APPLICATION_XML)))
     public String testMultiMediaType(String input) {
       return input;
     }
 
-    @ApiOperation(value = "testBlankMediaType", consumes = "", produces = "")
+    @Operation(operationId = "testBlankMediaType",
+        responses = {@ApiResponse(content = @Content(mediaType = ""))},
+        requestBody = @RequestBody(content = @Content(mediaType = "")))
     public String testBlankMediaType(String input) {
       return input;
     }
 
-    @ApiOperation(value = "testBodyParam")
+    @Operation(operationId = "testBodyParam")
     public String testBodyParam(@RequestBody TestBodyBean user) {
       return user.toString();
     }
@@ -130,33 +138,31 @@ public class ApiOperationProcessorTest {
   @Test
   public void testMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingleMediaType");
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN));
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().get("input"),
+        Matchers.equalTo(MediaType.TEXT_PLAIN));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().get(""),
+        Matchers.equalTo(MediaType.APPLICATION_XML));
 
     swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getConsumes(),
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getProduces(),
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
 
     swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
-    Assertions.assertNull(swaggerOperation.getOperation().getConsumes());
-    Assertions.assertNull(swaggerOperation.getOperation().getProduces());
-
-    swaggerOperation.getOperation().addConsumes(MediaType.TEXT_HTML);
-    swaggerOperation.getOperation().addProduces(MediaType.TEXT_HTML);
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_HTML));
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.TEXT_HTML));
+    Assertions.assertNull(swaggerOperation.getOperation().getRequestBody().getContent().keySet());
+    Assertions.assertNull(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet());
   }
 
 
   @Test
   public void testBodyParam() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
-    Map<String, Property> properties = swaggerOperation.getSwagger().getDefinitions().get("TestBodyBean").getProperties();
-    Assertions.assertTrue(properties.get("age").getRequired(), "Support NotBlank annotation");
-    Assertions.assertTrue(properties.get("sexes").getRequired(), "Support NotEmpty annotation");
-    Assertions.assertTrue(properties.get("name").getRequired(), "Original support NotNull annotation");
+    Map<String, Schema> properties = swaggerOperation.getSwagger()
+        .getPaths().get("testBodyParam").getPost().getRequestBody().getContent()
+        .get(MediaType.APPLICATION_JSON).getSchema().getProperties();
+    Assertions.assertTrue(properties.get("age").getNullable(), "Support NotBlank annotation");
+    Assertions.assertTrue(properties.get("sexes").getNullable(), "Support NotEmpty annotation");
+    Assertions.assertTrue(properties.get("name").getNullable(), "Original support NotNull annotation");
   }
-
 }

@@ -20,15 +20,15 @@ package org.apache.servicecomb.swagger.generator.springmvc.property.creator;
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.Schema;
 
 public class MultipartFilePropertyCreator implements PropertyCreator {
   private final Class<?>[] classes = {MultipartFile.class};
 
   @Override
-  public Property createProperty() {
-    return new FileProperty();
+  public Schema createProperty() {
+    return new FileSchema();
   }
 
   @Override

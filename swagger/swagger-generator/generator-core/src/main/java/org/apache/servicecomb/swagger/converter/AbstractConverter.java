@@ -30,15 +30,15 @@ import io.swagger.v3.oas.models.OpenAPI;
 public abstract class AbstractConverter implements Converter {
   protected abstract Map<String, Object> findVendorExtensions(Object def);
 
-  protected abstract JavaType doConvert(Swagger swagger, Object def);
+  protected abstract JavaType doConvert(OpenAPI swagger, Object def);
 
-  protected JavaType convertRef(Swagger swagger, String ref) {
-    Object def = swagger.getDefinitions().get(ref);
+  protected JavaType convertRef(OpenAPI swagger, String ref) {
+    Object def = swagger.getComponents().getSchemas().get(ref);
     return ConverterMgr.findJavaType(swagger, def);
   }
 
   @Override
-  public JavaType convert(Swagger swagger, Object def) {
+  public JavaType convert(OpenAPI swagger, Object def) {
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
     String canonical = SwaggerUtils.getClassName(vendorExtensions);
     if (StringUtils.isEmpty(canonical)) {

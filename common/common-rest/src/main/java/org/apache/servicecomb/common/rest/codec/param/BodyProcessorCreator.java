@@ -24,9 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,12 +45,13 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 public class BodyProcessorCreator implements ParamValueProcessorCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
@@ -246,23 +244,20 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    Model model = ((BodyParameter) parameter).getSchema();
-    JavaType swaggerType = null;
-    if (model instanceof ModelImpl) {
-      swaggerType = ConverterMgr.findJavaType(((ModelImpl) model).getType(), ((ModelImpl) model).getFormat());
-    }
+  public ParamValueProcessor create(String paraName, RequestBody parameter, Type genericParamType) {
+    Schema model = parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
+    JavaType swaggerType = ConverterMgr.findJavaType(model.getType(), model.getFormat());
     boolean isString = swaggerType != null && swaggerType.getRawClass().equals(String.class);
 
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     boolean rawJson = SwaggerUtils.isRawJsonType(parameter);
     if (rawJson) {
-      return new RawJsonBodyProcessor(targetType, (String) parameter.getVendorExtensions()
+      return new RawJsonBodyProcessor(targetType, (String) parameter.getExtensions()
           .get(SwaggerConst.EXT_JSON_VIEW), isString, parameter.getRequired());
     }
 
-    return new BodyProcessor(targetType, (String) parameter.getVendorExtensions()
+    return new BodyProcessor(targetType, (String) parameter.getExtensions()
         .get(SwaggerConst.EXT_JSON_VIEW), isString, parameter.getRequired());
   }
 }

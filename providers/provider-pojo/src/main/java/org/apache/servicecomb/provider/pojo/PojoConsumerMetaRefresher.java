@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.provider.pojo;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -29,6 +27,8 @@ import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class PojoConsumerMetaRefresher {
   private static final Logger LOGGER = LoggerFactory.getLogger(PojoConsumerMetaRefresher.class);
@@ -113,12 +113,6 @@ public class PojoConsumerMetaRefresher {
     // if present schemaId, just use it
     if (StringUtils.isNotEmpty(schemaId)) {
       return microserviceMeta.findSchemaMeta(schemaId);
-    }
-
-    // not present schemaId, try interface first
-    SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
-    if (schemaMeta != null) {
-      return schemaMeta;
     }
 
     // try interface name second

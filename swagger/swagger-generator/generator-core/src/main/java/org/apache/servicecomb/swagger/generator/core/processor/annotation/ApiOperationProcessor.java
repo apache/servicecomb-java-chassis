@@ -18,47 +18,43 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.models.Operation;
-import io.swagger.models.Scheme;
-import io.swagger.util.BaseReaderUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
 
-public class ApiOperationProcessor implements MethodAnnotationProcessor<ApiOperation> {
-  private static final String SEPARATOR = ",";
-
+public class ApiOperationProcessor implements MethodAnnotationProcessor<Operation> {
   public Type getProcessType() {
-    return ApiOperation.class;
+    return Operation.class;
   }
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator,
-      OperationGenerator operationGenerator, ApiOperation apiOperationAnnotation) {
-    Operation operation = operationGenerator.getOperation();
+      OperationGenerator operationGenerator, Operation apiOperationAnnotation) {
+    io.swagger.v3.oas.models.Operation operation = operationGenerator.getOperation();
 
-    operationGenerator.setHttpMethod(apiOperationAnnotation.httpMethod());
+    operationGenerator.setHttpMethod(apiOperationAnnotation.method());
 
-    if (!StringUtils.isEmpty(apiOperationAnnotation.value())) {
-      operation.setSummary(apiOperationAnnotation.value());
+    if (!StringUtils.isEmpty(apiOperationAnnotation.summary())) {
+      operation.setSummary(apiOperationAnnotation.summary());
     }
 
-    if (!StringUtils.isEmpty(apiOperationAnnotation.notes())) {
-      operation.setDescription(apiOperationAnnotation.notes());
+    if (!StringUtils.isEmpty(apiOperationAnnotation.description())) {
+      operation.setDescription(apiOperationAnnotation.description());
     }
 
-    operation.setOperationId(apiOperationAnnotation.nickname());
-    operation.getVendorExtensions().putAll(BaseReaderUtils.parseExtensions(apiOperationAnnotation.extensions()));
+    operation.setOperationId(apiOperationAnnotation.operationId());
+    operation.getExtensions().putAll(parseExtensions(apiOperationAnnotation.extensions()));
 
     convertTags(apiOperationAnnotation.tags(), operation);
-    SwaggerUtils.setCommaConsumes(operation, apiOperationAnnotation.consumes());
-    SwaggerUtils.setCommaProduces(operation, apiOperationAnnotation.produces());
-    convertProtocols(apiOperationAnnotation.protocols(), operation);
+
     AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
         operation,
         apiOperationAnnotation);
@@ -68,22 +64,15 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor<ApiOpera
     // authorizations未解析
   }
 
-  // protocols以分号为创建，比如：http, https, ws, wss
-  private void convertProtocols(String protocols, Operation operation) {
-    if (protocols == null) {
-      return;
-    }
-
-    for (String protocol : protocols.split(SEPARATOR)) {
-      if (StringUtils.isEmpty(protocol)) {
-        continue;
-      }
-
-      operation.addScheme(Scheme.forValue(protocol));
-    }
+  private Map<String, ?> parseExtensions(Extension[] extensions) {
+    Map<String, Object> result = new HashMap<>();
+    Stream.of(extensions)
+        .forEach(e -> Stream.of(e.properties()).forEach(item -> result.put(item.name(), item.value())));
+    return result;
   }
 
-  private void convertTags(String[] tags, Operation operation) {
+
+  private void convertTags(String[] tags, io.swagger.v3.oas.models.Operation operation) {
     if (tags == null || tags.length == 0) {
       return;
     }
@@ -93,7 +82,7 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor<ApiOpera
         continue;
       }
 
-      operation.addTag(tag);
+      operation.addTagsItem(tag);
     }
   }
 }

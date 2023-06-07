@@ -96,8 +96,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   // 如果Response中不存在对应的header，则会将这些header补充进去
   protected Map<String, HeaderParameter> methodResponseHeaders = new LinkedHashMap<>();
 
-  private static final List<String> NOT_NULL_ANNOTATIONS = Arrays.asList("NotBlank", "NotEmpty");
-
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
     this.swagger = swaggerGenerator.getOpenAPI();
@@ -331,11 +329,29 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodParameter(ParameterGenerator parameterGenerator) {
-    Parameter parameter = createParameter(parameterGenerator);
+    if (parameterGenerator.getHttpParameterType() == HttpParameterType.BODY) {
+      Parameter parameter = createParameter(parameterGenerator);
+
+      try {
+        fillParameter(swagger,
+            parameter,
+            parameterGenerator.getParameterName(),
+            parameterGenerator.getGenericType(),
+            parameterGenerator.getAnnotations());
+      } catch (Throwable e) {
+        throw new IllegalStateException(
+            String.format("failed to fill parameter, parameterName=%s.",
+                parameterGenerator.getParameterName()),
+            e);
+      }
+      return;
+    }
+
+    RequestBody requestBody = createRequestBody(parameterGenerator);
 
     try {
-      fillParameter(swagger,
-          parameter,
+      fillRequestBody(swagger,
+          requestBody,
           parameterGenerator.getParameterName(),
           parameterGenerator.getGenericType(),
           parameterGenerator.getAnnotations());
@@ -347,17 +363,18 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
   }
 
-  protected Parameter createParameter(ParameterGenerator parameterGenerator) {
-    if (parameterGenerator.getGeneratedParameter() == null) {
-      Parameter parameter = createParameter(parameterGenerator.getHttpParameterType());
-      parameterGenerator.setGeneratedParameter(parameter);
-    }
-    if (parameterGenerator.getRequestBody() != null) {
-      RequestBody requestBody = createRequestBody(parameterGenerator.getHttpParameterType());
-      parameterGenerator.setRequestBody(requestBody);
-    }
+  protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
+    RequestBody requestBody = createRequestBody(parameterGenerator.getHttpParameterType());
+    parameterGenerator.setRequestBody(requestBody);
     parameterGenerator.getGeneratedParameter().setName(parameterGenerator.getParameterName());
-    return parameterGenerator.getGeneratedParameter();
+    return requestBody;
+  }
+
+  protected Parameter createParameter(ParameterGenerator parameterGenerator) {
+    Parameter parameter = createParameter(parameterGenerator.getHttpParameterType());
+    parameterGenerator.setGeneratedParameter(parameter);
+    parameterGenerator.getGeneratedParameter().setName(parameterGenerator.getParameterName());
+    return parameter;
   }
 
   protected Parameter createParameter(HttpParameterType httpParameterType) {
@@ -398,6 +415,25 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(type);
+    if (processor != null) {
+      processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
+    }
+  }
+
+  protected void fillRequestBody(OpenAPI swagger, RequestBody parameter, String parameterName, JavaType type,
+      List<Annotation> annotations) {
+    for (Annotation annotation : annotations) {
+      ParameterProcessor<RequestBody, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      if (processor != null) {
+        processor.fillParameter(swagger, swaggerOperation, parameter, type, annotation);
+      }
+    }
+
+    if (type == null) {
+      return;
+    }
+
+    ParameterProcessor<RequestBody, Annotation> processor = findParameterProcessors(type);
     if (processor != null) {
       processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
     }
@@ -446,12 +482,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (swaggerOperation.getResponses() != null) {
       ApiResponse successResponse = swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY);
       if (successResponse != null) {
-        if (successResponse.getResponseSchema() == null) {
-          // 标注已经定义了response，但是是void，这可能是在标注上未定义
-          // 根据函数原型来处理response
-          Model model = createResponseModel();
-          successResponse.setResponseSchema(model);
-        }
         return;
       }
     }
