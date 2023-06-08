@@ -35,6 +35,8 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 import mockit.Deencapsulation;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
 public class TestLocalServiceRegistry {
@@ -61,6 +63,11 @@ public class TestLocalServiceRegistry {
   @Before
   public void setUp() throws Exception {
     inMemoryConfig.clear();
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    RegistryUtils.reset();
   }
 
   @Test
