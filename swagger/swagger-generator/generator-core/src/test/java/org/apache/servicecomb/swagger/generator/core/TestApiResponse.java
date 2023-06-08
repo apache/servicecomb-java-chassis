@@ -19,16 +19,15 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Response;
-import io.swagger.models.properties.Property;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 public class TestApiResponse {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
@@ -40,23 +39,25 @@ public class TestApiResponse {
 
   interface ApiResponseAnnotation {
     @ApiResponse(
-        responseHeaders = {@ResponseHeader(name = "k1", response = int.class),
-            @ResponseHeader(name = "k2", response = String.class)},
-        code = 200,
-        message = "")
+        headers = {@Header(name = "k1", schema = @Schema(name = "integer")),
+            @Header(name = "k2", schema = @Schema(name = "string"))},
+        responseCode = "200",
+        description = "")
     void testApiResponseHeader();
 
-    @ResponseHeader(name = "k1", response = int.class)
+    @ApiResponse(
+        headers = {@Header(name = "k1", schema = @Schema(name = "integer"))})
     void testResponseHeader();
 
     @ApiResponse(
-        code = 200,
-        response = int.class,
-        message = "msg")
+        content = @Content(schema = @Schema(type = "integer")),
+        responseCode = "200",
+        description = "msg")
     void testSingle();
 
-    @ApiResponses({@ApiResponse(code = 200, response = int.class, message = "msg1"),
-        @ApiResponse(code = 301, response = String.class, message = "msg2")})
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(type = "integer")), description = "msg1"),
+        @ApiResponse(responseCode = "301", content = @Content(schema = @Schema(type = "string")), description = "msg2")})
     void testMulti();
   }
 
@@ -65,10 +66,10 @@ public class TestApiResponse {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testResponseHeader");
     Assertions.assertEquals("/testResponseHeader", swaggerOperation.getPath());
 
-    Response response = swaggerOperation.getOperation().getResponses().get("200");
-    Property property = response.getHeaders().get("k1");
-    Assertions.assertEquals("integer", property.getType());
-    Assertions.assertEquals("int32", property.getFormat());
+    io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
+    io.swagger.v3.oas.models.headers.Header property = response.getHeaders().get("k1");
+    Assertions.assertEquals("integer", property.getSchema().getType());
+    Assertions.assertEquals("int32", property.getSchema().getFormat());
   }
 
   @Test

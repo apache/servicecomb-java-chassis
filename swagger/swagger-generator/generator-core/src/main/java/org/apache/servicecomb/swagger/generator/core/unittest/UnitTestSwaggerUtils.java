@@ -24,13 +24,13 @@ import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.junit.jupiter.api.Assertions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.util.Yaml;
-import org.junit.jupiter.api.Assertions;
 
 public final class UnitTestSwaggerUtils {
   private static final ObjectWriter writer = Yaml.pretty();
@@ -51,7 +51,7 @@ public final class UnitTestSwaggerUtils {
     }
   }
 
-  public static String pretty(Swagger swagger) {
+  public static String pretty(OpenAPI swagger) {
     try {
       return writer.writeValueAsString(swagger);
     } catch (JsonProcessingException e) {
@@ -59,11 +59,11 @@ public final class UnitTestSwaggerUtils {
     }
   }
 
-  public static Swagger parse(String content) {
+  public static OpenAPI parse(String content) {
     try {
-      return Yaml.mapper().readValue(content, Swagger.class);
+      return Yaml.mapper().readValue(content, OpenAPI.class);
     } catch (Exception e) {
-      return new Swagger();
+      return new OpenAPI();
       //            throw new Error(e);
     }
   }
@@ -73,7 +73,7 @@ public final class UnitTestSwaggerUtils {
     generator.replaceMethodWhiteList(methods);
     generator.getSwaggerGeneratorFeature().setPackageName("gen.cse.ms.ut");
 
-    Swagger swagger = generator.generate();
+    OpenAPI swagger = generator.generate();
     String schema = pretty(swagger);
 
     String expectSchema = loadExpect(resPath).replace("\r\n", "\n");
