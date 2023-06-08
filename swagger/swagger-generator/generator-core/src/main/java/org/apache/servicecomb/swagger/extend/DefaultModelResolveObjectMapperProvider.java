@@ -21,7 +21,8 @@ import org.apache.servicecomb.swagger.extend.module.EnumModuleExt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.swagger.util.Json;
+import io.swagger.v3.core.util.Json;
+
 
 public class DefaultModelResolveObjectMapperProvider implements ModelResolveObjectMapperProvider {
   @Override

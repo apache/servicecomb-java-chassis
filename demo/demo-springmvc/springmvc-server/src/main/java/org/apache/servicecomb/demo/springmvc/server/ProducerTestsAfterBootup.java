@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.netflix.config.DynamicPropertyFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.netflix.config.DynamicPropertyFactory;
 
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.util.Yaml;
 
 /**
  * Testing after bootup.
@@ -97,7 +97,7 @@ public class ProducerTestsAfterBootup implements BootListener {
     }
   }
 
-  private String getSwaggerContent(Swagger swagger) {
+  private String getSwaggerContent(OpenAPI swagger) {
     try {
       return writer.writeValueAsString(swagger);
     } catch (JsonProcessingException e) {

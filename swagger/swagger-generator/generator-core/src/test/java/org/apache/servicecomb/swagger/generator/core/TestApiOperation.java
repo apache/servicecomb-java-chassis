@@ -21,28 +21,26 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.ArrayModel;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Scheme;
-import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 
 public class TestApiOperation {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiOperationAnnotation.class);
@@ -53,121 +51,79 @@ public class TestApiOperation {
   }
 
   interface ApiOperationAnnotation {
-    @ApiOperation(
-        value = "summary",
-        notes = "notes",
+    @Operation(
+        summary = "summary",
+        description = "notes",
         tags = {"tag1", "tag2"},
-        httpMethod = "GET",
-        nickname = "test",
-        produces = "application/json",
-        consumes = "application/json",
-        protocols = "http,https",
-        code = 202,
-        responseHeaders = {@ResponseHeader(name = "h1", response = int.class)},
+        method = "GET",
+        operationId = "test",
+        requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON)),
+        responses = @ApiResponse(responseCode = "202",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON),
+            headers = @Header(name = "h1", schema = @Schema(name = "integer"))),
         extensions = {@Extension(
             name = "x-tagA",
             properties = {@ExtensionProperty(name = "x-tagAExt", value = "value of tagAExt")})})
     void testBase();
 
-    @ApiOperation(value = "aaa", code = 202, response = String.class)
+    @Operation(summary = "aaa")
+    @ApiResponse(responseCode = "202", content = @Content(schema = @Schema(name = "integer")))
     int testPrimitive();
 
-    @ApiOperation(value = "aaa", response = Integer.class, responseContainer = "Map")
-    int testMap();
-
-    @ApiOperation(value = "aaa", response = Integer.class, responseContainer = "List")
-    int testList();
-
-    @ApiOperation(value = "aaa", response = Integer.class, responseContainer = "Set")
-    int testSet();
-
-    @ApiOperation(value = "aaa", hidden = true)
+    @Operation(summary = "aaa", hidden = true)
     int testHidden();
   }
 
-  interface UnknownResponseContainer {
-    @ApiOperation(value = "aaa", response = Integer.class, responseContainer = "xxx")
-    int testUnknown();
-  }
 
   @Test
   public void testApiOperation() {
-    Swagger swagger = swaggerOperations.getSwagger();
-    testBase(swagger.getPath("/test"));
-    testPrimitive(swagger.getPath("/testPrimitive"));
-    testMap(swagger.getPath("/testMap"));
-    testList(swagger.getPath("/testList"));
-    testSet(swagger.getPath("/testSet"));
-    MatcherAssert.assertThat(swagger.getPath("/testHidden"), is(nullValue()));
+    OpenAPI swagger = swaggerOperations.getSwagger();
+    testBase(swagger.getPaths().get("/test"));
+    testPrimitive(swagger.getPaths().get("/testPrimitive"));
+    MatcherAssert.assertThat(swagger.getPaths().get("/testHidden"), is(nullValue()));
   }
 
-  @Test
-  public void testUnknown() {
-    UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.TestApiOperation$UnknownResponseContainer:testUnknown.",
-        "not support responseContainer xxx",
-        UnknownResponseContainer.class);
-  }
-
-  private void testSet(Path path) {
-    Operation operation = path.getPost();
-    Model result200 = operation.getResponses().get("200").getResponseSchema();
-    Assertions.assertEquals(ArrayModel.class, result200.getClass());
-    Assertions.assertEquals(true, ((ArrayModel) result200).getUniqueItems());
-  }
-
-  private void testList(Path path) {
-    Operation operation = path.getPost();
-    Model result200 = operation.getResponses().get("200").getResponseSchema();
-    Assertions.assertEquals(ArrayModel.class, result200.getClass());
-    Assertions.assertNull(((ArrayModel) result200).getUniqueItems());
-  }
-
-  private void testMap(Path path) {
-    Operation operation = path.getPost();
-    Model result200 = operation.getResponses().get("200").getResponseSchema();
-    Assertions.assertEquals(ModelImpl.class, result200.getClass());
-    Assertions.assertNotNull(((ModelImpl) result200).getAdditionalProperties());
-  }
-
-  private void testPrimitive(Path path) {
-    Operation operation = path.getPost();
+  private void testPrimitive(PathItem path) {
+    io.swagger.v3.oas.models.Operation operation = path.getPost();
 
     Assertions.assertEquals(2, operation.getResponses().size());
 
-    ModelImpl result200 = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
+    io.swagger.v3.oas.models.media.Schema result200 =
+        operation.getResponses().get("200").getContent().get(MediaType.APPLICATION_JSON).getSchema();
     Assertions.assertEquals("integer", result200.getType());
     Assertions.assertEquals("int32", result200.getFormat());
 
-    ModelImpl result202 = (ModelImpl) operation.getResponses().get("202").getResponseSchema();
+    io.swagger.v3.oas.models.media.Schema result202 =
+        operation.getResponses().get("202").getContent().get(MediaType.APPLICATION_JSON).getSchema();
     Assertions.assertEquals("string", result202.getType());
     Assertions.assertNull(result202.getFormat());
   }
 
-  private void testBase(Path path) {
-    Assertions.assertEquals(1, path.getOperations().size());
+  private void testBase(PathItem path) {
+    Assertions.assertEquals(1, path.readOperations().size());
 
-    Operation operation = path.getGet();
+    io.swagger.v3.oas.models.Operation operation = path.getGet();
 
     Assertions.assertEquals("summary", operation.getSummary());
     Assertions.assertEquals("notes", operation.getDescription());
     Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
-    Assertions.assertEquals(Arrays.asList("application/json"), operation.getProduces());
-    Assertions.assertEquals(Arrays.asList("application/json"), operation.getConsumes());
-    Assertions.assertEquals(Arrays.asList(Scheme.HTTP, Scheme.HTTPS), operation.getSchemes());
+    Assertions.assertEquals(Arrays.asList("application/json"),
+        operation.getResponses().getDefault().getContent().keySet().iterator().next());
+    Assertions.assertEquals(Arrays.asList("application/json"),
+        operation.getRequestBody().getContent().keySet().iterator().next());
 
-    Map<String, Response> responseMap = operation.getResponses();
+    ApiResponses responseMap = operation.getResponses();
     Assertions.assertEquals(2, responseMap.size());
 
-    Response response = responseMap.get(SwaggerConst.SUCCESS_KEY);
+    io.swagger.v3.oas.models.responses.ApiResponse response = responseMap.get(SwaggerConst.SUCCESS_KEY);
     Assertions.assertNotNull(response);
-    Assertions.assertNull(response.getResponseSchema());
+    Assertions.assertNull(response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getAdditionalProperties());
 
     response = responseMap.get("202");
     Assertions.assertNotNull(response);
-    Assertions.assertNull(response.getResponseSchema());
+    Assertions.assertNull(response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getAdditionalProperties());
 
     Assertions.assertEquals(1, response.getHeaders().size());
-    Assertions.assertEquals("integer", response.getHeaders().get("h1").getType());
+    Assertions.assertEquals("integer", response.getHeaders().get("h1").getSchema().getType());
   }
 }
