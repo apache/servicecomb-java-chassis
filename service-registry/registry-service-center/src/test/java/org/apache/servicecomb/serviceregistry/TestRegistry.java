@@ -39,6 +39,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
@@ -76,6 +77,11 @@ public class TestRegistry {
   @Before
   public void setUp() throws Exception {
     inMemoryConfig.clear();
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    RegistryUtils.reset();
   }
 
   @SuppressWarnings("deprecation")

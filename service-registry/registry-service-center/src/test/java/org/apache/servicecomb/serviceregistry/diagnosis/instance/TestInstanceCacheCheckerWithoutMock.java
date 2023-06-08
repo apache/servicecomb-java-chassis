@@ -69,6 +69,7 @@ public class TestInstanceCacheCheckerWithoutMock {
   @After
   public void tearDown() throws Exception {
     ArchaiusUtils.resetConfig();
+    RegistryUtils.reset();
   }
 
   @Test

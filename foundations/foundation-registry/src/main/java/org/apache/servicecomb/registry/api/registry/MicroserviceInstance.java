@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.config.InstancePropertiesLoader;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -198,13 +199,13 @@ public class MicroserviceInstance {
     String dataCenterName = DynamicPropertyFactory.getInstance()
         .getStringProperty("servicecomb.datacenter.name", null)
         .get();
+    if (StringUtils.isEmpty(dataCenterName)) {
+      return;
+    }
     String region = DynamicPropertyFactory.getInstance().
         getStringProperty("servicecomb.datacenter.region", null).get();
     String availableZone = DynamicPropertyFactory.getInstance().
         getStringProperty("servicecomb.datacenter.availableZone", null).get();
-    if (dataCenterName == null && region == null && availableZone == null) {
-      return;
-    }
     DataCenterInfo dataCenterInfo = new DataCenterInfo();
     dataCenterInfo.setName(dataCenterName);
     dataCenterInfo.setRegion(region);

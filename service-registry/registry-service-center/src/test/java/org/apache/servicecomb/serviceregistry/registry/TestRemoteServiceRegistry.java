@@ -37,6 +37,8 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
 public class TestRemoteServiceRegistry {
@@ -50,6 +52,11 @@ public class TestRemoteServiceRegistry {
     protected ServiceRegistryClient createServiceRegistryClient() {
       return new LocalServiceRegistryClientImpl();
     }
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    RegistryUtils.reset();
   }
 
   @Test

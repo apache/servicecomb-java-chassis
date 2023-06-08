@@ -52,7 +52,9 @@ import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterT
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.Subscribe;
+import com.netflix.config.DynamicPropertyFactory;
 
 public final class RegistryUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
@@ -71,12 +73,24 @@ public final class RegistryUtils {
 
   public static synchronized void init() {
     if (serviceRegistry != null) {
+      if (DynamicPropertyFactory.getInstance()
+          .getBooleanProperty("servicecomb.service.registry.initialization.notAllowed", true).get()) {
+        throw new IllegalStateException("Registry has already bean initialized and not allowed to initialize twice.");
+      }
       return;
     }
 
     initializeServiceRegistriesWithConfig(ConfigUtil.createLocalConfig());
 
     initAggregateServiceRegistryCache();
+  }
+
+  @VisibleForTesting
+  public static synchronized void reset() {
+    if (serviceRegistry != null) {
+      serviceRegistry.destroy();
+      serviceRegistry = null;
+    }
   }
 
   private static void initAggregateServiceRegistryCache() {
@@ -148,7 +162,7 @@ public final class RegistryUtils {
 
 
   public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
-                                                               String versionRule) {
+      String versionRule) {
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
         MicroserviceCacheKey.builder()
             .appId(appId).serviceName(serviceName)
@@ -185,7 +199,7 @@ public final class RegistryUtils {
   }
 
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
-                                                           String versionRule) {
+      String versionRule) {
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
         MicroserviceCacheKey.builder()
             .appId(appId)
