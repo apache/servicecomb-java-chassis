@@ -26,4 +26,9 @@ public class SCBBootstrap {
     DiscoveryManager.INSTANCE.init();
     return new SCBEngineForTest();
   }
+
+  public static void resetSCBEngineForTest() {
+    RegistrationManager.INSTANCE.destroy();
+    DiscoveryManager.INSTANCE.destroy();
+  }
 }

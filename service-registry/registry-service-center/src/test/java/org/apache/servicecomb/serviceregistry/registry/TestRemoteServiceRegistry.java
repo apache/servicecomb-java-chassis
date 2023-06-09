@@ -23,13 +23,15 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.event.ShutdownEvent;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
 
@@ -37,9 +39,6 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 
 public class TestRemoteServiceRegistry {
   static class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
@@ -56,7 +55,7 @@ public class TestRemoteServiceRegistry {
 
   @AfterEach
   public void tearDown() throws Exception {
-    RegistryUtils.reset();
+    RegistryUtils.destroy();
   }
 
   @Test

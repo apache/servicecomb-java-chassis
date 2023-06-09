@@ -73,7 +73,7 @@ public class TestInstanceCacheCheckerMock {
   @After
   public void tearDown() throws Exception {
     ArchaiusUtils.resetConfig();
-    RegistryUtils.reset();
+    RegistryUtils.destroy();
   }
 
   private Holder<MicroserviceInstances> createFindServiceInstancesResult() {
