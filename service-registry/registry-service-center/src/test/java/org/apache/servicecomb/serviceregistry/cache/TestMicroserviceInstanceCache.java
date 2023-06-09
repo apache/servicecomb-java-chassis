@@ -20,30 +20,32 @@ package org.apache.servicecomb.serviceregistry.cache;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestMicroserviceInstanceCache {
   @Before
   public void setup() {
     ConfigUtil.installDynamicConfig();
+    RegistryUtils.init();
   }
 
-  @AfterClass
-  public static void classTeardown() {
+  @After
+  public void teardown() {
+    RegistryUtils.destroy();
     ArchaiusUtils.resetConfig();
   }
 
@@ -75,12 +77,7 @@ public class TestMicroserviceInstanceCache {
   public void testGetOrCreateMicroserviceInstance(@Mocked ServiceRegistry serviceRegistry,
       @Mocked ServiceRegistryClient client,
       @Mocked MicroserviceInstance instance) {
-    new MockUp<RegistryUtils>() {
-      @Mock
-      ServiceRegistry getServiceRegistry() {
-        return serviceRegistry;
-      }
-    };
+    RegistryUtils.setServiceRegistry(serviceRegistry);
     new Expectations() {
       {
         serviceRegistry.getServiceRegistryClient();

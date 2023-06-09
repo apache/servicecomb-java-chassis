@@ -29,11 +29,11 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.jupiter.api.Assertions;
 
 public class TestRestServlet {
   private RestServlet restservlet = null;
@@ -51,6 +51,7 @@ public class TestRestServlet {
   public void tearDown() {
     restservlet = null;
     SCBEngine.getInstance().destroy();
+    SCBBootstrap.resetSCBEngineForTest();
     ArchaiusUtils.resetConfig();
   }
 

@@ -28,6 +28,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
@@ -35,9 +37,6 @@ import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 import mockit.Deencapsulation;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 
 public class TestLocalServiceRegistry {
   private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
@@ -67,7 +66,7 @@ public class TestLocalServiceRegistry {
 
   @AfterEach
   public void tearDown() throws Exception {
-    RegistryUtils.reset();
+    RegistryUtils.destroy();
   }
 
   @Test

@@ -81,7 +81,7 @@ public class TestRegistry {
 
   @AfterEach
   public void tearDown() throws Exception {
-    RegistryUtils.reset();
+    RegistryUtils.destroy();
   }
 
   @SuppressWarnings("deprecation")

@@ -69,7 +69,7 @@ public class TestInstanceCacheCheckerWithoutMock {
   @After
   public void tearDown() throws Exception {
     ArchaiusUtils.resetConfig();
-    RegistryUtils.reset();
+    RegistryUtils.destroy();
   }
 
   @Test
@@ -102,7 +102,8 @@ public class TestInstanceCacheCheckerWithoutMock {
 
     MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
-    Assertions.assertEquals(microserviceName, microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
+    Assertions.assertEquals(microserviceName,
+        microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
 
     InstanceCacheSummary instanceCacheSummary = checker.check();
 

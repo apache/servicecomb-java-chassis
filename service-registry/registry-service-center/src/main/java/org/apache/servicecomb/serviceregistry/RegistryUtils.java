@@ -57,12 +57,18 @@ import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
 public final class RegistryUtils {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
+
+  public static final String SERVICECOMB_SERVICE_REGISTRY_REPEATED_INITIALIZATION_ALLOWED
+      = "servicecomb.service.registry.repeated.initialization.allowed";
 
   /**
    * The default ServiceRegistry instance
    */
   private static volatile ServiceRegistry serviceRegistry;
+
+  private static volatile boolean running = false;
 
   private static final Map<String, ServiceRegistry> EXTRA_SERVICE_REGISTRIES = new LinkedHashMap<>();
 
@@ -74,23 +80,15 @@ public final class RegistryUtils {
   public static synchronized void init() {
     if (serviceRegistry != null) {
       if (DynamicPropertyFactory.getInstance()
-          .getBooleanProperty("servicecomb.service.registry.initialization.notAllowed", true).get()) {
-        throw new IllegalStateException("Registry has already bean initialized and not allowed to initialize twice.");
+          .getBooleanProperty(SERVICECOMB_SERVICE_REGISTRY_REPEATED_INITIALIZATION_ALLOWED, false).get()) {
+        return;
       }
-      return;
+      throw new IllegalStateException("Registry has already bean initialized and not allowed to initialize twice.");
     }
 
     initializeServiceRegistriesWithConfig(ConfigUtil.createLocalConfig());
 
     initAggregateServiceRegistryCache();
-  }
-
-  @VisibleForTesting
-  public static synchronized void reset() {
-    if (serviceRegistry != null) {
-      serviceRegistry.destroy();
-      serviceRegistry = null;
-    }
   }
 
   private static void initAggregateServiceRegistryCache() {
@@ -123,17 +121,31 @@ public final class RegistryUtils {
   }
 
   public static void run() {
+    if (running) {
+      if (DynamicPropertyFactory.getInstance()
+          .getBooleanProperty(SERVICECOMB_SERVICE_REGISTRY_REPEATED_INITIALIZATION_ALLOWED, false).get()) {
+        return;
+      }
+      throw new IllegalStateException("Registry has already bean initialized and not allowed to initialize twice.");
+    }
     executeOnEachServiceRegistry(ServiceRegistry::run);
   }
 
   public static void destroy() {
     executeOnEachServiceRegistry(ServiceRegistry::destroy);
+    running = false;
+    if (serviceRegistry != null) {
+      serviceRegistry = null;
+    }
+    EXTRA_SERVICE_REGISTRIES.clear();
   }
 
+  @VisibleForTesting
   public static ServiceRegistry getServiceRegistry() {
     return serviceRegistry;
   }
 
+  @VisibleForTesting
   public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
     RegistryUtils.serviceRegistry = serviceRegistry;
     initAggregateServiceRegistryCache();
@@ -266,8 +278,8 @@ public final class RegistryUtils {
   }
 
   public static void executeOnEachServiceRegistry(Consumer<ServiceRegistry> action) {
-    if (null != getServiceRegistry()) {
-      action.accept(getServiceRegistry());
+    if (null != serviceRegistry) {
+      action.accept(serviceRegistry);
     }
     if (!EXTRA_SERVICE_REGISTRIES.isEmpty()) {
       EXTRA_SERVICE_REGISTRIES.forEach((k, v) -> action.accept(v));
@@ -309,7 +321,7 @@ public final class RegistryUtils {
 
   public static ServiceRegistry getServiceRegistry(String registryName) {
     if (ServiceRegistry.DEFAULT_REGISTRY_NAME.equals(registryName)) {
-      return getServiceRegistry();
+      return serviceRegistry;
     }
 
     return EXTRA_SERVICE_REGISTRIES.get(registryName);

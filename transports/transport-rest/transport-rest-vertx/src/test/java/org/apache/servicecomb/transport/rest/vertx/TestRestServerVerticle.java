@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -75,6 +76,7 @@ public class TestRestServerVerticle {
     startPromise = null;
     SCBEngine.getInstance().destroy();
     ArchaiusUtils.resetConfig();
+    RegistryUtils.destroy();
   }
 
   @Test
