@@ -78,8 +78,6 @@ public final class RegistryUtils {
   }
 
   public static synchronized void init() {
-    LOGGER.error("todo debug information", new Exception());
-
     if (serviceRegistry != null) {
       if (DynamicPropertyFactory.getInstance()
           .getBooleanProperty(SERVICECOMB_SERVICE_REGISTRY_REPEATED_INITIALIZATION_ALLOWED, false).get()) {
