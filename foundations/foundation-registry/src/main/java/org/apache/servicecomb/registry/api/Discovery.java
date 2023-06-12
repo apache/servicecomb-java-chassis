@@ -70,6 +70,15 @@ public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
    * @return all instances match the criteria.
    */
   default MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
+    return findServiceInstances(appId, serviceName, versionRule, null);
+  }
+
+  /**
+   * @Depraction revision is not used for Discovery implementations.
+   */
+  @Deprecated
+  default MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule,
+      String revision) {
     return null;
   }
 
