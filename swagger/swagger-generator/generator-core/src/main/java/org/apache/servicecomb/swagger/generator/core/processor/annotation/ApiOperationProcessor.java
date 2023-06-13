@@ -51,26 +51,27 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor<Operatio
     }
 
     operation.setOperationId(apiOperationAnnotation.operationId());
-    operation.getExtensions().putAll(parseExtensions(apiOperationAnnotation.extensions()));
+    if (operation.getExtensions() == null) {
+      operation.setExtensions(parseExtensions(apiOperationAnnotation.extensions()));
+    } else {
+      operation.getExtensions().putAll(parseExtensions(apiOperationAnnotation.extensions()));
+    }
+
+    operation.setRequestBody(AnnotationUtils.requestBodyModel(apiOperationAnnotation.requestBody()));
 
     convertTags(apiOperationAnnotation.tags(), operation);
 
     AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
         operation,
         apiOperationAnnotation);
-
-    // responseReference未解析
-    // hidden未解析
-    // authorizations未解析
   }
 
-  private Map<String, ?> parseExtensions(Extension[] extensions) {
+  private Map<String, Object> parseExtensions(Extension[] extensions) {
     Map<String, Object> result = new HashMap<>();
     Stream.of(extensions)
         .forEach(e -> Stream.of(e.properties()).forEach(item -> result.put(item.name(), item.value())));
     return result;
   }
-
 
   private void convertTags(String[] tags, io.swagger.v3.oas.models.Operation operation) {
     if (tags == null || tags.length == 0) {
