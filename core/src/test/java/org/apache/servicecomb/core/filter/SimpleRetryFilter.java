@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 public class SimpleRetryFilter implements ConsumerFilter {
@@ -32,6 +33,11 @@ public class SimpleRetryFilter implements ConsumerFilter {
   @Override
   public String getName() {
     return "simple-retry";
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 900;
   }
 
   public SimpleRetryFilter setMaxRetry(int maxRetry) {

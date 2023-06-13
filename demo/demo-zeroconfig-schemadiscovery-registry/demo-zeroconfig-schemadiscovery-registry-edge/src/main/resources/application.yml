@@ -27,10 +27,9 @@ service_description:
 servicecomb:
   rest:
     address: 0.0.0.0:8888
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
+  filter-chains:
+    enabled: true
+
   http:
     dispatcher:
       edge:
@@ -45,6 +44,10 @@ servicecomb:
               path: "/register/url/prefix/.*"
               microserviceName: demo-zeroconfig-schemadiscovery-registry-client
               versionRule: 0+
+  references:
+    transport:
+      demo-zeroconfig-schemadiscovery-registry-client.ClientServerEndpoint.contextMapper: rest
+
   context:
     headerContextMapper: |
       gatewayHeader: context-gateway-header

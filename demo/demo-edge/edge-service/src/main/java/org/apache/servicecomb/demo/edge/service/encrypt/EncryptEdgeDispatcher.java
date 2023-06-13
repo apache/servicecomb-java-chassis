@@ -20,9 +20,17 @@ package org.apache.servicecomb.demo.edge.service.encrypt;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
 import org.apache.servicecomb.edge.core.AbstractEdgeDispatcher;
 import org.apache.servicecomb.edge.core.CompatiblePathVersionMapper;
+import org.apache.servicecomb.edge.core.EdgeInvocationCreator;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +55,10 @@ public class EncryptEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public void init(Router router) {
-    {
-      String regex = "/" + prefix + "/([^\\\\/]+)/([^\\\\/]+)/(.*)";
-      // cookies handler are enabled by default start from 3.8.3
-      router.routeWithRegex(regex).handler(createBodyHandler());
-      router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
-    }
+    String regex = "/" + prefix + "/([^\\\\/]+)/([^\\\\/]+)/(.*)";
+    // cookies handler are enabled by default start from 3.8.3
+    router.routeWithRegex(regex).handler(createBodyHandler());
+    router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
   }
 
   protected void onRequest(RoutingContext context) {
@@ -104,10 +110,28 @@ public class EncryptEdgeDispatcher extends AbstractEdgeDispatcher {
     String pathVersion = pathParams.get("param1");
     String path = context.request().path().substring(prefix.length() + 1);
 
-    EncryptEdgeInvocation edgeInvocation = new EncryptEdgeInvocation(new EncryptContext(hcr, userId));
-    edgeInvocation.setVersionRule(versionMapper.getOrCreate(pathVersion).getVersionRule());
+    requestByFilter(context, microserviceName, versionMapper.getOrCreate(pathVersion).getVersionRule(), path,
+        new EncryptContext(hcr, userId));
+  }
 
-    edgeInvocation.init(microserviceName, context, path, httpServerFilters);
-    edgeInvocation.edgeInvoke();
+  protected void requestByFilter(RoutingContext context, String microserviceName, String versionRule, String path
+      , EncryptContext encryptContext) {
+    HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
+    HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+    InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
+        microserviceName, versionRule, path) {
+      @Override
+      public CompletableFuture<Invocation> createAsync() {
+        CompletableFuture<Invocation> result = super.createAsync();
+        return result.whenComplete((invocation, throwable)
+            -> {
+          if (throwable == null) {
+            invocation.getHandlerContext().put("encryptContext", encryptContext);
+          }
+        });
+      }
+    };
+    new RestProducerInvocationFlow(creator, requestEx, responseEx)
+        .run();
   }
 }

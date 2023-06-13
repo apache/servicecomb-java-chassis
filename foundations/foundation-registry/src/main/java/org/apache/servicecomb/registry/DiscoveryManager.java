@@ -73,9 +73,10 @@ public class DiscoveryManager {
     // default values not suitable for aggregate, reset.
     result.setNeedRefresh(false);
     result.setMicroserviceNotExist(true);
+    result.setRevision(revision);
     discoveryList
         .forEach(discovery -> {
-          MicroserviceInstances instances = discovery.findServiceInstances(appId, serviceName, versionRule, revision);
+          MicroserviceInstances instances = discovery.findServiceInstances(appId, serviceName, versionRule);
           result.mergeMicroserviceInstances(instances);
         });
 

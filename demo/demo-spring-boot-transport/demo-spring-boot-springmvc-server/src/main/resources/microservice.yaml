@@ -18,3 +18,24 @@
 servicecomb:
   config:
     ignoreResolveFailure: true
+
+  service:
+    registry:
+      registerPath: true
+      address: http://127.0.0.1:9980,http://127.0.0.1:30100
+      client:
+        timeout:
+          idle: 60
+          watch: 60
+      instance:
+        healthCheck:
+          interval: 3
+        pull:
+          interval: 10
+        watch: true
+      autodiscovery: true
+  uploads:
+    directory: target
+
+  rest:
+    address: 0.0.0.0:8080?sslEnabled=false

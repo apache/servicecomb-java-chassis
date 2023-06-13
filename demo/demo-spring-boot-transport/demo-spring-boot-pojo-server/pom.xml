@@ -25,12 +25,13 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-spring-boot-transport</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <demo.main>org.apache.servicecomb.springboot.pojo.server.PojoServer</demo.main>
+    <demo.main>org.apache.servicecomb.demo.springboot.pojo.server.PojoServer</demo.main>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>jakarta.ws.rs</groupId>
@@ -40,8 +41,8 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>inspector</artifactId>
     </dependency>
-
   </dependencies>
+
   <build>
     <plugins>
       <plugin>

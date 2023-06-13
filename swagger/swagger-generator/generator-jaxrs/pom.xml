@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>swagger-generator</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>swagger-generator-jaxrs</artifactId>
   <name>Java Chassis::Swagger::Generator::Jaxrs</name>
@@ -32,13 +32,13 @@
       <artifactId>swagger-generator-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -28,9 +28,7 @@ import java.util.Set;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
@@ -91,6 +89,10 @@ import io.swagger.models.properties.Property;
  * </pre>
  */
 public abstract class AbstractArgumentsMapperCreator {
+  protected int notProcessedSwaggerParamIdx = 0;
+
+  protected boolean isSwaggerBodyField = false;
+
   protected SerializationConfig serializationConfig;
 
   // key is context class
@@ -159,28 +161,28 @@ public abstract class AbstractArgumentsMapperCreator {
     java.lang.reflect.Parameter[] providerParameters = providerMethod.getParameters();
     for (int providerParamIdx = 0; providerParamIdx < providerParameters.length; providerParamIdx++) {
       java.lang.reflect.Parameter providerParameter = providerParameters[providerParamIdx];
-      if (processContextParameter(providerParamIdx, providerParameter)) {
+      if (processContextParameter(providerParameter)) {
         continue;
       }
 
       String parameterName = collectParameterName(providerParameter);
       if (processKnownParameter(providerParamIdx, providerParameter, parameterName)) {
         processedSwaggerParamters.add(parameterName);
+        notProcessedSwaggerParamIdx++;
         continue;
       }
 
       if (processSwaggerBodyField(providerParamIdx, providerParameter, parameterName)) {
         processedSwaggerParamters.add(parameterName);
+        isSwaggerBodyField = true;
         continue;
       }
 
-      JavaType providerType = TypeFactory.defaultInstance().constructType(providerParameter.getParameterizedType());
-      if (SwaggerUtils.isBean(providerType)) {
-        processBeanParameter(providerParamIdx, providerParameter);
+      if (processBeanParameter(providerParamIdx, providerParameter)) {
         continue;
       }
 
-      processUnknownParameter(parameterName);
+      processUnknownParameter(providerParamIdx, providerParameter, parameterName);
     }
 
     for (Parameter parameter : swaggerParameters) {
@@ -192,18 +194,17 @@ public abstract class AbstractArgumentsMapperCreator {
 
   /**
    *
-   * @param providerParamIdx
    * @param providerParameter processing provider parameter
    * @return true means processed
    */
-  protected boolean processContextParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter) {
+  protected boolean processContextParameter(java.lang.reflect.Parameter providerParameter) {
     ContextArgumentMapperFactory contextFactory = contextFactorys.get(providerParameter.getType());
     if (contextFactory == null) {
       return false;
     }
 
     mappers.add(contextFactory
-        .create(this.providerMethod.getParameters()[providerParamIdx].getName(), providerParameter.getName()));
+        .create(providerParameter.getName(), providerParameter.getName()));
     return true;
   }
 
@@ -262,9 +263,10 @@ public abstract class AbstractArgumentsMapperCreator {
    * @param providerParamIdx
    * @param providerParameter processing provider parameter
    */
-  protected abstract void processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
+  protected abstract boolean processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
 
-  protected abstract void processUnknownParameter(String parameterName);
+  protected abstract void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
+      String parameterName);
 
   protected abstract void processPendingSwaggerParameter(Parameter parameter);
 }

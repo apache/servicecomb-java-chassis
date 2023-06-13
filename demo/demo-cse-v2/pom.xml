@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-parent</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>demo-cse-v2</artifactId>
   <name>Java Chassis::Demo::CSE-V2</name>
@@ -40,6 +40,10 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>servicestage-environment</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
 

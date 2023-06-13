@@ -26,22 +26,12 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-spring-boot-transport</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>springmvc-server</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>demo-schema</artifactId>
     </dependency>
   </dependencies>
   <build>

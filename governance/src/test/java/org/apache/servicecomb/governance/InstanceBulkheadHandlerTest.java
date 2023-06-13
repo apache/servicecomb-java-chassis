@@ -37,7 +37,7 @@ import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class InstanceBulkheadHandlerTest {
   private InstanceBulkheadHandler instanceBulkheadHandler;
 
@@ -55,7 +55,7 @@ public class InstanceBulkheadHandlerTest {
     GovernanceRequest requestInstance1 = new GovernanceRequest();
     requestInstance1.setInstanceId("instance01");
     requestInstance1.setServiceName("service01");
-    requestInstance1.setUri("/test");
+    requestInstance1.setApiPath("/test");
 
     Bulkhead bulkheadInstance1 = instanceBulkheadHandler.getActuator(requestInstance1);
     dsInstance1.withBulkhead(bulkheadInstance1);
@@ -69,7 +69,7 @@ public class InstanceBulkheadHandlerTest {
     GovernanceRequest requestInstance2 = new GovernanceRequest();
     requestInstance2.setInstanceId("instance02");
     requestInstance2.setServiceName("service01");
-    requestInstance2.setUri("/test");
+    requestInstance2.setApiPath("/test");
 
     Bulkhead bulkheadInstance2 = instanceBulkheadHandler.getActuator(requestInstance2);
     dsInstance2.withBulkhead(bulkheadInstance2);

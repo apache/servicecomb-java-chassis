@@ -37,14 +37,11 @@ servicecomb:
       autodiscovery: true
 
   rest:
-    address: 0.0.0.0:8080?sslEnabled=false
+    address: 0.0.0.0:8080
     server:
       compression: true
   highway:
-    address: 0.0.0.0:7070?sslEnabled=true
-
-  filter-chains:
-    enabled: true
+    address: 0.0.0.0:7070
 
 #########SSL options
 ssl.protocols: TLSv1.2

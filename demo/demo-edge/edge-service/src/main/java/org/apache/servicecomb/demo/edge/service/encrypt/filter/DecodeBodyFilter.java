@@ -19,38 +19,49 @@ package org.apache.servicecomb.demo.edge.service.encrypt.filter;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.demo.edge.service.encrypt.EncryptContext;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-public class DecodeBodyFilter implements HttpServerFilter {
+@Component
+public class DecodeBodyFilter implements ConsumerFilter {
   private JavaType bodyType = TypeFactory.defaultInstance().constructMapType(Map.class, String.class, String[].class);
 
   @Override
-  public int getOrder() {
-    return -9000;
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1790;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-edge-decode-body";
   }
 
   @Override
-  public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     EncryptContext encryptContext = (EncryptContext) invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT);
     if (encryptContext == null) {
-      return null;
+      return nextNode.onFilter(invocation);
     }
     Hcr hcr = encryptContext.getHcr();
 
-    String encodedBody = requestEx.getParameter("body");
+    String encodedBody = invocation.getRequestEx().getParameter("body");
     if (encodedBody == null) {
-      return null;
+      return nextNode.onFilter(invocation);
     }
 
     encodedBody = encodedBody.substring(hcr.getBodyKey().length());
@@ -58,16 +69,11 @@ public class DecodeBodyFilter implements HttpServerFilter {
     try {
       Map<String, String[]> decodedBody = RestObjectMapperFactory.getRestObjectMapper()
           .readValue(encodedBody, bodyType);
-      requestEx.getParameterMap().putAll(decodedBody);
+      invocation.getRequestEx().getParameterMap().putAll(decodedBody);
     } catch (Throwable e) {
       // should be a meaning exception response
-      return Response.producerFailResp(e);
+      return CompletableFuture.failedFuture(e);
     }
-    return null;
-  }
-
-  @Override
-  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
-    return CompletableFuture.completedFuture(null);
+    return nextNode.onFilter(invocation);
   }
 }

@@ -21,7 +21,12 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = ConsumerMain.class)
 public class EdgeDemoIT {
   @BeforeEach
   public void setUp() {
@@ -30,7 +35,7 @@ public class EdgeDemoIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    ConsumerMain.main(new String[0]);
+    ConsumerMain.runTest();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

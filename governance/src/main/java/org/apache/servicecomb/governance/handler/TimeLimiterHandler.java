@@ -17,19 +17,19 @@
 
 package org.apache.servicecomb.governance.handler;
 
-import io.github.resilience4j.micrometer.tagged.TaggedTimeLimiterMetrics;
-import io.github.resilience4j.micrometer.tagged.TimeLimiterMetricNames;
-import io.github.resilience4j.timelimiter.TimeLimiter;
-import io.github.resilience4j.timelimiter.TimeLimiterConfig;
-import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
+import java.time.Duration;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.TimeLimiterPolicy;
 import org.apache.servicecomb.governance.properties.TimeLimiterProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
+import io.github.resilience4j.micrometer.tagged.TaggedTimeLimiterMetrics;
+import io.github.resilience4j.micrometer.tagged.TimeLimiterMetricNames;
+import io.github.resilience4j.timelimiter.TimeLimiter;
+import io.github.resilience4j.timelimiter.TimeLimiterConfig;
+import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 
 public class TimeLimiterHandler extends AbstractGovernanceHandler<TimeLimiter, TimeLimiterPolicy> {
 
@@ -42,17 +42,17 @@ public class TimeLimiterHandler extends AbstractGovernanceHandler<TimeLimiter, T
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, TimeLimiterPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, TimeLimiterPolicy policy) {
     return timeLimiterProperties.getConfigKey() + "." + policy.getName();
   }
 
   @Override
-  public TimeLimiterPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, timeLimiterProperties.getParsedEntity());
+  public TimeLimiterPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, timeLimiterProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<TimeLimiter> createProcessor(String key, GovernanceRequest governanceRequest,
+  public Disposable<TimeLimiter> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       TimeLimiterPolicy policy) {
     return getTimeLimiter(key, policy);
   }

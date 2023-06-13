@@ -21,7 +21,7 @@ import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
 import org.slf4j.Logger;
@@ -53,11 +53,11 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, CircuitBreakerPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, CircuitBreakerPolicy policy) {
     return this.instanceIsolationProperties.getConfigKey()
         + "." + policy.getName()
-        + "." + governanceRequest.getServiceName()
-        + "." + governanceRequest.getInstanceId();
+        + "." + requestExtractor.serviceName()
+        + "." + requestExtractor.instanceId();
   }
 
   @Override
@@ -76,17 +76,17 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
   }
 
   @Override
-  public CircuitBreakerPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    if (StringUtils.isEmpty(governanceRequest.getServiceName()) || StringUtils.isEmpty(
-        governanceRequest.getInstanceId())) {
-      LOGGER.info("Isolation is not properly configured, service id or instance id is empty.");
+  public CircuitBreakerPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    if (StringUtils.isEmpty(requestExtractor.serviceName()) || StringUtils.isEmpty(
+        requestExtractor.instanceId())) {
+      LOGGER.debug("Isolation is not properly configured, service id or instance id is empty.");
       return null;
     }
-    return matchersManager.match(governanceRequest, instanceIsolationProperties.getParsedEntity());
+    return matchersManager.match(requestExtractor, instanceIsolationProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<CircuitBreaker> createProcessor(String key, GovernanceRequest governanceRequest,
+  public Disposable<CircuitBreaker> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       CircuitBreakerPolicy policy) {
     return getCircuitBreaker(key, policy);
   }

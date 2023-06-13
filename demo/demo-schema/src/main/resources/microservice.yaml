@@ -16,14 +16,6 @@
 ## ---------------------------------------------------------------------------
 servicecomb-config-order: -1
 
-cse:
-  test:
-    duplicate1: older
-
-servicecomb:
-  test:
-    duplicate2: older
-
 demo.multi.service.center.serverB:
   key1: key1
   key2: key2

@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.foundation.auth;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class ShaAKSKCipher implements Cipher {
   public static final String CIPHER_NAME = "ShaAKSKCipher";
 

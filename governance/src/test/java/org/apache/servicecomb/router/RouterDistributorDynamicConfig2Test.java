@@ -70,7 +70,7 @@ public class RouterDistributorDynamicConfig2Test {
 
   private RouterFilter routerFilter;
 
-  private RouterDistributor<ServiceIns, ServiceIns> testDistributor;
+  private RouterDistributor<ServiceIns> testDistributor;
 
   @Autowired
   public void setEnvironment(Environment environment) {
@@ -83,7 +83,7 @@ public class RouterDistributorDynamicConfig2Test {
   }
 
   @Autowired
-  public void setTestDistributor(RouterDistributor<ServiceIns, ServiceIns> testDistributor) {
+  public void setTestDistributor(RouterDistributor<ServiceIns> testDistributor) {
     this.testDistributor = testDistributor;
   }
 

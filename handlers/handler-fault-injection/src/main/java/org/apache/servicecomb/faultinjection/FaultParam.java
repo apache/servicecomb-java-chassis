@@ -23,20 +23,10 @@ import io.vertx.core.Vertx;
  * Fault injection parameters which decides the fault injection condition.
  */
 public class FaultParam {
-  private long reqCount;
-
   private Vertx vertx;
 
-  public long getReqCount() {
-    return reqCount;
-  }
+  FaultParam() {
 
-  public void setReqCount(long reqCount) {
-    this.reqCount = reqCount;
-  }
-
-  FaultParam(long reqCount) {
-    this.reqCount = reqCount;
   }
 
   public Vertx getVertx() {

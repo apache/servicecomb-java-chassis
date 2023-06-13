@@ -35,9 +35,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class Exceptions {
   private static ExceptionProcessor processor = new DefaultExceptionProcessor();
 
@@ -74,6 +72,9 @@ public class Exceptions {
   }
 
   public static InvocationException consumer(String code, String msg, Throwable cause) {
+    if (cause instanceof InvocationException) {
+      return (InvocationException) cause;
+    }
     return create(BAD_REQUEST, code, msg, cause);
   }
 

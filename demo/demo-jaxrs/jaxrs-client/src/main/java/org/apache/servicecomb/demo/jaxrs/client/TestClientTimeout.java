@@ -23,13 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.validator.Student;
-import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
-import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -77,24 +71,8 @@ public class TestClientTimeout implements CategorizedTestCase {
       // Request Timeout or Invocation Timeout
       TestMgr.check(true,
           e.getErrorData().toString().contains("Timeout."));
-      // TODO: 这个测试用例失败不会影响当前功能。 需要在完成 SCB-2213重试重构、实例统计状态基于事件重构（当前
-      //  在LoadbalanceHandler进行实例统计信息更新，应该基于服务执行完成事件更新，重试也应该在调用层重试。）
-      // 等功能后，才能够启用这个测试用例检查。
-      // TestMgr.check(serviceCombServerStats.getContinuousFailureCount(), failures + 1);
     }
 
     TestMgr.check(true, failed);
-  }
-
-  private static ServiceCombServerStats getServiceCombServerStats() {
-    InstanceCache instanceCache = DiscoveryManager.INSTANCE.getInstanceCacheManager()
-        .getOrCreate(RegistrationManager.INSTANCE.getAppId(),
-            "jaxrs", "0+");
-    org.apache.servicecomb.registry.api.registry.MicroserviceInstance microserviceInstance = instanceCache
-        .getInstanceMap().values().iterator().next();
-    ServiceCombServer serviceCombServer = ServiceCombLoadBalancerStats.INSTANCE
-        .getServiceCombServer(microserviceInstance);
-    return ServiceCombLoadBalancerStats.INSTANCE
-        .getServiceCombServerStats(serviceCombServer);
   }
 }

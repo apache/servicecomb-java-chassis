@@ -19,8 +19,6 @@ package org.apache.servicecomb.core;
 
 public interface BootListener {
   enum EventType {
-    BEFORE_HANDLER,
-    AFTER_HANDLER,
     BEFORE_FILTER,
     AFTER_FILTER,
     BEFORE_PRODUCER_PROVIDER,
@@ -73,12 +71,6 @@ public interface BootListener {
 
   default void onBootEvent(BootEvent event) {
     switch (event.eventType) {
-      case BEFORE_HANDLER:
-        onBeforeHandler(event);
-        return;
-      case AFTER_HANDLER:
-        onAfterHandler(event);
-        return;
       case BEFORE_FILTER:
         onBeforeFilter(event);
         return;

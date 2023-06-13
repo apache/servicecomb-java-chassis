@@ -17,18 +17,26 @@
 
 package org.apache.servicecomb.demo.edge.service.handler;
 
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.Nonnull;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-public class AuthHandler implements Handler {
+@Component
+public class AuthHandler implements ConsumerFilter {
   private static Logger LOGGER = LoggerFactory.getLogger(AuthHandler.class);
 
   private static Auth auth;
@@ -38,31 +46,39 @@ public class AuthHandler implements Handler {
   }
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT) != null) {
-      invocation.next(asyncResp);
-      return;
-    }
-
-    auth.auth("").whenComplete((succ, e) -> doHandle(invocation, asyncResp, succ, e));
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1980;
   }
 
-  protected void doHandle(Invocation invocation, AsyncResponse asyncResp, Boolean authSucc, Throwable authException) {
-    if (authException != null) {
-      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) authException.getMessage()));
-      return;
+  @Override
+  public boolean isEnabledForMicroservice(String microservice) {
+    if ("auth".equals(microservice)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-auth";
+  }
+
+  @Override
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    if (invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT) != null) {
+      return nextNode.onFilter(invocation);
     }
 
+    return auth.auth("").thenCompose(result -> doHandle(invocation, nextNode, result));
+  }
+
+  protected CompletableFuture<Response> doHandle(Invocation invocation, FilterNode nextNode, Boolean authSucc) {
     if (!authSucc) {
-      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
-      return;
+      return CompletableFuture.failedFuture(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
     }
 
     LOGGER.debug("auth success.");
-    try {
-      invocation.next(asyncResp);
-    } catch (Throwable e) {
-      asyncResp.consumerFail(e);
-    }
+    return nextNode.onFilter(invocation);
   }
 }

@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-parent</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>demo-filter</artifactId>
   <name>Java Chassis::Demo::Filter</name>
@@ -30,6 +30,8 @@
   <modules>
     <module>filter-server</module>
     <module>filter-client</module>
+    <module>filter-edge</module>
+    <module>filter-tests</module>
   </modules>
   <dependencies>
     <dependency>
@@ -37,12 +39,20 @@
       <artifactId>registry-service-center</artifactId>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
   </dependencies>
 </project>

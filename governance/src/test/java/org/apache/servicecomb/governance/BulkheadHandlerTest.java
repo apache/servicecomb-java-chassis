@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class BulkheadHandlerTest {
   private BulkheadHandler bulkheadHandler;
 
@@ -39,7 +39,7 @@ public class BulkheadHandlerTest {
   @Test
   public void testMatchPriorityPolicy() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/bulkhead");
+    request.setApiPath("/bulkhead");
     BulkheadPolicy policy = bulkheadHandler.matchPolicy(request);
     Assertions.assertEquals("demo-bulkhead-priority", policy.getName());
   }

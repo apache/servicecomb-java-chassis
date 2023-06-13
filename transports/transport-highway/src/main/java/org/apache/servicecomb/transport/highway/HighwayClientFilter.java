@@ -22,19 +22,20 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class HighwayClientFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientFilter.class);
 
@@ -44,6 +45,16 @@ public class HighwayClientFilter implements ConsumerFilter {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public boolean isEnabledForTransport(String transport) {
+    return Const.HIGHWAY.equals(transport);
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 2000;
   }
 
   @Override
@@ -83,8 +94,7 @@ public class HighwayClientFilter implements ConsumerFilter {
     try {
       return HighwayCodec.decodeResponse(invocation, operationProtobuf, tcpData);
     } catch (Exception e) {
-      AsyncUtils.rethrow(e);
-      return null;
+      throw AsyncUtils.rethrow(e);
     }
   }
 

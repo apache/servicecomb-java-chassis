@@ -30,16 +30,19 @@ import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringmvc;
 import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -51,6 +54,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+@SpringBootApplication
+@EnableServiceComb
 public class SpringmvcClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpringmvcClient.class);
 
@@ -64,8 +69,7 @@ public class SpringmvcClient {
 
   public static void main(String[] args) throws Exception {
     try {
-      Log4jUtils.init();
-      BeanUtils.init();
+      new SpringApplicationBuilder(SpringmvcClient.class).web(WebApplicationType.NONE).run(args);
 
       run();
     } catch (Throwable e) {
@@ -84,7 +88,6 @@ public class SpringmvcClient {
 
   public static void run() throws Exception {
     testHttpClientsIsOk();
-    testConfigurationDuplicate();
 
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
@@ -172,8 +175,6 @@ public class SpringmvcClient {
       TestMgr.check(true,
           content.contains(
               "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.sayHello"));
-      TestMgr.check(true, content.contains(
-          "servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.fallbackFromCache"));
       TestMgr.check(true,
           content
               .contains("servicecomb_invocation{appId=\"" + application + "\",operation=\"springmvc.codeFirst.isTrue"));
@@ -236,6 +237,14 @@ public class SpringmvcClient {
 
     TestMgr.check("hi world [world]",
         template.getForObject(prefix + "/controller/sayhi?name=world",
+            String.class));
+
+    TestMgr.check("hi world boot [world boot]",
+        template.getForObject(prefix + "/controller/sayhi?name=world boot",
+            String.class));
+
+    TestMgr.check("hi world boot [world boot]",
+        template.getForObject(prefix + "/controller/sayhi?name=world+boot",
             String.class));
 
     TestMgr.check("hi world1 [world1]",
@@ -353,21 +362,6 @@ public class SpringmvcClient {
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));
-  }
-
-  private static void testConfigurationDuplicate() {
-    // this configuration will give warning messages:
-    // Key servicecomb.test.duplicate2 with an ambiguous item cse.test.duplicate2 exists, please use the same prefix or will get unexpected merged value.
-    // Key servicecomb.test.duplicate1 with an ambiguous item cse.test.duplicate1 exists, please use the same prefix or will get unexpected merged value.
-    // and the expected value is not quite determined. But will not get wrong value like 'older,newer' or 'newer,older'
-    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate2", "wrong").get(),
-        "newer");
-    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate2", "wrong").get(),
-        "newer");
-    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate1", "wrong").get(),
-        "older");
-    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
-        "newer");
   }
 
   private static void testRequiredBody(RestTemplate template, String microserviceName) {

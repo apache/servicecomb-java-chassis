@@ -42,9 +42,6 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
-import org.apache.servicecomb.core.handler.ConsumerHandlerManager;
-import org.apache.servicecomb.core.handler.HandlerConfigUtils;
-import org.apache.servicecomb.core.handler.ProducerHandlerManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
@@ -92,10 +89,6 @@ public class SCBEngine {
   private ApplicationContext applicationContext;
 
   private FilterChainsManager filterChainsManager;
-
-  private final ConsumerHandlerManager consumerHandlerManager = new ConsumerHandlerManager();
-
-  private final ProducerHandlerManager producerHandlerManager = new ProducerHandlerManager();
 
   private ProducerProviderManager producerProviderManager;
 
@@ -188,18 +181,6 @@ public class SCBEngine {
   public SCBEngine setFilterChainsManager(FilterChainsManager filterChainsManager) {
     this.filterChainsManager = filterChainsManager;
     return this;
-  }
-
-  public boolean isFilterChainEnabled() {
-    return filterChainsManager.isEnabled();
-  }
-
-  public ConsumerHandlerManager getConsumerHandlerManager() {
-    return consumerHandlerManager;
-  }
-
-  public ProducerHandlerManager getProducerHandlerManager() {
-    return producerHandlerManager;
   }
 
   public PriorityPropertyManager getPriorityPropertyManager() {
@@ -364,10 +345,6 @@ public class SCBEngine {
 
     bootListeners.sort(Comparator.comparingInt(BootListener::getOrder));
 
-    triggerEvent(EventType.BEFORE_HANDLER);
-    HandlerConfigUtils.init(consumerHandlerManager, producerHandlerManager);
-    triggerEvent(EventType.AFTER_HANDLER);
-
     triggerEvent(EventType.BEFORE_FILTER);
     filterChainsManager.init();
     triggerEvent(EventType.AFTER_FILTER);
@@ -401,7 +378,6 @@ public class SCBEngine {
     String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
-    producerMicroserviceMeta.setHandlerChain(producerHandlerManager.getOrCreate(microserviceName));
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
   }

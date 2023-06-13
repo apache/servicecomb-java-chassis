@@ -19,9 +19,7 @@ package org.apache.servicecomb.core.governance;
 
 import org.apache.servicecomb.governance.MicroserviceMeta;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ServiceCombMicroserviceMeta implements MicroserviceMeta {
   @Override
   public String getName() {

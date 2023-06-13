@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
@@ -114,6 +115,6 @@ public class ServiceCombServer extends Server {
 
   @Override
   public int hashCode() {
-    return this.instance.getInstanceId().hashCode();
+    return Objects.hash(this.instance.getInstanceId(), this.endpoint);
   }
 }

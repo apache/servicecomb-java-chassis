@@ -16,14 +16,11 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.netflix.config.ConfigurationManager;
+import mockit.Deencapsulation;
 import org.apache.commons.configuration.Configuration;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -42,19 +39,20 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.jndi.JndiPropertySource;
 
-import com.netflix.config.ConfigurationManager;
-
-import mockit.Deencapsulation;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class TestConfigurationSpringInitializer {
   @BeforeEach
   public void beforeTest() {
-    Logger.getRootLogger().setLevel(Level.OFF);
+    Configurator.setRootLevel(Level.OFF);
 
     ConfigUtil.clearExtraConfig();
     ArchaiusUtils.resetConfig();
 
-    Logger.getRootLogger().setLevel(Level.INFO);
+    Configurator.setRootLevel(Level.INFO);
   }
 
   @AfterEach

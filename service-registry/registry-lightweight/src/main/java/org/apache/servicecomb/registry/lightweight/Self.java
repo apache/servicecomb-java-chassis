@@ -28,12 +28,10 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConfigurationManager;
 
-@Component
 public class Self implements InitializingBean, BootListener {
   private Microservice microservice;
 

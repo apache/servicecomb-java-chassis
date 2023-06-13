@@ -31,8 +31,7 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        #default: loadbalance
-        default: bizkeeper-consumer,loadbalance
+        default: loadbalance
   isolation:
     Consumer:
       enabled: false

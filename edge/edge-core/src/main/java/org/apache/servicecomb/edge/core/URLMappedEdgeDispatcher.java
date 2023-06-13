@@ -20,17 +20,23 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.annotations.VisibleForTesting;
-import io.vertx.ext.web.handler.PlatformHandler;
+import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.PlatformHandler;
 
 /**
  * Provide a URL mapping based dispatcher. Users configure witch URL patterns dispatch to a target service.
@@ -120,12 +126,16 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
     String path = Utils.findActualPath(context.request().path(), configurationItem.getPrefixSegmentCount());
 
-    EdgeInvocation edgeInvocation = createEdgeInvocation();
-    if (configurationItem.getVersionRule() != null) {
-      edgeInvocation.setVersionRule(configurationItem.getVersionRule());
-    }
-    edgeInvocation.init(configurationItem.getMicroserviceName(), context, path, httpServerFilters);
-    edgeInvocation.edgeInvoke();
+    requestByFilter(context, configurationItem, path);
+  }
+
+  protected void requestByFilter(RoutingContext context, URLMappedConfigurationItem configurationItem, String path) {
+    HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
+    HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+    InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
+        configurationItem.getMicroserviceName(), configurationItem.getVersionRule(), path);
+    new RestProducerInvocationFlow(creator, requestEx, responseEx)
+        .run();
   }
 
   private URLMappedConfigurationItem findConfigurationItem(String path) {

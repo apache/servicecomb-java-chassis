@@ -28,6 +28,7 @@ import java.text.MessageFormat;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DynamicProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,7 +46,13 @@ import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Configuration
-class TracingConfiguration {
+@ConditionalOnProperty(value = TracingConfiguration.TRACING_ENABLED,
+    havingValue = "true")
+public class TracingConfiguration {
+  public static final String TRACING_PREFIX = "servicecomb.tracing.zipkin";
+
+  public static final String TRACING_ENABLED = TRACING_PREFIX + ".enabled";
+
   private String apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
 
   @Bean
@@ -96,5 +103,10 @@ class TracingConfiguration {
   @Bean
   HttpTracing httpTracing(Tracing tracing) {
     return HttpTracing.create(tracing);
+  }
+
+  @Bean
+  ZipkinTracingFilter zipkinTracingFilter() {
+    return new ZipkinTracingFilter();
   }
 }

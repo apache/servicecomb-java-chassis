@@ -30,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import io.github.resilience4j.timelimiter.TimeLimiter;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class TimeLimiterHandlerTest {
   private TimeLimiterHandler timeLimiterHandler;
 
@@ -42,7 +42,7 @@ public class TimeLimiterHandlerTest {
   @Test
   public void testMatchPriorityPolicy() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/timeLimiter");
+    request.setApiPath("/timeLimiter");
     TimeLimiterPolicy policy = timeLimiterHandler.matchPolicy(request);
     Assertions.assertEquals("demo-timeLimiter", policy.getName());
     TimeLimiter timeLimiter = timeLimiterHandler.getActuator(request);

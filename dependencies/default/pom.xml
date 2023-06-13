@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-dependencies-parent</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
@@ -35,10 +35,9 @@
     <archaius.version>0.7.7</archaius.version>
     <asciidoctorj.version>2.5.3</asciidoctorj.version>
     <aspectj.version>1.9.19</aspectj.version>
-    <assertj.version>3.23.1</assertj.version>
+    <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
-    <brave.version>5.14.1</brave.version>
-    <bytebuddy.version>1.12.20</bytebuddy.version>
+    <brave.version>5.16.0</brave.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.11.0</commons-io.version>
@@ -47,41 +46,40 @@
     <commons-logging.version>1.2</commons-logging.version>
     <commons-text.version>1.10.0</commons-text.version>
     <classmate.version>1.5.1</classmate.version>
-    <esotericsoftware.version>4.0.2</esotericsoftware.version>
+    <esotericsoftware.version>4.0.3</esotericsoftware.version>
     <failureaccess.version>1.0.1</failureaccess.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
-    <governator-api.version>1.17.12</governator-api.version>
-    <guava.version>31.1-jre</guava.version>
+    <governator-api.version>1.17.13</governator-api.version>
+    <guava.version>32.0.1-jre</guava.version>
     <guice.version>5.1.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.12</hdr-histogram.version>
     <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.14</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
-    <jackson.version>2.14.1</jackson.version>
+    <jackson.version>2.14.2</jackson.version>
     <java-websocket.version>1.5.3</java-websocket.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
     <javax-resource.version>1.5</javax-resource.version>
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
-    <jersey.version>2.38</jersey.version>
+    <jersey.version>2.39.1</jersey.version>
     <jmockit.version>1.34</jmockit.version>
     <junit.version>4.13.2</junit.version>
-    <junit5.version>5.9.1</junit5.version>
+    <junit5.version>5.9.3</junit5.version>
     <log4j.version>1.2.17</log4j.version>
-    <log4j2.version>2.19.0</log4j2.version>
+    <log4j2.version>2.20.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
-    <maven-model.version>3.8.6</maven-model.version>
-    <micrometer.version>1.10.2</micrometer.version>
-    <mockito.version>4.11.0</mockito.version>
-    <mock-server.version>5.14.0</mock-server.version>
-    <nacos-client.version>2.2.0</nacos-client.version>
+    <maven-model.version>3.9.1</maven-model.version>
+    <micrometer.version>1.11.0</micrometer.version>
+    <mock-server.version>5.15.0</mock-server.version>
+    <nacos-client.version>2.2.3</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
-    <netty.version>4.1.86.Final</netty.version>
-    <okhttp3.version>4.10.0</okhttp3.version>
+    <netty.version>4.1.93.Final</netty.version>
+    <okhttp3.version>4.11.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
-    <protobuf.version>3.21.12</protobuf.version>
+    <protobuf.version>3.23.2</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
     <protostuff-parser.version>2.2.27</protostuff-parser.version>
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
@@ -93,14 +91,14 @@
     <servlet-api.version>4.0.4</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>1.33</snakeyaml.version>
-    <spectator.version>1.4.2</spectator.version>
-    <spring.version>5.3.24</spring.version>
-    <spring-boot.version>2.7.7</spring-boot.version>
-    <swagger.version>1.6.9</swagger.version>
+    <spectator.version>1.6.5</spectator.version>
+    <spring.version>5.3.27</spring.version>
+    <spring-boot.version>2.7.11</spring-boot.version>
+    <swagger.version>1.6.11</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <vertx.version>4.3.7</vertx.version>
-    <zipkin.version>2.24.0</zipkin.version>
-    <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
+    <vertx.version>4.4.3</vertx.version>
+    <zipkin.version>2.24.1</zipkin.version>
+    <zipkin-reporter.version>2.16.4</zipkin-reporter.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -520,11 +518,6 @@
         <artifactId>zipkin</artifactId>
         <version>${zipkin.version}</version>
       </dependency>
-      <dependency>
-        <groupId>io.zipkin.zipkin2</groupId>
-        <artifactId>zipkin-junit</artifactId>
-        <version>${zipkin.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>jakarta.servlet</groupId>
@@ -572,12 +565,6 @@
         <version>${junit5.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${log4j.version}</version>
       </dependency>
 
       <dependency>
@@ -696,25 +683,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>${bytebuddy.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-inline</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver-netty</artifactId>
         <version>${mock-server.version}</version>
@@ -724,11 +692,6 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
 

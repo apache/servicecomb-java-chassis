@@ -22,12 +22,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 
 // do not implements PriorityOrdered, must be Ordered
 // because this bean must run after PropertyPlaceholderConfigurer
 // this class's purpose: when asked to resolve placeholder, then throw exception directly
-@Component
 public class LastPropertyPlaceholderConfigurer implements BeanFactoryPostProcessor, Ordered {
   @Override
   public int getOrder() {

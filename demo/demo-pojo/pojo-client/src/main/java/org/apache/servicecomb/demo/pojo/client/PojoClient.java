@@ -38,18 +38,21 @@ import org.apache.servicecomb.demo.smartcare.Application;
 import org.apache.servicecomb.demo.smartcare.Group;
 import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
-@Component
+@SpringBootApplication
+@EnableServiceComb
 public class PojoClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
@@ -76,8 +79,7 @@ public class PojoClient {
   }
 
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+    new SpringApplicationBuilder(PojoClient.class).web(WebApplicationType.NONE).run(args);
 
     try {
       run();
@@ -87,8 +89,6 @@ public class PojoClient {
       LOGGER.error("", e);
       LOGGER.error("-------------- test failed -------------");
     }
-
-    TestMgr.summary();
   }
 
   private static void testContextClassLoaderIsNull() throws Exception {
@@ -165,6 +165,8 @@ public class PojoClient {
 
       testTraceIdOnContextContainsTraceId();
     }
+
+    TestMgr.summary();
   }
 
   private static void testHttpClientsIsOk() {

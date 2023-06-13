@@ -86,7 +86,6 @@ public class ServiceRegistryListener {
     // not shortName, to support cross app invoke
     String microserviceName = microserviceVersion.getMicroserviceName();
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(scbEngine, microserviceName, true);
-    microserviceMeta.setHandlerChain(scbEngine.getConsumerHandlerManager().getOrCreate(microserviceName));
     microserviceMeta.setFilterChain(scbEngine.getFilterChainsManager().findConsumerChain(microserviceName));
 
     MicroserviceVersions microserviceVersions = microserviceVersion.getMicroserviceVersions();

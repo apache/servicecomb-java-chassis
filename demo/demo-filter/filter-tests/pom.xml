@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-filter</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>filter-tests</artifactId>
+  <name>Java Chassis::Demo::Filter::Tests</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-local</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>solution-basic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.filter.FilterTests</demo.main>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>servicecomb/service-center</name>
+                    <alias>service30100</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>30100</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>30100:30100</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>filter-server:${project.version}</name>
+                    <alias>filter-server</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://service30100:30100
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/filter-server-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service30100:service30100</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>8080</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8080:8080</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>filter-client:${project.version}</name>
+                    <alias>filter-client</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://service30100:30100
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/filter-client-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service30100:service30100</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>8082</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8082:8082</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>filter-edge:${project.version}</name>
+                    <alias>filter-edge</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://service30100:30100
+                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/filter-edge-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service30100:service30100</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>9090</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9090:9090</port>
+                      </ports>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>com.github.odavid.maven.plugins</groupId>
+            <artifactId>mixin-maven-plugin</artifactId>
+            <configuration>
+              <mixins>
+                <mixin>
+                  <groupId>org.apache.servicecomb.demo</groupId>
+                  <artifactId>docker-run-config</artifactId>
+                  <version>${project.version}</version>
+                </mixin>
+              </mixins>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

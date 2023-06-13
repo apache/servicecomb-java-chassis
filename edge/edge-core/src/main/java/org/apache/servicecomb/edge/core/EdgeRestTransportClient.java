@@ -29,7 +29,8 @@ import io.vertx.core.Context;
 public class EdgeRestTransportClient extends RestTransportClient {
   @Override
   protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
-    Context invocationContext = (Context) invocation.getHandlerContext().get(EdgeInvocation.EDGE_INVOCATION_CONTEXT);
+    Context invocationContext = (Context) invocation.getHandlerContext()
+        .get(EdgeInvocationCreator.EDGE_INVOCATION_CONTEXT);
 
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
     String clientName = endpoint.isHttp2Enabled() ?

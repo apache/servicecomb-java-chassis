@@ -20,7 +20,7 @@ package org.apache.servicecomb.governance.handler;
 import java.time.Duration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.BulkheadPolicy;
 import org.apache.servicecomb.governance.properties.InstanceBulkheadProperties;
 import org.slf4j.Logger;
@@ -42,11 +42,11 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, BulkheadPolicy policy) {
     return this.bulkheadProperties.getConfigKey()
         + "." + policy.getName()
-        + "." + governanceRequest.getServiceName()
-        + "." + governanceRequest.getInstanceId();
+        + "." + requestExtractor.serviceName()
+        + "." + requestExtractor.instanceId();
   }
 
   @Override
@@ -65,17 +65,17 @@ public class InstanceBulkheadHandler extends AbstractGovernanceHandler<Bulkhead,
   }
 
   @Override
-  public BulkheadPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    if (StringUtils.isEmpty(governanceRequest.getServiceName()) || StringUtils.isEmpty(
-        governanceRequest.getInstanceId())) {
+  public BulkheadPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    if (StringUtils.isEmpty(requestExtractor.serviceName()) || StringUtils.isEmpty(
+        requestExtractor.instanceId())) {
       LOGGER.info("Instance bulkhead is not properly configured, service id or instance id is empty.");
       return null;
     }
-    return matchersManager.match(governanceRequest, bulkheadProperties.getParsedEntity());
+    return matchersManager.match(requestExtractor, bulkheadProperties.getParsedEntity());
   }
 
   @Override
-  public Disposable<Bulkhead> createProcessor(String key, GovernanceRequest governanceRequest, BulkheadPolicy policy) {
+  public Disposable<Bulkhead> createProcessor(String key, GovernanceRequestExtractor requestExtractor, BulkheadPolicy policy) {
     return getBulkhead(key, policy);
   }
 

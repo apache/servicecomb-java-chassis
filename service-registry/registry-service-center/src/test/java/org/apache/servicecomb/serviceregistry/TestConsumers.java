@@ -110,8 +110,8 @@ public class TestConsumers extends TestRegistryBase {
       Assertions.assertEquals(0, microserviceManager.getVersionsByName().size());
 
       MatcherAssert.assertThat(collector.getEvents().stream()
-              .filter(e -> e.getThrowableInformation() != null)
-              .map(e -> e.getThrowableInformation().getThrowable().getMessage())
+              .filter(e -> e.getThrown() != null)
+              .map(e -> e.getThrown().getMessage())
               .toArray(),
           Matchers.hasItemInArray("failed to query by microserviceId '002' from ServiceCenter."));
     }

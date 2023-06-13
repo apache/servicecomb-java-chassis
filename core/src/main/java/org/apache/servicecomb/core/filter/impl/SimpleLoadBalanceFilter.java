@@ -29,26 +29,25 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
-import org.apache.servicecomb.core.handler.impl.SimpleLoadBalanceHandler;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * build-in round robin LB, for demo scenes
  */
-@Component
 public class SimpleLoadBalanceFilter implements ConsumerFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadBalanceFilter.class);
 
   public static final String NAME = "simple-load-balance";
 
@@ -155,6 +154,11 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER;
   }
 
   @Override

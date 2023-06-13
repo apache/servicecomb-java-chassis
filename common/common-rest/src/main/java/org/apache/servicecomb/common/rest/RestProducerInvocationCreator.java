@@ -21,18 +21,19 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIENT;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.NOT_DEFINED_ANY_SCHEMA;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 import javax.ws.rs.core.HttpHeaders;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -44,6 +45,9 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.Json;
 
@@ -76,7 +80,7 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
 
     Invocation invocation = createInstance();
     initInvocationContext(invocation);
-
+    addParameterContext(invocation);
     initProduceProcessor();
     initTransportContext(invocation);
 
@@ -98,6 +102,38 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
     @SuppressWarnings("unchecked")
     Map<String, String> invocationContext = Json.decodeValue(strCseContext, Map.class);
     invocation.mergeContext(invocationContext);
+  }
+
+  protected void addParameterContext(Invocation invocation) {
+    String headerContextMapper = DynamicPropertyFactory.getInstance()
+        .getStringProperty(RestConst.HEADER_CONTEXT_MAPPER, null).get();
+    String queryContextMapper = DynamicPropertyFactory.getInstance()
+        .getStringProperty(RestConst.QUERY_CONTEXT_MAPPER, null).get();
+
+    Map<String, Object> headerContextMappers;
+    if (headerContextMapper != null) {
+      headerContextMappers = YAMLUtil.yaml2Properties(headerContextMapper);
+    } else {
+      headerContextMappers = new HashMap<>();
+    }
+
+    Map<String, Object> queryContextMappers;
+    if (queryContextMapper != null) {
+      queryContextMappers = YAMLUtil.yaml2Properties(queryContextMapper);
+    } else {
+      queryContextMappers = new HashMap<>();
+    }
+
+    headerContextMappers.forEach((k, v) -> {
+      if (v instanceof String && requestEx.getHeader(k) != null) {
+        invocation.addContext((String) v, requestEx.getHeader(k));
+      }
+    });
+    queryContextMappers.forEach((k, v) -> {
+      if (v instanceof String && requestEx.getParameter(k) != null) {
+        invocation.addContext((String) v, requestEx.getParameter(k));
+      }
+    });
   }
 
   protected abstract void initTransportContext(Invocation invocation);

@@ -23,12 +23,13 @@ import static org.apache.servicecomb.faultinjection.FaultInjectionConst.CONSUMER
 import static org.apache.servicecomb.faultinjection.FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE;
 
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Handles the count for all request based key[transport + microservice qualified name].
@@ -37,22 +38,8 @@ public class FaultInjectionUtil {
   private FaultInjectionUtil() {
   }
 
-  // key is transport+operQualifiedName
-  private static final Map<String, AtomicLong> requestCount = new ConcurrentHashMapEx<>();
-
   // key is config paramter
   private static final Map<String, AtomicInteger> configCenterValue = new ConcurrentHashMapEx<>();
-
-  /**
-   * Returns total requests per provider for operational level.
-   *
-   * @param key
-   *            transport+operational name
-   * @return long total requests
-   */
-  public static AtomicLong getOperMetTotalReq(String key) {
-    return requestCount.computeIfAbsent(key, p -> new AtomicLong(1));
-  }
 
   /**
    * Returns the map of config parameter key and values.
@@ -138,35 +125,15 @@ public class FaultInjectionUtil {
   }
 
   /**
-   * It will check the delay/abort condition based on request count and percentage
-   * received.
+   * It will check the delay/abort condition based on percentage.
    *
-   * @param reqCount
-   * @param percentage
    * @return true: delay/abort is needed. false: delay/abort is not needed.
    */
-  public static boolean isFaultNeedToInject(long reqCount, int percentage) {
-    /*
-     * Example: delay/abort percentage configured is 10% and Get the count(suppose
-     * if it is 10th request) from map and calculate resultNew(10th request) and
-     * requestOld(9th request). Like this for every request it will calculate
-     * current request count and previous count. if both not matched need to add
-     * delay/abort otherwise no need to add.
-     */
-
-    // calculate the value with current request count.
-    long resultNew = (reqCount * percentage) / 100;
-
-    // calculate the value with previous count value.
-    long resultOld = ((reqCount - 1) * percentage) / 100;
-
-    // if both are not matching then delay/abort should be added.
-    return (resultNew != resultOld);
-  }
-
-  @VisibleForTesting
-  static Map<String, AtomicLong> getRequestCount() {
-    return requestCount;
+  public static boolean isFaultNeedToInject(int percentage) {
+    if (percentage > 0) {
+      return ThreadLocalRandom.current().nextInt(100) < percentage;
+    }
+    return false;
   }
 
   @VisibleForTesting

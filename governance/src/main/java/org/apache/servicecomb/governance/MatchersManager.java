@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.AbstractPolicy;
 import org.apache.servicecomb.governance.service.MatchersService;
 
@@ -31,13 +31,13 @@ public class MatchersManager {
     this.matchersService = matchersService;
   }
 
-  public <T extends AbstractPolicy> T match(GovernanceRequest request, Map<String, T> policies) {
+  public <T extends AbstractPolicy> T match(GovernanceRequestExtractor requestExtractor, Map<String, T> policies) {
     List<T> sortPolicies = new ArrayList<>(policies.size());
     sortPolicies.addAll(policies.values());
     sortPolicies.sort(T::compareTo);
 
     for (T policy : sortPolicies) {
-      if (matchersService.checkMatch(request, policy.getName())) {
+      if (matchersService.checkMatch(requestExtractor, policy.getName())) {
         return policy;
       }
     }

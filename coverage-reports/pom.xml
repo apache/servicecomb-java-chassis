@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <relativePath>../parents/default</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -31,24 +31,6 @@
 
   <dependencies>
     <!-- sort by project directory name, easy to check if the module is missed -->
-    <!-- archetypes -->
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-jaxrs-archetype</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-pojo-archetype</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-spring-boot2-starter-archetype</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.archetypes</groupId>
-      <artifactId>business-service-springmvc-archetype</artifactId>
-    </dependency>
-
     <!-- clients -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -170,10 +152,6 @@
     </dependency>
 
     <!-- handlers -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-bizkeeper</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-fault-injection</artifactId>
@@ -490,16 +468,17 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- demo spring boot provider -->
+
+    <!-- demo spring boot transport-->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-spring-boot-jaxrs-client</artifactId>
+      <artifactId>demo-spring-boot-pojo-client</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-spring-boot-jaxrs-server</artifactId>
+      <artifactId>demo-spring-boot-pojo-server</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -512,19 +491,6 @@
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-springmvc-server</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- demo spring boot transport-->
-    <dependency>
-      <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-spring-boot-pojo-client</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-spring-boot-pojo-server</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

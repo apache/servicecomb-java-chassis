@@ -19,12 +19,14 @@ package org.apache.servicecomb.demo.multiple.a.client;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@EnableServiceComb
 public class AClientMain {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+    new SpringApplicationBuilder(AClientMain.class).web(WebApplicationType.NONE).run(args);
 
     AClient client = BeanUtils.getContext().getBean(AClient.class);
     client.run();

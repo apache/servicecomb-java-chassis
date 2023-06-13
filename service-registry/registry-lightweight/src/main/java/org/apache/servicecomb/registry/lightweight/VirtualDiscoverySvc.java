@@ -18,9 +18,7 @@
 package org.apache.servicecomb.registry.lightweight;
 
 import org.apache.servicecomb.provider.pojo.registry.ThirdServiceWithInvokerRegister;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
 public class VirtualDiscoverySvc extends ThirdServiceWithInvokerRegister {
   public static final String NAME = "scb-discovery";
 

@@ -16,20 +16,23 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.http.HttpClientRequest;
 
-@Component
 public class RestClientCodecFilter implements ConsumerFilter {
   public static final String NAME = "rest-client-codec";
 
@@ -43,6 +46,16 @@ public class RestClientCodecFilter implements ConsumerFilter {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public boolean isEnabledForTransport(String transport) {
+    return Const.RESTFUL.equals(transport);
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1990;
   }
 
   @Autowired
@@ -70,6 +83,7 @@ public class RestClientCodecFilter implements ConsumerFilter {
     return CompletableFuture.completedFuture(null)
         .thenCompose(v -> transportContextFactory.createHttpClientRequest(invocation).toCompletionStage())
         .thenAccept(httpClientRequest -> prepareTransportContext(invocation, httpClientRequest))
+        .thenAccept(v -> invocation.onStartSendRequest())
         .thenAccept(v -> encoder.encode(invocation))
         .thenCompose(v -> nextNode.onFilter(invocation))
         .thenApply(response -> decoder.decode(invocation, response))
@@ -83,8 +97,27 @@ public class RestClientCodecFilter implements ConsumerFilter {
   protected void prepareTransportContext(Invocation invocation, HttpClientRequest httpClientRequest) {
     invocation.getInvocationStageTrace().finishGetConnection();
 
+    copyExtraHttpHeaders(invocation, httpClientRequest);
+
     RestClientTransportContext transportContext = transportContextFactory.create(invocation, httpClientRequest);
     invocation.setTransportContext(transportContext);
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void copyExtraHttpHeaders(Invocation invocation, HttpClientRequest httpClientRequest) {
+    Map<String, String> httpHeaders = (Map<String, String>) invocation.getHandlerContext()
+        .get(RestConst.CONSUMER_HEADER);
+    if (httpHeaders == null) {
+      return;
+    }
+    httpHeaders.forEach((key, value) -> {
+      if ("Content-Length".equalsIgnoreCase(key)) {
+        return;
+      }
+      if (null != value) {
+        httpClientRequest.putHeader(key, value);
+      }
+    });
   }
 
   protected void finishClientFiltersResponse(Invocation invocation) {

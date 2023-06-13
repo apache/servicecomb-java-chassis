@@ -26,7 +26,6 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
   public static final String ROUTER_HEADER = "X-RouterContext";
 
   @SuppressWarnings("unchecked")
-  private final RouterDistributor<ServiceCombServer, Microservice> routerDistributor = BeanUtils
+  private final RouterDistributor<ServiceCombServer> routerDistributor = BeanUtils
       .getBean(RouterDistributor.class);
 
   private final RouterFilter routerFilter = BeanUtils.getBean(RouterFilter.class);

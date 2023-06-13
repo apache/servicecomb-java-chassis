@@ -16,21 +16,18 @@
  */
 package org.apache.servicecomb.edge.core;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.TransportContext;
-import org.springframework.stereotype.Component;
 
-@Component
 public class EdgeServerCodecFilter extends RestServerCodecFilter {
   public static final String NAME = "edge-server-codec";
 
@@ -42,8 +39,19 @@ public class EdgeServerCodecFilter extends RestServerCodecFilter {
 
   @Nonnull
   @Override
-  public List<InvocationType> getInvocationTypes() {
-    return Collections.singletonList(InvocationType.CONSUMER);
+  public boolean isEnabledForInvocationType(InvocationType invocationType) {
+    return invocationType == InvocationType.CONSUMER;
+  }
+
+  @Override
+  public boolean isEnabledForTransport(String transport) {
+    // For edge service, this filter executed before load balancer and transport is always null.
+    return true;
+  }
+
+  @Override
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER - 2000;
   }
 
   @Override

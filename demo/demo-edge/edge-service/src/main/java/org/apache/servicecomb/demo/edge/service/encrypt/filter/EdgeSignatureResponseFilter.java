@@ -19,61 +19,66 @@ package org.apache.servicecomb.demo.edge.service.encrypt.filter;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.demo.edge.service.encrypt.EncryptContext;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
 import io.vertx.core.buffer.Buffer;
 
-public class EdgeSignatureResponseFilter implements HttpServerFilter {
+@Component
+public class EdgeSignatureResponseFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeSignatureResponseFilter.class);
 
   @Override
-  public int getOrder() {
-    return 10000;
+  public int getOrder(InvocationType invocationType, String microservice) {
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1991;
+  }
+
+  @Nonnull
+  @Override
+  public String getName() {
+    return "test-edge-signature-request";
   }
 
   @Override
-  public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
-    return null;
-  }
+  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    return nextNode.onFilter(invocation).whenComplete((response, throwable) -> {
+      if (throwable != null) {
+        return;
+      }
+      EncryptContext encryptContext = (EncryptContext) invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT);
+      if (encryptContext == null) {
+        return;
+      }
+      Hcr hcr = encryptContext.getHcr();
 
-  @Override
-  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
-    if (invocation == null) {
-      return CompletableFuture.completedFuture(null);
-    }
+      // bad practice: it's better to set signature in response header
+      Buffer bodyBuffer = response.getResult();
+      String body = bodyBuffer.toString();
+      if (body.endsWith("}")) {
+        Hasher hasher = Hashing.sha256().newHasher();
+        hasher.putString(hcr.getSignatureKey(), StandardCharsets.UTF_8);
+        hasher.putString(body, StandardCharsets.UTF_8);
+        String signature = hasher.hash().toString();
+        LOGGER.info("beforeSendResponse signature: {}", signature);
 
-    EncryptContext encryptContext = (EncryptContext) invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT);
-    if (encryptContext == null) {
-      return CompletableFuture.completedFuture(null);
-    }
-    Hcr hcr = encryptContext.getHcr();
-
-    // bad practice: it's better to set signature in response header
-    Buffer bodyBuffer = responseEx.getBodyBuffer();
-    String body = bodyBuffer.toString();
-    if (body.endsWith("}")) {
-      Hasher hasher = Hashing.sha256().newHasher();
-      hasher.putString(hcr.getSignatureKey(), StandardCharsets.UTF_8);
-      hasher.putString(body, StandardCharsets.UTF_8);
-      String signature = hasher.hash().toString();
-      LOGGER.info("beforeSendResponse signature: {}", signature);
-
-      body = body.substring(0, body.length() - 1) + ",\"signature\":\"" + signature + "\"}";
-      responseEx.setBodyBuffer(Buffer.buffer(body));
-    }
-
-    return CompletableFuture.completedFuture(null);
+        body = body.substring(0, body.length() - 1) + ",\"signature\":\"" + signature + "\"}";
+        response.setResult(Buffer.buffer(body));
+      }
+    });
   }
 }

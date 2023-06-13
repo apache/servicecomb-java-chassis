@@ -16,9 +16,6 @@
  */
 package org.apache.servicecomb.common.rest.codec.query;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class QueryCodecCsv extends QueryCodecWithDelimiter {
   public static final String CODEC_NAME = "csv";
 

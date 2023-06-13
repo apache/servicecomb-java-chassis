@@ -37,7 +37,7 @@ import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class IdentifierRateLimitingHandlerTest {
   private IdentifierRateLimitingHandler rateLimitingHandler;
 
@@ -54,7 +54,7 @@ public class IdentifierRateLimitingHandlerTest {
     DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/hello");
+    request.setApiPath("/hello");
     Map<String, String> headers = new HashMap<>();
     headers.put("test", "1234");
     request.setHeaders(headers);
@@ -95,7 +95,7 @@ public class IdentifierRateLimitingHandlerTest {
     DecorateCheckedSupplier<Object> ds = Decorators.ofCheckedSupplier(() -> "test");
 
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/helloServiceName");
+    request.setApiPath("/helloServiceName");
     request.setServiceName("srcService");
     Map<String, String> headers = new HashMap<>();
     headers.put("test", "1234");

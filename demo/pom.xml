@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>2.9.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <relativePath>../parents/default</relativePath>
   </parent>
   <groupId>org.apache.servicecomb.demo</groupId>
@@ -49,7 +49,6 @@
     <module>demo-local-registry</module>
     <module>demo-multi-registries</module>
     <module>demo-zeroconfig-schemadiscovery-registry</module>
-    <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
     <module>demo-edge</module>
     <module>demo-multiple</module>
@@ -139,6 +138,11 @@
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -189,50 +193,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
-  <profiles>
-    <profile>
-      <id>demo-run-release</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <configuration>
-                <outputDirectory>${project.build.directory}</outputDirectory>
-                <archive>
-                  <manifest>
-                    <addClasspath>true</addClasspath>
-                    <classpathPrefix>./lib/</classpathPrefix>
-                    <mainClass>${demo.main}</mainClass>
-                  </manifest>
-                  <manifestEntries>
-                    <Class-Path>. ..</Class-Path>
-                  </manifestEntries>
-                </archive>
-              </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-dependency-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>copy-dependencies</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>copy-dependencies</goal>
-                  </goals>
-                  <configuration>
-                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                    <silent>true</silent>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 </project>

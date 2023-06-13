@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-
 public class NonSwaggerInvocation extends Invocation {
   private final String appId;
 
@@ -26,13 +24,10 @@ public class NonSwaggerInvocation extends Invocation {
 
   private final String versionRule;
 
-  private final Handler nextHandler;
-
-  public NonSwaggerInvocation(String appId, String microserviceName, String versionRule, Handler nextHandler) {
+  public NonSwaggerInvocation(String appId, String microserviceName, String versionRule) {
     this.appId = appId;
     this.microserviceName = microserviceName;
     this.versionRule = versionRule;
-    this.nextHandler = nextHandler;
   }
 
   @Override
@@ -68,10 +63,5 @@ public class NonSwaggerInvocation extends Invocation {
   @Override
   public String getMicroserviceVersionRule() {
     return versionRule;
-  }
-
-  @Override
-  public void next(AsyncResponse asyncResp) throws Exception {
-    nextHandler.handle(this, asyncResp);
   }
 }

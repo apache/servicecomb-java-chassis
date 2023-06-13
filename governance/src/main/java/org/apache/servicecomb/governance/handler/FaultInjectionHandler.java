@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.governance.handler;
 
-import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.FaultInjectionPolicy;
-import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 import org.apache.servicecomb.governance.processor.injection.Fault;
 import org.apache.servicecomb.governance.processor.injection.FaultInjectionUtil;
+import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
 
 public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, FaultInjectionPolicy> {
 
@@ -32,17 +32,17 @@ public class FaultInjectionHandler extends AbstractGovernanceHandler<Fault, Faul
   }
 
   @Override
-  protected String createKey(GovernanceRequest governanceRequest, FaultInjectionPolicy policy) {
+  protected String createKey(GovernanceRequestExtractor requestExtractor, FaultInjectionPolicy policy) {
     return FaultInjectionProperties.MATCH_FAULT_INJECTION_KEY + "." + policy.getName();
   }
 
   @Override
-  public FaultInjectionPolicy matchPolicy(GovernanceRequest governanceRequest) {
-    return matchersManager.match(governanceRequest, faultInjectionProperties.getParsedEntity());
+  public FaultInjectionPolicy matchPolicy(GovernanceRequestExtractor requestExtractor) {
+    return matchersManager.match(requestExtractor, faultInjectionProperties.getParsedEntity());
   }
 
   @Override
-  protected DisposableHolder<Fault> createProcessor(String key, GovernanceRequest governanceRequest,
+  protected DisposableHolder<Fault> createProcessor(String key, GovernanceRequestExtractor requestExtractor,
       FaultInjectionPolicy policy) {
     return new DisposableHolder<>(key, FaultInjectionUtil.getFault(key, policy));
   }

@@ -32,10 +32,7 @@ servicecomb:
     address: 0.0.0.0:7070
   swagger:
     disableDataTypeCheck: true
-  handler:
-    chain:
-      Provider:
-        default: qps-flowcontrol-provider,auth-provider
+
   flowcontrol:
     Provider:
       qps:

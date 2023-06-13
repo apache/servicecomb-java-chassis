@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class GovernanceCacheHandlerTest {
   private GovernanceCacheHandler<String, Object> governanceCacheHandler;
 
@@ -40,7 +40,7 @@ public class GovernanceCacheHandlerTest {
   @Test
   public void testMatchPriorityPolicy() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/governanceCache");
+    request.setApiPath("/governanceCache");
     GovernanceCachePolicy policy = governanceCacheHandler.matchPolicy(request);
     Assertions.assertEquals("demo-governanceCache", policy.getName());
     GovernanceCache<String, Object> governanceCache = governanceCacheHandler.getActuator(request);

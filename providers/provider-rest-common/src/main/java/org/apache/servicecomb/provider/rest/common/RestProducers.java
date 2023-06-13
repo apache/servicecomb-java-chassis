@@ -26,11 +26,9 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@Component
 public class RestProducers implements BeanPostProcessor {
   private final List<ProducerMeta> producerMetaList = new ArrayList<>();
 

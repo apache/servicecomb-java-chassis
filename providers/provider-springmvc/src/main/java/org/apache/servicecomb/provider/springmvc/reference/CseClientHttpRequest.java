@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -40,6 +39,7 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -49,6 +49,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.annotations.VisibleForTesting;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
 
@@ -177,7 +178,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   }
 
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
-    String microserviceName = uri.getAuthority();
+    String microserviceName = parseMicroserviceName(uri);
 
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName);
@@ -198,6 +199,12 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
     Map<String, String> pathParams = locator.getPathVarMap();
     return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
+  }
+
+  private String parseMicroserviceName(URI uri) {
+    String microserviceName = uri.getAuthority();
+    return microserviceName.replace(CseUriTemplateHandler.APP_SERVICE_SEPARATOR_INTERNAL,
+        DefinitionConst.APP_SERVICE_SEPARATOR);
   }
 
   protected String findUriPath(URI uri) {
@@ -224,7 +231,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
       invocation.setSuccessResponseType(TypeFactory.defaultInstance().constructType(responseType));
     }
 
-    invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
+    invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders.toSingleValueMap());
     return invocation;
   }
 

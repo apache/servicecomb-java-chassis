@@ -20,14 +20,10 @@ import java.util.Map;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class RouterRuleMatcher {
   private final RouterRuleCache routerRuleCache;
 
-  @Autowired
   public RouterRuleMatcher(RouterRuleCache routerRuleCache) {
     this.routerRuleCache = routerRuleCache;
   }

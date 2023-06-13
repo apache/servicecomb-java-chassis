@@ -27,32 +27,24 @@ public class TestHttpUtils {
 
   @Test
   public void parseParamFromHeaderValue_normal() {
-    Assertions.assertEquals("v", HttpUtils.parseParamFromHeaderValue("xx;k=v", "k"));
-  }
-
-  @Test
-  public void parseParamFromHeaderValue_normal_ignoreCase() {
-    Assertions.assertEquals("v", HttpUtils.parseParamFromHeaderValue("xx;K=v", "k"));
+    Assertions.assertEquals("a", HttpUtils.parseParamFromHeaderValue("key1=a;key2=b", "key1"));
+    Assertions.assertEquals("b", HttpUtils.parseParamFromHeaderValue("key1=a;key2= b", "key2"));
+    Assertions.assertEquals("b", HttpUtils.parseParamFromHeaderValue("key1=a; key2=b", "key2"));
+    Assertions.assertEquals("a", HttpUtils.parseParamFromHeaderValue("key1=\"a\";key2=\"b\"", "key1"));
+    Assertions.assertEquals("b", HttpUtils.parseParamFromHeaderValue("key1=\"a\";key2=\" b\"", "key2"));
+    Assertions.assertEquals("b", HttpUtils.parseParamFromHeaderValue("key1=\"a\"; key2=\"b\"", "key2"));
+    Assertions.assertEquals("b c.txt", HttpUtils.parseParamFromHeaderValue("key1=\"a\"; key2=\"b c.txt\"", "key2"));
   }
 
   @Test
   public void parseParamFromHeaderValue_null() {
-    Assertions.assertNull(HttpUtils.parseParamFromHeaderValue(null, "k"));
+    Assertions.assertNull(HttpUtils.parseParamFromHeaderValue(null, "key"));
+    Assertions.assertNull(HttpUtils.parseParamFromHeaderValue("key1=a; key2=b", "key"));
   }
 
   @Test
-  public void parseParamFromHeaderValue_noKv() {
-    Assertions.assertNull(HttpUtils.parseParamFromHeaderValue("xx", "k"));
-  }
-
-  @Test
-  public void parseParamFromHeaderValue_noV() {
-    Assertions.assertEquals("", HttpUtils.parseParamFromHeaderValue("xx;k=", "k"));
-  }
-
-  @Test
-  public void parseParamFromHeaderValue_keyNotFound() {
-    Assertions.assertNull(HttpUtils.parseParamFromHeaderValue("xx;k=", "kk"));
+  public void parseParamFromHeaderValue_emptyStr() {
+    Assertions.assertEquals("", HttpUtils.parseParamFromHeaderValue("key1=a; key2=", "key2"));
   }
 
   @Test

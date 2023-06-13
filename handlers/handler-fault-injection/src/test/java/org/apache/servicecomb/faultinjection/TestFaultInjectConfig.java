@@ -32,15 +32,9 @@ public class TestFaultInjectConfig {
 
   FaultParam faultParam;
 
-  AbortFault abortFault;
-
-  DelayFault delayFault;
-
   @BeforeEach
   public void setUp() throws Exception {
-    faultParam = new FaultParam(10);
-    abortFault = new AbortFault();
-    delayFault = new DelayFault();
+    faultParam = new FaultParam();
   }
 
   @AfterEach
@@ -61,21 +55,8 @@ public class TestFaultInjectConfig {
     Assertions.assertEquals("servicecomb.governance.Consumer.", FaultInjectionConst.CONSUMER_FAULTINJECTION);
     Assertions.assertEquals("policy.fault.protocols.", FaultInjectionConst.CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS);
     Assertions.assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE);
-    Assertions.assertEquals("servicecomb.governance.Consumer._global.", FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
+    Assertions.assertEquals("servicecomb.governance.Consumer._global.",
+        FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
     Assertions.assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_ERROR);
-  }
-
-  @Test
-  public void testFaultParam() {
-    faultParam.setReqCount(100);
-    faultParam.setVertx(null);
-    Assertions.assertEquals(100, faultParam.getReqCount());
-    Assertions.assertNull(faultParam.getVertx());
-  }
-
-  @Test
-  public void testFaultPriority() {
-    Assertions.assertEquals(200, abortFault.getOrder());
-    Assertions.assertEquals(100, delayFault.getOrder());
   }
 }

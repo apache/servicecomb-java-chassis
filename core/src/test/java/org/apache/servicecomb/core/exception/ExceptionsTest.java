@@ -100,7 +100,7 @@ class ExceptionsTest {
           .isSameAs(INTERNAL_SERVER_ERROR);
       assertThat(exception.getErrorData().toString())
           .isEqualTo("CommonExceptionData{code='SCB.50000000', message='Internal Server Error', dynamic={}}");
-      assertThat(logCollector.getLastEvents().getRenderedMessage().replace("\r\n", "\n"))
+      assertThat(logCollector.getLastEvents().getMessage().getFormattedMessage().replace("\r\n", "\n"))
           .isEqualTo("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
               + "original exception :org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: exception need convert\n"
               + "converter exception:org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace: mock exception when convert\n");

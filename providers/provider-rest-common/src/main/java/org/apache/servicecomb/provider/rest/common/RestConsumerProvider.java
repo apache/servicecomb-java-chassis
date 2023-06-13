@@ -19,9 +19,7 @@ package org.apache.servicecomb.provider.rest.common;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.provider.consumer.AbstractConsumerProvider;
-import org.springframework.stereotype.Component;
 
-@Component
 public class RestConsumerProvider extends AbstractConsumerProvider {
   @Override
   public String getName() {

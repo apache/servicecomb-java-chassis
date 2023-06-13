@@ -29,7 +29,7 @@
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>2.9.0-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
@@ -41,36 +41,35 @@
     <java.version>17</java.version>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
-    <werror.properties>-Werror</werror.properties>
-    <test.additional.args/>
+    <werror.properties></werror.properties>
     <!-- plugin version start -->
     <!-- sort by alpha -->
-    <checkstyle-maven-plugin.version>3.2.0</checkstyle-maven-plugin.version>
+    <checkstyle-maven-plugin.version>3.2.2</checkstyle-maven-plugin.version>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
-    <dependency-check-maven-plugin.version>7.4.3</dependency-check-maven-plugin.version>
-    <docker-maven-plugin.version>0.40.3</docker-maven-plugin.version>
+    <dependency-check-maven-plugin.version>8.2.1</dependency-check-maven-plugin.version>
+    <docker-maven-plugin.version>0.43.0</docker-maven-plugin.version>
     <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-    <gmavenplus-plugin.version>2.1.0</gmavenplus-plugin.version>
+    <gmavenplus-plugin.version>3.0.0</gmavenplus-plugin.version>
     <gpg-maven-plugin.version>3.0.1</gpg-maven-plugin.version>
-    <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
-    <javadoc-maven-plugin.version>3.4.1</javadoc-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+    <javadoc-maven-plugin.version>3.5.0</javadoc-maven-plugin.version>
     <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
-    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-    <maven-project-info-reports-plugin.version>3.4.1</maven-project-info-reports-plugin.version>
+    <maven-project-info-reports-plugin.version>3.4.3</maven-project-info-reports-plugin.version>
     <maven-remote-resources-plugin.version>3.0.0</maven-remote-resources-plugin.version>
     <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
     <protoc3-maven-plugin.version>3.19.2</protoc3-maven-plugin.version>
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
-    <puppycrawl-checkstyle.version>10.5.0</puppycrawl-checkstyle.version>
+    <puppycrawl-checkstyle.version>10.12.0</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>2.5.3</release-maven-plugin.version>
     <site-maven-plugin.version>3.12.1</site-maven-plugin.version>
     <source-maven-plugin.version>3.2.1</source-maven-plugin.version>
-    <spotbug-maven-plugin.version>4.7.3.0</spotbug-maven-plugin.version>
-    <spring-boot-maven-plugin.version>2.7.7</spring-boot-maven-plugin.version>
-    <surefire-maven-plugin.version>3.0.0-M7</surefire-maven-plugin.version>
+    <spotbug-maven-plugin.version>4.7.3.4</spotbug-maven-plugin.version>
+    <spring-boot-maven-plugin.version>3.1.0</spring-boot-maven-plugin.version>
+    <surefire-maven-plugin.version>3.0.0-M9</surefire-maven-plugin.version>
     <!-- plugin version end -->
   </properties>
 
@@ -152,7 +151,6 @@
     <module>edge</module>
     <module>metrics</module>
     <module>dynamic-config</module>
-    <module>archetypes</module>
     <module>spring-boot</module>
     <module>inspector</module>
     <module>solutions</module>
@@ -204,7 +202,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0</version>
         <executions>
           <execution>
             <id>default-cli</id>
@@ -284,7 +282,28 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-maven-plugin.version}</version>
         <configuration>
-          <argLine>${test.additional.args}</argLine>
+          <argLine>
+            -Djdk.attach.allowAttachSelf
+            --add-opens java.base/java.io=ALL-UNNAMED
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens java.base/java.net=ALL-UNNAMED
+            --add-opens java.base/java.nio=ALL-UNNAMED
+            --add-opens java.base/java.nio.channels.spi=ALL-UNNAMED
+            --add-opens java.base/java.nio.file=ALL-UNNAMED
+            --add-opens java.base/java.util=ALL-UNNAMED
+            --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+            --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
+            --add-opens java.base/java.util.jar=ALL-UNNAMED
+            --add-opens java.base/java.util.stream=ALL-UNNAMED
+            --add-opens java.base/java.time=ALL-UNNAMED
+            --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+            --add-opens java.base/sun.net.dns=ALL-UNNAMED
+            --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+            --add-opens java.base/sun.security.jca=ALL-UNNAMED
+            --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED
+            --add-reads java.base=java.desktop
+          </argLine>
           <skip>${maven.test.skip}</skip>
           <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
           <excludes>
@@ -466,6 +485,9 @@
   <profiles>
     <profile>
       <id>release</id>
+      <modules>
+        <module>distribution</module>
+      </modules>
       <properties>
         <skip-remote-resource>false</skip-remote-resource>
       </properties>
@@ -550,15 +572,6 @@
       <id>it</id>
       <modules>
         <module>demo</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>distribution</id>
-      <properties>
-        <skip-remote-resource>false</skip-remote-resource>
-      </properties>
-      <modules>
-        <module>distribution</module>
       </modules>
     </profile>
     <profile>
@@ -649,51 +662,6 @@
           </plugin>
         </plugins>
       </reporting>
-    </profile>
-    <profile>
-      <id>jdk11</id>
-      <activation>
-        <jdk>[11,17)</jdk>
-      </activation>
-      <properties>
-        <werror.properties/>
-        <test.additional.args>
-          -Djdk.attach.allowAttachSelf
-          --add-opens java.base/java.lang=ALL-UNNAMED
-          --add-reads java.base=java.desktop
-        </test.additional.args>
-      </properties>
-    </profile>
-    <profile>
-      <id>jdk17</id>
-      <activation>
-        <jdk>[17,)</jdk>
-      </activation>
-      <properties>
-        <werror.properties/>
-        <test.additional.args>
-          -Djdk.attach.allowAttachSelf
-          --add-opens java.base/java.io=ALL-UNNAMED
-          --add-opens java.base/java.lang=ALL-UNNAMED
-          --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-          --add-opens java.base/java.net=ALL-UNNAMED
-          --add-opens java.base/java.nio=ALL-UNNAMED
-          --add-opens java.base/java.nio.channels.spi=ALL-UNNAMED
-          --add-opens java.base/java.nio.file=ALL-UNNAMED
-          --add-opens java.base/java.util=ALL-UNNAMED
-          --add-opens java.base/java.util.concurrent=ALL-UNNAMED
-          --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED
-          --add-opens java.base/java.util.jar=ALL-UNNAMED
-          --add-opens java.base/java.util.stream=ALL-UNNAMED
-          --add-opens java.base/java.time=ALL-UNNAMED
-          --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
-          --add-opens java.base/sun.net.dns=ALL-UNNAMED
-          --add-opens java.base/sun.nio.ch=ALL-UNNAMED
-          --add-opens java.base/sun.security.jca=ALL-UNNAMED
-          --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED
-          --add-reads java.base=java.desktop
-        </test.additional.args>
-      </properties>
     </profile>
   </profiles>
 

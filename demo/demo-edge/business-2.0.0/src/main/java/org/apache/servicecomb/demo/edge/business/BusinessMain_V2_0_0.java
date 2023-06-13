@@ -17,12 +17,15 @@
 
 package org.apache.servicecomb.demo.edge.business;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.springboot.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
+@SpringBootApplication
+@EnableServiceComb
 public class BusinessMain_V2_0_0 {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+    new SpringApplicationBuilder(BusinessMain_V2_0_0.class).web(WebApplicationType.NONE).run(args);
   }
 }

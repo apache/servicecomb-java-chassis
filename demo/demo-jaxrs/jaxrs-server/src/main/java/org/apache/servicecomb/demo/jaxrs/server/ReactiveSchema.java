@@ -31,9 +31,10 @@ import org.springframework.web.client.RestTemplate;
 @Path("/reactive")
 @Produces(MediaType.APPLICATION_JSON)
 public class ReactiveSchema {
-  @Path("/add")
+  // reactive is configured to run in event-loop thread pool
+  @Path("/testSyncInvokeInEventLoop")
   @GET
-  public int add(@QueryParam("a") int a, @QueryParam("b") int b) {
+  public int testSyncInvokeInEventLoop(@QueryParam("a") int a, @QueryParam("b") int b) {
     RestTemplate client = RestTemplateBuilder.create();
     return client.getForObject("cse://jaxrs/compute/reduce?a=1&b=2", int.class);
   }

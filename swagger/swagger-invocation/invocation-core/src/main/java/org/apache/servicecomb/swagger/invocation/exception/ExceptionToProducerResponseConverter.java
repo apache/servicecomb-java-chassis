@@ -20,7 +20,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 /**
- *  ExceptionToProducerResponseConverter are used to convert provider Exceptions to user friendly messages.
+ *  ExceptionToProducerResponseConverter are used to convert provider Exceptions to user-friendly messages.
  *  They are called when :
  *  1. exception happens executing business logic
  *  2. exception happens in ProducerInvokeExtension.beforeMethodInvoke(e.g. parameter validation)

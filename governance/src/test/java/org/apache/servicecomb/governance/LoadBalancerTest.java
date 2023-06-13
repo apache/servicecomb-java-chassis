@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(classes = {GovernanceConfiguration.class, MockConfiguration.class})
+@ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
 public class LoadBalancerTest {
   private LoadBalanceHandler loadBalanceHandler;
 
@@ -43,7 +43,7 @@ public class LoadBalancerTest {
   @Test
   public void test_loadbalance_random() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/loadrandom");
+    request.setApiPath("/loadrandom");
     request.setServiceName("loadrandom");
     LoadBalance loadBalance = loadBalanceHandler.getActuator(request);
     Assert.assertEquals("Random", loadBalance.getRule());
@@ -52,7 +52,7 @@ public class LoadBalancerTest {
   @Test
   public void test_loadbalance_roundRobin() {
     GovernanceRequest request = new GovernanceRequest();
-    request.setUri("/loadroundRobin");
+    request.setApiPath("/loadroundRobin");
     request.setServiceName("loadroundRobin");
     LoadBalance loadBalance = loadBalanceHandler.getActuator(request);
     Assert.assertEquals("RoundRobin", loadBalance.getRule());

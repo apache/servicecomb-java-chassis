@@ -20,9 +20,7 @@ import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
 import org.apache.servicecomb.registry.lightweight.AbstractLightweightDiscovery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
   private static final String NAME = "zero-config discovery";
 

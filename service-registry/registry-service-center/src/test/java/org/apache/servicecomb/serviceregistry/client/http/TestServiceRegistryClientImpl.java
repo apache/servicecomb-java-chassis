@@ -17,23 +17,23 @@
 
 package org.apache.servicecomb.serviceregistry.client.http;
 
-import static org.hamcrest.core.Is.is;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.Json;
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
@@ -57,19 +57,14 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import javax.ws.rs.core.Response.Status;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import io.vertx.core.Handler;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.json.Json;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import static org.hamcrest.core.Is.is;
 
 public class TestServiceRegistryClientImpl {
   private ServiceRegistryClientImpl oClient = null;
@@ -132,27 +127,18 @@ public class TestServiceRegistryClientImpl {
 
   abstract static class RegisterSchemaTester {
     void run() {
-      Logger rootLogger = Logger.getRootLogger();
-
-      List<LoggingEvent> events = new ArrayList<>();
-      Appender appender = new MockUp<Appender>() {
-        @Mock
-        public void doAppend(LoggingEvent event) {
-          events.add(event);
-        }
-      }.getMockInstance();
-      rootLogger.addAppender(appender);
+      LogCollector logCollector = new LogCollector();
 
       try {
-        doRun(events);
+        doRun(logCollector.getEvents());
       } catch (Throwable e) {
         e.printStackTrace();
       }
 
-      rootLogger.removeAppender(appender);
+      logCollector.close();
     }
 
-    abstract void doRun(List<LoggingEvent> events);
+    abstract void doRun(List<LogEvent> events);
   }
 
   @Test
@@ -166,9 +152,9 @@ public class TestServiceRegistryClientImpl {
     };
 
     new RegisterSchemaTester() {
-      void doRun(java.util.List<LoggingEvent> events) {
+      void doRun(java.util.List<LogEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
-        Assertions.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage());
+        Assertions.assertEquals("Register schema msid/schemaId failed.", events.get(0).getMessage().getFormattedMessage());
       }
     }.run();
   }
@@ -192,12 +178,12 @@ public class TestServiceRegistryClientImpl {
     };
 
     new RegisterSchemaTester() {
-      void doRun(java.util.List<LoggingEvent> events) {
+      void doRun(java.util.List<LogEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
         Assertions.assertEquals(
             "register schema msid/schemaId fail.",
-            events.get(0).getMessage());
-        Assertions.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+            events.get(0).getMessage().getFormattedMessage());
+        Assertions.assertEquals(e, events.get(0).getThrown());
       }
     }.run();
   }
@@ -230,11 +216,11 @@ public class TestServiceRegistryClientImpl {
     };
 
     new RegisterSchemaTester() {
-      void doRun(java.util.List<LoggingEvent> events) {
+      void doRun(java.util.List<LogEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
         Assertions.assertEquals(
             "Register schema msid/schemaId failed, statusCode: 400, statusMessage: client error, description: too big.",
-            events.get(0).getMessage());
+            events.get(0).getMessage().getFormattedMessage());
       }
     }.run();
   }
@@ -262,11 +248,11 @@ public class TestServiceRegistryClientImpl {
     };
 
     new RegisterSchemaTester() {
-      void doRun(java.util.List<LoggingEvent> events) {
+      void doRun(java.util.List<LogEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
         Assertions.assertEquals(
             "register schema msid/schemaId success.",
-            events.get(0).getMessage());
+            events.get(0).getMessage().getFormattedMessage());
       }
     }.run();
   }
@@ -532,12 +518,12 @@ public class TestServiceRegistryClientImpl {
     };
 
     new RegisterSchemaTester() {
-      void doRun(java.util.List<LoggingEvent> events) {
+      void doRun(java.util.List<LogEvent> events) {
         oClient.getServiceCenterInfo();
         Assertions.assertEquals(
             "query servicecenter version info failed.",
-            events.get(0).getMessage());
-        Assertions.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
+            events.get(0).getMessage().getFormattedMessage());
+        Assertions.assertEquals(e, events.get(0).getThrown());
       }
     }.run();
   }

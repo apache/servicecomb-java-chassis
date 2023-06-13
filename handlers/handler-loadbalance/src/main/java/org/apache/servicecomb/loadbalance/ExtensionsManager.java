@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.loadbalance;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -25,16 +24,16 @@ import org.slf4j.LoggerFactory;
 public class ExtensionsManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionsManager.class);
 
-  private static List<ExtensionsFactory> extentionFactories = new ArrayList<>();
+  private final List<ExtensionsFactory> extensionsFactories;
 
-  public static void addExtentionsFactory(ExtensionsFactory factory) {
-    extentionFactories.add(factory);
+  public ExtensionsManager(List<ExtensionsFactory> extensionsFactories) {
+    this.extensionsFactories = extensionsFactories;
   }
 
-  public static RuleExt createLoadBalancerRule(String microservice) {
+  public RuleExt createLoadBalancerRule(String microservice) {
     RuleExt rule = null;
 
-    for (ExtensionsFactory factory : extentionFactories) {
+    for (ExtensionsFactory factory : extensionsFactories) {
       if (factory.isSupport(Configuration.RULE_STRATEGY_NAME,
           Configuration.INSTANCE.getRuleStrategyName(microservice))) {
         rule = factory.createLoadBalancerRule(

@@ -21,13 +21,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -53,7 +51,6 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
@@ -86,11 +83,6 @@ public class Invocation extends SwaggerInvocation {
 
   // 只用于handler之间传递数据，是本地数据
   private final Map<String, Object> handlerContext = localContext;
-
-  // handler链，是arrayList，可以高效地通过index访问
-  private List<Handler> handlerList;
-
-  private int handlerIndex;
 
   // 应答的处理器
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
@@ -144,9 +136,14 @@ public class Invocation extends SwaggerInvocation {
     this.schemaMeta = operationMeta.getSchemaMeta();
     this.operationMeta = operationMeta;
     this.setSwaggerArguments(swaggerArguments);
-    this.handlerList = getHandlerChain();
-    handlerIndex = 0;
     traceIdLogger = new TraceIdLogger(this);
+  }
+
+  public String getTransportName() {
+    if (endpoint == null || endpoint.getTransport() == null) {
+      return null;
+    }
+    return endpoint.getTransport().getName();
   }
 
   public Transport getTransport() {
@@ -155,15 +152,6 @@ public class Invocation extends SwaggerInvocation {
           "Endpoint is empty. Forget to configure \"loadbalance\" in consumer handler chain?");
     }
     return endpoint.getTransport();
-  }
-
-  public List<Handler> getHandlerChain() {
-    return schemaMeta.getMicroserviceMeta().getHandlerChain();
-  }
-
-  @VisibleForTesting
-  public void setHandlerList(List<Handler> handlerList) {
-    this.handlerList = handlerList;
   }
 
   public Executor getResponseExecutor() {
@@ -263,21 +251,6 @@ public class Invocation extends SwaggerInvocation {
 
   public Map<String, Object> getHandlerContext() {
     return handlerContext;
-  }
-
-  public int getHandlerIndex() {
-    return handlerIndex;
-  }
-
-  public void setHandlerIndex(int handlerIndex) {
-    this.handlerIndex = handlerIndex;
-  }
-
-  public void next(AsyncResponse asyncResp) throws Exception {
-    // 不必判断有效性，因为整个流程都是内部控制的
-    int runIndex = handlerIndex;
-    handlerIndex++;
-    handlerList.get(runIndex).handle(this, asyncResp);
   }
 
   public String getSchemaId() {
@@ -429,7 +402,6 @@ public class Invocation extends SwaggerInvocation {
   // for retry, reset invocation and try it again
   public void reset() {
     finished = false;
-    handlerIndex = 0;
   }
 
   public boolean isFinished() {
@@ -491,10 +463,23 @@ public class Invocation extends SwaggerInvocation {
   // ensure sync consumer invocation response flow not run in eventLoop
   public <T> CompletableFuture<T> optimizeSyncConsumerThread(CompletableFuture<T> future) {
     if (sync && !InvokerUtils.isInEventLoop()) {
-      AsyncUtils.waitQuietly(future);
+      return AsyncUtils.tryCatchSupplier(() -> InvokerUtils.toSync(future, getWaitTime()));
     }
 
     return future;
+  }
+
+  public long getWaitTime() {
+    if (getOperationMeta().getConfig().getMsInvocationTimeout() > 0) {
+      // if invocation timeout configured, use it.
+      return getOperationMeta().getConfig().getMsInvocationTimeout();
+    }
+
+    // In invocation handlers, may call other microservices, invocation
+    // timeout may be much longer than request timeout.
+    // But this is quite rare, for simplicity, default two times of request timeout.
+    // If users need longer timeout, can configure invocation timeout.
+    return getOperationMeta().getConfig().getMsRequestTimeout() * 2;
   }
 
   /**

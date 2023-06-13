@@ -96,7 +96,7 @@ public class TestGroupExecutor {
     Assertions.assertEquals(200, groupExecutor.maxThreads);
     Assertions.assertEquals(
         "servicecomb.executor.default.thread-per-group is deprecated, recommended to use servicecomb.executor.default.maxThreads-per-group.",
-        collector.getEvents().get(collector.getEvents().size() - 2).getMessage());
+        collector.getEvents().get(collector.getEvents().size() - 2).getMessage().getFormattedMessage());
     collector.teardown();
 
     ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 300);
@@ -113,7 +113,7 @@ public class TestGroupExecutor {
     Assertions.assertEquals(10, groupExecutor.maxThreads);
     Assertions.assertEquals(
         "coreThreads is bigger than maxThreads, change from 25 to 10.",
-        collector.getEvents().get(collector.getEvents().size() - 2).getMessage());
+        collector.getEvents().get(collector.getEvents().size() - 2).getMessage().getFormattedMessage());
     collector.teardown();
   }
 

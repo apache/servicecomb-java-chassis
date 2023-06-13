@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public class TestMgr {
 
     Error error = new Error(msg + " | " + desc + ", method is " + getCaller());
     if (e != null) {
-      error.setStackTrace(error.getStackTrace());
+      error.setStackTrace(e.getStackTrace());
     }
     errorList.add(error);
   }

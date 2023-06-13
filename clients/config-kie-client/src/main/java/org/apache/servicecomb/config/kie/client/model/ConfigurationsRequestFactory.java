@@ -32,13 +32,13 @@ public class ConfigurationsRequestFactory {
 
   private static final String KEY_VERSION = "version";
 
-  private static final int VERSION_ORDER = 50;
+  private static final int CUSTOM_ORDER = 100;
 
-  private static final int SERVICE_ORDER = 100;
+  private static final int VERSION_ORDER = 200;
 
-  private static final int APP_ORDER = 200;
+  private static final int SERVICE_ORDER = 300;
 
-  private static final int CUSTOM_ORDER = 300;
+  private static final int APP_ORDER = 400;
 
   public static List<ConfigurationsRequest> buildConfigurationRequests(KieConfiguration configuration) {
     List<ConfigurationsRequest> result = new ArrayList<>();

@@ -18,11 +18,9 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
-import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-@Component
 public class HealthBootListener implements BootListener {
   @Override
   public void onBeforeProducerProvider(BootEvent event) {
