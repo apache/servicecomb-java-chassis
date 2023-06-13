@@ -34,6 +34,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 
 public class TestSwaggerUtils {
 
@@ -83,6 +84,7 @@ public class TestSwaggerUtils {
     ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
+    operation.setResponses(new ApiResponses());
     operation.getResponses().addApiResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
@@ -95,6 +97,7 @@ public class TestSwaggerUtils {
     response.setDescription("description");
 
     Operation operation = new Operation();
+    operation.setResponses(new ApiResponses());
     operation.getResponses().addApiResponse("200", response);
 
     SwaggerUtils.correctResponses(operation);
@@ -106,6 +109,7 @@ public class TestSwaggerUtils {
     ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
+    operation.setResponses(new ApiResponses());
     operation.getResponses().addApiResponse("default", response);
 
     SwaggerUtils.correctResponses(operation);
@@ -117,6 +121,7 @@ public class TestSwaggerUtils {
     ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
+    operation.setResponses(new ApiResponses());
     operation.getResponses().addApiResponse("default", new ApiResponse());
     operation.getResponses().addApiResponse("201", response);
     operation.getResponses().addApiResponse("301", new ApiResponse());
@@ -130,6 +135,7 @@ public class TestSwaggerUtils {
     ApiResponse response = new ApiResponse();
 
     Operation operation = new Operation();
+    operation.setResponses(new ApiResponses());
     operation.getResponses().addApiResponse("200", response);
 
     PathItem path = new PathItem();

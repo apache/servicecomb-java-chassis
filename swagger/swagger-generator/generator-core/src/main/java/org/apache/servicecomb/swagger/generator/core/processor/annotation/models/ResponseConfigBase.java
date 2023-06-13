@@ -19,11 +19,7 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation.model
 public class ResponseConfigBase {
   private String description;
 
-  private String responseReference;
-
   private Class<?> responseClass;
-
-  private String responseContainer;
 
   public String getDescription() {
     return description;
@@ -31,10 +27,6 @@ public class ResponseConfigBase {
 
   public void setDescription(String description) {
     this.description = description;
-  }
-
-  public void setResponseReference(String responseReference) {
-    this.responseReference = responseReference;
   }
 
   public Class<?> getResponseClass() {
@@ -45,17 +37,9 @@ public class ResponseConfigBase {
     this.responseClass = responseClass;
   }
 
-  public String getResponseContainer() {
-    return responseContainer;
-  }
-
-  public void setResponseContainer(String responseContainer) {
-    this.responseContainer = responseContainer;
-  }
-
   @Override
   public String toString() {
-    return "ResponseConfigBase [description=" + description + ", responseReference=" + responseReference
-        + ", responseClass=" + responseClass + ", responseContainer=" + responseContainer + "]";
+    return "ResponseConfigBase [description=" + description
+        + ", responseClass=" + responseClass + "]";
   }
 }

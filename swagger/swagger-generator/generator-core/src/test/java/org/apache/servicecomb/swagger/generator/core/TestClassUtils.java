@@ -20,21 +20,20 @@ package org.apache.servicecomb.swagger.generator.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.ws.rs.Path;
-
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.models.parameters.PathParameter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-@SwaggerDefinition
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.Path;
+
+@OpenAPIDefinition
 public class TestClassUtils {
   @Test
   public void testHasAnnotation() {
-    Assertions.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
+    Assertions.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, OpenAPIDefinition.class));
     Assertions.assertTrue(SwaggerUtils.hasAnnotation(TestClassUtils.class, Test.class));
 
     Assertions.assertFalse(SwaggerUtils.hasAnnotation(TestClassUtils.class, Path.class));
@@ -42,14 +41,14 @@ public class TestClassUtils {
 
   @Test
   public void isRawJsonType() {
-    PathParameter param = new PathParameter();
+    RequestBody param = new RequestBody();
 
     Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
 
-    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.FALSE);
+    param.addExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.FALSE);
     Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
 
-    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.TRUE);
+    param.addExtension(SwaggerConst.EXT_RAW_JSON_TYPE, Boolean.TRUE);
     Assertions.assertTrue(SwaggerUtils.isRawJsonType(param));
   }
 

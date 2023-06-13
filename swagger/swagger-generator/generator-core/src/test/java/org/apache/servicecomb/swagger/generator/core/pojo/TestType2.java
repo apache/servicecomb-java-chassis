@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.swagger.generator.core.pojo;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("XXX")
+@Schema(name = "XXX")
 public class TestType2 {
   String val2;
 }
