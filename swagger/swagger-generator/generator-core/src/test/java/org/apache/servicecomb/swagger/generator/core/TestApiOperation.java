@@ -107,9 +107,9 @@ public class TestApiOperation {
     Assertions.assertEquals("summary", operation.getSummary());
     Assertions.assertEquals("notes", operation.getDescription());
     Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
-    Assertions.assertEquals(Arrays.asList("application/json"),
-        operation.getResponses().getDefault().getContent().keySet().iterator().next());
-    Assertions.assertEquals(Arrays.asList("application/json"),
+    Assertions.assertEquals("application/json",
+        operation.getResponses().get("200").getContent().keySet().iterator().next());
+    Assertions.assertEquals("application/json",
         operation.getRequestBody().getContent().keySet().iterator().next());
 
     ApiResponses responseMap = operation.getResponses();

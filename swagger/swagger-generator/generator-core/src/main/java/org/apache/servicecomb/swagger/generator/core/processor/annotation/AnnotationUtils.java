@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -74,7 +75,7 @@ public final class AnnotationUtils {
     return apiResponse.responseCode();
   }
 
-  private static io.swagger.v3.oas.models.responses.ApiResponse apiResponseModel(ApiResponse apiResponse) {
+  public static io.swagger.v3.oas.models.responses.ApiResponse apiResponseModel(ApiResponse apiResponse) {
     io.swagger.v3.oas.models.responses.ApiResponse result =
         new io.swagger.v3.oas.models.responses.ApiResponse();
     result.setDescription(apiResponse.description());
@@ -83,7 +84,7 @@ public final class AnnotationUtils {
     return result;
   }
 
-  private static Map<String, io.swagger.v3.oas.models.headers.Header> headersModel(Header[] headers) {
+  public static Map<String, io.swagger.v3.oas.models.headers.Header> headersModel(Header[] headers) {
     Map<String, io.swagger.v3.oas.models.headers.Header> result = new HashMap<>();
     for (Header header : headers) {
       io.swagger.v3.oas.models.headers.Header model =
@@ -95,7 +96,7 @@ public final class AnnotationUtils {
     return result;
   }
 
-  private static io.swagger.v3.oas.models.media.Content contentModel(Content[] contents) {
+  public static io.swagger.v3.oas.models.media.Content contentModel(Content[] contents) {
     io.swagger.v3.oas.models.media.Content result = new io.swagger.v3.oas.models.media.Content();
     for (io.swagger.v3.oas.annotations.media.Content content : contents) {
       MediaType mediaType = new MediaType();
@@ -106,6 +107,15 @@ public final class AnnotationUtils {
     return result;
   }
 
+  public static io.swagger.v3.oas.models.parameters.RequestBody requestBodyModel(RequestBody requestBody) {
+    if (requestBody == null) {
+      return null;
+    }
+    io.swagger.v3.oas.models.parameters.RequestBody result = new io.swagger.v3.oas.models.parameters.RequestBody();
+    result.setContent(AnnotationUtils.contentModel(requestBody.content()));
+    return result;
+  }
+
   private static String mediaTypeModel(io.swagger.v3.oas.annotations.media.Content content) {
     if (StringUtils.isEmpty(content.mediaType())) {
       return jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -113,7 +123,7 @@ public final class AnnotationUtils {
     return content.mediaType();
   }
 
-  private static io.swagger.v3.oas.models.media.Schema schemaModel(Schema schema) {
+  public static io.swagger.v3.oas.models.media.Schema schemaModel(Schema schema) {
     io.swagger.v3.oas.models.media.Schema result =
         new io.swagger.v3.oas.models.media.Schema();
     result.setDescription(schema.description());
