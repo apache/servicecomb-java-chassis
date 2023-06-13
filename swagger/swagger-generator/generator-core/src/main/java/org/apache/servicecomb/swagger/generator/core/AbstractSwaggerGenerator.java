@@ -94,7 +94,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   @Override
   public void setHttpMethod(String httpMethod) {
-    this.httpMethod = httpMethod.toLowerCase(Locale.US);
+    this.httpMethod = httpMethod.toUpperCase(Locale.US);
   }
 
   public SwaggerGeneratorFeature getSwaggerGeneratorFeature() {

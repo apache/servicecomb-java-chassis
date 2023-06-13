@@ -21,9 +21,9 @@ import javax.servlet.http.Part;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-
-import io.swagger.models.properties.FileProperty;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.media.FileSchema;
 
 
 public class TestPartPropertyCreator {
@@ -37,6 +37,6 @@ public class TestPartPropertyCreator {
 
   @Test
   public void createProperty() {
-    MatcherAssert.assertThat(creator.createProperty(), Matchers.instanceOf(FileProperty.class));
+    MatcherAssert.assertThat(creator.createProperty(), Matchers.instanceOf(FileSchema.class));
   }
 }

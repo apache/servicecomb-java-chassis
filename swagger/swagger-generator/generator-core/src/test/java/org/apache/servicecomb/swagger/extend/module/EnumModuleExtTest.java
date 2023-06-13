@@ -18,14 +18,14 @@
 package org.apache.servicecomb.swagger.extend.module;
 
 import org.apache.servicecomb.swagger.extend.introspector.JsonPropertyIntrospectorTest.TestEnum;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import io.swagger.util.Json;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import io.swagger.v3.core.util.Json;
 
 public class EnumModuleExtTest {
   @Test

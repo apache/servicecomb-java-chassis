@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 
 public class TestApiResponse {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
@@ -39,24 +40,24 @@ public class TestApiResponse {
 
   interface ApiResponseAnnotation {
     @ApiResponse(
-        headers = {@Header(name = "k1", schema = @Schema(name = "integer")),
-            @Header(name = "k2", schema = @Schema(name = "string"))},
+        headers = {@Header(name = "k1", schema = @Schema(type = "integer", format = "int32")),
+            @Header(name = "k2", schema = @Schema(type = "string"))},
         responseCode = "200",
         description = "")
     void testApiResponseHeader();
 
     @ApiResponse(
-        headers = {@Header(name = "k1", schema = @Schema(name = "integer"))})
+        headers = {@Header(name = "k1", schema = @Schema(type = "integer", format = "int32"))})
     void testResponseHeader();
 
     @ApiResponse(
-        content = @Content(schema = @Schema(type = "integer")),
+        content = @Content(schema = @Schema(type = "integer", format = "int32")),
         responseCode = "200",
         description = "msg")
     void testSingle();
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(type = "integer")), description = "msg1"),
+        @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(type = "integer", format = "int32")), description = "msg1"),
         @ApiResponse(responseCode = "301", content = @Content(schema = @Schema(type = "string")), description = "msg2")})
     void testMulti();
   }
@@ -77,8 +78,10 @@ public class TestApiResponse {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMulti");
     Assertions.assertEquals("/testMulti", swaggerOperation.getPath());
 
-    Response response1 = swaggerOperation.getOperation().getResponses().get("200");
-    Response response2 = swaggerOperation.getOperation().getResponses().get("301");
+    io.swagger.v3.oas.models.responses.ApiResponse response1 = swaggerOperation.getOperation().getResponses()
+        .get("200");
+    io.swagger.v3.oas.models.responses.ApiResponse response2 = swaggerOperation.getOperation().getResponses()
+        .get("301");
     Assertions.assertEquals("msg1", response1.getDescription());
     Assertions.assertEquals("msg2", response2.getDescription());
   }
@@ -88,14 +91,14 @@ public class TestApiResponse {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testApiResponseHeader");
     Assertions.assertEquals("/testApiResponseHeader", swaggerOperation.getPath());
 
-    Response response = swaggerOperation.getOperation().getResponses().get("200");
-    Property property = response.getHeaders().get("k1");
-    Assertions.assertEquals("integer", property.getType());
-    Assertions.assertEquals("int32", property.getFormat());
+    io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
+    io.swagger.v3.oas.models.headers.Header property = response.getHeaders().get("k1");
+    Assertions.assertEquals("integer", property.getSchema().getType());
+    Assertions.assertEquals("int32", property.getSchema().getFormat());
 
     property = response.getHeaders().get("k2");
-    Assertions.assertEquals("string", property.getType());
-    Assertions.assertNull(property.getFormat());
+    Assertions.assertEquals("string", property.getSchema().getType());
+    Assertions.assertEquals("", property.getSchema().getFormat());
   }
 
   @Test
@@ -103,9 +106,9 @@ public class TestApiResponse {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingle");
     Assertions.assertEquals("/testSingle", swaggerOperation.getPath());
 
-    Response response = swaggerOperation.getOperation().getResponses().get("200");
-    Assertions.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
-    Assertions.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
+    io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
+    Assertions.assertEquals("integer", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
+    Assertions.assertEquals("int32", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getFormat());
   }
 
   @Test
@@ -113,12 +116,12 @@ public class TestApiResponse {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMulti");
     Assertions.assertEquals("/testMulti", swaggerOperation.getPath());
 
-    Response response = swaggerOperation.getOperation().getResponses().get("200");
-    Assertions.assertEquals("integer", ((ModelImpl) response.getResponseSchema()).getType());
-    Assertions.assertEquals("int32", ((ModelImpl) response.getResponseSchema()).getFormat());
+    io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
+    Assertions.assertEquals("integer", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
+    Assertions.assertEquals("int32", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getFormat());
 
     response = swaggerOperation.getOperation().getResponses().get("301");
-    Assertions.assertEquals("string", ((ModelImpl) response.getResponseSchema()).getType());
-    Assertions.assertNull(((ModelImpl) response.getResponseSchema()).getFormat());
+    Assertions.assertEquals("string", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
+    Assertions.assertEquals("", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getFormat());
   }
 }

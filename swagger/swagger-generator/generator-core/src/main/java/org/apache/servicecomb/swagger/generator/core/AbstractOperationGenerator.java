@@ -63,6 +63,7 @@ import io.swagger.v3.core.util.ReflectionUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
@@ -73,6 +74,7 @@ import io.swagger.v3.oas.models.parameters.PathParameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import jakarta.ws.rs.core.MediaType;
 
 public abstract class AbstractOperationGenerator implements OperationGenerator {
@@ -117,7 +119,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
-    this.httpMethod = httpMethod.toLowerCase(Locale.US);
+    this.httpMethod = httpMethod.toUpperCase(Locale.US);
   }
 
   @Override
@@ -445,6 +447,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
+    if (swagger.getPaths() == null) {
+      swagger.setPaths(new Paths());
+    }
+
     PathItem pathObj = swagger.getPaths().get(path);
     if (pathObj == null) {
       pathObj = new PathItem();
@@ -484,6 +490,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       if (successResponse != null) {
         return;
       }
+    } else {
+      swaggerOperation.setResponses(new ApiResponses());
     }
 
     Schema model = createResponseModel();

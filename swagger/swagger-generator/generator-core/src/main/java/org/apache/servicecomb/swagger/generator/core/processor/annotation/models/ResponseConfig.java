@@ -16,15 +16,9 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.annotation.models;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtils;
 
 import io.swagger.v3.oas.models.examples.Example;
-import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 
 /**
@@ -32,7 +26,9 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
  * 所以将数据提取出来，统一处理
  */
 public class ResponseConfig extends ResponseConfigBase {
-  private int code;
+  private String code;
+
+  private String mediaType;
 
   private List<ResponseHeaderConfig> responseHeaders;
 
@@ -41,30 +37,24 @@ public class ResponseConfig extends ResponseConfigBase {
 
   private Example examples;
 
-  public int getCode() {
+  public String getCode() {
     return code;
   }
 
-  public void setCode(int code) {
+  public void setCode(String code) {
     this.code = code;
+  }
+
+  public String getMediaType() {
+    return mediaType;
+  }
+
+  public void setMediaType(String mediaType) {
+    this.mediaType = mediaType;
   }
 
   public List<ResponseHeaderConfig> getResponseHeaders() {
     return responseHeaders;
-  }
-
-  public void setResponseHeaders(Map<String, Header> responseHeaders) {
-    this.responseHeaders = new ArrayList<>();
-    for (Entry<String, Header> header : responseHeaders.entrySet()) {
-      ResponseHeaderConfig config = AnnotationUtils.convert(header.getValue());
-      if (config != null) {
-        this.responseHeaders.add(config);
-      }
-    }
-
-    if (this.responseHeaders.isEmpty()) {
-      this.responseHeaders = null;
-    }
   }
 
   public ApiResponse getResponse() {

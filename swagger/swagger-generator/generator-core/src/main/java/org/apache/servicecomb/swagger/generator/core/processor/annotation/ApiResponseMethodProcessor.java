@@ -17,26 +17,24 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<ApiResponses> {
+public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<ApiResponse> {
   @Override
   public Type getProcessType() {
-    return ApiResponses.class;
+    return ApiResponse.class;
   }
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      ApiResponses apiResponses) {
-    Arrays.stream(apiResponses.value()).forEach(apiResponse ->
-        AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
-            operationGenerator.getOperation(),
-            apiResponse));
+      ApiResponse apiResponse) {
+    AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
+        operationGenerator.getOperation(),
+        apiResponse);
   }
 }

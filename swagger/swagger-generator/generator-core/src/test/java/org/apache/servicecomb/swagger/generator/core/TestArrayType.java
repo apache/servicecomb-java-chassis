@@ -16,29 +16,29 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-
-import io.swagger.models.ModelImpl;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.properties.ByteArrayProperty;
+import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.media.ByteArraySchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.core.MediaType;
 
 public class TestArrayType {
   @Test
   public void test() {
     SwaggerOperations swaggerOperations = SwaggerOperations.generate(ArrayType.class);
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBytes");
-    BodyParameter bodyParameter = (BodyParameter) swaggerOperation.getOperation().getParameters().get(0);
-    ModelImpl model = SwaggerUtils.getModelImpl(swaggerOperations.getSwagger(), bodyParameter);
+    RequestBody bodyParameter = swaggerOperation.getOperation().getRequestBody();
+    Schema model = bodyParameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
 
-    Assertions.assertEquals(ModelImpl.OBJECT, model.getType());
+    Assertions.assertEquals("object", model.getType());
     Assertions.assertEquals(1, model.getProperties().size());
 
-    ByteArrayProperty byteArrayProperty = (ByteArrayProperty) model.getProperties().get("value");
+    ByteArraySchema byteArrayProperty = (ByteArraySchema) model.getProperties().get("value");
     Assertions.assertEquals("string", byteArrayProperty.getType());
     Assertions.assertEquals("byte", byteArrayProperty.getFormat());
   }

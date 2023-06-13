@@ -35,7 +35,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
-import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
@@ -45,12 +44,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.ObjectProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.models.properties.StringProperty;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class TestSwaggerUtils {
 
@@ -247,23 +241,15 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void testInvalidResponseHeader() {
-    UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test.",
-        "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
-        InvalidResponseHeader.class,
-        "test");
-  }
-
-  @Test
   public void noParameterName() {
     Method method = ReflectUtils.findMethod(Schema.class, "testint");
     Parameter parameter = Mockito.spy(method.getParameters()[0]);
     Mockito.when(parameter.isNamePresent()).thenReturn(false);
 
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
-            () -> SwaggerGeneratorUtils.collectParameterName(parameter));
-    String expectedMsg = "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
+        () -> SwaggerGeneratorUtils.collectParameterName(parameter));
+    String expectedMsg =
+        "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
             + "solution:\n"
             + "  change pom.xml, add compiler argument: -parameters, for example:\n"
             + "    <plugin>\n"
@@ -278,32 +264,15 @@ public class TestSwaggerUtils {
 
   @Test
   public void testGetRawJsonType() {
-    io.swagger.models.parameters.Parameter param = Mockito.mock(io.swagger.models.parameters.Parameter.class);
+    RequestBody param = Mockito.mock(RequestBody.class);
     Map<String, Object> extensions = new HashMap<>();
-    when(param.getVendorExtensions()).thenReturn(extensions);
+    when(param.getExtensions()).thenReturn(extensions);
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
     Assertions.assertTrue(SwaggerUtils.isRawJsonType(param));
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
     Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
-  }
-
-  @Test
-  public void isComplexProperty() {
-    Property property = new RefProperty("ref");
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-    property = new ObjectProperty();
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-    property = new MapProperty();
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-    property = new ArrayProperty(new ObjectProperty());
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-
-    property = new ArrayProperty(new StringProperty());
-    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
-    property = new StringProperty();
-    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
   }
 
   private static class AllTypeTest1 {
@@ -346,7 +315,7 @@ public class TestSwaggerUtils {
   }
 
   private void testExcep(Type f1, Type f2) {
-    Swagger swagger = new Swagger();
+    OpenAPI swagger = new OpenAPI();
     SwaggerUtils.addDefinitions(swagger, f1);
     SwaggerUtils.addDefinitions(swagger, f2);
   }
