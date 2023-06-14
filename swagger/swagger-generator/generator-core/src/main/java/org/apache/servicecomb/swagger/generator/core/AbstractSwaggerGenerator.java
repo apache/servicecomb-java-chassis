@@ -25,7 +25,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,8 +67,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   // key is operationId
   // to check if operationId is duplicated
   protected Map<String, AbstractOperationGenerator> operationGenerators = new LinkedHashMap<>();
-
-  protected Set<String> defaultTags = new LinkedHashSet<>();
 
   protected String httpMethod;
 
@@ -247,21 +244,5 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     Server server = new Server();
     server.setUrl(basePath);
     openAPI.getServers().add(server);
-  }
-
-  /**
-   * Add a tag to {@link #defaultTags} if the corresponding tag not exists.
-   * @param tagName the name of the added tag
-   */
-  public void addDefaultTag(String tagName) {
-    if (StringUtils.isEmpty(tagName)) {
-      return;
-    }
-
-    defaultTags.add(tagName);
-  }
-
-  public Set<String> getDefaultTags() {
-    return defaultTags;
   }
 }

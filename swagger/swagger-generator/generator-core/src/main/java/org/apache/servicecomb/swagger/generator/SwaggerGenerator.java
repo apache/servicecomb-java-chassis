@@ -63,12 +63,6 @@ public interface SwaggerGenerator {
 
   void setHttpMethod(String httpMethod);
 
-  /**
-   *
-   * @param tagName default tag for operations
-   */
-  void addDefaultTag(String tagName);
-
   void replaceMethodWhiteList(String... methodNames);
 
   <T extends OperationGenerator> T createOperationGenerator(Method method);

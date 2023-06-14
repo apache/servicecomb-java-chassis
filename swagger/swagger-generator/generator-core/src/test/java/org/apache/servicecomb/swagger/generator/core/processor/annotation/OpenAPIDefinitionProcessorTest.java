@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.models.OpenAPI;
 
-public class SwaggerDefinitionProcessorTest {
+public class OpenAPIDefinitionProcessorTest {
   @OpenAPIDefinition(tags = {
       @Tag(name = "testTag", description = "desc", externalDocs = @ExternalDocumentation(description = "testValue", url = "testUrl"))
   },

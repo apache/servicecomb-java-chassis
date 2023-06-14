@@ -50,13 +50,14 @@ public class TestSwaggerUtils {
 
   @Test
   public void parseSwaggerUrlNormal() throws IOException {
-    String content = "swagger: \"2.0\"";
+    String content = "openapi: 3.0.1";
     URL url = Mockito.mock(URL.class);
     try (MockedStatic<IOUtils> ioUtilsMockedStatic = Mockito.mockStatic(IOUtils.class)) {
       ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8)).thenReturn(content);
       OpenAPI swagger = Yaml.mapper().readValue(content, OpenAPI.class);
       OpenAPI result = SwaggerUtils.parseSwagger(url);
       Assertions.assertEquals(swagger, result);
+      Assertions.assertEquals("3.0.1", result.getOpenapi());
     }
   }
 

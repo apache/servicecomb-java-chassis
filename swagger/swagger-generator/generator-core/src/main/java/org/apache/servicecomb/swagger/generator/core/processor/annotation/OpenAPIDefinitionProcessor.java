@@ -19,31 +19,23 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.models.OpenAPI;
 
-public class ApiProcessor implements ClassAnnotationProcessor<OpenAPIDefinition> {
+public class OpenAPIDefinitionProcessor implements ClassAnnotationProcessor<OpenAPIDefinition> {
   @Override
   public Type getProcessType() {
     return OpenAPIDefinition.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OpenAPIDefinition api) {
-    setTags(swaggerGenerator, api);
-  }
-
-  private void setTags(SwaggerGenerator swaggerGenerator, OpenAPIDefinition api) {
-    Tag[] tags = api.tags();
-    for (Tag tagName : tags) {
-      if (StringUtils.isEmpty(tagName.name())) {
-        continue;
-      }
-      swaggerGenerator.addDefaultTag(tagName.name());
-    }
+  public void process(SwaggerGenerator swaggerGenerator, OpenAPIDefinition definitionAnnotation) {
+    OpenAPI swagger = swaggerGenerator.getOpenAPI();
+    swagger.setServers(AnnotationUtils.serversModel(definitionAnnotation.servers()));
+    swagger.setTags(AnnotationUtils.tagsModel(definitionAnnotation.tags()));
+    swagger.setInfo(AnnotationUtils.infoModel(definitionAnnotation.info()));
   }
 }
