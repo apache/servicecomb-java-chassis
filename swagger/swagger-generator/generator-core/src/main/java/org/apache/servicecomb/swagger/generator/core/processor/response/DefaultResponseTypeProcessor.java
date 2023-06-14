@@ -28,8 +28,6 @@ import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.v3.core.converter.AnnotatedType;
-import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.util.ReflectionUtils;
 import io.swagger.v3.oas.models.media.Schema;
 
@@ -85,8 +83,7 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
     if (responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType)) {
       responseType = Part.class;
     }
-    SwaggerUtils.addDefinitions(swaggerGenerator.getOpenAPI(), responseType);
-    return ModelConverters.getInstance().resolveAsResolvedSchema(
-        new AnnotatedType(responseType)).schema;
+
+    return SwaggerUtils.resolveTypeSchemas(swaggerGenerator.getOpenAPI(), responseType);
   }
 }

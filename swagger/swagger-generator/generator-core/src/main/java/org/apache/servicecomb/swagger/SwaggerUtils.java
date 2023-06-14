@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,8 +48,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.converter.ResolvedSchema;
 import io.swagger.v3.core.util.Yaml;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -60,6 +64,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.Response.Status.Family;
 
+@SuppressWarnings("rawtypes")
 public final class SwaggerUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerUtils.class);
@@ -83,7 +88,7 @@ public final class SwaggerUtils {
    */
   public static void setBasePath(OpenAPI swagger, String basePath) {
     if (swagger.getServers() == null || swagger.getServers().size() == 0) {
-      swagger.setServers(Arrays.asList(new Server()));
+      swagger.setServers(List.of(new Server()));
     }
     swagger.getServers().get(0).setUrl(basePath);
   }
@@ -106,8 +111,7 @@ public final class SwaggerUtils {
   }
 
   public static OpenAPI parseAndValidateSwagger(URL url) {
-    OpenAPI swagger = SwaggerUtils.parseSwagger(url);
-    return swagger;
+    return SwaggerUtils.parseSwagger(url);
   }
 
   public static OpenAPI parseSwagger(String swaggerContent) {
@@ -119,8 +123,7 @@ public final class SwaggerUtils {
   }
 
   public static OpenAPI parseAndValidateSwagger(String swaggerContent) {
-    OpenAPI swagger = SwaggerUtils.parseSwagger(swaggerContent);
-    return swagger;
+    return SwaggerUtils.parseSwagger(swaggerContent);
   }
 
   private static OpenAPI internalParseSwagger(String swaggerContent) throws IOException {
@@ -170,20 +173,46 @@ public final class SwaggerUtils {
     }
   }
 
+  public static Schema resolveTypeSchemas(OpenAPI swagger, Type type) {
+    ResolvedSchema resolvedSchema = ModelConverters.getInstance().resolveAsResolvedSchema(
+        new AnnotatedType(type).resolveAsRef(true));
 
-  public static void addDefinitions(OpenAPI swagger, Type paramType) {
-    JavaType javaType = TypeFactory.defaultInstance().constructType(paramType);
-    if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
-      return;
+    if (swagger.getComponents() == null) {
+      swagger.setComponents(new Components());
     }
-    Map<String, Schema> models = ModelConverters.getInstance().readAll(javaType);
-    for (Entry<String, Schema> entry : models.entrySet()) {
-      Schema schema = swagger.getComponents().getSchemas().put(entry.getKey(), entry.getValue());
-      if (schema != entry.getValue()) {
-        LOGGER.warn("duplicate param model: " + entry.getKey());
-        throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+
+    if (resolvedSchema != null) {
+      Map<String, Schema> schemaMap = resolvedSchema.referencedSchemas;
+      if (schemaMap != null) {
+        Map<String, Schema> componentSchemas = swagger.getComponents().getSchemas();
+        if (componentSchemas == null) {
+          componentSchemas = new LinkedHashMap<>(schemaMap);
+        } else {
+          for (Map.Entry<String, Schema> entry : schemaMap.entrySet()) {
+            if (!componentSchemas.containsKey(entry.getKey())) {
+              componentSchemas.put(entry.getKey(), entry.getValue());
+            } else {
+              if (!entry.getValue().getClass()
+                  .equals(componentSchemas.get(entry.getKey()).getClass())) {
+                throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+              }
+            }
+          }
+        }
+        swagger.getComponents().setSchemas(componentSchemas);
+      }
+
+      if (resolvedSchema.schema != null) {
+        Schema schemaN = new Schema();
+        if (StringUtils.isNotBlank(resolvedSchema.schema.getName())) {
+          schemaN.set$ref(Components.COMPONENTS_SCHEMAS_REF + resolvedSchema.schema.getName());
+        } else {
+          schemaN = resolvedSchema.schema;
+        }
+        return schemaN;
       }
     }
+    throw new IllegalArgumentException("cannot resolve type : " + type);
   }
 
   public static List<String> convertConsumesOrProduces(String... consumesOrProduces) {

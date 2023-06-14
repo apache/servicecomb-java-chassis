@@ -316,7 +316,7 @@ public class TestSwaggerUtils {
 
   private void testExcep(Type f1, Type f2) {
     OpenAPI swagger = new OpenAPI();
-    SwaggerUtils.addDefinitions(swagger, f1);
-    SwaggerUtils.addDefinitions(swagger, f2);
+    SwaggerUtils.resolveTypeSchemas(swagger, f1);
+    SwaggerUtils.resolveTypeSchemas(swagger, f2);
   }
 }

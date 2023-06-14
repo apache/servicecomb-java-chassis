@@ -34,7 +34,7 @@ import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -43,6 +43,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.HttpMethod;
 
+@SuppressWarnings("rawtypes")
 public class PojoOperationGenerator extends AbstractOperationGenerator {
   protected Schema bodyModel;
 
@@ -89,14 +90,21 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
       scanMethodParameter(parameterGenerator);
 
-      Map<String, Schema> property = ModelConverters.getInstance().read(parameterGenerator.getGenericType());
-      property.forEach(bodyModel::addProperty);
+      bodyModel.addProperty(parameterGenerator.getParameterName(),
+          SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()));
       parameterGenerator.setHttpParameterType(null);
+    }
+
+    if (swagger.getComponents() == null) {
+      swagger.setComponents(new Components());
     }
     swagger.getComponents().addSchemas(simpleRef, bodyModel);
 
     bodyParameter = new RequestBody();
-    MediaType mediaType = new MediaType().schema(bodyModel);
+    Schema bodyModelNew = new Schema();
+    bodyModelNew.set$ref(Components.COMPONENTS_SCHEMAS_REF + simpleRef);
+    MediaType mediaType = new MediaType().schema(bodyModelNew);
+
     bodyParameter.setContent(new Content()
         .addMediaType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON, mediaType));
 
@@ -133,7 +141,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
 
   @Override
   protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
-    if (isWrapBody(parameterGenerator.getGeneratedParameter())) {
+    if (isWrapBody(parameterGenerator.getRequestBody())) {
       return bodyParameter;
     }
 

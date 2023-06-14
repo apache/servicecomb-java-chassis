@@ -22,6 +22,9 @@ import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ByteArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -35,10 +38,13 @@ public class TestArrayType {
     RequestBody bodyParameter = swaggerOperation.getOperation().getRequestBody();
     Schema model = bodyParameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
 
-    Assertions.assertEquals("object", model.getType());
-    Assertions.assertEquals(1, model.getProperties().size());
+    Assertions.assertEquals(Components.COMPONENTS_SCHEMAS_REF + "testBytesBody", model.get$ref());
+    OpenAPI openAPI = swaggerOperation.getSwagger();
+    Schema schema = openAPI.getComponents().getSchemas().get("testBytesBody");
+    Assertions.assertEquals(1, schema.getProperties().size());
 
-    ByteArraySchema byteArrayProperty = (ByteArraySchema) model.getProperties().get("value");
+    ArraySchema arrayProperty = (ArraySchema) schema.getProperties().get("value");
+    ByteArraySchema byteArrayProperty = (ByteArraySchema) arrayProperty.getItems();
     Assertions.assertEquals("string", byteArrayProperty.getType());
     Assertions.assertEquals("byte", byteArrayProperty.getFormat());
   }
