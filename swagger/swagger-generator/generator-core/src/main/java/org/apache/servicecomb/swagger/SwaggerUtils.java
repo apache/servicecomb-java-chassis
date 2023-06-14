@@ -237,6 +237,9 @@ public final class SwaggerUtils {
   }
 
   public static boolean isRawJsonType(RequestBody param) {
+    if (param.getExtensions() == null) {
+      return false;
+    }
     Object rawJson = param.getExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
     if (rawJson instanceof Boolean) {
       return (boolean) rawJson;
