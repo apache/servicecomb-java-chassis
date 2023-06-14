@@ -331,7 +331,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodParameter(ParameterGenerator parameterGenerator) {
-    if (parameterGenerator.getHttpParameterType() == HttpParameterType.BODY) {
+    if (parameterGenerator.getHttpParameterType() != HttpParameterType.BODY) {
       Parameter parameter = createParameter(parameterGenerator);
 
       try {
@@ -368,7 +368,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
     RequestBody requestBody = createRequestBody(parameterGenerator.getHttpParameterType());
     parameterGenerator.setRequestBody(requestBody);
-    parameterGenerator.getGeneratedParameter().setName(parameterGenerator.getParameterName());
     return requestBody;
   }
 
