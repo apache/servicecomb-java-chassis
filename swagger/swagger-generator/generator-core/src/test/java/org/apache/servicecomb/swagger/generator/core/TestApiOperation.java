@@ -60,14 +60,14 @@ public class TestApiOperation {
         requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON)),
         responses = @ApiResponse(responseCode = "202",
             content = @Content(mediaType = MediaType.APPLICATION_JSON),
-            headers = @Header(name = "h1", schema = @Schema(name = "integer"))),
+            headers = @Header(name = "h1", schema = @Schema(type = "integer"))),
         extensions = {@Extension(
             name = "x-tagA",
             properties = {@ExtensionProperty(name = "x-tagAExt", value = "value of tagAExt")})})
     void testBase();
 
     @Operation(summary = "aaa")
-    @ApiResponse(responseCode = "202", content = @Content(schema = @Schema(name = "integer")))
+    @ApiResponse(responseCode = "202", content = @Content(schema = @Schema(type = "string")))
     int testPrimitive();
 
     @Operation(summary = "aaa", hidden = true)
@@ -96,7 +96,7 @@ public class TestApiOperation {
     io.swagger.v3.oas.models.media.Schema result202 =
         operation.getResponses().get("202").getContent().get(MediaType.APPLICATION_JSON).getSchema();
     Assertions.assertEquals("string", result202.getType());
-    Assertions.assertNull(result202.getFormat());
+    Assertions.assertEquals("", result202.getFormat());
   }
 
   private void testBase(PathItem path) {
@@ -117,11 +117,11 @@ public class TestApiOperation {
 
     io.swagger.v3.oas.models.responses.ApiResponse response = responseMap.get(SwaggerConst.SUCCESS_KEY);
     Assertions.assertNotNull(response);
-    Assertions.assertNull(response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getAdditionalProperties());
+    Assertions.assertNull(response.getContent().get(MediaType.APPLICATION_JSON).getSchema());
 
     response = responseMap.get("202");
     Assertions.assertNotNull(response);
-    Assertions.assertNull(response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getAdditionalProperties());
+    Assertions.assertEquals("", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
 
     Assertions.assertEquals(1, response.getHeaders().size());
     Assertions.assertEquals("integer", response.getHeaders().get("h1").getSchema().getType());

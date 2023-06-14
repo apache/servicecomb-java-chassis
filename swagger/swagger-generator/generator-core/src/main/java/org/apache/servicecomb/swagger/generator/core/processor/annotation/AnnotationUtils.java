@@ -18,20 +18,18 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.responses.ApiResponses;
 
 @SuppressWarnings("rawtypes")
 public final class AnnotationUtils {
@@ -39,36 +37,14 @@ public final class AnnotationUtils {
 
   }
 
-  public static void appendDefinition(OpenAPI swagger,
-      Map<String, io.swagger.v3.oas.models.media.Schema> newDefinitions) {
-    if (newDefinitions.isEmpty()) {
-      return;
-    }
-
-    Map<String, io.swagger.v3.oas.models.media.Schema> definitions = swagger.getComponents().getSchemas();
-    if (definitions == null) {
-      definitions = new LinkedHashMap<>();
-      swagger.getComponents().schemas(definitions);
-    }
-
-    definitions.putAll(newDefinitions);
+  public static Map<String, Object> extensionsModel(Extension[] extensions) {
+    Map<String, Object> result = new HashMap<>();
+    Stream.of(extensions)
+        .forEach(e -> Stream.of(e.properties()).forEach(item -> result.put(item.name(), item.value())));
+    return result;
   }
 
-  public static void addResponse(OpenAPI swagger, io.swagger.v3.oas.models.Operation operation
-      , Operation apiOperation) {
-    // TODO: should convert?
-    return;
-  }
-
-  public static void addResponse(OpenAPI swagger,
-      io.swagger.v3.oas.models.Operation operation, ApiResponse apiResponse) {
-    if (operation.getResponses() == null) {
-      operation.setResponses(new ApiResponses());
-    }
-    operation.getResponses().addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
-  }
-
-  private static String responseCodeModel(ApiResponse apiResponse) {
+  public static String responseCodeModel(ApiResponse apiResponse) {
     if (StringUtils.isEmpty(apiResponse.responseCode()) || "default".equals(apiResponse.responseCode())) {
       return "200";
     }
