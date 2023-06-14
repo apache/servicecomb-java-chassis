@@ -23,6 +23,7 @@ import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 
 public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<ApiResponse> {
   @Override
@@ -33,8 +34,10 @@ public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<Api
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ApiResponse apiResponse) {
-    AnnotationUtils.addResponse(swaggerGenerator.getOpenAPI(),
-        operationGenerator.getOperation(),
-        apiResponse);
+    if (operationGenerator.getOperation().getResponses() == null) {
+      operationGenerator.getOperation().setResponses(new ApiResponses());
+    }
+    operationGenerator.getOperation().getResponses().addApiResponse(
+        AnnotationUtils.responseCodeModel(apiResponse), AnnotationUtils.apiResponseModel(apiResponse));
   }
 }
