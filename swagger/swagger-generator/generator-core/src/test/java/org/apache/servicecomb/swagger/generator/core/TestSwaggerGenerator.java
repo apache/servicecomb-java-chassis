@@ -17,12 +17,9 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import static org.hamcrest.Matchers.contains;
-
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
-import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.jupiter.api.Assertions;
@@ -47,17 +44,5 @@ public class TestSwaggerGenerator {
     swaggerGenerator.setBasePath("/a/${var}/b");
 
     Assertions.assertEquals("/a/varValue/b", SwaggerUtils.getBasePath(swaggerGenerator.getOpenAPI()));
-  }
-
-  @Test
-  public void testAddDefaultTag() {
-    PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
-
-    swaggerGenerator.addDefaultTag("test1");
-    swaggerGenerator.addDefaultTag("");
-    swaggerGenerator.addDefaultTag(null);
-    swaggerGenerator.addDefaultTag("test2");
-
-    MatcherAssert.assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
   }
 }

@@ -176,24 +176,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (StringUtils.isEmpty(swaggerOperation.getOperationId())) {
       swaggerOperation.setOperationId(MethodUtils.findSwaggerMethodName(method));
     }
-
-    setDefaultTag();
-  }
-
-  private void setDefaultTag() {
-    // if tag has been defined, do nothing
-    if (null != swaggerOperation.getTags()) {
-      for (String tag : swaggerOperation.getTags()) {
-        if (StringUtils.isNotEmpty(tag)) {
-          return;
-        }
-      }
-    }
-
-    // if there is no tag, set default tag
-    if (!swaggerGenerator.getDefaultTags().isEmpty()) {
-      swaggerOperation.setTags(new ArrayList<>(swaggerGenerator.getDefaultTags()));
-    }
   }
 
   protected void scanMethodParameters() {

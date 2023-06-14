@@ -17,24 +17,138 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.models.media.MediaType;
 
+/**
+ * Utility class to convert from OpenAPI annotations to models.
+ */
 @SuppressWarnings("rawtypes")
 public final class AnnotationUtils {
   private AnnotationUtils() {
 
+  }
+
+  public static List<io.swagger.v3.oas.models.servers.Server> serversModel(Server[] servers) {
+    if (servers == null) {
+      return null;
+    }
+    return Arrays.stream(servers).map(AnnotationUtils::convertServer).collect(Collectors.toList());
+  }
+
+  public static io.swagger.v3.oas.models.servers.Server convertServer(Server server) {
+    io.swagger.v3.oas.models.servers.Server item = new io.swagger.v3.oas.models.servers.Server();
+    item.setUrl(server.url());
+    item.setDescription(server.description());
+    return item;
+  }
+
+  public static io.swagger.v3.oas.models.info.Info infoModel(Info infoAnnotation) {
+    if (infoAnnotation == null) {
+      return null;
+    }
+
+    io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
+
+    info.setTitle(infoAnnotation.title());
+    info.setVersion(infoAnnotation.version());
+    if (StringUtils.isNotEmpty(infoAnnotation.description())) {
+      info.setDescription(infoAnnotation.description());
+    }
+    if (StringUtils.isNotEmpty(infoAnnotation.termsOfService())) {
+      info.setTermsOfService(infoAnnotation.termsOfService());
+    }
+    info.setContact(contactModel(infoAnnotation.contact()));
+    info.setLicense(licenseModel(infoAnnotation.license()));
+
+    return info;
+  }
+
+  public static io.swagger.v3.oas.models.info.License licenseModel(License licenseAnnotation) {
+    io.swagger.v3.oas.models.info.License license = new io.swagger.v3.oas.models.info.License();
+
+    if (StringUtils.isNotEmpty(licenseAnnotation.name())) {
+      license.setName(licenseAnnotation.name());
+    }
+    if (StringUtils.isNotEmpty(licenseAnnotation.url())) {
+      license.setUrl(licenseAnnotation.url());
+    }
+
+    if (StringUtils.isEmpty(license.getName()) && StringUtils.isEmpty(license.getUrl())) {
+      return null;
+    }
+
+    return license;
+  }
+
+  public static io.swagger.v3.oas.models.info.Contact contactModel(Contact contactAnnotation) {
+    io.swagger.v3.oas.models.info.Contact contact = new io.swagger.v3.oas.models.info.Contact();
+
+    if (StringUtils.isNotEmpty(contactAnnotation.name())) {
+      contact.setName(contactAnnotation.name());
+    }
+    if (StringUtils.isNotEmpty(contactAnnotation.url())) {
+      contact.setUrl(contactAnnotation.url());
+    }
+    if (StringUtils.isNotEmpty(contactAnnotation.email())) {
+      contact.setEmail(contactAnnotation.email());
+    }
+
+    if (StringUtils.isEmpty(contact.getName()) &&
+        StringUtils.isEmpty(contact.getUrl()) &&
+        StringUtils.isEmpty(contact.getEmail())) {
+      return null;
+    }
+
+    return contact;
+  }
+
+  public static List<io.swagger.v3.oas.models.tags.Tag> tagsModel(Tag[] tagArray) {
+    if (tagArray == null) {
+      return null;
+    }
+
+    List<io.swagger.v3.oas.models.tags.Tag> tags = Arrays.stream(tagArray)
+        .filter(t -> !t.name().isEmpty())
+        .map(AnnotationUtils::tagModel)
+        .collect(Collectors.toList());
+    return tags.isEmpty() ? null : tags;
+  }
+
+  public static io.swagger.v3.oas.models.tags.Tag tagModel(Tag tagAnnotation) {
+    io.swagger.v3.oas.models.tags.Tag tag = new io.swagger.v3.oas.models.tags.Tag();
+    tag.setName(tagAnnotation.name());
+    tag.setDescription(tagAnnotation.description());
+    tag.setExternalDocs(externalDocumentationModel(tagAnnotation.externalDocs()));
+    return tag;
+  }
+
+  public static io.swagger.v3.oas.models.ExternalDocumentation externalDocumentationModel(
+      ExternalDocumentation externalDocs) {
+    io.swagger.v3.oas.models.ExternalDocumentation doc = new io.swagger.v3.oas.models.ExternalDocumentation();
+    doc.setUrl(externalDocs.url());
+    doc.setDescription(externalDocs.description());
+    return doc;
   }
 
   public static Map<String, Object> extensionsModel(Extension[] extensions) {
