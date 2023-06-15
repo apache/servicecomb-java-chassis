@@ -77,6 +77,7 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import jakarta.ws.rs.core.MediaType;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected AbstractSwaggerGenerator swaggerGenerator;
 
@@ -465,20 +466,30 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   public void scanResponse() {
-    if (swaggerOperation.getResponses() != null) {
-      ApiResponse successResponse = swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-      if (successResponse != null) {
-        return;
-      }
-    } else {
+    Schema model = createResponseModel();
+
+    if (swaggerOperation.getResponses() == null) {
       swaggerOperation.setResponses(new ApiResponses());
     }
+    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY) == null) {
+      swaggerOperation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
+    }
+    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() == null) {
+      swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).setContent(new Content());
+    }
+    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().size() == 0) {
+      swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
+          .addMediaType(MediaType.APPLICATION_JSON, new io.swagger.v3.oas.models.media.MediaType());
+    }
 
-    Schema model = createResponseModel();
-    ApiResponse response = new ApiResponse();
-    response.content(new Content().addMediaType(MediaType.APPLICATION_JSON,
-        new io.swagger.v3.oas.models.media.MediaType().schema(model)));
-    swaggerOperation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, response);
+    if (model != null) {
+      swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().forEach((k, v) -> {
+        if (v.getSchema() == null || (StringUtils.isEmpty(v.getSchema().getType()) &&
+            StringUtils.isEmpty(v.getSchema().get$ref()))) {
+          v.setSchema(model);
+        }
+      });
+    }
   }
 
   protected Schema createResponseModel() {

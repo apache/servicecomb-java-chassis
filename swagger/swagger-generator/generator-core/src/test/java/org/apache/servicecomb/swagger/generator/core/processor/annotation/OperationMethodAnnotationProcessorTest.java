@@ -40,7 +40,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.MediaType;
 
-
 public class OperationMethodAnnotationProcessorTest {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
 
@@ -59,7 +58,7 @@ public class OperationMethodAnnotationProcessorTest {
     }
 
     @Operation(summary = "testSingleMediaType",
-        responses = {@ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_XML))},
+        responses = {@ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_XML))},
         requestBody = @RequestBody(content = @Content(mediaType = MediaType.TEXT_PLAIN)))
     public String testSingleMediaType(String input) {
       return input;
@@ -67,9 +66,14 @@ public class OperationMethodAnnotationProcessorTest {
 
     @Operation(summary = "testMultiMediaType",
         responses = {
-            @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON + "," + MediaType.TEXT_PLAIN))},
-        requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON + ","
-            + MediaType.APPLICATION_XML)))
+            @ApiResponse(responseCode = "200", content = {
+                @Content(mediaType = MediaType.APPLICATION_JSON),
+                @Content(mediaType = MediaType.TEXT_PLAIN)
+            })},
+        requestBody = @RequestBody(content = {
+            @Content(mediaType = MediaType.APPLICATION_JSON),
+            @Content(mediaType = MediaType.APPLICATION_XML)
+        }))
     public String testMultiMediaType(String input) {
       return input;
     }
@@ -137,24 +141,33 @@ public class OperationMethodAnnotationProcessorTest {
   }
 
   @Test
-  public void testMediaType() {
-    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingleMediaType");
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().get("input"),
-        Matchers.equalTo(MediaType.TEXT_PLAIN));
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().get(""),
-        Matchers.equalTo(MediaType.APPLICATION_XML));
-
-    swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
+  public void testMultiMediaType() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
     MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
-
-    swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
-    Assertions.assertNull(swaggerOperation.getOperation().getRequestBody().getContent().keySet());
-    Assertions.assertNull(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet());
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().get("200").getContent().keySet(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
   }
 
+  @Test
+  public void testSingleMediaType() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingleMediaType");
+    MatcherAssert.assertThat(swaggerOperation.getOperation()
+            .getRequestBody().getContent().get(MediaType.TEXT_PLAIN).getSchema().get$ref(),
+        Matchers.equalTo(Components.COMPONENTS_SCHEMAS_REF + "testSingleMediaTypeBody"));
+    MatcherAssert.assertThat(swaggerOperation.getOperation()
+            .getResponses().get("200").getContent().get(MediaType.APPLICATION_XML).getSchema().getType(),
+        Matchers.equalTo("string"));
+  }
+
+  @Test
+  public void testBlankMediaType() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
+        Matchers.contains(MediaType.APPLICATION_JSON));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet(),
+        Matchers.contains(MediaType.APPLICATION_JSON));
+  }
 
   @Test
   public void testBodyParam() {
@@ -166,7 +179,7 @@ public class OperationMethodAnnotationProcessorTest {
     schema = swaggerOperation.getSwagger().getComponents().getSchemas().get("TestBodyBean");
     Map<String, Schema> properties = schema.getProperties();
 
-    // swagger new version do not support primitive types(stinrg, integer, etc...) to using NotBlank, NotEmpty, ...)
+//    swagger new version do not support primitive types(String, Integer, etc...) to use NotBlank, NotEmpty, ...)
 //    Assertions.assertTrue(properties.get("age").getNullable(), "Support NotBlank annotation");
 //    Assertions.assertTrue(properties.get("sexes").getNullable(), "Support NotEmpty annotation");
 //    Assertions.assertTrue(properties.get("name").getNullable(), "Original support NotNull annotation");

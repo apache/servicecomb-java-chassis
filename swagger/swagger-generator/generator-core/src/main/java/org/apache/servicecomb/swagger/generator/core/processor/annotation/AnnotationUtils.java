@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -172,7 +173,7 @@ public final class AnnotationUtils {
   }
 
   public static String responseCodeModel(ApiResponse apiResponse) {
-    if (StringUtils.isEmpty(apiResponse.responseCode()) || "default".equals(apiResponse.responseCode())) {
+    if (StringUtils.isEmpty(apiResponse.responseCode())) {
       return "200";
     }
     return apiResponse.responseCode();
@@ -192,7 +193,11 @@ public final class AnnotationUtils {
     io.swagger.v3.oas.models.responses.ApiResponses result =
         new io.swagger.v3.oas.models.responses.ApiResponses();
     for (ApiResponse apiResponse : apiResponses) {
-      result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
+      if (result.get(responseCodeModel(apiResponse)) != null) {
+        throw new IllegalStateException("not support too many ApiResponse with same status code");
+      } else {
+        result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
+      }
     }
     return result;
   }
@@ -240,7 +245,7 @@ public final class AnnotationUtils {
 
   private static String mediaTypeModel(io.swagger.v3.oas.annotations.media.Content content) {
     if (StringUtils.isEmpty(content.mediaType())) {
-      return jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+      return SwaggerConst.DEFAULT_MEDIA_TYPE;
     }
     return content.mediaType();
   }
