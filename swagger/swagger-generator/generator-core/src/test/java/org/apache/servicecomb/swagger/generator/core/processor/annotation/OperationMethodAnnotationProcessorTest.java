@@ -40,7 +40,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.MediaType;
 
 
-public class ApiOperationProcessorTest {
+public class OperationMethodAnnotationProcessorTest {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
 
   @AfterAll
@@ -49,22 +49,22 @@ public class ApiOperationProcessorTest {
   }
 
   private static class TestClass {
-    @Operation(operationId = "value1", tags = {"tag1", "tag2"})
+    @Operation(summary = "value1", tags = {"tag1", "tag2"})
     public void function() {
     }
 
-    @Operation(operationId = "value2")
+    @Operation(summary = "value2")
     public void functionWithNoTag() {
     }
 
-    @Operation(operationId = "testSingleMediaType",
+    @Operation(summary = "testSingleMediaType",
         responses = {@ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_XML))},
         requestBody = @RequestBody(content = @Content(mediaType = MediaType.TEXT_PLAIN)))
     public String testSingleMediaType(String input) {
       return input;
     }
 
-    @Operation(operationId = "testMultiMediaType",
+    @Operation(summary = "testMultiMediaType",
         responses = {
             @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON + "," + MediaType.TEXT_PLAIN))},
         requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON + ","
@@ -73,14 +73,14 @@ public class ApiOperationProcessorTest {
       return input;
     }
 
-    @Operation(operationId = "testBlankMediaType",
+    @Operation(summary = "testBlankMediaType",
         responses = {@ApiResponse(content = @Content(mediaType = ""))},
         requestBody = @RequestBody(content = @Content(mediaType = "")))
     public String testBlankMediaType(String input) {
       return input;
     }
 
-    @Operation(operationId = "testBodyParam")
+    @Operation(summary = "testBodyParam")
     public String testBodyParam(@RequestBody TestBodyBean user) {
       return user.toString();
     }
@@ -159,7 +159,7 @@ public class ApiOperationProcessorTest {
   public void testBodyParam() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
     Map<String, Schema> properties = swaggerOperation.getSwagger()
-        .getPaths().get("testBodyParam").getPost().getRequestBody().getContent()
+        .getPaths().get("/testBodyParam").getPost().getRequestBody().getContent()
         .get(MediaType.APPLICATION_JSON).getSchema().getProperties();
     Assertions.assertTrue(properties.get("age").getNullable(), "Support NotBlank annotation");
     Assertions.assertTrue(properties.get("sexes").getNullable(), "Support NotEmpty annotation");

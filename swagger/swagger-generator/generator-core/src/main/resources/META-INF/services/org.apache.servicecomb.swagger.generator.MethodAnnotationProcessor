@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiOperationProcessor
+org.apache.servicecomb.swagger.generator.core.processor.annotation.OperationMethodAnnotationProcessor
 org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesMethodProcessor
 org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponseMethodProcessor
