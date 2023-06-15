@@ -20,6 +20,7 @@ package org.apache.servicecomb.swagger.extend;
 import org.apache.servicecomb.swagger.extend.module.EnumModuleExt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import io.swagger.v3.core.util.Json;
 
@@ -34,6 +35,7 @@ public class DefaultModelResolveObjectMapperProvider implements ModelResolveObje
   public ObjectMapper getMapper() {
     ObjectMapper mapper = Json.mapper();
     mapper.registerModule(new EnumModuleExt());
+    mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, false);
     return mapper;
   }
 }

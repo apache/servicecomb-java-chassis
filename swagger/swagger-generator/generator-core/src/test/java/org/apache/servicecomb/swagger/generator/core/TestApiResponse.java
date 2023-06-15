@@ -46,7 +46,7 @@ public class TestApiResponse {
         description = "")
     void testApiResponseHeader();
 
-    @ApiResponse(
+    @ApiResponse(responseCode = "200",
         headers = {@Header(name = "k1", schema = @Schema(type = "integer", format = "int32"))})
     void testResponseHeader();
 

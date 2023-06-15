@@ -17,22 +17,38 @@
 
 package org.apache.servicecomb.swagger.extend.module;
 
-import org.apache.servicecomb.swagger.extend.introspector.JsonPropertyIntrospectorTest.TestEnum;
+import static org.hamcrest.Matchers.contains;
+
+import java.util.List;
+
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EnumModuleExtTest {
+  public enum TestEnum {
+    AB,
+    @JsonProperty(value = "C-D")
+    C_D,
+    @JsonProperty(value = "E.F")
+    E_F,
+    @JsonProperty
+    HI
+  }
+
   @Test
   public void testEnumModule() throws JsonProcessingException {
     ObjectMapper mapper = Json.mapper();
-    mapper.registerModule(new SimpleModule());
-
     String serializeValue = mapper.writeValueAsString(TestEnum.AB);
     Assertions.assertEquals("\"AB\"", serializeValue);
     serializeValue = mapper.writeValueAsString(TestEnum.C_D);
@@ -41,5 +57,13 @@ public class EnumModuleExtTest {
     Assertions.assertEquals("\"E.F\"", serializeValue);
     serializeValue = mapper.writeValueAsString(TestEnum.HI);
     Assertions.assertEquals("\"HI\"", serializeValue);
+  }
+
+  @Test
+  public void testEnumModuleModel() {
+    OpenAPI openAPI = new OpenAPI();
+    Schema schema = SwaggerUtils.resolveTypeSchemas(openAPI, TestEnum.class);
+    Assertions.assertEquals(schema.getType(), "string");
+    MatcherAssert.assertThat((List<String>) schema.getEnum(), contains("AB", "C-D", "E.F", "HI"));
   }
 }
