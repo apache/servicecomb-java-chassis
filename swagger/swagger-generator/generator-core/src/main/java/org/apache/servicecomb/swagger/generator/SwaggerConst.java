@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator;
 
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 public final class SwaggerConst {
@@ -25,6 +26,8 @@ public final class SwaggerConst {
   }
 
   public static final String SUCCESS_KEY = String.valueOf(Response.Status.OK.getStatusCode());
+
+  public static final String DEFAULT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
 
   public static final String EXT_JAVA_INTF = "x-java-interface";
 

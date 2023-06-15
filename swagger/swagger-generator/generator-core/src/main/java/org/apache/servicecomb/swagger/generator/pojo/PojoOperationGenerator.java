@@ -99,14 +99,20 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
       swagger.setComponents(new Components());
     }
     swagger.getComponents().addSchemas(simpleRef, bodyModel);
-
-    bodyParameter = new RequestBody();
     Schema bodyModelNew = new Schema();
     bodyModelNew.set$ref(Components.COMPONENTS_SCHEMAS_REF + simpleRef);
-    MediaType mediaType = new MediaType().schema(bodyModelNew);
 
-    bodyParameter.setContent(new Content()
-        .addMediaType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON, mediaType));
+    bodyParameter = swaggerOperation.getRequestBody();
+    if (bodyParameter == null) {
+      bodyParameter = new RequestBody();
+    }
+    if (bodyParameter.getContent() == null) {
+      bodyParameter.setContent(new Content());
+    }
+    if (bodyParameter.getContent().size() == 0) {
+      bodyParameter.getContent().addMediaType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON, new MediaType());
+    }
+    bodyParameter.getContent().forEach((k, v) -> v.setSchema(bodyModelNew));
 
     List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
     newParameterGenerators.add(new ParameterGenerator(

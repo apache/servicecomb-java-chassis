@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.springframework.util.CollectionUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -51,7 +52,7 @@ public class OperationMethodAnnotationProcessor implements MethodAnnotationProce
       operation.setOperationId(specificOperation.getOperationId());
     }
 
-    if (specificOperation.getExtensions() != null) {
+    if (!CollectionUtils.isEmpty(specificOperation.getExtensions())) {
       operation.setExtensions(specificOperation.getExtensions());
     }
 
@@ -59,11 +60,11 @@ public class OperationMethodAnnotationProcessor implements MethodAnnotationProce
       operation.setRequestBody(specificOperation.getRequestBody());
     }
 
-    if (specificOperation.getTags() != null) {
+    if (!CollectionUtils.isEmpty(specificOperation.getTags())) {
       operation.setTags(specificOperation.getTags());
     }
 
-    if (specificOperation.getResponses() != null) {
+    if (!CollectionUtils.isEmpty(specificOperation.getResponses())) {
       operation.setResponses(specificOperation.getResponses());
     }
   }
