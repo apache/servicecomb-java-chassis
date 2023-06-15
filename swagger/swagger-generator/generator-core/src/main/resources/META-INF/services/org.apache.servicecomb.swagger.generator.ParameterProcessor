@@ -18,6 +18,7 @@
 org.apache.servicecomb.swagger.generator.core.processor.parameter.ApiImplicitParamProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.ApiParamProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.RawJsonRequestBodyProcessor
+org.apache.servicecomb.swagger.generator.core.processor.parameter.RequestBodyParameterProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartListProcessor

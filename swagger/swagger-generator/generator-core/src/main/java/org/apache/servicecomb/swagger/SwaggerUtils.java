@@ -25,13 +25,11 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.Part;
 
@@ -42,8 +40,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -66,10 +62,6 @@ import jakarta.ws.rs.core.Response.Status.Family;
 
 @SuppressWarnings("rawtypes")
 public final class SwaggerUtils {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerUtils.class);
-
-
   private SwaggerUtils() {
   }
 
@@ -213,13 +205,6 @@ public final class SwaggerUtils {
       }
     }
     throw new IllegalArgumentException("cannot resolve type : " + type);
-  }
-
-  public static List<String> convertConsumesOrProduces(String... consumesOrProduces) {
-    return Arrays.stream(consumesOrProduces)
-        .map(String::trim)
-        .filter(StringUtils::isNotEmpty)
-        .collect(Collectors.toList());
   }
 
   public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {
