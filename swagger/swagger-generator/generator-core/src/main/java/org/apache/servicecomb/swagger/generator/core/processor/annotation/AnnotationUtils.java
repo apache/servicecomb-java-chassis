@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -36,6 +37,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -135,6 +137,17 @@ public final class AnnotationUtils {
     return tags.isEmpty() ? null : tags;
   }
 
+  public static List<String> tagsModel(String[] tagArray) {
+    if (tagArray == null) {
+      return null;
+    }
+
+    List<String> tags = Arrays.stream(tagArray)
+        .filter(t -> !t.isEmpty())
+        .collect(Collectors.toList());
+    return tags.isEmpty() ? null : tags;
+  }
+
   public static io.swagger.v3.oas.models.tags.Tag tagModel(Tag tagAnnotation) {
     io.swagger.v3.oas.models.tags.Tag tag = new io.swagger.v3.oas.models.tags.Tag();
     tag.setName(tagAnnotation.name());
@@ -163,6 +176,25 @@ public final class AnnotationUtils {
       return "200";
     }
     return apiResponse.responseCode();
+  }
+
+  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(ApiResponses apiResponses) {
+    io.swagger.v3.oas.models.responses.ApiResponses result =
+        new io.swagger.v3.oas.models.responses.ApiResponses();
+    result.setExtensions(extensionsModel(apiResponses.extensions()));
+    for (ApiResponse apiResponse : apiResponses.value()) {
+      result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
+    }
+    return result;
+  }
+
+  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(ApiResponse[] apiResponses) {
+    io.swagger.v3.oas.models.responses.ApiResponses result =
+        new io.swagger.v3.oas.models.responses.ApiResponses();
+    for (ApiResponse apiResponse : apiResponses) {
+      result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
+    }
+    return result;
   }
 
   public static io.swagger.v3.oas.models.responses.ApiResponse apiResponseModel(ApiResponse apiResponse) {
@@ -219,6 +251,16 @@ public final class AnnotationUtils {
     result.setDescription(schema.description());
     result.setType(schema.type());
     result.setFormat(schema.format());
+    return result;
+  }
+
+  public static io.swagger.v3.oas.models.Operation operationModel(Operation apiOperationAnnotation) {
+    io.swagger.v3.oas.models.Operation result = new io.swagger.v3.oas.models.Operation();
+    result.setExtensions(extensionsModel(apiOperationAnnotation.extensions()));
+    result.setResponses(apiResponsesModel(apiOperationAnnotation.responses()));
+    result.setOperationId(apiOperationAnnotation.operationId());
+    result.setTags(tagsModel(apiOperationAnnotation.tags()));
+    result.setRequestBody(requestBodyModel(apiOperationAnnotation.requestBody()));
     return result;
   }
 }
