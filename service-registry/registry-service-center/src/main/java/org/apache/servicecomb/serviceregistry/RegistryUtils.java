@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -68,7 +69,7 @@ public final class RegistryUtils {
    */
   private static volatile ServiceRegistry serviceRegistry;
 
-  private static volatile boolean running = false;
+  private static AtomicBoolean running = new AtomicBoolean(false);
 
   private static final Map<String, ServiceRegistry> EXTRA_SERVICE_REGISTRIES = new LinkedHashMap<>();
 
@@ -121,19 +122,20 @@ public final class RegistryUtils {
   }
 
   public static void run() {
-    if (running) {
-      if (DynamicPropertyFactory.getInstance()
-          .getBooleanProperty(SERVICECOMB_SERVICE_REGISTRY_REPEATED_INITIALIZATION_ALLOWED, false).get()) {
-        return;
-      }
-      throw new IllegalStateException("Registry has already bean initialized and not allowed to initialize twice.");
+    if (running.compareAndSet(false, true)) {
+      executeOnEachServiceRegistry(ServiceRegistry::run);
+      return;
     }
-    executeOnEachServiceRegistry(ServiceRegistry::run);
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(SERVICECOMB_SERVICE_REGISTRY_REPEATED_INITIALIZATION_ALLOWED, false).get()) {
+      return;
+    }
+    throw new IllegalStateException("Registry has already bean initialized and not allowed to initialize twice.");
   }
 
   public static void destroy() {
+    running.set(false);
     executeOnEachServiceRegistry(ServiceRegistry::destroy);
-    running = false;
     if (serviceRegistry != null) {
       serviceRegistry = null;
     }
