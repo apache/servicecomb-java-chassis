@@ -165,6 +165,7 @@ public class TestSwaggerUtils {
 
   @Test
   public void testAllType() {
+    // TODO: User do not generate nested properties friends
     testSchemaMethod("allType", "testAllType");
   }
 

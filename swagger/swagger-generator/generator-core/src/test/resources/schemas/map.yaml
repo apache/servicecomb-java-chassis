@@ -16,44 +16,39 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema"
-  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
-basePath: "/Schema"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema
+  version: 1.0.0
 paths:
   /testMap:
     post:
-      operationId: "testMap"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testMapBody"
+      operationId: testMap
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testMapBody'
       responses:
         "200":
-          description: "response of 200"
-definitions:
-  User:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-      friends:
-        type: "array"
-        items:
-          $ref: "#/definitions/User"
-    x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.User"
-  testMapBody:
-    type: "object"
-    properties:
-      value:
-        type: "object"
-        additionalProperties:
-          $ref: "#/definitions/User"
+          description: response of 200
+          content:
+            application/json: {}
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    testMapBody:
+      type: object
+      properties:
+        value:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/User'

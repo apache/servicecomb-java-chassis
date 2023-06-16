@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
@@ -45,6 +46,8 @@ import jakarta.ws.rs.HttpMethod;
 
 @SuppressWarnings("rawtypes")
 public class PojoOperationGenerator extends AbstractOperationGenerator {
+  private boolean isWrapBody = false;
+
   protected Schema bodyModel;
 
   protected RequestBody bodyParameter;
@@ -60,6 +63,12 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     tryWrapParametersToBody();
   }
 
+  private void initRequestBody(Schema schema) {
+    this.bodyParameter = new RequestBody();
+    bodyParameter.content(new Content()).getContent().addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE,
+        new MediaType()).get(SwaggerConst.DEFAULT_MEDIA_TYPE).schema(schema);
+  }
+
   private void tryWrapParametersToBody() {
     List<ParameterGenerator> bodyFields = parameterGenerators.stream().filter(pg -> pg.getHttpParameterType() == null)
         .collect(Collectors.toList());
@@ -70,6 +79,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     if (bodyFields.size() == 1 && SwaggerUtils.isBean(bodyFields.get(0).getGenericType())) {
       ParameterGenerator parameterGenerator = bodyFields.get(0);
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+      initRequestBody(SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()));
       return;
     }
 
@@ -78,9 +88,11 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   private void wrapParametersToBody(List<ParameterGenerator> bodyFields) {
+    isWrapBody = true;
     String simpleRef = MethodUtils.findSwaggerMethodName(method) + "Body";
 
     bodyModel = new Schema();
+    bodyModel.setType("object");
 
     for (ParameterGenerator parameterGenerator : bodyFields) {
       // to collect all information by swagger mechanism
@@ -102,17 +114,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     Schema bodyModelNew = new Schema();
     bodyModelNew.set$ref(Components.COMPONENTS_SCHEMAS_REF + simpleRef);
 
-    bodyParameter = swaggerOperation.getRequestBody();
-    if (bodyParameter == null) {
-      bodyParameter = new RequestBody();
-    }
-    if (bodyParameter.getContent() == null) {
-      bodyParameter.setContent(new Content());
-    }
-    if (bodyParameter.getContent().size() == 0) {
-      bodyParameter.getContent().addMediaType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON, new MediaType());
-    }
-    bodyParameter.getContent().forEach((k, v) -> v.setSchema(bodyModelNew));
+    initRequestBody(bodyModelNew);
 
     List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
     newParameterGenerators.add(new ParameterGenerator(
@@ -126,14 +128,10 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     parameterGenerators = newParameterGenerators;
   }
 
-  private boolean isWrapBody(Object parameter) {
-    return parameter != null && parameter == bodyParameter;
-  }
-
   @Override
   protected void fillParameter(OpenAPI swagger, Parameter parameter, String parameterName, JavaType type,
       List<Annotation> annotations) {
-    if (isWrapBody(parameter)) {
+    if (isWrapBody) {
       return;
     }
 
@@ -147,11 +145,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
 
   @Override
   protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
-    if (isWrapBody(parameterGenerator.getRequestBody())) {
-      return bodyParameter;
-    }
-
-    return super.createRequestBody(parameterGenerator);
+    return bodyParameter;
   }
 
   @Override

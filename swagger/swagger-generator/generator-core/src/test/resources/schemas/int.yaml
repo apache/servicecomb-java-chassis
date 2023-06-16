@@ -16,33 +16,29 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema"
-  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
-basePath: "/Schema"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema
+  version: 1.0.0
 paths:
   /testint:
     post:
-      operationId: "testint"
-      parameters:
-      - in: "body"
-        name: "value"
-        required: false
-        schema:
-          $ref: "#/definitions/testintBody"
+      operationId: testint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testintBody'
       responses:
         "200":
-          description: "response of 200"
-definitions:
-  testintBody:
-    type: "object"
-    properties:
-      value:
-        type: "integer"
-        format: "int32"
+          description: response of 200
+          content:
+            application/json: {}
+components:
+  schemas:
+    testintBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
