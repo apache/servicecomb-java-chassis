@@ -261,6 +261,8 @@ public final class AnnotationUtils {
 
   public static io.swagger.v3.oas.models.Operation operationModel(Operation apiOperationAnnotation) {
     io.swagger.v3.oas.models.Operation result = new io.swagger.v3.oas.models.Operation();
+    result.setSummary(apiOperationAnnotation.summary());
+    result.setDescription(apiOperationAnnotation.description());
     result.setExtensions(extensionsModel(apiOperationAnnotation.extensions()));
     result.setResponses(apiResponsesModel(apiOperationAnnotation.responses()));
     result.setOperationId(apiOperationAnnotation.operationId());

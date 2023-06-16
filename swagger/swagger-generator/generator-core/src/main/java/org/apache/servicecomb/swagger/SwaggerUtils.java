@@ -184,7 +184,7 @@ public final class SwaggerUtils {
             if (!componentSchemas.containsKey(entry.getKey())) {
               componentSchemas.put(entry.getKey(), entry.getValue());
             } else {
-              if (!entry.getValue().getClass()
+              if (entry.getValue().getClass()
                   .equals(componentSchemas.get(entry.getKey()).getClass())) {
                 throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
               }

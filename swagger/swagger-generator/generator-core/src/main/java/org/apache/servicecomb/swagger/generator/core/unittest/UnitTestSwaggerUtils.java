@@ -74,12 +74,12 @@ public final class UnitTestSwaggerUtils {
     generator.getSwaggerGeneratorFeature().setPackageName("gen.cse.ms.ut");
 
     OpenAPI swagger = generator.generate();
-    String schema = pretty(swagger);
+    String schema = pretty(swagger).trim();
 
-    String expectSchema = loadExpect(resPath).replace("\r\n", "\n");
-    int offset = expectSchema.indexOf("---\nswagger: \"2.0\"");
+    String expectSchema = loadExpect(resPath).replace("\r\n", "\n").trim();
+    int offset = expectSchema.indexOf("---\nopenapi: 3.0.1");
     if (offset > 0) {
-      expectSchema = expectSchema.substring(offset);
+      expectSchema = expectSchema.substring(offset + 4);
     }
 
     if (!Objects.equals(expectSchema, schema)) {
