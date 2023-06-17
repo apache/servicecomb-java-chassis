@@ -16,45 +16,38 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema"
-  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
-basePath: "/Schema"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema
+  version: 1.0.0
 paths:
   /testEnum:
     post:
-      operationId: "testEnum"
-      parameters:
-      - in: "body"
-        name: "testEnumBody"
-        required: false
-        schema:
-          $ref: "#/definitions/testEnumBody"
+      operationId: testEnum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testEnumBody'
       responses:
         "200":
-          description: "response of 200"
-definitions:
-  testEnumBody:
-    type: "object"
-    properties:
-      color:
-        type: "string"
-        enum:
-        - "RED"
-        - "YELLOW"
-        - "BLUE"
-        x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
-      color1:
-        type: "string"
-        enum:
-        - "RED"
-        - "YELLOW"
-        - "BLUE"
-        x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
-    x-java-class: "gen.cse.ms.ut.testEnumBody"
+          description: response of 200
+          content:
+            application/json: {}
+components:
+  schemas:
+    testEnumBody:
+      type: object
+      properties:
+        color:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - BLUE
+        color1:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - BLUE

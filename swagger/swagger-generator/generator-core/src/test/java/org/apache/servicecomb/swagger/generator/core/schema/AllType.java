@@ -25,45 +25,45 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
 public class AllType {
-  public boolean bValue;
-
-  public byte byteValue;
-
-  public Byte byteObjectValue;
-
-  public short sValue;
-
-  public Short sObjectValue;
-
-  public int iValue;
-
-  public Integer iObjectValue;
-
-  public long lValue;
-
-  public Long lObjectValue;
-
-  public float fValue;
-
-  public Float fObjectValue;
-
-  public double dValue;
-
-  public Double dObjectValue;
-
-  public Color enumValue;
-
-  public char cValue;
-
-  public Character cObjectValue;
-
-  public byte[] bytes;
-
-  public String strValue;
-
-  public Set<String> set;
+//  public boolean bValue;
+//
+//  public byte byteValue;
+//
+//  public Byte byteObjectValue;
+//
+//  public short sValue;
+//
+//  public Short sObjectValue;
+//
+//  public int iValue;
+//
+//  public Integer iObjectValue;
+//
+//  public long lValue;
+//
+//  public Long lObjectValue;
+//
+//  public float fValue;
+//
+//  public Float fObjectValue;
+//
+//  public double dValue;
+//
+//  public Double dObjectValue;
+//
+//  public Color enumValue;
+//
+//  public char cValue;
+//
+//  public Character cObjectValue;
+//
+//  public byte[] bytes;
+//
+//  public String strValue;
+//
+//  public Set<String> set;
 
   public List<User> list;
 
-  public Map<String, User> map;
+//  public Map<String, User> map;
 }
