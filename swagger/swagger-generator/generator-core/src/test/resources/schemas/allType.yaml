@@ -34,76 +34,16 @@ components:
     AllType:
       type: object
       properties:
-        bValue:
-          type: boolean
-        byteValue:
-          type: string
-          format: byte
-        byteObjectValue:
-          type: string
-          format: byte
-        sValue:
-          type: integer
-          format: int32
-        sObjectValue:
-          type: integer
-          format: int32
-        iValue:
-          type: integer
-          format: int32
-        iObjectValue:
-          type: integer
-          format: int32
-        lValue:
-          type: integer
-          format: int64
-        lObjectValue:
-          type: integer
-          format: int64
-        fValue:
-          type: number
-          format: float
-        fObjectValue:
-          type: number
-          format: float
-        dValue:
-          type: number
-          format: double
-        dObjectValue:
-          type: number
-          format: double
-        enumValue:
-          type: string
-          enum:
-          - RED
-          - YELLOW
-          - BLUE
-        cValue:
-          type: string
-        cObjectValue:
-          type: string
-        bytes:
-          type: array
-          items:
-            type: string
-            format: byte
-        strValue:
-          type: string
-        set:
-          uniqueItems: true
-          type: array
-          items:
-            type: string
         list:
           type: array
           items:
-            $ref: '#/components/schemas/User'
-        map:
-          type: object
-          additionalProperties:
             $ref: '#/components/schemas/User'
     User:
       type: object
       properties:
         name:
           type: string
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
