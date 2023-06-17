@@ -29,11 +29,12 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.core.MediaType;
 
-public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<RequestBody, FormParam> {
+public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
     return FormParam.class;
@@ -50,7 +51,13 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      FormParam formParam) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       FormParam formParam) {
     // TODO: not complete
     Schema schema = new Schema();

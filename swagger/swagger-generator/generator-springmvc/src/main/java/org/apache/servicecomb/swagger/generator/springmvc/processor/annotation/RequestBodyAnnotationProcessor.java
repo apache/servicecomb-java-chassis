@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
-public class RequestBodyAnnotationProcessor implements
-    ParameterProcessor<io.swagger.v3.oas.models.parameters.RequestBody, RequestBody> {
+public class RequestBodyAnnotationProcessor implements ParameterProcessor<RequestBody> {
   @Override
   public Type getProcessType() {
     return RequestBody.class;
@@ -46,7 +46,13 @@ public class RequestBodyAnnotationProcessor implements
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      RequestBody requestBody) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation,
       io.swagger.v3.oas.models.parameters.RequestBody bodyParameter, JavaType type,
       RequestBody requestBody) {
     bodyParameter.setRequired(requestBody.required());

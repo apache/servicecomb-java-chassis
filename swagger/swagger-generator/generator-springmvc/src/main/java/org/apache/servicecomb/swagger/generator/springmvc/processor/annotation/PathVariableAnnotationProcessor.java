@@ -26,10 +26,11 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.PathParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class PathVariableAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<PathParameter, PathVariable> {
+    AbstractSpringmvcSerializableParameterProcessor<PathVariable> {
   @Override
   public Type getProcessType() {
     return PathVariable.class;
@@ -50,8 +51,14 @@ public class PathVariableAnnotationProcessor extends
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, PathParameter pathParameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter pathParameter, JavaType type,
       PathVariable pathVariable) {
     // TODO: not complete
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      PathVariable pathVariable) {
+
   }
 }

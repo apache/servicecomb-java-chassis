@@ -26,9 +26,10 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
-public class RawJsonRequestBodyProcessor implements ParameterProcessor<RequestBody, RawJsonRequestBody> {
+public class RawJsonRequestBodyProcessor implements ParameterProcessor<RawJsonRequestBody> {
   @Override
   public Class<?> getProcessType() {
     return RawJsonRequestBody.class;
@@ -51,7 +52,13 @@ public class RawJsonRequestBodyProcessor implements ParameterProcessor<RequestBo
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      RawJsonRequestBody rawJsonRequestBody) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
       RawJsonRequestBody annotation) {
     parameter.getExtensions().put("x-raw-json", true);
     parameter.setRequired(annotation.required());

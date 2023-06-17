@@ -26,10 +26,11 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.QueryParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class RequestParamAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<QueryParameter, RequestParam> {
+    AbstractSpringmvcSerializableParameterProcessor<RequestParam> {
   @Override
   public Type getProcessType() {
     return RequestParam.class;
@@ -50,8 +51,14 @@ public class RequestParamAnnotationProcessor extends
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, QueryParameter queryParameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter queryParameter, JavaType type,
       RequestParam requestParam) {
     // TODO: not complete
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      RequestParam requestParam) {
+
   }
 }

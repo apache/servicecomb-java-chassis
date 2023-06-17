@@ -31,10 +31,11 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.core.MediaType;
 
-public class PartArrayProcessor implements ParameterProcessor<RequestBody, Annotation> {
+public class PartArrayProcessor implements ParameterProcessor<Annotation> {
   @Override
   public Type getProcessType() {
     return Part[].class;
@@ -51,7 +52,13 @@ public class PartArrayProcessor implements ParameterProcessor<RequestBody, Annot
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      Annotation annotation) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
       Annotation annotation) {
     ArraySchema property = new ArraySchema().items(new FileSchema());
     parameter.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,

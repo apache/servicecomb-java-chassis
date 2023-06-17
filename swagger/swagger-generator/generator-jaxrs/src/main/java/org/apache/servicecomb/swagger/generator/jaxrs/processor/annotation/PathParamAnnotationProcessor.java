@@ -19,8 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.PathParam;
-
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
@@ -28,10 +26,12 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.PathParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.PathParam;
 
 
-public class PathParamAnnotationProcessor extends AbstractSerializableParameterProcessor<PathParameter, PathParam> {
+public class PathParamAnnotationProcessor extends AbstractSerializableParameterProcessor<PathParam> {
   @Override
   public Type getProcessType() {
     return PathParam.class;
@@ -48,8 +48,14 @@ public class PathParamAnnotationProcessor extends AbstractSerializableParameterP
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, PathParameter pathParameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter pathParameter, JavaType type,
       PathParam pathParam) {
     // TODO: not complete
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      PathParam pathParam) {
+
   }
 }

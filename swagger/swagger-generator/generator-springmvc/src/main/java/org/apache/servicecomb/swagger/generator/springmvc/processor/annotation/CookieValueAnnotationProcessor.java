@@ -26,11 +26,11 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.CookieParameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 
 public class CookieValueAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<CookieParameter, CookieValue> {
+    AbstractSpringmvcSerializableParameterProcessor<CookieValue> {
   @Override
   public Type getProcessType() {
     return CookieValue.class;
@@ -51,14 +51,14 @@ public class CookieValueAnnotationProcessor extends
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, CookieParameter cookieParameter, JavaType type,
-      CookieValue cookieValue) {
+  public void fillParameter(OpenAPI swagger, Operation operation,
+      io.swagger.v3.oas.models.parameters.Parameter parameter, JavaType type, CookieValue cookieValue) {
 
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, CookieParameter cookieParameter, Type type,
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
       CookieValue cookieValue) {
-    super.fillParameter(swagger, operation, cookieParameter, type, cookieValue);
+
   }
 }

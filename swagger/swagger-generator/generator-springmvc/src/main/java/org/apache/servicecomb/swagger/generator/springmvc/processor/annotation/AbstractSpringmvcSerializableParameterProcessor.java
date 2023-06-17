@@ -19,6 +19,6 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
-public abstract class AbstractSpringmvcSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> extends
-    AbstractSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
+public abstract class AbstractSpringmvcSerializableParameterProcessor<ANNOTATION> extends
+    AbstractSerializableParameterProcessor<ANNOTATION> {
 }

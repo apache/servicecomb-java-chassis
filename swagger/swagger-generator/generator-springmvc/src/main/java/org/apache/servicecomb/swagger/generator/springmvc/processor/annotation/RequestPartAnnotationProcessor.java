@@ -28,11 +28,12 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.core.MediaType;
 
 public class RequestPartAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<RequestBody, RequestPart> {
+    AbstractSpringmvcSerializableParameterProcessor<RequestPart> {
   @Override
   public Type getProcessType() {
     return RequestPart.class;
@@ -53,7 +54,13 @@ public class RequestPartAnnotationProcessor extends
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      RequestPart requestPart) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       RequestPart requestPart) {
     // TODO: not complete
     requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,

@@ -1,0 +1,848 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+---
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema
+  version: 1.0.0
+paths:
+  /ignoreRequest:
+    post:
+      operationId: ignoreRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ignoreRequestBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /nestedListString:
+    post:
+      operationId: nestedListString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/nestedListStringBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: string
+  /part:
+    post:
+      operationId: part
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /partArray:
+    post:
+      operationId: partArray
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                type: string
+                format: binary
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /partList:
+    post:
+      operationId: partList
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                type: string
+                format: binary
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testAllType:
+    post:
+      operationId: testAllType
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testApiOperation:
+    post:
+      operationId: testApiOperation
+      responses:
+        default:
+          description: response of default
+          headers:
+            h:
+              description: ""
+              schema:
+                type: string
+                description: ""
+                format: ""
+          content: {}
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testApiResponse:
+    post:
+      operationId: testApiResponse
+      responses:
+        "200":
+          description: response of 200
+          headers:
+            h:
+              description: ""
+              schema:
+                type: string
+                description: ""
+                format: ""
+          content:
+            application/json: {}
+  /testArray:
+    post:
+      operationId: testArray
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testArrayBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testBoolean:
+    post:
+      operationId: testBoolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testBooleanBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testByte:
+    post:
+      operationId: testByte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testByteBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testBytes:
+    post:
+      operationId: testBytes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testBytesBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testChar:
+    post:
+      operationId: testChar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testCharBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testCompletableFuture:
+    post:
+      operationId: testCompletableFuture
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testCompletableFutureOptional:
+    post:
+      operationId: testCompletableFutureOptional
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testDate:
+    post:
+      operationId: testDate
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+  /testDouble:
+    post:
+      operationId: testDouble
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testDoubleBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testEnum:
+    post:
+      operationId: testEnum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testEnumBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testFloat:
+    post:
+      operationId: testFloat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testFloatBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testInteger:
+    post:
+      operationId: testInteger
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testIntegerBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testList:
+    post:
+      operationId: testList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testListBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testLong:
+    post:
+      operationId: testLong
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testLongBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testMap:
+    post:
+      operationId: testMap
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testMapBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testMapList:
+    post:
+      operationId: testMapList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testMapListBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testMultiParam:
+    post:
+      operationId: testMultiParam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testMultiParamBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /testObject:
+    post:
+      operationId: testObject
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testOneEnum:
+    post:
+      operationId: testOneEnum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testOneEnumBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testOptional:
+    post:
+      operationId: testOptional
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testResponseHeader:
+    post:
+      operationId: testResponseHeader
+      responses:
+        default:
+          description: response of default
+          headers:
+            h:
+              description: ""
+              schema:
+                type: string
+                description: ""
+                format: ""
+          content: {}
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testSet:
+    post:
+      operationId: testSet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testSetBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testShort:
+    post:
+      operationId: testShort
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testShortBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testString:
+    post:
+      operationId: testString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testStringBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testboolean:
+    post:
+      operationId: testboolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testbooleanBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testbyte:
+    post:
+      operationId: testbyte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testbyteBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testbytes:
+    post:
+      operationId: testbytes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testbytesBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testchar:
+    post:
+      operationId: testchar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testcharBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testdouble:
+    post:
+      operationId: testdouble
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testdoubleBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testfloat:
+    post:
+      operationId: testfloat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testfloatBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testint:
+    post:
+      operationId: testint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testintBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testlong:
+    post:
+      operationId: testlong
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testlongBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /testshort:
+    post:
+      operationId: testshort
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testshortBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+  /wrapToBodyWithDesc:
+    post:
+      operationId: wrapToBodyWithDesc
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/wrapToBodyWithDescBody'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json: {}
+components:
+  schemas:
+    ignoreRequestBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+    nestedListStringBody:
+      type: object
+      properties:
+        param:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+    AllType:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    testArrayBody:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            type: string
+    testBooleanBody:
+      type: object
+      properties:
+        value:
+          type: boolean
+    testByteBody:
+      type: object
+      properties:
+        value:
+          type: string
+          format: byte
+    testBytesBody:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            type: string
+            format: byte
+    testCharBody:
+      type: object
+      properties:
+        value:
+          type: string
+    testDoubleBody:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+    testEnumBody:
+      type: object
+      properties:
+        color:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - BLUE
+        color1:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - BLUE
+    testFloatBody:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+    testIntegerBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+    testListBody:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    testLongBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+    testMapBody:
+      type: object
+      properties:
+        value:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+    testMapListBody:
+      type: object
+      properties:
+        value:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+    testMultiParamBody:
+      type: object
+      properties:
+        obj:
+          $ref: '#/components/schemas/AllType'
+        bValue:
+          type: boolean
+        byteValue:
+          type: string
+          format: byte
+        sValue:
+          type: integer
+          format: int32
+        iValue:
+          type: integer
+          format: int32
+        lValue:
+          type: integer
+          format: int64
+        fValue:
+          type: number
+          format: float
+        dValue:
+          type: number
+          format: double
+        enumValue:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - BLUE
+        cValue:
+          type: string
+        bytes:
+          type: array
+          items:
+            type: string
+            format: byte
+        strValue:
+          type: string
+        strArray:
+          type: array
+          items:
+            type: string
+        set:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        map:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/User'
+    testOneEnumBody:
+      type: object
+      properties:
+        color:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - BLUE
+    testSetBody:
+      type: object
+      properties:
+        value:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+    testShortBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+    testStringBody:
+      type: object
+      properties:
+        value:
+          type: string
+    testbooleanBody:
+      type: object
+      properties:
+        value:
+          type: boolean
+    testbyteBody:
+      type: object
+      properties:
+        value:
+          type: string
+          format: byte
+    testbytesBody:
+      type: object
+      properties:
+        value:
+          type: array
+          items:
+            type: string
+            format: byte
+    testcharBody:
+      type: object
+      properties:
+        value:
+          type: string
+    testdoubleBody:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+    testfloatBody:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+    testintBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+    testlongBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+    testshortBody:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+    wrapToBodyWithDescBody:
+      type: object
+      properties:
+        desc:
+          type: integer
+          format: int32

@@ -19,6 +19,6 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 
-public abstract class AbstractSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> implements
-    ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
+public abstract class AbstractSerializableParameterProcessor<ANNOTATION> implements
+    ParameterProcessor<ANNOTATION> {
 }

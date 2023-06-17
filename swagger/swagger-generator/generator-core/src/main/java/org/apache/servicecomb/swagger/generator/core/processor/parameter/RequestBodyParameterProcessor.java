@@ -27,11 +27,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.core.MediaType;
 
-public class RequestBodyParameterProcessor
-    implements ParameterProcessor<RequestBody, io.swagger.v3.oas.annotations.parameters.RequestBody> {
+public class RequestBodyParameterProcessor implements
+    ParameterProcessor<io.swagger.v3.oas.annotations.parameters.RequestBody> {
   @Override
   public Class<?> getProcessType() {
     return io.swagger.v3.oas.annotations.parameters.RequestBody.class;
@@ -49,7 +50,13 @@ public class RequestBodyParameterProcessor
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      io.swagger.v3.oas.annotations.parameters.RequestBody requestBody) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
       io.swagger.v3.oas.annotations.parameters.RequestBody annotation) {
     // create a new request body
     RequestBody requestBody = AnnotationUtils.requestBodyModel(annotation);
