@@ -29,11 +29,12 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.core.MediaType;
 
 public class RequestAttributeAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<RequestBody, RequestAttribute> {
+    AbstractSpringmvcSerializableParameterProcessor<RequestAttribute> {
   @Override
   public Type getProcessType() {
     return RequestAttribute.class;
@@ -54,7 +55,13 @@ public class RequestAttributeAnnotationProcessor extends
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
+      RequestAttribute requestAttribute) {
+
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       RequestAttribute requestAttribute) {
     // TODO: not complete
     Schema schema = new Schema();

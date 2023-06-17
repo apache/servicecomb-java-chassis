@@ -19,8 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.QueryParam;
-
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
@@ -28,10 +26,12 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.QueryParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.ws.rs.QueryParam;
 
 
-public class QueryParamAnnotationProcessor extends AbstractSerializableParameterProcessor<QueryParameter, QueryParam> {
+public class QueryParamAnnotationProcessor extends AbstractSerializableParameterProcessor<QueryParam> {
   @Override
   public Type getProcessType() {
     return QueryParam.class;
@@ -48,8 +48,14 @@ public class QueryParamAnnotationProcessor extends AbstractSerializableParameter
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, QueryParameter queryParameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter queryParameter, JavaType type,
       QueryParam queryParam) {
     // TODO: not complete
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      QueryParam queryParam) {
+
   }
 }

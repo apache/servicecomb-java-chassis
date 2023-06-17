@@ -25,8 +25,10 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
-public interface ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
+public interface ParameterProcessor<ANNOTATION> {
   Type getProcessType();
 
   default JavaType getProcessJavaType() {
@@ -41,11 +43,19 @@ public interface ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
 
   HttpParameterType getHttpParameterType(ANNOTATION parameterAnnotation);
 
-  void fillParameter(OpenAPI swagger, Operation operation, SWAGGER_PARAMETER parameter, JavaType type,
+  void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
       ANNOTATION annotation);
 
-  default void fillParameter(OpenAPI swagger, Operation operation, SWAGGER_PARAMETER parameter, Type type,
+  default void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, Type type,
       ANNOTATION annotation) {
     fillParameter(swagger, operation, parameter, TypeFactory.defaultInstance().constructType(type), annotation);
+  }
+
+  void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      ANNOTATION annotation);
+
+  default void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, Type type,
+      ANNOTATION annotation) {
+    fillRequestBody(swagger, operation, parameter, TypeFactory.defaultInstance().constructType(type), annotation);
   }
 }

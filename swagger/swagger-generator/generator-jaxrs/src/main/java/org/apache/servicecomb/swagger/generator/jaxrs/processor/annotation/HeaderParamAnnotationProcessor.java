@@ -26,12 +26,13 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.HeaderParam;
 
 
 public class HeaderParamAnnotationProcessor extends
-    AbstractSerializableParameterProcessor<HeaderParameter, HeaderParam> {
+    AbstractSerializableParameterProcessor<HeaderParam> {
   @Override
   public Type getProcessType() {
     return HeaderParam.class;
@@ -48,8 +49,14 @@ public class HeaderParamAnnotationProcessor extends
   }
 
   @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, HeaderParameter headerParameter, JavaType type,
+  public void fillParameter(OpenAPI swagger, Operation operation, Parameter headerParameter, JavaType type,
       HeaderParam headerParam) {
     // TODO: not complete
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      HeaderParam headerParam) {
+
   }
 }

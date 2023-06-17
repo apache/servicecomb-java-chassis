@@ -59,7 +59,7 @@ public final class SwaggerGeneratorUtils {
 
   private static final Map<Type, MethodAnnotationProcessor<?>> methodAnnotationProcessors = new HashMap<>();
 
-  private static final Map<JavaType, ParameterProcessor<?, ?>> parameterProcessors = new HashMap<>();
+  private static final Map<JavaType, ParameterProcessor<?>> parameterProcessors = new HashMap<>();
 
   private static final Map<Type, ResponseTypeProcessor> responseTypeProcessors = new HashMap<>();
 
@@ -86,7 +86,7 @@ public final class SwaggerGeneratorUtils {
       }
     }
 
-    for (ParameterProcessor<?, ?> processor : SPIServiceUtils.getOrLoadSortedService(ParameterProcessor.class)) {
+    for (ParameterProcessor<?> processor : SPIServiceUtils.getOrLoadSortedService(ParameterProcessor.class)) {
       JavaType javaType = processor.getProcessJavaType();
       if (parameterProcessors.putIfAbsent(javaType, processor) != null) {
         LOGGER.info("ignore duplicated ParameterProcessor, type={}, processor={}.",
@@ -128,10 +128,10 @@ public final class SwaggerGeneratorUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <SWAGGER_PARAMETER, ANNOTATION> ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> findParameterProcessors(
+  public static <ANNOTATION> ParameterProcessor<ANNOTATION> findParameterProcessors(
       Type type) {
     type = TypeFactory.defaultInstance().constructType(type);
-    return (ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION>) parameterProcessors.get(type);
+    return (ParameterProcessor<ANNOTATION>) parameterProcessors.get(type);
   }
 
   public static ResponseTypeProcessor findResponseTypeProcessor(Type type) {
@@ -180,7 +180,7 @@ public final class SwaggerGeneratorUtils {
     //   it's ambiguous to use different name in different annotation
     //   so we only read the first available name
     for (Annotation annotation : annotations) {
-      ParameterProcessor<?, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor == null) {
         continue;
       }
@@ -214,7 +214,7 @@ public final class SwaggerGeneratorUtils {
   public static Type collectGenericType(List<Annotation> annotations, Type defaultType) {
     Type genericType = null;
     for (Annotation annotation : annotations) {
-      ParameterProcessor<?, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor == null) {
         continue;
       }
@@ -257,7 +257,7 @@ public final class SwaggerGeneratorUtils {
   }
 
   private static HttpParameterType collectHttpParameterType(Annotation parameterAnnotation, Type type) {
-    ParameterProcessor<?, Annotation> processor = findParameterProcessors(type);
+    ParameterProcessor<Annotation> processor = findParameterProcessors(type);
     if (processor == null) {
       return null;
     }

@@ -28,9 +28,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 
-public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotation> {
+public class JsonViewProcessor implements ParameterProcessor<Annotation> {
 
   @Override
   public Type getProcessType() {
@@ -61,5 +62,11 @@ public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotati
     }
 //    parameter.getVendorExtensions().put(SwaggerConst.EXT_JSON_VIEW, jvValue[0].getName());
     // TODO: not complete
+  }
+
+  @Override
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+      Annotation annotation) {
+
   }
 }

@@ -387,7 +387,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected void fillParameter(OpenAPI swagger, Parameter parameter, String parameterName, JavaType type,
       List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
-      ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor != null) {
         processor.fillParameter(swagger, swaggerOperation, parameter, type, annotation);
       }
@@ -397,7 +397,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
-    ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(type);
+    ParameterProcessor<Annotation> processor = findParameterProcessors(type);
     if (processor != null) {
       processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
     }
@@ -406,9 +406,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected void fillRequestBody(OpenAPI swagger, RequestBody parameter, String parameterName, JavaType type,
       List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
-      ParameterProcessor<RequestBody, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor != null) {
-        processor.fillParameter(swagger, swaggerOperation, parameter, type, annotation);
+        processor.fillRequestBody(swagger, swaggerOperation, parameter, type, annotation);
       }
     }
 
@@ -416,9 +416,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
-    ParameterProcessor<RequestBody, Annotation> processor = findParameterProcessors(type);
+    ParameterProcessor<Annotation> processor = findParameterProcessors(type);
     if (processor != null) {
-      processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
+      processor.fillRequestBody(swagger, swaggerOperation, parameter, type, null);
     }
   }
 
