@@ -20,6 +20,8 @@ openapi: 3.0.1
 info:
   title: swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema
   version: 1.0.0
+servers:
+- url: /Schema
 paths:
   /testbytes:
     post:
