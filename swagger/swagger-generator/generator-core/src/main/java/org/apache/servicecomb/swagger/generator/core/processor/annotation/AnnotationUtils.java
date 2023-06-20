@@ -30,6 +30,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -83,6 +84,7 @@ public final class AnnotationUtils {
     }
     info.setContact(contactModel(infoAnnotation.contact()));
     info.setLicense(licenseModel(infoAnnotation.license()));
+    info.setExtensions(extensionsModel(infoAnnotation.extensions()));
 
     return info;
   }
@@ -154,6 +156,7 @@ public final class AnnotationUtils {
     tag.setName(tagAnnotation.name());
     tag.setDescription(tagAnnotation.description());
     tag.setExternalDocs(externalDocumentationModel(tagAnnotation.externalDocs()));
+    tag.setExtensions(extensionsModel(tagAnnotation.extensions()));
     return tag;
   }
 
@@ -167,8 +170,13 @@ public final class AnnotationUtils {
 
   public static Map<String, Object> extensionsModel(Extension[] extensions) {
     Map<String, Object> result = new HashMap<>();
-    Stream.of(extensions)
-        .forEach(e -> Stream.of(e.properties()).forEach(item -> result.put(item.name(), item.value())));
+    Stream.of(extensions).forEach(e -> result.put(e.name(), extensionPropertiesModel(e.properties())));
+    return result;
+  }
+
+  public static Map<String, String> extensionPropertiesModel(ExtensionProperty[] properties) {
+    Map<String, String> result = new HashMap<>();
+    Stream.of(properties).forEach(e -> result.put(e.name(), e.value()));
     return result;
   }
 
