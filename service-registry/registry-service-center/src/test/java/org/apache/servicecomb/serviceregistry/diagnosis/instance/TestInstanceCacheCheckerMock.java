@@ -197,8 +197,8 @@ public class TestInstanceCacheCheckerMock {
     instanceCacheResult.setMicroserviceName(microserviceName);
     instanceCacheResult.setStatus(Status.UNKNOWN);
     instanceCacheResult.setPulledInstances(new ArrayList<>());
-    instanceCacheResult.setDetail(
-        "revision is different, will be synchronized in next pull. local revision=first, remote revision=second");
+    instanceCacheResult.setDetail("revision is different, will be synchronized in next pull. "
+        + "local revision=Fv/f6YTFogBi3MiMIkVuh2DZLvU=, remote revision=second");
     expectedSummary.getProducers().add(instanceCacheResult);
     expectedSummary.setStatus(Status.UNKNOWN);
 
