@@ -64,9 +64,20 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   private void initRequestBody(Schema schema) {
-    this.bodyParameter = new RequestBody();
-    bodyParameter.content(new Content()).getContent().addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE,
-        new MediaType()).get(SwaggerConst.DEFAULT_MEDIA_TYPE).schema(schema);
+    if (this.swaggerOperation.getRequestBody() != null) {
+      this.bodyParameter = this.swaggerOperation.getRequestBody();
+      if (this.bodyParameter.getContent() == null) {
+        this.bodyParameter.setContent(new Content());
+      }
+      if (this.bodyParameter.getContent().size() == 0) {
+        this.bodyParameter.getContent().addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE,
+            new MediaType());
+      }
+    } else {
+      this.bodyParameter = new RequestBody().content(new Content().addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE,
+          new MediaType()));
+    }
+    bodyParameter.getContent().forEach((k, v) -> v.setSchema(schema));
   }
 
   private void tryWrapParametersToBody() {

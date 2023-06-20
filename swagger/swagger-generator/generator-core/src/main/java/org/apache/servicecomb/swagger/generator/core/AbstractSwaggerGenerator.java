@@ -254,6 +254,9 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     basePath = new PlaceholderResolver().replaceFirst(basePath);
     Server server = new Server();
     server.setUrl(basePath);
+    if (openAPI.getServers() == null) {
+      openAPI.setServers(new ArrayList<>());
+    }
     openAPI.getServers().add(server);
   }
 }

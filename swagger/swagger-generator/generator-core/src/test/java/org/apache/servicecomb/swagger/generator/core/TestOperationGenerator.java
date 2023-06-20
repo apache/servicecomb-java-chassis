@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.util.List;
 
@@ -51,17 +52,18 @@ public class TestOperationGenerator {
     @ApiResponse(responseCode = "200", description = "200 is ok............",
         content = @Content(mediaType = "application/json", schema = @Schema(name = "String")),
         headers = @Header(name = "x-user-domain", schema = @Schema(name = "String")))
-    @Operation(operationId = "value1", tags = {"tag1", "tag2"},
+    @Operation(summary = "value1", tags = {"tag1", "tag2"},
         responses = {
-            @ApiResponse(headers = @Header(name = "x-user-name", schema = @Schema(name = "String"))),
-            @ApiResponse(headers = @Header(name = "x-user-id", schema = @Schema(name = "String")))},
+            @ApiResponse(responseCode = "200", headers =
+                {@Header(name = "x-user-name", schema = @Schema(name = "String")),
+                    @Header(name = "x-user-id", schema = @Schema(name = "String"))})},
         extensions = {
             @Extension(name = "x-class-name", properties = @ExtensionProperty(value = "value", name = "key"))})
     public void responseThenApiOperation() {
     }
 
-    @Operation(operationId = "value1", tags = {"tag1", "tag2"},
-        responses = {@ApiResponse(headers = {
+    @Operation(summary = "value1", tags = {"tag1", "tag2"},
+        responses = {@ApiResponse(responseCode = "200", headers = {
             @Header(name = "x-user-name", schema = @Schema(name = "String")),
             @Header(name = "x-user-id", schema = @Schema(name = "String"))})},
         extensions = {
@@ -73,7 +75,7 @@ public class TestOperationGenerator {
     public void apiOperationThenResponse() {
     }
 
-    @Operation(operationId = "value2")
+    @Operation(summary = "value2")
     public void apiOperationNoTag() {
     }
 
@@ -85,7 +87,7 @@ public class TestOperationGenerator {
   public void apiOperationNoTag() {
     SwaggerOperation operation = swaggerOperations.findOperation("apiOperationNoTag");
     List<String> tags = operation.getOperation().getTags();
-    MatcherAssert.assertThat(tags, contains("default0", "default1"));
+    MatcherAssert.assertThat(tags, equalTo(null));
     Assertions.assertEquals("value2", operation.getOperation().getSummary());
   }
 
@@ -93,7 +95,7 @@ public class TestOperationGenerator {
   public void noApiOperation() {
     SwaggerOperation operation = swaggerOperations.findOperation("noApiOperation");
     List<String> tags = operation.getOperation().getTags();
-    MatcherAssert.assertThat(tags, contains("default0", "default1"));
+    MatcherAssert.assertThat(tags, equalTo(null));
     Assertions.assertNull(operation.getOperation().getSummary());
   }
 
@@ -104,7 +106,7 @@ public class TestOperationGenerator {
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
-    Assertions.assertEquals("200 is ok............", response.getDescription());
+    Assertions.assertEquals("response of 200", response.getDescription());
     Assertions.assertNull(response.getHeaders().get("x-user-domain"));
     Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
     Assertions.assertNotNull(swaggerOperation.getOperation().getExtensions().get("x-class-name"));
@@ -117,7 +119,7 @@ public class TestOperationGenerator {
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
-    Assertions.assertEquals("200 is ok............", response.getDescription());
+    Assertions.assertEquals("response of 200", response.getDescription());
     Assertions.assertNull(response.getHeaders().get("x-user-domain"));
     Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
     Assertions.assertNotNull(swaggerOperation.getOperation().getExtensions().get("x-class-name"));

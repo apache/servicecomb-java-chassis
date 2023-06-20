@@ -164,7 +164,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected void scanMethodAnnotation() {
     for (Annotation annotation : Arrays.stream(method.getAnnotations())
-        .sorted(Comparator.comparing(a -> a.annotationType().getName()))
+        .sorted(Comparator.comparing(a -> a.annotationType().getSimpleName()))
         .collect(Collectors.toList())) {
       MethodAnnotationProcessor<Annotation> processor = findMethodAnnotationProcessor(annotation.annotationType());
       if (processor == null) {
