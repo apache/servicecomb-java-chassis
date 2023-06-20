@@ -52,10 +52,12 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.Response.Status.Family;
@@ -275,5 +277,38 @@ public final class SwaggerUtils {
         && cls != File.class
         && !cls.getName().equals("org.springframework.web.multipart.MultipartFile")
         && !Part.class.isAssignableFrom(cls));
+  }
+
+  public static void updateProduces(Operation operation, String[] produces) {
+    if (operation.getResponses() == null) {
+      operation.setResponses(new ApiResponses());
+    }
+    if (operation.getResponses().size() == 0) {
+      operation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
+    }
+    for (String produce : produces) {
+      operation.getResponses().forEach((k, v) -> {
+        if (v.getContent() == null) {
+          v.setContent(new Content());
+        }
+        if (v.getContent().get(produce) == null) {
+          v.getContent().addMediaType(produce, new MediaType());
+        }
+      });
+    }
+  }
+
+  public static void updateConsumes(Operation operation, String[] consumes) {
+    if (operation.getRequestBody() == null) {
+      operation.setRequestBody(new RequestBody());
+    }
+    if (operation.getRequestBody().getContent() == null) {
+      operation.getRequestBody().setContent(new Content());
+    }
+    for (String consume : consumes) {
+      if (operation.getRequestBody().getContent().get(consume) == null) {
+        operation.getRequestBody().getContent().addMediaType(consume, new MediaType());
+      }
+    }
   }
 }

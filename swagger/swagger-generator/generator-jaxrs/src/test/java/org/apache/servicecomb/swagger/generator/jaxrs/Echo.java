@@ -19,21 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 
 import java.util.List;
 
-import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.CookieParam;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
@@ -51,9 +36,25 @@ import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatus;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusBeanParam;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusModel;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path(value = "Echo")
 public class Echo {
@@ -63,7 +64,8 @@ public class Echo {
   }
 
   @POST
-  @ApiResponse(response = int.class, code = 200, message = "")
+  @ApiResponse(content = {
+      @Content(schema = @Schema(type = "number", format = "int32"))}, responseCode = "200", description = "")
   public Response response() {
     return null;
   }
@@ -82,7 +84,7 @@ public class Echo {
   @POST
   @Produces("")
   @Consumes("")
-  @ApiOperation(value = "")
+  @Operation(summary = "")
   public void emptyPath() {
 
   }
@@ -121,7 +123,7 @@ public class Echo {
     return String.format("%s", querys);
   }
 
-  @ApiOperation(value = "")
+  @Operation(summary = "")
   public void ignoredNonRestful() {
 
   }
@@ -187,7 +189,7 @@ public class Echo {
   @Path("/dynamicStatusEnum")
   @POST
   public DynamicStatus dynamicStatusEnum(@BeanParam DynamicStatusBeanParam statusBeanParam,
-      @QueryParam("status") @ApiParam(value = "dynamic desc direct") DynamicStatus status,
+      @QueryParam("status") @Parameter(description = "dynamic desc direct") DynamicStatus status,
       DynamicStatusModel model) {
     return null;
   }
@@ -195,7 +197,7 @@ public class Echo {
   @Path("/jdkStatusEnum")
   @POST
   public JdkStatus jdkStatusEnum(@BeanParam JdkStatusBeanParam statusBeanParam,
-      @QueryParam("status") @ApiParam(value = "jdk desc direct") JdkStatus status,
+      @QueryParam("status") @Parameter(description = "jdk desc direct") JdkStatus status,
       JdkStatusModel model) {
     return null;
   }

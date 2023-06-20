@@ -16,12 +16,12 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model.enums;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.Parameter;
 
 public enum JdkStatus {
-  @ApiModelProperty(value = "jdk bad request")
+  @Parameter(description = "jdk bad request")
   BAD_REQUEST,
 
-  @ApiModelProperty(value = "jdk not found")
+  @Parameter(description = "jdk not found")
   NOT_FOUND
 }
