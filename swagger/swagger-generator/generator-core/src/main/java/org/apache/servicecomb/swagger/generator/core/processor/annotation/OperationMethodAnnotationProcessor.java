@@ -41,11 +41,11 @@ public class OperationMethodAnnotationProcessor implements MethodAnnotationProce
     operationGenerator.setHttpMethod(apiOperationAnnotation.method());
 
     if (!StringUtils.isEmpty(specificOperation.getSummary())) {
-      operation.setSummary(apiOperationAnnotation.summary());
+      operation.setSummary(specificOperation.getSummary());
     }
 
     if (!StringUtils.isEmpty(specificOperation.getDescription())) {
-      operation.setDescription(apiOperationAnnotation.description());
+      operation.setDescription(specificOperation.getDescription());
     }
 
     if (!StringUtils.isEmpty(specificOperation.getOperationId())) {
