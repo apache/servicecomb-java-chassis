@@ -34,6 +34,6 @@ public class ProducesAnnotationProcessor implements MethodAnnotationProcessor<Pr
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Produces produces) {
-    SwaggerUtils.setProduces(operationGenerator.getOperation(), produces.value());
+    SwaggerUtils.updateProduces(operationGenerator.getOperation(), produces.value());
   }
 }

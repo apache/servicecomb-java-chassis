@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model.enums;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.ws.rs.QueryParam;
 
-import io.swagger.annotations.ApiParam;
-
 public class JdkStatusBeanParam {
-  @ApiParam(value = "jdk desc aggr")
+  @Parameter(description = "jdk desc aggr")
   @QueryParam("status-aggr")
   public JdkStatus queryStatus;
 }

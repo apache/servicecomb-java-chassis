@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model.enums;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.Parameter;
 
 public class JdkStatusModel {
-  @ApiModelProperty(value = "jdk status model")
+  @Parameter(description = "jdk status model")
   public JdkStatus status;
 }

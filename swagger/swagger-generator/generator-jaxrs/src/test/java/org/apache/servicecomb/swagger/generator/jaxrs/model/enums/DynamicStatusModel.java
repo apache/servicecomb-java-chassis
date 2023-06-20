@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model.enums;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.Parameter;
 
 public class DynamicStatusModel {
-  @ApiModelProperty(value = "dynamic status model")
+  @Parameter(description = "dynamic status model")
   public DynamicStatus status;
 }

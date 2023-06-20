@@ -34,6 +34,6 @@ public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor<Co
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Consumes consumes) {
-    SwaggerUtils.setConsumes(operationGenerator.getOperation(), consumes.value());
+    SwaggerUtils.updateConsumes(operationGenerator.getOperation(), consumes.value());
   }
 }
