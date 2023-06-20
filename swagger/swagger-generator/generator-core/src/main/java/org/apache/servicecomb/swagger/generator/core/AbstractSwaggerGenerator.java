@@ -22,6 +22,7 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -70,7 +71,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   protected String httpMethod;
 
-  @SuppressWarnings("unchecked")
   public AbstractSwaggerGenerator(Class<?> cls) {
     this.openAPI = new OpenAPI();
     this.cls = cls;
@@ -138,12 +138,23 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
    */
   protected void correctSwagger() {
     if (StringUtils.isEmpty(openAPI.getOpenapi())) {
-      openAPI.setOpenapi("3.0");
+      openAPI.setOpenapi("3.0.0");
     }
 
+    correctBasePath();
     correctInfo();
   }
 
+  private void correctBasePath() {
+    if (openAPI.getServers() == null) {
+      openAPI.setServers(new ArrayList<>());
+    }
+    if (openAPI.getServers().size() <= 0) {
+      Server server = new Server();
+      server.setUrl("/" + cls.getSimpleName());
+      openAPI.getServers().add(server);
+    }
+  }
 
   private void correctInfo() {
     Info info = openAPI.getInfo();
@@ -191,7 +202,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
     Operation apiOperation = method.getAnnotation(Operation.class);
     if (apiOperation != null && apiOperation.hidden()) {
-      return apiOperation.hidden();
+      return true;
     }
 
     if (!methodWhiteList.isEmpty()) {

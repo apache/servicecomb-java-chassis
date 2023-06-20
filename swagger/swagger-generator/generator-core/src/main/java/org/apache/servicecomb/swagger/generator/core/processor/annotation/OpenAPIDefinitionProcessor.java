@@ -37,5 +37,6 @@ public class OpenAPIDefinitionProcessor implements ClassAnnotationProcessor<Open
     swagger.setServers(AnnotationUtils.serversModel(definitionAnnotation.servers()));
     swagger.setTags(AnnotationUtils.tagsModel(definitionAnnotation.tags()));
     swagger.setInfo(AnnotationUtils.infoModel(definitionAnnotation.info()));
+    swagger.setExternalDocs(AnnotationUtils.externalDocumentationModel(definitionAnnotation.externalDocs()));
   }
 }

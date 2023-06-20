@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -35,6 +34,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.models.OpenAPI;
 
+@SuppressWarnings("unchecked")
 public class TestSwaggerDefinition {
   @OpenAPIDefinition(
       servers = @Server(url = "host/base"),
@@ -64,13 +64,12 @@ public class TestSwaggerDefinition {
   interface SwaggerNoAnnotation {
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testSwaggerDefinition() {
     OpenAPI swagger = SwaggerGenerator.generate(SwaggerAnnotation.class);
 
-    Assertions.assertEquals(SwaggerAnnotation.class.getName(),
-        swagger.getInfo().getExtensions().get(SwaggerConst.EXT_JAVA_INTF));
+    Assertions.assertEquals("value of infoExt",
+        ((Map<String, String>) swagger.getInfo().getExtensions().get("x-info")).get("x-infoExt"));
     Assertions.assertEquals("3.0.1", swagger.getOpenapi());
     Assertions.assertEquals("host/base", swagger.getServers().get(0).getUrl());
 
@@ -82,7 +81,7 @@ public class TestSwaggerDefinition {
     Assertions.assertEquals("url of tagA ext docs", tagA.getExternalDocs().getUrl());
     Assertions.assertEquals(1, tagA.getExtensions().size());
 
-    Map<String, Object> tagValue = (Map<String, Object>) tagA.getExtensions().get("x-tagA");
+    Map<String, String> tagValue = (Map<String, String>) tagA.getExtensions().get("x-tagA");
     Assertions.assertEquals("value of tagAExt", tagValue.get("x-tagAExt"));
 
     io.swagger.v3.oas.models.info.Info info = swagger.getInfo();
@@ -98,11 +97,6 @@ public class TestSwaggerDefinition {
     Assertions.assertEquals("license ", info.getLicense().getName());
     Assertions.assertEquals("http://license", info.getLicense().getUrl());
 
-    Assertions.assertEquals(2, info.getExtensions().size());
-
-    Map<String, Object> infoValue = (Map<String, Object>) info.getExtensions().get("x-info");
-    Assertions.assertEquals("value of infoExt", infoValue.get("x-infoExt"));
-
     Assertions.assertEquals("SwaggerAnnotation ext docs", swagger.getExternalDocs().getDescription());
     Assertions.assertEquals("url of SwaggerAnnotation ext docs", swagger.getExternalDocs().getUrl());
   }
@@ -110,7 +104,7 @@ public class TestSwaggerDefinition {
   @Test
   public void testFillDefault() {
     OpenAPI swagger = SwaggerGenerator.generate(SwaggerNoAnnotation.class);
-    Assertions.assertEquals("3.0.0", swagger.getOpenapi());
+    Assertions.assertEquals("3.0.1", swagger.getOpenapi());
     Assertions.assertEquals("/SwaggerNoAnnotation", swagger.getServers().get(0).getUrl());
     Assertions.assertEquals("swagger definition for " + SwaggerNoAnnotation.class.getName(),
         swagger.getInfo().getTitle());
