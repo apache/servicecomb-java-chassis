@@ -17,6 +17,15 @@
 
 package org.apache.servicecomb.registry.api.registry;
 
+import java.nio.charset.StandardCharsets;
+
+import javax.crypto.Mac;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
+import org.apache.commons.lang3.StringUtils;
+
 public class MicroserviceInstances {
   private boolean microserviceNotExist;
 
@@ -71,8 +80,16 @@ public class MicroserviceInstances {
 
   private void mergeRevision(MicroserviceInstances other) {
     if (!other.isMicroserviceNotExist() && other.needRefresh) {
-      this.revision = other.getRevision();
+      Mac mac = HmacUtils.getInitializedMac(HmacAlgorithms.HMAC_SHA_1, stringToBytes(this.revision));
+      this.revision = Base64.encodeBase64String(mac.doFinal(stringToBytes(other.revision)));
     }
+  }
+
+  private byte[] stringToBytes(String input) {
+    if (StringUtils.isEmpty(input)) {
+      input = "@";
+    }
+    return input.getBytes(StandardCharsets.UTF_8);
   }
 
   private void mergeMicroserviceNotExist(boolean microserviceNotExist) {
