@@ -22,7 +22,8 @@ import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.models.Operation;
+import io.swagger.v3.oas.models.Operation;
+
 
 abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implements
     MethodAnnotationProcessor<ANNOTATION> {
@@ -37,8 +38,8 @@ abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implemen
     if (requestMethod != null) {
       operationGenerator.setHttpMethod(requestMethod.name());
     }
-    SwaggerUtils.setConsumes(operation, consumes);
-    SwaggerUtils.setProduces(operation, produces);
+    SwaggerUtils.updateConsumes(operation, consumes);
+    SwaggerUtils.updateProduces(operation, produces);
   }
 
   protected void processPath(OperationGenerator operationGenerator, String[] paths) {

@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 public class PojoImpl {
   public int testSimple(int a, int b, int c) {
@@ -35,7 +35,7 @@ public class PojoImpl {
     return user;
   }
 
-  @ApiOperation(nickname = "testSimpleAndObject", value = "")
+  @Operation(operationId = "testSimpleAndObject", summary = "")
   public CompletableFuture<String> testSimpleAndObjectAsync(String prefix, Person user) {
     CompletableFuture<String> future = new CompletableFuture<>();
     future.complete(prefix + " " + user.getName());

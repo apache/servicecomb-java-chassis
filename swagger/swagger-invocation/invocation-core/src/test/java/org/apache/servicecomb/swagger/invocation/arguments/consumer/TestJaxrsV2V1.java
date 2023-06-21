@@ -31,16 +31,16 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestJaxrsV2V1 {
   @Test
   public void add_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -61,7 +61,7 @@ public class TestJaxrsV2V1 {
   @Test
   public void add_addBeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -82,7 +82,7 @@ public class TestJaxrsV2V1 {
   @Test
   public void add_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -105,7 +105,7 @@ public class TestJaxrsV2V1 {
   @Test
   public void addBody_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -124,7 +124,7 @@ public class TestJaxrsV2V1 {
   @Test
   public void addBody_addBeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -143,7 +143,7 @@ public class TestJaxrsV2V1 {
   @Test
   public void addBody_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 

@@ -22,14 +22,14 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 public interface PojoConsumerIntf {
   int testSimple(int a, int b, int c);
 
   Person testObject(Person user);
 
-  @ApiOperation(nickname = "testObject", value = "")
+  @Operation(operationId = "testObject", summary = "")
   CompletableFuture<Person> testObjectAsync(Person user);
 
   String testSimpleAndObject(String prefix, Person user);

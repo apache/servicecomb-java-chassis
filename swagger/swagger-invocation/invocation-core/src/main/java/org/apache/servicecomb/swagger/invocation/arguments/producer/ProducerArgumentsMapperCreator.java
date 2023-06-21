@@ -70,7 +70,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected void processPendingSwaggerParameter(io.swagger.models.parameters.Parameter parameter) {
+  protected void processPendingSwaggerParameter(io.swagger.v3.oas.models.parameters.Parameter parameter) {
     swaggerParameterTypes.put(parameter.getName(), Object.class);
   }
 

@@ -32,9 +32,9 @@ import org.apache.servicecomb.swagger.invocation.schemas.PojoAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestPojoV1V1 {
@@ -50,7 +50,7 @@ public class TestPojoV1V1 {
 
   public void add_add(Class<?> clazz) {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(clazz);
+    OpenAPI swagger = SwaggerGenerator.generate(clazz);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -72,7 +72,7 @@ public class TestPojoV1V1 {
   @Test
   public void add_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoAddBodyV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoAddBodyV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -94,7 +94,7 @@ public class TestPojoV1V1 {
   @Test
   public void addBody_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -111,7 +111,7 @@ public class TestPojoV1V1 {
   @Test
   public void addBody_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoAddBodyV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoAddBodyV1.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
@@ -132,7 +132,7 @@ public class TestPojoV1V1 {
   @Test
   public void addWithContext_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddWithContext.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();

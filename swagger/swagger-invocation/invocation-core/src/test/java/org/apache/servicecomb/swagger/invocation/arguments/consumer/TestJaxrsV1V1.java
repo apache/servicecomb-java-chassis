@@ -31,16 +31,16 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV1;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.Assertions;
 
 @SuppressWarnings("unchecked")
 public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_multi_args_to_swagger_multi_args() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -64,7 +64,7 @@ public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_multi_args_to_swagger_multi_args_with_diff_order() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1_diff_order.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -84,7 +84,7 @@ public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_multi_args_to_swagger_multi_args_gen_by_BeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -104,7 +104,7 @@ public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_multi_args_to_swagger_body() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -126,7 +126,7 @@ public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_wrapped_body_to_swagger_multi_args() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -145,7 +145,7 @@ public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_wrapped_body_to_swagger_multi_args_gen_by_BeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -164,7 +164,7 @@ public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_body_to_swagger_body() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 

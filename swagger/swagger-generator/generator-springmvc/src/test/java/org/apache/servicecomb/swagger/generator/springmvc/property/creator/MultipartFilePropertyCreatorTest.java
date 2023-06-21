@@ -22,16 +22,16 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.Schema;
 
 public class MultipartFilePropertyCreatorTest {
   private final MultipartFilePropertyCreator multipartFilePropertyCreator = new MultipartFilePropertyCreator();
 
   @Test
   public void createProperty() {
-    Property property = multipartFilePropertyCreator.createProperty();
-    MatcherAssert.assertThat(property, Matchers.instanceOf(FileProperty.class));
+    Schema property = multipartFilePropertyCreator.createProperty();
+    MatcherAssert.assertThat(property, Matchers.instanceOf(FileSchema.class));
   }
 
   @Test
