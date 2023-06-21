@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.models.Scheme;
 import io.swagger.v3.oas.models.OpenAPI;
 
 public class ProducerBootListener implements BootListener {
@@ -67,18 +66,9 @@ public class ProducerBootListener implements BootListener {
     // register schema to microservice;
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
-    String swaggerSchema = "http";
-    for (String endpoint : microservice.getInstance().getEndpoints()) {
-      if (endpoint.startsWith("rest://") && endpoint.indexOf("sslEnabled=true") > 0) {
-        swaggerSchema = "https";
-        break;
-      }
-    }
-
     MicroserviceMeta microserviceMeta = event.getScbEngine().getProducerMicroserviceMeta();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
-      Swagger swagger = schemaMeta.getSwagger();
-      swagger.addScheme(Scheme.forValue(swaggerSchema));
+      OpenAPI swagger = schemaMeta.getSwagger();
       String content = SwaggerUtils.swaggerToString(swagger);
       if (exportToFile) {
         exportToFile(String.format(filePath, microservice.getServiceName(), schemaMeta.getSchemaId()), content);
@@ -104,9 +94,9 @@ public class ProducerBootListener implements BootListener {
     String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     Map<String, BasePath> basePaths = new LinkedHashMap<>();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
-      Swagger swagger = schemaMeta.getSwagger();
+      OpenAPI swagger = schemaMeta.getSwagger();
 
-      String basePath = swagger.getBasePath();
+      String basePath = SwaggerUtils.getBasePath(swagger);
       if (StringUtils.isNotEmpty(urlPrefix) && !basePath.startsWith(urlPrefix)) {
         basePath = urlPrefix + basePath;
       }
