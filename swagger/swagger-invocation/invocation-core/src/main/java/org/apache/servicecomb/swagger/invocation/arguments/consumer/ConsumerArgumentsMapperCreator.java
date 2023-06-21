@@ -37,7 +37,8 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+
 
 public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerArgumentsMapperCreator.class);

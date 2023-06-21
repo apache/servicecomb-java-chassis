@@ -18,24 +18,25 @@ package org.apache.servicecomb.swagger.invocation.response;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.Assertions;
+import io.swagger.v3.oas.models.Operation;
 
 public class TestResponsesMeta {
   static class ResponseMetaImpl {
-    @ApiResponses({@ApiResponse(code = 400, response = String.class, message = ""),
-        @ApiResponse(
-            code = 401,
-            response = long.class,
-            message = "",
-            responseHeaders = {@ResponseHeader(name = "h1", response = int.class)})
+    @ApiResponses({@ApiResponse(responseCode = "400", description = "",
+        content = {@Content(schema = @Schema(type = "string"))}),
+        @ApiResponse(responseCode = "401", description = "",
+            content = {@Content(schema = @Schema(type = "string"))},
+            headers = {@Header(name = "h1", schema = @Schema(type = "string"))})
     })
     public int add(int x, int y) {
       return x + y;
@@ -44,8 +45,8 @@ public class TestResponsesMeta {
 
   @Test
   public void test() {
-    Swagger swagger = SwaggerGenerator.generate(ResponseMetaImpl.class);
-    Operation operation = swagger.getPath("/add").getPost();
+    OpenAPI swagger = SwaggerGenerator.generate(ResponseMetaImpl.class);
+    Operation operation = swagger.getPaths().get("/add").getPost();
 
     ResponsesMeta meta = new ResponsesMeta();
     meta.init(swagger, operation);

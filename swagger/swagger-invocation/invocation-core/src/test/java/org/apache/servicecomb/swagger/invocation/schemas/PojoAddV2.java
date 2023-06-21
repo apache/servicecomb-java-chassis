@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.swagger.invocation.schemas;
 
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Parameter;
 
 public interface PojoAddV2 {
-  int add(int x, int y, @ApiParam(name = "x-z") int z);
+  int add(int x, int y, @Parameter(name = "x-z") int z);
 }

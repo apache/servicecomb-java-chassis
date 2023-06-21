@@ -118,14 +118,4 @@ public class SwaggerProducerOperation {
   public Type getSwaggerParameterType(String name) {
     return this.swaggerParameterTypes.get(name);
   }
-
-  private static io.swagger.models.parameters.Parameter findParameterByName(
-      List<io.swagger.models.parameters.Parameter> swaggerParameters, String name) {
-    for (io.swagger.models.parameters.Parameter p : swaggerParameters) {
-      if (p.getName().equals(name)) {
-        return p;
-      }
-    }
-    throw new IllegalStateException("not found parameter name in swagger, name=" + name);
-  }
 }

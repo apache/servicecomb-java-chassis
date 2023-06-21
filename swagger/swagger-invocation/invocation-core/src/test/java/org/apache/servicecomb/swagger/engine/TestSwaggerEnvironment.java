@@ -62,7 +62,7 @@ public class TestSwaggerEnvironment {
 
   @Test
   public void createConsumer_consumerMethodSetBigger() {
-    Swagger swagger = SwaggerGenerator.generate(ContractIntf.class);
+    OpenAPI swagger = SwaggerGenerator.generate(ContractIntf.class);
     SwaggerConsumer swaggerConsumer = env.createConsumer(ConsumerIntf.class, swagger);
 
     Assertions.assertNotNull(swaggerConsumer.findOperation("exist"));

@@ -28,10 +28,12 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Before;
 import org.junit.Test;
-
-import io.swagger.annotations.ApiResponse;
-import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
+
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class TestConsumerResponseMapperFactorys {
   interface ConsumerResponseForTest {
@@ -39,10 +41,10 @@ public class TestConsumerResponseMapperFactorys {
 
     CompletableFuture<String> async();
 
-    @ApiResponse(code = 200, message = "", response = String.class)
+    @ApiResponse(responseCode = "200", description = "", content = {@Content(schema = @Schema(type = "string"))})
     Response scbResponse();
 
-    @ApiResponse(code = 200, message = "", response = String.class)
+    @ApiResponse(responseCode = "200", description = "", content = {@Content(schema = @Schema(type = "string"))})
     jakarta.ws.rs.core.Response jaxrsResponse();
 
     Optional<String> optional();
@@ -58,7 +60,7 @@ public class TestConsumerResponseMapperFactorys {
 
   @Before
   public void setup() {
-    Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
+    OpenAPI swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
     swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }
 

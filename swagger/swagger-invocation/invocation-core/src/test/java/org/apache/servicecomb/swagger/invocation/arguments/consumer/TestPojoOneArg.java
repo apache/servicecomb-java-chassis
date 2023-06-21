@@ -28,17 +28,17 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerOneArg;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoOneArg;
-
-import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.OpenAPI;
 
 @SuppressWarnings("unchecked")
 public class TestPojoOneArg {
   @Test
   public void should_mapper_consumer_simple_to_swagger_body() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoOneArg.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoOneArg.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerOneArg.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("simple").getArgumentsMapper();
@@ -58,7 +58,7 @@ public class TestPojoOneArg {
   @Test
   public void should_mapper_consumer_bean_to_swagger_body() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoOneArg.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoOneArg.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerOneArg.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("bean").getArgumentsMapper();
@@ -76,7 +76,7 @@ public class TestPojoOneArg {
   @Test
   public void should_mapper_consumer_enum_to_swagger_body_field() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoOneArg.class);
+    OpenAPI swagger = SwaggerGenerator.generate(PojoOneArg.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerOneArg.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("enumBody").getArgumentsMapper();

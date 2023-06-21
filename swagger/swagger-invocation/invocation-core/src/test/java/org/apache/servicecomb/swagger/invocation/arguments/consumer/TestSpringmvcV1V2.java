@@ -40,7 +40,7 @@ public class TestSpringmvcV1V2 {
   @Test
   public void add_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -61,7 +61,7 @@ public class TestSpringmvcV1V2 {
   @Test
   public void add_addWrapper() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -82,7 +82,7 @@ public class TestSpringmvcV1V2 {
   @Test
   public void add_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -105,7 +105,7 @@ public class TestSpringmvcV1V2 {
   @Test
   public void addBody_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -125,7 +125,7 @@ public class TestSpringmvcV1V2 {
   @Test
   public void addBody_addWrapper() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -145,7 +145,7 @@ public class TestSpringmvcV1V2 {
   @Test
   public void addBody_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();

@@ -17,15 +17,16 @@
 
 package org.apache.servicecomb.swagger.invocation.models;
 
-import io.swagger.annotations.ApiOperation;
+
+import io.swagger.v3.oas.annotations.Operation;
 
 public class ProducerImpl {
-  @ApiOperation(value = "", hidden = true)
+  @Operation(summary = "", hidden = true)
   public int hiddenMethod(int a) {
     return a;
   }
 
-  @ApiOperation(value = "")
+  @Operation(summary = "")
   public int visibleMethod(int a) {
     return a;
   }
