@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 
 public final class MatchType {
   private static class GovernanceRequestExtractorImpl implements GovernanceRequestExtractor {
@@ -34,7 +35,7 @@ public final class MatchType {
     public String apiPath() {
       if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
         if (invocation.isConsumer()) {
-          return concatAbsolutePath(invocation.getSchemaMeta().getSwagger().getBasePath(),
+          return concatAbsolutePath(SwaggerUtils.getBasePath(invocation.getSchemaMeta().getSwagger()),
               invocation.getOperationMeta().getOperationPath());
         }
         // not highway
