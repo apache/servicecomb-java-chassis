@@ -20,7 +20,7 @@ package org.apache.servicecomb.demo.jaxrs.server.beanParam;
 import java.io.IOException;
 import java.util.Scanner;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;

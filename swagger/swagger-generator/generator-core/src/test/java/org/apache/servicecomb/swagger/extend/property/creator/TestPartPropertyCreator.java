@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.swagger.extend.property.creator;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;

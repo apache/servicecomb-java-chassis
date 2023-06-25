@@ -19,8 +19,8 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.Response.StatusType;
 
 import io.vertx.core.http.HttpHeaders;

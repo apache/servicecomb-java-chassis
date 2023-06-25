@@ -21,11 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
@@ -35,6 +30,10 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
 import io.vertx.core.buffer.Buffer;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 
 public class TestStandardHttpServletResponseEx {
@@ -72,14 +71,6 @@ public class TestStandardHttpServletResponseEx {
     bodyBuffer.appendString("abc");
     responseEx.setBodyBuffer(bodyBuffer);
     Assertions.assertEquals(3, responseEx.getBodyBytesLength());
-  }
-
-  @Test
-  public void setStatus() {
-    responseEx.setStatus(200, "ok");
-    Assertions.assertEquals(200, responseEx.getStatus());
-    Assertions.assertEquals(200, responseEx.getStatusType().getStatusCode());
-    Assertions.assertEquals("ok", responseEx.getStatusType().getReasonPhrase());
   }
 
   @Test

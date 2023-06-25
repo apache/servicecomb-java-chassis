@@ -22,7 +22,7 @@ import static org.apache.servicecomb.transport.rest.client.RestClientEncoder.gen
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;

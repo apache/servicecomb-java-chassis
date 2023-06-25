@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.QueryParam;
 

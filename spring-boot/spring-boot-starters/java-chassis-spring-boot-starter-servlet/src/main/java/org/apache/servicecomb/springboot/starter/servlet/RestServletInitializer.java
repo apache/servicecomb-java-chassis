@@ -20,9 +20,6 @@ package org.apache.servicecomb.springboot.starter.servlet;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.transport.rest.servlet.ServletConfig;
@@ -34,6 +31,9 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 import com.netflix.config.DynamicPropertyFactory;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 public class RestServletInitializer
     implements WebServerFactoryCustomizer<AbstractConfigurableWebServerFactory>, ServletContextInitializer {

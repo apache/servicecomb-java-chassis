@@ -19,12 +19,12 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.util.Collections;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TestAbstractHttpServletRequest {
   HttpServletRequest request = new AbstractHttpServletRequest() {
@@ -172,13 +172,6 @@ public class TestAbstractHttpServletRequest {
   @Test
   public void testGetRequestDispatcher() {
     Error error = Assertions.assertThrows(Error.class, () -> request.getRequestDispatcher(""));
-    checkError(error);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testGetRealPath() {
-    Error error = Assertions.assertThrows(Error.class, () -> request.getRealPath(""));
     checkError(error);
   }
 
@@ -395,13 +388,6 @@ public class TestAbstractHttpServletRequest {
   @Test
   public void testIsRequestedSessionIdFromURL() {
     Error error = Assertions.assertThrows(Error.class, () -> request.isRequestedSessionIdFromURL());
-    checkError(error);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testIsRequestedSessionIdFromUrl() {
-    Error error = Assertions.assertThrows(Error.class, () -> request.isRequestedSessionIdFromUrl());
     checkError(error);
   }
 

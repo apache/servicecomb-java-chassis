@@ -25,10 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.part.FilePart;
@@ -49,6 +45,9 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.SyncContext;
 import io.vertx.core.streams.WriteStream;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -172,7 +171,8 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     };
 
-    NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> new VertxServerResponseToHttpServletResponse(serverResponse));
+    NullPointerException exception = Assertions.assertThrows(NullPointerException.class,
+        () -> new VertxServerResponseToHttpServletResponse(serverResponse));
     Assertions.assertEquals("must run in vertx context.", exception.getMessage());
   }
 
@@ -180,14 +180,6 @@ public class TestVertxServerResponseToHttpServletResponse {
   public void setContentType() {
     response.setContentType("json");
     Assertions.assertEquals("json", headers.get(HttpHeaders.CONTENT_TYPE));
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void setStatus() {
-    response.setStatus(222, "test");
-    Assertions.assertEquals(222, httpStatus.getStatusCode());
-    Assertions.assertEquals("test", httpStatus.getReasonPhrase());
   }
 
   @Test
