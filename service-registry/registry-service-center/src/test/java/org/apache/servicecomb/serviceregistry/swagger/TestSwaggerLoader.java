@@ -54,7 +54,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void registerSwagger() {
-    Swagger swagger = SwaggerGenerator.generate(Hello.class);
+    OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
     RegistrationManager.INSTANCE.getSwaggerLoader().registerSwagger("default:ms2", schemaId, swagger);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
@@ -65,7 +65,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void loadFromRemote() {
-    Swagger swagger = SwaggerGenerator.generate(Hello.class);
+    OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
     new Expectations(serviceRegistry.getServiceRegistryClient()) {
       {
         serviceRegistry.getServiceRegistryClient().getAggregatedSchema(serviceId, schemaId);
@@ -77,7 +77,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE
+    OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
     Assertions.assertEquals(swagger, loadedSwagger);
@@ -85,14 +85,14 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void loadFromResource_sameApp_dirWithoutApp() {
-    Swagger swagger = SwaggerGenerator.generate(Hello.class);
+    OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("microservices/%s/%s.yaml", serviceName, schemaId));
 
     RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE
+    OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
     Assertions.assertEquals(swagger, loadedSwagger);
@@ -100,14 +100,14 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void loadFromResource_sameApp_dirWithApp() {
-    Swagger swagger = SwaggerGenerator.generate(Hello.class);
+    OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", appId, serviceName, schemaId));
 
     RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE
+    OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
     Assertions.assertEquals(swagger, loadedSwagger);
@@ -115,7 +115,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void loadFromResource_diffApp_dirWithoutApp() {
-    Swagger swagger = SwaggerGenerator.generate(Hello.class);
+    OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("microservices/%s/%s.yaml", "ms3", schemaId));
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
@@ -126,18 +126,18 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void loadFromResource_diffApp_dirWithApp() {
-    Swagger swagger = SwaggerGenerator.generate(Hello.class);
+    OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", "other", "ms3", schemaId));
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE
+    OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
     Assertions.assertEquals(swagger, loadedSwagger);
   }
 
-  private void mockLocalResource(Swagger swagger, String path) {
+  private void mockLocalResource(OpenAPI swagger, String path) {
     mockLocalResource(SwaggerUtils.swaggerToString(swagger), path);
   }
 
@@ -240,7 +240,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
       RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("location");
     });
-    Assertions.assertEquals("failed to register swaggers, microserviceName=default, location=location.", exception.getMessage());
+    Assertions.assertEquals("failed to register swaggers, microserviceName=default, location=location.",
+        exception.getMessage());
     Assertions.assertTrue(exception.getCause() instanceof ServiceCombException);
   }
 
