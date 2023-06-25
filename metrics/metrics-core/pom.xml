@@ -70,11 +70,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jmockit</groupId>
       <artifactId>jmockit</artifactId>
       <scope>test</scope>

@@ -22,9 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
@@ -34,8 +31,12 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("/metrics")
 public class MetricsRestPublisher implements MetricsInitializer {
@@ -47,7 +48,8 @@ public class MetricsRestPublisher implements MetricsInitializer {
   }
 
   @ApiResponses({
-      @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
+      @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(type = "string")),
+          description = "illegal request content"),
   })
   @GET
   @Path("/")
