@@ -19,13 +19,13 @@ package org.apache.servicecomb.swagger.invocation.springmvc.response;
 import java.util.List;
 import java.util.Map.Entry;
 
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
   private final ProducerResponseMapper realMapper;
@@ -39,8 +39,8 @@ public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
   public Response mapResponse(StatusType status, Object response) {
     ResponseEntity<Object> springmvcResponse = (ResponseEntity<Object>) response;
 
-    StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(),
-        springmvcResponse.getStatusCode().getReasonPhrase());
+    // TODO: maybe can use swagger HttpStatus instead of customized one
+    StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(), "");
 
     Response cseResponse = null;
     if (HttpStatus.isSuccess(responseStatus)) {

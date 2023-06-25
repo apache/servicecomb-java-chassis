@@ -16,27 +16,28 @@
  */
 package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-
-import io.swagger.annotations.ApiResponse;
-import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
+
 public class TestJaxrsConsumerResponseMapper {
   @Path("/")
   interface ConsumerResponseForTest {
-    @ApiResponse(code = 200, message = "", response = String.class)
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(type = "string")))
     @Path("/jaxrsResponse")
     @GET
     jakarta.ws.rs.core.Response jaxrsResponse();
@@ -53,7 +54,7 @@ public class TestJaxrsConsumerResponseMapper {
 
   @BeforeEach
   public void setup() {
-    Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
+    OpenAPI swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
     swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }
 
