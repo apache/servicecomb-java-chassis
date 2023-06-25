@@ -18,7 +18,6 @@ package org.apache.servicecomb.inspector.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -32,15 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandler;
@@ -67,9 +57,18 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicProperty;
 
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/inspector")
 public class InspectorImpl {
@@ -118,11 +117,11 @@ public class InspectorImpl {
 
     for (Entry<String, String> entry : schemas.entrySet()) {
       OpenAPI swagger = SwaggerUtils.parseSwagger(entry.getValue());
-      if (swagger.getBasePath().startsWith(urlPrefix)) {
+      if (SwaggerUtils.getBasePath(swagger).startsWith(urlPrefix)) {
         continue;
       }
 
-      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+      SwaggerUtils.setBasePath(swagger, urlPrefix + SwaggerUtils.getBasePath(swagger));
 
       entry.setValue(SwaggerUtils.swaggerToString(swagger));
     }
@@ -137,7 +136,8 @@ public class InspectorImpl {
 
   @Path("/download/schemas")
   @GET
-  @ApiResponse(code = 200, message = "", response = File.class)
+  @ApiResponse(responseCode = "200", description = "", content =
+  @Content(schema = @Schema(type = "string", format = "binary")))
   public Response downloadSchemas(@QueryParam("format") SchemaFormat format) {
     if (format == null) {
       format = SchemaFormat.SWAGGER;
@@ -168,7 +168,8 @@ public class InspectorImpl {
 
   @Path("/schemas/{schemaId}")
   @GET
-  @ApiResponse(code = 200, message = "", response = File.class)
+  @ApiResponse(responseCode = "200", description = "", content =
+  @Content(schema = @Schema(type = "string", format = "binary")))
   public Response getSchemaContentById(@PathParam("schemaId") String schemaId,
       @QueryParam("format") SchemaFormat format, @QueryParam("download") boolean download) {
     String swaggerContent = schemas.get(schemaId);
@@ -195,7 +196,8 @@ public class InspectorImpl {
 
   @Path("/{path : .+}")
   @GET
-  @ApiResponse(code = 200, message = "", response = File.class)
+  @ApiResponse(responseCode = "200", description = "", content =
+  @Content(schema = @Schema(type = "string", format = "binary")))
   public Response getStaticResource(@PathParam("path") String path) {
     return resourceHandler.handle(path);
   }
