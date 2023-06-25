@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
@@ -58,7 +60,7 @@ public class UrlPathItemTest {
 
   private SchemaMeta schemaMeta;
 
-  private Swagger swagger;
+  private OpenAPI swagger;
 
   private RestClientRequestImpl restClientRequest;
 
@@ -73,7 +75,7 @@ public class UrlPathItemTest {
     serverRequest = Mockito.mock(HttpServerRequest.class);
     operationMeta = Mockito.mock(OperationMeta.class);
     schemaMeta = Mockito.mock(SchemaMeta.class);
-    swagger = Mockito.mock(Swagger.class);
+    swagger = Mockito.mock(OpenAPI.class);
     restClientRequest = Mockito.mock(RestClientRequestImpl.class);
     clientRequest = Mockito.mock(HttpClientRequest.class);
 
@@ -88,7 +90,9 @@ public class UrlPathItemTest {
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
     when(invocation.getSchemaMeta()).thenReturn(schemaMeta);
     when(schemaMeta.getSwagger()).thenReturn(swagger);
-    when(swagger.getBasePath()).thenReturn("/base");
+    Server server = Mockito.mock(Server.class);
+    when(server.getUrl()).thenReturn("/base");
+    when(swagger.getServers()).thenReturn(Arrays.asList(server));
     when(operationMeta.getOperationPath()).thenReturn("/test");
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
