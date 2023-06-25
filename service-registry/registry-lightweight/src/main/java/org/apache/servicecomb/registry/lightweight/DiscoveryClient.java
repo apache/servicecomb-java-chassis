@@ -19,6 +19,12 @@ package org.apache.servicecomb.registry.lightweight;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -26,18 +32,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-
-import io.swagger.annotations.ApiOperation;
-
 @Path("/v1/discovery")
 public interface DiscoveryClient {
   @Path("/info")
   @GET
-  @ApiOperation(value = "", nickname = "getInfo")
+  @Operation(summary = "", operationId = "getInfo")
   CompletableFuture<MicroserviceInfo> getInfoAsync(Endpoint endpoint, @QueryParam("service-id") String serviceId);
 
 
@@ -47,7 +46,7 @@ public interface DiscoveryClient {
 
   @Path("/microservice")
   @GET
-  @ApiOperation(value = "", nickname = "getMicroservice")
+  @Operation(summary = "", operationId = "getMicroservice")
   CompletableFuture<Microservice> getMicroserviceAsync(Endpoint endpoint, @QueryParam("service-id") String serviceId);
 
   default Microservice getMicroservice(Endpoint endpoint, String serviceId) {
@@ -56,7 +55,7 @@ public interface DiscoveryClient {
 
   @Path("/instance")
   @GET
-  @ApiOperation(value = "", nickname = "getInstance")
+  @Operation(summary = "", operationId = "getInstance")
   CompletableFuture<MicroserviceInstance> getInstanceAsync(Endpoint endpoint,
       @QueryParam("service-id") String serviceId);
 
@@ -67,7 +66,7 @@ public interface DiscoveryClient {
   @Path("/schemas/{schema-id}")
   @GET
   @Produces(MediaType.TEXT_PLAIN)
-  @ApiOperation(value = "", nickname = "getSchema")
+  @Operation(summary = "", operationId = "getSchema")
   CompletableFuture<String> getSchemaAsync(Endpoint endpoint, @QueryParam("service-id") String serviceId,
       @PathParam("schema-id") String schemaId);
 

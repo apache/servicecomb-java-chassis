@@ -29,7 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import io.swagger.util.Json;
+import io.swagger.v3.core.util.Json;
 
 public class TestPageResponseTypeProcessor {
   interface PageSchema {
