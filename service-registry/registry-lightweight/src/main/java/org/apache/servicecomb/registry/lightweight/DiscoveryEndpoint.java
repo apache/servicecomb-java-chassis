@@ -21,18 +21,19 @@ import static org.apache.servicecomb.registry.lightweight.DiscoveryEndpoint.SCHE
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 
 @RestSchema(schemaId = SCHEMA_ID)
 @Path("/v1/discovery")
@@ -45,10 +46,10 @@ public class DiscoveryEndpoint {
     this.self = self;
   }
 
-  @ApiImplicitParams(
+  @Parameters(
       {
-          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
-              value = "just make it possible to mock many instances by one real instance for performance test")
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+              description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
   @Path("/info")
@@ -57,10 +58,10 @@ public class DiscoveryEndpoint {
     return CompletableFuture.completedFuture(self.getMicroserviceInfo());
   }
 
-  @ApiImplicitParams(
+  @Parameters(
       {
-          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
-              value = "just make it possible to mock many instances by one real instance for performance test")
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+              description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
   @Path("/microservice")
@@ -69,10 +70,10 @@ public class DiscoveryEndpoint {
     return CompletableFuture.completedFuture(self.getMicroservice());
   }
 
-  @ApiImplicitParams(
+  @Parameters(
       {
-          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
-              value = "just make it possible to mock many instances by one real instance for performance test")
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+              description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
   @Path("/instance")
@@ -81,10 +82,10 @@ public class DiscoveryEndpoint {
     return CompletableFuture.completedFuture(self.getInstance());
   }
 
-  @ApiImplicitParams(
+  @Parameters(
       {
-          @ApiImplicitParam(name = "service-id", paramType = "query", dataType = "string",
-              value = "just make it possible to mock many instances by one real instance for performance test")
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+              description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
   @Path("/schemas/{schema-id}")
