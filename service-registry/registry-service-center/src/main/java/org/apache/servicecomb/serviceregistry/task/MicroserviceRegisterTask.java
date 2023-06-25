@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
@@ -43,6 +41,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.ws.rs.core.Response.Status;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -98,11 +97,12 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
           microserviceTemp.getProperties().putAll(propertiesTemp);
         }
         if (srClient.updateMicroserviceProperties(serviceId, microserviceTemp.getProperties())) {
-          LOGGER.info("microservice is already registered. Update microservice properties successfully. properties=[{}]",
-                  microserviceTemp.getProperties());
+          LOGGER.info(
+              "microservice is already registered. Update microservice properties successfully. properties=[{}]",
+              microserviceTemp.getProperties());
         } else {
           LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}]",
-                  microserviceTemp.getProperties());
+              microserviceTemp.getProperties());
         }
       }
       LOGGER.info(
@@ -292,8 +292,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       }
 
       if (!StringUtils.isEmpty(scSchemaContent) && !StringUtils.isEmpty(localSchemaContent)) {
-        Swagger scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
-        Swagger localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
+        OpenAPI scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
+        OpenAPI localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
         if (scSwagger.equals(localSwagger)) {
           LOGGER.info("Service center schema and local schema content different, but with same swagger syntax.");
           return true;
