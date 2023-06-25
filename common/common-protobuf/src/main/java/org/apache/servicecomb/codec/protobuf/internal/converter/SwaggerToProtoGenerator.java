@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
@@ -41,22 +38,23 @@ import com.google.common.hash.Hashing;
 
 import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.vertx.core.json.Json;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 public class SwaggerToProtoGenerator {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerToProtoGenerator.class);
 
   private final String protoPackage;
 
-  private final Swagger swagger;
+  private final OpenAPI swagger;
 
   private final StringBuilder msgStringBuilder = new StringBuilder();
 
@@ -70,7 +68,7 @@ public class SwaggerToProtoGenerator {
 
   // not java package
   // better to be: app_${app}.mid_{microservice}.sid_{schemaId}
-  public SwaggerToProtoGenerator(String protoPackage, Swagger swagger) {
+  public SwaggerToProtoGenerator(String protoPackage, OpenAPI swagger) {
     this.protoPackage = escapePackageName(protoPackage);
     this.swagger = swagger;
   }
@@ -108,27 +106,27 @@ public class SwaggerToProtoGenerator {
   }
 
   private void convertDefinitions() {
-    if (swagger.getDefinitions() == null) {
+    if (swagger.getComponents() == null || swagger.getComponents().getSchemas() == null) {
       return;
     }
 
-    for (Entry<String, Model> entry : swagger.getDefinitions().entrySet()) {
-      convertDefinition(entry.getKey(), (ModelImpl) entry.getValue());
+    for (Entry<String, Schema> entry : swagger.getComponents().getSchemas().entrySet()) {
+      convertDefinition(entry.getKey(), entry.getValue());
     }
   }
 
   @SuppressWarnings("unchecked")
-  private void convertDefinition(String modelName, ModelImpl model) {
-    Map<String, Property> properties = model.getProperties();
+  private void convertDefinition(String modelName, Schema model) {
+    Map<String, Schema> properties = model.getProperties();
     if (properties == null) {
       // it's a empty message
       properties = Collections.emptyMap();
     }
 
-    createMessage(modelName, (Map<String, Object>) (Object) properties);
+    createMessage(modelName, properties);
   }
 
-  private void createMessage(String protoName, Map<String, Object> properties, String... annotations) {
+  private void createMessage(String protoName, Map<String, Schema> properties, String... annotations) {
     if (!messages.add(protoName)) {
       // already created
       return;
@@ -140,8 +138,8 @@ public class SwaggerToProtoGenerator {
     }
     appendLine(msgStringBuilder, "message %s {", protoName);
     int tag = 1;
-    for (Entry<String, Object> entry : properties.entrySet()) {
-      Object property = entry.getValue();
+    for (Entry<String, Schema> entry : properties.entrySet()) {
+      Schema property = entry.getValue();
       String propertyType = convertSwaggerType(property);
 
       appendLine(msgStringBuilder, "  %s %s = %d;", propertyType, entry.getKey(), tag);
@@ -157,7 +155,7 @@ public class SwaggerToProtoGenerator {
     }
   }
 
-  private String convertSwaggerType(Object swaggerType) {
+  private String convertSwaggerType(Schema swaggerType) {
     if (swaggerType == null) {
       // void
       addImports(ProtoConst.EMPTY_PROTO);
@@ -180,7 +178,7 @@ public class SwaggerToProtoGenerator {
       return type;
     }
 
-    Property itemProperty = adapter.getArrayItem();
+    Schema itemProperty = adapter.getArrayItem();
     if (itemProperty != null) {
       return "repeated " + convertArrayOrMapItem(itemProperty);
     }
@@ -200,7 +198,7 @@ public class SwaggerToProtoGenerator {
             Json.encode(swaggerType)));
   }
 
-  private String convertArrayOrMapItem(Property itemProperty) {
+  private String convertArrayOrMapItem(Schema itemProperty) {
     SwaggerTypeAdapter itemAdapter = SwaggerTypeAdapter.create(itemProperty);
     // List<List<>>, need to wrap
     if (itemAdapter.getArrayItem() != null) {
@@ -219,7 +217,7 @@ public class SwaggerToProtoGenerator {
     return convertSwaggerType(itemProperty);
   }
 
-  private String generateWrapPropertyName(String prefix, Property property) {
+  private String generateWrapPropertyName(String prefix, Schema property) {
     SwaggerTypeAdapter adapter = SwaggerTypeAdapter.create(property);
     // List<List<>>, need to wrap
     if (adapter.getArrayItem() != null) {
@@ -235,7 +233,7 @@ public class SwaggerToProtoGenerator {
     return prefix + StringUtils.capitalize(escapeMessageName(convertSwaggerType(adapter)));
   }
 
-  private void wrapPropertyToMessage(String protoName, Object property) {
+  private void wrapPropertyToMessage(String protoName, Schema property) {
     createMessage(protoName, Collections.singletonMap("value", property), ProtoConst.ANNOTATION_WRAP_PROPERTY);
   }
 
@@ -302,14 +300,14 @@ public class SwaggerToProtoGenerator {
   }
 
   private void convertOperations() {
-    Map<String, Path> paths = swagger.getPaths();
+    Paths paths = swagger.getPaths();
     if (paths == null || paths.isEmpty()) {
       return;
     }
 
     appendLine(serviceBuilder, "service MainService {");
-    for (Path path : paths.values()) {
-      for (Operation operation : path.getOperationMap().values()) {
+    for (PathItem path : paths.values()) {
+      for (Operation operation : path.readOperations()) {
         if (isUpload(operation)) {
           LOGGER.warn("Not support operation for highway {}.{}, {}", this.protoPackage, operation.getOperationId(),
               "file upload not supported");
@@ -380,8 +378,8 @@ public class SwaggerToProtoGenerator {
   }
 
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
-    for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
-      String type = convertSwaggerType(entry.getValue().getResponseSchema());
+    for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
+      String type = convertSwaggerType(entry.getValue().getContent().);
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
