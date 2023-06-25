@@ -49,7 +49,7 @@ public class TestSpringmvcConsumerResponseMapper {
 
   @Before
   public void setup() {
-    Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
+    OpenAPI swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
     swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }
 

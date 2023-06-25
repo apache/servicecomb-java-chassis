@@ -131,6 +131,10 @@ public abstract class AbstractArgumentsMapperCreator {
   }
 
   protected Integer findSwaggerParameterIndex(String name) {
+    // TODO: find request body too
+    if (swaggerParameters == null) {
+      return null;
+    }
     for (int idx = 0; idx < swaggerParameters.size(); idx++) {
       Parameter parameter = swaggerParameters.get(idx);
       if (parameter != null && name.equals(parameter.getName())) {
@@ -169,6 +173,10 @@ public abstract class AbstractArgumentsMapperCreator {
       processUnknownParameter(providerParamIdx, providerParameter, parameterName);
     }
 
+    // TODO: find request body too
+    if (swaggerParameters == null) {
+      return;
+    }
     for (Parameter parameter : swaggerParameters) {
       if (!processedSwaggerParamters.contains(parameter.getName())) {
         processPendingSwaggerParameter(parameter);
