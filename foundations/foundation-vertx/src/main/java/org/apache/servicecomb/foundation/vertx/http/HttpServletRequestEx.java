@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface HttpServletRequestEx extends HttpServletRequest, BodyBufferSupport {
   default void setHeader(String name, String value) {

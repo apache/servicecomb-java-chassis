@@ -16,11 +16,11 @@
  */
 package org.apache.servicecomb.foundation.common.utils.json;
 
-import javax.servlet.http.Part;
-
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import jakarta.servlet.http.Part;
 
 public class PartModule extends SimpleModule implements SPIOrder {
   private static final long serialVersionUID = 4201325332650814739L;

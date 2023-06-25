@@ -22,8 +22,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 import org.junit.Test;
 

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.jaxrs.server.beanParam;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.QueryParam;
 

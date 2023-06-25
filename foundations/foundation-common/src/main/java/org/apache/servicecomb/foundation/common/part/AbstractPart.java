@@ -22,7 +22,8 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.Part;
+
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.MediaType;
 
 public class AbstractPart implements Part {

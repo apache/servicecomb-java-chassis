@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.lang.StringUtils;

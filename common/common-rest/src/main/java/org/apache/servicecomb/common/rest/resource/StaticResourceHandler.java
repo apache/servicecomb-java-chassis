@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest.resource;
 import java.io.IOException;
 import java.net.URI;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response.Status;
 

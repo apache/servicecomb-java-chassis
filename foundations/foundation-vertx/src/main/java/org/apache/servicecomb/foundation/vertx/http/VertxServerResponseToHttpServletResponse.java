@@ -21,16 +21,15 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
   private final Context context;
@@ -51,12 +50,6 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
     serverResponse.headers().set(HttpHeaders.CONTENT_TYPE, type);
   }
 
-  @Override
-  @Deprecated
-  public void setStatus(int sc, String sm) {
-    serverResponse.setStatusCode(sc);
-    serverResponse.setStatusMessage(sm);
-  }
 
   @Override
   public void setStatus(int sc) {

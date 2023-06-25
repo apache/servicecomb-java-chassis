@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import javax.servlet.MultipartConfigElement;
+import jakarta.servlet.MultipartConfigElement;
 
 import com.netflix.config.DynamicPropertyFactory;
 

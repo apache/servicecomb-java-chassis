@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -48,6 +47,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 
 import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
+import jakarta.servlet.http.Part;
 
 public class RestServerCodecFilter implements ProducerFilter {
   public static final String NAME = "rest-server-codec";
@@ -107,7 +107,7 @@ public class RestServerCodecFilter implements ProducerFilter {
   @SuppressWarnings("deprecation")
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
-    responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
+    responseEx.setStatus(response.getStatusCode());
     copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     if (download) {

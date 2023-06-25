@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;

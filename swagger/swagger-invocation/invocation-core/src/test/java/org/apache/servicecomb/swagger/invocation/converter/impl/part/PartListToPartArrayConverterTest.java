@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
 import java.util.Arrays;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.hamcrest.MatcherAssert;

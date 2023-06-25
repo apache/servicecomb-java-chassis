@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
 import java.lang.reflect.Type;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.swagger.generator.SwaggerContextRegister;
 

@@ -18,7 +18,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.common.part.FilePartForSend;

@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import com.google.inject.util.Types;
 

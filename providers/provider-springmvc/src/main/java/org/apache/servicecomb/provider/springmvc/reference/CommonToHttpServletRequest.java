@@ -29,9 +29,9 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.Part;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;

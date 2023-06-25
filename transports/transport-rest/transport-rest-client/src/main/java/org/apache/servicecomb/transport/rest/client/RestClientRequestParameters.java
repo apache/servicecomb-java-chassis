@@ -18,7 +18,7 @@ package org.apache.servicecomb.transport.rest.client;
 
 import java.util.Map;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 
