@@ -27,10 +27,11 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.QueryParameter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class QueryVarParamWriterTest {
   private static QueryVarParamWriter queryVarParamWriterCsv;
@@ -43,13 +44,15 @@ public class QueryVarParamWriterTest {
   public static void beforeClass() {
     QueryParameter parameter = new QueryParameter();
     parameter.setName("q");
-    parameter.setCollectionFormat("csv");
+    parameter.setSchema(new Schema());
+    parameter.getSchema().setType("csv");
     queryVarParamWriterCsv = new QueryVarParamWriter(
         new RestParam(parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
-    parameter.setCollectionFormat("multi");
+    parameter.setSchema(new Schema());
+    parameter.getSchema().setType("multi");
     queryVarParamWriterMulti = new QueryVarParamWriter(
         new RestParam(parameter, String[].class));
 

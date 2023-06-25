@@ -34,15 +34,15 @@ import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.Hea
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.properties.ArrayProperty;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public class TestHeaderProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -60,11 +60,11 @@ public class TestHeaderProcessor {
 
     HeaderParameter headerParameter = new HeaderParameter();
     headerParameter.name(name)
-        .required(required)
-        .setDefaultValue(defaultValue);
+        .required(required);
+    headerParameter.getSchema().setDefault(defaultValue);
 
     if (javaType.isContainerType()) {
-      headerParameter.type(ArrayProperty.TYPE);
+      headerParameter.schema(new ArraySchema());
     }
     return new HeaderProcessor(headerParameter, javaType);
   }
@@ -180,7 +180,7 @@ public class TestHeaderProcessor {
   @Test
   public void testSetValueDateFixed() throws Exception {
     Date date = new Date(1586957400199L);
-    String strDate =  "2020-04-15T13:30:00.199+00:00";
+    String strDate = "2020-04-15T13:30:00.199+00:00";
 
     Mockito.doAnswer(invocation -> {
       headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
@@ -195,7 +195,7 @@ public class TestHeaderProcessor {
   @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
-    String strDate =  new StdDateFormat().format(date);
+    String strDate = new StdDateFormat().format(date);
     Mockito.doAnswer(invocation -> {
       headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
       return null;

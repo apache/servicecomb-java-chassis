@@ -22,13 +22,6 @@ import static org.hamcrest.core.Is.is;
 import java.io.File;
 import java.util.Arrays;
 
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -40,13 +33,20 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import io.swagger.v3.oas.models.servers.Server;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 public class TestRestOperationMeta {
   @Path("/")
@@ -154,7 +154,7 @@ public class TestRestOperationMeta {
 
   static SCBEngine scbEngine;
 
-  static Swagger swagger;
+  static OpenAPI swagger;
 
   OperationMeta meta;
 
@@ -385,7 +385,9 @@ public class TestRestOperationMeta {
   @Test
   public void generatesAbsolutePathWithNonRootBasePath() {
     findOperation("textCharJsonChar");
-    Mockito.when(swagger.getBasePath()).thenReturn("/rest");
+    Server server = Mockito.mock(Server.class);
+    Mockito.when(server.getUrl()).thenReturn("/rest");
+    Mockito.when(swagger.getServers()).thenReturn(Arrays.asList(server));
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(meta);
 
@@ -395,7 +397,9 @@ public class TestRestOperationMeta {
   @Test
   public void generatesAbsolutePathWithNullPath() {
     findOperation("textCharJsonChar");
-    Mockito.when(swagger.getBasePath()).thenReturn(null);
+    Server server = Mockito.mock(Server.class);
+    Mockito.when(server.getUrl()).thenReturn(null);
+    Mockito.when(swagger.getServers()).thenReturn(Arrays.asList(server));
     Mockito.when(meta.getOperationPath()).thenReturn(null);
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(meta);
@@ -406,7 +410,9 @@ public class TestRestOperationMeta {
   @Test
   public void generatesAbsolutePathWithEmptyPath() {
     findOperation("textCharJsonChar");
-    Mockito.when(swagger.getBasePath()).thenReturn("");
+    Server server = Mockito.mock(Server.class);
+    Mockito.when(server.getUrl()).thenReturn("");
+    Mockito.when(swagger.getServers()).thenReturn(Arrays.asList(server));
     Mockito.when(meta.getOperationPath()).thenReturn("");
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(meta);
@@ -417,7 +423,9 @@ public class TestRestOperationMeta {
   @Test
   public void consecutiveSlashesAreRemoved() {
     findOperation("textCharJsonChar");
-    Mockito.when(swagger.getBasePath()).thenReturn("//rest//");
+    Server server = Mockito.mock(Server.class);
+    Mockito.when(server.getUrl()).thenReturn("//rest//");
+    Mockito.when(swagger.getServers()).thenReturn(Arrays.asList(server));
     Mockito.when(meta.getOperationPath()).thenReturn("//sayHi//");
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(meta);

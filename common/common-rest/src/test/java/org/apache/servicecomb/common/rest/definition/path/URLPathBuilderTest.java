@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.PathParameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class URLPathBuilderTest {
   @Test
