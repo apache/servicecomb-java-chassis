@@ -27,8 +27,8 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class TestQueryProcessorCreator {
   @Test

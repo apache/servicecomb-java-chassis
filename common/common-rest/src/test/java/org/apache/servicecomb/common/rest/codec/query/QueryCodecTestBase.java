@@ -26,8 +26,9 @@ import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.properties.ArrayProperty;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class QueryCodecTestBase {
   QueryCodec codec;
@@ -67,9 +68,10 @@ public class QueryCodecTestBase {
     Class<?> targetType = decodedValue == null ? Object.class : decodedValue.getClass();
 
     QueryParameter queryParameter = new QueryParameter();
-    queryParameter.setCollectionFormat(codec.getCodecName());
+    queryParameter.setSchema(new Schema());
+    queryParameter.getSchema().setFormat(codec.getCodecName());
     if (targetType.isArray()) {
-      queryParameter.setType(ArrayProperty.TYPE);
+      queryParameter.setSchema(new ArraySchema());
     }
 
     QueryProcessor queryProcessor = new QueryProcessor(queryParameter,

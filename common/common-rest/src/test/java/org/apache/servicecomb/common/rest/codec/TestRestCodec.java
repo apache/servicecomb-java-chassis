@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
@@ -38,8 +37,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.ws.rs.core.Response.Status;
 
 public class TestRestCodec {
 
@@ -63,7 +63,6 @@ public class TestRestCodec {
 
     restOperation = Mockito.mock(RestOperationMeta.class);
     paramList = new ArrayList<>();
-
 
     paramList.add(restParam);
     Mockito.when(restOperation.getParamList()).thenReturn(paramList);

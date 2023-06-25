@@ -19,9 +19,9 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.HeaderParameter;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public class TestHeaderProcessorCreator {
   @Test

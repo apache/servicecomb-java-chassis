@@ -19,10 +19,10 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.PathProcessorCreator.PathProcessor;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.PathParameter;
 
 public class TestPathProcessorCreator {
   @Test

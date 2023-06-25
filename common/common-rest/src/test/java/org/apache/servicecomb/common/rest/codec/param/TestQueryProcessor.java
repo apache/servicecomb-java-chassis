@@ -23,14 +23,15 @@ import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.Quer
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.properties.ArrayProperty;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class TestQueryProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -46,11 +47,12 @@ public class TestQueryProcessor {
     QueryParameter queryParameter = new QueryParameter();
     queryParameter.name(name)
         .required(required)
-        .collectionFormat(collectionFormat)
-        .setDefaultValue(defaultValue);
+        .setSchema(new StringSchema());
+    queryParameter.getSchema().setDefault(defaultValue);
 
     if (javaType.isContainerType()) {
-      queryParameter.type(ArrayProperty.TYPE);
+      queryParameter.setSchema(new ArraySchema());
+      queryParameter.getSchema().setFormat(collectionFormat);
     }
     return new QueryProcessor(queryParameter, javaType);
   }

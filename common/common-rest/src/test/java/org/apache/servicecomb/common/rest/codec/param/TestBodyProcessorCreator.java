@@ -21,18 +21,18 @@ import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyP
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.BodyParameter;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class TestBodyProcessorCreator {
   @Test
   public void testCreateNormal() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
-    BodyParameter param = new BodyParameter();
+    RequestBody param = new RequestBody();
 
-    ParamValueProcessor processor = creator.create(param, String.class);
+    ParamValueProcessor processor = creator.create(null, param, String.class);
 
     Assertions.assertEquals(BodyProcessor.class, processor.getClass());
   }
@@ -41,10 +41,10 @@ public class TestBodyProcessorCreator {
   public void testCreateRawJson() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
-    BodyParameter param = new BodyParameter();
-    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
+    RequestBody param = new RequestBody();
+    param.addExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
-    ParamValueProcessor processor = creator.create(param, String.class);
+    ParamValueProcessor processor = creator.create(null, param, String.class);
 
     Assertions.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
   }

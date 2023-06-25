@@ -19,19 +19,18 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.FormParameter;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class TestFormProcessorCreator {
   @Test
   public void testCreate() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(FormProcessorCreator.PARAMTYPE);
-    FormParameter p = new FormParameter();
-    p.setName("p1");
+    RequestBody p = new RequestBody();
 
-    ParamValueProcessor processor = creator.create(p, String.class);
+    ParamValueProcessor processor = creator.create("p1", p, String.class);
 
     Assertions.assertEquals(FormProcessor.class, processor.getClass());
   }
