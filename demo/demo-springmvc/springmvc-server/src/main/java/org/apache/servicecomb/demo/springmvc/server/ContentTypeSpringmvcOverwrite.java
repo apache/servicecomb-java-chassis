@@ -17,16 +17,13 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.Api;
+import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "contentTypeSpringmvcOverwrite")
-@Api(produces = MediaType.APPLICATION_JSON)
 @RequestMapping(value = "/contentTypeSpringmvcOverwrite", produces = MediaType.TEXT_PLAIN)
 public class ContentTypeSpringmvcOverwrite {
   @RequestMapping(value = "/testResponseTypeOverwrite", method = RequestMethod.GET)

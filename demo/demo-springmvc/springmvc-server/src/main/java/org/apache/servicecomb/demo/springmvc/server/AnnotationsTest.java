@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,9 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "annotations")
 @RequestMapping(path = "/springmvc/annotations", produces = MediaType.APPLICATION_JSON)
@@ -47,16 +47,16 @@ public class AnnotationsTest {
   }
 
   @GetMapping(path = "/sayhi")
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "name", paramType = "query", dataType = "string", defaultValue = "test"),
-      @ApiImplicitParam(name = "age", paramType = "query", dataType = "integer", defaultValue = "20")
+  @Parameters({
+      @Parameter(name = "name", in = ParameterIn.QUERY, schema = @Schema(type = "string", defaultValue = "test")),
+      @Parameter(name = "age", in = ParameterIn.QUERY, schema = @Schema(type = "integer", defaultValue = "20"))
   })
   public String sayHi(String name, int age) {
     return "hi " + name + " your age is : " + age;
   }
 
   @RequestMapping(path = "/saysomething", method = RequestMethod.POST)
-  public String saySomething(String prefix, @RequestBody(required = false) @ApiParam(required = false) Person user) {
+  public String saySomething(String prefix, @RequestBody(required = false) @Parameter(required = false) Person user) {
     if (user == null || user.getName() == null || user.getName().isEmpty()) {
       return "No user data found";
     }

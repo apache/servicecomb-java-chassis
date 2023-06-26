@@ -25,11 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.BootListener;
@@ -50,7 +45,6 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.metrics.core.MetricsBootListener;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
-import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -80,13 +74,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.vertx.core.json.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response.Status;
 
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -133,8 +134,10 @@ public class CodeFirstSpringmvc {
     return _fileUpload(file1, file2);
   }
 
-  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-      @ResponseHeader(name = "h2", response = String.class)})
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Date.class))
+      , description = "",
+      headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
+          @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
@@ -146,8 +149,10 @@ public class CodeFirstSpringmvc {
     return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
-  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-      @ResponseHeader(name = "h2", response = String.class)})
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Date.class))
+      , description = "",
+      headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
+          @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.PATCH)
   public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestAttribute("date") Date date) {
     return responseEntity(c1, date);
@@ -155,9 +160,10 @@ public class CodeFirstSpringmvc {
 
   // This definition is not correct, response type is not
   // same as the actual one. May be not support in future.
-  @ApiResponse(code = 200, response = User.class, message = "")
-  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-      @ResponseHeader(name = "h2", response = String.class)})
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class))
+      , description = "",
+      headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
+          @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @RequestMapping(path = "/cseResponse", method = RequestMethod.GET)
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
@@ -171,9 +177,10 @@ public class CodeFirstSpringmvc {
 
   // This definition is correct, but not supported by highway.
   // highway do not support define code other than 200
-  @ApiResponse(code = 202, response = User.class, message = "")
-  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-      @ResponseHeader(name = "h2", response = String.class)})
+  @ApiResponse(responseCode = "202", content = @Content(schema = @Schema(implementation = User.class))
+      , description = "",
+      headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
+          @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @RequestMapping(path = "/cseResponseCorrect", method = RequestMethod.GET)
   public Response cseResponseCorrect(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
@@ -212,7 +219,7 @@ public class CodeFirstSpringmvc {
   }
 
   // this should be ignored as it's hidden
-  @ApiOperation(value = "", hidden = true, httpMethod = "POST")
+  @Operation(summary = "", hidden = true, method = "POST")
   public int add(@RequestParam("a") int a) {
     return a;
   }
@@ -223,7 +230,7 @@ public class CodeFirstSpringmvc {
   }
 
   @GetMapping(path = "/reduce")
-  @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
+  @Parameters({@Parameter(name = "a", schema = @Schema(type = "integer", format = "int32"), in = ParameterIn.QUERY)})
   public int reduce(HttpServletRequest request, @CookieValue(name = "b") int b) {
     int a = Integer.parseInt(request.getParameter("a"));
     return a - b;
@@ -240,7 +247,8 @@ public class CodeFirstSpringmvc {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -293,8 +301,9 @@ public class CodeFirstSpringmvc {
   // Using 490, 590 error code, the response type should be CommonExceptionData. Or we need
   // complex ExceptionConverters to deal with exceptions thrown by Hanlders, etc.
   @RequestMapping(path = "/fallback/returnnull/{name}", method = RequestMethod.GET)
-  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200",
+      content = @Content(schema = @Schema(implementation = String.class)), description = "xxx"),
+      @ApiResponse(responseCode = "490", content = @Content(schema = @Schema(implementation = CommonExceptionData.class)), description = "xxx")})
   public String fallbackReturnNull(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
       throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
@@ -303,8 +312,11 @@ public class CodeFirstSpringmvc {
   }
 
   @RequestMapping(path = "/fallback/throwexception/{name}", method = RequestMethod.GET)
-  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+          , description = "xxx"),
+      @ApiResponse(responseCode = "490", content = @Content(schema = @Schema(implementation = CommonExceptionData.class))
+          , description = "xxx")})
   public String fallbackThrowException(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
       throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
@@ -313,8 +325,11 @@ public class CodeFirstSpringmvc {
   }
 
   @RequestMapping(path = "/fallback/fromcache/{name}", method = RequestMethod.GET)
-  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+          , description = "xxx"),
+      @ApiResponse(responseCode = "490", content = @Content(schema = @Schema(implementation = CommonExceptionData.class))
+          , description = "xxx")})
   public String fallbackFromCache(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
       throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
@@ -323,8 +338,11 @@ public class CodeFirstSpringmvc {
   }
 
   @RequestMapping(path = "/fallback/force/{name}", method = RequestMethod.GET)
-  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+          , description = "xxx"),
+      @ApiResponse(responseCode = "490", content = @Content(schema = @Schema(implementation = CommonExceptionData.class))
+          , description = "xxx")})
   public String fallbackForce(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
       throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
@@ -338,8 +356,11 @@ public class CodeFirstSpringmvc {
   }
 
   @RequestMapping(path = "/testenum/{name}", method = RequestMethod.GET)
-  @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "200 normal"),
-      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "490 exception")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+          , description = "xxx"),
+      @ApiResponse(responseCode = "490", content = @Content(schema = @Schema(implementation = CommonExceptionData.class))
+          , description = "xxx")})
   public String testEnum(@RequestParam(name = "username") String username,
       @PathVariable(value = "name") NameType nameType) {
     return nameType.toString();
@@ -360,7 +381,8 @@ public class CodeFirstSpringmvc {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -369,10 +391,10 @@ public class CodeFirstSpringmvc {
   }
 
   @PostMapping(path = "/testform")
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "form1", dataType = "string", paramType = "form", value = "a required form param",
+  @Parameters({
+      @Parameter(name = "form1", schema = @Schema(type = "string"), in = ParameterIn.QUERY, description = "a required form param",
           required = true),
-      @ApiImplicitParam(name = "form2", dataType = "string", paramType = "form", value = "an optional form param",
+      @Parameter(name = "form2", schema = @Schema(type = "string"), in = ParameterIn.QUERY, description = "an optional form param",
           required = false)})
   public String testform(HttpServletRequest request) {
     String form1 = request.getParameter("form1");

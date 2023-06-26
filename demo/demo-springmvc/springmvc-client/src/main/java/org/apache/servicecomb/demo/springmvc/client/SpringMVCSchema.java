@@ -17,28 +17,24 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ExampleProperty;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestSchema(schemaId = "SpringMVCSchema")
 @RequestMapping("/springMvcSchema")
 public class SpringMVCSchema {
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = "success",
-          examples = @Example({
-              @ExampleProperty(value = "wget http://localhost/springMvcSchema/testApiExample", mediaType = "text"),
-              @ExampleProperty(value = "{name:hello}", mediaType = "application/json"),
-              @ExampleProperty(value = "{name:hello}", mediaType = "json")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+          , description = "success"
       )})
   @RequestMapping(path = "/testApiExample", method = RequestMethod.POST)
   public String testApiExample(@RequestBody String name, HttpServletRequest request) {
@@ -46,11 +42,8 @@ public class SpringMVCSchema {
   }
 
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = "success",
-          examples = @Example({
-              @ExampleProperty(value = "wget http://localhost/springMvcSchema/testDefaultGetApiExample", mediaType = "text"),
-              @ExampleProperty(value = "{name:hello}", mediaType = "application/json"),
-              @ExampleProperty(value = "{name:hello}", mediaType = "json")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+          , description = "success"
       )})
   @RequestMapping(path = "/testDefaultGetApiExample")
   public String testDefaultGetApiExample(@RequestParam String name, HttpServletRequest request) {
