@@ -25,6 +25,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
+import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
+import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
+import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.vertx.core.json.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.Consumes;
@@ -42,37 +67,13 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.demo.compute.Person;
-import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
-import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
-import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
-import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
-import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ResponseHeader;
-import io.vertx.core.json.JsonObject;
-
 @RestSchema(schemaId = "codeFirst")
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
-  @ApiResponse(code = 200, response = User.class, message = "")
-  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-      @ResponseHeader(name = "h2", response = String.class)})
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "",
+      headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
+          @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @Path("/cseResponse")
   @GET
   public Response cseResponse(InvocationContext c1) {
@@ -132,7 +133,7 @@ public class CodeFirstJaxrs {
 
   @Path("/reduce")
   @GET
-  @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
+  @Parameters({@Parameter(name = "a", schema = @Schema(type = "integer", format = "int32"), in = ParameterIn.QUERY)})
   public int reduce(HttpServletRequest request, @CookieParam("b") int b) {
     int a = Integer.parseInt(request.getParameter("a"));
     return a - b;
@@ -248,7 +249,7 @@ public class CodeFirstJaxrs {
 
   @GET
   @Path("/responseLong")
-  @ApiResponse(code = 200, response = Object.class, message = "")
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Object.class)), description = "")
   public Response responseLong() {
     return Response.createSuccess(Long.MAX_VALUE);
   }

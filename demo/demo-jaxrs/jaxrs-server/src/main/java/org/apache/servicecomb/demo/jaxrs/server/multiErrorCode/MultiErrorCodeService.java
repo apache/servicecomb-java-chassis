@@ -20,22 +20,22 @@ package org.apache.servicecomb.demo.jaxrs.server.multiErrorCode;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.demo.multiErrorCode.MultiRequest;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse200;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse400;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse500;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response.Status;
 
 @RestSchema(schemaId = "MultiErrorCodeService")
 @Path("MultiErrorCodeService")
@@ -43,9 +43,9 @@ public class MultiErrorCodeService {
   @Path("/errorCode")
   @POST
   @ApiResponses({
-      @ApiResponse(code = 200, response = MultiResponse200.class, message = ""),
-      @ApiResponse(code = 400, response = MultiResponse400.class, message = ""),
-      @ApiResponse(code = 500, response = MultiResponse500.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = MultiResponse200.class)), description = ""),
+      @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = MultiResponse400.class)), description = ""),
+      @ApiResponse(responseCode = "500", content = @Content(schema = @Schema(implementation = MultiResponse500.class)), description = "")})
   public MultiResponse200 errorCode(MultiRequest request) {
     if (request.getCode() == 400) {
       MultiResponse400 r = new MultiResponse400();
@@ -68,10 +68,15 @@ public class MultiErrorCodeService {
   @Path("/errorCodeWithHeader")
   @POST
   @ApiResponses({
-      @ApiResponse(code = 200, response = MultiResponse200.class, message = ""),
-      @ApiResponse(code = 400, response = MultiResponse400.class, message = ""),
-      @ApiResponse(code = 500, response = MultiResponse500.class, message = "")})
-  @ResponseHeaders({@ResponseHeader(name = "x-code", response = String.class)})
+      @ApiResponse(responseCode = "200", headers = {
+          @Header(name = "x-code", schema = @Schema(implementation = String.class))},
+          content = @Content(schema = @Schema(implementation = MultiResponse200.class)), description = ""),
+      @ApiResponse(responseCode = "400", headers = {
+          @Header(name = "x-code", schema = @Schema(implementation = String.class))},
+          content = @Content(schema = @Schema(implementation = MultiResponse400.class)), description = ""),
+      @ApiResponse(responseCode = "500", headers = {
+          @Header(name = "x-code", schema = @Schema(implementation = String.class))},
+          content = @Content(schema = @Schema(implementation = MultiResponse500.class)), description = "")})
   public Response errorCodeWithHeader(MultiRequest request) {
     Response response = new Response();
     if (request.getCode() == 400) {
@@ -106,10 +111,15 @@ public class MultiErrorCodeService {
   @Path("/errorCodeWithHeaderJAXRS")
   @POST
   @ApiResponses({
-      @ApiResponse(code = 200, response = MultiResponse200.class, message = ""),
-      @ApiResponse(code = 400, response = MultiResponse400.class, message = ""),
-      @ApiResponse(code = 500, response = MultiResponse500.class, message = "")})
-  @ResponseHeaders({@ResponseHeader(name = "x-code", response = String.class)})
+      @ApiResponse(responseCode = "200", headers = {
+          @Header(name = "x-code", schema = @Schema(implementation = String.class))},
+          content = @Content(schema = @Schema(implementation = MultiResponse200.class)), description = ""),
+      @ApiResponse(responseCode = "400", headers = {
+          @Header(name = "x-code", schema = @Schema(implementation = String.class))},
+          content = @Content(schema = @Schema(implementation = MultiResponse400.class)), description = ""),
+      @ApiResponse(responseCode = "500", headers = {
+          @Header(name = "x-code", schema = @Schema(implementation = String.class))},
+          content = @Content(schema = @Schema(implementation = MultiResponse500.class)), description = "")})
   public jakarta.ws.rs.core.Response errorCodeWithHeaderJAXRS(MultiRequest request) {
     jakarta.ws.rs.core.Response response;
     if (request.getCode() == 400) {
@@ -146,7 +156,7 @@ public class MultiErrorCodeService {
   @Path("/noClientErrorCode")
   @POST
   @ApiResponses({
-      @ApiResponse(code = 400, response = NoClientErrorCode400.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = NoClientErrorCode400.class)), description = "")})
   public List<NoClientErrorCode200> noClientErrorCode(MultiRequest request) {
     if (request.getCode() == 400) {
       NoClientErrorCode400 r = new NoClientErrorCode400();
