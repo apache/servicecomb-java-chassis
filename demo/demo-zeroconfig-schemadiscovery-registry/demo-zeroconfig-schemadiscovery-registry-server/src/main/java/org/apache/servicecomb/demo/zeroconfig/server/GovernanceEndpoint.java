@@ -20,8 +20,6 @@ package org.apache.servicecomb.demo.zeroconfig.server;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -30,8 +28,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.core.Response.Status;
 
 @RestSchema(schemaId = "GovernanceEndpoint")
 @RequestMapping("/governance")
@@ -47,8 +48,8 @@ public class GovernanceEndpoint {
 
   @GetMapping("/retry")
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = ""),
-      @ApiResponse(code = 502, response = String.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)), description = ""),
+      @ApiResponse(responseCode = "502", content = @Content(schema = @Schema(implementation = String.class)), description = "")})
   public String retry(@RequestParam(name = "invocationID") String invocationID) {
     LOGGER.info("invoke service: {}", invocationID);
     retryTimes.putIfAbsent(invocationID, 0);
@@ -64,8 +65,8 @@ public class GovernanceEndpoint {
 
   @GetMapping("/retryRpc")
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = ""),
-      @ApiResponse(code = 502, response = String.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)), description = ""),
+      @ApiResponse(responseCode = "502", content = @Content(schema = @Schema(implementation = String.class)), description = "")})
   public String retryRpc(@RequestParam(name = "invocationID") String invocationID) {
     return retry(invocationID);
   }

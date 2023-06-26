@@ -29,8 +29,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestSchema(schemaId = "EdgeServiceGovernanceService")
 @RequestMapping(path = "/business/v2")
@@ -43,8 +45,8 @@ public class EdgeServiceGovernanceService {
 
   @GetMapping("/testEdgeServiceRetry")
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = ""),
-      @ApiResponse(code = 502, response = String.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)), description = ""),
+      @ApiResponse(responseCode = "502", content = @Content(schema = @Schema(implementation = String.class)), description = "")})
   public String testEdgeServiceRetry(@RequestParam(name = "invocationID") String invocationID) {
     LOGGER.info("invoke service: {}", invocationID);
     retryTimes.putIfAbsent(invocationID, 0);
@@ -60,8 +62,8 @@ public class EdgeServiceGovernanceService {
 
   @GetMapping("/testEdgeServiceInstanceIsolation")
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = ""),
-      @ApiResponse(code = 502, response = String.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)), description = ""),
+      @ApiResponse(responseCode = "502", content = @Content(schema = @Schema(implementation = String.class)), description = "")})
   public String testEdgeServiceInstanceIsolation(@RequestParam(name = "name") String name) {
     if (instanceIsolationIndex.getAndIncrement() % 3 != 0) {
       throw new InvocationException(502, "InstanceIsolation", "InstanceIsolation");

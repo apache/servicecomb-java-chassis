@@ -41,8 +41,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestSchema(schemaId = "news-v2")
 @RequestMapping(path = "/business/v2")
@@ -73,7 +75,7 @@ public class Impl {
 
   @GetMapping(path = "/download")
   @ApiResponses({
-      @ApiResponse(code = 200, response = File.class, message = ""),
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = File.class)), description = ""),
   })
   public ResponseEntity<InputStream> download() throws IOException {
     return ResponseEntity
