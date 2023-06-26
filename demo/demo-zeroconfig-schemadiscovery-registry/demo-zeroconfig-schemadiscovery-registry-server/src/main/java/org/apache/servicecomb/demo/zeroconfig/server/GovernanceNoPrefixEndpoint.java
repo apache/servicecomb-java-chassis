@@ -28,8 +28,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestSchema(schemaId = "GovernanceNoPrefixEndpoint")
 @RequestMapping("/")
@@ -40,8 +42,8 @@ public class GovernanceNoPrefixEndpoint {
 
   @GetMapping("/noPrefixRetry")
   @ApiResponses({
-      @ApiResponse(code = 200, response = String.class, message = ""),
-      @ApiResponse(code = 502, response = String.class, message = "")})
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class)), description = ""),
+      @ApiResponse(responseCode = "502", content = @Content(schema = @Schema(implementation = String.class)), description = "")})
   public String noPrefixRetry(@RequestParam(name = "invocationID") String invocationID) {
     LOGGER.info("invoke service: {}", invocationID);
     retryTimes.putIfAbsent(invocationID, 0);
