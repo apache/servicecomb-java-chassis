@@ -18,15 +18,15 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 public interface ICompatible1xTestSchema {
   String parameterName(int c, int d);
 
-  @ApiOperation(nickname = "parameterName", value = "parameterName")
+  @Operation(operationId = "parameterName", summary = "parameterName")
   String parameterNamePartMatchLeft(int a, int d);
 
-  @ApiOperation(nickname = "parameterName", value = "parameterName")
+  @Operation(operationId = "parameterName", summary = "parameterName")
   String parameterNamePartMatchRight(int c, int b);
 
   String parameterName(InvocationContext context, int c, int d);

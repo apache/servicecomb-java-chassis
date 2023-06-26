@@ -28,33 +28,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestSchema(schemaId = "weakSpringmvc")
 @RequestMapping(path = "/weakSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WeakSpringmvc {
   @GetMapping(path = "/diffNames")
-  @ApiOperation(value = "differentName", nickname = "differentName")
+  @Operation(summary = "differentName", operationId = "differentName")
   public int diffNames(@RequestParam("x") int a, @RequestParam("y") int b) {
     return a * 2 + b;
   }
 
   @GetMapping(path = "/genericParams")
-  @ApiOperation(value = "genericParams", nickname = "genericParams")
+  @Operation(summary = "genericParams", operationId = "genericParams")
   public List<List<String>> genericParams(@RequestParam("code") int code, @RequestBody List<List<String>> names) {
     return names;
   }
 
   @GetMapping(path = "/genericParamsModel")
-  @ApiOperation(value = "genericParamsModel", nickname = "genericParamsModel")
+  @Operation(summary = "genericParamsModel", operationId = "genericParamsModel")
   public GenericsModel genericParamsModel(@RequestParam("code") int code, @RequestBody GenericsModel model) {
     return model;
   }
 
   @GetMapping(path = "/specialNameModel")
-  @ApiOperation(value = "specialNameModel", nickname = "specialNameModel")
+  @Operation(summary = "specialNameModel", operationId = "specialNameModel")
   public SpecialNameModel specialNameModel(@RequestParam("code") int code, @RequestBody SpecialNameModel model) {
     return model;
   }
-
 }

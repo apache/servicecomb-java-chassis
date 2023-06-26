@@ -17,20 +17,16 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "contentTypeSpringmvc")
 @RequestMapping("/contentTypeSpringmvc")
-@Api(consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
 public class ContentTypeSpringmvc {
   @RequestMapping(path = "/testGlobalSetting", method = RequestMethod.POST)
   public String testGlobalSetting(@RequestBody String name, HttpServletRequest request) {
@@ -38,7 +34,6 @@ public class ContentTypeSpringmvc {
   }
 
   @RequestMapping(path = "/testApiOperation", method = RequestMethod.POST)
-  @ApiOperation(value = "testApiOperation desc", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
   public String testApiOperation(@RequestBody String name, HttpServletRequest request) {
     return String.format("testApiOperation: name=[%s], request content-type=[%s]", name, request.getContentType());
   }
