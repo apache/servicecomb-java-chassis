@@ -53,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.swagger.v3.oas.models.OpenAPI;
 
 /**
@@ -85,7 +86,7 @@ public class TestSchemaMetaCodecRestTemplate {
     Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
 
     SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
-    Swagger swagger = swaggerGenerator.generate();
+    OpenAPI swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
     providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swagger);

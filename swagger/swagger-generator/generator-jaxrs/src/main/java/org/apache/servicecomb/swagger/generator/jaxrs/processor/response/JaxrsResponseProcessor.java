@@ -19,9 +19,13 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.response;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
@@ -38,6 +42,16 @@ public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
   public Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       Type genericResponseType) {
-    return null;
+    ApiResponses responses = operationGenerator.getOperation().getResponses();
+    if (responses != null) {
+      ApiResponse response = responses.get(SwaggerConst.SUCCESS_KEY);
+      if (response != null && response.getContent() != null) {
+        if (response.getContent().get(MediaType.TEXT_PLAIN) != null) {
+          return String.class;
+        }
+      }
+    }
+
+    throw new IllegalStateException("Use ApiOperation or ApiResponses to declare response type");
   }
 }

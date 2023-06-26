@@ -96,7 +96,7 @@ public class TestSchemaMetaCodec {
     Mockito.when(consumerMicroserviceMeta.getMicroserviceVersionsMeta()).thenReturn(microserviceVersionsMeta);
     Mockito.when(consumerMicroserviceMeta.getMicroserviceName()).thenReturn("test");
     Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
-    Swagger swagger = swaggerGenerator.generate();
+    OpenAPI swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
     providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, schemaId, swagger);
