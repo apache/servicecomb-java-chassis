@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RequestMapping("/CommonSchemaInterface")
 public interface CommonSchemaInterface {
@@ -30,7 +30,7 @@ public interface CommonSchemaInterface {
   String testInvocationTimeout(@RequestParam("timeout") long timeout, @RequestParam("name") String name);
 
   @GetMapping(path = "testInvocationTimeoutWithInvocation")
-  @ApiOperation(value = "testInvocationTimeoutWithInvocation", nickname = "testInvocationTimeoutWithInvocation")
+  @Operation(summary = "testInvocationTimeoutWithInvocation", operationId = "testInvocationTimeoutWithInvocation")
   String testInvocationTimeout(InvocationContext context, @RequestParam("timeout") long timeout,
       @RequestParam("name") String name);
 

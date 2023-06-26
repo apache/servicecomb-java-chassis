@@ -17,9 +17,10 @@
 
 package org.apache.servicecomb.demo.pojo.server.same.pk1;
 
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 
-@SwaggerDefinition(basePath = "/SameInterface1")
+@OpenAPIDefinition(servers = {@Server(url = "/SameInterface1")})
 public interface SameInterface {
   String sayHello(String name);
 }
