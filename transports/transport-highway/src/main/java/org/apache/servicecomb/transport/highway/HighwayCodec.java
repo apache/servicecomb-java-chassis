@@ -35,7 +35,7 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Defaults;
 
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
 
 public final class HighwayCodec {
