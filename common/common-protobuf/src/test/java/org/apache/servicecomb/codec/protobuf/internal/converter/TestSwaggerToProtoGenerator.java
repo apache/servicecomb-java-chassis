@@ -16,17 +16,18 @@
  */
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
-import io.protostuff.compiler.model.Proto;
-import io.swagger.v3.oas.models.OpenAPI;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import io.protostuff.compiler.model.Proto;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class TestSwaggerToProtoGenerator {
   @Test
@@ -37,7 +38,7 @@ public class TestSwaggerToProtoGenerator {
     protoContent = protoContent.substring(idx);
 
     SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
-    Swagger swagger = swaggerGenerator.generate();
+    OpenAPI swagger = swaggerGenerator.generate();
 
     SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator("a.b", swagger);
     Proto proto = generator.convert();

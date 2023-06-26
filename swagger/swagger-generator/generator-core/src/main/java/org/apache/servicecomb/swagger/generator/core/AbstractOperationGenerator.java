@@ -420,6 +420,23 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (processor != null) {
       processor.fillRequestBody(swagger, swaggerOperation, parameter, type, null);
     }
+
+    fillBodyParameter(swagger, parameter, type);
+  }
+
+  private void fillBodyParameter(OpenAPI swagger, RequestBody parameter, Type type) {
+    if (parameter.getContent() == null) {
+      parameter.setContent(new Content());
+    }
+    if (parameter.getContent().size() == 0) {
+      parameter.getContent()
+          .addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE, new io.swagger.v3.oas.models.media.MediaType());
+    }
+    for (io.swagger.v3.oas.models.media.MediaType mediaType : parameter.getContent().values()) {
+      if (mediaType.getSchema() == null) {
+        mediaType.schema(SwaggerUtils.resolveTypeSchemas(swagger, type));
+      }
+    }
   }
 
   @Override

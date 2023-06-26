@@ -21,7 +21,7 @@ import java.util.List;
 import io.swagger.v3.oas.models.media.Schema;
 
 public interface SwaggerTypeAdapter {
-  static SwaggerTypeAdapter create(Schema swaggerType) {
+  static SwaggerTypeAdapter create(Object swaggerType) {
     if (swaggerType instanceof SwaggerTypeAdapter) {
       return (SwaggerTypeAdapter) swaggerType;
     }

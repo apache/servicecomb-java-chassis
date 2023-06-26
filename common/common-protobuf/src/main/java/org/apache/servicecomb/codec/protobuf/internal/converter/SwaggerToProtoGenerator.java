@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +156,7 @@ public class SwaggerToProtoGenerator {
     }
   }
 
-  private String convertSwaggerType(Schema swaggerType) {
+  private String convertSwaggerType(Object swaggerType) {
     if (swaggerType == null) {
       // void
       addImports(ProtoConst.EMPTY_PROTO);
@@ -331,15 +332,19 @@ public class SwaggerToProtoGenerator {
   }
 
   private boolean isUpload(Operation operation) {
-    return operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA);
+    if (operation.getRequestBody() != null && operation.getRequestBody().getContent() != null
+        && operation.getRequestBody().getContent().get(MediaType.MULTIPART_FORM_DATA) != null) {
+      return true;
+    }
+    return false;
   }
 
   private boolean isDownload(Operation operation) {
-    if (operation.getResponses().get("200").getResponseSchema() instanceof ModelImpl) {
-      ModelImpl model = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
-      if ("file".equals(model.getType())) {
-        return true;
-      }
+    if (operation.getResponses().get(SwaggerConst.SUCCESS_KEY) != null &&
+        operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() != null &&
+        operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().get(MediaType.MULTIPART_FORM_DATA)
+            != null) {
+      return true;
     }
     return false;
   }
@@ -364,7 +369,7 @@ public class SwaggerToProtoGenerator {
     }
 
     if (parameters.size() == 1) {
-      String type = convertSwaggerType(parameters.get(0));
+      String type = convertSwaggerType(parameters.get(0).getSchema());
       if (messages.contains(type)) {
         protoMethod.setArgTypeName(type);
         return;
@@ -379,7 +384,7 @@ public class SwaggerToProtoGenerator {
 
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
     for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
-      String type = convertSwaggerType(entry.getValue().getContent().);
+      String type = convertSwaggerType(entry.getValue().getContent().get(SwaggerConst.SUCCESS_KEY).getSchema());
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
@@ -387,7 +392,7 @@ public class SwaggerToProtoGenerator {
 
       if (wrapped) {
         String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
-        wrapPropertyToMessage(wrapName, entry.getValue().getResponseSchema());
+        wrapPropertyToMessage(wrapName, entry.getValue().getContent().get(SwaggerConst.SUCCESS_KEY).getSchema());
 
         protoResponse.setTypeName(wrapName);
       }
@@ -396,9 +401,9 @@ public class SwaggerToProtoGenerator {
   }
 
   private void createWrapArgs(String wrapName, List<Parameter> parameters) {
-    Map<String, Object> properties = new LinkedHashMap<>();
+    Map<String, Schema> properties = new LinkedHashMap<>();
     for (Parameter parameter : parameters) {
-      properties.put(parameter.getName(), parameter);
+      properties.put(parameter.getName(), parameter.getSchema());
     }
     createMessage(wrapName, properties, ProtoConst.ANNOTATION_WRAP_ARGUMENTS);
   }

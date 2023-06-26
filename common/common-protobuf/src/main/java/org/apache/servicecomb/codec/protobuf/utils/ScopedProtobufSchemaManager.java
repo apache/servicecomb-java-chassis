@@ -47,7 +47,7 @@ public class ScopedProtobufSchemaManager {
    */
   public ProtoMapper getOrCreateProtoMapper(SchemaMeta schemaMeta) {
     return mapperCache.computeIfAbsent(schemaMeta.getSchemaId(), key -> {
-      Swagger swagger = schemaMeta.getSwagger();
+      OpenAPI swagger = schemaMeta.getSwagger();
       SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator(schemaMeta.getMicroserviceQualifiedName(),
           swagger);
       Proto proto = generator.convert();

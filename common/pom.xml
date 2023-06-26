@@ -28,8 +28,7 @@
   <name>Java Chassis::Common</name>
   <packaging>pom</packaging>
   <modules>
-    <!-- TODO: highway -->
-    <!-- <module>common-protobuf</module> -->
+    <module>common-protobuf</module>
     <module>common-rest</module>
     <module>common-access-log</module>
   </modules>
