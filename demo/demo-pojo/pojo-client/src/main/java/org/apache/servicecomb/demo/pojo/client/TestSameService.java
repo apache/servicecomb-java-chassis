@@ -22,26 +22,27 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.springframework.stereotype.Component;
 
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @Component
 public class TestSameService implements CategorizedTestCase {
-  @SwaggerDefinition(basePath = "/SameInterface1")
+  @OpenAPIDefinition(servers = {@Server(url = "/SameInterface1")})
   public interface SameInterface1 {
     String sayHello(String name);
   }
 
-  @SwaggerDefinition(basePath = "/SameInterface2")
+  @OpenAPIDefinition(servers = {@Server(url = "/SameInterface2")})
   public interface SameInterface2 {
     String sayHello(String name);
   }
 
-  @SwaggerDefinition(basePath = "/SameService1")
+  @OpenAPIDefinition(servers = {@Server(url = "/SameService1")})
   public interface SameService1 {
     String sayHello(String name);
   }
 
-  @SwaggerDefinition(basePath = "/SameService2")
+  @OpenAPIDefinition(servers = {@Server(url = "/SameService2")})
   public interface SameService2 {
     String sayHello(String name);
   }

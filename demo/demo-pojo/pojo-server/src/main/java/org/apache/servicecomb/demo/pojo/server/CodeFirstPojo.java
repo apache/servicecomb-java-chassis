@@ -32,11 +32,12 @@ import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @RpcSchema()
-@SwaggerDefinition(basePath = "/pojo/rest")
+@OpenAPIDefinition(servers = {@Server(url = "/pojo/rest")})
 public class CodeFirstPojo implements CodeFirstPojoIntf {
   @Override
   public ParseResponse parse(ParseRequest request) {
@@ -128,7 +129,7 @@ public class CodeFirstPojo implements CodeFirstPojoIntf {
         : ContextUtils.getInvocationContext().getContext("k"));
   }
 
-  @ApiOperation(nickname = "sayHi2", value = "")
+  @Operation(operationId = "sayHi2", summary = "")
   public CompletableFuture<String> sayHi2Async(String name) {
     CompletableFuture<String> future = new CompletableFuture<>();
     future.complete(name + " sayhi 2");

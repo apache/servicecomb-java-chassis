@@ -20,11 +20,12 @@ package org.apache.servicecomb.demo.pojo.server.same.pk2;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.springframework.stereotype.Component;
 
-import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 @RpcSchema(schemaId = "SameService2")
 @Component("SameService2")
-@SwaggerDefinition(basePath = "/SameService2")
+@OpenAPIDefinition(servers = {@Server(url = "/SameService2")})
 public class SameService {
   public String sayHello(String name) {
     return "pk2-svc-" + name;
