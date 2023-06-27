@@ -28,9 +28,10 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings("rawtypes")
 public class MapPropertyConverter extends AbstractPropertyConverter {
   @Override
-  public JavaType doConvert(OpenAPI swagger, Object property) {
+  public JavaType doConvert(OpenAPI swagger, Schema property) {
     MapSchema mapProperty = (MapSchema) property;
     Object valueProperty = mapProperty.getAdditionalProperties();
     if (valueProperty instanceof Boolean) {

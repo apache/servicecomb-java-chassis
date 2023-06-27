@@ -36,7 +36,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
-import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -44,8 +43,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.IntegerSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings("rawtypes")
 public class TestSwaggerUtils {
 
   private void testSchemaMethod(String resultName, String... methodNames) {
@@ -319,5 +322,23 @@ public class TestSwaggerUtils {
     OpenAPI swagger = new OpenAPI();
     SwaggerUtils.resolveTypeSchemas(swagger, f1);
     SwaggerUtils.resolveTypeSchemas(swagger, f2);
+  }
+
+  @Test
+  public void test_resolve_type_schemas_correct() {
+    OpenAPI openAPI = new OpenAPI();
+    Schema schema = SwaggerUtils.resolveTypeSchemas(openAPI, String.class);
+    Assertions.assertTrue(schema instanceof StringSchema);
+
+    openAPI = new OpenAPI();
+    schema = SwaggerUtils.resolveTypeSchemas(openAPI, Integer.class);
+    Assertions.assertTrue(schema instanceof IntegerSchema);
+
+    openAPI = new OpenAPI();
+    schema = SwaggerUtils.resolveTypeSchemas(openAPI, TestType1.class);
+    schema = SwaggerUtils.getSchema(openAPI, schema); // resolve reference
+    // should be ObjectSchema but swagger is not.
+    // <pre> Assertions.assertTrue(schema instanceof ObjectSchema) </pre>
+    Assertions.assertEquals("object", schema.getType());
   }
 }

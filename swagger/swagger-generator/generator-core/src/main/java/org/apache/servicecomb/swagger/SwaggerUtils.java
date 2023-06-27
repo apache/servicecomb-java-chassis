@@ -211,6 +211,13 @@ public final class SwaggerUtils {
     return swagger.getComponents().getSchemas().get(ref.substring(Components.COMPONENTS_SCHEMAS_REF.length()));
   }
 
+  public static Schema getSchema(OpenAPI swagger, Schema ref) {
+    if (ref.get$ref() != null) {
+      return getSchema(swagger, ref.get$ref());
+    }
+    return ref;
+  }
+
   public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {
     if (cls.getAnnotation(annotation) != null) {
       return true;
