@@ -190,8 +190,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         throw new IllegalStateException(
             String.format("not support duplicated parameter, name=%s.", parameterGenerator.getParameterName()));
       }
-      if (parameterGenerator.getRequestBody() != null) {
-        swaggerOperation.setRequestBody(parameterGenerator.getRequestBody());
+      if (parameterGenerator.getGeneratedRequestBody() != null) {
+        swaggerOperation.setRequestBody(parameterGenerator.getGeneratedRequestBody());
       }
       if (parameterGenerator.getGeneratedParameter() != null) {
         swaggerOperation.addParametersItem(parameterGenerator.getGeneratedParameter());
@@ -353,7 +353,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     Map<String, Object> extensions = new HashMap<>();
     extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGenerator.getParameterName());
     requestBody.setExtensions(extensions);
-    parameterGenerator.setRequestBody(requestBody);
+    parameterGenerator.setGeneratedRequestBody(requestBody);
     return requestBody;
   }
 
