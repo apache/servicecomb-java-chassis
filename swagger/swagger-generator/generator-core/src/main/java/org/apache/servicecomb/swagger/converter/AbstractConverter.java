@@ -26,19 +26,16 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractConverter implements Converter {
   protected abstract Map<String, Object> findVendorExtensions(Object def);
 
-  protected abstract JavaType doConvert(OpenAPI swagger, Object def);
-
-  protected JavaType convertRef(OpenAPI swagger, String ref) {
-    Object def = swagger.getComponents().getSchemas().get(ref);
-    return ConverterMgr.findJavaType(swagger, def);
-  }
+  protected abstract JavaType doConvert(OpenAPI swagger, Schema def);
 
   @Override
-  public JavaType convert(OpenAPI swagger, Object def) {
+  public JavaType convert(OpenAPI swagger, Schema def) {
     Map<String, Object> vendorExtensions = findVendorExtensions(def);
     String canonical = SwaggerUtils.getClassName(vendorExtensions);
     if (StringUtils.isEmpty(canonical)) {
@@ -48,8 +45,7 @@ public abstract class AbstractConverter implements Converter {
     try {
       return TypeFactory.defaultInstance().constructFromCanonical(canonical);
     } catch (Throwable e) {
-      // type not exist
-      return OBJECT_JAVA_TYPE;
+      return doConvert(swagger, def);
     }
   }
 }

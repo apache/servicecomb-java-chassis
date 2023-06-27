@@ -30,6 +30,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings("rawtypes")
 public class ArrayPropertyConverter extends AbstractPropertyConverter {
   public static JavaType findJavaType(OpenAPI swagger, Schema itemProperty, Boolean uniqueItems) {
     JavaType itemJavaType = ConverterMgr.findJavaType(swagger, itemProperty);
@@ -43,7 +44,7 @@ public class ArrayPropertyConverter extends AbstractPropertyConverter {
   }
 
   @Override
-  public JavaType doConvert(OpenAPI swagger, Object property) {
+  public JavaType doConvert(OpenAPI swagger, Schema property) {
     ArraySchema arrayProperty = (ArraySchema) property;
 
     return findJavaType(swagger, arrayProperty.getItems(), arrayProperty.getUniqueItems());

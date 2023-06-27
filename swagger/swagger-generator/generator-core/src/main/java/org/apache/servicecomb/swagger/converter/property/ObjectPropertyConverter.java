@@ -21,10 +21,12 @@ import org.apache.servicecomb.swagger.converter.Converter;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings("rawtypes")
 public class ObjectPropertyConverter implements Converter {
   @Override
-  public JavaType convert(OpenAPI swagger, Object def) {
+  public JavaType convert(OpenAPI swagger, Schema def) {
     return OBJECT_JAVA_TYPE;
   }
 }
