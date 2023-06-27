@@ -44,7 +44,7 @@ public class ParameterGenerator {
 
   private Parameter generatedParameter;
 
-  private RequestBody requestBody;
+  private RequestBody generatedRequestBody;
 
   public ParameterGenerator(String parameterName, List<Annotation> annotations, JavaType genericType,
       HttpParameterType httpParameterType, Parameter generatedParameter) {
@@ -56,12 +56,12 @@ public class ParameterGenerator {
   }
 
   public ParameterGenerator(String parameterName, List<Annotation> annotations, JavaType genericType,
-      HttpParameterType httpParameterType, RequestBody requestBody) {
+      HttpParameterType httpParameterType, RequestBody generatedRequestBody) {
     this.parameterName = parameterName;
     this.annotations = annotations;
     this.genericType = genericType;
     this.httpParameterType = httpParameterType;
-    this.requestBody = requestBody;
+    this.generatedRequestBody = generatedRequestBody;
   }
 
   public ParameterGenerator(Executable executable, Map<String, List<Annotation>> methodAnnotationMap,
@@ -122,11 +122,11 @@ public class ParameterGenerator {
     this.generatedParameter = generatedParameter;
   }
 
-  public void setRequestBody(RequestBody requestBody) {
-    this.requestBody = requestBody;
+  public void setGeneratedRequestBody(RequestBody generatedRequestBody) {
+    this.generatedRequestBody = generatedRequestBody;
   }
 
-  public RequestBody getRequestBody() {
-    return this.requestBody;
+  public RequestBody getGeneratedRequestBody() {
+    return this.generatedRequestBody;
   }
 }

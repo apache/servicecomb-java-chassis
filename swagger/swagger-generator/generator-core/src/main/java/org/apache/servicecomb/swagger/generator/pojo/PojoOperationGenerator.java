@@ -96,6 +96,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
       initRequestBody(SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()),
           parameterGenerator.getParameterName());
+      parameterGenerator.setGeneratedRequestBody(bodyParameter);
       return;
     }
 
@@ -133,12 +134,14 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     initRequestBody(bodyModelNew, simpleRef);
 
     List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
-    newParameterGenerators.add(new ParameterGenerator(
+    ParameterGenerator newParameterGenerator = new ParameterGenerator(
         null,
         Collections.emptyList(),
         null,
         HttpParameterType.BODY,
-        bodyParameter));
+        bodyParameter);
+    newParameterGenerator.setGeneratedRequestBody(bodyParameter);
+    newParameterGenerators.add(newParameterGenerator);
     parameterGenerators.stream().filter(p -> p.getHttpParameterType() != null)
         .forEach(newParameterGenerators::add);
     parameterGenerators = newParameterGenerators;
