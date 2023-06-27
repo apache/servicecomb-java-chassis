@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     tryWrapParametersToBody();
   }
 
-  private void initRequestBody(Schema schema) {
+  private void initRequestBody(Schema schema, String bodyName) {
     if (this.swaggerOperation.getRequestBody() != null) {
       this.bodyParameter = this.swaggerOperation.getRequestBody();
       if (this.bodyParameter.getContent() == null) {
@@ -78,6 +79,9 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
           new MediaType()));
     }
     bodyParameter.getContent().forEach((k, v) -> v.setSchema(schema));
+    Map<String, Object> extensions = new HashMap<>();
+    extensions.put(SwaggerConst.EXT_BODY_NAME, bodyName);
+    bodyParameter.setExtensions(extensions);
   }
 
   private void tryWrapParametersToBody() {
@@ -90,7 +94,8 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     if (bodyFields.size() == 1 && SwaggerUtils.isBean(bodyFields.get(0).getGenericType())) {
       ParameterGenerator parameterGenerator = bodyFields.get(0);
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
-      initRequestBody(SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()));
+      initRequestBody(SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()),
+          parameterGenerator.getParameterName());
       return;
     }
 
@@ -125,7 +130,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     Schema bodyModelNew = new Schema();
     bodyModelNew.set$ref(Components.COMPONENTS_SCHEMAS_REF + simpleRef);
 
-    initRequestBody(bodyModelNew);
+    initRequestBody(bodyModelNew, simpleRef);
 
     List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
     newParameterGenerators.add(new ParameterGenerator(

@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +57,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.Response.Status.Family;
 
@@ -206,6 +205,10 @@ public final class SwaggerUtils {
       }
     }
     throw new IllegalArgumentException("cannot resolve type : " + type);
+  }
+
+  public static Schema getSchema(OpenAPI swagger, String ref) {
+    return swagger.getComponents().getSchemas().get(ref.substring(Components.COMPONENTS_SCHEMAS_REF.length()));
   }
 
   public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {

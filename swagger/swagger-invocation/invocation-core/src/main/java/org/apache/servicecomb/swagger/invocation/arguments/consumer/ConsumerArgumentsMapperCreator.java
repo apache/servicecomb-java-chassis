@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
-
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerArgumentsMapperCreator.class);
@@ -79,25 +80,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   @Override
   protected void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
       String parameterName) {
-
-    // Make best guess, use the index of swagger to invoke server.
-    // For compatible to old version behavior
-    if (!isSwaggerBodyField && notProcessedSwaggerParamIdx < swaggerParameters.size()) {
-      Parameter parameter = swaggerParameters.get(notProcessedSwaggerParamIdx);
-      if (parameter != null) {
-        ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, notProcessedSwaggerParamIdx);
-        mappers.add(mapper);
-        processedSwaggerParamters.add(parameterName);
-        notProcessedSwaggerParamIdx++;
-        LOGGER.warn("Old consumer invoke new version producer, parameter({}) is not exist in contract, method={}:{}."
-                + " Please change consumer parameter name to match swagger.",
-            parameterName, providerMethod.getDeclaringClass().getName(), providerMethod.getName());
-        return;
-      }
-    }
-
-    // real unknown parameter, new consumer invoke old producer, just ignore this parameter
-    LOGGER.warn("new consumer invoke old version producer, parameter({}) is not exist in contract, method={}:{}.",
+    LOGGER.warn("Consumer parameter({}) is not exist in contract, method={}:{}.",
         parameterName, providerMethod.getDeclaringClass().getName(), providerMethod.getName());
     unknownConsumerParams++;
   }
@@ -108,41 +91,38 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected ArgumentMapper createKnownParameterMapper(int consumerParamIdx, Integer swaggerIdx) {
-    return new ConsumerArgumentSame(this.providerMethod.getParameters()[consumerParamIdx].getName(),
-        this.swaggerParameters.get(swaggerIdx).getName());
+  protected void processPendingBodyParameter(RequestBody parameter) {
+
   }
 
   @Override
-  protected ArgumentMapper createSwaggerBodyFieldMapper(int consumerParamIdx, String parameterName,
-      int swaggerBodyIdx) {
+  protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, String invocationArgumentName) {
+    return new ConsumerArgumentSame(invocationArgumentName, invocationArgumentName);
+  }
+
+  @Override
+  protected ArgumentMapper createSwaggerBodyFieldMapper(int consumerParamIdx, String parameterName) {
     return new ConsumerArgumentToBodyField(this.providerMethod.getParameters()[consumerParamIdx].getName(),
-        this.swaggerParameters.get(swaggerBodyIdx).getName(), parameterName);
+        (String) this.bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME), parameterName);
   }
 
   @Override
   protected boolean processBeanParameter(int consumerParamIdx, java.lang.reflect.Parameter consumerParameter) {
-    JavaType providerType = TypeFactory.defaultInstance().constructType(consumerParameter.getParameterizedType());
-    if (!SwaggerUtils.isBean(providerType)) {
+    JavaType consumerType = TypeFactory.defaultInstance().constructType(consumerParameter.getParameterizedType());
+    if (!SwaggerUtils.isBean(consumerType)) {
       return false;
     }
     boolean result = false;
     ConsumerBeanParamMapper mapper = new ConsumerBeanParamMapper(
         this.providerMethod.getParameters()[consumerParamIdx].getName());
-    JavaType consumerType = TypeFactory.defaultInstance().constructType(consumerParameter.getParameterizedType());
     for (BeanPropertyDefinition propertyDefinition : serializationConfig.introspect(consumerType).findProperties()) {
       String parameterName = collectParameterName(providerMethod, propertyDefinition);
-      Integer swaggerIdx = findSwaggerParameterIndex(parameterName);
-      if (swaggerIdx == null) {
-        // unknown field, ignore it
-        LOGGER.warn(
-            "new consumer invoke old version producer, bean parameter({}) is not exist in contract, method={}:{}.",
-            parameterName, providerMethod.getDeclaringClass().getName(), providerMethod.getName());
+      if (parameterNameNotExistsInSwagger(parameterName)) {
         continue;
       }
 
       mapper.addField(parameterName, LambdaMetafactoryUtils.createObjectGetter(propertyDefinition));
-      processedSwaggerParamters.add(parameterName);
+      processedSwaggerParameters.add(parameterName);
       result = true;
     }
     mappers.add(mapper);

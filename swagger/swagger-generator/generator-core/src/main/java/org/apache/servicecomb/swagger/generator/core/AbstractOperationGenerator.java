@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -349,6 +350,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
     RequestBody requestBody = createRequestBody(parameterGenerator.getHttpParameterType());
+    Map<String, Object> extensions = new HashMap<>();
+    extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGenerator.getParameterName());
+    requestBody.setExtensions(extensions);
     parameterGenerator.setRequestBody(requestBody);
     return requestBody;
   }

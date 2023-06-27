@@ -26,10 +26,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 
 import com.fasterxml.jackson.databind.SerializationConfig;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
@@ -87,9 +89,8 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
  *      x, y, z
  * </pre>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractArgumentsMapperCreator {
-  protected int notProcessedSwaggerParamIdx = 0;
-
   protected boolean isSwaggerBodyField = false;
 
   protected SerializationConfig serializationConfig;
@@ -108,12 +109,11 @@ public abstract class AbstractArgumentsMapperCreator {
 
   protected List<Parameter> swaggerParameters;
 
-  // body index in swagger parameters
-  protected int swaggerBodyIdx;
-
   protected RequestBody bodyParameter;
 
-  protected Set<String> processedSwaggerParamters;
+  protected Map<String, Schema> swaggerBodyProperties;
+
+  protected Set<String> processedSwaggerParameters;
 
   public AbstractArgumentsMapperCreator(SerializationConfig serializationConfig,
       Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> providerClass,
@@ -126,22 +126,22 @@ public abstract class AbstractArgumentsMapperCreator {
 
     this.swaggerParameters = this.swaggerOperation.getOperation().getParameters();
 
-    bodyParameter = this.swaggerOperation.getOperation().getRequestBody();
-    processedSwaggerParamters = new HashSet<>();
+    this.bodyParameter = this.swaggerOperation.getOperation().getRequestBody();
+    this.swaggerBodyProperties = readSwaggerBodyProperties();
+    this.processedSwaggerParameters = new HashSet<>();
   }
 
-  protected Integer findSwaggerParameterIndex(String name) {
-    // TODO: find request body too
-    if (swaggerParameters == null) {
+  private Map<String, Schema> readSwaggerBodyProperties() {
+    if (bodyParameter == null || bodyParameter.getContent() == null || bodyParameter.getContent().size() == 0) {
       return null;
     }
-    for (int idx = 0; idx < swaggerParameters.size(); idx++) {
-      Parameter parameter = swaggerParameters.get(idx);
-      if (parameter != null && name.equals(parameter.getName())) {
-        return idx;
-      }
+    Schema schema = bodyParameter.getContent().entrySet().iterator().next().getValue().getSchema();
+    if (schema != null && schema.get$ref() != null) {
+      schema = SwaggerUtils.getSchema(swaggerOperation.getSwagger(), schema.get$ref());
     }
-
+    if (schema != null && schema.getProperties() != null) {
+      return schema.getProperties();
+    }
     return null;
   }
 
@@ -154,14 +154,13 @@ public abstract class AbstractArgumentsMapperCreator {
       }
 
       String parameterName = collectParameterName(providerParameter);
-      if (processKnownParameter(providerParamIdx, providerParameter, parameterName)) {
-        processedSwaggerParamters.add(parameterName);
-        notProcessedSwaggerParamIdx++;
+      if (processKnownParameter(providerParamIdx, parameterName)) {
+        processedSwaggerParameters.add(parameterName);
         continue;
       }
 
-      if (processSwaggerBodyField(providerParamIdx, providerParameter, parameterName)) {
-        processedSwaggerParamters.add(parameterName);
+      if (processSwaggerBodyField(providerParamIdx, parameterName)) {
+        processedSwaggerParameters.add(parameterName);
         isSwaggerBodyField = true;
         continue;
       }
@@ -173,14 +172,17 @@ public abstract class AbstractArgumentsMapperCreator {
       processUnknownParameter(providerParamIdx, providerParameter, parameterName);
     }
 
-    // TODO: find request body too
-    if (swaggerParameters == null) {
-      return;
-    }
-    for (Parameter parameter : swaggerParameters) {
-      if (!processedSwaggerParamters.contains(parameter.getName())) {
-        processPendingSwaggerParameter(parameter);
+    // Process swagger parameters that not in method parameters
+    if (swaggerParameters != null) {
+      for (Parameter parameter : swaggerParameters) {
+        if (!processedSwaggerParameters.contains(parameter.getName())) {
+          processPendingSwaggerParameter(parameter);
+        }
       }
+    }
+    if (bodyParameter != null && !processedSwaggerParameters.contains(
+        (String) bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+      processPendingBodyParameter(bodyParameter);
     }
   }
 
@@ -201,50 +203,60 @@ public abstract class AbstractArgumentsMapperCreator {
   }
 
   /**
-   *
-   * @param providerParamIdx
-   * @param providerParameter processing provider parameter
-   * @param parameterName
-   * @return true means processed
+   * Parameters has the same name in method and swagger.
    */
-  protected boolean processKnownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
-      String parameterName) {
-    Integer swaggerIdx = findSwaggerParameterIndex(parameterName);
-    if (swaggerIdx == null) {
+  protected boolean processKnownParameter(int providerParamIdx, String invocationArgumentName) {
+    if (parameterNameNotExistsInSwagger(invocationArgumentName)) {
       return false;
     }
 
-    // complex scenes
-    // swagger: int add(Body x)
-    // producer: int add(int x, int y)
-    if (bodyParameter != null &&
-        !SwaggerUtils.isBean(providerParameter.getType()) &&
-        swaggerIdx == swaggerBodyIdx &&
-        SwaggerUtils.isBean(bodyParameter)) {
-      return false;
-    }
-
-    ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, swaggerIdx);
+    ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, invocationArgumentName);
     mappers.add(mapper);
     return true;
   }
 
-  protected abstract ArgumentMapper createKnownParameterMapper(int providerParamIdx, Integer swaggerIdx);
-
-  protected boolean processSwaggerBodyField(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
-      String parameterName) {
-    ArgumentMapper mapper = createSwaggerBodyFieldMapper(providerParamIdx, parameterName, swaggerBodyIdx);
-    mappers.add(mapper);
-    return true;
+  protected boolean parameterNameNotExistsInSwagger(String parameterName) {
+    if (this.swaggerParameters != null) {
+      for (Parameter parameter : this.swaggerParameters) {
+        if (parameterName.equals(parameter.getName())) {
+          return false;
+        }
+      }
+    }
+    return this.bodyParameter == null || this.bodyParameter.getExtensions() == null ||
+        !parameterName.equals(this.bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME));
   }
 
-  protected abstract ArgumentMapper createSwaggerBodyFieldMapper(int providerParamIdx, String parameterName,
-      int swaggerBodyIdx);
+  protected abstract ArgumentMapper createKnownParameterMapper(int providerParamIdx, String parameterName);
 
   /**
+   * Process POJO wrapped parameters, e.g.
+   *   method(int foo, int bar)
+   * and Form parameters, e.g.
+   *   method(@FormParam("foo") int foo, @FormParam("bar") int bar)
+   */
+  protected boolean processSwaggerBodyField(int providerParamIdx, String parameterName) {
+    if (swaggerBodyProperties == null || swaggerBodyProperties.get(parameterName) == null) {
+      return false;
+    }
+
+    ArgumentMapper mapper = createSwaggerBodyFieldMapper(providerParamIdx, parameterName);
+    mappers.add(mapper);
+    return true;
+  }
+
+  protected abstract ArgumentMapper createSwaggerBodyFieldMapper(int providerParamIdx, String parameterName);
+
+  /**
+   * Bean parameters, e.g.
    *
-   * @param providerParamIdx
-   * @param providerParameter processing provider parameter
+   *   method(QueryModels queries)
+   *
+   * where swagger should be:
+   *    - in: query
+   *      name: foo
+   *    - in: query
+   *      name: bar
    */
   protected abstract boolean processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
 
@@ -252,4 +264,6 @@ public abstract class AbstractArgumentsMapperCreator {
       String parameterName);
 
   protected abstract void processPendingSwaggerParameter(Parameter parameter);
+
+  protected abstract void processPendingBodyParameter(RequestBody parameter);
 }
