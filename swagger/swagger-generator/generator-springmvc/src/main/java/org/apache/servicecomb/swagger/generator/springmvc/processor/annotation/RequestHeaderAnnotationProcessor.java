@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
@@ -53,7 +55,11 @@ public class RequestHeaderAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter headerParameter, JavaType type,
       RequestHeader requestHeader) {
-    // TODO: not complete
+    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+    headerParameter.setSchema(schema);
+    headerParameter.setRequired(requestHeader.required());
+    headerParameter.setName(requestHeader.name());
+    schema.setDefault(requestHeader.defaultValue());
   }
 
   @Override
