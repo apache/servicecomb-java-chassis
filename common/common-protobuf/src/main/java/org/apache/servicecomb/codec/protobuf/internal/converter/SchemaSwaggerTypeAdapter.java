@@ -20,30 +20,46 @@ import java.util.List;
 
 import io.swagger.v3.oas.models.media.Schema;
 
-public interface SwaggerTypeAdapter {
-  static SwaggerTypeAdapter create(Object swaggerType) {
-    if (swaggerType instanceof SwaggerTypeAdapter) {
-      return (SwaggerTypeAdapter) swaggerType;
-    }
+public class SchemaSwaggerTypeAdapter implements SwaggerTypeAdapter {
+  private final Schema<?> schema;
 
-    if (swaggerType instanceof Schema<?>) {
-      return new SchemaSwaggerTypeAdapter((Schema<?>) swaggerType);
-    }
-
-    throw new IllegalStateException("not support swagger type: " + swaggerType.getClass().getName());
+  public SchemaSwaggerTypeAdapter(Schema<?> schema) {
+    this.schema = schema;
   }
 
-  String getRefType();
+  @Override
+  public String getRefType() {
+    return schema.get$ref();
+  }
 
-  Schema<?> getArrayItem();
+  @Override
+  public Schema<?> getArrayItem() {
+    return schema.getItems();
+  }
 
-  Schema<?> getMapItem();
+  @Override
+  public Schema<?> getMapItem() {
+    return schema.getAdditionalItems();
+  }
 
-  List<String> getEnum();
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<String> getEnum() {
+    return (List<String>) schema.getEnum();
+  }
 
-  String getType();
+  @Override
+  public String getType() {
+    return schema.getType();
+  }
 
-  String getFormat();
+  @Override
+  public String getFormat() {
+    return schema.getFormat();
+  }
 
-  boolean isJavaLangObject();
+  @Override
+  public boolean isJavaLangObject() {
+    return "object".equals(getType());
+  }
 }

@@ -57,7 +57,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
 
     public QueryProcessor(QueryParameter queryParameter, JavaType targetType) {
       super(queryParameter.getName(), targetType, queryParameter.getSchema().getDefault(),
-          queryParameter.getRequired());
+          queryParameter.getRequired() != null && queryParameter.getRequired());
 
       this.repeatedType = queryParameter.getSchema() instanceof ArraySchema;
       this.queryCodec = QueryCodecsUtils.find(queryParameter.getStyle(), queryParameter.getExplode());
