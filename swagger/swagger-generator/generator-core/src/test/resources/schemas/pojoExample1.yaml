@@ -23,9 +23,25 @@ info:
 servers:
 - url: /PojoExample1
 paths:
-  /testType1:
+  /testMultiParameter:
     post:
-      operationId: testType1
+      operationId: testMultiParameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/testMultiParameterBody'
+        x-name: testMultiParameterBody
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/XXX'
+  /testOneParameter:
+    post:
+      operationId: testOneParameter
       requestBody:
         content:
           application/json:
@@ -47,3 +63,10 @@ components:
         val1:
           type: integer
           format: int32
+    testMultiParameterBody:
+      type: object
+      properties:
+        testType1:
+          $ref: '#/components/schemas/XXX'
+        testString:
+          type: string

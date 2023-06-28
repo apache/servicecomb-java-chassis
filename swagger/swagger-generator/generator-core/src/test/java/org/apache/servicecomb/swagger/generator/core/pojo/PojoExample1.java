@@ -17,7 +17,11 @@
 package org.apache.servicecomb.swagger.generator.core.pojo;
 
 public class PojoExample1 {
-  public TestType1 testType1(TestType1 testType1) {
+  public TestType1 testOneParameter(TestType1 testType1) {
+    return null;
+  }
+
+  public TestType1 testMultiParameter(TestType1 testType1, String testString) {
     return null;
   }
 }

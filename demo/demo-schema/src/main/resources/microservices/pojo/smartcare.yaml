@@ -15,122 +15,85 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# this is an example of the Uber API
-# as a demonstration of an API spec in YAML
-swagger: '2.0'
+openapi: 3.0.1
 info:
-  title: smartcare test
+  title: swagger definition for org.apache.servicecomb.demo.pojo.server.SmartCareImpl
   version: 1.0.0
-# x-java-interface is optional, remove it should works well, but sometimes need to generate more class in memory
-#  x-java-interface: org.apache.servicecomb.demo.smartcare.SmartCare
-
-# the domain of the service
-#host: api.uber.com
-
-# array of all schemes that your API supports
-#schemes:
-#  - https
-
-# will be prefixed to all paths
-basePath: /pojo/rest/plat/meta/v1
-produces:
-  - application/json
-
+servers:
+- url: /pojo/rest/plat/meta/v1
 paths:
-  /applications:
+  /addApplication:
     post:
       operationId: addApplication
-      parameters:
-        - name: application
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Application'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Application'
+        x-name: application
       responses:
-        201:
-          description: success
-          schema:
-            $ref: '#/definitions/Response'
-        400:
-          description: error
-          schema:
-            $ref: '#/definitions/Response'
-        500:
-          description: error
-          schema:
-            $ref: '#/definitions/Response'
-
-  /applications/{appName}:
-    delete:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+  /delApplication:
+    post:
       operationId: delApplication
-      parameters:
-        - name: appName
-          in: path
-          required: true
-          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/delApplicationBody'
+        x-name: delApplicationBody
       responses:
-        201:
-          description: success
-          schema:
-            $ref: '#/definitions/Response'
-        400:
-          description: error
-          schema:
-            $ref: '#/definitions/Response'
-        500:
-          description: error
-          schema:
-            $ref: '#/definitions/Response'
-
-
-definitions:
-  Application:
-    type: object
-    properties:
-      name:
-        type: string
-      labelEN:
-        type: string
-      labelCH:
-        type: string
-      defaultGroup:
-        type: string
-      version:
-        type: string
-      dynamicFlag:
-        type: boolean
-      groups:
-        type: array
-        items:
-          $ref: '#/definitions/Group'
-    required:
-      - name
-      - defaultGroup
-      - version
-      - dynamicFlag
-      - groups
-
-  Group:
-    type: object
-    properties:
-      name:
-        type: string
-      labelEN:
-        type: string
-      labelCH:
-        type: string
-    required:
-      - name
-
-  Response:
-    type: object
-    x-java-class: org.apache.servicecomb.demo.smartcare.Response
-    properties:
-      resultCode:
-        type: integer
-        format: int32
-      resultMessage:
-        type: string
-    required:
-      - resultCode
-
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+components:
+  schemas:
+    Application:
+      type: object
+      properties:
+        name:
+          type: string
+        labelEN:
+          type: string
+        labelCH:
+          type: string
+        defaultGroup:
+          type: string
+        version:
+          type: string
+        dynamicFlag:
+          type: boolean
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+    Group:
+      type: object
+      properties:
+        name:
+          type: string
+        labelEN:
+          type: string
+        labelCH:
+          type: string
+    Response:
+      type: object
+      properties:
+        resultCode:
+          type: integer
+          format: int32
+        resultMessage:
+          type: string
+    delApplicationBody:
+      type: object
+      properties:
+        appName:
+          type: string
