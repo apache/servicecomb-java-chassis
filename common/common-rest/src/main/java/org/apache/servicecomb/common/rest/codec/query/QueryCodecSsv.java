@@ -17,7 +17,7 @@
 package org.apache.servicecomb.common.rest.codec.query;
 
 public class QueryCodecSsv extends QueryCodecWithDelimiter {
-  public static final String CODEC_NAME = "ssv";
+  public static final String CODEC_NAME = "spaceDelimited:0";
 
   public static final String DELIMITER = " ";
 

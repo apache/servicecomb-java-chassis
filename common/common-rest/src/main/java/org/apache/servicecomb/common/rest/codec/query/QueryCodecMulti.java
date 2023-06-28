@@ -25,7 +25,7 @@ import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.Quer
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
 public class QueryCodecMulti extends AbstractQueryCodec {
-  public static final String CODEC_NAME = "multi";
+  public static final String CODEC_NAME = "form:1";
 
   public QueryCodecMulti() {
     super(CODEC_NAME);

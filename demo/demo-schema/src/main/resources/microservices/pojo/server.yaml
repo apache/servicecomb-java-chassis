@@ -23,14 +23,16 @@ servers:
 - url: /pojo/rest
 paths:
   /addString:
-    post:
+    delete:
       operationId: addString
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/addStringBody'
-        x-name: addStringBody
+      parameters:
+        - name: strArr
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: response of 200
