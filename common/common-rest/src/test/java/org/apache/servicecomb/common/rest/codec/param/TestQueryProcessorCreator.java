@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +27,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TestQueryProcessorCreator {
   @Test
@@ -38,7 +37,7 @@ public class TestQueryProcessorCreator {
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
 
-    ParamValueProcessor processor = creator.create(parameter, String.class);
+    ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 
@@ -62,7 +61,7 @@ public class TestQueryProcessorCreator {
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
 
-    ParamValueProcessor processor = creator.create(parameter, String.class);
+    ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 

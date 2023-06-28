@@ -23,8 +23,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -49,11 +47,13 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
-public class BodyProcessorCreator implements ParamValueProcessorCreator {
+@SuppressWarnings("rawtypes")
+public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
   public static final String PARAM_TYPE = "body";
@@ -68,8 +68,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     protected JavaType targetType;
 
     protected Class<?> serialViewClass;
-
-    private final boolean isString;
 
     protected boolean isRequired;
 
@@ -87,7 +85,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         }
       }
       this.targetType = targetType;
-      this.isString = isString;
       this.isRequired = isRequired;
     }
 
@@ -161,11 +158,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     /**
      * Deserialize body object into body buffer, according to the Content-Type.
-     *
-     * @param contentType the Content-Type of request
-     * @param arg body param object
-     * @return the deserialized body buffer
-     * @throws IOException
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
       if (MediaType.TEXT_PLAIN.equals(contentType)) {
@@ -244,7 +236,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(String paraName, RequestBody parameter, Type genericParamType) {
+  public ParamValueProcessor create(String parameterName, RequestBody parameter, Type genericParamType) {
     Schema model = parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
     JavaType swaggerType = ConverterMgr.findJavaType(model.getType(), model.getFormat());
     boolean isString = swaggerType != null && swaggerType.getRawClass().equals(String.class);
@@ -254,10 +246,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     boolean rawJson = SwaggerUtils.isRawJsonType(parameter);
     if (rawJson) {
       return new RawJsonBodyProcessor(targetType, (String) parameter.getExtensions()
-          .get(SwaggerConst.EXT_JSON_VIEW), isString, parameter.getRequired());
+          .get(SwaggerConst.EXT_JSON_VIEW), isString,
+          parameter.getRequired() != null && parameter.getRequired());
     }
 
     return new BodyProcessor(targetType, (String) parameter.getExtensions()
-        .get(SwaggerConst.EXT_JSON_VIEW), isString, parameter.getRequired());
+        .get(SwaggerConst.EXT_JSON_VIEW), isString,
+        parameter.getRequired() != null && parameter.getRequired());
   }
 }

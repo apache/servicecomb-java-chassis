@@ -38,6 +38,7 @@ import org.apache.servicecomb.foundation.common.utils.MimeTypesUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +48,13 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.FileSchema;
 import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
-
+@SuppressWarnings("rawtypes")
 public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
 
@@ -92,23 +92,32 @@ public class RestOperationMeta {
 
     OpenAPI swagger = operationMeta.getSchemaMeta().getSwagger();
     Operation operation = operationMeta.getSwaggerOperation();
-    this.produces = operation.getResponses().getDefault().getContent().keySet().stream().toList();
+    this.produces = operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() == null ?
+        null : operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().keySet().stream().toList();
 
     this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
 
-    // 初始化所有rest param
-    for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
-      Parameter parameter = operation.getParameters().get(swaggerParameterIdx);
+    if (operation.getParameters() != null) {
+      for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
+        Parameter parameter = operation.getParameters().get(swaggerParameterIdx);
+        Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
+            .getSwaggerParameterTypes().get(parameter.getName()) : null;
+        RestParam param = new RestParam(parameter, type);
+        addParam(param);
+      }
+    }
 
-      if ("formData".equals(parameter.getIn())) {
+    if (operation.getRequestBody() != null) {
+      if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
         formData = true;
       }
 
       Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
-          .getSwaggerParameterTypes().get(parameter.getName()) : null;
+          .getSwaggerParameterTypes().get(
+              (String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME)) : null;
       type = correctFormBodyType(operation.getRequestBody(), type);
-      RestParam param = new RestParam(parameter, type);
+      RestParam param = new RestParam(operation.getRequestBody(), type);
       addParam(param);
     }
 
@@ -139,9 +148,8 @@ public class RestOperationMeta {
 
   private boolean checkDownloadFileFlag() {
     ApiResponse response = operationMeta.getSwaggerOperation().getResponses().get("200");
-    if (response != null) {
-      Schema model = response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema();
-      return model instanceof FileSchema;
+    if (response != null && response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED) != null) {
+      return response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof FileSchema;
     }
 
     return false;

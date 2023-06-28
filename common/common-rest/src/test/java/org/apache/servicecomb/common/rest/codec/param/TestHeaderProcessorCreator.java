@@ -31,7 +31,7 @@ public class TestHeaderProcessorCreator {
     HeaderParameter hp = new HeaderParameter();
     hp.setName("h1");
 
-    ParamValueProcessor processor = creator.create(hp, String.class);
+    ParamValueProcessor processor = creator.create(hp.getName(), hp, String.class);
 
     Assertions.assertEquals(HeaderProcessor.class, processor.getClass());
   }
