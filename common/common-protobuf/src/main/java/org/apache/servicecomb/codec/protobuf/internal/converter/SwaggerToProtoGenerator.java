@@ -34,6 +34,7 @@ import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.hash.Hashing;
 
@@ -50,6 +51,7 @@ import io.vertx.core.json.Json;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
+@SuppressWarnings("rawtypes")
 public class SwaggerToProtoGenerator {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerToProtoGenerator.class);
 
@@ -268,36 +270,22 @@ public class SwaggerToProtoGenerator {
 
   private String findBaseType(String swaggerType, String swaggerFmt) {
     String key = swaggerType + ":" + swaggerFmt;
-    switch (key) {
-      case "boolean:null":
-        return "bool";
+    return switch (key) {
+      case "boolean:null" -> "bool";
       // there is no int8/int16 in protobuf
-      case "integer:null":
-        return "int64";
-      case "integer:int8":
-      case "integer:int16":
-      case "integer:int32":
-        return "int32";
-      case "integer:int64":
-        return "int64";
-      case "number:null":
-        return "double";
-      case "number:float":
-        return "float";
-      case "number:double":
-        return "double";
-      case "string:null":
-        return "string";
-      case "string:byte":
-        return "bytes";
-      case "string:date": // LocalDate
-      case "string:date-time": // Date
-        return "int64";
-      case "file:null":
-        throw new IllegalStateException("not support swagger type: " + swaggerType);
-      default:
-        return null;
-    }
+      case "integer:null" -> "int64";
+      case "integer:int8", "integer:int16", "integer:int32" -> "int32";
+      case "integer:int64" -> "int64";
+      case "number:null" -> "double";
+      case "number:float" -> "float";
+      case "number:double" -> "double";
+      case "string:null" -> "string";
+      case "string:byte" -> "bytes"; // LocalDate
+      case "string:date", "string:date-time" -> // Date
+          "int64";
+      case "file:null" -> throw new IllegalStateException("not support swagger type: " + swaggerType);
+      default -> null;
+    };
   }
 
   private void convertOperations() {
@@ -332,21 +320,15 @@ public class SwaggerToProtoGenerator {
   }
 
   private boolean isUpload(Operation operation) {
-    if (operation.getRequestBody() != null && operation.getRequestBody().getContent() != null
-        && operation.getRequestBody().getContent().get(MediaType.MULTIPART_FORM_DATA) != null) {
-      return true;
-    }
-    return false;
+    return operation.getRequestBody() != null && operation.getRequestBody().getContent() != null
+        && operation.getRequestBody().getContent().get(MediaType.MULTIPART_FORM_DATA) != null;
   }
 
   private boolean isDownload(Operation operation) {
-    if (operation.getResponses().get(SwaggerConst.SUCCESS_KEY) != null &&
+    return operation.getResponses().get(SwaggerConst.SUCCESS_KEY) != null &&
         operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() != null &&
         operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().get(MediaType.MULTIPART_FORM_DATA)
-            != null) {
-      return true;
-    }
-    return false;
+            != null;
   }
 
   private void convertOperation(Operation operation) {
@@ -362,7 +344,7 @@ public class SwaggerToProtoGenerator {
 
   private void fillRequestType(Operation operation, ProtoMethod protoMethod) {
     List<Parameter> parameters = operation.getParameters();
-    if (parameters.isEmpty()) {
+    if (CollectionUtils.isEmpty(parameters)) {
       addImports(ProtoConst.EMPTY_PROTO);
       protoMethod.setArgTypeName(ProtoConst.EMPTY.getCanonicalName());
       return;
