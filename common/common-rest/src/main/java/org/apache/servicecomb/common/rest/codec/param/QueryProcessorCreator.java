@@ -60,7 +60,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
           queryParameter.getRequired());
 
       this.repeatedType = queryParameter.getSchema() instanceof ArraySchema;
-      this.queryCodec = QueryCodecsUtils.find(queryParameter.getStyle().name());
+      this.queryCodec = QueryCodecsUtils.find(queryParameter.getStyle(), queryParameter.getExplode());
     }
 
     @Override

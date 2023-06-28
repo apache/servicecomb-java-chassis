@@ -35,7 +35,6 @@ public class QueryCodecs {
         new QueryCodecMulti(),
         new QueryCodecCsv(),
         new QueryCodecSsv(),
-        new QueryCodecTsv(),
         new QueryCodecPipes()
     ));
   }
