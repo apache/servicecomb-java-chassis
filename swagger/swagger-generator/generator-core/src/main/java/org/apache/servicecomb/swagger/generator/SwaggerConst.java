@@ -31,6 +31,8 @@ public final class SwaggerConst {
 
   public static final String FORM_MEDIA_TYPE = MediaType.APPLICATION_FORM_URLENCODED;
 
+  public static final String FILE_MEDIA_TYPE = MediaType.MULTIPART_FORM_DATA;
+
   public static final String EXT_JAVA_INTF = "x-java-interface";
 
   public static final String EXT_JAVA_CLASS = "x-java-class";

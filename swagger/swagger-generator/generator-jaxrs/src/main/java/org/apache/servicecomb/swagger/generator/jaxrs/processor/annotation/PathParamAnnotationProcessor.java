@@ -19,6 +19,8 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.PathParam;
@@ -50,7 +53,9 @@ public class PathParamAnnotationProcessor extends AbstractSerializableParameterP
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter pathParameter, JavaType type,
       PathParam pathParam) {
-    // TODO: not complete
+    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+    pathParameter.setSchema(schema);
+    pathParameter.setName(pathParam.value());
   }
 
   @Override

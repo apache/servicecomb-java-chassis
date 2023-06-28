@@ -19,6 +19,8 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
 
@@ -28,6 +30,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.core.MediaType;
@@ -62,8 +66,18 @@ public class RequestPartAnnotationProcessor extends
   @Override
   public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       RequestPart requestPart) {
-    // TODO: not complete
-    requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
-        new io.swagger.v3.oas.models.media.MediaType().schema(new FileSchema())));
+    if (requestBody.getContent() == null) {
+      requestBody.setContent(new Content());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) == null) {
+      requestBody.getContent().addMediaType(SwaggerConst.FILE_MEDIA_TYPE,
+          new io.swagger.v3.oas.models.media.MediaType());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema() == null) {
+      requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
+          .setSchema(new FileSchema());
+    }
+    requestBody.setRequired(requestPart.required());
+    requestBody.addExtension(SwaggerConst.EXT_BODY_NAME, requestPart.name());
   }
 }

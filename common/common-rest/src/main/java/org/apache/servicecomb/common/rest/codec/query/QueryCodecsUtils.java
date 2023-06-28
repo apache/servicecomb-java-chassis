@@ -31,13 +31,13 @@ public class QueryCodecsUtils {
 
   @Nonnull
   public static QueryCodec find(Parameter.StyleEnum styleEnum, Boolean explode) {
-    if (styleEnum == null) {
-      return null;
-    }
     return queryCodecs.find(formatName(styleEnum, explode));
   }
 
   private static String formatName(StyleEnum styleEnum, Boolean explode) {
+    if (styleEnum == null) {
+      return null;
+    }
     return styleEnum.name() + ":" +
         (explode != null && explode ? "1" : "0");
   }

@@ -19,6 +19,8 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
@@ -27,13 +29,13 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.core.MediaType;
 
+@SuppressWarnings("rawtypes")
 public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
@@ -59,10 +61,19 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
   @Override
   public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       FormParam formParam) {
-    // TODO: not complete
-    Schema schema = new Schema();
-    schema.addProperty(formParam.value(), new StringSchema());
-    requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
-        new io.swagger.v3.oas.models.media.MediaType().schema(schema)));
+    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+    if (requestBody.getContent() == null) {
+      requestBody.setContent(new Content());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) == null) {
+      requestBody.getContent().addMediaType(SwaggerConst.FORM_MEDIA_TYPE,
+          new io.swagger.v3.oas.models.media.MediaType());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() == null) {
+      requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+          .setSchema(new MapSchema());
+    }
+    requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+        .getSchema().addProperty(formParam.value(), schema);
   }
 }

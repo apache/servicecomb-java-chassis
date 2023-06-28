@@ -19,6 +19,8 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
@@ -27,11 +29,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
-import jakarta.ws.rs.core.MediaType;
 
 public class RequestAttributeAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<RequestAttribute> {
@@ -63,10 +64,19 @@ public class RequestAttributeAnnotationProcessor extends
   @Override
   public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       RequestAttribute requestAttribute) {
-    // TODO: not complete
-    Schema schema = new Schema();
-    schema.addProperty(requestAttribute.value(), new StringSchema());
-    requestBody.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
-        new io.swagger.v3.oas.models.media.MediaType().schema(schema)));
+    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+    if (requestBody.getContent() == null) {
+      requestBody.setContent(new Content());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) == null) {
+      requestBody.getContent().addMediaType(SwaggerConst.FORM_MEDIA_TYPE,
+          new io.swagger.v3.oas.models.media.MediaType());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() == null) {
+      requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+          .setSchema(new MapSchema());
+    }
+    requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+        .getSchema().addProperty(requestAttribute.name(), schema);
   }
 }

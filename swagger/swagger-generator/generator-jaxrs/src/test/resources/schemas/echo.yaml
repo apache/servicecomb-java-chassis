@@ -16,57 +16,54 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.Echo"
-  x-java-interface: "gen.cse.ms.ut.EchoIntf"
-basePath: "/Echo"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.Echo
+  version: 1.0.0
+servers:
+- url: Echo
 paths:
   /echo/{targetName}:
     post:
-      operationId: "echo"
-      consumes:
-      - "json"
-      - "xml"
-      produces:
-      - "json"
-      - "xml"
+      operationId: echo
       parameters:
-      - in: "body"
-        name: "srcUser"
-        required: false
+      - name: header
+        in: header
         schema:
-          $ref: "#/definitions/User"
-      - name: "header"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "targetName"
-        in: "path"
+          type: string
+      - name: targetName
+        in: path
         required: true
-        type: "string"
-      - name: "word"
-        in: "query"
-        required: false
-        type: "string"
+        schema:
+          type: string
+      - name: word
+        in: query
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        x-name: srcUser
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "string"
-definitions:
-  User:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-      friends:
-        type: "array"
-        items:
-          $ref: "#/definitions/User"
-    x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.User"
+          description: response of 200
+          content:
+            json:
+              schema:
+                type: string
+            xml:
+              schema:
+                type: string
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
