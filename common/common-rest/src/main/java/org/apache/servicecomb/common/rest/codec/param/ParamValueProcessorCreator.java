@@ -19,15 +19,8 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-
-public interface ParamValueProcessorCreator {
-  default ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    throw new IllegalStateException("not implemented");
-  }
-
-  default ParamValueProcessor create(String paramName, RequestBody parameter, Type genericParamType) {
+public interface ParamValueProcessorCreator<T> {
+  default ParamValueProcessor create(String paramName, T parameter, Type genericParamType) {
     throw new IllegalStateException("not implemented");
   }
 }

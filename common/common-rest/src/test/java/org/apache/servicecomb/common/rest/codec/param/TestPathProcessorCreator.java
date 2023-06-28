@@ -32,7 +32,7 @@ public class TestPathProcessorCreator {
     Parameter parameter = new PathParameter();
     parameter.setName("path");
 
-    ParamValueProcessor processor = creator.create(parameter, String.class);
+    ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(PathProcessor.class, processor.getClass());
   }

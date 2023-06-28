@@ -21,14 +21,17 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 public class RestParam {
   private static final JavaType STRING_ARRAY_TYPE = TypeFactory.defaultInstance().constructArrayType(String.class);
@@ -42,6 +45,13 @@ public class RestParam {
 
     init(parameter, genericParamType);
   }
+
+  public RestParam(RequestBody parameter, Type genericParamType) {
+    this.paramName = (String) parameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME);
+
+    init(parameter, genericParamType);
+  }
+
 
   public ParamValueProcessor getParamProcessor() {
     return this.paramProcessor;
@@ -60,7 +70,15 @@ public class RestParam {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
 
-    this.setParamProcessor(creator.create(parameter, genericParamType));
+    this.setParamProcessor(creator.create(parameter.getName(), parameter, genericParamType));
+  }
+
+  protected void init(RequestBody parameter, Type genericParamType) {
+    ParamValueProcessorCreator creator =
+        ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(BodyProcessorCreator.PARAM_TYPE);
+
+    this.setParamProcessor(creator.create((String) parameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME),
+        parameter, genericParamType));
   }
 
   @SuppressWarnings("unchecked")

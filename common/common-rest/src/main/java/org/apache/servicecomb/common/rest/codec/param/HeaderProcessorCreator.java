@@ -21,8 +21,6 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -36,9 +34,10 @@ import com.netflix.config.DynamicPropertyFactory;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response.Status;
 
-public class HeaderProcessorCreator implements ParamValueProcessorCreator {
+public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parameter> {
   private static final Logger LOGGER = LoggerFactory.getLogger(HeaderProcessorCreator.class);
 
   public static final String PARAMTYPE = "header";
@@ -104,7 +103,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(String parameterName, Parameter parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new HeaderProcessor((HeaderParameter) parameter, targetType);
