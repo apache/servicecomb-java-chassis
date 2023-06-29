@@ -16,8 +16,3 @@
 ## ---------------------------------------------------------------------------
 
 servicecomb-config-order: -500
-
-servicecomb:
-  exception:
-    invocation:
-      print-stack-trace: false

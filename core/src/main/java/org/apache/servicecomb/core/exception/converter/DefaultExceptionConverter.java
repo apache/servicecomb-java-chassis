@@ -17,13 +17,14 @@
 package org.apache.servicecomb.core.exception.converter;
 
 import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 /**
  * <pre>
@@ -59,8 +60,8 @@ public class DefaultExceptionConverter implements ExceptionConverter<Throwable> 
       msg = "Unexpected exception when processing.";
     }
 
-    LOGGER.error("convert unknown exception({}) to InvocationException, message={}.",
-        throwable.getClass().getName(), msg);
+    LOGGER.error("convert exception({}) to InvocationException.",
+        throwable.getClass().getName(), throwable);
     return new InvocationException(genericStatus, ExceptionConverter.getGenericCode(genericStatus),
         msg, throwable);
   }

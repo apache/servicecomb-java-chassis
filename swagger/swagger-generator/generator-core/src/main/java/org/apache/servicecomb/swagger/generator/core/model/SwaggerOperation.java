@@ -36,6 +36,17 @@ public class SwaggerOperation {
     this.operation = operation;
   }
 
+  public int parameterCount() {
+    int result = 0;
+    if (operation.getRequestBody() != null) {
+      result++;
+    }
+    if (operation.getParameters() != null) {
+      result += operation.getParameters().size();
+    }
+    return result;
+  }
+
   public OpenAPI getSwagger() {
     return swagger;
   }

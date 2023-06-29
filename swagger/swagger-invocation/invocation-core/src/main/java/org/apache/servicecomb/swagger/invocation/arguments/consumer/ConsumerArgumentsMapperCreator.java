@@ -69,23 +69,12 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
     // if all mappers are SameMapper, then no need any mapper
     if (unknownConsumerParams == 0
-        && mappers.size() == swaggerParameterCount()
+        && mappers.size() == swaggerOperation.parameterCount()
         && isAllSameMapper()) {
       return new ArgumentsMapperDirectReuse();
     }
 
     return new ArgumentsMapperCommon(mappers);
-  }
-
-  private int swaggerParameterCount() {
-    int result = 0;
-    if (swaggerOperation.getOperation().getRequestBody() != null) {
-      result++;
-    }
-    if (swaggerOperation.getOperation().getParameters() != null) {
-      result += swaggerOperation.getOperation().getParameters().size();
-    }
-    return result;
   }
 
   @Override

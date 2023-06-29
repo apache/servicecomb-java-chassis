@@ -64,13 +64,16 @@ public final class HighwayCodec {
     if (invocation.getOperationMeta().getSwaggerProducerOperation() != null && !invocation.isEdge()) {
       List<Parameter> swaggerParameters = invocation.getOperationMeta().getSwaggerOperation()
           .getParameters();
-      for (Parameter parameter : swaggerParameters) {
-        if (swaggerArguments.get(parameter.getName()) == null) {
-          Type type = invocation.getOperationMeta().getSwaggerProducerOperation()
-              .getSwaggerParameterType(parameter.getName());
-          swaggerArguments.put(parameter.getName(), defaultPrimitiveValue(null, type));
+      if (swaggerParameters != null) {
+        for (Parameter parameter : swaggerParameters) {
+          if (swaggerArguments.get(parameter.getName()) == null) {
+            Type type = invocation.getOperationMeta().getSwaggerProducerOperation()
+                .getSwaggerParameterType(parameter.getName());
+            swaggerArguments.put(parameter.getName(), defaultPrimitiveValue(null, type));
+          }
         }
       }
+
     }
     return swaggerArguments;
   }

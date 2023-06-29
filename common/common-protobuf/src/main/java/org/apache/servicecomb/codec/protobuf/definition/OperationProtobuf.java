@@ -21,9 +21,6 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.Response.Status.Family;
-
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
@@ -33,6 +30,8 @@ import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.protostuff.compiler.model.Message;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status.Family;
 
 @SuppressWarnings("rawtypes")
 public class OperationProtobuf {
@@ -101,10 +100,10 @@ public class OperationProtobuf {
       requestRootSerializer = new RequestRootSerializer(
           mapper.createRootSerializer(requestMessage, Object.class), true, false);
     } else {
-      if (invocation.getOperationMeta().getSwaggerOperation().getParameters().isEmpty()) {
+      if (invocation.getOperationMeta().parameterCount() == 0) {
         requestRootSerializer = new RequestRootSerializer(mapper.createRootSerializer(requestMessage, Object.class),
             false, false);
-      } else if (invocation.getOperationMeta().getSwaggerOperation().getParameters().size() == 1) {
+      } else if (invocation.getOperationMeta().parameterCount() == 1) {
         requestRootSerializer = new RequestRootSerializer(mapper.createRootSerializer(requestMessage,
             Object.class), false, true);
       } else {

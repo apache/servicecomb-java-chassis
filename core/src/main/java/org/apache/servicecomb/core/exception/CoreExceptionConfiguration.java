@@ -16,14 +16,17 @@
  */
 package org.apache.servicecomb.core.exception;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CoreExceptionConfiguration {
+  @Bean
   public Exceptions exceptions() {
     return new Exceptions();
   }
 
+  @Bean
   public DefaultExceptionProcessor defaultExceptionProcessor() {
     return new DefaultExceptionProcessor();
   }

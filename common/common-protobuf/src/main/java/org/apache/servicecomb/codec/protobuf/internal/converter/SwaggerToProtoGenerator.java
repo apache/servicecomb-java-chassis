@@ -366,7 +366,11 @@ public class SwaggerToProtoGenerator {
 
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
     for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
-      String type = convertSwaggerType(entry.getValue().getContent().get(SwaggerConst.SUCCESS_KEY).getSchema());
+      if (entry.getValue().getContent() == null ||
+          entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) == null) {
+        continue;
+      }
+      String type = convertSwaggerType(entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
@@ -374,7 +378,7 @@ public class SwaggerToProtoGenerator {
 
       if (wrapped) {
         String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
-        wrapPropertyToMessage(wrapName, entry.getValue().getContent().get(SwaggerConst.SUCCESS_KEY).getSchema());
+        wrapPropertyToMessage(wrapName, entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
 
         protoResponse.setTypeName(wrapName);
       }
