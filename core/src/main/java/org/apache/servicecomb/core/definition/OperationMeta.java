@@ -96,6 +96,17 @@ public class OperationMeta {
     return responsesMeta;
   }
 
+  public int parameterCount() {
+    int result = 0;
+    if (swaggerOperation.getRequestBody() != null) {
+      result++;
+    }
+    if (swaggerOperation.getParameters() != null) {
+      result += swaggerOperation.getParameters().size();
+    }
+    return result;
+  }
+
   private ResponsesMeta cloneResponseMeta() {
     ResponsesMeta result = new ResponsesMeta();
     this.responsesMeta.cloneTo(result);
