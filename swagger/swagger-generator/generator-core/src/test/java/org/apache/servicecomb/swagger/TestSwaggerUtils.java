@@ -55,7 +55,7 @@ public class TestSwaggerUtils {
     try (MockedStatic<IOUtils> ioUtilsMockedStatic = Mockito.mockStatic(IOUtils.class)) {
       ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8)).thenReturn(content);
       OpenAPI swagger = Yaml.mapper().readValue(content, OpenAPI.class);
-      OpenAPI result = SwaggerUtils.parseSwagger(url);
+      OpenAPI result = SwaggerUtils.parseAndValidateSwagger(url);
       Assertions.assertEquals(swagger, result);
       Assertions.assertEquals("3.0.1", result.getOpenapi());
     }
@@ -68,7 +68,7 @@ public class TestSwaggerUtils {
       ioUtilsMockedStatic.when(() -> IOUtils.toString(url, StandardCharsets.UTF_8))
           .thenThrow(new RuntimeExceptionWithoutStackTrace("failed"));
       ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-          () -> SwaggerUtils.parseSwagger(url));
+          () -> SwaggerUtils.parseAndValidateSwagger(url));
       Assertions.assertTrue(exception.getMessage().contains("Parse swagger from url failed, "));
     }
   }
