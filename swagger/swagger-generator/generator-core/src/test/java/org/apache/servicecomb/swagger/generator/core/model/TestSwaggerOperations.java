@@ -29,7 +29,7 @@ public class TestSwaggerOperations {
 
   @Test
   public void emptyOperationId() {
-    OpenAPI swagger = SwaggerUtils.parseSwagger(this.getClass().getResource("/schemas/boolean.yaml"));
+    OpenAPI swagger = SwaggerUtils.parseAndValidateSwagger(this.getClass().getResource("/schemas/boolean.yaml"));
     swagger.getPaths().values().stream()
         .findFirst().get()
         .getPost().setOperationId("");

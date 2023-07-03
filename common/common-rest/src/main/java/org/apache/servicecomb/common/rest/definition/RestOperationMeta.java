@@ -147,8 +147,8 @@ public class RestOperationMeta {
   }
 
   private boolean checkDownloadFileFlag() {
-    ApiResponse response = operationMeta.getSwaggerOperation().getResponses().get("200");
-    if (response != null && response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED) != null) {
+    ApiResponse response = operationMeta.getSwaggerOperation().getResponses().get(SwaggerConst.SUCCESS_KEY);
+    if (response.getContent() != null && response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED) != null) {
       return response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof FileSchema;
     }
 

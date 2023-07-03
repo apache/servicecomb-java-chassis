@@ -81,6 +81,13 @@ public class ResponsesMeta {
     }
 
     for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
+      if (entry.getValue().getContent() == null) {
+        continue;
+      }
+      if (entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) == null) {
+        continue;
+      }
+
       JavaType javaType = ConverterMgr.findJavaType(swagger,
           SwaggerUtils.getSchema(swagger,
               entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema()));

@@ -52,6 +52,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -91,17 +92,15 @@ public final class SwaggerUtils {
     }
   }
 
-  public static OpenAPI parseSwagger(URL url) {
+  public static OpenAPI parseAndValidateSwagger(URL url) {
     try {
       String swaggerContent = IOUtils.toString(url, StandardCharsets.UTF_8);
-      return internalParseSwagger(swaggerContent);
+      OpenAPI result = internalParseSwagger(swaggerContent);
+      validateSwagger(result);
+      return result;
     } catch (Throwable e) {
       throw new ServiceCombException("Parse swagger from url failed, url=" + url, e);
     }
-  }
-
-  public static OpenAPI parseAndValidateSwagger(URL url) {
-    return SwaggerUtils.parseSwagger(url);
   }
 
   public static OpenAPI parseSwagger(String swaggerContent) {
@@ -113,13 +112,72 @@ public final class SwaggerUtils {
   }
 
   public static OpenAPI parseAndValidateSwagger(String swaggerContent) {
-    return SwaggerUtils.parseSwagger(swaggerContent);
+    try {
+      OpenAPI result = internalParseSwagger(swaggerContent);
+      validateSwagger(result);
+      return result;
+    } catch (Throwable e) {
+      throw new ServiceCombException("Parse swagger from content failed, ", e);
+    }
+  }
+
+  private static void validateSwagger(OpenAPI openAPI) {
+    if (openAPI.getPaths() == null) {
+      return;
+    }
+    for (PathItem pathItem : openAPI.getPaths().values()) {
+      if (pathItem.getGet() != null) {
+        validateOperation(pathItem.getGet());
+      }
+      if (pathItem.getPost() != null) {
+        validateOperation(pathItem.getPost());
+      }
+      if (pathItem.getDelete() != null) {
+        validateOperation(pathItem.getDelete());
+      }
+      if (pathItem.getPut() != null) {
+        validateOperation(pathItem.getPut());
+      }
+      if (pathItem.getPatch() != null) {
+        validateOperation(pathItem.getPatch());
+      }
+    }
+  }
+
+  private static void validateOperation(Operation operation) {
+    if (operation.getResponses() == null) {
+      throw new ServiceCombException("Response 200/OK is required.");
+    }
+    if (operation.getResponses().get(SwaggerConst.SUCCESS_KEY) == null) {
+      throw new ServiceCombException("Response 200/OK is required.");
+    }
+    if (operation.getRequestBody() != null) {
+      validateRequestBody(operation.getRequestBody());
+    }
+    if (operation.getParameters() != null) {
+      validateParameters(operation.getParameters());
+    }
+  }
+
+  private static void validateParameters(List<Parameter> parameters) {
+    for (Parameter parameter : parameters) {
+      if (StringUtils.isEmpty(parameter.getName())) {
+        throw new ServiceCombException("Parameter name is required.");
+      }
+    }
+  }
+
+  private static void validateRequestBody(RequestBody requestBody) {
+    if (requestBody.getExtensions() == null) {
+      throw new ServiceCombException("Request body x-name extension is required.");
+    }
+    if (StringUtils.isEmpty((String) requestBody.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+      throw new ServiceCombException("Request body x-name extension is required.");
+    }
   }
 
   private static OpenAPI internalParseSwagger(String swaggerContent) throws IOException {
-    OpenAPI swagger = Yaml.mapper().readValue(swaggerContent, OpenAPI.class);
-    correctResponses(swagger);
-    return swagger;
+    return Yaml.mapper().readValue(swaggerContent, OpenAPI.class);
   }
 
   // add descriptions to response and add a default response if absent.
