@@ -34,7 +34,6 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
@@ -58,8 +57,6 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
 import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.Response.Status.Family;
 
 @SuppressWarnings("rawtypes")
 public final class SwaggerUtils {
@@ -125,32 +122,20 @@ public final class SwaggerUtils {
     return swagger;
   }
 
+  // add descriptions to response and add a default response if absent.
   public static void correctResponses(Operation operation) {
-    int okCode = Status.OK.getStatusCode();
-    String strOkCode = String.valueOf(okCode);
-    ApiResponse okResponse = null;
+    if (operation.getResponses() == null) {
+      operation.setResponses(new ApiResponses());
+    }
+    if (operation.getResponses().size() == 0) {
+      operation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
+    }
 
     for (Entry<String, ApiResponse> responseEntry : operation.getResponses().entrySet()) {
       ApiResponse response = responseEntry.getValue();
       if (StringUtils.isEmpty(response.getDescription())) {
         response.setDescription("response of " + responseEntry.getKey());
       }
-
-      if (operation.getResponses().get(strOkCode) != null) {
-        continue;
-      }
-
-      int statusCode = NumberUtils.toInt(responseEntry.getKey());
-      if ("default".equals(responseEntry.getKey())) {
-        statusCode = okCode;
-      }
-      if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
-        okResponse = response;
-      }
-    }
-
-    if (okResponse != null) {
-      operation.getResponses().addApiResponse(strOkCode, okResponse);
     }
   }
 
@@ -290,6 +275,9 @@ public final class SwaggerUtils {
   }
 
   public static void updateProduces(Operation operation, String[] produces) {
+    if (produces == null || produces.length == 0) {
+      return;
+    }
     if (operation.getResponses() == null) {
       operation.setResponses(new ApiResponses());
     }
@@ -309,6 +297,9 @@ public final class SwaggerUtils {
   }
 
   public static void updateConsumes(Operation operation, String[] consumes) {
+    if (consumes == null || consumes.length == 0) {
+      return;
+    }
     if (operation.getRequestBody() == null) {
       operation.setRequestBody(new RequestBody());
     }
