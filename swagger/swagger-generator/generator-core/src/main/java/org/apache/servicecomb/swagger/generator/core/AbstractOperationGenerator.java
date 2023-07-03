@@ -39,8 +39,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.inject.PlaceholderResolver;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -65,7 +63,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.CookieParameter;
@@ -76,6 +73,7 @@ import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("rawtypes")
@@ -96,10 +94,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected Operation swaggerOperation;
 
-  // 根据方法上独立的ResponseHeader(s)标注生成的数据
-  // 如果Response中不存在对应的header，则会将这些header补充进去
-  protected Map<String, HeaderParameter> methodResponseHeaders = new LinkedHashMap<>();
-
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
     this.swagger = swaggerGenerator.getOpenAPI();
@@ -108,11 +102,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     this.httpMethod = swaggerGenerator.getHttpMethod();
 
     swaggerOperation = new Operation();
-  }
-
-  @Override
-  public void addMethodResponseHeader(String name, HeaderParameter header) {
-    methodResponseHeaders.put(name, header);
   }
 
   @Override
@@ -469,25 +458,13 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   public void correctOperation() {
     SwaggerUtils.correctResponses(swaggerOperation);
-    addHeaderToResponse();
-  }
-
-  private void addHeaderToResponse() {
-    for (Entry<String, ApiResponse> responseEntry : swaggerOperation.getResponses().entrySet()) {
-      ApiResponse response = responseEntry.getValue();
-
-      for (Entry<String, HeaderParameter> entry : methodResponseHeaders.entrySet()) {
-        if (response.getHeaders() != null && response.getHeaders().containsKey(entry.getKey())) {
-          continue;
-        }
-
-        response.addHeaderObject(entry.getKey(), new Header().schema(entry.getValue().getSchema()));
-      }
-    }
   }
 
   public void scanResponse() {
     Schema model = createResponseModel();
+    if (model == null) {
+      return;
+    }
 
     if (swaggerOperation.getResponses() == null) {
       swaggerOperation.setResponses(new ApiResponses());
@@ -503,14 +480,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
           .addMediaType(MediaType.APPLICATION_JSON, new io.swagger.v3.oas.models.media.MediaType());
     }
 
-    if (model != null) {
-      swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().forEach((k, v) -> {
-        if (v.getSchema() == null || (StringUtils.isEmpty(v.getSchema().getType()) &&
-            StringUtils.isEmpty(v.getSchema().get$ref()))) {
-          v.setSchema(model);
-        }
-      });
-    }
+    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().forEach((k, v) -> {
+      if (v.getSchema() == null || (StringUtils.isEmpty(v.getSchema().getType()) &&
+          StringUtils.isEmpty(v.getSchema().get$ref()))) {
+        v.setSchema(model);
+      }
+    });
   }
 
   protected Schema createResponseModel() {

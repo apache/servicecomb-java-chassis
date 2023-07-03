@@ -16,23 +16,16 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.Echo"
-  x-java-interface: "gen.cse.ms.ut.EchoIntf"
-basePath: "/Echo"
-consumes:
-- "a"
-- "b"
-produces:
-- "a"
-- "b"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.Echo
+  version: 1.0.0
+servers:
+- url: Echo
 paths:
   /:
     put:
-      operationId: "emptyPath"
-      parameters: []
+      operationId: emptyPath
       responses:
         "200":
-          description: "response of 200"
+          description: response of 200
