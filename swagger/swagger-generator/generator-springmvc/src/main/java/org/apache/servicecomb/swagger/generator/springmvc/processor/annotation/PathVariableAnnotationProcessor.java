@@ -40,11 +40,7 @@ public class PathVariableAnnotationProcessor extends
 
   @Override
   public String getParameterName(PathVariable annotation) {
-    String value = annotation.value();
-    if (value.isEmpty()) {
-      value = annotation.name();
-    }
-    return value;
+    return annotation.value();
   }
 
   @Override
@@ -57,7 +53,6 @@ public class PathVariableAnnotationProcessor extends
       PathVariable pathVariable) {
     Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
     pathParameter.setSchema(schema);
-    pathParameter.setName(pathVariable.name());
     pathParameter.setRequired(pathVariable.required());
   }
 

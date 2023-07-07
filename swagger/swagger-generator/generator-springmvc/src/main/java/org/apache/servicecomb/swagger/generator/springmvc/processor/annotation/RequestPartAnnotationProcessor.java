@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -30,11 +29,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
-import jakarta.ws.rs.core.MediaType;
 
 public class RequestPartAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<RequestPart> {
@@ -45,11 +41,7 @@ public class RequestPartAnnotationProcessor extends
 
   @Override
   public String getParameterName(RequestPart annotation) {
-    String value = annotation.value();
-    if (value.isEmpty()) {
-      value = annotation.name();
-    }
-    return value;
+    return annotation.value();
   }
 
   @Override
@@ -78,6 +70,5 @@ public class RequestPartAnnotationProcessor extends
           .setSchema(new FileSchema());
     }
     requestBody.setRequired(requestPart.required());
-    requestBody.addExtension(SwaggerConst.EXT_BODY_NAME, requestPart.name());
   }
 }
