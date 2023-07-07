@@ -58,8 +58,8 @@ public class QueryParamAnnotationProcessor extends AbstractSerializableParameter
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      QueryParam queryParam) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
+      JavaType type, QueryParam queryParam) {
 
   }
 }

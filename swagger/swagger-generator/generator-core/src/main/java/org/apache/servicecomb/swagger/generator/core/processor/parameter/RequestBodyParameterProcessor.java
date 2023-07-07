@@ -56,7 +56,8 @@ public class RequestBodyParameterProcessor implements
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter,
+      String parameterName, JavaType type,
       io.swagger.v3.oas.annotations.parameters.RequestBody annotation) {
     // create a new request body
     RequestBody requestBody = AnnotationUtils.requestBodyModel(annotation);

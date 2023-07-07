@@ -19,8 +19,6 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
@@ -33,6 +31,7 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.MediaType;
 
 public class PartArrayProcessor implements ParameterProcessor<Annotation> {
@@ -48,7 +47,7 @@ public class PartArrayProcessor implements ParameterProcessor<Annotation> {
 
   @Override
   public HttpParameterType getHttpParameterType(Annotation parameterAnnotation) {
-    return HttpParameterType.BODY;
+    return HttpParameterType.FORM;
   }
 
   @Override
@@ -58,8 +57,8 @@ public class PartArrayProcessor implements ParameterProcessor<Annotation> {
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      Annotation annotation) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, String parameterName,
+      JavaType type, Annotation annotation) {
     ArraySchema property = new ArraySchema().items(new FileSchema());
     parameter.setContent(new Content().addMediaType(MediaType.MULTIPART_FORM_DATA,
         new io.swagger.v3.oas.models.media.MediaType().schema(property)));

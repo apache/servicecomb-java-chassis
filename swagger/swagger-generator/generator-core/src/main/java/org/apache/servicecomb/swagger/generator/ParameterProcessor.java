@@ -51,11 +51,12 @@ public interface ParameterProcessor<ANNOTATION> {
     fillParameter(swagger, operation, parameter, TypeFactory.defaultInstance().constructType(type), annotation);
   }
 
-  void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      ANNOTATION annotation);
+  void fillRequestBody(OpenAPI swagger, Operation operation,
+      RequestBody parameter, String parameterName, JavaType type, ANNOTATION annotation);
 
-  default void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, Type type,
-      ANNOTATION annotation) {
-    fillRequestBody(swagger, operation, parameter, TypeFactory.defaultInstance().constructType(type), annotation);
+  default void fillRequestBody(OpenAPI swagger, Operation operation,
+      RequestBody parameter, String parameterName, Type type, ANNOTATION annotation) {
+    fillRequestBody(swagger, operation, parameter, parameterName,
+        TypeFactory.defaultInstance().constructType(type), annotation);
   }
 }

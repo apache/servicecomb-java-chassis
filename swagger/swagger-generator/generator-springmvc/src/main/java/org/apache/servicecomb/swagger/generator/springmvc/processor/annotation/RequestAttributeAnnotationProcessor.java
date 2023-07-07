@@ -53,8 +53,8 @@ public class RequestAttributeAnnotationProcessor extends
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
-      RequestAttribute requestAttribute) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
+      JavaType type, RequestAttribute requestAttribute) {
     throw new IllegalStateException("RequestAttribute is not supported by open api.");
   }
 }

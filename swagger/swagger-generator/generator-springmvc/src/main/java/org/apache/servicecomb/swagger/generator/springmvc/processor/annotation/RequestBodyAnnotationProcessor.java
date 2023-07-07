@@ -53,7 +53,7 @@ public class RequestBodyAnnotationProcessor implements ParameterProcessor<Reques
 
   @Override
   public void fillRequestBody(OpenAPI swagger, Operation operation,
-      io.swagger.v3.oas.models.parameters.RequestBody bodyParameter, JavaType type,
+      io.swagger.v3.oas.models.parameters.RequestBody bodyParameter, String parameterName, JavaType type,
       RequestBody requestBody) {
     bodyParameter.setRequired(requestBody.required());
   }

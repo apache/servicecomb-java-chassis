@@ -94,6 +94,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected Operation swaggerOperation;
 
+  protected RequestBody bodyParameter;
+
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
     this.swagger = swaggerGenerator.getOpenAPI();
@@ -303,7 +305,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodParameter(ParameterGenerator parameterGenerator) {
-    if (parameterGenerator.getHttpParameterType() != HttpParameterType.BODY) {
+    if (!HttpParameterType.isBodyParameter(parameterGenerator.getHttpParameterType())) {
       Parameter parameter = createParameter(parameterGenerator);
 
       try {
@@ -338,12 +340,26 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
-    RequestBody requestBody = createRequestBody(parameterGenerator.getHttpParameterType());
-    Map<String, Object> extensions = new HashMap<>();
-    extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGenerator.getParameterName());
-    requestBody.setExtensions(extensions);
-    parameterGenerator.setGeneratedRequestBody(requestBody);
-    return requestBody;
+    switch (parameterGenerator.getHttpParameterType()) {
+      case BODY:
+        if (this.bodyParameter != null) {
+          throw new IllegalStateException("Only one body parameter is allowed.");
+        }
+        this.bodyParameter = new RequestBody();
+        Map<String, Object> extensions = new HashMap<>();
+        extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGenerator.getParameterName());
+        this.bodyParameter.setExtensions(extensions);
+        parameterGenerator.setGeneratedRequestBody(this.bodyParameter);
+        return this.bodyParameter;
+      case FORM:
+        if (this.bodyParameter == null) {
+          this.bodyParameter = new RequestBody();
+        }
+        parameterGenerator.setGeneratedRequestBody(this.bodyParameter);
+        return this.bodyParameter;
+      default:
+        throw new IllegalStateException("not support httpParameterType " + parameterGenerator.getHttpParameterType());
+    }
   }
 
   protected Parameter createParameter(ParameterGenerator parameterGenerator) {
@@ -363,15 +379,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         return new HeaderParameter();
       case COOKIE:
         return new CookieParameter();
-      default:
-        throw new IllegalStateException("not support httpParameterType " + httpParameterType);
-    }
-  }
-
-  protected RequestBody createRequestBody(HttpParameterType httpParameterType) {
-    switch (httpParameterType) {
-      case BODY:
-        return new RequestBody();
       default:
         throw new IllegalStateException("not support httpParameterType " + httpParameterType);
     }
@@ -401,7 +408,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     for (Annotation annotation : annotations) {
       ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor != null) {
-        processor.fillRequestBody(swagger, swaggerOperation, parameter, type, annotation);
+        processor.fillRequestBody(swagger, swaggerOperation, parameter, parameterName, type, annotation);
       }
     }
 
@@ -411,7 +418,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     ParameterProcessor<Annotation> processor = findParameterProcessors(type);
     if (processor != null) {
-      processor.fillRequestBody(swagger, swaggerOperation, parameter, type, null);
+      processor.fillRequestBody(swagger, swaggerOperation, parameter, parameterName, type, null);
     }
 
     fillBodyParameter(swagger, parameter, type);

@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc;
 
+import java.io.IOException;
+
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 // TODO: Now not support consumes User as text/plain. This test case should fail.
 @RequestMapping(path = "MethodMixupAnnotations")
@@ -86,5 +91,11 @@ public class MethodMixupAnnotations {
   public String usingDeleteMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
+  }
+
+  @PostMapping(path = "/uploadFileAndAttribute")
+  public String uploadFileAndAttribute(@RequestPart(name = "file") MultipartFile file,
+      @RequestPart(name = "attribute") String attribute) throws IOException {
+    return null;
   }
 }

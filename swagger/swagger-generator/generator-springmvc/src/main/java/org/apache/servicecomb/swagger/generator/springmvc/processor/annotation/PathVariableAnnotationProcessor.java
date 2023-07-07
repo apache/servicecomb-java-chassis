@@ -57,8 +57,8 @@ public class PathVariableAnnotationProcessor extends
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      PathVariable pathVariable) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
+      JavaType type, PathVariable pathVariable) {
 
   }
 }
