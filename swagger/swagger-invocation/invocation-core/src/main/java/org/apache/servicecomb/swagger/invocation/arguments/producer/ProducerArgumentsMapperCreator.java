@@ -117,7 +117,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
         .findProperties()) {
       String parameterName = collectParameterName(providerMethod, propertyDefinition);
 
-      if (parameterNameNotExistsInSwagger(parameterName)) {
+      if (!parameterNameExistsInSwagger(parameterName)) {
         continue;
       }
 

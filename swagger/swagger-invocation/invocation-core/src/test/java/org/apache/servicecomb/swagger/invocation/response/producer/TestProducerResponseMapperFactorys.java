@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,7 +32,6 @@ import org.junit.Test;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.ws.rs.core.Response.Status;
 
 public class TestProducerResponseMapperFactorys {
@@ -75,8 +73,7 @@ public class TestProducerResponseMapperFactorys {
 
   @BeforeClass
   public static void setup() {
-    OpenAPI swagger = SwaggerGenerator.generate(ResponseForTest.class);
-    swaggerProducer = environment.createProducer(instance, swagger);
+    swaggerProducer = environment.createProducer(instance);
   }
 
   @Test
