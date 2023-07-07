@@ -47,7 +47,6 @@ public class TestSpringmvc {
   }
 
   @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testMixupAnnotations() {
     UnitTestSwaggerUtils.testSwagger("schemas/mixupAnnotations.yaml", MethodMixupAnnotations.class);
   }

@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -40,11 +41,7 @@ public class RequestHeaderAnnotationProcessor extends
 
   @Override
   public String getParameterName(RequestHeader annotation) {
-    String value = annotation.value();
-    if (value.isEmpty()) {
-      value = annotation.name();
-    }
-    return value;
+    return annotation.value();
   }
 
   @Override
@@ -58,8 +55,9 @@ public class RequestHeaderAnnotationProcessor extends
     Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
     headerParameter.setSchema(schema);
     headerParameter.setRequired(requestHeader.required());
-    headerParameter.setName(requestHeader.name());
-    schema.setDefault(requestHeader.defaultValue());
+    if (!ValueConstants.DEFAULT_NONE.equals(requestHeader.defaultValue())) {
+      schema.setDefault(requestHeader.defaultValue());
+    }
   }
 
   @Override

@@ -19,8 +19,6 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
@@ -28,9 +26,6 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
@@ -43,40 +38,23 @@ public class RequestAttributeAnnotationProcessor extends
 
   @Override
   public String getParameterName(RequestAttribute annotation) {
-    String value = annotation.value();
-    if (value.isEmpty()) {
-      value = annotation.name();
-    }
-    return value;
+    throw new IllegalStateException("RequestAttribute is not supported by open api.");
   }
 
   @Override
   public HttpParameterType getHttpParameterType(RequestAttribute parameterAnnotation) {
-    return HttpParameterType.BODY;
+    throw new IllegalStateException("RequestAttribute is not supported by open api.");
   }
 
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
       RequestAttribute requestAttribute) {
-
+    throw new IllegalStateException("RequestAttribute is not supported by open api.");
   }
 
   @Override
   public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
       RequestAttribute requestAttribute) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    if (requestBody.getContent() == null) {
-      requestBody.setContent(new Content());
-    }
-    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) == null) {
-      requestBody.getContent().addMediaType(SwaggerConst.FORM_MEDIA_TYPE,
-          new io.swagger.v3.oas.models.media.MediaType());
-    }
-    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() == null) {
-      requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
-          .setSchema(new MapSchema());
-    }
-    requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
-        .getSchema().addProperty(requestAttribute.name(), schema);
+    throw new IllegalStateException("RequestAttribute is not supported by open api.");
   }
 }

@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -40,11 +41,7 @@ public class CookieValueAnnotationProcessor extends
 
   @Override
   public String getParameterName(CookieValue annotation) {
-    String value = annotation.value();
-    if (value.isEmpty()) {
-      value = annotation.name();
-    }
-    return value;
+    return annotation.value();
   }
 
   @Override
@@ -58,8 +55,9 @@ public class CookieValueAnnotationProcessor extends
     Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
     parameter.setSchema(schema);
     parameter.setRequired(cookieValue.required());
-    parameter.setName(cookieValue.name());
-    schema.setDefault(cookieValue.defaultValue());
+    if (!ValueConstants.DEFAULT_NONE.equals(cookieValue.defaultValue())) {
+      schema.setDefault(cookieValue.defaultValue());
+    }
   }
 
   @Override

@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+// TODO: Now not support consumes User as text/plain. This test case should fail.
 @RequestMapping(path = "MethodMixupAnnotations")
 public class MethodMixupAnnotations {
   @RequestMapping(
@@ -39,8 +39,8 @@ public class MethodMixupAnnotations {
       consumes = {"text/plain", "application/*"},
       produces = {"text/plain", "application/*"})
   public String usingRequestMapping(@RequestBody User srcUser, @RequestHeader String header,
-      @PathVariable String targetName, @RequestParam(name = "word") String word, @RequestAttribute String form) {
-    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+      @PathVariable String targetName, @RequestParam(name = "word") String word) {
+    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word);
   }
 
   @GetMapping(
@@ -48,8 +48,8 @@ public class MethodMixupAnnotations {
       consumes = {"text/plain", "application/*"},
       produces = {"text/plain", "application/*"})
   public String usingGetMapping(@RequestBody User srcUser, @RequestHeader String header,
-      @PathVariable String targetName, @RequestParam(name = "word") String word, @RequestAttribute String form) {
-    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+      @PathVariable String targetName, @RequestParam(name = "word") String word) {
+    return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
   }
 
   @PutMapping(
@@ -57,8 +57,8 @@ public class MethodMixupAnnotations {
       consumes = {"text/plain", "application/*"},
       produces = {"text/plain", "application/*"})
   public String usingPutMapping(@RequestBody User srcUser, @RequestHeader String header,
-      @PathVariable String targetName, @RequestParam(name = "word") String word, @RequestAttribute String form) {
-    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+      @PathVariable String targetName, @RequestParam(name = "word") String word) {
+    return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
   }
 
   @PostMapping(
@@ -66,8 +66,8 @@ public class MethodMixupAnnotations {
       consumes = {"text/plain", "application/*"},
       produces = {"text/plain", "application/*"})
   public String usingPostMapping(@RequestBody User srcUser, @RequestHeader String header,
-      @PathVariable String targetName, @RequestParam(name = "word") String word, @RequestAttribute String form) {
-    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+      @PathVariable String targetName, @RequestParam(name = "word") String word) {
+    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word);
   }
 
   @PatchMapping(
@@ -75,8 +75,8 @@ public class MethodMixupAnnotations {
       consumes = {"text/plain", "application/*"},
       produces = {"text/plain", "application/*"})
   public String usingPatchMapping(@RequestBody User srcUser, @RequestHeader String header,
-      @PathVariable String targetName, @RequestParam(name = "word") String word, @RequestAttribute String form) {
-    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+      @PathVariable String targetName, @RequestParam(name = "word") String word) {
+    return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
   }
 
   @DeleteMapping(
@@ -84,7 +84,7 @@ public class MethodMixupAnnotations {
       consumes = {"text/plain", "application/*"},
       produces = {"text/plain", "application/*"})
   public String usingDeleteMapping(@RequestBody User srcUser, @RequestHeader String header,
-      @PathVariable String targetName, @RequestParam(name = "word") String word, @RequestAttribute String form) {
-    return String.format("%s %s %s %s %s", srcUser.name, header, targetName, word, form);
+      @PathVariable String targetName, @RequestParam(name = "word") String word) {
+    return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
   }
 }
