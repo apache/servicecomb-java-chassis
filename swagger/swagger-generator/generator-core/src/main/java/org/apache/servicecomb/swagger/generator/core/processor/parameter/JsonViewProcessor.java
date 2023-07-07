@@ -65,8 +65,8 @@ public class JsonViewProcessor implements ParameterProcessor<Annotation> {
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      Annotation annotation) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, String parameterName,
+      JavaType type, Annotation annotation) {
 
   }
 }

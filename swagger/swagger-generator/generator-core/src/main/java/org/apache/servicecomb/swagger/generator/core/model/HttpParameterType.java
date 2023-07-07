@@ -21,10 +21,19 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 
 public enum HttpParameterType {
+  /** io.swagger.v3.oas.annotations.enums.ParameterIn.PATH */
   PATH,
+  /** io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY */
   QUERY,
+  /** io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER */
   HEADER,
+  /** io.swagger.v3.oas.annotations.enums.ParameterIn.COOKIE */
   COOKIE,
+
+  /** request bodies: application/x-www-form-urlencoded, multipart/form-data */
+  FORM,
+
+  /** request bodies: application/json, etc. */
   BODY;
 
   public static HttpParameterType parse(String value) {
@@ -33,5 +42,9 @@ public enum HttpParameterType {
     }
 
     return HttpParameterType.valueOf(value.toUpperCase(Locale.US));
+  }
+
+  public static boolean isBodyParameter(HttpParameterType type) {
+    return BODY == type || FORM == type;
   }
 }

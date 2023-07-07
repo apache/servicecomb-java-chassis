@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
@@ -59,8 +58,8 @@ public class PathParamAnnotationProcessor extends AbstractSerializableParameterP
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      PathParam pathParam) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, String parameterName,
+      JavaType type, PathParam pathParam) {
 
   }
 }

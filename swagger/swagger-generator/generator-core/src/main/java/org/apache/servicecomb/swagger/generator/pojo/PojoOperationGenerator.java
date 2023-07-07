@@ -51,8 +51,6 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
 
   protected Schema bodyModel;
 
-  protected RequestBody bodyParameter;
-
   public PojoOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     super(swaggerGenerator, method);
   }

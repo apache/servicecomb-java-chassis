@@ -61,8 +61,8 @@ public class RequestHeaderAnnotationProcessor extends
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      RequestHeader requestHeader) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
+      JavaType type, RequestHeader requestHeader) {
 
   }
 }

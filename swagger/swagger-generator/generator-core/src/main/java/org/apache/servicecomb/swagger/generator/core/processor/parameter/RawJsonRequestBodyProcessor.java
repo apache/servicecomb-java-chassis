@@ -58,7 +58,8 @@ public class RawJsonRequestBodyProcessor implements ParameterProcessor<RawJsonRe
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter,
+      String parameterName, JavaType type,
       RawJsonRequestBody annotation) {
     parameter.getExtensions().put("x-raw-json", true);
     parameter.setRequired(annotation.required());

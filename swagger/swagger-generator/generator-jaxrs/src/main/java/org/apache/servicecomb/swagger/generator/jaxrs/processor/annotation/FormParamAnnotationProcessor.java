@@ -49,7 +49,7 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
 
   @Override
   public HttpParameterType getHttpParameterType(FormParam parameterAnnotation) {
-    return HttpParameterType.BODY;
+    return HttpParameterType.FORM;
   }
 
   @Override
@@ -59,8 +59,8 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
-      FormParam formParam) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
+      JavaType type, FormParam formParam) {
     Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
     if (requestBody.getContent() == null) {
       requestBody.setContent(new Content());

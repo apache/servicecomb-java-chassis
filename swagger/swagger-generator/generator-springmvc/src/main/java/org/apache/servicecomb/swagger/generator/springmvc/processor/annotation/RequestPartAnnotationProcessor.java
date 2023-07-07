@@ -18,20 +18,26 @@
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
 
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.FileSchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RequestPartAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<RequestPart> {
   @Override
@@ -46,7 +52,7 @@ public class RequestPartAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(RequestPart parameterAnnotation) {
-    return HttpParameterType.BODY;
+    return HttpParameterType.FORM;
   }
 
   @Override
@@ -56,8 +62,8 @@ public class RequestPartAnnotationProcessor extends
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, JavaType type,
-      RequestPart requestPart) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
+      JavaType type, RequestPart requestPart) {
     if (requestBody.getContent() == null) {
       requestBody.setContent(new Content());
     }
@@ -66,9 +72,18 @@ public class RequestPartAnnotationProcessor extends
           new io.swagger.v3.oas.models.media.MediaType());
     }
     if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema() == null) {
+      Schema<?> schema = new Schema<>();
+      schema.setProperties(new HashMap<>());
       requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
-          .setSchema(new FileSchema());
+          .setSchema(schema);
     }
-    requestBody.setRequired(requestPart.required());
+    // RequestPart used with MultipartFile and simple types.
+    // MultipartFile is processed by type processor.
+    if (!MultipartFile.class.equals(type.getRawClass()) &&
+        !Types.newParameterizedType(List.class, MultipartFile.class).equals(type.getRawClass()) &&
+        !MultipartFile[].class.equals(type.getRawClass())) {
+      Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties().put(parameterName, schema);
+    }
   }
 }

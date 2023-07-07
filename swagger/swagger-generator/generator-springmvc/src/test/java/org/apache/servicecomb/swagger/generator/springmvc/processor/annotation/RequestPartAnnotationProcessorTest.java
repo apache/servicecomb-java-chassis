@@ -80,7 +80,7 @@ public class RequestPartAnnotationProcessorTest {
   @Test
   public void getHttpParameterType() {
     MatcherAssert.assertThat(requestPartAnnotationProcessor.getHttpParameterType(null),
-        Matchers.is(HttpParameterType.BODY));
+        Matchers.is(HttpParameterType.FORM));
   }
 
   @Test
@@ -89,7 +89,7 @@ public class RequestPartAnnotationProcessorTest {
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
     RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
-        .fillRequestBody(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
+        .fillRequestBody(null, null, formParameter, "fun", param.getParameterizedType(), requestPartAnnotation);
 
     MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
         .getSchema().getProperties().get("stringParam"), Matchers.is(StringSchema.class));
@@ -101,7 +101,7 @@ public class RequestPartAnnotationProcessorTest {
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
     RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
-        .fillRequestBody(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
+        .fillRequestBody(null, null, formParameter, "fun", param.getParameterizedType(), requestPartAnnotation);
 
     MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
         .getSchema().getProperties().get("stringParamArray"), Matchers.is(ArraySchema.class));
@@ -115,7 +115,7 @@ public class RequestPartAnnotationProcessorTest {
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
     RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
-        .fillRequestBody(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
+        .fillRequestBody(null, null, formParameter, "fun", param.getParameterizedType(), requestPartAnnotation);
 
     MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
         .getSchema().getProperties().get("stringParamCollection"), Matchers.is(ArraySchema.class));
@@ -129,7 +129,7 @@ public class RequestPartAnnotationProcessorTest {
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
     RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
-        .fillRequestBody(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
+        .fillRequestBody(null, null, formParameter, "fun", param.getParameterizedType(), requestPartAnnotation);
 
     MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
         .getSchema().getProperties().get("file"), Matchers.is(FileSchema.class));
@@ -141,7 +141,7 @@ public class RequestPartAnnotationProcessorTest {
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
     RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
-        .fillRequestBody(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
+        .fillRequestBody(null, null, formParameter, "fun", param.getParameterizedType(), requestPartAnnotation);
 
     MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
         .getSchema().getProperties().get("fileArray"), Matchers.is(ArraySchema.class));
@@ -155,7 +155,7 @@ public class RequestPartAnnotationProcessorTest {
     RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
     RequestBody formParameter = new RequestBody();
     requestPartAnnotationProcessor
-        .fillRequestBody(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
+        .fillRequestBody(null, null, formParameter, "fun", param.getParameterizedType(), requestPartAnnotation);
 
     MatcherAssert.assertThat(formParameter.getContent().get(MediaType.MULTIPART_FORM_DATA)
         .getSchema().getProperties().get("fileCollection"), Matchers.is(ArraySchema.class));

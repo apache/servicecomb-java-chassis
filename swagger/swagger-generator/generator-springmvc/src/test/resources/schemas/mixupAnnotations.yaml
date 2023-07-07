@@ -23,6 +23,26 @@ info:
 servers:
 - url: MethodMixupAnnotations
 paths:
+  /uploadFileAndAttribute:
+    post:
+      operationId: uploadFileAndAttribute
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: string
+                  format: binary
+                attribute:
+                  type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /usingDeleteMapping/{targetName}:
     delete:
       operationId: usingDeleteMapping

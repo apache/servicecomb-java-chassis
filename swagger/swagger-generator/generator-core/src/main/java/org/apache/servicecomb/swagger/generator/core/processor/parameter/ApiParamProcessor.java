@@ -49,8 +49,8 @@ public class ApiParamProcessor implements ParameterProcessor<io.swagger.v3.oas.a
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      io.swagger.v3.oas.annotations.Parameter parameter2) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter,
+      String parameterName, JavaType type, io.swagger.v3.oas.annotations.Parameter parameter2) {
 
   }
 }

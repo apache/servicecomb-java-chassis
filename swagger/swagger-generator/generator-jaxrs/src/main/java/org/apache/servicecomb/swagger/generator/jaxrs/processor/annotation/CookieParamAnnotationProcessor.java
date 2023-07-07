@@ -58,8 +58,8 @@ public class CookieParamAnnotationProcessor extends
   }
 
   @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, JavaType type,
-      CookieParam cookieParam) {
+  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, String parameterName,
+      JavaType type, CookieParam cookieParam) {
 
   }
 }
