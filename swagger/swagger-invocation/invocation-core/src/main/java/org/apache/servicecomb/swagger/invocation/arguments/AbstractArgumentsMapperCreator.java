@@ -111,6 +111,7 @@ public abstract class AbstractArgumentsMapperCreator {
 
   protected RequestBody bodyParameter;
 
+  // For pojo wrapped bodies only
   protected Map<String, Schema> swaggerBodyProperties;
 
   protected Set<String> processedSwaggerParameters;
@@ -132,7 +133,13 @@ public abstract class AbstractArgumentsMapperCreator {
   }
 
   private Map<String, Schema> readSwaggerBodyProperties() {
-    if (bodyParameter == null || bodyParameter.getContent() == null || bodyParameter.getContent().size() == 0) {
+    if (bodyParameter == null || bodyParameter.getContent() == null
+        || bodyParameter.getContent().size() == 0) {
+      return null;
+    }
+    // For pojo wrapped bodies only
+    if (bodyParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null ||
+        bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
       return null;
     }
     Schema schema = bodyParameter.getContent().entrySet().iterator().next().getValue().getSchema();
@@ -180,7 +187,9 @@ public abstract class AbstractArgumentsMapperCreator {
         }
       }
     }
-    if (bodyParameter != null && !processedSwaggerParameters.contains(
+    if (bodyParameter != null && bodyParameter.getExtensions() != null
+        && bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME) != null
+        && !processedSwaggerParameters.contains(
         (String) bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
       processPendingBodyParameter(bodyParameter);
     }
@@ -206,7 +215,7 @@ public abstract class AbstractArgumentsMapperCreator {
    * Parameters has the same name in method and swagger.
    */
   protected boolean processKnownParameter(int providerParamIdx, String invocationArgumentName) {
-    if (parameterNameNotExistsInSwagger(invocationArgumentName)) {
+    if (!parameterNameExistsInSwagger(invocationArgumentName)) {
       return false;
     }
 
@@ -215,16 +224,32 @@ public abstract class AbstractArgumentsMapperCreator {
     return true;
   }
 
-  protected boolean parameterNameNotExistsInSwagger(String parameterName) {
+  protected boolean parameterNameExistsInSwagger(String parameterName) {
     if (this.swaggerParameters != null) {
       for (Parameter parameter : this.swaggerParameters) {
         if (parameterName.equals(parameter.getName())) {
-          return false;
+          return true;
         }
       }
     }
-    return this.bodyParameter == null || this.bodyParameter.getExtensions() == null ||
-        !parameterName.equals(this.bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME));
+    if (this.bodyParameter != null && this.bodyParameter.getContent() != null) {
+      if (this.bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null &&
+          this.bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() != null &&
+          this.bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties() != null) {
+        return this.bodyParameter.getContent()
+            .get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().get(parameterName) != null;
+      }
+      if (this.bodyParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null &&
+          this.bodyParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema() != null &&
+          this.bodyParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties() != null) {
+        return this.bodyParameter.getContent()
+            .get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties().get(parameterName) != null;
+      }
+    }
+    if (this.bodyParameter != null && this.bodyParameter.getExtensions() != null) {
+      return parameterName.equals(this.bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME));
+    }
+    return false;
   }
 
   protected abstract ArgumentMapper createKnownParameterMapper(int providerParamIdx, String parameterName);
@@ -263,7 +288,13 @@ public abstract class AbstractArgumentsMapperCreator {
   protected abstract void processUnknownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
       String parameterName);
 
+  /**
+   * Process parameters that in swagger but not in method.
+   */
   protected abstract void processPendingSwaggerParameter(Parameter parameter);
 
+  /**
+   * Process body parameter that in swagger but not in method.
+   */
   protected abstract void processPendingBodyParameter(RequestBody parameter);
 }

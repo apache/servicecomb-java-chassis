@@ -54,8 +54,6 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.v3.oas.models.OpenAPI;
-
 /**
  * SchemaMetaCodec test cases. This test cases covers RestTemplate invoker and producer.
  */
@@ -86,17 +84,17 @@ public class TestSchemaMetaCodecRestTemplate {
     Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
 
     SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
-    OpenAPI swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema(), swagger);
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema());
+    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swaggerProducer.getSwagger());
+
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
       operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
-    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
+    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swaggerProducer.getSwagger());
   }
 
   private Invocation mockInvocation(String operation, InvocationType invocationType) {

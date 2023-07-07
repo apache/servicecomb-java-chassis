@@ -370,18 +370,13 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected Parameter createParameter(HttpParameterType httpParameterType) {
-    switch (httpParameterType) {
-      case PATH:
-        return new PathParameter();
-      case QUERY:
-        return new QueryParameter();
-      case HEADER:
-        return new HeaderParameter();
-      case COOKIE:
-        return new CookieParameter();
-      default:
-        throw new IllegalStateException("not support httpParameterType " + httpParameterType);
-    }
+    return switch (httpParameterType) {
+      case PATH -> new PathParameter();
+      case QUERY -> new QueryParameter();
+      case HEADER -> new HeaderParameter();
+      case COOKIE -> new CookieParameter();
+      default -> throw new IllegalStateException("not support httpParameterType " + httpParameterType);
+    };
   }
 
   protected void fillParameter(OpenAPI swagger, Parameter parameter, String parameterName, JavaType type,
@@ -453,13 +448,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (pathObj == null) {
       pathObj = new PathItem();
       swagger.path(path, pathObj);
-    }
-
-    if (pathObj.readOperations().size() > 0) {
-      throw new IllegalStateException(String.format("Only allowed one default path. method=%s:%s.",
+    } else if (SwaggerUtils.methodExists(pathObj, httpMethod)) {
+      throw new IllegalStateException(String.format("Duplicate operation path detected. method=%s:%s.",
           method.getDeclaringClass().getName(),
           method.getName()));
     }
+
     pathObj.operation(PathItem.HttpMethod.valueOf(httpMethod), swaggerOperation);
   }
 

@@ -51,9 +51,6 @@ public class ParameterParameterProcessor implements ParameterProcessor<io.swagge
 
   @Override
   public HttpParameterType getHttpParameterType(io.swagger.v3.oas.annotations.Parameter annotation) {
-    if (annotation.in() == null) {
-      return null;
-    }
     return HttpParameterType.from(annotation.in());
   }
 

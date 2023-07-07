@@ -44,7 +44,7 @@ public enum HttpParameterType {
       case QUERY -> HttpParameterType.QUERY;
       case HEADER -> HttpParameterType.HEADER;
       case PATH -> HttpParameterType.PATH;
-      default -> throw new IllegalStateException("parameter type is required.");
+      default -> null;
     };
   }
 

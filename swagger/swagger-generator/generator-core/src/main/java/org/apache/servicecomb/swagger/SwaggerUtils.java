@@ -370,4 +370,16 @@ public final class SwaggerUtils {
       }
     }
   }
+
+  public static boolean methodExists(PathItem pathItem, String httpMethod) {
+    PathItem.HttpMethod method = PathItem.HttpMethod.valueOf(httpMethod);
+    return switch (method) {
+      case GET -> pathItem.getGet() != null;
+      case PUT -> pathItem.getPut() != null;
+      case POST -> pathItem.getPost() != null;
+      case PATCH -> pathItem.getPatch() != null;
+      case DELETE -> pathItem.getDelete() != null;
+      default -> false;
+    };
+  }
 }

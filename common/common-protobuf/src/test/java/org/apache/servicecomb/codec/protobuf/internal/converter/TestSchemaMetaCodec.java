@@ -61,8 +61,6 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.v3.oas.models.OpenAPI;
-
 /**
  * SchemaMetaCodec test cases. This test cases covers POJO invoker and producer.
  */
@@ -96,17 +94,15 @@ public class TestSchemaMetaCodec {
     Mockito.when(consumerMicroserviceMeta.getMicroserviceVersionsMeta()).thenReturn(microserviceVersionsMeta);
     Mockito.when(consumerMicroserviceMeta.getMicroserviceName()).thenReturn("test");
     Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
-    OpenAPI swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
-
-    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, schemaId, swagger);
-    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(producerInstance, swagger);
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(producerInstance);
+    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, schemaId, swaggerProducer.getSwagger());
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
       operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
-    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, schemaId, swagger);
+    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, schemaId, swaggerProducer.getSwagger());
   }
 
   @Test
