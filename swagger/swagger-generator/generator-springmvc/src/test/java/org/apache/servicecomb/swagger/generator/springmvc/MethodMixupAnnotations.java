@@ -20,7 +20,6 @@ package org.apache.servicecomb.swagger.generator.springmvc;
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -95,6 +94,12 @@ public class MethodMixupAnnotations {
 
   @PostMapping(path = "/uploadFileAndAttribute")
   public String uploadFileAndAttribute(@RequestPart(name = "file") MultipartFile file,
+      @RequestPart(name = "attribute") String attribute) throws IOException {
+    return null;
+  }
+
+  @PostMapping(path = "/uploadFilesAndAttribute")
+  public String uploadFilesAndAttribute(@RequestPart(name = "files") MultipartFile[] files,
       @RequestPart(name = "attribute") String attribute) throws IOException {
     return null;
   }

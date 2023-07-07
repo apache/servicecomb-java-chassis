@@ -43,6 +43,28 @@ paths:
             application/json:
               schema:
                 type: string
+  /uploadFilesAndAttribute:
+    post:
+      operationId: uploadFilesAndAttribute
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                attribute:
+                  type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /usingDeleteMapping/{targetName}:
     delete:
       operationId: usingDeleteMapping
