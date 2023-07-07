@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
@@ -23,13 +26,22 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
-public class ApiParamProcessor implements ParameterProcessor<io.swagger.v3.oas.annotations.Parameter> {
+public class ParameterParameterProcessor implements ParameterProcessor<io.swagger.v3.oas.annotations.Parameter> {
   @Override
   public Class<?> getProcessType() {
     return io.swagger.v3.oas.annotations.Parameter.class;
+  }
+
+  @Override
+  public Type getGenericType(io.swagger.v3.oas.annotations.Parameter parameterAnnotation) {
+    if (parameterAnnotation.schema() == null) {
+      return null;
+    }
+    return parameterAnnotation.schema().implementation();
   }
 
   @Override
@@ -38,14 +50,19 @@ public class ApiParamProcessor implements ParameterProcessor<io.swagger.v3.oas.a
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(io.swagger.v3.oas.annotations.Parameter parameterAnnotation) {
-    return null;
+  public HttpParameterType getHttpParameterType(io.swagger.v3.oas.annotations.Parameter annotation) {
+    if (annotation.in() == null) {
+      return null;
+    }
+    return HttpParameterType.from(annotation.in());
   }
 
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
-      io.swagger.v3.oas.annotations.Parameter parameter2) {
-    // TODO: not complete
+      io.swagger.v3.oas.annotations.Parameter annotation) {
+    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+    parameter.setSchema(schema);
+    parameter.setRequired(annotation.required());
   }
 
   @Override

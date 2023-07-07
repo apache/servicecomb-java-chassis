@@ -63,7 +63,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -139,7 +138,7 @@ public class CodeFirstSpringmvc {
       headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
           @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
-  public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
+  public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestPart("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
@@ -154,7 +153,7 @@ public class CodeFirstSpringmvc {
       headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
           @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.PATCH)
-  public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestAttribute("date") Date date) {
+  public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestPart("date") Date date) {
     return responseEntity(c1, date);
   }
 
@@ -214,7 +213,7 @@ public class CodeFirstSpringmvc {
   }
 
   @RequestMapping(path = "/addDate", method = RequestMethod.POST)
-  public Date addDate(@RequestAttribute("date") Date date, @QueryParam("seconds") long seconds) {
+  public Date addDate(@RequestPart("date") Date date, @QueryParam("seconds") long seconds) {
     return new Date(date.getTime() + seconds * 1000);
   }
 
@@ -225,7 +224,7 @@ public class CodeFirstSpringmvc {
   }
 
   @RequestMapping(path = "/add", method = RequestMethod.POST)
-  public int add(@RequestAttribute("a") int a, @RequestAttribute("b") int b) {
+  public int add(@RequestPart("a") int a, @RequestPart("b") int b) {
     return a + b;
   }
 

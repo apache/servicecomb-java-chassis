@@ -20,6 +20,8 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+
 public enum HttpParameterType {
   /** io.swagger.v3.oas.annotations.enums.ParameterIn.PATH */
   PATH,
@@ -35,6 +37,16 @@ public enum HttpParameterType {
 
   /** request bodies: application/json, etc. */
   BODY;
+
+  public static HttpParameterType from(ParameterIn in) {
+    return switch (in) {
+      case COOKIE -> HttpParameterType.COOKIE;
+      case QUERY -> HttpParameterType.QUERY;
+      case HEADER -> HttpParameterType.HEADER;
+      case PATH -> HttpParameterType.PATH;
+      default -> throw new IllegalStateException("parameter type is required.");
+    };
+  }
 
   public static HttpParameterType parse(String value) {
     if (StringUtils.isEmpty(value)) {
