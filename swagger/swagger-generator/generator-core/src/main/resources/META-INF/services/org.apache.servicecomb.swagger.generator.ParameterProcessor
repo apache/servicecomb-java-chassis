@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.core.processor.parameter.ApiParamProcessor
+org.apache.servicecomb.swagger.generator.core.processor.parameter.ParameterParameterProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.RawJsonRequestBodyProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.RequestBodyParameterProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartProcessor

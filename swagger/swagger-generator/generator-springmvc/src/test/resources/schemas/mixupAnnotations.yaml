@@ -23,6 +23,29 @@ info:
 servers:
 - url: MethodMixupAnnotations
 paths:
+  /reduce:
+    get:
+      operationId: reduce
+      parameters:
+      - name: b
+        in: cookie
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: a
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
   /uploadFileAndAttribute:
     post:
       operationId: uploadFileAndAttribute
