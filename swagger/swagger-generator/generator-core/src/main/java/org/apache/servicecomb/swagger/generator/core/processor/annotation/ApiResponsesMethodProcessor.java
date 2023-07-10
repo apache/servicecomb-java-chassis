@@ -34,7 +34,8 @@ public class ApiResponsesMethodProcessor implements MethodAnnotationProcessor<Ap
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ApiResponses apiResponses) {
-    io.swagger.v3.oas.models.responses.ApiResponses responses = AnnotationUtils.apiResponsesModel(apiResponses);
+    io.swagger.v3.oas.models.responses.ApiResponses responses =
+        AnnotationUtils.apiResponsesModel(swaggerGenerator.getOpenAPI(), apiResponses);
     operationGenerator.getOperation().setResponses(responses);
   }
 }

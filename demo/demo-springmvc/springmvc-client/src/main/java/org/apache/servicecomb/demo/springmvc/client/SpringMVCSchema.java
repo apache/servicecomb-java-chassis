@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,8 +33,13 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestSchema(schemaId = "SpringMVCSchema")
 @RequestMapping("/springMvcSchema")
 public class SpringMVCSchema {
+  // TODO: examples not serialized by yaml parser
   @ApiResponses({
-      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+      @ApiResponse(responseCode = "200", content = @Content(
+          schema = @Schema(implementation = String.class, example = "wget http://localhost/springMvcSchema/testApiExample"),
+          examples = {@ExampleObject(value = "wget http://localhost/springMvcSchema/testApiExample", name = "text"),
+              @ExampleObject(value = "{name:hello}", name = "application/json"),
+              @ExampleObject(value = "{name:hello}", name = "json")})
           , description = "success"
       )})
   @RequestMapping(path = "/testApiExample", method = RequestMethod.POST)
@@ -42,7 +48,10 @@ public class SpringMVCSchema {
   }
 
   @ApiResponses({
-      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class))
+      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = String.class),
+          examples = {@ExampleObject(value = "wget http://localhost/springMvcSchema/testApiExample", name = "text"),
+              @ExampleObject(value = "{name:hello}", name = "application/json"),
+              @ExampleObject(value = "{name:hello}", name = "json")})
           , description = "success"
       )})
   @RequestMapping(path = "/testDefaultGetApiExample")

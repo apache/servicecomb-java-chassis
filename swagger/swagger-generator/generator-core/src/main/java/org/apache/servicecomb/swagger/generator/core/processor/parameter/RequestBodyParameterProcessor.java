@@ -60,7 +60,7 @@ public class RequestBodyParameterProcessor implements
       String parameterName, JavaType type,
       io.swagger.v3.oas.annotations.parameters.RequestBody annotation) {
     // create a new request body
-    RequestBody requestBody = AnnotationUtils.requestBodyModel(annotation);
+    RequestBody requestBody = AnnotationUtils.requestBodyModel(swagger, annotation);
     if (requestBody.getContent() == null) {
       requestBody.setContent(new Content());
     }

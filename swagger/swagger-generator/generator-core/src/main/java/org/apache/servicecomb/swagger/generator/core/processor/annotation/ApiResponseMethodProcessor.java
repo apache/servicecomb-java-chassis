@@ -38,6 +38,7 @@ public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<Api
       operationGenerator.getOperation().setResponses(new ApiResponses());
     }
     operationGenerator.getOperation().getResponses().addApiResponse(
-        AnnotationUtils.responseCodeModel(apiResponse), AnnotationUtils.apiResponseModel(apiResponse));
+        AnnotationUtils.responseCodeModel(apiResponse),
+        AnnotationUtils.apiResponseModel(swaggerGenerator.getOpenAPI(), apiResponse));
   }
 }

@@ -74,7 +74,6 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractOperationGenerator implements OperationGenerator {
@@ -473,23 +472,19 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (swaggerOperation.getResponses() == null) {
       swaggerOperation.setResponses(new ApiResponses());
     }
-    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY) == null) {
-      swaggerOperation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
-    }
-    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() == null) {
-      swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).setContent(new Content());
-    }
-    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().size() == 0) {
-      swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
-          .addMediaType(MediaType.APPLICATION_JSON, new io.swagger.v3.oas.models.media.MediaType());
+
+    // If annotations contains ApiResponse, schema must be defined.
+    if (swaggerOperation.getResponses().size() > 0) {
+      return;
     }
 
-    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().forEach((k, v) -> {
-      if (v.getSchema() == null || (StringUtils.isEmpty(v.getSchema().getType()) &&
-          StringUtils.isEmpty(v.getSchema().get$ref()))) {
-        v.setSchema(model);
-      }
-    });
+    swaggerOperation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
+    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).setContent(new Content());
+    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
+        .addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE, new io.swagger.v3.oas.models.media.MediaType());
+    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
+        .get(SwaggerConst.DEFAULT_MEDIA_TYPE)
+        .setSchema(model);
   }
 
   protected Schema createResponseModel() {
