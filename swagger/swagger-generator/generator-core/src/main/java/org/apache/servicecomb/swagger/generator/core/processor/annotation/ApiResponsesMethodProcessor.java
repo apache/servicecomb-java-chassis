@@ -16,15 +16,12 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
-
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 
@@ -37,9 +34,7 @@ public class ApiResponsesMethodProcessor implements MethodAnnotationProcessor<Ap
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ApiResponses apiResponses) {
-    MethodAnnotationProcessor<ApiResponse> processor = findMethodAnnotationProcessor(ApiResponse.class);
-    for (ApiResponse apiResponse : apiResponses.value()) {
-      processor.process(swaggerGenerator, operationGenerator, apiResponse);
-    }
+    io.swagger.v3.oas.models.responses.ApiResponses responses = AnnotationUtils.apiResponsesModel(apiResponses);
+    operationGenerator.getOperation().setResponses(responses);
   }
 }
