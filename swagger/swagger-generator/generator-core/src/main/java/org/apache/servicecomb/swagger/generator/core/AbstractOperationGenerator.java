@@ -396,6 +396,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (processor != null) {
       processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
     }
+
+    io.swagger.v3.core.util.ParameterProcessor.applyAnnotations(parameter, type, annotations, swagger.getComponents(),
+        null, null, null);
   }
 
   protected void fillRequestBody(OpenAPI swagger, RequestBody parameter, String parameterName, JavaType type,

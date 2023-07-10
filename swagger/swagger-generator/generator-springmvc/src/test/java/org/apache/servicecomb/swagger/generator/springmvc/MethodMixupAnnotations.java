@@ -115,4 +115,9 @@ public class MethodMixupAnnotations {
   public int reduce(HttpServletRequest request, @CookieValue(name = "b") int b) {
     return 0;
   }
+
+  @RequestMapping(path = "/defaultQueryParam", method = RequestMethod.POST)
+  public String defaultQueryParam(String prefix, @RequestBody User user) {
+    return null;
+  }
 }
