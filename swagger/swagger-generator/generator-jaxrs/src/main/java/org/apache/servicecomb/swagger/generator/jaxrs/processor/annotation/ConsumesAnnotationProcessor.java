@@ -19,12 +19,11 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.Consumes;
-
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+
+import jakarta.ws.rs.Consumes;
 
 public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor<Consumes> {
   @Override
@@ -34,6 +33,8 @@ public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor<Co
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Consumes consumes) {
-    SwaggerUtils.updateConsumes(operationGenerator.getOperation(), consumes.value());
+    // TODO: actually is no use to update consumes and produces
+    // Because they are system capabilities.
+//    SwaggerUtils.updateConsumes(operationGenerator.getOperation(), consumes.value());
   }
 }

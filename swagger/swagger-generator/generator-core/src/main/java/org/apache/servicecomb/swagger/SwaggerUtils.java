@@ -255,6 +255,9 @@ public final class SwaggerUtils {
   }
 
   public static Schema getSchema(OpenAPI swagger, Schema ref) {
+    if (ref == null) {
+      return null;
+    }
     if (ref.get$ref() != null) {
       return getSchema(swagger, ref.get$ref());
     }

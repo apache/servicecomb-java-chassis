@@ -159,7 +159,8 @@ public class RestOperationMeta {
     if (null != type || parameter == null) {
       return type;
     }
-    if (!(parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema() instanceof MapSchema)) {
+    if (parameter.getContent().get(MediaType.APPLICATION_JSON) == null
+        || !(parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema() instanceof MapSchema)) {
       return null;
     }
     return RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()

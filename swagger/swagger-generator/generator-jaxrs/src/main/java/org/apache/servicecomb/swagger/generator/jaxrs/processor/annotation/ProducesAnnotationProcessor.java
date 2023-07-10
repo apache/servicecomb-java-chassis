@@ -34,6 +34,8 @@ public class ProducesAnnotationProcessor implements MethodAnnotationProcessor<Pr
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Produces produces) {
-    SwaggerUtils.updateProduces(operationGenerator.getOperation(), produces.value());
+    // TODO: actually is no use to update consumes and produces
+    // Because they are system capabilities.
+//    SwaggerUtils.updateProduces(operationGenerator.getOperation(), produces.value());
   }
 }
