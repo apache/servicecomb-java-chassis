@@ -40,7 +40,9 @@ import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 
@@ -73,6 +75,10 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   public AbstractSwaggerGenerator(Class<?> cls) {
     this.openAPI = new OpenAPI();
+    this.openAPI.components(new Components())
+        .paths(new Paths())
+        .servers(new ArrayList<>())
+        .info(new Info());
     this.cls = cls;
   }
 
