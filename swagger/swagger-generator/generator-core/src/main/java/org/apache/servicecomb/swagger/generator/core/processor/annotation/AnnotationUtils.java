@@ -243,12 +243,17 @@ public final class AnnotationUtils {
   }
 
   public static io.swagger.v3.oas.models.parameters.RequestBody requestBodyModel(RequestBody requestBody) {
-    if (requestBody == null) {
+    if (requestBody == null || isOperationDefaultRequestBody(requestBody)) {
       return null;
     }
     io.swagger.v3.oas.models.parameters.RequestBody result = new io.swagger.v3.oas.models.parameters.RequestBody();
     result.setContent(AnnotationUtils.contentModel(requestBody.content()));
     return result;
+  }
+
+  private static boolean isOperationDefaultRequestBody(RequestBody requestBody) {
+    return "".equals(requestBody.description()) && requestBody.content().length == 0
+        && !requestBody.required() && requestBody.extensions().length == 0;
   }
 
   private static String mediaTypeModel(io.swagger.v3.oas.annotations.media.Content content) {

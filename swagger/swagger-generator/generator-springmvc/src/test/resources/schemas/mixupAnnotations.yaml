@@ -45,6 +45,31 @@ paths:
             application/json:
               schema:
                 type: string
+  /diffNames:
+    get:
+      summary: differentName
+      operationId: differentName
+      parameters:
+      - name: x
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: "y"
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
   /reduce:
     get:
       operationId: reduce

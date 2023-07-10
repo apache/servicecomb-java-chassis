@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -119,5 +120,11 @@ public class MethodMixupAnnotations {
   @RequestMapping(path = "/defaultQueryParam", method = RequestMethod.POST)
   public String defaultQueryParam(String prefix, @RequestBody User user) {
     return null;
+  }
+
+  @GetMapping(path = "/diffNames")
+  @Operation(summary = "differentName", operationId = "differentName")
+  public int diffNames(@RequestParam("x") int a, @RequestParam("y") int b) {
+    return a * 2 + b;
   }
 }
