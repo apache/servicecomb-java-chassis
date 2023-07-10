@@ -474,7 +474,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     // If annotations contains ApiResponse, schema must be defined.
-    if (swaggerOperation.getResponses().size() > 0) {
+    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY) != null) {
       return;
     }
 

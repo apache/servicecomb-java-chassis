@@ -15,122 +15,123 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# this is an example of the Uber API
-# as a demonstration of an API spec in YAML
-swagger: '2.0'
+openapi: 3.0.1
 info:
-  title: rest test
+  title: swagger definition for org.apache.servicecomb.demo.springmvc.server.ControllerImpl
   version: 1.0.0
-  x-java-interface: org.apache.servicecomb.demo.controller.Controller
-
-# the domain of the service
-#host: api.uber.com
-
-# array of all schemes that your API supports
-#schemes:
-#  - https
-
-# will be prefixed to all paths
-basePath: /springmvc/controller
-produces:
-  - application/json
-
+servers:
+- url: /springmvc/controller
 paths:
   /add:
     get:
       operationId: add
       parameters:
-        - name: a
-          in: query
-          required: true
+      - name: a
+        in: query
+        required: true
+        schema:
+          minimum: 1
           type: integer
           format: int32
-        - name: b
-          in: query
-          required: true
+      - name: b
+        in: query
+        required: true
+        schema:
+          minimum: 1
           type: integer
           format: int32
       responses:
         "200":
-          description: add numer
-          schema:
-            type: integer
-            format: int32
-
-  /sayhello/{name}:
-    post:
-      operationId: sayHello
-      parameters:
-        - name: name
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: say hello
-          schema:
-            type: string
-  /saysomething:
-    post:
-      operationId: saySomething
-      parameters:
-        - name: prefix
-          in: query
-          required: true
-          type: string
-        - name: user
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Person'
-      responses:
-        "200":
-          description: say something
-          schema:
-            type: string
-  /sayhi:
-    get:
-      operationId: sayHi
-      parameters:
-        - name: name
-          in: query
-          required: true
-          type: string
-      responses:
-        "200":
-          description: say hi
-          schema:
-            type: string
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
   /sayhei:
     get:
       operationId: sayHei
       parameters:
-        - name: name
-          in: header
-          required: true
+      - name: name
+        in: header
+        required: true
+        schema:
           type: string
       responses:
         "200":
-          description: say hei
-          schema:
-            type: string
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /sayhello/{name}:
+    post:
+      operationId: sayHello
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /sayHello1:
     get:
       operationId: sayHello1
       parameters:
-        - name: name
-          in: query
-          required: true
+      - name: name
+        in: query
+        required: true
+        schema:
           type: string
       responses:
         "200":
-          description: check the handler is effective
-          schema:
-            type: string
-
-definitions:
-  Person:
-    type: object
-    properties:
-      name:
-        type: string
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /sayhi:
+    get:
+      operationId: sayHi
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /saysomething:
+    post:
+      operationId: saySomething
+      parameters:
+      - name: prefix
+        in: query
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        required: true
+        x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    Person:
+      type: object
+      properties:
+        name:
+          type: string
