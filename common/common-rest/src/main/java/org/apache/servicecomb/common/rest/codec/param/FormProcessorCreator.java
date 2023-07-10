@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
@@ -34,12 +35,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.FileSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
@@ -50,10 +48,10 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     public FormProcessor(String paraName, RequestBody formParameter, JavaType targetType) {
       super(paraName, targetType,
-          formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema().getDefault(),
+          formParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getDefault(),
           formParameter.getRequired());
 
-      this.repeatedType = formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof
+      this.repeatedType = formParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() instanceof
           ArraySchema;
     }
 
@@ -111,13 +109,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
   }
 
   private boolean isPart(RequestBody parameter) {
-    if (parameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema()
-        instanceof ArraySchema) {
-      Schema items = ((ArraySchema) parameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED)
-          .getSchema()).getItems();
-      return items instanceof FileSchema;
-    }
-    return parameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof FileSchema;
+    return parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null;
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
@@ -138,17 +130,14 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     private final boolean repeatedType;
 
-    private final Type genericParamType;
-
     private Converter converter;
 
     PartProcessor(String paramName, RequestBody formParameter, Type genericParamType) {
       super(paramName, null,
-          formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema().getDefault(),
-          formParameter.getRequired());
+          formParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getDefault(),
+          formParameter.getRequired() != null && formParameter.getRequired());
 
-      this.genericParamType = genericParamType;
-      this.repeatedType = formParameter.getContent().get(MediaType.APPLICATION_FORM_URLENCODED)
+      this.repeatedType = formParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
           .getSchema() instanceof ArraySchema;
       initConverter(genericParamType);
     }
