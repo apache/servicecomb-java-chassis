@@ -165,10 +165,7 @@ paths:
         "200":
           description: response of 200
           content:
-            text/plain:
-              schema:
-                type: string
-            application/*:
+            application/json:
               schema:
                 type: string
   /usingGetMapping/{targetName}:
@@ -201,10 +198,7 @@ paths:
         "200":
           description: response of 200
           content:
-            text/plain:
-              schema:
-                type: string
-            application/*:
+            application/json:
               schema:
                 type: string
   /usingPatchMapping/{targetName}:
@@ -237,10 +231,7 @@ paths:
         "200":
           description: response of 200
           content:
-            text/plain:
-              schema:
-                type: string
-            application/*:
+            application/json:
               schema:
                 type: string
   /usingPostMapping/{targetName}:
@@ -273,10 +264,7 @@ paths:
         "200":
           description: response of 200
           content:
-            text/plain:
-              schema:
-                type: string
-            application/*:
+            application/json:
               schema:
                 type: string
   /usingPutMapping/{targetName}:
@@ -309,10 +297,7 @@ paths:
         "200":
           description: response of 200
           content:
-            text/plain:
-              schema:
-                type: string
-            application/*:
+            application/json:
               schema:
                 type: string
   /usingRequestMapping/{targetName}:
@@ -345,10 +330,7 @@ paths:
         "200":
           description: response of 200
           content:
-            text/plain:
-              schema:
-                type: string
-            application/*:
+            application/json:
               schema:
                 type: string
 components:
