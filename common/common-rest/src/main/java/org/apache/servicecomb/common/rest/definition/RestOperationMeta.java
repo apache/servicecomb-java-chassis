@@ -46,8 +46,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.FileSchema;
 import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -92,8 +92,10 @@ public class RestOperationMeta {
 
     OpenAPI swagger = operationMeta.getSchemaMeta().getSwagger();
     Operation operation = operationMeta.getSwaggerOperation();
-    this.produces = operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() == null ?
-        null : operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().keySet().stream().toList();
+    this.produces =
+        (operation.getResponses().get(SwaggerConst.SUCCESS_KEY) == null ||
+            operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() == null) ?
+            null : operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().keySet().stream().toList();
 
     this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
@@ -109,19 +111,41 @@ public class RestOperationMeta {
     }
 
     if (operation.getRequestBody() != null) {
-      if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      if (isFormParameters(operation)) {
         formData = true;
+        Schema formSchema = formSchemas(operation);
+        if (formSchema != null) {
+          formSchema.getProperties().forEach((k, v) -> {
+            addRestParamByName(operationMeta, (String) k, operation);
+          });
+        }
+      } else {
+        addRestParamByName(operationMeta,
+            (String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME), operation);
       }
-
-      Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
-          .getSwaggerParameterTypes().get(
-              (String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME)) : null;
-      type = correctFormBodyType(operation.getRequestBody(), type);
-      RestParam param = new RestParam(operation.getRequestBody(), type);
-      addParam(param);
     }
 
     setAbsolutePath(concatPath(SwaggerUtils.getBasePath(swagger), operationMeta.getOperationPath()));
+  }
+
+  private void addRestParamByName(OperationMeta operationMeta, String name, Operation operation) {
+    Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
+        .getSwaggerParameterTypes().get(name) : null;
+    type = correctFormBodyType(operation.getRequestBody(), type);
+    RestParam param = new RestParam(name, operation.getRequestBody(), formData, type);
+    addParam(param);
+  }
+
+  private boolean isFormParameters(Operation operation) {
+    return operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null ||
+        operation.getRequestBody().getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null;
+  }
+
+  private Schema formSchemas(Operation operation) {
+    if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      return operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema();
+    }
+    return operation.getRequestBody().getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema();
   }
 
   /**
@@ -148,11 +172,8 @@ public class RestOperationMeta {
 
   private boolean checkDownloadFileFlag() {
     ApiResponse response = operationMeta.getSwaggerOperation().getResponses().get(SwaggerConst.SUCCESS_KEY);
-    if (response.getContent() != null && response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED) != null) {
-      return response.getContent().get(MediaType.APPLICATION_FORM_URLENCODED).getSchema() instanceof FileSchema;
-    }
-
-    return false;
+    return response != null && response.getContent() != null
+        && response.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null;
   }
 
   public boolean isFormData() {
