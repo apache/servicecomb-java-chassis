@@ -22,6 +22,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -42,51 +43,20 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   private ObjectWriter writer = Yaml.pretty();
 
-  private static final String EXPECTED_DATA = "---\n"
-      + "swagger: \"2.0\"\n"
-      + "info:\n"
-      + "  version: \"1.0.0\"\n"
-      + "  title: \"swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\"\n"
-      + "  x-java-interface: \"gen.swagger.CodeFirstSpringmvcForSchemaIntf\"\n"
-      + "basePath: \"/forScheam\"\n"
-      + "consumes:\n"
-      + "- \"application/json\"\n"
-      + "produces:\n"
-      + "- \"application/json\"\n"
-      + "paths:\n"
-      + "  /uploadFile:\n"
-      + "    post:\n"
-      + "      operationId: \"uploadAwardFile\"\n"
-      + "      consumes:\n"
-      + "      - \"multipart/form-data\"\n"
-      + "      produces:\n"
-      + "      - \"application/json\"\n"
-      + "      parameters:\n"
-      + "      - name: \"fileType\"\n"
-      + "        in: \"query\"\n"
-      + "        required: true\n"
-      + "        type: \"string\"\n"
-      + "      - name: \"zoneId\"\n"
-      + "        in: \"query\"\n"
-      + "        required: true\n"
-      + "        type: \"string\"\n"
-      + "      - name: \"file\"\n"
-      + "        in: \"formData\"\n"
-      + "        required: true\n"
-      + "        type: \"file\"\n"
-      + "      responses:\n"
-      + "        \"200\":\n"
-      + "          description: \"response of 200\"\n"
-      + "          schema:\n"
-      + "            type: \"boolean\"\n";
-
   public void testSchemaNotChange(SCBEngine scbEngine) {
     LOGGER.info("ProducerTestsAfterBootup testing start");
     //we can not set microserviceName any more
     SchemaMeta meta = scbEngine.getProducerProviderManager().registerSchema("test1", new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
-    TestMgr.check(EXPECTED_DATA,
-        codeFirst);
+
+    String expectSchema = UnitTestSwaggerUtils.loadExpect("schemas/CodeFirstSpringmvcForSchema.yaml")
+        .replace("\r\n", "\n").trim();
+    int offset = expectSchema.indexOf("---\nopenapi: 3.0.1");
+    if (offset > 0) {
+      expectSchema = expectSchema.substring(offset + 4);
+    }
+
+    TestMgr.check(expectSchema.trim(), codeFirst.trim());
   }
 
   public void testRegisteredBasePath() {
