@@ -36,7 +36,8 @@ public class OperationMethodAnnotationProcessor implements MethodAnnotationProce
   public void process(SwaggerGenerator swaggerGenerator,
       OperationGenerator operationGenerator, Operation apiOperationAnnotation) {
     io.swagger.v3.oas.models.Operation operation = operationGenerator.getOperation();
-    io.swagger.v3.oas.models.Operation specificOperation = AnnotationUtils.operationModel(apiOperationAnnotation);
+    io.swagger.v3.oas.models.Operation specificOperation =
+        AnnotationUtils.operationModel(swaggerGenerator.getOpenAPI(), apiOperationAnnotation);
 
     operationGenerator.setHttpMethod(apiOperationAnnotation.method());
 

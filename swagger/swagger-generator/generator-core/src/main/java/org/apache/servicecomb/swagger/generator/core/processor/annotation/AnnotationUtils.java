@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
@@ -36,18 +38,20 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.MediaType;
 
 /**
  * Utility class to convert from OpenAPI annotations to models.
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class AnnotationUtils {
   private AnnotationUtils() {
 
@@ -187,67 +191,70 @@ public final class AnnotationUtils {
     return apiResponse.responseCode();
   }
 
-  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(ApiResponses apiResponses) {
+  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(OpenAPI openAPI,
+      ApiResponses apiResponses) {
     io.swagger.v3.oas.models.responses.ApiResponses result =
         new io.swagger.v3.oas.models.responses.ApiResponses();
     result.setExtensions(extensionsModel(apiResponses.extensions()));
     for (ApiResponse apiResponse : apiResponses.value()) {
-      result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
+      result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(openAPI, apiResponse));
     }
     return result;
   }
 
-  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(ApiResponse[] apiResponses) {
+  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(OpenAPI openAPI,
+      ApiResponse[] apiResponses) {
     io.swagger.v3.oas.models.responses.ApiResponses result =
         new io.swagger.v3.oas.models.responses.ApiResponses();
     for (ApiResponse apiResponse : apiResponses) {
       if (result.get(responseCodeModel(apiResponse)) != null) {
         throw new IllegalStateException("not support too many ApiResponse with same status code");
       } else {
-        result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(apiResponse));
+        result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(openAPI, apiResponse));
       }
     }
     return result;
   }
 
-  public static io.swagger.v3.oas.models.responses.ApiResponse apiResponseModel(ApiResponse apiResponse) {
+  public static io.swagger.v3.oas.models.responses.ApiResponse apiResponseModel(OpenAPI openAPI,
+      ApiResponse apiResponse) {
     io.swagger.v3.oas.models.responses.ApiResponse result =
         new io.swagger.v3.oas.models.responses.ApiResponse();
     result.setDescription(apiResponse.description());
-    result.setContent(contentModel(apiResponse.content()));
-    result.setHeaders(headersModel(apiResponse.headers()));
+    result.setContent(contentModel(openAPI, apiResponse.content()));
+    result.setHeaders(headersModel(openAPI, apiResponse.headers()));
     return result;
   }
 
-  public static Map<String, io.swagger.v3.oas.models.headers.Header> headersModel(Header[] headers) {
+  public static Map<String, io.swagger.v3.oas.models.headers.Header> headersModel(OpenAPI openAPI, Header[] headers) {
     Map<String, io.swagger.v3.oas.models.headers.Header> result = new HashMap<>();
     for (Header header : headers) {
       io.swagger.v3.oas.models.headers.Header model =
           new io.swagger.v3.oas.models.headers.Header();
       model.setDescription(header.description());
-      model.setSchema(schemaModel(header.schema()));
+      model.setSchema(schemaModel(openAPI, header.schema()));
       result.put(header.name(), model);
     }
     return result;
   }
 
-  public static io.swagger.v3.oas.models.media.Content contentModel(Content[] contents) {
+  public static io.swagger.v3.oas.models.media.Content contentModel(OpenAPI openAPI, Content[] contents) {
     io.swagger.v3.oas.models.media.Content result = new io.swagger.v3.oas.models.media.Content();
     for (io.swagger.v3.oas.annotations.media.Content content : contents) {
       MediaType mediaType = new MediaType();
-      mediaType.setExample(content.examples());
-      mediaType.setSchema(schemaModel(content.schema()));
+      mediaType.setSchema(schemaModel(openAPI, content.schema(), content.examples()));
       result.addMediaType(mediaTypeModel(content), mediaType);
     }
     return result;
   }
 
-  public static io.swagger.v3.oas.models.parameters.RequestBody requestBodyModel(RequestBody requestBody) {
+  public static io.swagger.v3.oas.models.parameters.RequestBody requestBodyModel(OpenAPI openAPI,
+      RequestBody requestBody) {
     if (requestBody == null || isOperationDefaultRequestBody(requestBody)) {
       return null;
     }
     io.swagger.v3.oas.models.parameters.RequestBody result = new io.swagger.v3.oas.models.parameters.RequestBody();
-    result.setContent(AnnotationUtils.contentModel(requestBody.content()));
+    result.setContent(AnnotationUtils.contentModel(openAPI, requestBody.content()));
     return result;
   }
 
@@ -263,24 +270,44 @@ public final class AnnotationUtils {
     return content.mediaType();
   }
 
-  public static io.swagger.v3.oas.models.media.Schema schemaModel(Schema schema) {
+  public static io.swagger.v3.oas.models.media.Schema schemaModel(OpenAPI openAPI, Schema schema) {
+    if (schema.implementation() != Void.class) {
+      io.swagger.v3.oas.models.media.Schema result =
+          SwaggerUtils.resolveTypeSchemas(openAPI, schema.implementation());
+      result.setDescription(schema.description());
+      result.setExample(schema.example());
+      return result;
+    }
+
     io.swagger.v3.oas.models.media.Schema result =
         new io.swagger.v3.oas.models.media.Schema();
     result.setDescription(schema.description());
     result.setType(schema.type());
     result.setFormat(schema.format());
+    result.setExample(schema.example());
     return result;
   }
 
-  public static io.swagger.v3.oas.models.Operation operationModel(Operation apiOperationAnnotation) {
+  public static io.swagger.v3.oas.models.media.Schema schemaModel(OpenAPI openAPI, Schema schema,
+      ExampleObject[] exampleObjects) {
+    io.swagger.v3.oas.models.media.Schema result = schemaModel(openAPI, schema);
+    List<Object> examples = new ArrayList<>();
+    for (ExampleObject exampleObject : exampleObjects) {
+      examples.add(exampleObject.name() + ":" + exampleObject.value());
+    }
+    result.setExamples(examples);
+    return result;
+  }
+
+  public static io.swagger.v3.oas.models.Operation operationModel(OpenAPI openAPI, Operation apiOperationAnnotation) {
     io.swagger.v3.oas.models.Operation result = new io.swagger.v3.oas.models.Operation();
     result.setSummary(apiOperationAnnotation.summary());
     result.setDescription(apiOperationAnnotation.description());
     result.setExtensions(extensionsModel(apiOperationAnnotation.extensions()));
-    result.setResponses(apiResponsesModel(apiOperationAnnotation.responses()));
+    result.setResponses(apiResponsesModel(openAPI, apiOperationAnnotation.responses()));
     result.setOperationId(apiOperationAnnotation.operationId());
     result.setTags(tagsModel(apiOperationAnnotation.tags()));
-    result.setRequestBody(requestBodyModel(apiOperationAnnotation.requestBody()));
+    result.setRequestBody(requestBodyModel(openAPI, apiOperationAnnotation.requestBody()));
     return result;
   }
 }
