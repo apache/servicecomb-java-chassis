@@ -145,12 +145,6 @@ public final class SwaggerUtils {
   }
 
   private static void validateOperation(Operation operation) {
-    if (operation.getResponses() == null) {
-      throw new ServiceCombException("Response 200/OK is required.");
-    }
-    if (operation.getResponses().get(SwaggerConst.SUCCESS_KEY) == null) {
-      throw new ServiceCombException("Response 200/OK is required.");
-    }
     if (operation.getRequestBody() != null) {
       validateRequestBody(operation.getRequestBody());
     }
@@ -161,6 +155,9 @@ public final class SwaggerUtils {
 
   private static void validateParameters(List<Parameter> parameters) {
     for (Parameter parameter : parameters) {
+      if (parameter == null) {
+        throw new ServiceCombException("Parameter can not be null.");
+      }
       if (StringUtils.isEmpty(parameter.getName())) {
         throw new ServiceCombException("Parameter name is required.");
       }
@@ -168,11 +165,17 @@ public final class SwaggerUtils {
   }
 
   private static void validateRequestBody(RequestBody requestBody) {
-    if (requestBody.getExtensions() == null) {
-      throw new ServiceCombException("Request body x-name extension is required.");
-    }
-    if (StringUtils.isEmpty((String) requestBody.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
-      throw new ServiceCombException("Request body x-name extension is required.");
+    for (String contentType : requestBody.getContent().keySet()) {
+      if (SwaggerConst.FILE_MEDIA_TYPE.equals(contentType) || SwaggerConst.FORM_MEDIA_TYPE.equals(contentType)) {
+        continue;
+      }
+      if (requestBody.getExtensions() == null) {
+        throw new ServiceCombException("Request body x-name extension is required.");
+      }
+      if (StringUtils.isEmpty((String) requestBody.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+        throw new ServiceCombException("Request body x-name extension is required.");
+      }
+      break;
     }
   }
 
