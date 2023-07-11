@@ -92,6 +92,17 @@ public class DownloadSchema {
         .body(new FilePart(null, file));
   }
 
+  @GetMapping(path = "/setContentTypeByResponseEntity")
+  public ResponseEntity<Part> setContentTypeByResponseEntity(@RequestParam("content") String content, @RequestParam("contentType") String contentType) throws IOException {
+    File file = createTempFile(content);
+
+    return ResponseEntity
+            .ok()
+            .header(HttpHeaders.CONTENT_TYPE, contentType)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+            .body(new FilePart(null, file));
+  }
+
   @GetMapping(path = "/assertLastFileDeleted")
   public boolean assertLastFileDeleted() {
     return lastFile.exists();

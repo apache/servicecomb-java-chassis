@@ -44,7 +44,11 @@ public final class DownloadUtils {
       return;
     }
     if (responseEx.getHeader(HttpHeaders.CONTENT_TYPE.toString()) == null) {
-      responseEx.setHeader(HttpHeaders.CONTENT_TYPE.toString(), part.getContentType());
+      if (responseEx.getContentType() != null) {
+        responseEx.setHeader(HttpHeaders.CONTENT_TYPE.toString(), responseEx.getContentType());
+      } else {
+        responseEx.setHeader(HttpHeaders.CONTENT_TYPE.toString(), part.getContentType());
+      }
     }
 
     if (responseEx.getHeader(javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION) == null) {
