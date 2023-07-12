@@ -21,6 +21,11 @@ package org.apache.servicecomb.swagger.extend.property.creator;
 import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.Schema;
 
+/**
+ * Swagger core will generate byte to type=string,format=byte, this is not correct.
+ * In Open API, type=string,format=byte is for byte array.
+ */
+@SuppressWarnings({"rawtypes"})
 public class BytePropertyCreator implements PropertyCreator {
 
   private final Class<?>[] classes = {Byte.class, byte.class};

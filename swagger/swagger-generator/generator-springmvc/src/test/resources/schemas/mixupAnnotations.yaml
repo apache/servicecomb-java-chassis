@@ -23,6 +23,25 @@ info:
 servers:
 - url: MethodMixupAnnotations
 paths:
+  /bytes:
+    get:
+      operationId: bytes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: byte
+        required: true
+        x-name: value
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+                format: byte
   /defaultQueryParam:
     post:
       operationId: defaultQueryParam

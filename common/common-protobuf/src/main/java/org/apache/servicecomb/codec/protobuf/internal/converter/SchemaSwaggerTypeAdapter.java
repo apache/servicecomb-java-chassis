@@ -39,7 +39,7 @@ public class SchemaSwaggerTypeAdapter implements SwaggerTypeAdapter {
 
   @Override
   public Schema<?> getMapItem() {
-    return schema.getAdditionalItems();
+    return (Schema<?>) schema.getAdditionalProperties();
   }
 
   @Override

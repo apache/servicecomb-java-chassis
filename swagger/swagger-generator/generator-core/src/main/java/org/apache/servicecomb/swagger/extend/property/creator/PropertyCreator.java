@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.extend.property.creator;
 
 import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings({"rawtypes"})
 public interface PropertyCreator {
   Schema createProperty();
 

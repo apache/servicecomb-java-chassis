@@ -34,12 +34,12 @@ import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 
 import com.google.common.hash.Hashing;
 
 import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -178,7 +178,7 @@ public class SwaggerToProtoGenerator {
 
     type = adapter.getRefType();
     if (type != null) {
-      return type;
+      return type.substring(Components.COMPONENTS_SCHEMAS_REF.length());
     }
 
     Schema itemProperty = adapter.getArrayItem();
@@ -343,15 +343,15 @@ public class SwaggerToProtoGenerator {
   }
 
   private void fillRequestType(Operation operation, ProtoMethod protoMethod) {
-    List<Parameter> parameters = operation.getParameters();
-    if (CollectionUtils.isEmpty(parameters)) {
+    int parametersCount = parametersCount(operation);
+    if (parametersCount == 0) {
       addImports(ProtoConst.EMPTY_PROTO);
       protoMethod.setArgTypeName(ProtoConst.EMPTY.getCanonicalName());
       return;
     }
 
-    if (parameters.size() == 1) {
-      String type = convertSwaggerType(parameters.get(0).getSchema());
+    if (parametersCount == 1) {
+      String type = convertSwaggerType(oneSchema(operation));
       if (messages.contains(type)) {
         protoMethod.setArgTypeName(type);
         return;
@@ -359,18 +359,50 @@ public class SwaggerToProtoGenerator {
     }
 
     String wrapName = StringUtils.capitalize(operation.getOperationId()) + "RequestWrap";
-    createWrapArgs(wrapName, parameters);
+    createWrapArgs(wrapName, wrapSchema(operation));
 
     protoMethod.setArgTypeName(wrapName);
   }
 
+  private Map<String, Schema> wrapSchema(Operation operation) {
+    Map<String, Schema> properties = new LinkedHashMap<>();
+    if (operation.getParameters() != null) {
+      for (Parameter parameter : operation.getParameters()) {
+        properties.put(parameter.getName(), parameter.getSchema());
+      }
+    }
+    if (operation.getRequestBody() != null
+        && operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
+      properties.put((String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME),
+          operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
+    }
+    return properties;
+  }
+
+  private Schema oneSchema(Operation operation) {
+    if (operation.getParameters() != null && operation.getParameters().size() == 1) {
+      return operation.getParameters().get(0).getSchema();
+    }
+    return operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema();
+  }
+
+  private int parametersCount(Operation operation) {
+    int parameters = operation.getParameters() == null ? 0 : operation.getParameters().size();
+    if (operation.getRequestBody() != null
+        && operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
+      parameters = parameters + 1;
+    }
+    return parameters;
+  }
+
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
     for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
-      if (entry.getValue().getContent() == null ||
-          entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) == null) {
-        continue;
+      Schema schema = null;
+      if (entry.getValue().getContent() != null &&
+          entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
+        schema = entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema();
       }
-      String type = convertSwaggerType(entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
+      String type = convertSwaggerType(schema);
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
@@ -378,7 +410,7 @@ public class SwaggerToProtoGenerator {
 
       if (wrapped) {
         String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
-        wrapPropertyToMessage(wrapName, entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
+        wrapPropertyToMessage(wrapName, schema);
 
         protoResponse.setTypeName(wrapName);
       }
@@ -386,11 +418,7 @@ public class SwaggerToProtoGenerator {
     }
   }
 
-  private void createWrapArgs(String wrapName, List<Parameter> parameters) {
-    Map<String, Schema> properties = new LinkedHashMap<>();
-    for (Parameter parameter : parameters) {
-      properties.put(parameter.getName(), parameter.getSchema());
-    }
+  private void createWrapArgs(String wrapName, Map<String, Schema> properties) {
     createMessage(wrapName, properties, ProtoConst.ANNOTATION_WRAP_ARGUMENTS);
   }
 
