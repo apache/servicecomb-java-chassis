@@ -276,8 +276,8 @@ message MapUserResponseWrap200 {
 
 //@WrapArguments
 message UserWrapInProtobufRequestWrap {
-  User user = 1;
-  int32 ivalue = 2;
+  int32 ivalue = 1;
+  User user = 2;
 }
 
 //@WrapProperty

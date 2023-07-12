@@ -33,12 +33,10 @@ import org.apache.servicecomb.swagger.extend.property.creator.BytePropertyCreato
 import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
-import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
@@ -49,27 +47,18 @@ import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 
-
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ModelResolverExt extends ModelResolver {
-  private final Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
-
-  private static ObjectMapper objectMapper;
+  private final Map<Type, PropertyCreator> propertyCreatorMap = new HashMap<>();
 
   private final Set<Type> concreteInterfaces = new HashSet<>();
-
-  private static final String DISABLE_DATA_TYPE_CHECK = "servicecomb.swagger.disableDataTypeCheck";
-
-  // This property is used only for compatible usage and is not recommended and may not compatible to
-  // OPEN API standard
-  private final boolean disableDataTypeCheck = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty(DISABLE_DATA_TYPE_CHECK, false).get();
 
   public ModelResolverExt() {
     super(findMapper());
 
     addPropertyCreator(new BytePropertyCreator());
-    addPropertyCreator(new ShortPropertyCreator());
     addPropertyCreator(new ByteArrayPropertyCreator());
+
     addPropertyCreator(new InputStreamPropertyCreator());
     addPropertyCreator(new PartPropertyCreator());
 
@@ -80,30 +69,24 @@ public class ModelResolverExt extends ModelResolver {
   }
 
   private static ObjectMapper findMapper() {
-    if (null != objectMapper) {
-      return objectMapper;
-    }
-
     ModelResolveObjectMapperProvider objectMapperProvider = SPIServiceUtils
         .getPriorityHighestService(ModelResolveObjectMapperProvider.class);
     if (null == objectMapperProvider) {
       objectMapperProvider = new DefaultModelResolveObjectMapperProvider();
     }
-    objectMapper = objectMapperProvider.getMapper();
-
-    return objectMapper;
+    return objectMapperProvider.getMapper();
   }
 
   private void addPropertyCreator(PropertyCreator creator) {
     for (Class<?> cls : creator.classes()) {
       propertyCreatorMap.put(cls, creator);
+      propertyCreatorMap.put(TypeFactory.defaultInstance().constructType(cls), creator);
     }
   }
 
 
   @Override
   public Schema resolve(AnnotatedType propType, ModelConverterContext context, Iterator<ModelConverter> next) {
-
     PropertyCreator creator = propertyCreatorMap.get(propType.getType());
     if (creator != null) {
       return creator.createProperty();

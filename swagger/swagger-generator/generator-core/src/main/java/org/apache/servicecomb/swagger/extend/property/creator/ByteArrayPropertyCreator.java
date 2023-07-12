@@ -20,6 +20,11 @@ package org.apache.servicecomb.swagger.extend.property.creator;
 import io.swagger.v3.oas.models.media.ByteArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 
+/**
+ * Swagger core will generate byte array to type=array, this is not correct.
+ * In Open API, byte array should use type=string,format=byte.
+ */
+@SuppressWarnings({"rawtypes"})
 public class ByteArrayPropertyCreator implements PropertyCreator {
 
   private final Class<?>[] classes = {Byte[].class, byte[].class};

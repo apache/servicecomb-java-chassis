@@ -127,4 +127,9 @@ public class MethodMixupAnnotations {
   public int diffNames(@RequestParam("x") int a, @RequestParam("y") int b) {
     return a * 2 + b;
   }
+
+  @GetMapping(path = "/bytes")
+  public byte[] bytes(@RequestBody byte[] value) {
+    return null;
+  }
 }

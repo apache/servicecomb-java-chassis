@@ -130,7 +130,12 @@ public final class SwaggerGeneratorUtils {
   @SuppressWarnings("unchecked")
   public static <ANNOTATION> ParameterProcessor<ANNOTATION> findParameterProcessors(
       Type type) {
-    type = TypeFactory.defaultInstance().constructType(type);
+    return findParameterProcessors(TypeFactory.defaultInstance().constructType(type));
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <ANNOTATION> ParameterProcessor<ANNOTATION> findParameterProcessors(
+      JavaType type) {
     return (ParameterProcessor<ANNOTATION>) parameterProcessors.get(type);
   }
 
