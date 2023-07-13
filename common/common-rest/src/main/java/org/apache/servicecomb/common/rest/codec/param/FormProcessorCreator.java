@@ -40,6 +40,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.Response.Status;
 
+@SuppressWarnings("unchecked")
 public class FormProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
   public static final String PARAMTYPE = "formData";
 
@@ -57,8 +58,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     @Override
     public Object getValue(HttpServletRequest request) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
+      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
       if (forms != null && !forms.isEmpty()) {
         return convertValue(forms.get(paramPath), targetType);
       }

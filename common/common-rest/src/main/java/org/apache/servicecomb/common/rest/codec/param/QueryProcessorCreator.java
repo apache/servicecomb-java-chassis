@@ -18,8 +18,10 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
@@ -35,6 +37,7 @@ import io.swagger.v3.oas.models.parameters.QueryParameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response.Status;
 
+@SuppressWarnings("unchecked")
 public class QueryProcessorCreator implements ParamValueProcessorCreator<Parameter> {
   public static final String PARAMTYPE = "query";
 
@@ -69,9 +72,17 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
     }
 
     public Object getAndCheckParameter(HttpServletRequest request) {
-      Object value = request.getParameter(paramPath);
+      String value = request.getParameter(paramPath);
+
+      // compatible to SpringMVC @RequestParam. BODY_PARAMETER is only set for SpringMVC.
+      if (StringUtils.isEmpty(value)) {
+        Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
+        value = (forms == null || forms.get(paramPath) == null)
+            ? null : forms.get(paramPath).toString();
+      }
+
       // make some old systems happy
-      if (emptyAsNull && StringUtils.isEmpty((String) value)) {
+      if (emptyAsNull && StringUtils.isEmpty(value)) {
         value = null;
       }
 
@@ -80,7 +91,8 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
 
     private Object checkRequiredAndDefaultValue() {
       if (!ignoreRequiredCheck && isRequired()) {
-        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
+        throw new InvocationException(Status.BAD_REQUEST,
+            String.format("Parameter %s is required.", paramPath));
       }
       Object defaultValue = getDefaultValue();
       if (!ignoreDefaultValue && defaultValue != null) {
