@@ -89,7 +89,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
         .getType();
     swaggerParameterTypes
         .put(invocationArgumentName, providerType);
-    return new ProducerArgumentSame(invocationArgumentName, invocationArgumentName);
+    return new ProducerArgumentSame(providerMethod.getParameters()[providerParamIdx].getName(), invocationArgumentName);
   }
 
   @Override
