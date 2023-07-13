@@ -17,13 +17,17 @@
 package org.apache.servicecomb.common.rest.codec.query;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
-import jakarta.servlet.http.HttpServletRequest;
 
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+@SuppressWarnings("unchecked")
 public class QueryCodecMulti extends AbstractQueryCodec {
   public static final String CODEC_NAME = "form:1";
 
@@ -48,6 +52,17 @@ public class QueryCodecMulti extends AbstractQueryCodec {
     if (processor.isRepeatedType()) {
       //Even if the paramPath does not exist, value won't be null at now
       String[] values = request.getParameterValues(processor.getParameterPath());
+
+      // compatible to SpringMVC @RequestParam. BODY_PARAMETER is only set for SpringMVC.
+      if (values == null || values.length == 0) {
+        Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
+        Object formValue = forms.get(processor.getParameterPath());
+        if (formValue instanceof String[]) {
+          values = (String[]) formValue;
+        } else {
+          values = new String[] {formValue.toString()};
+        }
+      }
       return processor.convertValue(values);
     }
 

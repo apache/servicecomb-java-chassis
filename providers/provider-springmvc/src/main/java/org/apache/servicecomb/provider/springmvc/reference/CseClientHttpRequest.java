@@ -253,7 +253,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
   protected Map<String, Object> collectArguments() {
     HttpServletRequest mockRequest = new CommonToHttpServletRequest(requestMeta.getPathParams(), queryParams,
-        httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData(),
+        httpHeaders, requestBody,
         requestMeta.getSwaggerRestOperation().getFileKeys());
     // no types info, so will not convert any parameters
     return RestCodec.restToArgs(mockRequest, requestMeta.getSwaggerRestOperation());

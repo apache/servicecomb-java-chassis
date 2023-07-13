@@ -27,11 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.hamcrest.MatcherAssert;
@@ -39,22 +34,26 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+
 public class TestCommonToHttpServletRequest {
   @Test
   public void testConstructFormTrue() {
     Map<String, Object> forms = new HashMap<>();
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, forms, true);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, forms);
 
     Assertions.assertNull(request.getAttribute(RestConst.BODY_PARAMETER));
-    Assertions.assertEquals(forms, request.getAttribute(RestConst.FORM_PARAMETERS));
+    Assertions.assertEquals(forms, request.getAttribute(RestConst.BODY_PARAMETER));
   }
 
   @Test
   public void testConstructFormFalse() {
     Object body = new Object();
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, body, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, body);
 
-    Assertions.assertNull(request.getAttribute(RestConst.FORM_PARAMETERS));
     Assertions.assertEquals(body, request.getAttribute(RestConst.BODY_PARAMETER));
   }
 
@@ -63,7 +62,7 @@ public class TestCommonToHttpServletRequest {
     List<String> fileKeys = new ArrayList<>();
     fileKeys.add("test1");
     fileKeys.add("test2");
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null, false, fileKeys);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null, fileKeys);
     Assertions.assertEquals(2, ((CommonToHttpServletRequest) request).getFileKeys().size());
     Assertions.assertEquals("test1", ((CommonToHttpServletRequest) request).getFileKeys().get(0));
     Assertions.assertEquals("test2", ((CommonToHttpServletRequest) request).getFileKeys().get(1));
@@ -72,7 +71,7 @@ public class TestCommonToHttpServletRequest {
   @Test
   public void testConstructPath() {
     Map<String, String> pathParams = new HashMap<>();
-    HttpServletRequest request = new CommonToHttpServletRequest(pathParams, null, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(pathParams, null, null, null);
 
     Assertions.assertEquals(pathParams, request.getAttribute(RestConst.PATH_PARAMETERS));
   }
@@ -82,7 +81,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put(HttpHeaders.CONTENT_TYPE, Arrays.asList("json"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertEquals("json", request.getContentType());
   }
 
@@ -91,7 +90,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put("name", Arrays.asList("value"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null);
     Assertions.assertEquals("value", request.getParameter("name"));
   }
 
@@ -100,7 +99,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put("name", Arrays.asList());
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null);
     Assertions.assertNull(request.getParameter("name"));
   }
 
@@ -108,7 +107,7 @@ public class TestCommonToHttpServletRequest {
   public void testGetParameterNull() {
     Map<String, List<String>> queryParams = new HashMap<>();
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null);
     Assertions.assertNull(request.getParameter("name"));
   }
 
@@ -117,7 +116,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put("name", Arrays.asList("value"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null);
     MatcherAssert.assertThat(request.getParameterValues("name"), Matchers.arrayContaining("value"));
   }
 
@@ -126,7 +125,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put("name", Arrays.asList());
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null);
     Assertions.assertArrayEquals(new String[0], request.getParameterValues("name"));
   }
 
@@ -134,7 +133,7 @@ public class TestCommonToHttpServletRequest {
   public void testGetParameterValuesNull() {
     Map<String, List<String>> queryParams = new HashMap<>();
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null);
     Assertions.assertArrayEquals(new String[0], request.getParameterValues("name"));
   }
 
@@ -143,7 +142,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put("name", Arrays.asList("value"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertEquals("value", request.getHeader("name"));
   }
 
@@ -152,7 +151,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put("name", Arrays.asList());
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertNull(request.getHeader("name"));
   }
 
@@ -161,7 +160,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put("name", Arrays.asList("value"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     MatcherAssert.assertThat(Collections.list(request.getHeaderNames()), Matchers.contains("name"));
   }
 
@@ -169,7 +168,7 @@ public class TestCommonToHttpServletRequest {
   public void testGetHeaderNamesEmpty() {
     Map<String, List<String>> httpHeaders = new HashMap<>();
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertFalse(request.getHeaderNames().hasMoreElements());
   }
 
@@ -177,7 +176,7 @@ public class TestCommonToHttpServletRequest {
   public void testGetHeaderNull() {
     Map<String, List<String>> httpHeaders = new HashMap<>();
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertNull(request.getHeader("name"));
   }
 
@@ -186,7 +185,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put("name", Arrays.asList("value"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("value"));
   }
 
@@ -195,7 +194,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put("name", Arrays.asList());
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertFalse(request.getHeaders("name").hasMoreElements());
   }
 
@@ -203,7 +202,7 @@ public class TestCommonToHttpServletRequest {
   public void testGetHeadersNull() {
     Map<String, List<String>> httpHeaders = new HashMap<>();
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertFalse(request.getHeaders("name").hasMoreElements());
   }
 
@@ -211,7 +210,7 @@ public class TestCommonToHttpServletRequest {
   public void testGetCookiesNull() {
     Map<String, List<String>> httpHeaders = new HashMap<>();
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Assertions.assertEquals(0, request.getCookies().length);
   }
 
@@ -220,7 +219,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> httpHeaders = new HashMap<>();
     httpHeaders.put(HttpHeaders.COOKIE, Arrays.asList("k1=v1;k2=v2;"));
 
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     Cookie[] cookies = request.getCookies();
     Assertions.assertSame(cookies, request.getCookies());
     Assertions.assertEquals(1, cookies.length);
@@ -230,14 +229,14 @@ public class TestCommonToHttpServletRequest {
 
   @Test
   public void testGetInputStream() throws IOException {
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null, false);
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null);
     Assertions.assertNull(request.getInputStream());
   }
 
   @Test
   public void testSetHeader() {
     Map<String, List<String>> httpHeaders = new HashMap<>();
-    HttpServletRequestEx request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequestEx request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     request.setHeader("name", "v1");
     request.setHeader("name", "v2");
     Assertions.assertEquals("v2", request.getHeader("name"));
@@ -246,7 +245,7 @@ public class TestCommonToHttpServletRequest {
   @Test
   public void testAddHeader() {
     Map<String, List<String>> httpHeaders = new HashMap<>();
-    HttpServletRequestEx request = new CommonToHttpServletRequest(null, null, httpHeaders, null, false);
+    HttpServletRequestEx request = new CommonToHttpServletRequest(null, null, httpHeaders, null);
     request.addHeader("name", "v1");
     request.addHeader("name", "v2");
     MatcherAssert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("v1", "v2"));
@@ -268,7 +267,7 @@ public class TestCommonToHttpServletRequest {
     objectMap.put("test4", "haha");
 
     Map<String, String> pathParams = new HashMap<>();
-    HttpServletRequest request = new CommonToHttpServletRequest(pathParams, null, null, objectMap, true, restParams);
+    HttpServletRequest request = new CommonToHttpServletRequest(pathParams, null, null, objectMap, restParams);
     try {
       Collection<Part> tmpParts = request.getParts();
       ArrayList<Part> parts = new ArrayList<>(tmpParts);

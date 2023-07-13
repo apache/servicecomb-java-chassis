@@ -79,7 +79,7 @@ public class TestFormProcessor {
   public void testGetValueWithAttr() throws Exception {
     Map<String, Object> forms = new HashMap<>();
     forms.put("name", "value");
-    Mockito.when(request.getAttribute(RestConst.FORM_PARAMETERS)).thenReturn(forms);
+    Mockito.when(request.getAttribute(RestConst.BODY_PARAMETER)).thenReturn(forms);
 
     ParamValueProcessor processor = createProcessor("name", String.class);
     Object value = processor.getValue(request);
