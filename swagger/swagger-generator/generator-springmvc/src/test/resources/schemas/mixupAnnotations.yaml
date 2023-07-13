@@ -89,6 +89,27 @@ paths:
               schema:
                 type: integer
                 format: int32
+  /upload:
+    post:
+      operationId: fileUpload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file1:
+                  type: string
+                  format: binary
+                someFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /reduce:
     get:
       operationId: reduce

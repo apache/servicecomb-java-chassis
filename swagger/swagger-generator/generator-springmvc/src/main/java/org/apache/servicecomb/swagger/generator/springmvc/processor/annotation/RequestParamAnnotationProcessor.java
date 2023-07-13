@@ -41,7 +41,11 @@ public class RequestParamAnnotationProcessor extends
 
   @Override
   public String getParameterName(RequestParam annotation) {
-    return annotation.value();
+    String value = annotation.value();
+    if (value.isEmpty()) {
+      value = annotation.name();
+    }
+    return value;
   }
 
   @Override

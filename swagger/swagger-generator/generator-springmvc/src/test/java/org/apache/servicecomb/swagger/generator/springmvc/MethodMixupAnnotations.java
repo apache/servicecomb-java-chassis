@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.springmvc;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 // TODO: Now not support consumes User as text/plain. This test case should fail.
 @SuppressWarnings("unused")
@@ -130,6 +132,12 @@ public class MethodMixupAnnotations {
 
   @GetMapping(path = "/bytes")
   public byte[] bytes(@RequestBody byte[] value) {
+    return null;
+  }
+
+  @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
+  public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
+      @RequestPart(name = "someFile") Part file2) {
     return null;
   }
 }

@@ -47,7 +47,11 @@ public class RequestPartAnnotationProcessor extends
 
   @Override
   public String getParameterName(RequestPart annotation) {
-    return annotation.value();
+    String value = annotation.value();
+    if (value.isEmpty()) {
+      value = annotation.name();
+    }
+    return value;
   }
 
   @Override

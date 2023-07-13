@@ -41,7 +41,11 @@ public class RequestHeaderAnnotationProcessor extends
 
   @Override
   public String getParameterName(RequestHeader annotation) {
-    return annotation.value();
+    String value = annotation.value();
+    if (value.isEmpty()) {
+      value = annotation.name();
+    }
+    return value;
   }
 
   @Override
