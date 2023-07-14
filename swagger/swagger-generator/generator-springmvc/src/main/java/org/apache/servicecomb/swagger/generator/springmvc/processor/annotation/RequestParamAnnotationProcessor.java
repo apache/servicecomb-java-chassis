@@ -32,6 +32,14 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+/**
+ * Use RequestParam to annotate a Query parameter.
+ *
+ * NOTICE: In spring-web, RequestParam is used to annotate query param and form param.
+ * This is implementation based. We can't use RequestParam to express
+ * both query and form in OpenAPI 3.0.
+ */
+@SuppressWarnings("rawtypes")
 public class RequestParamAnnotationProcessor extends
     AbstractSpringmvcSerializableParameterProcessor<RequestParam> {
   @Override
