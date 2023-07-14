@@ -72,17 +72,17 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
     }
 
     public Object getAndCheckParameter(HttpServletRequest request) {
-      String value = request.getParameter(paramPath);
+      Object value = request.getParameter(paramPath);
 
       // compatible to SpringMVC @RequestParam. BODY_PARAMETER is only set for SpringMVC.
-      if (StringUtils.isEmpty(value)) {
+      if (StringUtils.isEmpty((String) value)) {
         Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
         value = (forms == null || forms.get(paramPath) == null)
-            ? null : forms.get(paramPath).toString();
+            ? null : forms.get(paramPath);
       }
 
       // make some old systems happy
-      if (emptyAsNull && StringUtils.isEmpty(value)) {
+      if (emptyAsNull && "".equals(value)) {
         value = null;
       }
 

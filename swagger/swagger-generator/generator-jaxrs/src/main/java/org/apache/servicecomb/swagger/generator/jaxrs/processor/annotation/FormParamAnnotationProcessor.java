@@ -74,6 +74,6 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
           .setSchema(new MapSchema());
     }
     requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
-        .getSchema().addProperty(formParam.value(), schema);
+        .getSchema().addProperty(getParameterName(formParam), schema);
   }
 }
