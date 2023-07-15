@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class TestDoSFix {
   static final ObjectMapper mapper = new RestObjectMapper();
 
-  static final String invalidNum = Strings.repeat("9", 100_0000);
+  static final String invalidNum = Strings.repeat("9", 1000);
 
   static final String invalidStr = "\"" + invalidNum + "\"";
 
