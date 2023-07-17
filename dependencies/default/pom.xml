@@ -72,7 +72,7 @@
     <log4j2.version>2.20.0</log4j2.version>
     <logback.version>1.2.11</logback.version>
     <maven-model.version>3.9.1</maven-model.version>
-    <micrometer.version>1.11.1</micrometer.version>
+    <micrometer.version>1.11.2</micrometer.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.2.3</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
