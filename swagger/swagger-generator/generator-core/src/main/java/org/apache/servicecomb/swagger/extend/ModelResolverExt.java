@@ -25,14 +25,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.base.EnumUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +51,14 @@ import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 
+/**
+ * Customize swagger model converters to support:
+ *
+ * 1. byte and byte[] related types
+ * 2. stream related types
+ * 3. jason mapper customization
+ * 4. add x-java-class to model
+ */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ModelResolverExt extends ModelResolver {
   private final Map<Type, PropertyCreator> propertyCreatorMap = new HashMap<>();
@@ -96,7 +108,28 @@ public class ModelResolverExt extends ModelResolver {
       return resolveDynamicEnum(TypeFactory.defaultInstance().constructType(propType.getType()));
     }
 
-    return super.resolve(propType, context, next);
+    Schema result = super.resolve(propType, context, next);
+    if (SwaggerGeneratorFeature.isLocalExtJavaClassInVendor()
+        && !StringUtils.isEmpty(result.get$ref())) {
+      Schema referencedSchema = context.getDefinedModels() != null
+          ? context.getDefinedModels().get(SwaggerUtils.getSchemaName(result.get$ref())) : null;
+      if (referencedSchema != null) {
+        if (referencedSchema.getExtensions() == null) {
+          referencedSchema.setExtensions(new HashMap<>());
+        }
+        if (propType.getType() instanceof JavaType) {
+          referencedSchema.getExtensions().put(SwaggerConst.EXT_JAVA_CLASS,
+              ((JavaType) propType.getType()).toCanonical());
+        } else if (propType.getType() instanceof Class<?>) {
+          referencedSchema.getExtensions().put(SwaggerConst.EXT_JAVA_CLASS,
+              ((Class<?>) propType.getType()).getCanonicalName());
+        } else {
+          referencedSchema.getExtensions().put(SwaggerConst.EXT_JAVA_CLASS,
+              TypeFactory.defaultInstance().constructType(propType.getType()).toCanonical());
+        }
+      }
+    }
+    return result;
   }
 
   private Schema resolveDynamicEnum(JavaType propType) {

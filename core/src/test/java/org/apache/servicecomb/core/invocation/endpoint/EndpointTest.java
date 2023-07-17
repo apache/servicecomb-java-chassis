@@ -44,6 +44,9 @@ public class EndpointTest {
   @Test
   void should_ignore_endpoint_when_generate_swagger() {
     SwaggerGenerator generator = SwaggerGenerator.create(TestSchema.class);
+    generator.getSwaggerGeneratorFeature()
+        .setExtJavaInterfaceInVendor(false)
+        .setExtJavaClassInVendor(false);
     OpenAPI swagger = generator.generate();
 
     assertThat(SwaggerUtils.swaggerToString(swagger))
