@@ -133,6 +133,31 @@ paths:
               schema:
                 type: integer
                 format: int32
+  /testImplicitForm:
+    post:
+      operationId: testImplicitForm
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                form1:
+                  type: string
+                  description: a required form param
+                  nullable: false
+                  example: ""
+                form2:
+                  type: string
+                  description: an optional form param
+                  nullable: true
+                  example: ""
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /uploadFileAndAttribute:
     post:
       operationId: uploadFileAndAttribute

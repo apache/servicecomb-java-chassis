@@ -241,9 +241,29 @@ public final class AnnotationUtils {
   public static io.swagger.v3.oas.models.media.Content contentModel(OpenAPI openAPI, Content[] contents) {
     io.swagger.v3.oas.models.media.Content result = new io.swagger.v3.oas.models.media.Content();
     for (io.swagger.v3.oas.annotations.media.Content content : contents) {
-      MediaType mediaType = new MediaType();
-      mediaType.setSchema(schemaModel(openAPI, content.schema(), content.examples()));
-      result.addMediaType(mediaTypeModel(content), mediaType);
+      String mediaTypeName = mediaTypeModel(content);
+      MediaType mediaType = result.get(mediaTypeName);
+      boolean isForm = SwaggerConst.FORM_MEDIA_TYPE.equals(mediaTypeName) ||
+          SwaggerConst.FILE_MEDIA_TYPE.equals(mediaTypeName);
+      if (mediaType == null) {
+        mediaType = new MediaType();
+        if (isForm) {
+          io.swagger.v3.oas.models.media.Schema schema = new io.swagger.v3.oas.models.media.Schema();
+          schema.setProperties(new HashMap<>());
+          schema.addProperty(content.schema().name(), schemaModel(openAPI, content.schema(), content.examples()));
+          mediaType.setSchema(schema);
+        } else {
+          mediaType.setSchema(schemaModel(openAPI, content.schema(), content.examples()));
+        }
+        result.addMediaType(mediaTypeName, mediaType);
+      } else {
+        if (isForm) {
+          mediaType.getSchema().addProperty(content.schema().name(),
+              schemaModel(openAPI, content.schema(), content.examples()));
+        } else {
+          throw new IllegalStateException("Not allowed to define duplicated content type for " + mediaTypeName);
+        }
+      }
     }
     return result;
   }
@@ -276,15 +296,17 @@ public final class AnnotationUtils {
           SwaggerUtils.resolveTypeSchemas(openAPI, schema.implementation());
       result.setDescription(schema.description());
       result.setExample(schema.example());
+      result.setNullable(schema.nullable());
       return result;
     }
 
     io.swagger.v3.oas.models.media.Schema result =
         new io.swagger.v3.oas.models.media.Schema();
-    result.setDescription(schema.description());
     result.setType(schema.type());
     result.setFormat(schema.format());
+    result.setDescription(schema.description());
     result.setExample(schema.example());
+    result.setNullable(schema.nullable());
     return result;
   }
 
