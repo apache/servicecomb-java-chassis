@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.springmvc;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,6 +39,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
@@ -138,6 +140,18 @@ public class MethodMixupAnnotations {
   @PostMapping(path = "/upload", produces = MediaType.TEXT_PLAIN_VALUE)
   public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
       @RequestPart(name = "someFile") Part file2) {
+    return null;
+  }
+
+  @PostMapping(path = "/testImplicitForm")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = {@Content(mediaType = SwaggerConst.FORM_MEDIA_TYPE,
+          schema = @Schema(name = "form1", implementation = String.class,
+              nullable = false, description = "a required form param")),
+          @Content(mediaType = SwaggerConst.FORM_MEDIA_TYPE,
+              schema = @Schema(name = "form2", implementation = String.class,
+                  nullable = true, description = "an optional form param"))})
+  public String testImplicitForm(HttpServletRequest request) {
     return null;
   }
 }

@@ -18,3 +18,4 @@
 org.apache.servicecomb.swagger.generator.core.processor.annotation.OperationMethodAnnotationProcessor
 org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesMethodProcessor
 org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponseMethodProcessor
+org.apache.servicecomb.swagger.generator.core.processor.annotation.RequestBodyMethodAnnotationProcessor
