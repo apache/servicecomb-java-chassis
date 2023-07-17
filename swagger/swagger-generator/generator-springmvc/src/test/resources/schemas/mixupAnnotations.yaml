@@ -409,3 +409,4 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+      x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User

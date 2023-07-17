@@ -216,45 +216,41 @@ public final class SwaggerUtils {
     ResolvedSchema resolvedSchema = ModelConverters.getInstance().resolveAsResolvedSchema(
         new AnnotatedType(type).resolveAsRef(true));
 
+    if (resolvedSchema == null || resolvedSchema.schema == null) {
+      throw new IllegalArgumentException("cannot resolve type : " + type);
+    }
+
     if (swagger.getComponents() == null) {
       swagger.setComponents(new Components());
     }
 
-    if (resolvedSchema != null) {
-      Map<String, Schema> schemaMap = resolvedSchema.referencedSchemas;
-      if (schemaMap != null) {
-        Map<String, Schema> componentSchemas = swagger.getComponents().getSchemas();
-        if (componentSchemas == null) {
-          componentSchemas = new LinkedHashMap<>(schemaMap);
-        } else {
-          for (Map.Entry<String, Schema> entry : schemaMap.entrySet()) {
-            if (!componentSchemas.containsKey(entry.getKey())) {
-              componentSchemas.put(entry.getKey(), entry.getValue());
-            } else {
-              if (!entry.getValue().equals(componentSchemas.get(entry.getKey()))) {
-                throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
-              }
+    Map<String, Schema> schemaMap = resolvedSchema.referencedSchemas;
+    if (schemaMap != null) {
+      Map<String, Schema> componentSchemas = swagger.getComponents().getSchemas();
+      if (componentSchemas == null) {
+        componentSchemas = new LinkedHashMap<>(schemaMap);
+      } else {
+        for (Map.Entry<String, Schema> entry : schemaMap.entrySet()) {
+          if (!componentSchemas.containsKey(entry.getKey())) {
+            componentSchemas.put(entry.getKey(), entry.getValue());
+          } else {
+            if (!entry.getValue().equals(componentSchemas.get(entry.getKey()))) {
+              throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
             }
           }
         }
-        swagger.getComponents().setSchemas(componentSchemas);
       }
-
-      if (resolvedSchema.schema != null) {
-        Schema schemaN = new Schema();
-        if (StringUtils.isNotBlank(resolvedSchema.schema.getName())) {
-          schemaN.set$ref(Components.COMPONENTS_SCHEMAS_REF + resolvedSchema.schema.getName());
-        } else {
-          schemaN = resolvedSchema.schema;
-        }
-        return schemaN;
-      }
+      swagger.getComponents().setSchemas(componentSchemas);
     }
-    throw new IllegalArgumentException("cannot resolve type : " + type);
+    return resolvedSchema.schema;
   }
 
   public static Schema getSchema(OpenAPI swagger, String ref) {
     return swagger.getComponents().getSchemas().get(ref.substring(Components.COMPONENTS_SCHEMAS_REF.length()));
+  }
+
+  public static String getSchemaName(String ref) {
+    return ref.substring(Components.COMPONENTS_SCHEMAS_REF.length());
   }
 
   public static Schema getSchema(OpenAPI swagger, Schema ref) {
