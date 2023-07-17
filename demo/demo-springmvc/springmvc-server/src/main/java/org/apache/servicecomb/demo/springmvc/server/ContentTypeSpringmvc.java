@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "contentTypeSpringmvc")
-@RequestMapping("/contentTypeSpringmvc")
+@RequestMapping(value = "/contentTypeSpringmvc", consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
 public class ContentTypeSpringmvc {
   @RequestMapping(path = "/testGlobalSetting", method = RequestMethod.POST)
   public String testGlobalSetting(@RequestBody String name, HttpServletRequest request) {
