@@ -55,7 +55,7 @@ public class JAXBUtils {
       marshaller.marshal(obj, writer);
       result = writer.toString();
     } catch (Exception e) {
-      LOGGER.error("Bean convert to xml failed, error message: {}", e.getMessage());
+      LOGGER.error("Bean convert to xml failed, error message: {}", e.getMessage(), e);
     }
     return result;
   }

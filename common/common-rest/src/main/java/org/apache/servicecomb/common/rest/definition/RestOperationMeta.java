@@ -296,7 +296,11 @@ public class RestOperationMeta {
       }
     }
 
-    defaultProcessor = produceProcessorMap.values().stream().findFirst().get();
+    if (produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE) != null) {
+      defaultProcessor = produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE);
+    } else {
+      defaultProcessor = produceProcessorMap.values().stream().findFirst().get();
+    }
     produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
   }
 
