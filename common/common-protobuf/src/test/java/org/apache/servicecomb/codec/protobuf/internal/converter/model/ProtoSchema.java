@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping(path = "/")
 public class ProtoSchema implements ProtoSchemaIntf {
@@ -176,5 +178,17 @@ public class ProtoSchema implements ProtoSchemaIntf {
   @PostMapping(path = "/fieldNeedWrap")
   public FieldNeedWrap fieldNeedWrap(@RequestBody FieldNeedWrap fieldNeedWrap) {
     return fieldNeedWrap;
+  }
+
+  @PostMapping(path = "/testImplicitForm")
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = {@Content(mediaType = SwaggerConst.FORM_MEDIA_TYPE,
+          schema = @Schema(name = "form1", implementation = String.class,
+              nullable = false, description = "a required form param")),
+          @Content(mediaType = SwaggerConst.FORM_MEDIA_TYPE,
+              schema = @Schema(name = "form2", implementation = String.class,
+                  nullable = true, description = "an optional form param"))})
+  public String testImplicitForm(HttpServletRequest request) {
+    return null;
   }
 }

@@ -275,6 +275,17 @@ message MapUserResponseWrap200 {
 }
 
 //@WrapArguments
+message TestImplicitFormRequestWrap {
+  string form1 = 1;
+  string form2 = 2;
+}
+
+//@WrapProperty
+message TestImplicitFormResponseWrap200 {
+  string value = 1;
+}
+
+//@WrapArguments
 message UserWrapInProtobufRequestWrap {
   int32 ivalue = 1;
   User user = 2;
@@ -421,6 +432,9 @@ service MainService {
 
   //@Rpc{"argTypeName":"Ref1","responses":{"200":{"typeName":"Ref2"}}}
   rpc ref (Ref1) returns (Ref2);
+
+  //@Rpc{"argTypeName":"TestImplicitFormRequestWrap","responses":{"200":{"typeName":"TestImplicitFormResponseWrap200"}}}
+  rpc testImplicitForm (TestImplicitFormRequestWrap) returns (TestImplicitFormResponseWrap200);
 
   //@Rpc{"argTypeName":"User","responses":{"200":{"typeName":"User"}}}
   rpc user (User) returns (User);

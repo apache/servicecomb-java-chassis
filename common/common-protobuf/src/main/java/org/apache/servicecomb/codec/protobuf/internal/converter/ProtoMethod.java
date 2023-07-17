@@ -19,11 +19,11 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ProtoMethod {
   private String argTypeName;
@@ -60,6 +60,14 @@ public class ProtoMethod {
     ProtoResponse response = responses.get(statusCode);
     if (response != null) {
       return response;
+    }
+
+    if (statusCode == Status.OK.getStatusCode()) {
+      for (Integer code : responses.keySet()) {
+        if (HttpStatus.isSuccess(code)) {
+          return responses.get(code);
+        }
+      }
     }
 
     if (HttpStatus.isSuccess(statusCode)) {

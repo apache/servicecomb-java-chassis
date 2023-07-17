@@ -51,7 +51,7 @@ import io.vertx.core.json.Json;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class SwaggerToProtoGenerator {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerToProtoGenerator.class);
 
@@ -376,6 +376,11 @@ public class SwaggerToProtoGenerator {
       properties.put((String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME),
           operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
     }
+    if (operation.getRequestBody() != null
+        && operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties()
+          .forEach((k, v) -> properties.put((String) k, (Schema) v));
+    }
     return properties;
   }
 
@@ -383,14 +388,23 @@ public class SwaggerToProtoGenerator {
     if (operation.getParameters() != null && operation.getParameters().size() == 1) {
       return operation.getParameters().get(0).getSchema();
     }
-    return operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema();
+    if (operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
+      return operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema();
+    }
+    return (Schema) operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema()
+        .getProperties()
+        .values().iterator().next();
   }
 
   private int parametersCount(Operation operation) {
     int parameters = operation.getParameters() == null ? 0 : operation.getParameters().size();
-    if (operation.getRequestBody() != null
-        && operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
-      parameters = parameters + 1;
+    if (operation.getRequestBody() != null) {
+      if (operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
+        parameters = parameters + 1;
+      } else if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+        parameters = parameters + operation.getRequestBody()
+            .getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().size();
+      }
     }
     return parameters;
   }

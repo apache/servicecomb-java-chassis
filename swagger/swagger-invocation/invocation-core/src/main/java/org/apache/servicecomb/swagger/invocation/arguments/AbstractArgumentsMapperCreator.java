@@ -187,10 +187,7 @@ public abstract class AbstractArgumentsMapperCreator {
         }
       }
     }
-    if (bodyParameter != null && bodyParameter.getExtensions() != null
-        && bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME) != null
-        && !processedSwaggerParameters.contains(
-        (String) bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+    if (bodyParameter != null) {
       processPendingBodyParameter(bodyParameter);
     }
   }

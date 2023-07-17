@@ -45,6 +45,7 @@ paths:
               schema:
                 type: string
                 description: ""
+                nullable: false
                 example: wget http://localhost/springMvcSchema/testApiExample
   /testDefaultGetApiExample:
     get:
@@ -64,6 +65,7 @@ paths:
               schema:
                 type: string
                 description: ""
+                nullable: false
                 example: ""
 components:
   schemas: {}
