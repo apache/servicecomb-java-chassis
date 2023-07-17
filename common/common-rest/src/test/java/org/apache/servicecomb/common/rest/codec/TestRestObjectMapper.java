@@ -21,6 +21,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Date;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.exc.StreamConstraintsException;
+import com.google.common.base.Strings;
 import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
 import org.junit.jupiter.api.Assertions;
 
@@ -90,4 +93,18 @@ public class TestRestObjectMapper {
       Assertions.fail();
     }
   }
+
+  @Test
+  public void testReadValue() {
+    String content = "{\"desc\":" + Strings.repeat("9", 1001) + "}";
+    try {
+      RestObjectMapperFactory.getRestObjectMapper().readValue(content, PojoModel.class);
+      Assertions.fail();
+    } catch (StreamConstraintsException e) {
+      // right place, nothing to do.
+    } catch (JsonProcessingException ex) {
+      Assertions.fail();
+    }
+  }
+
 }
