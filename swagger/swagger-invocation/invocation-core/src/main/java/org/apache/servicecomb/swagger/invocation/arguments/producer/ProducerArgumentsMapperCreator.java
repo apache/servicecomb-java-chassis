@@ -41,6 +41,7 @@ import com.google.common.reflect.TypeToken;
 
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings("unchecked")
 public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
   // swagger parameter types relate to producer
   // because features of @BeanParam/query, and rpc mode parameter wrapper
@@ -78,8 +79,17 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
-  protected void processPendingBodyParameter(RequestBody parameter) {
-    swaggerParameterTypes.put((String) bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME), Object.class);
+  protected void processPendingBodyParameter(RequestBody bodyParameter) {
+    if (bodyParameter.getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null
+        && !processedSwaggerParameters.contains(
+        (String) bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+      swaggerParameterTypes.put((String) bodyParameter
+          .getExtensions().get(SwaggerConst.EXT_BODY_NAME), Object.class);
+    }
+    if (bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().forEach((k, v) ->
+          swaggerParameterTypes.put((String) k, Object.class));
+    }
   }
 
   @Override
