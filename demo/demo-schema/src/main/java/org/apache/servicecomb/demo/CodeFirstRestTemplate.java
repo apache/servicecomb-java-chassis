@@ -30,6 +30,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -110,10 +111,16 @@ public class CodeFirstRestTemplate {
     userMap.put("u1", user1);
     userMap.put("u2", user2);
 
-    @SuppressWarnings("unchecked")
-    Map<String, User> result = template.postForObject(cseUrlPrefix + "testUserMap",
-        userMap,
-        Map.class);
+    // TODO: shall we support this usage? Seams not valid, cause result should be Map<String, Object> and type not defined.
+//    @SuppressWarnings("unchecked")
+//    Map<String, User> result = template.postForObject(cseUrlPrefix + "testUserMap",
+//        userMap,
+//        Map.class);
+
+    Map<String, User> result = template.exchange(cseUrlPrefix + "testUserMap", HttpMethod.POST,
+        new HttpEntity<>(userMap),
+        new ParameterizedTypeReference<Map<String, User>>() {
+        }).getBody();
 
     TestMgr.check("u1", result.get("u1").getNames()[0]);
     TestMgr.check("u2", result.get("u1").getNames()[1]);

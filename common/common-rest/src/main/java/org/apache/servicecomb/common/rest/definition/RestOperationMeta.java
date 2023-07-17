@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -163,8 +165,18 @@ public class RestOperationMeta {
         || !(parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema() instanceof MapSchema)) {
       return null;
     }
+    String className = SwaggerUtils.getClassName(parameter.getExtensions());
+    if (!StringUtils.isEmpty(className)) {
+      try {
+        JavaType javaType = TypeFactory.defaultInstance().constructFromCanonical(className);
+        return RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
+            .constructMapType(Map.class, String.class, javaType.getRawClass());
+      } catch (Throwable e) {
+        // ignore
+      }
+    }
     return RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
-        .constructMapType(Map.class, String.class, String.class);
+        .constructMapType(Map.class, String.class, Object.class);
   }
 
   public boolean isDownloadFile() {
