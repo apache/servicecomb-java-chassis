@@ -87,8 +87,11 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
           .getExtensions().get(SwaggerConst.EXT_BODY_NAME), Object.class);
     }
     if (bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
-      bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().forEach((k, v) ->
-          swaggerParameterTypes.put((String) k, Object.class));
+      bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().forEach((k, v) -> {
+        if (!processedSwaggerParameters.contains((String) k)) {
+          swaggerParameterTypes.put((String) k, Object.class);
+        }
+      });
     }
   }
 
