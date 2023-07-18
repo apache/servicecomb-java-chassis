@@ -35,6 +35,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
@@ -47,12 +49,12 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
   public static class FormProcessor extends AbstractParamProcessor {
     private final boolean repeatedType;
 
-    public FormProcessor(String paraName, RequestBody formParameter, JavaType targetType) {
+    public FormProcessor(String paraName, RequestBody formParameter, String mediaType, JavaType targetType) {
       super(paraName, targetType,
-          formParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getDefault(),
+          formParameter.getContent().get(mediaType).getSchema().getDefault(),
           formParameter.getRequired() != null && formParameter.getRequired());
 
-      this.repeatedType = formParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() instanceof
+      this.repeatedType = formParameter.getContent().get(mediaType).getSchema() instanceof
           ArraySchema;
     }
 
@@ -102,14 +104,24 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
 
-    if (isPart(parameter)) {
+    if (isPart(parameter, paramName)) {
       return new PartProcessor(paramName, parameter, genericParamType);
     }
-    return new FormProcessor(paramName, parameter, targetType);
+    String mediaType = SwaggerConst.FORM_MEDIA_TYPE;
+    if (parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null) {
+      mediaType = SwaggerConst.FILE_MEDIA_TYPE;
+    }
+    return new FormProcessor(paramName, parameter, mediaType, targetType);
   }
 
-  private boolean isPart(RequestBody parameter) {
-    return parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null;
+  private boolean isPart(RequestBody parameter, String paramName) {
+    MediaType file = parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE);
+    if (file != null) {
+      Schema<?> schema = (Schema<?>) file.getSchema().getProperties().get(paramName);
+      return schema instanceof ArraySchema ||
+          ("string".equals(schema.getType()) && "binary".equals(schema.getFormat()));
+    }
+    return false;
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
@@ -138,7 +150,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
           formParameter.getRequired() != null && formParameter.getRequired());
 
       this.repeatedType = formParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
-          .getSchema() instanceof ArraySchema;
+          .getSchema().getProperties().get(paramName) instanceof ArraySchema;
       initConverter(genericParamType);
     }
 

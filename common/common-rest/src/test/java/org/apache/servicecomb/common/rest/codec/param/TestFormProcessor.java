@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
@@ -42,6 +40,7 @@ import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.MediaType;
 
 public class TestFormProcessor {
@@ -72,7 +71,7 @@ public class TestFormProcessor {
     if (javaType.isContainerType()) {
       mediaType.schema(new ArraySchema());
     }
-    return new FormProcessor(name, formParameter, javaType);
+    return new FormProcessor(name, formParameter, MediaType.APPLICATION_FORM_URLENCODED, javaType);
   }
 
   @Test
