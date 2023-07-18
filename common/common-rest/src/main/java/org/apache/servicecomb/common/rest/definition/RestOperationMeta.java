@@ -53,6 +53,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
@@ -184,9 +185,21 @@ public class RestOperationMeta {
   }
 
   private boolean checkDownloadFileFlag() {
-    ApiResponse response = operationMeta.getSwaggerOperation().getResponses().get(SwaggerConst.SUCCESS_KEY);
-    return response != null && response.getContent() != null
-        && response.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null;
+    ApiResponses responses = operationMeta.getSwaggerOperation().getResponses();
+    if (responses == null) {
+      return false;
+    }
+    ApiResponse response = responses.get(SwaggerConst.SUCCESS_KEY);
+    if (response != null && response.getContent() != null) {
+      for (io.swagger.v3.oas.models.media.MediaType mediaType : response.getContent().values()) {
+        if (mediaType.getSchema() != null
+            && "string".equals(mediaType.getSchema().getType())
+            && "binary".equals(mediaType.getSchema().getFormat())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public boolean isFormData() {
