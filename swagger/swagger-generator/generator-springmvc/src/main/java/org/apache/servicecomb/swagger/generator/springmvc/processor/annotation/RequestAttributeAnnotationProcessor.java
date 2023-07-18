@@ -75,15 +75,21 @@ public class RequestAttributeAnnotationProcessor extends
     if (requestBody.getContent() == null) {
       requestBody.setContent(new Content());
     }
-    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) == null) {
-      requestBody.getContent().addMediaType(SwaggerConst.FORM_MEDIA_TYPE,
+
+    String mediaType = SwaggerConst.FORM_MEDIA_TYPE;
+    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null) {
+      mediaType = SwaggerConst.FILE_MEDIA_TYPE;
+    }
+
+    if (requestBody.getContent().get(mediaType) == null) {
+      requestBody.getContent().addMediaType(mediaType,
           new io.swagger.v3.oas.models.media.MediaType());
     }
-    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() == null) {
-      requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+    if (requestBody.getContent().get(mediaType).getSchema() == null) {
+      requestBody.getContent().get(mediaType)
           .setSchema(new MapSchema());
     }
-    requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+    requestBody.getContent().get(mediaType)
         .getSchema().addProperty(getParameterName(requestAttribute), schema);
   }
 }

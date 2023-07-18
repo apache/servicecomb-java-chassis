@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
@@ -113,8 +114,11 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
     Throwable unwrapped = ExceptionFactory.unwrap(throwable);
     try {
-      return converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped))
-          .convert(invocation, unwrapped, genericStatus);
+      ExceptionConverter<Throwable> converter =
+          converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped));
+      LOGGER.warn("convert exception {} using {}.", throwable.getClass().getName(),
+          converter.getClass().getName(), throwable);
+      return converter.convert(invocation, unwrapped, genericStatus);
     } catch (Exception e) {
       LOGGER.error("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
               + "original exception :{}"
