@@ -56,7 +56,7 @@ public class AnnotationsTest {
   }
 
   @RequestMapping(path = "/saysomething", method = RequestMethod.POST)
-  public String saySomething(String prefix, @RequestBody(required = false) @Parameter(required = false) Person user) {
+  public String saySomething(String prefix, @RequestBody(required = false) Person user) {
     if (user == null || user.getName() == null || user.getName().isEmpty()) {
       return "No user data found";
     }

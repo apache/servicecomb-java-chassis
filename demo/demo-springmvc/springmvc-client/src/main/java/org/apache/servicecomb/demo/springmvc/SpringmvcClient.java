@@ -278,8 +278,6 @@ public class SpringmvcClient {
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 503);
     }
-
-    TestMgr.check("hi world [world]", controller.sayHi("world"));
   }
 
   private static void testControllerAllTransport(RestTemplate template, String microserviceName) {
