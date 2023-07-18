@@ -590,4 +590,9 @@ public class CodeFirstSpringmvc {
   public void testDefaultGetApiExample() {
     LOGGER.info("testDefaultGetApiExample() is called!");
   }
+
+  @RequestMapping(path = "/testHolder")
+  public void testHolder(@RequestBody Holder name) {
+    LOGGER.info("testDefaultGetApiExample() is called!");
+  }
 }
