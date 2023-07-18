@@ -31,9 +31,9 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
-
+@SuppressWarnings("rawtypes")
 public class CookieValueAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<CookieValue> {
+    AbstractSpringmvcParameterProcessor<CookieValue> {
   @Override
   public Type getProcessType() {
     return CookieValue.class;
@@ -56,11 +56,16 @@ public class CookieValueAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation,
       io.swagger.v3.oas.models.parameters.Parameter parameter, JavaType type, CookieValue cookieValue) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    parameter.setSchema(schema);
+    Schema schema = parameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      parameter.setSchema(schema);
+    }
     parameter.setRequired(cookieValue.required());
     if (!ValueConstants.DEFAULT_NONE.equals(cookieValue.defaultValue())) {
       schema.setDefault(cookieValue.defaultValue());
+      // if default value is set, must be required false.
+      parameter.setRequired(false);
     }
   }
 

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
+package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 
-public abstract class AbstractSpringmvcSerializableParameterProcessor<ANNOTATION> extends
-    AbstractSerializableParameterProcessor<ANNOTATION> {
+public abstract class AbstractParameterProcessor<ANNOTATION> implements
+    ParameterProcessor<ANNOTATION> {
 }

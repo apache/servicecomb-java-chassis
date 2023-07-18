@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -36,7 +36,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.FormParam;
 
 @SuppressWarnings("rawtypes")
-public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<FormParam> {
+public class FormParamAnnotationProcessor extends AbstractParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
     return FormParam.class;

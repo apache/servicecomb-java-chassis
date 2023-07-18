@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -34,7 +34,7 @@ import jakarta.ws.rs.HeaderParam;
 
 
 public class HeaderParamAnnotationProcessor extends
-    AbstractSerializableParameterProcessor<HeaderParam> {
+    AbstractParameterProcessor<HeaderParam> {
   @Override
   public Type getProcessType() {
     return HeaderParam.class;

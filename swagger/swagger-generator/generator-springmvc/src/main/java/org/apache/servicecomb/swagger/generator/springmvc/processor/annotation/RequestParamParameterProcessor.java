@@ -40,8 +40,8 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
  * both query and form in OpenAPI 3.0.
  */
 @SuppressWarnings("rawtypes")
-public class RequestParamAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<RequestParam> {
+public class RequestParamParameterProcessor extends
+    AbstractSpringmvcParameterProcessor<RequestParam> {
   @Override
   public Type getProcessType() {
     return RequestParam.class;
@@ -64,11 +64,16 @@ public class RequestParamAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter queryParameter, JavaType type,
       RequestParam requestParam) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    queryParameter.setSchema(schema);
+    Schema schema = queryParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      queryParameter.setSchema(schema);
+    }
     queryParameter.setRequired(requestParam.required());
     if (!ValueConstants.DEFAULT_NONE.equals(requestParam.defaultValue())) {
       schema.setDefault(requestParam.defaultValue());
+      // if default value is set, must be required false.
+      queryParameter.setRequired(false);
     }
   }
 

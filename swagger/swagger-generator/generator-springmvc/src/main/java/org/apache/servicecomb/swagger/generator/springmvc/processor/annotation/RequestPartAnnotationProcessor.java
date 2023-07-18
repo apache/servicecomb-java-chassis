@@ -39,7 +39,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RequestPartAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<RequestPart> {
+    AbstractSpringmvcParameterProcessor<RequestPart> {
   @Override
   public Type getProcessType() {
     return RequestPart.class;

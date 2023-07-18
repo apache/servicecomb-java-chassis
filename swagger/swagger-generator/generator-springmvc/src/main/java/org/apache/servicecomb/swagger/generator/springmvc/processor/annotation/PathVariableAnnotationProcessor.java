@@ -31,8 +31,9 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings("rawtypes")
 public class PathVariableAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<PathVariable> {
+    AbstractSpringmvcParameterProcessor<PathVariable> {
   @Override
   public Type getProcessType() {
     return PathVariable.class;
@@ -55,8 +56,11 @@ public class PathVariableAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter pathParameter, JavaType type,
       PathVariable pathVariable) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    pathParameter.setSchema(schema);
+    Schema schema = pathParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      pathParameter.setSchema(schema);
+    }
     pathParameter.setRequired(pathVariable.required());
   }
 

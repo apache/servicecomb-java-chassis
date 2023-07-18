@@ -43,6 +43,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 // TODO: Now not support consumes User as text/plain. This test case should fail.
 @SuppressWarnings("unused")
@@ -153,5 +155,14 @@ public class MethodMixupAnnotations {
                   nullable = true, description = "an optional form param"))})
   public String testImplicitForm(HttpServletRequest request) {
     return null;
+  }
+
+  @GetMapping("/testDefaultValue")
+  public String testDefaultValue(@RequestParam(name = "e", required = false) int e,
+      @RequestHeader(name = "a", defaultValue = "20") int a,
+      @CookieValue(name = "b", defaultValue = "bobo") String b,
+      @RequestParam(name = "c", defaultValue = "40") Integer c,
+      @Min(value = 20) @Max(value = 30) @RequestParam(name = "d", required = false) int d) {
+    return "Hello " + a + b + c + d + e;
   }
 }

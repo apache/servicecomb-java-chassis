@@ -21,7 +21,7 @@ org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.Multipart
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.PathVariableAnnotationProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestBodyAnnotationProcessor
-org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamParameterProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestHeaderAnnotationProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestAttributeAnnotationProcessor
