@@ -32,8 +32,9 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings("rawtypes")
 public class RequestHeaderAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<RequestHeader> {
+    AbstractSpringmvcParameterProcessor<RequestHeader> {
   @Override
   public Type getProcessType() {
     return RequestHeader.class;
@@ -56,11 +57,16 @@ public class RequestHeaderAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter headerParameter, JavaType type,
       RequestHeader requestHeader) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    headerParameter.setSchema(schema);
+    Schema schema = headerParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      headerParameter.setSchema(schema);
+    }
     headerParameter.setRequired(requestHeader.required());
     if (!ValueConstants.DEFAULT_NONE.equals(requestHeader.defaultValue())) {
       schema.setDefault(requestHeader.defaultValue());
+      // if default value is set, must be required false.
+      headerParameter.setRequired(false);
     }
   }
 
