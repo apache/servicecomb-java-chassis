@@ -34,6 +34,7 @@ import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import jakarta.servlet.http.Part;
 
 @SuppressWarnings("rawtypes")
 public final class ConverterMgr {
@@ -77,11 +78,11 @@ public final class ConverterMgr {
         TypeFactory.defaultInstance().constructType(LocalDateTime.class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("string", "password"),
         TypeFactory.defaultInstance().constructType(String.class));
-    // TODO: byte / binary need analyse
+
     TYPE_FORMAT_MAP.put(genTypeFormatKey("string", "byte"),
-        TypeFactory.defaultInstance().constructType(Byte.class));
+        TypeFactory.defaultInstance().constructType(Byte[].class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("string", "binary"),
-        TypeFactory.defaultInstance().constructType(Byte.class));
+        TypeFactory.defaultInstance().constructType(Part.class));
   }
 
   private static void initConverters() {

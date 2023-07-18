@@ -44,12 +44,17 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 import jakarta.servlet.http.Part;
 
 public class RestServerCodecFilter implements ProducerFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestServerCodecFilter.class);
+
   public static final String NAME = "rest-server-codec";
 
   @Nonnull
@@ -82,15 +87,13 @@ public class RestServerCodecFilter implements ProducerFilter {
     return nextNode.onFilter(invocation);
   }
 
-  protected Void decodeRequest(Invocation invocation) {
+  protected void decodeRequest(Invocation invocation) {
     HttpServletRequestEx requestEx = invocation.getRequestEx();
 
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     Map<String, Object> swaggerArguments = RestCodec.restToArgs(requestEx, restOperationMeta);
     invocation.setSwaggerArguments(swaggerArguments);
-
-    return null;
   }
 
   protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
@@ -104,7 +107,6 @@ public class RestServerCodecFilter implements ProducerFilter {
     return encodeResponse(response, download, produceProcessor, responseEx);
   }
 
-  @SuppressWarnings("deprecation")
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setStatus(response.getStatusCode());
@@ -122,7 +124,16 @@ public class RestServerCodecFilter implements ProducerFilter {
 
       return CompletableFuture.completedFuture(response);
     } catch (Throwable e) {
-      return AsyncUtils.completeExceptionally(e);
+      LOGGER.error("internal service error must be fixed.", e);
+      try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
+        responseEx.setStatus(500);
+        produceProcessor.encodeResponse(output, new CommonExceptionData("500", "Internal Server Error"));
+        responseEx.setBodyBuffer(output.getBuffer());
+        return CompletableFuture.completedFuture(response);
+      } catch (Throwable e1) {
+        // we have no idea how to do, no response given to client.
+        return AsyncUtils.completeExceptionally(e);
+      }
     }
   }
 
