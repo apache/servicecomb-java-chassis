@@ -41,20 +41,17 @@ public class TestObject {
   }
 
   public void runRest() {
-    testEmptyObject_rest();
-    testMapObject_rest();
-    testObject();
-    testListObject();
-    testHolderObject();
+
   }
 
   public void runHighway() {
-    testEmptyObject_highway();
-    testMapObject_highway();
+
   }
 
   public void runAllTransport() {
     testObject();
+    testMapObject();
+    testEmptyObject();
     testListObject();
     testHolderObject();
   }
@@ -82,19 +79,7 @@ public class TestObject {
   }
 
   @SuppressWarnings("unchecked")
-  private void testMapObject_rest() {
-    Map<String, Object> map = Collections.singletonMap("k", "v");
-    Map<String, Object> result = intf.testMapObject(map);
-    TestMgr.check("{k=v}", result);
-    TestMgr.check(LinkedHashMap.class, result.getClass());
-
-    result = restTemplate.postForObject(prefix + "/mapObject", map, Map.class);
-    TestMgr.check("{k=v}", result);
-    TestMgr.check(LinkedHashMap.class, result.getClass());
-  }
-
-  @SuppressWarnings("unchecked")
-  private void testMapObject_highway() {
+  private void testMapObject() {
     Map<String, Object> map = Collections.singletonMap("k", "v");
     Map<String, Object> result = intf.testMapObject(map);
     TestMgr.check("{k=v}", result);
@@ -106,16 +91,7 @@ public class TestObject {
     TestMgr.check(LinkedHashMap.class, result.getClass());
   }
 
-  private void testEmptyObject_highway() {
-    // This is a behavior change in 2.0.0, before 2.0.0 this return null
-    EmptyObject result = intf.testEmpty(new EmptyObject());
-    TestMgr.check(result instanceof EmptyObject, true);
-
-    result = restTemplate.postForObject(prefix + "/emptyObject", new EmptyObject(), EmptyObject.class);
-    TestMgr.check(result instanceof EmptyObject, true);
-  }
-
-  private void testEmptyObject_rest() {
+  private void testEmptyObject() {
     EmptyObject result = intf.testEmpty(new EmptyObject());
     TestMgr.check(EmptyObject.class, result.getClass());
 
@@ -175,6 +151,8 @@ public class TestObject {
     TestMgr.check(true, List.class.isAssignableFrom(result.getClass()));
 
     // generic
+    // TODO: Notice: This test case for HIGHWAY is not stable.
+    // When proto schema contains Holder message, the result type is Map. Or the result is Holder(using json).
     Holder<String> holder = new Holder<>("v");
     result = intf.testObject(holder);
     TestMgr.check("v", ((Map<String, String>) result).get("value"));

@@ -135,3 +135,4 @@ components:
       properties:
         name:
           type: string
+      x-java-class: org.apache.servicecomb.demo.controller.Person
