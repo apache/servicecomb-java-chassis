@@ -21,13 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.RouteItem;
 import org.apache.servicecomb.router.model.TagItem;
-import org.apache.servicecomb.router.util.VersionCompareUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +57,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
 
     invokeRule.check();
 
-    // 未设置tag实例集合
+    // unSetTags instance list
     List<INSTANCE> unSetTagInstances = new ArrayList<>();
 
     // get tag list
@@ -67,17 +65,17 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
 
     if (CollectionUtils.isEmpty(versionServerMap)) {
       LOGGER.debug("route management can not match any rule and route the latest version");
-      // 规则未匹配到实例标签，全量返回，后面负载均衡选择实例
+      // rule note matched instance babel, all instance return, select instance for load balancing later
       return list;
     }
 
-    // 权重计算获取下一个tag实例
+    // weight calculation to obtain the next tags instance
     TagItem targetTag = getFiltedServerTagItem(invokeRule, targetServiceName);
     if (targetTag != null && versionServerMap.containsKey(targetTag)) {
       return versionServerMap.get(targetTag);
     }
 
-    // 存在缺省权重情况
+    // has weightLess situation
     if (invokeRule.isWeightLess()) {
       return unSetTagInstances;
     }
@@ -114,7 +112,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
         TagItem tagItem = new TagItem(getVersion.apply(instance), getProperties.apply(instance));
         TagItem targetTag = null;
         int maxMatch = 0;
-        // 得到参数匹配最多的一条规则
+        // obtain the rule with the most parameter matches
         for (RouteItem entry : invokeRule.getRoute()) {
           if (entry.getTagitem() == null){
             continue;
@@ -131,7 +129,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
           }
           versionServerMap.get(targetTag).add(instance);
         } else {
-          // 未匹配上，放入未设置tag实例集合中
+          // not matched, placed in the unset tag instances collection
           unSetTagInstances.add(instance);
         }
       }
