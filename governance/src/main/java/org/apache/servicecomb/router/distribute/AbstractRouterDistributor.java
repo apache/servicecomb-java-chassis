@@ -56,25 +56,32 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
 
   @Override
   public List<INSTANCE> distribute(String targetServiceName, List<INSTANCE> list, PolicyRuleItem invokeRule) {
-    //init LatestVersion
-    initLatestVersion(targetServiceName, list);
 
-    invokeRule.check(
-        routerRuleCache.getServiceInfoCacheMap().get(targetServiceName).getLatestVersionTag());
+    invokeRule.check();
+
+    // 未设置tag实例集合
+    List<INSTANCE> unSetTagInstances = new ArrayList<>();
 
     // get tag list
-    Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule);
+    Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule, unSetTagInstances);
 
     if (CollectionUtils.isEmpty(versionServerMap)) {
       LOGGER.debug("route management can not match any rule and route the latest version");
-      return getLatestVersionList(list, targetServiceName);
+      // 规则未匹配到实例标签，全量返回，后面负载均衡选择实例
+      return list;
     }
 
+    // 权重计算获取下一个tag实例
     TagItem targetTag = getFiltedServerTagItem(invokeRule, targetServiceName);
-    if (versionServerMap.containsKey(targetTag)) {
+    if (targetTag != null && versionServerMap.containsKey(targetTag)) {
       return versionServerMap.get(targetTag);
     }
-    return getLatestVersionList(list, targetServiceName);
+
+    // 存在缺省权重情况
+    if (invokeRule.isWeightLess()) {
+      return unSetTagInstances;
+    }
+    return list;
   }
 
   @Override
@@ -98,10 +105,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
    * the method getProperties() contains other field that we don't need.
    */
   private Map<TagItem, List<INSTANCE>> getDistributList(String serviceName,
-      List<INSTANCE> list,
-      PolicyRuleItem invokeRule) {
-    String latestV = routerRuleCache.getServiceInfoCacheMap().get(serviceName).getLatestVersionTag()
-        .getVersion();
+      List<INSTANCE> list, PolicyRuleItem invokeRule, List<INSTANCE> unSetTagInstances) {
     Map<TagItem, List<INSTANCE>> versionServerMap = new HashMap<>();
     for (INSTANCE instance : list) {
       //get server
@@ -110,6 +114,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
         TagItem tagItem = new TagItem(getVersion.apply(instance), getProperties.apply(instance));
         TagItem targetTag = null;
         int maxMatch = 0;
+        // 得到参数匹配最多的一条规则
         for (RouteItem entry : invokeRule.getRoute()) {
           if (entry.getTagitem() == null){
             continue;
@@ -120,45 +125,17 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
             targetTag = entry.getTagitem();
           }
         }
-        if (invokeRule.isWeightLess() && getVersion.apply(instance).equals(latestV)) {
-          TagItem latestVTag = invokeRule.getRoute().get(invokeRule.getRoute().size() - 1)
-              .getTagitem();
-          if (!versionServerMap.containsKey(latestVTag)) {
-            versionServerMap.put(latestVTag, new ArrayList<>());
-          }
-          versionServerMap.get(latestVTag).add(instance);
-        }
         if (targetTag != null) {
           if (!versionServerMap.containsKey(targetTag)) {
             versionServerMap.put(targetTag, new ArrayList<>());
           }
           versionServerMap.get(targetTag).add(instance);
+        } else {
+          // 未匹配上，放入未设置tag实例集合中
+          unSetTagInstances.add(instance);
         }
       }
     }
     return versionServerMap;
-  }
-
-
-  public void initLatestVersion(String serviceName, List<INSTANCE> list) {
-    String latestVersion = null;
-    for (INSTANCE instance : list) {
-      if (getServerName.apply(instance).equals(serviceName)) {
-        if (latestVersion == null || VersionCompareUtil
-            .compareVersion(latestVersion, getVersion.apply(instance)) == -1) {
-          latestVersion = getVersion.apply(instance);
-        }
-      }
-    }
-    TagItem tagitem = new TagItem(latestVersion);
-    routerRuleCache.getServiceInfoCacheMap().get(serviceName).setLatestVersionTag(tagitem);
-  }
-
-  public List<INSTANCE> getLatestVersionList(List<INSTANCE> list, String targetServiceName) {
-    String latestV = routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
-        .getLatestVersionTag().getVersion();
-    return list.stream().filter(instance ->
-        getVersion.apply(instance).equals(latestV)
-    ).collect(Collectors.toList());
   }
 }
