@@ -21,9 +21,9 @@ import java.util.Date;
 import org.apache.servicecomb.provider.pojo.registry.ThirdServiceWithInvokerRegister;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
 
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,7 +39,7 @@ public class ThirdSvc extends ThirdServiceWithInvokerRegister {
         headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
             @Header(name = "h2", schema = @Schema(implementation = String.class))})
     @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
-    ResponseEntity<Date> responseEntity(@RequestPart("date") Date date);
+    ResponseEntity<Date> responseEntity(@RequestAttribute("date") Date date);
   }
 
   public ThirdSvc() {
