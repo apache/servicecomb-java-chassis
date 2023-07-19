@@ -55,8 +55,8 @@ public class DefaultExceptionConverter implements ExceptionConverter<Throwable> 
 
   @Override
   public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
-    String msg = String.format("Unexpected exception when processing %s, message %s",
-        invocation.getInvocationQualifiedName(), throwable.getMessage());
+    String msg = String.format("Unexpected exception when processing %s. %s",
+        invocation.getMicroserviceQualifiedName(), throwable.getMessage());
     LOGGER.warn("convert exception({}) to InvocationException.",
         throwable.getClass().getName(), throwable);
     return new InvocationException(genericStatus, ExceptionConverter.getGenericCode(genericStatus),
