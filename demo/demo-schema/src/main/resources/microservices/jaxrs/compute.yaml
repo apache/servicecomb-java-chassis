@@ -15,187 +15,167 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# this is an example of the Uber API
-# as a demonstration of an API spec in YAML
-swagger: '2.0'
+openapi: 3.0.1
 info:
-  title: rest test
+  title: swagger definition for org.apache.servicecomb.demo.jaxrs.server.ComputeImpl
   version: 1.0.0
-  x-java-interface: org.apache.servicecomb.demo.compute.Compute
-
-# the domain of the service
-#host: api.uber.com
-
-# array of all schemes that your API supports
-#schemes:
-#  - https
-
-# will be prefixed to all paths
-basePath: /compute
-produces:
-  - application/json
-
+servers:
+- url: /compute
 paths:
   /add:
     post:
       operationId: add
-      parameters:
-        - name: a
-          in: formData
-          required: true
-          type: integer
-          format: int32
-        - name: b
-          in: formData
-          required: true
-          type: integer
-          format: int32
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                a:
+                  type: integer
+                  format: int32
+                b:
+                  type: integer
+                  format: int32
       responses:
         "200":
-          description: add numer
-          schema:
-            type: integer
-            format: int32
-  /reduce:
-    get:
-      operationId: reduce
-      parameters:
-        - name: a
-          in: query
-          required: true
-          type: integer
-          format: int32
-        - name: b
-          in: query
-          required: true
-          type: integer
-          format: int32
-      responses:
-        "200":
-          description: reduce
-          schema:
-            type: integer
-            format: int32
-  /sayhello:
-    post:
-      operationId: sayHello
-      parameters:
-        - name: user
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Person'
-      responses:
-        "200":
-          description: say hello
-          schema:
-            $ref: '#/definitions/Person'
-  /testrawjson:
-    post:
-      operationId: testRawJsonString
-      parameters:
-        - name: jsonInput
-          in: body
-          required: true
-          x-raw-json: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: test RawJson String
-          schema:
-            type: string
-  /saysomething:
-    post:
-      operationId: saySomething
-      parameters:
-        - name: prefix
-          in: header
-          required: true
-          type: string
-        - name: user
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Person'
-      responses:
-        "200":
-          description: say something
-          schema:
-            type: string
-  /sayhi/{name}:
-    put:
-      operationId: sayHi
-      parameters:
-        - name: name
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: say hi
-          schema:
-            type: string
-        202:
-          description: say hi
-          schema:
-            type: string
-  /sayhi/{name}/v2:
-    put:
-      operationId: sayHi2
-      parameters:
-        - name: name
-          in: path
-          required: true
-          type: string
-      responses:
-        "200":
-          description: say hi
-          schema:
-            type: string
-  /sayhei:
-    delete:
-      operationId: sayHei
-      parameters:
-        - name: name
-          in: query
-          required: true
-          type: string
-      responses:
-        "200":
-          description: say hi
-          schema:
-            type: string
-  /istrue:
-    get:
-      operationId: isTrue
-      responses:
-        "200":
-          description: is true
-          schema:
-            type: boolean
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
   /addstring:
     delete:
       operationId: addString
-      produces:
-        - text/plain
       parameters:
-        - name: s
-          in: query
-          required: true
+      - name: s
+        in: query
+        schema:
           type: array
           items:
             type: string
       responses:
         "200":
-          description: add string
-          schema:
-            type: string
-
-definitions:
-  Person:
-    type: object
-    properties:
-      name:
-        type: string
-    x-java-class: "org.apache.servicecomb.demo.compute.Person"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /istrue:
+    get:
+      operationId: isTrue
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /reduce:
+    get:
+      operationId: reduce
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+  /sayhei:
+    delete:
+      operationId: sayHei
+      parameters:
+      - name: name
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+  /sayhello:
+    post:
+      operationId: sayHello
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+  /sayhi/{name}:
+    put:
+      operationId: sayHi
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+  /sayhi/{name}/v2:
+    put:
+      operationId: sayHi2
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+  /saysomething:
+    post:
+      operationId: saySomething
+      parameters:
+      - name: prefix
+        in: header
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testrawjson:
+    post:
+      operationId: testRawJsonString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        x-name: jsonInput
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    Person:
+      type: object
+      properties:
+        name:
+          type: string
+      x-java-class: org.apache.servicecomb.demo.compute.Person

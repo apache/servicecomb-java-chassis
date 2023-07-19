@@ -262,7 +262,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     @SuppressWarnings("rawtypes")
     ResponseEntity<List> listResult = template
         .postForEntity(SERVER + "/MultiErrorCodeService/noClientErrorCode", requestJson, List.class);
-    TestMgr.check(listResult.getStatusCodeValue(), 200);
+    TestMgr.check(listResult.getStatusCode().value(), 200);
     Map<?, ?> mapResult =
         RestObjectMapperFactory.getRestObjectMapper().convertValue(listResult.getBody().get(0), Map.class);
     TestMgr.check(mapResult.get("message"), "test message");

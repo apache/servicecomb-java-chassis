@@ -24,12 +24,14 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
 
+import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings("rawtypes")
 public class ParameterParameterProcessor implements ParameterProcessor<io.swagger.v3.oas.annotations.Parameter> {
   @Override
   public Class<?> getProcessType() {
@@ -41,7 +43,12 @@ public class ParameterParameterProcessor implements ParameterProcessor<io.swagge
     if (parameterAnnotation.schema() == null) {
       return null;
     }
-    return parameterAnnotation.schema().implementation();
+
+    if (parameterAnnotation.schema().implementation() != Void.class
+        && parameterAnnotation.schema().implementation() != null) {
+      return parameterAnnotation.schema().implementation();
+    }
+    return null;
   }
 
   @Override
@@ -57,8 +64,12 @@ public class ParameterParameterProcessor implements ParameterProcessor<io.swagge
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
       io.swagger.v3.oas.annotations.Parameter annotation) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    parameter.setSchema(schema);
+    Schema schema = parameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      parameter.setSchema(schema);
+    }
+    parameter.setExplode(Explode.TRUE.equals(annotation.explode()));
     parameter.setRequired(annotation.required());
   }
 

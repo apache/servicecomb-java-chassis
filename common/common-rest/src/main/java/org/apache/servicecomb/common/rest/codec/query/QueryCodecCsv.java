@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.common.rest.codec.query;
 
+/**
+ * ?query=x1,x2
+ */
 public class QueryCodecCsv extends QueryCodecWithDelimiter {
   public static final String CODEC_NAME = "form:0";
 

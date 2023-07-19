@@ -45,5 +45,25 @@ paths:
             application/json:
               schema:
                 type: string
+  /queryListMULTI:
+    get:
+      operationId: queryListMULTI
+      parameters:
+      - name: queryList
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
 components:
   schemas: {}
