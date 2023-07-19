@@ -63,7 +63,8 @@ public class PojoClient {
   @RpcReference(microserviceName = "notExist")
   public static Test notExist;
 
-  @RpcReference(microserviceName = "pojo")
+  // TODO: not support x-java-interface lookup. while in the near plan, do not need schemaId.
+  @RpcReference(microserviceName = "pojo", schemaId = "server")
   public static Test test;
 
   public static Test testFromXml;
@@ -83,12 +84,13 @@ public class PojoClient {
 
     try {
       run();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       TestMgr.check("success", "failed");
       LOGGER.error("-------------- test failed -------------");
       LOGGER.error("", e);
       LOGGER.error("-------------- test failed -------------");
     }
+    TestMgr.summary();
   }
 
   private static void testContextClassLoaderIsNull() throws Exception {
@@ -165,8 +167,6 @@ public class PojoClient {
 
       testTraceIdOnContextContainsTraceId();
     }
-
-    TestMgr.summary();
   }
 
   private static void testHttpClientsIsOk() {

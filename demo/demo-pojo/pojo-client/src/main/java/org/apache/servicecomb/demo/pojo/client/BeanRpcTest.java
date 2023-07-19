@@ -20,7 +20,8 @@ import org.apache.servicecomb.demo.server.Test;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 
 public class BeanRpcTest {
-  @RpcReference(microserviceName = "pojo")
+  // TODO: not support x-java-interface lookup. while in the near plan, do not need schemaId.
+  @RpcReference(microserviceName = "pojo", schemaId = "server")
   private Test test;
 
   public BeanRpcTest() {
