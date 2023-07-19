@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
@@ -70,10 +70,11 @@ public class PartProcessor implements ParameterProcessor<Annotation> {
           new io.swagger.v3.oas.models.media.MediaType());
     }
     if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema() == null) {
-      Schema<?> schema = new Schema<>();
-      schema.setProperties(new HashMap<>());
       requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
-          .setSchema(schema);
+          .setSchema(new Schema<>());
+    }
+    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties() == null) {
+      requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().setProperties(new LinkedHashMap<>());
     }
     if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema()
         .getProperties().get(parameterName) == null) {

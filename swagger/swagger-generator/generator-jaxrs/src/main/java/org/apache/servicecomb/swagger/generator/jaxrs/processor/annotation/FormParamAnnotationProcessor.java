@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
@@ -25,6 +26,7 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -33,6 +35,7 @@ import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 
 @SuppressWarnings("rawtypes")
@@ -61,19 +64,35 @@ public class FormParamAnnotationProcessor extends AbstractParameterProcessor<For
   @Override
   public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
       JavaType type, FormParam formParam) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
     if (requestBody.getContent() == null) {
       requestBody.setContent(new Content());
     }
-    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) == null) {
-      requestBody.getContent().addMediaType(SwaggerConst.FORM_MEDIA_TYPE,
+
+    String mediaType = SwaggerConst.FORM_MEDIA_TYPE;
+    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null || isPart(type)) {
+      mediaType = SwaggerConst.FILE_MEDIA_TYPE;
+    }
+
+    if (requestBody.getContent().get(mediaType) == null) {
+      requestBody.getContent().addMediaType(mediaType,
           new io.swagger.v3.oas.models.media.MediaType());
     }
-    if (requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() == null) {
-      requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
+    if (requestBody.getContent().get(mediaType).getSchema() == null) {
+      requestBody.getContent().get(mediaType)
           .setSchema(new MapSchema());
     }
-    requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE)
-        .getSchema().addProperty(getParameterName(formParam), schema);
+
+    // FormParam used with Part and simple types.
+    // Part is processed by type processor.
+    if (!isPart(type)) {
+      Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      requestBody.getContent().get(mediaType).getSchema().getProperties().put(parameterName, schema);
+    }
+  }
+
+  private boolean isPart(JavaType type) {
+    return Part.class.equals(type.getRawClass()) ||
+        Types.newParameterizedType(List.class, Part.class).equals(type.getRawClass()) ||
+        Part[].class.equals(type.getRawClass());
   }
 }

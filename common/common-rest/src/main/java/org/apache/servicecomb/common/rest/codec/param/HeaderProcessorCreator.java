@@ -51,7 +51,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parame
 
     public HeaderProcessor(HeaderParameter headerParameter, JavaType targetType) {
       super(headerParameter.getName(), targetType, headerParameter.getSchema().getDefault(),
-          headerParameter.getRequired());
+          headerParameter.getRequired() != null && headerParameter.getRequired());
 
       this.repeatedType = headerParameter.getSchema() instanceof ArraySchema;
     }

@@ -89,6 +89,6 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator<Parame
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new CookieProcessor(parameterName, targetType, parameter.getSchema().getDefault(),
-        parameter.getRequired());
+        parameter.getRequired() != null && parameter.getRequired());
   }
 }
