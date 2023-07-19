@@ -277,19 +277,23 @@ public class PojoClient {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("index", 2);
     arguments.put("user", new User());
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", arguments);
+    Map<String, Object> warpArguments = new HashMap<>();
+    warpArguments.put("splitParamBody", arguments);
+    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", warpArguments);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=2]", result);
 
     arguments = new HashMap<>();
     arguments.put("index", 3);
     arguments.put("user", new User());
+    warpArguments = new HashMap<>();
+    warpArguments.put("splitParamBody", arguments);
     result =
         InvokerUtils.syncInvoke("pojo",
             "0.0.4",
             transport,
             "server",
             "splitParam",
-            arguments);
+            warpArguments);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=3]", result);
   }
 
