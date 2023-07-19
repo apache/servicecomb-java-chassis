@@ -156,7 +156,7 @@ public class MultiErrorCodeService {
   @Path("/noClientErrorCode")
   @POST
   @ApiResponses({
-      @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = NoClientErrorCode400.class)), description = "")})
+      @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = NoClientErrorCode400.class)), description = "")})
   public List<NoClientErrorCode200> noClientErrorCode(MultiRequest request) {
     if (request.getCode() == 400) {
       NoClientErrorCode400 r = new NoClientErrorCode400();

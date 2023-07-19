@@ -17,12 +17,19 @@
 package org.apache.servicecomb.swagger.generator.jaxrs;
 
 import java.io.IOException;
+import java.util.List;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path(value = "/FullSwaggerService")
@@ -32,5 +39,13 @@ public class FullSwaggerService {
   @Produces(MediaType.TEXT_PLAIN)
   public String fileUpload(@FormParam("file1") Part file1, @FormParam("file2") Part file2) throws IOException {
     return null;
+  }
+
+  @Path("/queryListMULTI")
+  @GET
+  public String queryListMULTI(
+      @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.FORM, explode = Explode.TRUE)
+      @QueryParam("queryList") List<String> queryList) {
+    return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 }

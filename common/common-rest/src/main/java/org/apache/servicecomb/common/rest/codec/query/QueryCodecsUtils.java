@@ -38,7 +38,7 @@ public class QueryCodecsUtils {
     if (styleEnum == null) {
       return null;
     }
-    return styleEnum.name() + ":" +
+    return styleEnum + ":" +
         (explode != null && explode ? "1" : "0");
   }
 }

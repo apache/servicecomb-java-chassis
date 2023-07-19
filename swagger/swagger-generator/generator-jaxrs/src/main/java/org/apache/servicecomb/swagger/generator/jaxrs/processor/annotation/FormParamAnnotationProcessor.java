@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -38,7 +39,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class FormParamAnnotationProcessor extends AbstractParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
@@ -80,6 +81,10 @@ public class FormParamAnnotationProcessor extends AbstractParameterProcessor<For
     if (requestBody.getContent().get(mediaType).getSchema() == null) {
       requestBody.getContent().get(mediaType)
           .setSchema(new MapSchema());
+    }
+    if (requestBody.getContent().get(mediaType).getSchema().getProperties() == null) {
+      requestBody.getContent().get(mediaType)
+          .getSchema().setProperties(new LinkedHashMap<>());
     }
 
     // FormParam used with Part and simple types.
