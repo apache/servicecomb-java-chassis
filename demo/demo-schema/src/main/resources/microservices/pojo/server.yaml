@@ -20,19 +20,17 @@ info:
   title: swagger definition for org.apache.servicecomb.demo.pojo.server.TestImpl
   version: 1.0.0
 servers:
-- url: /pojo/rest
+- url: /TestImpl
 paths:
   /addString:
-    delete:
+    post:
       operationId: addString
-      parameters:
-        - name: strArr
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addStringBody'
+        x-name: addStringBody
       responses:
         "200":
           description: response of 200
@@ -203,6 +201,7 @@ components:
           type: array
           items:
             type: string
+      x-java-class: org.apache.servicecomb.demo.server.User
     splitParamBody:
       type: object
       properties:
@@ -237,7 +236,6 @@ components:
           items:
             $ref: '#/components/schemas/User'
         data:
-          type: array
-          items:
-            type: string
-            format: byte
+          type: string
+          format: byte
+      x-java-class: org.apache.servicecomb.demo.server.TestRequest
