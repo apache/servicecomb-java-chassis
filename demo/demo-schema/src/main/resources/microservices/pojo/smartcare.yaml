@@ -20,7 +20,7 @@ info:
   title: swagger definition for org.apache.servicecomb.demo.pojo.server.SmartCareImpl
   version: 1.0.0
 servers:
-- url: /pojo/rest/plat/meta/v1
+- url: /SmartCareImpl
 paths:
   /addApplication:
     post:
@@ -75,6 +75,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Group'
+      x-java-class: org.apache.servicecomb.demo.smartcare.Application
     Group:
       type: object
       properties:
@@ -84,6 +85,7 @@ components:
           type: string
         labelCH:
           type: string
+      x-java-class: org.apache.servicecomb.demo.smartcare.Group
     Response:
       type: object
       properties:
@@ -92,6 +94,7 @@ components:
           format: int32
         resultMessage:
           type: string
+      x-java-class: org.apache.servicecomb.demo.smartcare.Response
     delApplicationBody:
       type: object
       properties:
