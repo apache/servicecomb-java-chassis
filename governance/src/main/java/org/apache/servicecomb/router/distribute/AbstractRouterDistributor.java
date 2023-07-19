@@ -76,7 +76,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
     }
 
     // has weightLess situation
-    if (invokeRule.isWeightLess()) {
+    if (invokeRule.isWeightLess() && unSetTagInstances.size() > 0) {
       return unSetTagInstances;
     }
     return list;
