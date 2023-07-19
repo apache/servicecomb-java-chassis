@@ -20,6 +20,17 @@ package org.apache.servicecomb.demo.jaxrs.server;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
@@ -33,13 +44,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.demo.compute.Person;
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestSchema(schemaId = "compute")
 @Path("/compute")
@@ -55,6 +59,8 @@ public class ComputeImpl {
 
   @Path("/reduce")
   @GET
+  @Parameters(value = {@Parameter(in = ParameterIn.QUERY, name = "a", schema = @Schema(implementation = int.class)),
+      @Parameter(in = ParameterIn.QUERY, name = "b", schema = @Schema(implementation = int.class))})
   public int reduce(@Context HttpServletRequest request) {
     int a = Integer.parseInt(request.getParameter("a"));
     int b = Integer.parseInt(request.getParameter("b"));
@@ -74,7 +80,8 @@ public class ComputeImpl {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

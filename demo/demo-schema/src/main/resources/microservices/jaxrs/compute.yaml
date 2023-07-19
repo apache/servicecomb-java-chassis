@@ -75,6 +75,21 @@ paths:
   /reduce:
     get:
       operationId: reduce
+      parameters:
+      - name: a
+        in: query
+        required: false
+        explode: false
+        schema:
+          type: integer
+          format: int32
+      - name: b
+        in: query
+        required: false
+        explode: false
+        schema:
+          type: integer
+          format: int32
       responses:
         "200":
           description: response of 200

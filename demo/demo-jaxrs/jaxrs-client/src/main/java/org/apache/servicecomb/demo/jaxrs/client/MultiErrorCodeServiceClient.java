@@ -101,7 +101,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
       template
           .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
     } catch (HttpClientErrorException e) {
-      TestMgr.check(e.getRawStatusCode(), 400);
+      TestMgr.check(e.getStatusCode().value(), 400);
       TestMgr.check(e.getMessage(),
           "400 Bad Request: \"{\"message\":\"Parameter is not valid for operation [jaxrs.MultiErrorCodeService.errorCode]." +
               " Parameter is [request]. Processor is [body].\"}\"");
@@ -113,7 +113,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
           .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
       TestMgr.check(590, 200);
     } catch (HttpServerErrorException e) {
-      TestMgr.check(e.getRawStatusCode(), 500);
+      TestMgr.check(e.getStatusCode().value(), 500);
     }
 
     // not recommend
@@ -121,7 +121,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     entity = new HttpEntity<>(body, headers);
     result = template
         .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 200);
+    TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
   }
 
@@ -131,7 +131,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     request.setCode(200);
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", request, MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 200);
+    TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
 
     request.setCode(400);
@@ -161,7 +161,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     request.setCode(200);
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeader", request, MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 200);
+    TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);

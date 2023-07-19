@@ -60,11 +60,11 @@ public class QueryCodecMulti extends AbstractQueryCodec {
       if (values == null || values.length == 0) {
         Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
         if (forms == null) {
-          return null;
+          return processor.convertValue(values);
         }
         Object formValue = forms.get(processor.getParameterPath());
         if (formValue == null) {
-          return null;
+          return processor.convertValue(values);
         }
         if (formValue instanceof String[]) {
           values = (String[]) formValue;
