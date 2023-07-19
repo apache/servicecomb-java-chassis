@@ -107,6 +107,11 @@ public class TestJaxrs {
   }
 
   @Test
+  public void testFullSwaggerService() {
+    UnitTestSwaggerUtils.testSwagger("schemas/FullSwaggerService.yaml", FullSwaggerService.class);
+  }
+
+  @Test
   public void consumesAndProduces() {
     UnitTestSwaggerUtils.testSwagger("schemas/consumes.yaml", ConsumesAndProduces.class);
   }

@@ -466,11 +466,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   public void scanResponse() {
-    Schema model = createResponseModel();
-    if (model == null) {
-      return;
-    }
-
     if (swaggerOperation.getResponses() == null) {
       swaggerOperation.setResponses(new ApiResponses());
     }
@@ -480,6 +475,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
+    Schema model = createResponseModel();
+    if (model == null) {
+      return;
+    }
     swaggerOperation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
     swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).setContent(new Content());
     swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
