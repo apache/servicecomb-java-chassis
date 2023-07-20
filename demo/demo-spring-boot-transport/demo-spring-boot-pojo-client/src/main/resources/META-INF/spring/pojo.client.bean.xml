@@ -22,7 +22,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.huawei.com/schema/paas/cse/rpc classpath:META-INF/spring/spring-paas-cse-rpc.xsd">
 
-  <cse:rpc-reference id="server" microservice-name="pojo"
+  <cse:rpc-reference id="server" microservice-name="spring-boot-pojo-server"
     schema-id="server" interface="org.apache.servicecomb.demo.springboot.pojo.server.schema.server.Test"></cse:rpc-reference>
 
   <bean class="org.apache.servicecomb.demo.springboot.pojo.client.PojoClientTest">

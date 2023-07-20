@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class PojoClientTest {
   private static Logger LOGGER = LoggerFactory.getLogger(PojoClientTest.class);
 
-  @RpcReference(microserviceName = "pojo", schemaId = "server")
+  @RpcReference(microserviceName = "spring-boot-pojo-server", schemaId = "server")
   public static Test test;
 
   public static Test testFromXml;
@@ -53,7 +53,7 @@ public class PojoClientTest {
   }
 
   public static void runTest() throws Exception {
-    String microserviceName = "pojo";
+    String microserviceName = "spring-boot-pojo-server";
 
     for (String transport : DemoConst.transports) {
       ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
@@ -92,23 +92,27 @@ public class PojoClientTest {
   @SuppressWarnings({"deprecation"})
   private static void testCommonInvoke(String transport) {
     Map<String, Object> arguments = new HashMap<>();
+    Map<String, Object> wrap = new HashMap<>();
     arguments.put("index", 2);
     arguments.put("user", new User());
+    wrap.put("splitParamBody", arguments);
 
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", arguments, User.class);
+    Object result = InvokerUtils.syncInvoke("spring-boot-pojo-server", "server", "splitParam", wrap, User.class);
     TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
         + ", age=100, index=2]", result);
 
     arguments = new HashMap<>();
     arguments.put("index", 3);
     arguments.put("user", new User());
+    wrap = new HashMap<>();
+    wrap.put("splitParamBody", arguments);
     result =
-        InvokerUtils.syncInvoke("pojo",
+        InvokerUtils.syncInvoke("spring-boot-pojo-server",
             "0.0.1",
             transport,
             "server",
             "splitParam",
-            arguments, User.class);
+            wrap, User.class);
     TestMgr.check("User [name=nameA,  users count:0" + SPLITPARAM_RESPONSE_USER_SUFFIX
         + ", age=100, index=3]", result);
   }

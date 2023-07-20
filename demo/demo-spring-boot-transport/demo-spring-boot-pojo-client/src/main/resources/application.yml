@@ -22,7 +22,7 @@ server:
 
 APPLICATION_ID: spring-boot-pojotest
 service_description:
-  name: pojoClient
+  name: spring-boot-pojo-client
   version: 0.0.1
 servicecomb:
   service:
