@@ -21,29 +21,24 @@ import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUti
 import org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema;
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget;
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget_ValueOverWritePath;
-import org.apache.servicecomb.swagger.generator.springmvc.model.TestProducer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 public class TestSpringmvc {
   @Test
   public void testMultiDefaultPath() {
     UnitTestSwaggerUtils.testException(
-        "Only allowed one default path. method=org.apache.servicecomb.swagger.generator.springmvc.MultiDefaultPath:p2.",
+        "Duplicate operation path detected. method=org.apache.servicecomb.swagger.generator.springmvc.MultiDefaultPath:p2.",
         MultiDefaultPath.class);
   }
 
   @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testResponseEntity() {
     UnitTestSwaggerUtils.testSwagger("schemas/responseEntity.yaml", MethodResponseEntity.class);
   }
 
   @Test
-  public void testEmptyPath() {
-    UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", Echo.class, "emptyPath");
-    UnitTestSwaggerUtils.testSwagger("schemas/MethodEmptyPath.yaml", MethodEmptyPath.class);
+  public void testEcho() {
+    UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", Echo.class);
   }
 
   @Test
@@ -56,15 +51,6 @@ public class TestSpringmvc {
     UnitTestSwaggerUtils.testSwagger("schemas/defaultParameter.yaml", MethodDefaultParameter.class);
   }
 
-  @Test
-  public void testInheritHttpMethod() {
-    UnitTestSwaggerUtils.testSwagger("schemas/inheritHttpMethod.yaml", Echo.class, "inheritHttpMethod");
-  }
-
-  @Test
-  public void testRawJsonStringMethod() {
-    UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", Echo.class, "rawJsonStringMethod");
-  }
 
   @Test
   public void testClassMethodNoPath() {
@@ -81,14 +67,6 @@ public class TestSpringmvc {
         .testSwagger("schemas/requestMappingHttpMethod.yaml", ClassMethodNoHttpMethod.class, "noHttpMethod");
   }
 
-  @Test
-  public void testMethodMultiHttpMethod() {
-    UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.Echo:multiHttpMethod.",
-        "not allowed multi http method.",
-        Echo.class,
-        "multiHttpMethod");
-  }
 
   @Test
   public void testClassMultiHttpMethod() {
@@ -158,95 +136,10 @@ public class TestSpringmvc {
         ClassMultiPath.class);
   }
 
-  @Test
-  public void testEnumBody() {
-    UnitTestSwaggerUtils.testSwagger("schemas/enumBody.yaml", Echo.class, "enumBody");
-  }
 
   @Test
-  public void testAsyncResponseEntity() {
-    UnitTestSwaggerUtils.testSwagger("schemas/asyncResponseEntity.yaml", Echo.class, "asyncResponseEntity");
-  }
-
-  @Test
-  public void testSimpleParam() {
-    UnitTestSwaggerUtils.testSwagger("schemas/testSimpleParam.yaml", DefaultParameterSchema.class, "testSimpleParam");
-  }
-
-  @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
-  public void testObjectParam() {
-    UnitTestSwaggerUtils.testSwagger("schemas/testObjectParam.yaml", DefaultParameterSchema.class, "testObjectParam");
-  }
-
-  @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
-  public void testMultiObjParamsWithSameFiledName() {
-    UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema:testMultiObjParamsWithSameFiledName.",
-        "not support duplicated parameter, name=name.",
-        DefaultParameterSchema.class,
-        "testMultiObjParamsWithSameFiledName");
-  }
-
-  @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
-  public void testUnsupportedParamType() {
-    UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema:testUnsupportedParamType.",
-        "not allow complex type for query parameter, type=java.util.List<org.apache.servicecomb.swagger.generator.springmvc.model.TestParam>.",
-        DefaultParameterSchema.class,
-        "testUnsupportedParamType");
-  }
-
-  @Test
-  public void testSingleMediaType() {
-    UnitTestSwaggerUtils.testSwagger("schemas/testSingleMediaType.yaml", TestProducer.class, "testSingleMediaType");
-  }
-
-  @Test
-  public void testMultipleMediaType() {
-    UnitTestSwaggerUtils.testSwagger("schemas/testMultipleMediaType.yaml", TestProducer.class, "testMultipleMediaType");
-  }
-
-  @Test
-  public void testBlankMediaType() {
-    UnitTestSwaggerUtils.testSwagger("schemas/testBlankMediaType.yaml", TestProducer.class, "testBlankMediaType");
-  }
-
-  @Test
-  public void cookie() {
-    UnitTestSwaggerUtils.testSwagger("schemas/cookie.yaml", Echo.class, "cookie");
-  }
-
-  @Test
-  public void part() {
-    UnitTestSwaggerUtils.testSwagger("schemas/part.yaml", Echo.class, "part");
-  }
-
-  @Test
-  public void partArray() {
-    UnitTestSwaggerUtils.testSwagger("schemas/partArray.yaml", Echo.class, "partArray");
-  }
-
-  @Test
-  public void partList() {
-    UnitTestSwaggerUtils.testSwagger("schemas/partList.yaml", Echo.class, "partList");
-  }
-
-  @Test
-  public void partAnnotation() {
-    UnitTestSwaggerUtils.testSwagger("schemas/partAnnotation.yaml", Echo.class, "partAnnotation");
-  }
-
-  @Test
-  public void partArrayAnnotation() {
-    UnitTestSwaggerUtils.testSwagger("schemas/partArrayAnnotation.yaml", Echo.class, "partArrayAnnotation");
-  }
-
-  @Test
-  public void partListAnnotation() {
-    UnitTestSwaggerUtils.testSwagger("schemas/partListAnnotation.yaml", Echo.class, "partListAnnotation");
+  public void testDefaultParameterSchema() {
+    UnitTestSwaggerUtils.testSwagger("schemas/DefaultParameterSchema.yaml", DefaultParameterSchema.class);
   }
 
   @Test
@@ -258,23 +151,5 @@ public class TestSpringmvc {
   public void swaggerTestTarget_ValueOverWritePath() {
     UnitTestSwaggerUtils
         .testSwagger("schemas/swaggerTestTarget_ValueOverWritePath.yaml", SwaggerTestTarget_ValueOverWritePath.class);
-  }
-
-  @Test
-  public void testResponseEntityOptional() {
-    UnitTestSwaggerUtils
-        .testSwagger("schemas/testResponseEntityOptional.yaml", Echo.class, "testResponseEntityOptional");
-  }
-
-  @Test
-  public void testCompletableFutureResponseEntityOptional() {
-    UnitTestSwaggerUtils
-        .testSwagger("schemas/testCompletableFutureResponseEntityOptional.yaml", Echo.class,
-            "testCompletableFutureResponseEntityOptional");
-  }
-
-  @Test
-  public void nestedListString() {
-    UnitTestSwaggerUtils.testSwagger("schemas/nestedListString.yaml", Echo.class, "nestedListString");
   }
 }

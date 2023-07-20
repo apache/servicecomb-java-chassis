@@ -16,21 +16,17 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoHttpMethod"
-  x-java-interface: "gen.cse.ms.ut.ClassMethodNoHttpMethodIntf"
-basePath: "/c"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoHttpMethod
+  version: 1.0.0
+servers:
+- url: c
 paths:
   /m:
     get:
-      operationId: "noHttpMethod"
-      parameters: []
+      operationId: noHttpMethod
       responses:
         "200":
-          description: "response of 200"
+          description: response of 200
+components: {}

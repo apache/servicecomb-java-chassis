@@ -20,7 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.ws.rs.core.MediaType;
 
 @RestController
 public class DefaultParameterSchema {
@@ -39,8 +43,20 @@ public class DefaultParameterSchema {
     return null;
   }
 
-  @GetMapping("/testMultiObjParamsWithSameFiledName")
-  public String testMultiObjParamsWithSameFiledName(String name, TestParam objParam0, TestParam objParam1, int age) {
-    return objParam0 + "-" + objParam1;
+  @RequestMapping(path = "testSingleMediaType", method = RequestMethod.POST, consumes = MediaType.APPLICATION_XML, produces = MediaType.APPLICATION_XML)
+  public String testSingleMediaType(String input) {
+    return input;
+  }
+
+  @RequestMapping(path = "testMultipleMediaType", method = RequestMethod.PUT, consumes = {MediaType.TEXT_PLAIN,
+      MediaType.APPLICATION_JSON},
+      produces = {MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+  public String testMultipleMediaType(String input) {
+    return input;
+  }
+
+  @RequestMapping(path = "testBlankMediaType", method = RequestMethod.POST, consumes = "", produces = "")
+  public String testBlankMediaType(String input) {
+    return input;
   }
 }

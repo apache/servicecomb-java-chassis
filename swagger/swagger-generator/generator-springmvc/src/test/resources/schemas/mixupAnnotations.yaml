@@ -123,6 +123,7 @@ paths:
       - name: a
         in: query
         required: false
+        explode: false
         schema:
           type: string
       responses:

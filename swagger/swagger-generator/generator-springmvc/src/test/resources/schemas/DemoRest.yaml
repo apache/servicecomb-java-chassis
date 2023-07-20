@@ -16,18 +16,3 @@
 ## ---------------------------------------------------------------------------
 
 ---
-openapi: 3.0.1
-info:
-  title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget_ValueOverWritePath
-  version: 1.0.0
-servers:
-- url: /testPath
-- url: /testValue
-paths:
-  /:
-    get:
-      operationId: method
-      responses:
-        "200":
-          description: response of 200
-components: {}
