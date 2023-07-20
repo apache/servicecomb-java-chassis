@@ -231,7 +231,7 @@ public class CodeFirstSpringmvc {
   }
 
   @GetMapping(path = "/reduce")
-  @Parameters({@Parameter(name = "a", schema = @Schema(type = "integer", format = "int32"), in = ParameterIn.QUERY)})
+  @Parameters({@Parameter(name = "a", schema = @Schema(implementation = int.class), in = ParameterIn.QUERY)})
   public int reduce(HttpServletRequest request, @CookieValue(name = "b") int b) {
     int a = Integer.parseInt(request.getParameter("a"));
     return a - b;

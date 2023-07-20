@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.highway;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
@@ -28,6 +29,7 @@ import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
@@ -35,9 +37,12 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Defaults;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.vertx.core.buffer.Buffer;
 
+@SuppressWarnings("rawtypes")
 public final class HighwayCodec {
   private HighwayCodec() {
   }
@@ -58,9 +63,10 @@ public final class HighwayCodec {
     return os;
   }
 
+  // Proto buffer never serialize default values, put it back in provider.
+  // Or will get IllegalArgumentsException for primitive types.
   private static Map<String, Object> addPrimitiveTypeDefaultValues(Invocation invocation,
       Map<String, Object> swaggerArguments) {
-    // proto buffer never serialize default values, put it back in provider
     if (invocation.getOperationMeta().getSwaggerProducerOperation() != null && !invocation.isEdge()) {
       List<Parameter> swaggerParameters = invocation.getOperationMeta().getSwaggerOperation()
           .getParameters();
@@ -74,6 +80,21 @@ public final class HighwayCodec {
         }
       }
 
+      RequestBody requestBody = invocation.getOperationMeta().getSwaggerOperation().getRequestBody();
+      if (requestBody != null && requestBody.getContent() != null
+          && requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null
+          && requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema() != null
+          && requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties() != null) {
+        for (Object entry :
+            requestBody.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().entrySet()) {
+          Entry<String, Schema> types = (Entry<String, Schema>) entry;
+          if (swaggerArguments.get(types.getKey()) == null) {
+            Type type = invocation.getOperationMeta().getSwaggerProducerOperation()
+                .getSwaggerParameterType(types.getKey());
+            swaggerArguments.put(types.getKey(), defaultPrimitiveValue(null, type));
+          }
+        }
+      }
     }
     return swaggerArguments;
   }
