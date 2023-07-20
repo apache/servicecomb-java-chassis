@@ -50,7 +50,7 @@ public class TestPojoOneArg {
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
     Assertions.assertEquals(1, result.size());
-    result = (Map<String, Object>) result.get("name");
+    result = (Map<String, Object>) result.get("simpleBody");
     Assertions.assertEquals(1, result.size());
     Assertions.assertEquals("name", result.get("name"));
   }
@@ -88,7 +88,7 @@ public class TestPojoOneArg {
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
 
     Assertions.assertEquals(1, result.size());
-    result = (Map<String, Object>) result.get("color");
+    result = (Map<String, Object>) result.get("enumBodyBody");
     Assertions.assertEquals(1, result.size());
     Assertions.assertEquals(Color.BLUE, result.get("color"));
   }

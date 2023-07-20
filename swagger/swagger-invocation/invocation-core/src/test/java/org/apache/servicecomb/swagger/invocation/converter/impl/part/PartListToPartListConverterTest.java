@@ -30,12 +30,12 @@ public class PartListToPartListConverterTest {
 
   @Test
   public void getSrcType() {
-    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<jakarta.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getTargetType().getTypeName());
+    Assertions.assertEquals("java.util.List<jakarta.servlet.http.Part>", converter.getTargetType().getTypeName());
   }
 
   @Test

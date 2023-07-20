@@ -35,8 +35,8 @@ public class TestResponsesMeta {
     @ApiResponses({@ApiResponse(responseCode = "400", description = "",
         content = {@Content(schema = @Schema(type = "string"))}),
         @ApiResponse(responseCode = "401", description = "",
-            content = {@Content(schema = @Schema(type = "string"))},
-            headers = {@Header(name = "h1", schema = @Schema(type = "string"))})
+            content = {@Content(schema = @Schema(implementation = String.class))},
+            headers = {@Header(name = "h1", schema = @Schema(implementation = String.class))})
     })
     public int add(int x, int y) {
       return x + y;
@@ -61,7 +61,7 @@ public class TestResponsesMeta {
     Assertions.assertEquals(String.class, resp.getRawClass());
 
     resp = meta.findResponseType(401);
-    Assertions.assertEquals(Long.class, resp.getRawClass());
+    Assertions.assertEquals(String.class, resp.getRawClass());
 
     resp = meta.findResponseType(500);
     // changed to Object for new version to keep user defined error data not lose and can be parsed.

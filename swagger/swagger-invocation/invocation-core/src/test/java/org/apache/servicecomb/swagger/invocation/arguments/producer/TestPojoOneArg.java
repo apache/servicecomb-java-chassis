@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoOneArg;
 import org.junit.Test;
@@ -33,8 +34,8 @@ public class TestPojoOneArg {
   public void should_mapper_swagger_wrapped_body_field_to_producer_enum() {
     SwaggerProducer swaggerProducer = new SwaggerEnvironment().createProducer(new PojoOneArg(), null);
     SwaggerProducerOperation swaggerProducerOperation = swaggerProducer.findOperation("enumBody");
-    Assertions.assertEquals("color",
-        swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().get(0).getName());
+    Assertions.assertEquals("enumBodyBody",
+        swaggerProducerOperation.getSwaggerOperation().getOperation().getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME));
 
     ProducerArgumentsMapper mapper = swaggerProducerOperation.getArgumentsMapper();
 
@@ -42,7 +43,7 @@ public class TestPojoOneArg {
     Map<String, Object> swaggerArguments = new HashMap<>();
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("color", "BLUE");
-    swaggerArguments.put("color", arguments);
+    swaggerArguments.put("enumBodyBody", arguments);
 
     Map<String, Object> result = mapper.swaggerArgumentToInvocationArguments(invocation, swaggerArguments);
 
