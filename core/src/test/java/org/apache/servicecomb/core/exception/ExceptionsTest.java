@@ -54,7 +54,7 @@ class ExceptionsTest {
     assertThat(invocationException.getStatus()).isEqualTo(BAD_REQUEST);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
     assertThat(Json.encode(invocationException.getErrorData()))
-        .isEqualTo("{\"code\":\"SCB.00000000\",\"message\":\"msg\"}");
+        .isEqualTo("{\"code\":\"SCB.00000000\",\"message\":\"Unexpected exception when processing none. msg\"}");
   }
 
   @Test
@@ -67,7 +67,7 @@ class ExceptionsTest {
     assertThat(invocationException.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
     assertThat(Json.encode(invocationException.getErrorData()))
-        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"msg\"}");
+        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected exception when processing none. msg\"}");
   }
 
   static class ThrowExceptionWhenConvert implements ExceptionConverter<Throwable> {
