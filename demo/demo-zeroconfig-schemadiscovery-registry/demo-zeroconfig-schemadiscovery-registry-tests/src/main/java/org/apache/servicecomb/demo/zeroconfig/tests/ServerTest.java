@@ -22,11 +22,13 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -121,16 +123,20 @@ public class ServerTest implements CategorizedTestCase {
   private void testGetAllMicroservice() {
     // invoke demo-zeroconfig-schemadiscovery-registry-client
     TestMgr.check("2", template
-        .getForObject(
+        .exchange(
             "cse://demo-zeroconfig-schemadiscovery-registry-client"
-                + "/register/url/prefix/getRegisteredMicroservice",
-            List.class).size());
+                + "/register/url/prefix/getRegisteredMicroservice", HttpMethod.GET, null,
+            new ParameterizedTypeReference<Set<String>>() {
+
+            }).getBody().size());
     // invoke demo-zeroconfig-schemadiscovery-registry-edge
     TestMgr.check("2", template
-        .getForObject(
+        .exchange(
             "cse://demo-zeroconfig-schemadiscovery-registry-edge"
-                + "/register/url/prefix/getRegisteredMicroservice",
-            List.class).size());
+                + "/register/url/prefix/getRegisteredMicroservice", HttpMethod.GET, null,
+            new ParameterizedTypeReference<Set<String>>() {
+
+            }).getBody().size());
   }
 
   private void testJsonObject() {
