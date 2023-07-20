@@ -15,127 +15,142 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.demo.zeroconfig.client.ClientServerEndpoint"
-  x-java-interface: "gen.swagger.ClientServerEndpointIntf"
-basePath: "/register/url/prefix"
-schemes:
-  - "http"
-consumes:
-  - "application/json"
-produces:
-  - "application/json"
+  title: swagger definition for org.apache.servicecomb.demo.zeroconfig.client.ClientServerEndpoint
+  version: 1.0.0
+servers:
+- url: /register/url/prefix
 paths:
   /contextMapper:
     get:
-      operationId: "contextMapper"
+      operationId: contextMapper
       parameters:
-        - name: "gatewayHeader"
-          in: "header"
-          required: true
-          type: "string"
-        - name: "clientHeader"
-          in: "header"
-          required: true
-          type: "string"
-        - name: "gatewayQuery"
-          in: "query"
-          required: true
-          type: "string"
-        - name: "clientQuery"
-          in: "query"
-          required: true
-          type: "string"
+      - name: gatewayHeader
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: clientHeader
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: gatewayQuery
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: clientQuery
+        in: query
+        required: true
+        schema:
+          type: string
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "string"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /getName:
     get:
-      operationId: "getName"
+      operationId: getName
       parameters:
-        - name: "name"
-          in: "query"
-          required: true
-          type: "string"
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "string"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /getRegisteredMicroservice:
     get:
-      operationId: "getRegisteredMicroservice"
-      parameters: []
+      operationId: getRegisteredMicroservice
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "array"
-            items:
-              type: "string"
-            uniqueItems: true
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                uniqueItems: true
+                type: array
+                items:
+                  type: string
   /getString:
     post:
-      operationId: "getString"
-      parameters:
-        - in: "body"
-          name: "jsonString"
-          required: true
-          schema:
-            type: "string"
-          x-raw-json: true
+      operationId: getString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+        x-raw-json: true
+        x-name: jsonString
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "string"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /jsonObject:
     post:
-      operationId: "jsonObject"
-      parameters:
-        - in: "body"
-          name: "jsonObject"
-          required: true
-          schema:
-            $ref: "#/definitions/JsonObject"
+      operationId: jsonObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonObject'
+        required: true
+        x-name: jsonObject
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            $ref: "#/definitions/JsonObject"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonObject'
   /postModel:
     post:
-      operationId: "postModel"
-      parameters:
-        - in: "body"
-          name: "clientModel"
-          required: true
-          schema:
-            $ref: "#/definitions/ClientModel"
+      operationId: postModel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientModel'
+        required: true
+        x-name: clientModel
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            $ref: "#/definitions/ClientModel"
-definitions:
-  JsonObject:
-    type: "object"
-    properties:
-      map:
-        type: "object"
-        additionalProperties:
-          type: "object"
-      empty:
-        type: "boolean"
-    x-java-class: "io.vertx.core.json.JsonObject"
-  ClientModel:
-    type: "object"
-    properties:
-      updateDate:
-        type: "string"
-        format: "date-time"
-    x-java-class: "org.apache.servicecomb.demo.zeroconfig.client.ClientModel"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientModel'
+components:
+  schemas:
+    JsonObject:
+      type: object
+      properties:
+        map:
+          type: object
+          additionalProperties:
+            type: object
+        empty:
+          type: boolean
+      x-java-class: io.vertx.core.json.JsonObject
+    ClientModel:
+      type: object
+      properties:
+        updateDate:
+          type: string
+          format: date-time
+      x-java-class: org.apache.servicecomb.demo.zeroconfig.client.ClientModel
+

@@ -48,7 +48,7 @@ public class DiscoveryEndpoint {
 
   @Parameters(
       {
-          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(implementation = String.class),
               description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
@@ -60,7 +60,7 @@ public class DiscoveryEndpoint {
 
   @Parameters(
       {
-          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(implementation = String.class),
               description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
@@ -72,7 +72,7 @@ public class DiscoveryEndpoint {
 
   @Parameters(
       {
-          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(implementation = String.class),
               description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
@@ -84,7 +84,7 @@ public class DiscoveryEndpoint {
 
   @Parameters(
       {
-          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+          @Parameter(name = "service-id", in = ParameterIn.QUERY, schema = @Schema(implementation = String.class),
               description = "just make it possible to mock many instances by one real instance for performance test")
       }
   )
