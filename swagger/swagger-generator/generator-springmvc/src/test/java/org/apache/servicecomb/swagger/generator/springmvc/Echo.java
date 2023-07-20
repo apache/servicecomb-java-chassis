@@ -25,7 +25,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,76 +38,72 @@ import org.springframework.web.multipart.MultipartFile;
     produces = {"a", "b"})
 public class Echo {
 
-  @RequestMapping
+  @RequestMapping("emptyPath")
   public void emptyPath() {
   }
 
-  @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
-  public void multiHttpMethod() {
-  }
-
-  @RequestMapping
+  @RequestMapping("inheritHttpMethod")
   public void inheritHttpMethod(int query) {
   }
 
-  @RequestMapping
+  @RequestMapping("cookie")
   public void cookie(@CookieValue(value = "cookie", required = false) int cookie) {
   }
 
-  @RequestMapping
+  @RequestMapping("rawJsonStringMethod")
   public void rawJsonStringMethod(@RawJsonRequestBody String jsonInput) {
   }
 
-  @RequestMapping
+  @RequestMapping("enumBody")
   public void enumBody(@RequestBody Color color) {
   }
 
-  @RequestMapping
+  @RequestMapping("asyncResponseEntity")
   public CompletableFuture<ResponseEntity<List<String>>> asyncResponseEntity() {
     return null;
   }
 
-  @RequestMapping
+  @RequestMapping("testResponseEntityOptional")
   public ResponseEntity<Optional<String>> testResponseEntityOptional() {
     return null;
   }
 
-  @RequestMapping
+  @RequestMapping("testCompletableFutureResponseEntityOptional")
   public CompletableFuture<ResponseEntity<Optional<String>>> testCompletableFutureResponseEntityOptional() {
     return null;
   }
 
-  @RequestMapping
+  @RequestMapping("part")
   public void part(MultipartFile part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping("partArray")
   public void partArray(MultipartFile[] part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping("partList")
   public void partList(List<MultipartFile> part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping("partAnnotation")
   public void partAnnotation(@RequestPart MultipartFile part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping("partArrayAnnotation")
   public void partArrayAnnotation(@RequestPart MultipartFile[] part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping("partListAnnotation")
   public void partListAnnotation(@RequestPart List<MultipartFile> part) {
 
   }
 
-  @PostMapping("nestedListString")
+  @RequestMapping("nestedListString")
   public List<List<String>> nestedListString(@RequestBody List<List<String>> param) {
     return param;
   }

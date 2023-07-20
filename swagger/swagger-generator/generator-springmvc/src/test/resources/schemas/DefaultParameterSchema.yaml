@@ -18,92 +18,127 @@
 ---
 openapi: 3.0.1
 info:
-  title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.MethodResponseEntity
+  title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema
   version: 1.0.0
 servers:
-- url: MethodResponseEntity
+- url: /
 paths:
-  /usingDeleteMapping:
-    delete:
-      operationId: usingDeleteMapping
-      responses:
-        "200":
-          description: response of 200
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /usingGetMapping:
-    get:
-      operationId: usingGetMapping
-      responses:
-        "200":
-          description: response of 200
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /usingPatchMapping:
-    patch:
-      operationId: usingPatchMapping
-      responses:
-        "200":
-          description: response of 200
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /usingPostMapping:
+  /testBlankMediaType:
     post:
-      operationId: usingPostMapping
+      operationId: testBlankMediaType
+      parameters:
+      - name: input
+        in: query
+        schema:
+          type: string
       responses:
         "200":
           description: response of 200
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /usingPutMapping:
+                type: string
+  /testMultipleMediaType:
     put:
-      operationId: usingPutMapping
+      operationId: testMultipleMediaType
+      parameters:
+      - name: input
+        in: query
+        schema:
+          type: string
       responses:
         "200":
           description: response of 200
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-  /usingRequestMapping:
-    put:
-      operationId: usingRequestMapping
+                type: string
+  /testObjectParam:
+    get:
+      operationId: testObjectParam
+      parameters:
+      - name: name
+        in: query
+        schema:
+          type: string
+      - name: age
+        in: query
+        schema:
+          type: integer
+          format: int32
       responses:
         "200":
           description: response of 200
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                type: string
+  /testSimpleParam:
+    get:
+      operationId: testSimpleParam
+      parameters:
+      - name: strParam
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testSingleMediaType:
+    post:
+      operationId: testSingleMediaType
+      parameters:
+      - name: input
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testUnsupportedParamType:
+    get:
+      operationId: testUnsupportedParamType
+      parameters:
+      - name: i
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: integerList
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestParam'
+      - name: stringMap
+        in: query
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
 components:
   schemas:
-    User:
+    TestParam:
       type: object
       properties:
         name:
           type: string
-        friends:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-      x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User
+        age:
+          type: integer
+          format: int32
+      x-java-class: org.apache.servicecomb.swagger.generator.springmvc.model.TestParam
