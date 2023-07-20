@@ -22,7 +22,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 
 import java.util.Arrays;
 
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterAll;
@@ -42,6 +41,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import jakarta.ws.rs.core.MediaType;
 
+@SuppressWarnings({"rawtypes", "unused"})
 public class TestApiOperation {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiOperationAnnotation.class);
 
@@ -57,9 +57,11 @@ public class TestApiOperation {
         tags = {"tag1", "tag2"},
         method = "GET",
         operationId = "test",
-        requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON)),
+        requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = String.class))),
         responses = @ApiResponse(responseCode = "202",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON),
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = String.class)),
             headers = @Header(name = "h1", schema = @Schema(type = "integer"))),
         extensions = {@Extension(
             name = "x-tagA",
@@ -67,7 +69,7 @@ public class TestApiOperation {
     void testBase();
 
     @Operation(summary = "aaa")
-    @ApiResponse(responseCode = "202", content = @Content(schema = @Schema(type = "string")))
+    @ApiResponse(responseCode = "202", content = @Content(schema = @Schema(implementation = String.class)))
     int testPrimitive();
 
     @Operation(summary = "aaa", hidden = true)
@@ -96,7 +98,6 @@ public class TestApiOperation {
     io.swagger.v3.oas.models.media.Schema result202 =
         operation.getResponses().get("202").getContent().get(MediaType.APPLICATION_JSON).getSchema();
     Assertions.assertEquals("string", result202.getType());
-    Assertions.assertEquals("", result202.getFormat());
   }
 
   private void testBase(PathItem path) {
@@ -108,20 +109,14 @@ public class TestApiOperation {
     Assertions.assertEquals("notes", operation.getDescription());
     Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
     Assertions.assertEquals("application/json",
-        operation.getResponses().get("200").getContent().keySet().iterator().next());
-    Assertions.assertEquals("application/json",
         operation.getRequestBody().getContent().keySet().iterator().next());
 
     ApiResponses responseMap = operation.getResponses();
-    Assertions.assertEquals(2, responseMap.size());
+    Assertions.assertEquals(1, responseMap.size());
 
-    io.swagger.v3.oas.models.responses.ApiResponse response = responseMap.get(SwaggerConst.SUCCESS_KEY);
+    io.swagger.v3.oas.models.responses.ApiResponse response = responseMap.get("202");
     Assertions.assertNotNull(response);
-    Assertions.assertNull(response.getContent().get(MediaType.APPLICATION_JSON).getSchema());
-
-    response = responseMap.get("202");
-    Assertions.assertNotNull(response);
-    Assertions.assertEquals("", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
+    Assertions.assertEquals("string", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
 
     Assertions.assertEquals(1, response.getHeaders().size());
     Assertions.assertEquals("integer", response.getHeaders().get("h1").getSchema().getType());

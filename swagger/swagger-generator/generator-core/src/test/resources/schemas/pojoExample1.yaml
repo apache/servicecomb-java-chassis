@@ -63,6 +63,7 @@ components:
         val1:
           type: integer
           format: int32
+      x-java-class: org.apache.servicecomb.swagger.generator.core.pojo.TestType1
     testMultiParameterBody:
       type: object
       properties:

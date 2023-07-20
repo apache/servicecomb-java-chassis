@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -58,8 +58,10 @@ public class OperationMethodAnnotationProcessorTest {
     }
 
     @Operation(summary = "testSingleMediaType",
-        responses = {@ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_XML))},
-        requestBody = @RequestBody(content = @Content(mediaType = MediaType.TEXT_PLAIN)))
+        responses = {@ApiResponse(responseCode = "200", content = @Content(
+            mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = String.class)))},
+        requestBody = @RequestBody(content = @Content(mediaType = MediaType.TEXT_PLAIN,
+            schema = @Schema(implementation = String.class))))
     public String testSingleMediaType(String input) {
       return input;
     }
@@ -71,8 +73,10 @@ public class OperationMethodAnnotationProcessorTest {
                 @Content(mediaType = MediaType.TEXT_PLAIN)
             })},
         requestBody = @RequestBody(content = {
-            @Content(mediaType = MediaType.APPLICATION_JSON),
-            @Content(mediaType = MediaType.APPLICATION_XML)
+            @Content(mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = String.class)),
+            @Content(mediaType = MediaType.APPLICATION_XML,
+                schema = @Schema(implementation = String.class))
         }))
     public String testMultiMediaType(String input) {
       return input;
@@ -80,13 +84,16 @@ public class OperationMethodAnnotationProcessorTest {
 
     @Operation(summary = "testBlankMediaType",
         responses = {@ApiResponse(content = @Content(mediaType = ""))},
-        requestBody = @RequestBody(content = @Content(mediaType = "")))
+        requestBody = @RequestBody(content = @Content(mediaType = "",
+            schema = @Schema(implementation = String.class))))
     public String testBlankMediaType(String input) {
       return input;
     }
 
     @Operation(summary = "testBodyParam")
-    public String testBodyParam(@RequestBody TestBodyBean user) {
+    public String testBodyParam(@RequestBody(content = @Content(
+        schema = @Schema(
+            implementation = TestBodyBean.class))) TestBodyBean user) {
       return user.toString();
     }
   }
@@ -172,12 +179,12 @@ public class OperationMethodAnnotationProcessorTest {
   @Test
   public void testBodyParam() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
-    Schema schema = swaggerOperation.getSwagger()
+    io.swagger.v3.oas.models.media.Schema schema = swaggerOperation.getSwagger()
         .getPaths().get("/testBodyParam").getPost().getRequestBody().getContent()
         .get(MediaType.APPLICATION_JSON).getSchema();
     Assertions.assertEquals(Components.COMPONENTS_SCHEMAS_REF + "TestBodyBean", schema.get$ref());
     schema = swaggerOperation.getSwagger().getComponents().getSchemas().get("TestBodyBean");
-    Map<String, Schema> properties = schema.getProperties();
+    Map<String, io.swagger.v3.oas.models.media.Schema> properties = schema.getProperties();
 
 //    swagger new version do not support primitive types(String, Integer, etc...) to use NotBlank, NotEmpty, ...)
 //    Assertions.assertTrue(properties.get("age").getNullable(), "Support NotBlank annotation");
