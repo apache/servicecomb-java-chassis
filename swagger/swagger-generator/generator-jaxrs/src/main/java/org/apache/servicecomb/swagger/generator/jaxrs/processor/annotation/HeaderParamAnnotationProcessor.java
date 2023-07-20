@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -32,9 +31,9 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.HeaderParam;
 
-
+@SuppressWarnings("rawtypes")
 public class HeaderParamAnnotationProcessor extends
-    AbstractParameterProcessor<HeaderParam> {
+    AbstractJaxrsParameterProcessor<HeaderParam> {
   @Override
   public Type getProcessType() {
     return HeaderParam.class;
@@ -53,8 +52,11 @@ public class HeaderParamAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter headerParameter, JavaType type,
       HeaderParam headerParam) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    headerParameter.setSchema(schema);
+    Schema schema = headerParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      headerParameter.setSchema(schema);
+    }
     headerParameter.setName(headerParam.value());
   }
 

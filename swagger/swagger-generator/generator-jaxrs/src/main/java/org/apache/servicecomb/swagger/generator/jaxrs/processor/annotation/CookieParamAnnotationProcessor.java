@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -33,7 +32,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.CookieParam;
 
 public class CookieParamAnnotationProcessor extends
-    AbstractParameterProcessor<CookieParam> {
+    AbstractJaxrsParameterProcessor<CookieParam> {
   @Override
   public Type getProcessType() {
     return CookieParam.class;
@@ -52,8 +51,11 @@ public class CookieParamAnnotationProcessor extends
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter cookieParameter, JavaType type,
       CookieParam cookieParam) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    cookieParameter.setSchema(schema);
+    Schema schema = cookieParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      cookieParameter.setSchema(schema);
+    }
     cookieParameter.setName(cookieParam.value());
   }
 

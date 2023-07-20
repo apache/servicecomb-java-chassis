@@ -340,7 +340,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
     switch (parameterGenerator.getHttpParameterType()) {
-      case BODY:
+      case BODY -> {
         if (this.bodyParameter != null) {
           throw new IllegalStateException("Only one body parameter is allowed.");
         }
@@ -350,14 +350,16 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         this.bodyParameter.setExtensions(extensions);
         parameterGenerator.setGeneratedRequestBody(this.bodyParameter);
         return this.bodyParameter;
-      case FORM:
+      }
+      case FORM -> {
         if (this.bodyParameter == null) {
           this.bodyParameter = new RequestBody();
         }
         parameterGenerator.setGeneratedRequestBody(this.bodyParameter);
         return this.bodyParameter;
-      default:
-        throw new IllegalStateException("not support httpParameterType " + parameterGenerator.getHttpParameterType());
+      }
+      default -> throw new IllegalStateException(
+          "not support httpParameterType " + parameterGenerator.getHttpParameterType());
     }
   }
 

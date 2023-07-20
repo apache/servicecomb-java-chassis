@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.google.inject.util.Types;
@@ -40,7 +39,7 @@ import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class FormParamAnnotationProcessor extends AbstractParameterProcessor<FormParam> {
+public class FormParamAnnotationProcessor extends AbstractJaxrsParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
     return FormParam.class;

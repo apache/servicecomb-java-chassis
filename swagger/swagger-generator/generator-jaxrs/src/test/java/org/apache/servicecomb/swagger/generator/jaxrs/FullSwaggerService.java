@@ -24,6 +24,9 @@ import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import jakarta.servlet.http.Part;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -47,5 +50,13 @@ public class FullSwaggerService {
       @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.FORM, explode = Explode.TRUE)
       @QueryParam("queryList") List<String> queryList) {
     return queryList == null ? "null" : queryList.size() + ":" + queryList;
+  }
+
+  @Path("/defaultValue")
+  @GET
+  public String defaultValue(@QueryParam("e") int e, @DefaultValue("20") @QueryParam("a") int a,
+      @DefaultValue("bobo") @QueryParam("b") String b,
+      @DefaultValue("40") @QueryParam("c") Integer c, @Min(value = 20) @Max(value = 30) @QueryParam("d") int d) {
+    return "Hello " + a + b + c + d + e;
   }
 }

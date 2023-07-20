@@ -32,8 +32,8 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.QueryParam;
 
-
-public class QueryParamAnnotationProcessor extends AbstractParameterProcessor<QueryParam> {
+@SuppressWarnings("rawtypes")
+public class QueryParamAnnotationProcessor extends AbstractJaxrsParameterProcessor<QueryParam> {
   @Override
   public Type getProcessType() {
     return QueryParam.class;
@@ -52,8 +52,11 @@ public class QueryParamAnnotationProcessor extends AbstractParameterProcessor<Qu
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter queryParameter, JavaType type,
       QueryParam queryParam) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    queryParameter.setSchema(schema);
+    Schema schema = queryParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      queryParameter.setSchema(schema);
+    }
     queryParameter.setName(queryParam.value());
   }
 

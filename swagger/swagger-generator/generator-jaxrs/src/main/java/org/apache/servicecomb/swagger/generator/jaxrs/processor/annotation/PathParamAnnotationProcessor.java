@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -32,8 +31,8 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.PathParam;
 
-
-public class PathParamAnnotationProcessor extends AbstractParameterProcessor<PathParam> {
+@SuppressWarnings("rawtypes")
+public class PathParamAnnotationProcessor extends AbstractJaxrsParameterProcessor<PathParam> {
   @Override
   public Type getProcessType() {
     return PathParam.class;
@@ -52,8 +51,11 @@ public class PathParamAnnotationProcessor extends AbstractParameterProcessor<Pat
   @Override
   public void fillParameter(OpenAPI swagger, Operation operation, Parameter pathParameter, JavaType type,
       PathParam pathParam) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    pathParameter.setSchema(schema);
+    Schema schema = pathParameter.getSchema();
+    if (schema == null) {
+      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+      pathParameter.setSchema(schema);
+    }
     pathParameter.setName(pathParam.value());
   }
 

@@ -23,6 +23,46 @@ info:
 servers:
 - url: /FullSwaggerService
 paths:
+  /defaultValue:
+    get:
+      operationId: defaultValue
+      parameters:
+      - name: e
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: a
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      - name: b
+        in: query
+        schema:
+          type: string
+          default: bobo
+      - name: c
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      - name: d
+        in: query
+        schema:
+          maximum: 30
+          minimum: 20
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
   /fileUpload:
     post:
       operationId: fileUpload
