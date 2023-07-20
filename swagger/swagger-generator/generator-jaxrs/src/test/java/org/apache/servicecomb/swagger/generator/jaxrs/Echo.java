@@ -26,7 +26,6 @@ import org.apache.servicecomb.swagger.generator.jaxrs.model.AggregatedParam;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamComplexField;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamComplexSetter;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamDefaultBody;
-import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamInvalidDefaultBody;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithJsonIgnoredTagged;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithPart;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatus;
@@ -53,7 +52,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path(value = "Echo")
@@ -66,18 +64,8 @@ public class Echo {
   @POST
   @ApiResponse(content = {
       @Content(schema = @Schema(type = "number", format = "int32"))}, responseCode = "200", description = "")
+  @Path("response")
   public Response response() {
-    return null;
-  }
-
-  @GET
-  @Produces(MediaType.TEXT_PLAIN)
-  public Response responseText() {
-    return null;
-  }
-
-  @GET
-  public Response invalidResponse() {
     return null;
   }
 
@@ -85,6 +73,7 @@ public class Echo {
   @Produces("")
   @Consumes("")
   @Operation(summary = "")
+  @Path("emptyPath")
   public void emptyPath() {
 
   }
@@ -117,7 +106,7 @@ public class Echo {
     return String.format("%s", query);
   }
 
-  @Path(value = "query")
+  @Path(value = "queryComplex")
   @GET
   public String queryComplex(@QueryParam(value = "querys") List<User> querys) {
     return String.format("%s", querys);
@@ -165,12 +154,6 @@ public class Echo {
   @Path("beanParamDefaultBody")
   @POST
   public void beanParamDefaultBody(@BeanParam BeanParamDefaultBody beanParamDefaultBody) {
-
-  }
-
-  @Path("beanParamInvalidDefaultBody")
-  @POST
-  public void beanParamInvalidDefaultBody(@BeanParam BeanParamInvalidDefaultBody beanParamInvalidDefaultBody) {
 
   }
 

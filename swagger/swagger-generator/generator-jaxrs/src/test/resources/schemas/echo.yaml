@@ -23,6 +23,180 @@ info:
 servers:
 - url: Echo
 paths:
+  /aggregatedParam:
+    post:
+      operationId: aggregatedParam
+      parameters:
+      - name: path0
+        in: path
+        required: true
+        schema:
+          type: string
+          default: pa
+      - name: query1
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: cookie4
+        in: cookie
+        schema:
+          type: integer
+          format: int64
+      - name: header2
+        in: header
+        schema:
+          type: string
+      - name: query-array
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: query-list
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                form3:
+                  type: integer
+                  format: int64
+      responses:
+        "200":
+          description: response of 200
+  /beanParamComplexField:
+    post:
+      operationId: beanParamComplexField
+      parameters:
+      - name: q
+        in: query
+        schema:
+          $ref: '#/components/schemas/AggregatedParam'
+      responses:
+        "200":
+          description: response of 200
+  /beanParamComplexSetter:
+    post:
+      operationId: beanParamComplexSetter
+      parameters:
+      - name: h
+        in: header
+        schema:
+          $ref: '#/components/schemas/AggregatedParam'
+      responses:
+        "200":
+          description: response of 200
+  /beanParamDefaultBody:
+    post:
+      operationId: beanParamDefaultBody
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        x-name: name
+      responses:
+        "200":
+          description: response of 200
+  /beanParamWithJsonIgnoredTaggedBody:
+    post:
+      operationId: beanParamWithJsonIgnoredTagged
+      parameters:
+      - name: name
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+  /beanParamWithPart:
+    post:
+      operationId: beanParamWithPart
+      parameters:
+      - name: queryStr
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                up0:
+                  type: string
+                  format: binary
+                up1:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: response of 200
+  /cookie:
+    post:
+      operationId: cookie
+      parameters:
+      - name: cookie
+        in: cookie
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /dynamicStatusEnum:
+    post:
+      operationId: dynamicStatusEnum
+      parameters:
+      - name: status-aggr
+        in: query
+        description: |
+          dynamic desc aggr
+          - 400: dynamic bad request
+          - 404: dynamic not found
+        required: false
+        explode: false
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        description: |
+          dynamic desc direct
+          - 400: dynamic bad request
+          - 404: dynamic not found
+        required: false
+        explode: false
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicStatusModel'
+        x-name: model
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: |
+                  - 400: dynamic bad request
+                  - 404: dynamic not found
+                format: int32
   /echo/{targetName}:
     post:
       operationId: echo
@@ -50,14 +224,223 @@ paths:
         "200":
           description: response of 200
           content:
-            json:
+            application/json:
               schema:
                 type: string
-            xml:
+  /emptyPath:
+    post:
+      operationId: emptyPath
+      responses:
+        "200":
+          description: response of 200
+  /enumBody:
+    post:
+      operationId: enumBody
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+              - RED
+              - YELLOW
+              - BLUE
+        x-name: color
+      responses:
+        "200":
+          description: response of 200
+  /form:
+    post:
+      operationId: form
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                form:
+                  type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
               schema:
                 type: string
+  /jdkStatusEnum:
+    post:
+      operationId: jdkStatusEnum
+      parameters:
+      - name: status-aggr
+        in: query
+        description: |
+          jdk desc aggr
+          - BAD_REQUEST: jdk bad request
+          - NOT_FOUND: jdk not found
+        required: false
+        explode: false
+        schema:
+          type: string
+          enum:
+          - BAD_REQUEST
+          - NOT_FOUND
+      - name: status
+        in: query
+        description: |
+          jdk desc direct
+          - BAD_REQUEST: jdk bad request
+          - NOT_FOUND: jdk not found
+        required: false
+        explode: false
+        schema:
+          type: string
+          enum:
+          - BAD_REQUEST
+          - NOT_FOUND
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JdkStatusModel'
+        x-name: model
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+                description: |
+                  - BAD_REQUEST: jdk bad request
+                  - NOT_FOUND: jdk not found
+                enum:
+                - BAD_REQUEST
+                - NOT_FOUND
+  /nestedListString:
+    post:
+      operationId: nestedListString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: array
+                items:
+                  type: string
+        x-name: param
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: string
+  /:
+    patch:
+      operationId: patch
+      responses:
+        "200":
+          description: response of 200
+  /query:
+    get:
+      operationId: query
+      parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /queryComplex:
+    get:
+      operationId: queryComplex
+      parameters:
+      - name: querys
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testRawJson:
+    post:
+      operationId: rawJsonStringMethod
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+        x-raw-json: true
+        x-name: jsonInput
+      responses:
+        "200":
+          description: response of 200
+  /response:
+    post:
+      operationId: response
+      responses:
+        "200":
+          description: response of 200
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: number
+                description: ""
+                format: int32
+                nullable: false
+                example: ""
 components:
   schemas:
+    AggregatedParam:
+      type: object
+      properties:
+        strVal:
+          type: string
+        intVal:
+          type: integer
+          format: int32
+        longVal:
+          type: integer
+          format: int64
+        cookieVal:
+          type: integer
+          format: int64
+        headerVal:
+          type: string
+        queryArray:
+          type: array
+          items:
+            type: string
+        queryList:
+          type: array
+          items:
+            type: string
+      x-java-class: org.apache.servicecomb.swagger.generator.jaxrs.model.AggregatedParam
+    DynamicStatusModel:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+      x-java-class: org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatusModel
     User:
       type: object
       properties:
@@ -67,3 +450,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+      x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User
+    JdkStatusModel:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - BAD_REQUEST
+          - NOT_FOUND
+      x-java-class: org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusModel
