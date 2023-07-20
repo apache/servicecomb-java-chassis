@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
 import org.apache.servicecomb.core.Invocation;
@@ -49,6 +47,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 @InjectProperties(prefix = "servicecomb.invocation.exception")
 public class DefaultExceptionProcessor implements ExceptionProcessor {
@@ -116,8 +116,10 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     try {
       ExceptionConverter<Throwable> converter =
           converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped));
-      LOGGER.warn("convert exception {} using {}.", throwable.getClass().getName(),
-          converter.getClass().getName(), throwable);
+      LOGGER.warn("convert operation {} exception {} using {}.",
+          invocation == null ? genericStatus.getStatusCode() : invocation.getMicroserviceQualifiedName(),
+          throwable.getClass().getSimpleName(),
+          converter.getClass().getSimpleName(), throwable);
       return converter.convert(invocation, unwrapped, genericStatus);
     } catch (Exception e) {
       LOGGER.error("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
