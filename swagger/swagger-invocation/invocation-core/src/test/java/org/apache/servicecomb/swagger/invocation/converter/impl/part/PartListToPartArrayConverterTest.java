@@ -31,7 +31,7 @@ public class PartListToPartArrayConverterTest {
 
   @Test
   public void getSrcType() {
-    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<jakarta.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test
