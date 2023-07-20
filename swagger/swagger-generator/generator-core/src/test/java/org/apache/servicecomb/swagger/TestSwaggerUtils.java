@@ -106,32 +106,6 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void correctResponsesOperationDefaultTo200() {
-    ApiResponse response = new ApiResponse();
-
-    Operation operation = new Operation();
-    operation.setResponses(new ApiResponses());
-    operation.getResponses().addApiResponse("default", response);
-
-    SwaggerUtils.correctResponses(operation);
-    Assertions.assertSame(response, operation.getResponses().get("200"));
-  }
-
-  @Test
-  public void correctResponsesOperation2xxTo200() {
-    ApiResponse response = new ApiResponse();
-
-    Operation operation = new Operation();
-    operation.setResponses(new ApiResponses());
-    operation.getResponses().addApiResponse("default", new ApiResponse());
-    operation.getResponses().addApiResponse("201", response);
-    operation.getResponses().addApiResponse("301", new ApiResponse());
-
-    SwaggerUtils.correctResponses(operation);
-    Assertions.assertSame(response, operation.getResponses().get("200"));
-  }
-
-  @Test
   public void correctResponsesHavePaths() {
     ApiResponse response = new ApiResponse();
 

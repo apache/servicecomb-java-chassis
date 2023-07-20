@@ -36,6 +36,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
+import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -44,197 +45,16 @@ import org.mockito.Mockito;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.IntegerSchema;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
 @SuppressWarnings("rawtypes")
 public class TestSwaggerUtils {
 
-  private void testSchemaMethod(String resultName, String... methodNames) {
-    UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
-        Schema.class,
-        methodNames);
-  }
-
   @Test
-  public void testBoolean() {
-    testSchemaMethod("boolean", "testboolean");
-    testSchemaMethod("booleanObject", "testBoolean");
-  }
-
-  @Test
-  public void testByte() {
-    testSchemaMethod("byte", "testbyte");
-    testSchemaMethod("byteObject", "testByte");
-  }
-
-  @Test
-  public void testShort() {
-    testSchemaMethod("short", "testshort");
-    testSchemaMethod("shortObject", "testShort");
-  }
-
-  @Test
-  public void testInt() {
-    testSchemaMethod("int", "testint");
-    testSchemaMethod("intObject", "testInteger");
-  }
-
-  @Test
-  public void testLong() {
-    testSchemaMethod("long", "testlong");
-    testSchemaMethod("longObject", "testLong");
-  }
-
-  @Test
-  public void testFloat() {
-    testSchemaMethod("float", "testfloat");
-    testSchemaMethod("floatObject", "testFloat");
-  }
-
-  @Test
-  public void testDouble() {
-    testSchemaMethod("double", "testdouble");
-    testSchemaMethod("doubleObject", "testDouble");
-  }
-
-  @Test
-  public void should_not_lost_ApiParam_description_when_wrap_parameter_to_body() {
-    testSchemaMethod("wrapToBodyWithDesc", "wrapToBodyWithDesc");
-  }
-
-  @Test
-  public void testOneEnum() {
-    testSchemaMethod("oneEnum", "testOneEnum");
-  }
-
-  @Test
-  public void testEnum() {
-    testSchemaMethod("enum", "testEnum");
-  }
-
-  @Test
-  public void testChar() {
-    testSchemaMethod("char", "testchar");
-    testSchemaMethod("charObject", "testChar");
-  }
-
-  @Test
-  public void testBytes() {
-    testSchemaMethod("bytes", "testbytes");
-    testSchemaMethod("bytesObject", "testBytes");
-  }
-
-  @Test
-  public void testString() {
-    testSchemaMethod("string", "testString");
-  }
-
-  @Test
-  public void testObject() {
-    testSchemaMethod("object", "testObject");
-  }
-
-  @Test
-  public void testArray() {
-    testSchemaMethod("array", "testArray");
-  }
-
-  @Test
-  public void testSet() {
-    testSchemaMethod("set", "testSet");
-  }
-
-  @Test
-  public void testList() {
-    testSchemaMethod("list", "testList");
-  }
-
-  @Test
-  public void nestedListString() {
-    testSchemaMethod("nestedListString", "nestedListString");
-  }
-
-  @Test
-  public void testMap() {
-    testSchemaMethod("map", "testMap");
-  }
-
-  @Test
-  public void testMapList() {
-    testSchemaMethod("mapList", "testMapList");
-  }
-
-  @Test
-  public void testAllType() {
-    // TODO: User do not generate nested properties friends
-    testSchemaMethod("allType", "testAllType");
-  }
-
-  @Test
-  public void testMultiParam() {
-    testSchemaMethod("multiParam", "testMultiParam");
-  }
-
-  @Test
-  public void testAllMethod() {
-    testSchemaMethod("allMethod");
-  }
-
-  @Test
-  public void testResponseHeader() {
-    testSchemaMethod("responseHeader", "testResponseHeader");
-  }
-
-  @Test
-  public void testApiResponse() {
-    testSchemaMethod("apiResponse", "testApiResponse");
-  }
-
-  @Test
-  public void testApiOperation() {
-    testSchemaMethod("apiOperation", "testApiOperation");
-  }
-
-  @Test
-  public void testCompletableFuture() {
-    testSchemaMethod("completableFuture", "testCompletableFuture");
-  }
-
-  @Test
-  public void testOptional() {
-    testSchemaMethod("testOptional", "testOptional");
-  }
-
-  @Test
-  public void testCompletableFutureOptional() {
-    testSchemaMethod("testCompletableFutureOptional", "testCompletableFutureOptional");
-  }
-
-  @Test
-  public void testDate() {
-    testSchemaMethod("date", "testDate");
-  }
-
-  @Test
-  public void testPart() {
-    testSchemaMethod("part", "part");
-  }
-
-  @Test
-  public void testPartArray() {
-    testSchemaMethod("partArray", "partArray");
-  }
-
-  @Test
-  public void testPartList() {
-    testSchemaMethod("partList", "partList");
-  }
-
-  @Test
-  public void should_ignore_httpServletRequest() {
-    testSchemaMethod("ignoreRequest", "ignoreRequest");
+  public void testSchemaMethod() {
+    UnitTestSwaggerUtils.testSwagger("schemas/Schema.yaml",
+        Schema.class);
   }
 
   @Test
@@ -327,7 +147,8 @@ public class TestSwaggerUtils {
   @Test
   public void test_resolve_type_schemas_correct() {
     OpenAPI openAPI = new OpenAPI();
-    Schema schema = SwaggerUtils.resolveTypeSchemas(openAPI, String.class);
+
+    io.swagger.v3.oas.models.media.Schema schema = SwaggerUtils.resolveTypeSchemas(openAPI, String.class);
     Assertions.assertTrue(schema instanceof StringSchema);
 
     openAPI = new OpenAPI();

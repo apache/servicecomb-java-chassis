@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ByteArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -43,9 +42,8 @@ public class TestArrayType {
     Schema schema = openAPI.getComponents().getSchemas().get("testBytesBody");
     Assertions.assertEquals(1, schema.getProperties().size());
 
-    ArraySchema arrayProperty = (ArraySchema) schema.getProperties().get("value");
-    ByteArraySchema byteArrayProperty = (ByteArraySchema) arrayProperty.getItems();
-    Assertions.assertEquals("string", byteArrayProperty.getType());
-    Assertions.assertEquals("byte", byteArrayProperty.getFormat());
+    ByteArraySchema arrayProperty = (ByteArraySchema) schema.getProperties().get("value");
+    Assertions.assertEquals("string", arrayProperty.getType());
+    Assertions.assertEquals("byte", arrayProperty.getFormat());
   }
 }
