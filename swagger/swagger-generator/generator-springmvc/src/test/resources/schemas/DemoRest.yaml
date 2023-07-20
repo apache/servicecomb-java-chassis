@@ -16,3 +16,49 @@
 ## ---------------------------------------------------------------------------
 
 ---
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessorTest$DemoRest
+  version: 1.0.0
+servers:
+- url: /DemoRest
+paths:
+  /fun:
+    post:
+      operationId: fun
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                stringParam:
+                  type: string
+                intParam:
+                  type: integer
+                  format: int32
+                stringParamArray:
+                  type: array
+                  items:
+                    type: string
+                stringParamCollection:
+                  type: array
+                  items:
+                    type: string
+                file:
+                  type: string
+                  format: binary
+                fileArray:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                fileCollection:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: response of 200
+components:
+  schemas: {}
