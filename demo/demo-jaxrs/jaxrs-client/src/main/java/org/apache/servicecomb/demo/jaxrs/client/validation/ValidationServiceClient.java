@@ -89,7 +89,7 @@ public class ValidationServiceClient {
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(e.getErrorData().toString().contains("Parameter is required."), true);
+      TestMgr.check(e.getErrorData().toString().contains("Parameter name is required."), true);
     }
 
     Teacher teacher = new Teacher();
