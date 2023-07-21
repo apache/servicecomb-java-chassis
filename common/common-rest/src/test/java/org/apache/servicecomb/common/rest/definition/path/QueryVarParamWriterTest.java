@@ -31,7 +31,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
 

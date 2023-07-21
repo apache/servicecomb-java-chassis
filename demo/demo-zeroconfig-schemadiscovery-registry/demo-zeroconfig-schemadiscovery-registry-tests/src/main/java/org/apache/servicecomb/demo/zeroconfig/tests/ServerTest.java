@@ -20,7 +20,6 @@ package org.apache.servicecomb.demo.zeroconfig.tests;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
