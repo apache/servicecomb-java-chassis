@@ -196,7 +196,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     request.setMessage("success result");
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", request, MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 200);
+    TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -235,7 +235,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
 
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", requestJson, MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 200);
+    TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -248,7 +248,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", new JsonObject(stringRequest),
             MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 200);
+    TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);

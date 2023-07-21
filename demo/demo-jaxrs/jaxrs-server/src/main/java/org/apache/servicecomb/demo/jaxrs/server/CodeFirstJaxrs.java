@@ -19,14 +19,12 @@ package org.apache.servicecomb.demo.jaxrs.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.compute.Person;
@@ -227,45 +225,11 @@ public class CodeFirstJaxrs {
     return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
   }
 
-  @Path("/upload1")
-  @POST
-  @Produces(MediaType.TEXT_PLAIN)
-  public String fileUpload1(@FormParam("file1") Part file1, @FormParam("file2") Part file2) throws IOException {
-    if (file1 == null || file2 == null) {
-      return "null file";
-    }
-    try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
-      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
-      String content2 = IOUtils.toString(is2, StandardCharsets.UTF_8);
-      return String.format("%s:%s:%s\n" + "%s:%s:%s",
-          file1.getSubmittedFileName(),
-          file1.getContentType(),
-          content1,
-          file2.getSubmittedFileName(),
-          file2.getContentType(),
-          content2);
-    }
-  }
-
   @GET
   @Path("/responseLong")
   @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Object.class)), description = "")
   public Response responseLong() {
     return Response.createSuccess(Long.MAX_VALUE);
-  }
-
-  @Path("/upload2")
-  @POST
-  @Produces(MediaType.TEXT_PLAIN)
-  public String fileUpload2(@FormParam("file1") Part file1, @FormParam("message") String message) throws IOException {
-    try (InputStream is1 = file1.getInputStream()) {
-      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
-      return String.format("%s:%s:%s:%s",
-          file1.getSubmittedFileName(),
-          file1.getContentType(),
-          content1,
-          message);
-    }
   }
 
   @Path("/download/testDeleteAfterFinished")

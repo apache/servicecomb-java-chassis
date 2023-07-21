@@ -19,14 +19,12 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -95,8 +93,6 @@ public class FormParamAnnotationProcessor extends AbstractJaxrsParameterProcesso
   }
 
   private boolean isPart(JavaType type) {
-    return Part.class.equals(type.getRawClass()) ||
-        Types.newParameterizedType(List.class, Part.class).equals(type.getRawClass()) ||
-        Part[].class.equals(type.getRawClass());
+    return Part.class.equals(type.getRawClass());
   }
 }

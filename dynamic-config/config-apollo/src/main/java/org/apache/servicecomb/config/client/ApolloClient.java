@@ -127,7 +127,7 @@ public class ApolloClient {
         }
       } else {
         LOGGER.error("fetch configuration failed, error code:{} for {}",
-            exchange.getStatusCodeValue(),
+            exchange.getStatusCode().value(),
             exchange.getBody());
       }
     }

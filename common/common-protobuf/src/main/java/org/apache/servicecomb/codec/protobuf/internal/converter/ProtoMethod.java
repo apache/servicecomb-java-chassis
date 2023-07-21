@@ -18,6 +18,7 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 
@@ -30,7 +31,7 @@ public class ProtoMethod {
 
   @JsonProperty
   // key is status
-  private Map<Integer, ProtoResponse> responses = new HashMap<>();
+  private final Map<Integer, ProtoResponse> responses = new HashMap<>();
 
   private ProtoResponse defaultResponse;
 
@@ -63,9 +64,9 @@ public class ProtoMethod {
     }
 
     if (statusCode == Status.OK.getStatusCode()) {
-      for (Integer code : responses.keySet()) {
-        if (HttpStatus.isSuccess(code)) {
-          return responses.get(code);
+      for (Entry<Integer, ProtoResponse> code : responses.entrySet()) {
+        if (HttpStatus.isSuccess(code.getKey())) {
+          return responses.get(code.getKey());
         }
       }
     }

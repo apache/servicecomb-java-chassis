@@ -46,19 +46,19 @@ public class TestRestTemplate {
   private void testvoidResponse() {
     ResponseEntity<Void> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/testvoidInRestTemplate", void.class);
-    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "void return type invocation failed");
+    Assert.isTrue(200 == resultEntity.getStatusCode().value(), "void return type invocation failed");
   }
 
   private void testVoidResponse() {
     ResponseEntity<Void> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
-    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
+    Assert.isTrue(200 == resultEntity.getStatusCode().value(), "Void return type invocation failed");
     resultEntity = restTemplate
         .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
-    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
+    Assert.isTrue(200 == resultEntity.getStatusCode().value(), "Void return type invocation failed");
     resultEntity = restTemplate
         .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/testDefaultGetApiExample", Void.class);
-    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
+    Assert.isTrue(200 == resultEntity.getStatusCode().value(), "Void return type invocation failed");
   }
 
   private void checkAllVoidTestResult() {
