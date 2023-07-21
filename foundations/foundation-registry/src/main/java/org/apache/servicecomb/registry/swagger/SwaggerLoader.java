@@ -60,26 +60,6 @@ public class SwaggerLoader {
     return Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString();
   }
 
-  /**
-   * <pre>
-   * register swaggers in the location to current microservice
-   * Scenes for contract first mode:
-   *  1.consumer
-   *    manager manage some product, can only know product microservice names after deploy
-   *    and can only register swagger after product registered
-   *    in fact, consumers can load swagger from ServiceCenter
-   *    so for consumer, this logic is not necessary, just keep it for compatible
-   *  2.producer
-   *    deploy to different microservice name in different product
-   *    can register swaggers in BootListener.onBeforeProducerProvider
-   * </pre>
-   * @param swaggersLocation eg. "test/schemas", will load all test/schemas/*.yaml
-   */
-  public void registerSwaggersInLocation(String swaggersLocation) {
-    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
-    registerSwaggersInLocation(microserviceName, swaggersLocation);
-  }
-
   public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
     LOGGER.info("register schemas in location [{}], microserviceName=[{}]", swaggersLocation, microserviceName);
     try {
