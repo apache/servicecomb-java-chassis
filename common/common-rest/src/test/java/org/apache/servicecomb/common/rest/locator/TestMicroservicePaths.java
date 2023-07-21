@@ -89,11 +89,11 @@ public class TestMicroservicePaths {
       collector.getEvents()
           .forEach(e -> sb.append(e.getMessage().getFormattedMessage()).append("\n"));
       Assertions.assertEquals(
-          "Swagger mapped \"{[/static/], method=[POST], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.postStatic()\n"
-              + "Swagger mapped \"{[/static/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStatic()\n"
-              + "Swagger mapped \"{[/staticEx/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStaticEx()\n"
-              + "Swagger mapped \"{[/dynamicEx/{id}/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicExId(java.lang.String)\n"
-              + "Swagger mapped \"{[/dynamic/{id}/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicId(java.lang.String)\n",
+          "Swagger mapped \"{[/static/], method=[POST]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.postStatic()\n"
+              + "Swagger mapped \"{[/static/], method=[GET]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStatic()\n"
+              + "Swagger mapped \"{[/staticEx/], method=[GET]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStaticEx()\n"
+              + "Swagger mapped \"{[/dynamicEx/{id}/], method=[GET]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicExId(java.lang.String)\n"
+              + "Swagger mapped \"{[/dynamic/{id}/], method=[GET]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicId(java.lang.String)\n",
           sb.toString());
     }
   }

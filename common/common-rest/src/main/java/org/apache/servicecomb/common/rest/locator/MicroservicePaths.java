@@ -97,10 +97,9 @@ public class MicroservicePaths {
     for (RestOperationMeta operation : operations) {
       SwaggerProducerOperation producerOperation = operation.getOperationMeta().getSwaggerProducerOperation();
 
-      LOGGER.info("Swagger mapped \"{[{}], method=[{}], produces={}}\" onto {}",
+      LOGGER.info("Swagger mapped \"{[{}], method=[{}]}\" onto {}",
           operation.getAbsolutePath(),
           operation.getHttpMethod(),
-          operation.getProduces(),
           producerOperation.getProducerMethod());
     }
   }

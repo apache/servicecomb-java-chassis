@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public class TestHeaderProcessor {
@@ -59,6 +60,7 @@ public class TestHeaderProcessor {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
 
     HeaderParameter headerParameter = new HeaderParameter();
+    headerParameter.setSchema(new Schema());
     headerParameter.name(name)
         .required(required);
     headerParameter.getSchema().setDefault(defaultValue);

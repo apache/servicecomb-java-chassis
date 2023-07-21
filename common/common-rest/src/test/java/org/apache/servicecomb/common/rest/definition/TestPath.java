@@ -31,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.PathParameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
@@ -99,11 +100,13 @@ public class TestPath {
 
     Parameter pathParameter = new PathParameter();
     pathParameter.setName("id");
+    pathParameter.setSchema(new Schema<>());
     RestParam oRestParam = new RestParam(pathParameter, int.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     Parameter queryParameter = new QueryParameter();
     queryParameter.setName("q");
+    queryParameter.setSchema(new Schema<>());
     oRestParam = new RestParam(queryParameter, String.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
@@ -120,6 +123,7 @@ public class TestPath {
     boolean status = true;
 
     Parameter parameter = new QueryParameter();
+    parameter.setSchema(new Schema<>());
     RestParam restParam = new RestParam(parameter, String.class);
     RestParam spy = Mockito.spy(restParam);
     Mockito.when(spy.getParamName()).thenReturn("queryVar");

@@ -21,6 +21,7 @@ import org.apache.servicecomb.common.rest.codec.param.PathProcessorCreator.PathP
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.PathParameter;
 
@@ -31,6 +32,7 @@ public class TestPathProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.findValue(PathProcessorCreator.PARAMTYPE);
     Parameter parameter = new PathParameter();
     parameter.setName("path");
+    parameter.setSchema(new Schema());
 
     ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
 

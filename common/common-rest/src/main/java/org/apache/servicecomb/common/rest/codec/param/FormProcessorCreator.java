@@ -54,8 +54,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
           formParameter.getContent().get(mediaType).getSchema().getDefault(),
           formParameter.getRequired() != null && formParameter.getRequired());
 
-      this.repeatedType = formParameter.getContent().get(mediaType).getSchema() instanceof
-          ArraySchema;
+      this.repeatedType = formParameter.getContent().get(mediaType)
+          .getSchema().getProperties().get(paraName) instanceof ArraySchema;
     }
 
     @Override

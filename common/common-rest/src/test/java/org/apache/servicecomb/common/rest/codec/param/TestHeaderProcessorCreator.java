@@ -21,6 +21,7 @@ import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.Hea
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public class TestHeaderProcessorCreator {
@@ -30,6 +31,7 @@ public class TestHeaderProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.findValue(HeaderProcessorCreator.PARAMTYPE);
     HeaderParameter hp = new HeaderParameter();
     hp.setName("h1");
+    hp.setSchema(new Schema());
 
     ParamValueProcessor processor = creator.create(hp.getName(), hp, String.class);
 

@@ -25,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
@@ -58,6 +56,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.json.Json;
+import jakarta.servlet.http.Part;
 
 public class RestServerCodecFilterTest {
   final RestServerCodecFilter codecFilter = new RestServerCodecFilter();
@@ -117,7 +116,8 @@ public class RestServerCodecFilterTest {
   private void mockDecodeRequestFail() {
     Mockito.when(invocation.getTransportContext()).thenReturn(transportContext);
     Mockito.when(transportContext.getResponseEx()).thenReturn(responseEx);
-    Mockito.when(invocation.getRequestEx()).thenThrow(new RuntimeExceptionWithoutStackTrace("mock encode request failed"));
+    Mockito.when(invocation.getRequestEx())
+        .thenThrow(new RuntimeExceptionWithoutStackTrace("mock encode request failed"));
   }
 
   @Test
@@ -135,20 +135,21 @@ public class RestServerCodecFilterTest {
       throws ExecutionException, InterruptedException {
     mockDecodeRequestFail();
     Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode()))
-            .thenReturn(TypeFactory.defaultInstance().constructType(String.class));
+        .thenReturn(TypeFactory.defaultInstance().constructType(String.class));
 
     Response response = codecFilter.onFilter(invocation, nextNode).get();
 
     assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
     assertThat(Json.encode(response.getResult())).
-            isIn("{\"code\":\"SCB.50000000\",\"message\":\"mock encode request failed\"}",
-                    "{\"message\":\"mock encode request failed\",\"code\":\"SCB.50000000\"}");
+        isIn("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected "
+            + "exception when processing null. mock encode request failed\"}");
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {
     Mockito.when(invocation.getTransportContext()).thenReturn(transportContext);
     Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
-    Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode())).thenReturn(TypeFactory.defaultInstance().constructType(String.class));
+    Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode()))
+        .thenReturn(TypeFactory.defaultInstance().constructType(String.class));
     JavaType javaType = Mockito.mock(JavaType.class);
     Mockito.when(invocationRuntimeType.findResponseType(200)).thenReturn(javaType);
     Mockito.when(javaType.getRawClass()).thenAnswer(invocationOnMock -> Part.class);
@@ -163,7 +164,7 @@ public class RestServerCodecFilterTest {
     headers.add("h1", "v1");
     success_invocation();
 
-   Mockito.verify(responseEx).addHeader("h1", "v1");
+    Mockito.verify(responseEx).addHeader("h1", "v1");
   }
 
   @Test
