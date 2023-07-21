@@ -59,4 +59,12 @@ public class FullSwaggerService {
       @DefaultValue("40") @QueryParam("c") Integer c, @Min(value = 20) @Max(value = 30) @QueryParam("d") int d) {
     return "Hello " + a + b + c + d + e;
   }
+
+  // TODO: should produces text/plain for string
+//  @Path("/textPlain")
+//  @GET
+//  @Produces(MediaType.TEXT_PLAIN)
+//  public String textPlain() {
+//    return null;
+//  }
 }

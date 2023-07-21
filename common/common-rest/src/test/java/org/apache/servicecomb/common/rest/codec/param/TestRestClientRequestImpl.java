@@ -16,14 +16,12 @@
  */
 package org.apache.servicecomb.common.rest.codec.param;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -32,7 +30,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -43,7 +40,9 @@ import io.vertx.core.Context;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
-import static org.assertj.core.api.Assertions.assertThat;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 public class TestRestClientRequestImpl {
   private HttpClientRequest request;
@@ -74,13 +73,15 @@ public class TestRestClientRequestImpl {
   public void testCookie() throws Exception {
     final MultiMap map = MultiMap.caseInsensitiveMultiMap();
     Mockito.doAnswer(invocation -> {
-      map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
-      return null;
-    }).when(request).putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+          map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+          return null;
+        }).when(request)
+        .putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
     Mockito.doAnswer(invocation -> {
-      map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
-      return null;
-    }).when(request).putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "region=china-north; sessionid=abcdefghijklmnopqrstuvwxyz; ");
+          map.add(io.vertx.core.http.HttpHeaders.COOKIE, "sessionid=abcdefghijklmnopqrstuvwxyz; region=china-north; ");
+          return null;
+        }).when(request)
+        .putHeader(io.vertx.core.http.HttpHeaders.COOKIE, "region=china-north; sessionid=abcdefghijklmnopqrstuvwxyz; ");
     Mockito.when(request.headers()).thenReturn(map);
 
     RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
@@ -149,33 +150,15 @@ public class TestRestClientRequestImpl {
   }
 
   @Test
-  @EnabledOnJre(JRE.JAVA_8)
-  public void doEndWithUploadForJre8() {
-    Map<String, String> headers = new HashMap<>();
-    Mockito.doAnswer(invocation -> {
-      headers.put(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null");
-      return null;
-    }).when(request).putHeader(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null");
-
-    UUID uuid = new UUID(0, 0);
-    try (MockedStatic<UUID> mockedStatic = Mockito.mockStatic(UUID.class)) {
-      mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
-      RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
-      restClientRequest.doEndWithUpload();
-
-      Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null",
-              headers.get(HttpHeaders.CONTENT_TYPE));
-    }
-  }
-
-  @Test
   @EnabledForJreRange(min = JRE.JAVA_9)
   public void doEndWithUploadAfterJre8() {
     Map<String, String> headers = new HashMap<>();
     Mockito.doAnswer(invocation -> {
-      headers.put(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
+      headers.put(HttpHeaders.CONTENT_TYPE,
+          "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
       return null;
-    }).when(request).putHeader(HttpHeaders.CONTENT_TYPE, "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
+    }).when(request).putHeader(HttpHeaders.CONTENT_TYPE,
+        "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
 
     UUID uuid = new UUID(0, 0);
     try (MockedStatic<UUID> mockedStatic = Mockito.mockStatic(UUID.class)) {
@@ -183,8 +166,9 @@ public class TestRestClientRequestImpl {
       RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
       restClientRequest.doEndWithUpload();
 
-      Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
-              headers.get(HttpHeaders.CONTENT_TYPE));
+      Assertions.assertEquals(
+          "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
+          headers.get(HttpHeaders.CONTENT_TYPE));
     }
   }
 }

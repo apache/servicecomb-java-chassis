@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -31,17 +29,21 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TestQueryProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-  private ParamValueProcessor createProcessor(String name, Class<?> type, String collectionFormat) {
-    return createProcessor(name, type, null, true, collectionFormat);
+  private ParamValueProcessor createProcessor(String name, Class<?> type,
+      Parameter.StyleEnum style, boolean explode) {
+    return createProcessor(name, type, null, true, style, explode);
   }
 
   private ParamValueProcessor createProcessor(String name, Class<?> type, String defaultValue, boolean required,
-      String collectionFormat) {
+      Parameter.StyleEnum style, boolean explode) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
 
     QueryParameter queryParameter = new QueryParameter();
@@ -52,7 +54,8 @@ public class TestQueryProcessor {
 
     if (javaType.isContainerType()) {
       queryParameter.setSchema(new ArraySchema());
-      queryParameter.getSchema().setFormat(collectionFormat);
+      queryParameter.setExplode(explode);
+      queryParameter.setStyle(style);
     }
     return new QueryProcessor(queryParameter, javaType);
   }
@@ -61,7 +64,7 @@ public class TestQueryProcessor {
   public void testGetValueNormal() throws Exception {
     Mockito.when(request.getParameter("name")).thenReturn("value");
 
-    ParamValueProcessor processor = createProcessor("name", String.class, "multi");
+    ParamValueProcessor processor = createProcessor("name", String.class, StyleEnum.FORM, true);
     Object value = processor.getValue(request);
     Assertions.assertEquals("value", value);
   }
@@ -70,7 +73,7 @@ public class TestQueryProcessor {
   public void testGetValueContainerType() throws Exception {
     Mockito.when(request.getParameterValues("name")).thenReturn(new String[] {"value", "value2"});
 
-    ParamValueProcessor processor = createProcessor("name", String[].class, "multi");
+    ParamValueProcessor processor = createProcessor("name", String[].class, StyleEnum.FORM, true);
     String[] value = (String[]) processor.getValue(request);
     MatcherAssert.assertThat(value, Matchers.arrayContaining("value", "value2"));
   }
@@ -79,14 +82,14 @@ public class TestQueryProcessor {
   public void testGetValueOnCollectionFormatIsCsv() throws Exception {
     Mockito.when(request.getParameter("name")).thenReturn("value2,value3");
 
-    ParamValueProcessor processor = createProcessor("name", String[].class, "csv");
+    ParamValueProcessor processor = createProcessor("name", String[].class, StyleEnum.FORM, false);
     String[] value = (String[]) processor.getValue(request);
     MatcherAssert.assertThat(value, Matchers.arrayContaining("value2", "value3"));
   }
 
   @Test
   public void testGetProcessorType() {
-    ParamValueProcessor processor = createProcessor("name", String.class, "multi");
+    ParamValueProcessor processor = createProcessor("name", String.class, StyleEnum.FORM, true);
     Assertions.assertEquals("query", processor.getProcessorType());
   }
 
@@ -94,12 +97,12 @@ public class TestQueryProcessor {
   public void testGetValueRequiredTrue() throws Exception {
     Mockito.when(request.getParameter("name")).thenReturn(null);
 
-    ParamValueProcessor processor = createProcessor("name", String.class, "multi");
+    ParamValueProcessor processor = createProcessor("name", String.class, StyleEnum.FORM, true);
     try {
       processor.getValue(request);
       Assertions.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assertions.assertTrue(e.getMessage().contains("Parameter is required."));
+      Assertions.assertTrue(e.getMessage().contains("Parameter name is required."));
     }
   }
 
@@ -107,7 +110,7 @@ public class TestQueryProcessor {
   public void testGetValueRequiredFalse() throws Exception {
     Mockito.when(request.getParameter("name")).thenReturn(null);
 
-    ParamValueProcessor processor = createProcessor("name", String.class, "test", false, "multi");
+    ParamValueProcessor processor = createProcessor("name", String.class, "test", false, StyleEnum.FORM, true);
     Object result = processor.getValue(request);
     Assertions.assertEquals("test", result);
   }

@@ -38,7 +38,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.MediaType;
@@ -59,18 +60,25 @@ public class TestFormProcessor {
 
     RequestBody formParameter = new RequestBody();
     Content content = new Content();
-    StringSchema schema = new StringSchema();
-    schema.setDefault(defaultValue);
+    MapSchema schema = new MapSchema();
     io.swagger.v3.oas.models.media.MediaType mediaType = new io.swagger.v3.oas.models.media.MediaType();
-    mediaType.schema(schema);
+
+    if (javaType.isContainerType()) {
+      Schema propertySchema = new ArraySchema();
+      schema.addProperty(name, propertySchema);
+      mediaType.schema(schema);
+    } else {
+      Schema propertySchema = new Schema();
+      propertySchema.setDefault(defaultValue);
+      schema.addProperty(name, propertySchema);
+      mediaType.schema(schema);
+    }
+
     content.addMediaType(MediaType.APPLICATION_FORM_URLENCODED,
-        new io.swagger.v3.oas.models.media.MediaType().schema(schema));
+        mediaType);
     formParameter.content(content)
         .required(required);
 
-    if (javaType.isContainerType()) {
-      mediaType.schema(new ArraySchema());
-    }
     return new FormProcessor(name, formParameter, MediaType.APPLICATION_FORM_URLENCODED, javaType);
   }
 

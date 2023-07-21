@@ -17,20 +17,30 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
+import java.util.HashMap;
+
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class TestBodyProcessorCreator {
   @Test
   public void testCreateNormal() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
     RequestBody param = new RequestBody();
+    param.setContent(new Content());
+    param.getContent().addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE, new MediaType());
+    param.getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).setSchema(new Schema());
+    param.setExtensions(new HashMap<>());
 
     ParamValueProcessor processor = creator.create(null, param, String.class);
 
@@ -42,6 +52,9 @@ public class TestBodyProcessorCreator {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAM_TYPE);
     RequestBody param = new RequestBody();
+    param.setContent(new Content());
+    param.getContent().addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE, new MediaType());
+    param.getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).setSchema(new Schema());
     param.addExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
     ParamValueProcessor processor = creator.create(null, param, String.class);

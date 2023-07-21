@@ -37,6 +37,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import jakarta.ws.rs.core.Response.Status;
@@ -59,6 +60,7 @@ public class TestRestCodec {
   public static void beforeClass() {
     Parameter hp = new HeaderParameter();
     hp.setName("header");
+    hp.setSchema(new Schema());
     RestParam restParam = new RestParam(hp, int.class);
 
     restOperation = Mockito.mock(RestOperationMeta.class);

@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class TestQueryProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
-
+    parameter.setSchema(new Schema());
     ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
@@ -60,6 +61,7 @@ public class TestQueryProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
+    parameter.setSchema(new Schema());
 
     ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
 

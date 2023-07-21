@@ -31,6 +31,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class QueryVarParamWriterTest {
@@ -45,19 +47,22 @@ public class QueryVarParamWriterTest {
     QueryParameter parameter = new QueryParameter();
     parameter.setName("q");
     parameter.setSchema(new Schema());
-    parameter.getSchema().setType("csv");
+    parameter.setStyle(StyleEnum.FORM);
+    parameter.setExplode(false);
     queryVarParamWriterCsv = new QueryVarParamWriter(
         new RestParam(parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
     parameter.setSchema(new Schema());
-    parameter.getSchema().setType("multi");
+    parameter.setStyle(StyleEnum.FORM);
+    parameter.setExplode(true);
     queryVarParamWriterMulti = new QueryVarParamWriter(
         new RestParam(parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
+    parameter.setSchema(new Schema());
     queryVarParamWriterDefault = new QueryVarParamWriter(
         new RestParam(parameter, String[].class));
   }

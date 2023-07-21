@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.PathParameter;
 import io.swagger.v3.oas.models.parameters.QueryParameter;
@@ -117,6 +118,7 @@ public class URLPathBuilderTest {
       ParameterConstructor constructor, Map<String, RestParam> paramMap) {
     Parameter parameter = constructor.construct();
     parameter.setName(paramName);
+    parameter.setSchema(new Schema());
     paramMap.put(paramName, new RestParam(parameter, paramType));
   }
 
