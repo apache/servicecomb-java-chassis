@@ -249,7 +249,7 @@ public class TestSchemaMetaCodec {
     args.put("users", userMap);
     if (isPojo) {
       Map<String, Object> swaggerArgs = new HashMap<>(1);
-      swaggerArgs.put("users", args);
+      swaggerArgs.put("listListUserBody", args);
       values = requestSerializer.serialize(swaggerArgs);
     } else {
       values = requestSerializer.serialize(args);
@@ -257,7 +257,7 @@ public class TestSchemaMetaCodec {
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
     if (isPojo) {
-      decodedUserArgs = (Map<String, Object>) decodedUserArgs.get("users");
+      decodedUserArgs = (Map<String, Object>) decodedUserArgs.get("mapUserBody");
       Assertions.assertEquals(user.name,
           ((Map<String, Map<String, Object>>) decodedUserArgs.get("users")).get("test").get("name"));
       Assertions.assertEquals(user.friends.get(0).name,
@@ -272,13 +272,15 @@ public class TestSchemaMetaCodec {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(userMap);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
+    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values,
+        TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, User.class));
     Assertions.assertEquals(user.name, decodedUser.get("test").name);
     Assertions.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(userMap);
-    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
+    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values,
+        TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, User.class));
     Assertions.assertEquals(user.name, decodedUser.get("test").name);
     // proto buffer encode and decode empty list to be null
     Assertions.assertNull(decodedUser.get("test").friends);
@@ -443,7 +445,7 @@ public class TestSchemaMetaCodec {
 
     if (isPojo) {
       Map<String, Object> swaggerArgs = new HashMap<>();
-      swaggerArgs.put("value", args);
+      swaggerArgs.put("listListUserBody", args);
       values = requestSerializer.serialize(swaggerArgs);
     } else {
       values = requestSerializer.serialize(args);
@@ -453,7 +455,7 @@ public class TestSchemaMetaCodec {
     Map<String, Object> decodedArgs;
     if (isPojo) {
       Assertions.assertEquals(1, decodedSwaggerArgs.size());
-      decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("value");
+      decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("listListUserBody");
     } else {
       decodedArgs = decodedSwaggerArgs;
     }
