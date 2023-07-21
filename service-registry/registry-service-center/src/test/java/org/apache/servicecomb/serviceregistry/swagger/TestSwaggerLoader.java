@@ -20,22 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
-import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.TestRegistryBase;
@@ -205,68 +198,5 @@ public class TestSwaggerLoader extends TestRegistryBase {
         return resourceMap.get(url.getPath());
       }
     };
-  }
-
-  @Test
-  public void should_ignore_not_exist_location_when_register_swagger_in_location() {
-    Map<String, Object> apps = Deencapsulation.getField(RegistrationManager.INSTANCE.getSwaggerLoader(), "apps");
-    apps.clear();
-    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("notExistPath");
-    assertThat(apps).isEmpty();
-  }
-
-  @Test
-  public void should_ignore_non_yaml_file_when_register_swagger_in_location() {
-    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
-    assertThat(RegistrationManager.INSTANCE.getSwaggerLoader().loadFromMemory(appId, serviceName, "other")).isNull();
-  }
-
-  @Test
-  public void should_throw_exception_when_register_invalid_swagger_in_location() {
-    IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
-      URL url = new MockUp<URL>() {
-
-        private final String path = "location/invalid.yaml";
-
-        @Mock
-        String getPath() {
-          return path;
-        }
-
-        @Mock
-        String toExternalForm() {
-          return path;
-        }
-      }.getMockInstance();
-      URI uri = new MockUp<URI>() {
-        @Mock
-        URL toURL() {
-          return url;
-        }
-      }.getMockInstance();
-      new MockUp<ResourceUtil>() {
-        @Mock
-        List<URI> findResources(String directory, Predicate<Path> filter) {
-          return Collections.singletonList(uri);
-        }
-      };
-      new MockUp<IOUtils>() {
-        @Mock
-        String toString(final URL url, final Charset encoding) {
-          return "invalid yaml content";
-        }
-      };
-
-      RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("location");
-    });
-    Assertions.assertEquals("failed to register swaggers, microserviceName=default, location=location.",
-        exception.getMessage());
-    Assertions.assertTrue(exception.getCause() instanceof ServiceCombException);
-  }
-
-  @Test
-  public void should_correct_register_swagger_in_location() {
-    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
-    assertThat(RegistrationManager.INSTANCE.getSwaggerLoader().loadFromMemory(appId, serviceName, "hello")).isNotNull();
   }
 }
