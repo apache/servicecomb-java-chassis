@@ -16,11 +16,9 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import mockit.Expectations;
-import mockit.Mocked;
-import org.apache.logging.log4j.core.LogEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -34,8 +32,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestMicroserviceRegisterTask {
   private EventBus eventBus;
@@ -520,86 +521,60 @@ public class TestMicroserviceRegisterTask {
         srClient.getSchemas(anyString);
         result = onlineSchemasHolder;
         srClient.getSchema(anyString, anyString);
-        result = "swagger: \"2.0\"\n" +
-            "info:\n" +
-            "  version: \"1.0.0\"\n" +
-            "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
-            "basePath: \"/clientreqtimeout\"\n" +
-            "consumes:\n" +
-            "- \"application/json\"\n" +
-            "produces:\n" +
-            "- \"application/json\"\n" +
-            "paths:\n" +
-            "  /sayhello:\n" +
-            "    post:\n" +
-            "      operationId: \"sayHello\"\n" +
-            "      parameters:\n" +
-            "      - in: \"body\"\n" +
-            "        name: \"student\"\n" +
-            "        required: false\n" +
-            "        schema:\n" +
-            "          $ref: \"#/definitions/Student\"\n" +
-            "      responses:\n" +
-            "        200:\n" +
-            "          description: \"response of 200\"\n" +
-            "          schema:\n" +
-            "            $ref: \"#/definitions/Student\"\n" +
-            "definitions:\n" +
-            "  Student:\n" +
-            "    type: \"object\"\n" +
-            "    required:\n" +
-            "    - \"name\"\n" +
-            "    properties:\n" +
-            "      name:\n" +
-            "        type: \"string\"\n" +
-            "      age:\n" +
-            "        type: \"integer\"\n" +
-            "        format: \"int32\"\n" +
-            "        maximum: 20\n" +
-            "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"";
+        result = "openapi: 3.0.1\n"
+            + "info:\n"
+            + "  title: swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\n"
+            + "  version: 1.0.0\n"
+            + "servers:\n"
+            + "- url: /forScheam\n"
+            + "paths:\n"
+            + "  /uploadFile:\n"
+            + "    post:\n"
+            + "      operationId: uploadAwardFile\n"
+            + "      parameters:\n"
+            + "      - name: fileType\n"
+            + "        in: query\n"
+            + "        required: true\n"
+            + "        schema:\n"
+            + "          type: string\n"
+            + "      responses:\n"
+            + "        \"200\":\n"
+            + "          description: response of 200\n"
+            + "          content:\n"
+            + "            application/json:\n"
+            + "              schema:\n"
+            + "                type: boolean\n"
+            + "components:\n"
+            + "  schemas: {}";
       }
     };
 
     microservice.addSchema("s1",
-        "swagger: \"2.0\"\n" +
-            "info:\n" +
-            "  version: \"1.0.0\"\n" +
-            "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
-            "basePath: \"/clientreqtimeout\"\n" +
-            "consumes:\n" +
-            "- \"application/json\"\n" +
-            "produces:\n" +
-            "- \"application/json\"\n" +
-            "paths:\n" +
-            "  /sayhello:\n" +
-            "    post:\n" +
-            "      operationId: \"sayHello\"\n" +
-            "      parameters:\n" +
-            "      - in: \"body\"\n" +
-            "        name: \"student\"\n" +
-            "        required: false\n" +
-            "        schema:\n" +
-            "          $ref: \"#/definitions/Student\"\n" +
-            "      responses:\n" +
-            "        200:\n" +
-            "          description: \"response of 200\"\n" +
-            "          schema:\n" +
-            "            type: \"string\"\n" +
-            "definitions:\n" +
-            "  Student:\n" +
-            "    type: \"object\"\n" +
-            "    required:\n" +
-            "    - \"name\"\n" +
-            "    properties:\n" +
-            "      name:\n" +
-            "        type: \"string\"\n" +
-            "      age:\n" +
-            "        type: \"integer\"\n" +
-            "        format: \"int32\"\n" +
-            "        maximum: 20\n" +
-            "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"");
+        "openapi: 3.0.1\n"
+            + "info:\n"
+            + "  title: swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\n"
+            + "  version: 1.0.0\n"
+            + "servers:\n"
+            + "- url: /forScheam\n"
+            + "paths:\n"
+            + "  /uploadFile:\n"
+            + "    post:\n"
+            + "      operationId: uploadAwardFile\n"
+            + "      parameters:\n"
+            + "      - name: fileType-changed\n"
+            + "        in: query\n"
+            + "        required: true\n"
+            + "        schema:\n"
+            + "          type: string\n"
+            + "      responses:\n"
+            + "        \"200\":\n"
+            + "          description: response of 200\n"
+            + "          content:\n"
+            + "            application/json:\n"
+            + "              schema:\n"
+            + "                type: boolean\n"
+            + "components:\n"
+            + "  schemas: {}");
     microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
 
@@ -609,106 +584,11 @@ public class TestMicroserviceRegisterTask {
       registerTask.run();
     } catch (IllegalStateException exception) {
       isIllegalException = true;
-      List<LogEvent> events = collector.getEvents().stream()
-          .filter(e -> MicroserviceRegisterTask.class.getName().equals(e.getLoggerName())).toList();
-
-      Assertions.assertEquals("service center schema and local schema both are different:\n" +
-          " service center schema:\n" +
-          "[swagger: \"2.0\"\n" +
-          "info:\n" +
-          "  version: \"1.0.0\"\n" +
-          "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-          "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
-          "basePath: \"/clientreqtimeout\"\n" +
-          "consumes:\n" +
-          "- \"application/json\"\n" +
-          "produces:\n" +
-          "- \"application/json\"\n" +
-          "paths:\n" +
-          "  /sayhello:\n" +
-          "    post:\n" +
-          "      operationId: \"sayHello\"\n" +
-          "      parameters:\n" +
-          "      - in: \"body\"\n" +
-          "        name: \"student\"\n" +
-          "        required: false\n" +
-          "        schema:\n" +
-          "          $ref: \"#/definitions/Student\"\n" +
-          "      responses:\n" +
-          "        200:\n" +
-          "          description: \"response of 200\"\n" +
-          "          schema:\n" +
-          "            $ref: \"#/definitions/Student\"\n" +
-          "definitions:\n" +
-          "  Student:\n" +
-          "    type: \"object\"\n" +
-          "    required:\n" +
-          "    - \"name\"\n" +
-          "    properties:\n" +
-          "      name:\n" +
-          "        type: \"string\"\n" +
-          "      age:\n" +
-          "        type: \"integer\"\n" +
-          "        format: \"int32\"\n" +
-          "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"\n" +
-          " local schema:\n" +
-          "[swagger: \"2.0\"\n" +
-          "info:\n" +
-          "  version: \"1.0.0\"\n" +
-          "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-          "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
-          "basePath: \"/clientreqtimeout\"\n" +
-          "consumes:\n" +
-          "- \"application/json\"\n" +
-          "produces:\n" +
-          "- \"application/json\"\n" +
-          "paths:\n" +
-          "  /sayhello:\n" +
-          "    post:\n" +
-          "      operationId: \"sayHello\"\n" +
-          "      parameters:\n" +
-          "      - in: \"body\"\n" +
-          "        name: \"student\"\n" +
-          "        required: false\n" +
-          "        schema:\n" +
-          "          $ref: \"#/definitions/Student\"\n" +
-          "      responses:\n" +
-          "        200:\n" +
-          "          description: \"response of 200\"\n" +
-          "          schema:\n" +
-          "            type: \"string\"\n" +
-          "definitions:\n" +
-          "  Student:\n" +
-          "    type: \"object\"\n" +
-          "    required:\n" +
-          "    - \"name\"\n" +
-          "    properties:\n" +
-          "      name:\n" +
-          "        type: \"string\"\n" +
-          "      age:\n" +
-          "        type: \"integer\"\n" +
-          "        format: \"int32\"\n" +
-          "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]",
-              events.get(5).getMessage().getFormattedMessage());
-
-      Assertions.assertEquals("The difference in local schema:\n" +
-          "[type: \"string\"\n" +
-          "definitions:\n" +
-          "  Student:\n" +
-          "    type: \"object\"\n" +
-          "    required:\n" +
-          "    - \"name\"\n" +
-          "    properties:\n" +
-          "      name:\n" +
-          "        type: \"string\"\n" +
-          "      age:\n" +
-          "        type: \"integer\"\n" +
-          "        format: \"int32\"\n" +
-          "        maximum: 20\n" +
-          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]",
-              events.get(6).getMessage().getFormattedMessage());
+      Assertions.assertEquals("The schema(id=[s1]) content held by this instance and the "
+              + "service center is different. You need to increment microservice version before deploying. "
+              + "Or you can configure servicecomb.service.environment=development to work in "
+              + "development environment and ignore this error",
+          exception.getMessage());
     }
 
     Assertions.assertTrue(isIllegalException);
@@ -742,86 +622,60 @@ public class TestMicroserviceRegisterTask {
         srClient.getSchemas(anyString);
         result = onlineSchemasHolder;
         srClient.getSchema(anyString, anyString);
-        result = "swagger: \"2.0\"\n" +
-            "info:\n" +
-            "  version: \"1.0.0\"\n" +
-            "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
-            "basePath: \"/clientreqtimeout\"\n" +
-            "consumes:\n" +
-            "- \"application/json\"\n" +
-            "produces:\n" +
-            "- \"application/json\"\n" +
-            "paths:\n" +
-            "  /sayhello:\n" +
-            "    post:\n" +
-            "      operationId: \"sayHello\"\n" +
-            "      parameters:\n" +
-            "      - in: \"body\"\n" +
-            "        name: \"student\"\n" +
-            "        required: false\n" +
-            "        schema:\n" +
-            "          $ref: \"#/definitions/Student\"\n" +
-            "      responses:\n" +
-            "        200:\n" +
-            "          description: \"response of 200\"\n" +
-            "          schema:\n" +
-            "            $ref: \"#/definitions/Student\"\n" +
-            "definitions:\n" +
-            "  Student:\n" +
-            "    type: \"object\"\n" +
-            "    required:\n" +
-            "    - \"name\"\n" +
-            "    properties:\n" +
-            "      name:\n" +
-            "        type: \"string\"\n" +
-            "      age:\n" +
-            "        type: \"integer\"\n" +
-            "        format: \"int32\"\n" +
-            "        maximum: 20\n" +
-            "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"";
+        result = "openapi: 3.0.1\n"
+            + "info:\n"
+            + "  title: swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\n"
+            + "  version: 1.0.0\n"
+            + "servers:\n"
+            + "- url: /forScheam\n"
+            + "paths:\n"
+            + "  /uploadFile:\n"
+            + "    post:\n"
+            + "      operationId: uploadAwardFile\n"
+            + "      parameters:\n"
+            + "      - name: fileType\n"
+            + "        in: query\n"
+            + "        required: true\n"
+            + "        schema:\n"
+            + "          type: string\n"
+            + "      responses:\n"
+            + "        \"200\":\n"
+            + "          description: response of 200\n"
+            + "          content:\n"
+            + "            application/json:\n"
+            + "              schema:\n"
+            + "                type: boolean\n"
+            + "components:\n"
+            + "  schemas: {}";
       }
     };
 
     microservice.addSchema("s1",
-        "swagger: \"2.0\"\n" +
-            "info:\n" +
-            "  version: \"1.0.0\"\n" +
-            "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
-            "basePath: \"/clientreqtimeout\"\n" +
-            "consumes:\n" +
-            "- \"application/json\"\n" +
-            "produces:\n" +
-            "- \"application/json\"\n" +
-            "paths:\n" +
-            "  /sayhello:\n" +
-            "    post:\n" +
-            "      operationId: \"sayHello\"\n" +
-            "      parameters:\n" +
-            "      - in: \"body\"\n" +
-            "        name: \"student\"\n" +
-            "        required: false\n" +
-            "        schema:\n" +
-            "          $ref: \"#/definitions/Student\"\n" +
-            "      responses:\n" +
-            "        200:\n" +
-            "          description: \"response of 200\"\n" +
-            "          schema:\n" +
-            "            type: \"string\"\n" +
-            "definitions:\n" +
-            "  Student:\n" +
-            "    type: \"object\"\n" +
-            "    required:\n" +
-            "    - \"name\"\n" +
-            "    properties:\n" +
-            "      name:\n" +
-            "        type: \"string\"\n" +
-            "      age:\n" +
-            "        type: \"integer\"\n" +
-            "        format: \"int32\"\n" +
-            "        maximum: 20\n" +
-            "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"");
+        "openapi: 3.0.1\n"
+            + "info:\n"
+            + "  title: swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\n"
+            + "  version: 1.0.0\n"
+            + "servers:\n"
+            + "- url: /forScheam\n"
+            + "paths:\n"
+            + "  /uploadFile:\n"
+            + "    post:\n"
+            + "      operationId: uploadAwardFile\n"
+            + "      parameters:\n"
+            + "      - name: fileType_changed\n"
+            + "        in: query\n"
+            + "        required: true\n"
+            + "        schema:\n"
+            + "          type: string\n"
+            + "      responses:\n"
+            + "        \"200\":\n"
+            + "          description: response of 200\n"
+            + "          content:\n"
+            + "            application/json:\n"
+            + "              schema:\n"
+            + "                type: boolean\n"
+            + "components:\n"
+            + "  schemas: {}");
     microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
 
