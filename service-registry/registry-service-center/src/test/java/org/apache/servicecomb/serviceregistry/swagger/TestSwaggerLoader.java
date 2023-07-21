@@ -66,6 +66,9 @@ public class TestSwaggerLoader extends TestRegistryBase {
   @Test
   public void loadFromRemote() {
     OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
+    String swaggerString = SwaggerUtils.swaggerToString(swagger);
+    OpenAPI swaggerOpenApi = SwaggerUtils.parseSwagger(swaggerString);
+
     new Expectations(serviceRegistry.getServiceRegistryClient()) {
       {
         serviceRegistry.getServiceRegistryClient().getAggregatedSchema(serviceId, schemaId);
@@ -80,12 +83,16 @@ public class TestSwaggerLoader extends TestRegistryBase {
     OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
-    Assertions.assertEquals(swagger, loadedSwagger);
+    // OpenApi -> String -> OpenApi, maybe not produce same OpenApi instance.
+    Assertions.assertEquals(swaggerOpenApi, loadedSwagger);
+//    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
   public void loadFromResource_sameApp_dirWithoutApp() {
     OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
+    String swaggerString = SwaggerUtils.swaggerToString(swagger);
+    OpenAPI swaggerOpenApi = SwaggerUtils.parseSwagger(swaggerString);
     mockLocalResource(swagger, String.format("microservices/%s/%s.yaml", serviceName, schemaId));
 
     RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
@@ -95,12 +102,17 @@ public class TestSwaggerLoader extends TestRegistryBase {
     OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
-    Assertions.assertEquals(swagger, loadedSwagger);
+    // OpenApi -> String -> OpenApi, maybe not produce same OpenApi instance.
+    Assertions.assertEquals(swaggerOpenApi, loadedSwagger);
+//    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
   public void loadFromResource_sameApp_dirWithApp() {
     OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
+    String swaggerString = SwaggerUtils.swaggerToString(swagger);
+    OpenAPI swaggerOpenApi = SwaggerUtils.parseSwagger(swaggerString);
+
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", appId, serviceName, schemaId));
 
     RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
@@ -110,7 +122,9 @@ public class TestSwaggerLoader extends TestRegistryBase {
     OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
-    Assertions.assertEquals(swagger, loadedSwagger);
+    // OpenApi -> String -> OpenApi, maybe not produce same OpenApi instance.
+    Assertions.assertEquals(swaggerOpenApi, loadedSwagger);
+//    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   @Test
@@ -127,6 +141,9 @@ public class TestSwaggerLoader extends TestRegistryBase {
   @Test
   public void loadFromResource_diffApp_dirWithApp() {
     OpenAPI swagger = SwaggerGenerator.generate(Hello.class);
+    String swaggerString = SwaggerUtils.swaggerToString(swagger);
+    OpenAPI swaggerOpenApi = SwaggerUtils.parseSwagger(swaggerString);
+
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", "other", "ms3", schemaId));
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
@@ -134,7 +151,9 @@ public class TestSwaggerLoader extends TestRegistryBase {
     OpenAPI loadedSwagger = RegistrationManager.INSTANCE
         .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assertions.assertNotSame(swagger, loadedSwagger);
-    Assertions.assertEquals(swagger, loadedSwagger);
+    // OpenApi -> String -> OpenApi, maybe not produce same OpenApi instance.
+    Assertions.assertEquals(swaggerOpenApi, loadedSwagger);
+//    Assertions.assertEquals(swagger, loadedSwagger);
   }
 
   private void mockLocalResource(OpenAPI swagger, String path) {
