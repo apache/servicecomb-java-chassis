@@ -15,50 +15,47 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher"
-  x-java-interface: "cse.gen.perfTest.perf1.healthEndpoint.HealthCheckerRestPublisherIntf"
-basePath: "/health"
-schemes:
-  - "http"
-consumes:
-  - "application/json"
-produces:
-  - "application/json"
+  title: swagger definition for org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher
+  version: 1.0.0
+servers:
+  - url: /metrics
 paths:
   /:
     get:
-      operationId: "checkHealth"
-      parameters: []
+      operationId: checkHealth
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "boolean"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: boolean
   /details:
     get:
-      operationId: "checkHealthDetails"
-      parameters: []
+      operationId: checkHealthDetails
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "object"
-            additionalProperties:
-              $ref: "#/definitions/HealthCheckResult"
-definitions:
-  HealthCheckResult:
-    type: "object"
-    properties:
-      healthy:
-        type: "boolean"
-      information:
-        type: "string"
-      extraData:
-        type: "string"
-      timestamp:
-        type: "integer"
-        format: "int64"
-    x-java-class: "org.apache.servicecomb.foundation.metrics.health.HealthCheckResult"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/HealthCheckResult'
+components:
+  schemas:
+    HealthCheckResult:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+        information:
+          type: string
+        extraData:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+      x-java-class: org.apache.servicecomb.foundation.metrics.health.HealthCheckResult
