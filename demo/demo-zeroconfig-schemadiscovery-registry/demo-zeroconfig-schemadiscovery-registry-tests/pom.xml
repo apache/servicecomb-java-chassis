@@ -152,27 +152,6 @@
             <artifactId>docker-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>org.codehaus.gmavenplus</groupId>
-            <artifactId>gmavenplus-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-default-properties</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scripts>
-                    <script>
-                      project.properties.setProperty('docker.hostname', 'localhost')
-                      log.info("Docker hostname is " + project.properties['docker.hostname'])
-                    </script>
-                  </scripts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>

@@ -202,7 +202,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
+                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/edge-service-${project.version}.jar</JAR_PATH>
                   </env>
@@ -260,33 +260,9 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.gmavenplus</groupId>
-            <artifactId>gmavenplus-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-default-properties</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scripts>
-                    <script>
-                      project.properties.setProperty('docker.hostname', 'localhost')
-                      log.info("Docker hostname is " + project.properties['docker.hostname'])
-                    </script>
-                  </scripts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <systemPropertyVariables>
-                <servicecomb.service.registry.address>http://${docker.hostname}:30100</servicecomb.service.registry.address>
-              </systemPropertyVariables>
               <argLine>${jacoco.failsafe.argLine}</argLine>
             </configuration>
             <executions>
@@ -305,30 +281,6 @@
       <id>docker-machine</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.gmavenplus</groupId>
-            <artifactId>gmavenplus-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-dynamic-properties</id>
-                <phase>prepare-package</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scripts>
-                    <script>
-                      def process = "docker-machine ip default".execute()
-                      process.waitFor()
-                      project.properties.setProperty('docker.hostname', process.in.text.trim())
-
-                      log.info("Docker hostname is " + project.properties['docker.hostname'])
-                    </script>
-                  </scripts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
