@@ -43,9 +43,6 @@
                 <alias>${demo.service.name}</alias>
                 <run>
                   <env>
-                    <JAVA_OPTS>
-                      -Dservicecomb.service.publishAddress=${docker.hostname}
-                    </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                   </env>
                   <wait>
@@ -91,27 +88,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.gmavenplus</groupId>
-            <artifactId>gmavenplus-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-default-properties</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scripts>
-                    <script>
-                      project.properties.setProperty('docker.hostname', 'localhost')
-                      log.info("Docker hostname is " + project.properties['docker.hostname'])
-                    </script>
-                  </scripts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
@@ -133,30 +109,6 @@
       <id>docker-machine</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.gmavenplus</groupId>
-            <artifactId>gmavenplus-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-dynamic-properties</id>
-                <phase>prepare-package</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scripts>
-                    <script>
-                      def process = "docker-machine ip default".execute()
-                      process.waitFor()
-                      project.properties.setProperty('docker.hostname', process.in.text.trim())
-
-                      log.info("Docker hostname is " + project.properties['docker.hostname'])
-                    </script>
-                  </scripts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>

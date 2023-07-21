@@ -145,7 +145,6 @@
                       <env>
                         <JAVA_OPTS>
                           -Dservicecomb.service.registry.address=http://service30100:30100
-                          -Dservicecomb.service.publishAddress=${docker.hostname}
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/filter-edge-${project.version}.jar</JAR_PATH>
                       </env>
