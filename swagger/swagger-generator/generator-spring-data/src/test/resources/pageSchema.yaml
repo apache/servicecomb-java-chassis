@@ -16,124 +16,90 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.springdata.TestPageResponseTypeProcessor$PageSchema"
-  x-java-interface: "org.apache.servicecomb.swagger.generator.springdata.TestPageResponseTypeProcessor$PageSchema"
-basePath: "/PageSchema"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.springdata.TestPageResponseTypeProcessor$PageSchema
+  version: 1.0.0
+servers:
+- url: /PageSchema
 paths:
   /test:
     post:
-      operationId: "test"
-      parameters:
-      - in: "body"
-        name: "page"
-        required: false
-        schema:
-          $ref: "#/definitions/PageString"
+      operationId: test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageString'
+        x-name: page
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            $ref: "#/definitions/PageString"
-definitions:
-  Page:
-    type: "object"
-    properties:
-      content:
-        type: "array"
-        items:
-          type: "object"
-      empty:
-        type: "boolean"
-      first:
-        type: "boolean"
-      last:
-        type: "boolean"
-      number:
-        type: "integer"
-        format: "int32"
-      numberOfElements:
-        type: "integer"
-        format: "int32"
-      pageable:
-        $ref: "#/definitions/Pageable"
-      size:
-        type: "integer"
-        format: "int32"
-      sort:
-        $ref: "#/definitions/Sort"
-      totalElements:
-        type: "integer"
-        format: "int64"
-      totalPages:
-        type: "integer"
-        format: "int32"
-    x-java-class: "org.springframework.data.domain.Page"
-  PageString:
-    type: "object"
-    properties:
-      content:
-        type: "array"
-        items:
-          type: "string"
-      empty:
-        type: "boolean"
-      first:
-        type: "boolean"
-      last:
-        type: "boolean"
-      number:
-        type: "integer"
-        format: "int32"
-      numberOfElements:
-        type: "integer"
-        format: "int32"
-      pageable:
-        $ref: "#/definitions/Pageable"
-      size:
-        type: "integer"
-        format: "int32"
-      sort:
-        $ref: "#/definitions/Sort"
-      totalElements:
-        type: "integer"
-        format: "int64"
-      totalPages:
-        type: "integer"
-        format: "int32"
-    x-java-class: "org.springframework.data.domain.Page<java.lang.String>"
-  Pageable:
-    type: "object"
-    properties:
-      offset:
-        type: "integer"
-        format: "int64"
-      pageNumber:
-        type: "integer"
-        format: "int32"
-      pageSize:
-        type: "integer"
-        format: "int32"
-      paged:
-        type: "boolean"
-      sort:
-        $ref: "#/definitions/Sort"
-      unpaged:
-        type: "boolean"
-    x-java-class: "org.springframework.data.domain.Pageable"
-  Sort:
-    type: "object"
-    properties:
-      empty:
-        type: "boolean"
-      sorted:
-        type: "boolean"
-      unsorted:
-        type: "boolean"
-    x-java-class: "org.springframework.data.domain.Sort"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageString'
+components:
+  schemas:
+    PageString:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: string
+        empty:
+          type: boolean
+        first:
+          type: boolean
+        last:
+          type: boolean
+        number:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        size:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+      x-java-class: org.springframework.data.domain.Page<java.lang.String>
+    Pageable:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        sort:
+          $ref: '#/components/schemas/Sort'
+        unpaged:
+          type: boolean
+      x-java-class: org.springframework.data.domain.Pageable
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+      x-java-class: org.springframework.data.domain.Sort
