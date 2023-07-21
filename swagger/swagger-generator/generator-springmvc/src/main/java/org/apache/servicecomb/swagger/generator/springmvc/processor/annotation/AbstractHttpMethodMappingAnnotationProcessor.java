@@ -21,15 +21,11 @@ import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.v3.oas.models.Operation;
-
 
 abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implements
     MethodAnnotationProcessor<ANNOTATION> {
   protected void doProcess(OperationGenerator operationGenerator, String[] paths, String[] pathValues,
       RequestMethod requestMethod, String[] consumes, String[] produces) {
-    Operation operation = operationGenerator.getOperation();
-
     // paths same to pathValues
     this.processPath(operationGenerator, paths);
     this.processPath(operationGenerator, pathValues);
@@ -39,6 +35,7 @@ abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implemen
     }
     // TODO: actually is no use to update consumes and produces
     // Because they are system capabilities.
+//    Operation operation = operationGenerator.getOperation();
 //    SwaggerUtils.updateConsumes(operation, consumes);
 //    SwaggerUtils.updateProduces(operation, produces);
   }

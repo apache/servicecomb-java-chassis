@@ -90,7 +90,7 @@ public class TestResponse {
     TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
     TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
 
-    TestMgr.check(202, responseEntity.getStatusCodeValue());
+    TestMgr.check(202, responseEntity.getStatusCode().value());
   }
 
   private void testvoidResponse() {

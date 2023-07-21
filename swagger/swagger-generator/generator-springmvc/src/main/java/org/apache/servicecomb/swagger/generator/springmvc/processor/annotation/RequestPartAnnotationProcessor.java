@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -85,11 +84,21 @@ public class RequestPartAnnotationProcessor extends
     }
     // RequestPart used with MultipartFile and simple types.
     // MultipartFile is processed by type processor.
-    if (!MultipartFile.class.equals(type.getRawClass()) &&
-        !Types.newParameterizedType(List.class, MultipartFile.class).equals(type.getRawClass()) &&
-        !MultipartFile[].class.equals(type.getRawClass())) {
-      Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties().put(parameterName, schema);
+    if (isPart(type)) {
+      return;
     }
+    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
+    requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties().put(parameterName, schema);
+  }
+
+  private boolean isPart(JavaType type) {
+    if (MultipartFile.class.equals(type.getRawClass())) {
+      return true;
+    }
+    if (MultipartFile[].class.equals(type.getRawClass())) {
+      return true;
+    }
+    return type.getContentType() != null &&
+        List.class.equals(type.getRawClass()) && MultipartFile.class.equals(type.getContentType().getRawClass());
   }
 }

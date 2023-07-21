@@ -446,7 +446,7 @@ public class JaxrsClient {
   private static void testValidatorSayHiSuccess(RestTemplate template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "world");
-    TestMgr.check(202, responseEntity.getStatusCodeValue());
+    TestMgr.check(202, responseEntity.getStatusCode().value());
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 

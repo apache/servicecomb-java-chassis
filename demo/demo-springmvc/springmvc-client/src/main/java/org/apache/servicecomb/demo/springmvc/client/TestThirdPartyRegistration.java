@@ -59,7 +59,7 @@ public class TestThirdPartyRegistration implements BootListener, CategorizedTest
     TestMgr.check("h1v null", responseEntity.getHeaders().getFirst("h1"));
     TestMgr.check("h2v null", responseEntity.getHeaders().getFirst("h2"));
 
-    TestMgr.check(202, responseEntity.getStatusCodeValue());
+    TestMgr.check(202, responseEntity.getStatusCode().value());
   }
 
   @Override
