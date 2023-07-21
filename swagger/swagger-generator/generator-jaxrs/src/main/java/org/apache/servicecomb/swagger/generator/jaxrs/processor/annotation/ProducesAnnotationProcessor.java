@@ -19,12 +19,11 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.Produces;
-
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+
+import jakarta.ws.rs.Produces;
 
 public class ProducesAnnotationProcessor implements MethodAnnotationProcessor<Produces> {
   @Override

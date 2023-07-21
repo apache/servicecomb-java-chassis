@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 
 import com.fasterxml.jackson.databind.JavaType;
 

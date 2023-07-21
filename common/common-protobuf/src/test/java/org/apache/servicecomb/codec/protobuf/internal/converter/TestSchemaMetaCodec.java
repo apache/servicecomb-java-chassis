@@ -42,7 +42,6 @@ import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.People;
