@@ -45,7 +45,6 @@ public class TestCommonToHttpServletRequest {
     Map<String, Object> forms = new HashMap<>();
     HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, forms);
 
-    Assertions.assertNull(request.getAttribute(RestConst.BODY_PARAMETER));
     Assertions.assertEquals(forms, request.getAttribute(RestConst.BODY_PARAMETER));
   }
 
