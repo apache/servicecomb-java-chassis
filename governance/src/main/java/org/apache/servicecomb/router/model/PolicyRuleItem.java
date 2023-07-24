@@ -48,15 +48,10 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
   /**
    * if weight is less than 100, fill with minimum version
    *
-   * @param latestVersionTag
    */
-  public void check(TagItem latestVersionTag) {
+  public void check() {
     if (CollectionUtils.isEmpty(route)) {
       throw new RouterIllegalParamException("canary rule list can not be null");
-    }
-    if (route.size() == 1) {
-      route.get(0).setWeight(100);
-      return;
     }
     int sum = 0;
     for (RouteItem item : route) {
@@ -68,11 +63,8 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
     if (sum > 100) {
       LOGGER.warn("canary rule weight sum is more than 100");
     } else if (sum < 100) {
-      if (latestVersionTag == null) {
-        LOGGER.warn("canary has some error when set default latestVersion");
-      }
       weightLess = true;
-      route.add(new RouteItem(100 - sum, latestVersionTag));
+      route.add(new RouteItem(100 - sum, null));
     }
   }
 
