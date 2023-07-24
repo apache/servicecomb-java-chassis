@@ -54,18 +54,18 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
 
   @Override
   public List<INSTANCE> distribute(String targetServiceName, List<INSTANCE> list, PolicyRuleItem invokeRule) {
-
     invokeRule.check();
 
     // unSetTags instance list
     List<INSTANCE> unSetTagInstances = new ArrayList<>();
 
     // get tag list
-    Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule, unSetTagInstances);
+    Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule,
+        unSetTagInstances);
 
     if (CollectionUtils.isEmpty(versionServerMap)) {
       LOGGER.debug("route management can not match any rule and route the latest version");
-      // rule note matched instance babel, all instance return, select instance for load balancing later
+      // no rule matched instance babel, all instance return, select instance for load balancing later
       return list;
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
       return versionServerMap.get(targetTag);
     }
 
-    // has weightLess situation
+    // has weightLess situation and unSetTagInstances has values
     if (invokeRule.isWeightLess() && unSetTagInstances.size() > 0) {
       return unSetTagInstances;
     }
