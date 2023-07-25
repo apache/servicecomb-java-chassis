@@ -22,16 +22,11 @@ import java.net.ServerSocket;
 
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.transport.rest.client.RestTransportClient;
-import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestServletRestTransport {
   ServletRestTransport transport = new ServletRestTransport();
@@ -42,14 +37,7 @@ public class TestServletRestTransport {
   }
 
   @Test
-  public void testInitNotPublish(@Mocked RestTransportClient restTransportClient) {
-    new MockUp<RestTransportClientManager>() {
-      @Mock
-      public RestTransportClient getRestTransportClient(boolean sslEnabled) {
-        return restTransportClient;
-      }
-    };
-
+  public void testInitNotPublish() {
     new Expectations(ServletConfig.class) {
       {
         ServletConfig.getLocalServerAddress();
@@ -61,14 +49,7 @@ public class TestServletRestTransport {
   }
 
   @Test
-  public void testInitPublishNoUrlPrefix(@Mocked RestTransportClient restTransportClient) {
-    new MockUp<RestTransportClientManager>() {
-      @Mock
-      public RestTransportClient getRestTransportClient(boolean sslEnabled) {
-        return restTransportClient;
-      }
-    };
-
+  public void testInitPublishNoUrlPrefix() {
     new Expectations(ServletConfig.class) {
       {
         ServletConfig.getLocalServerAddress();
@@ -80,15 +61,7 @@ public class TestServletRestTransport {
   }
 
   @Test
-  public void testInitPublishWithUrlPrefix(@Mocked RestTransportClient restTransportClient) {
-
-    new MockUp<RestTransportClientManager>() {
-      @Mock
-      public RestTransportClient getRestTransportClient(boolean sslEnabled) {
-        return restTransportClient;
-      }
-    };
-
+  public void testInitPublishWithUrlPrefix() {
     new Expectations(ServletConfig.class) {
       {
         ServletConfig.getLocalServerAddress();

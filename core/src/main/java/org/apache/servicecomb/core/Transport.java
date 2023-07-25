@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-
 // TODO:感觉要拆成显式的client、server才好些
 public interface Transport {
   String getName();
@@ -47,6 +45,4 @@ public interface Transport {
    * 用于上报到服务中心，要求是其他节点可访问的地址
    */
   Endpoint getPublishEndpoint() throws Exception;
-
-  void send(Invocation invocation, AsyncResponse asyncResp) throws Exception;
 }

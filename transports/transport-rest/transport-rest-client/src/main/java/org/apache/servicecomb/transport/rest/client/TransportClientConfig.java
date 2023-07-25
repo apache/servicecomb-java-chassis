@@ -25,17 +25,7 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.net.TCPSSLOptions;
 
 public final class TransportClientConfig {
-  private static Class<? extends RestTransportClient> restTransportClientCls = RestTransportClient.class;
-
   private TransportClientConfig() {
-  }
-
-  public static Class<? extends RestTransportClient> getRestTransportClientCls() {
-    return restTransportClientCls;
-  }
-
-  public static void setRestTransportClientCls(Class<? extends RestTransportClient> restTransportClientCls) {
-    TransportClientConfig.restTransportClientCls = restTransportClientCls;
   }
 
   public static int getThreadCount() {
@@ -46,13 +36,13 @@ public final class TransportClientConfig {
 
   public static int getHttp2ConnectionMaxPoolSize() {
     return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.maxPoolSize",
-        HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE)
+            HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE)
         .get();
   }
 
   public static int getHttp2MultiplexingLimit() {
     return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit",
-        HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT)
+            HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT)
         .get();
   }
 
@@ -111,9 +101,9 @@ public final class TransportClientConfig {
 
   public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
     int result = DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds",
-                    -1)
-            .get();
+        .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds",
+            -1)
+        .get();
     if (result >= 0) {
       return result;
     }

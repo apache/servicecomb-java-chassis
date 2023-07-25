@@ -22,10 +22,8 @@ import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,9 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import mockit.Mock;
-import mockit.MockUp;
 
 public class TestHighwayTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHighwayTransport.class);
@@ -69,23 +64,6 @@ public class TestHighwayTransport {
     }
 
     Assertions.assertTrue(status);
-  }
-
-  @Test
-  public void testSendException() throws Exception {
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    commonHighwayMock(invocation);
-
-    Holder<Boolean> sended = new Holder<>(false);
-    new MockUp<HighwayClient>() {
-      @Mock
-      public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        sended.value = true;
-      }
-    };
-    transport.send(invocation, asyncResp);
-    Assertions.assertTrue(sended.value);
   }
 
   @Test

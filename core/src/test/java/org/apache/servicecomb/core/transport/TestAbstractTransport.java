@@ -23,11 +23,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -42,11 +40,6 @@ public class TestAbstractTransport {
   private final Method updatePropertyMethod =
       ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
 
-  private void updateProperty(String key, Object value) {
-    updatePropertyMethod.setAccessible(true);
-    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
-  }
-
   static class MyAbstractTransport extends AbstractTransport {
 
     @Override
@@ -57,10 +50,6 @@ public class TestAbstractTransport {
     @Override
     public boolean init() {
       return true;
-    }
-
-    @Override
-    public void send(Invocation invocation, AsyncResponse asyncResp) {
     }
   }
 
