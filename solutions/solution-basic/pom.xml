@@ -95,20 +95,6 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
-
-    <!-- servicestage -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>servicestage</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>config-cc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>config-kie</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
