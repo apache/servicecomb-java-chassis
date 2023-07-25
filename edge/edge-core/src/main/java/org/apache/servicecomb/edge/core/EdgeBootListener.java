@@ -20,7 +20,6 @@ package org.apache.servicecomb.edge.core;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.transport.rest.client.TransportClientConfig;
 import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,6 @@ public class EdgeBootListener implements BootListener {
       return;
     }
 
-    TransportClientConfig.setRestTransportClientCls(EdgeRestTransportClient.class);
     TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
 
     String defaultExecutor = DynamicPropertyFactory.getInstance()

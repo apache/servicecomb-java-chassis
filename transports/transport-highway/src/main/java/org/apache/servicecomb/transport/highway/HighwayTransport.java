@@ -20,12 +20,10 @@ package org.apache.servicecomb.transport.highway;
 import java.util.Collections;
 
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConst;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 import io.vertx.core.DeploymentOptions;
 
@@ -48,11 +46,6 @@ public class HighwayTransport extends AbstractTransport {
     deployOptions.setConfig(json);
     deployOptions.setWorkerPoolName("pool-worker-transport-highway");
     return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
-  }
-
-  @Override
-  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    highwayClient.send(invocation, asyncResp);
   }
 
   public HighwayClient getHighwayClient() {

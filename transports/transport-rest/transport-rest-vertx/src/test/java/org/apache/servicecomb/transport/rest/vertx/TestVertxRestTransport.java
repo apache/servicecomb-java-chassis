@@ -20,14 +20,9 @@ package org.apache.servicecomb.transport.rest.vertx;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
@@ -72,25 +67,6 @@ public class TestVertxRestTransport {
       status = true;
     }
     Assertions.assertFalse(status);
-  }
-
-  @Test
-  public void testSendException() {
-    boolean validAssert;
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    URIEndpointObject endpoint = Mockito.mock(URIEndpointObject.class);
-    Endpoint end = Mockito.mock(Endpoint.class);
-    Mockito.when(invocation.getEndpoint()).thenReturn(end);
-    Mockito.when(invocation.getEndpoint().getAddress()).thenReturn(endpoint);
-    try {
-      validAssert = true;
-      instance.send(invocation, asyncResp);
-    } catch (Exception e) {
-
-      validAssert = false;
-    }
-    Assertions.assertFalse(validAssert);
   }
 
   @Test
