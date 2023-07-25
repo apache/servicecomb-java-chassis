@@ -65,7 +65,8 @@ public final class RestCodec {
             .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s]. Message is [%s].",
                 restOperation.getOperationMeta().getMicroserviceQualifiedName(),
                 param.getParamName(),
-                param.getParamProcessor().getProcessorType(), e.getMessage());
+                param.getParamProcessor().getProcessorType(),
+                e.getMessage());
         throw new InvocationException(Status.BAD_REQUEST, message);
       }
     }
