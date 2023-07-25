@@ -160,6 +160,38 @@ public class TestRestCodec {
       success = true;
     } catch (InvocationException e) {
       Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
+      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage()
+          .contains("Parameter is not valid for operation"));
+    }
+    Assertions.assertFalse(success);
+  }
+
+  @Test
+  public void testRestToArgsNullBodyException() throws Exception {
+    InvocationException exception = new InvocationException(Status.BAD_REQUEST, "Body parameter is required.");
+    ParamValueProcessor processor = Mockito.mock(ParamValueProcessor.class);
+    Mockito.when(processor.getValue(Mockito.any())).thenThrow(exception);
+
+    RestOperationMeta restOperation = Mockito.mock(RestOperationMeta.class);
+    RestParam restParam = Mockito.mock(RestParam.class);
+    Mockito.when(restParam.getParamProcessor()).thenReturn(processor);
+
+    List<RestParam> params = new ArrayList<>();
+    params.add(restParam);
+    Mockito.when(restOperation.getParamList()).thenReturn(params);
+
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
+
+    boolean success = false;
+    try {
+      HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+      RestCodec.restToArgs(request, restOperation);
+      success = true;
+    } catch (InvocationException e) {
+      Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
+      Assertions.assertFalse(((CommonExceptionData) e.getErrorData()).getMessage()
+          .contains("Parameter is not valid for operation"));
     }
     Assertions.assertFalse(success);
   }
