@@ -60,32 +60,22 @@ public final class RestCodec {
     for (RestParam param : paramList) {
       try {
         paramValues.put(param.getParamName(), param.getParamProcessor().getValue(request));
-      } catch (InvocationException e) {
-        if (e.getMessage().contains("Body parameter is required")) {
-          throw e;
-        } else {
-          throw new InvocationException(Status.BAD_REQUEST, buidMessage(restOperation, param, e));
-        }
       } catch (Exception e) {
-        throw new InvocationException(Status.BAD_REQUEST, buidMessage(restOperation, param, e));
+        // Avoid information leak of user input, and add option for debug use.
+        String message = String
+            .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+                restOperation.getOperationMeta().getMicroserviceQualifiedName(),
+                param.getParamName(),
+                param.getParamProcessor().getProcessorType());
+        if (DynamicPropertyFactory.getInstance().getBooleanProperty(
+            RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
+          LOG.error(message, e);
+        } else {
+          LOG.error("{} Add {}=true to print the details.", message, RestConst.PRINT_CODEC_ERROR_MESSGAGE);
+        }
+        throw new InvocationException(Status.BAD_REQUEST, message);
       }
     }
     return paramValues;
-  }
-
-  private static String buidMessage(RestOperationMeta restOperation, RestParam param, Exception e) {
-    // Avoid information leak of user input, and add option for debug use.
-    String message = String
-        .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
-            restOperation.getOperationMeta().getMicroserviceQualifiedName(),
-            param.getParamName(),
-            param.getParamProcessor().getProcessorType());
-    if (DynamicPropertyFactory.getInstance().getBooleanProperty(
-        RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
-      LOG.error(message, e);
-    } else {
-      LOG.error("{} Add {}=false to print the details.", message, RestConst.PRINT_CODEC_ERROR_MESSGAGE);
-    }
-    return message;
   }
 }
