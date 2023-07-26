@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,5 +44,10 @@ public class ServiceCombCoreConfiguration {
   @ConfigurationProperties(prefix = "servicecomb.service")
   public MicroserviceProperties microserviceProperties() {
     return new MicroserviceProperties();
+  }
+
+  @Bean
+  public ProducerBootListener producerBootListener() {
+    return new ProducerBootListener();
   }
 }

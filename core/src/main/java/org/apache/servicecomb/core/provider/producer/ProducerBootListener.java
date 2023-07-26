@@ -25,16 +25,17 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.MicroserviceProperties;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -48,6 +49,20 @@ public class ProducerBootListener implements BootListener {
 
   private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 
+  private RegistrationManager registrationManager;
+
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
+  }
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   @Override
   public void onAfterTransport(BootEvent event) {
     boolean exportToFile = DynamicPropertyFactory.getInstance()
@@ -59,14 +74,12 @@ public class ProducerBootListener implements BootListener {
       LOGGER.info("export microservice swagger file to path {}", filePath);
     }
     // register schema to microservice;
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-
     MicroserviceMeta microserviceMeta = event.getScbEngine().getProducerMicroserviceMeta();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
       OpenAPI swagger = schemaMeta.getSwagger();
       String content = SwaggerUtils.swaggerToString(swagger);
       if (exportToFile) {
-        exportToFile(String.format(filePath, microservice.getServiceName(), schemaMeta.getSchemaId()), content);
+        exportToFile(String.format(filePath, microserviceProperties.getName(), schemaMeta.getSchemaId()), content);
       } else {
         LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
             microserviceMeta.getAppId(),
@@ -74,7 +87,7 @@ public class ProducerBootListener implements BootListener {
             schemaMeta.getSchemaId(),
             content);
       }
-      RegistrationManager.INSTANCE.addSchema(schemaMeta.getSchemaId(), content);
+      this.registrationManager.addSchema(schemaMeta.getSchemaId(), content);
     }
   }
 

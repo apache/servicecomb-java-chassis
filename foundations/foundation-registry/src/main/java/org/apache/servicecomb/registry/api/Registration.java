@@ -54,4 +54,11 @@ public interface Registration<R extends RegistrationInstance> extends SPIEnabled
    * Life Cycle：This method is called after <code>init</code> and before <code>run</code>.
    */
   void addEndpoint(String endpoint);
+
+  /**
+   * adding property to MicroserviceInstance </br>
+   *
+   * Life Cycle：This method is called after <code>init</code> and before <code>run</code>.
+   */
+  void addProperty(String key, String value);
 }
