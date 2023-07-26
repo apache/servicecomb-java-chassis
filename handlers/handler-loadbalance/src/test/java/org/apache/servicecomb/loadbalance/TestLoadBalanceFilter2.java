@@ -44,7 +44,6 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.junit.After;
@@ -97,8 +96,8 @@ public class TestLoadBalanceFilter2 {
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
-
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    //TODO: mock
+//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -148,9 +147,10 @@ public class TestLoadBalanceFilter2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
     LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
-    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-        .thenReturn(parent);
+    //TODO: mock
+//    mockUpInstanceCacheManager(instanceCacheManager);
+//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
@@ -199,8 +199,8 @@ public class TestLoadBalanceFilter2 {
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
-
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    //TODO: mock
+//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -229,9 +229,10 @@ public class TestLoadBalanceFilter2 {
     scbEngine.setTransportManager(transportManager);
 
     LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
-    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-        .thenReturn(parent);
+    //TODO: mock
+//    mockUpInstanceCacheManager(instanceCacheManager);
+//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
@@ -266,8 +267,8 @@ public class TestLoadBalanceFilter2 {
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
-
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    //TODO: mock
+//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -318,9 +319,10 @@ public class TestLoadBalanceFilter2 {
     scbEngine.setTransportManager(transportManager);
 
     LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
-    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-        .thenReturn(parent);
+    //TODO: mock
+//    mockUpInstanceCacheManager(instanceCacheManager);
+//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
@@ -357,8 +359,8 @@ public class TestLoadBalanceFilter2 {
   @Test
   public void testZoneAwareFilterUsingMockedInvocationWorks() throws Exception {
     Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+");
-
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    //TODO: mock
+//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -409,9 +411,11 @@ public class TestLoadBalanceFilter2 {
     scbEngine.setTransportManager(transportManager);
 
     LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
-    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-        .thenReturn(parent);
+    //TODO: mock
+//    mockUpInstanceCacheManager(instanceCacheManager);
+//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+//        .thenReturn(parent);
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
@@ -429,7 +433,7 @@ public class TestLoadBalanceFilter2 {
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+        new DiscoveryManager(Collections.emptyList()), scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
@@ -452,8 +456,8 @@ public class TestLoadBalanceFilter2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.status.enabled", "false");
 
     Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+");
-
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    //TODO: mock
+//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -505,9 +509,10 @@ public class TestLoadBalanceFilter2 {
     scbEngine.setTransportManager(transportManager);
 
     LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
-    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-        .thenReturn(parent);
+    //TODO: mock
+//    mockUpInstanceCacheManager(instanceCacheManager);
+//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
@@ -541,14 +546,5 @@ public class TestLoadBalanceFilter2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
-  }
-
-  private void mockUpInstanceCacheManager(InstanceCacheManager instanceCacheManager) {
-    new MockUp<DiscoveryManager>() {
-      @Mock
-      public InstanceCacheManager getInstanceCacheManager() {
-        return instanceCacheManager;
-      }
-    };
   }
 }
