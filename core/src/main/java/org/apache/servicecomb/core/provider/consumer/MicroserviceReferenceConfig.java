@@ -23,11 +23,8 @@ import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 
 /**
  * <pre>
@@ -95,16 +92,7 @@ public class MicroserviceReferenceConfig {
       transport = operationMeta.getConfig().getTransport();
     }
     final ReferenceConfig referenceConfig = new ReferenceConfig(transport, versionRule);
-    mark3rdPartyService(operationMeta, referenceConfig);
     return referenceConfig;
-  }
-
-  private void mark3rdPartyService(OperationMeta operationMeta, ReferenceConfig referenceConfig) {
-    final MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersions(
-            operationMeta.getMicroserviceMeta().getAppId(),
-            operationMeta.getMicroserviceName());
-    referenceConfig.setThirdPartyService(microserviceVersions instanceof StaticMicroserviceVersions);
   }
 
   public boolean isExpired() {

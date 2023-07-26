@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -32,13 +33,14 @@ import org.apache.servicecomb.loadbalance.LoadBalancer;
 import org.apache.servicecomb.loadbalance.RuleExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOptionsSPI;
 import org.apache.servicecomb.transport.rest.client.HttpTransportHttpClientOptionsSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
@@ -75,14 +77,24 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
+  private MicroserviceProperties microserviceProperties;
+
+  private DiscoveryManager discoveryManager;
+
   private DiscoveryTree discoveryTree;
 
-  public CommonHttpEdgeDispatcher() {
+  public CommonHttpEdgeDispatcher(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
     if (this.enabled()) {
       loadConfigurations();
-      discoveryTree = new DiscoveryTree();
+      discoveryTree = new DiscoveryTree(this.discoveryManager);
       discoveryTree.addFilter(new ServerDiscoveryFilter());
     }
+  }
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
   }
 
   @Override
@@ -199,9 +211,8 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
     VersionedCache serversVersionedCache = discoveryTree.discovery(context,
-        RegistrationManager.INSTANCE.getMicroservice().getAppId(),
-        microserviceName,
-        versionRule);
+        this.microserviceProperties.getApplication(),
+        microserviceName);
     invocation.addLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
     return loadBalancerMap
         .computeIfAbsent(microserviceName, name -> createLoadBalancer(microserviceName));

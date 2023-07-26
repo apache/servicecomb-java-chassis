@@ -35,9 +35,11 @@ import org.apache.servicecomb.loadbalance.LoadBalanceFilter;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -74,11 +76,27 @@ public class TestDateTimeSchema implements CategorizedTestCase {
   @RpcReference(microserviceName = "springmvc", schemaId = "DateTimeSchema")
   private DateTimeSchemaWithContextInf dateTimeSchemaWithContextInf;
 
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  private DiscoveryTree discoveryTree;
 
-  public TestDateTimeSchema() {
+  private SCBEngine scbEngine;
+
+  private DiscoveryManager discoveryManager;
+
+  @Autowired
+  public void setScbEngine(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+    this.discoveryTree = new DiscoveryTree(discoveryManager);
     discoveryTree.addFilter(new CustomEndpointDiscoveryFilter());
     discoveryTree.sort();
+  }
+
+  public TestDateTimeSchema() {
+
   }
 
   @Override
@@ -126,7 +144,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
   private void testDateTimeSchemaMulticast() throws Exception {
     DiscoveryContext context = new DiscoveryContext();
-    VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc", "0+");
+    VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc");
     List<String> enpoints = serversVersionedCache.data();
 
     for (String endpoint : enpoints) {
@@ -144,13 +162,13 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
   private Endpoint parseEndpoint(String endpointUri) throws Exception {
     URI formatUri = new URI(endpointUri);
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
+    Transport transport = scbEngine.getTransportManager().findTransport(formatUri.getScheme());
     return new Endpoint(transport, endpointUri);
   }
 
   private void testDateTimeSchemaMulticastRestTemplate() throws Exception {
     DiscoveryContext context = new DiscoveryContext();
-    VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc", "0+");
+    VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc");
     List<String> enpoints = serversVersionedCache.data();
 
     RestTemplate restTemplate = RestTemplateBuilder.create();

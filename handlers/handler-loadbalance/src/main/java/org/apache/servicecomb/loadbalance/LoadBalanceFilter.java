@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
@@ -36,6 +35,7 @@ import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
@@ -45,9 +45,12 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class LoadBalanceFilter implements ConsumerFilter {
   public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
@@ -67,7 +70,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalanceFilter.class);
 
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  private DiscoveryTree discoveryTree;
 
   // key为grouping filter qualified name
   private final Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
@@ -78,18 +81,27 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private String strategy = null;
 
+  private SCBEngine scbEngine;
+
   @VisibleForTesting
   public LoadBalanceFilter(DiscoveryTree discoveryTree, ExtensionsManager extensionsManager) {
     this.discoveryTree = discoveryTree;
     this.extensionsManager = extensionsManager;
   }
 
-  public LoadBalanceFilter(ExtensionsManager extensionsManager) {
+  @Autowired
+  public LoadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryManager discoveryManager) {
     preCheck();
     this.extensionsManager = extensionsManager;
+    discoveryTree = new DiscoveryTree(discoveryManager);
     discoveryTree.loadFromSPI(DiscoveryFilter.class);
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
+  }
+
+  @Autowired
+  public void setScbEngine(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
   }
 
   private void preCheck() {
@@ -166,7 +178,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private Endpoint parseEndpoint(String endpointUri) throws Exception {
     URI formatUri = new URI(endpointUri);
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
+    Transport transport = scbEngine.getTransportManager().findTransport(formatUri.getScheme());
     if (transport == null) {
       LOGGER.error("not deployed transport {}, ignore {}.", formatUri.getScheme(), endpointUri);
       throw new InvocationException(Status.BAD_REQUEST,
@@ -271,8 +283,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
     context.setInputParameters(invocation);
     VersionedCache serversVersionedCache = discoveryTree.discovery(context,
         invocation.getAppId(),
-        invocation.getMicroserviceName(),
-        invocation.getMicroserviceVersionRule());
+        invocation.getMicroserviceName());
     invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
     return loadBalancerMap

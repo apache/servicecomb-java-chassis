@@ -18,8 +18,6 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.Date;
 
-import org.apache.servicecomb.provider.pojo.registry.ThirdServiceWithInvokerRegister;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +28,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-@Configuration
-public class ThirdSvc extends ThirdServiceWithInvokerRegister {
+public class ThirdSvc {
   @RequestMapping(path = "/codeFirstSpringmvc")
   public interface ThirdSvcClient {
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Date.class))
@@ -40,11 +37,5 @@ public class ThirdSvc extends ThirdServiceWithInvokerRegister {
             @Header(name = "h2", schema = @Schema(implementation = String.class))})
     @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
     ResponseEntity<Date> responseEntity(@RequestAttribute("date") Date date);
-  }
-
-  public ThirdSvc() {
-    super("3rd-svc");
-
-    addSchema("schema-1", ThirdSvcClient.class);
   }
 }

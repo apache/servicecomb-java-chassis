@@ -27,9 +27,17 @@ import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EndpointDiscoveryFilter.class);
+
+  private final SCBEngine scbEngine;
+
+  @Autowired
+  public EndpointDiscoveryFilter(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
 
   @Override
   public int getOrder() {
@@ -45,7 +53,7 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   @Override
   protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
       MicroserviceInstance instance) {
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
+    Transport transport = scbEngine.getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;
