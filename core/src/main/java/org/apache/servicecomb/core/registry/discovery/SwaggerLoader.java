@@ -29,7 +29,6 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
@@ -95,13 +94,14 @@ public class SwaggerLoader {
     LOGGER.info("register swagger appId={}, name={}, schemaId={}.", appId, shortName, schemaId);
   }
 
-  public OpenAPI loadSwagger(Microservice microservice, Collection<DiscoveryInstance> instances, String schemaId) {
-    OpenAPI swagger = loadLocalSwagger(microservice.getAppId(), microservice.getServiceName(), schemaId);
+  public OpenAPI loadSwagger(String appId, String microserviceName, Collection<DiscoveryInstance> instances,
+      String schemaId) {
+    OpenAPI swagger = loadLocalSwagger(appId, microserviceName, schemaId);
     if (swagger != null) {
       return swagger;
     }
 
-    return loadFromRemote(microservice, instances, schemaId);
+    return loadFromRemote(appId, microserviceName, instances, schemaId);
   }
 
   public OpenAPI loadLocalSwagger(String appId, String shortName, String schemaId) {
@@ -145,7 +145,7 @@ public class SwaggerLoader {
     return SwaggerUtils.parseAndValidateSwagger(url);
   }
 
-  private OpenAPI loadFromRemote(Microservice microservice, Collection<DiscoveryInstance> instances,
+  private OpenAPI loadFromRemote(String appId, String microserviceName, Collection<DiscoveryInstance> instances,
       String schemaId) {
     if (CollectionUtils.isEmpty(instances)) {
       return null;
@@ -153,22 +153,18 @@ public class SwaggerLoader {
     String schemaContent = instances.iterator().next().getSchemas().get(schemaId);
     if (schemaContent != null) {
       LOGGER.info(
-          "load schema from service center, appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",
-          microservice.getAppId(),
-          microservice.getServiceName(),
-          microservice.getVersion(),
-          microservice.getServiceId(),
+          "load schema from service center, appId={}, microserviceName={}, schemaId={}.",
+          appId,
+          microserviceName,
           schemaId);
       LOGGER.debug(schemaContent);
       return SwaggerUtils.parseAndValidateSwagger(schemaContent);
     }
 
     LOGGER.warn("no schema in local, and can not get schema from service center, "
-            + "appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",
-        microservice.getAppId(),
-        microservice.getServiceName(),
-        microservice.getVersion(),
-        microservice.getServiceId(),
+            + "appId={}, microserviceName={}, schemaId={}.",
+        appId,
+        microserviceName,
         schemaId);
 
     return null;
