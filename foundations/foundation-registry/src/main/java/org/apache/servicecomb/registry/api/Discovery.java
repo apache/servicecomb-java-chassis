@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
-import org.apache.servicecomb.registry.DiscoveryInstance;
 
 /**
  * This is the core service discovery interface. <br/>

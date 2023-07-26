@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -44,8 +43,9 @@ public class TestThirdPartyRegistration implements BootListener, CategorizedTest
     } else {
       endpoints.add("rest://localhost:8080?sslEnabled=false");
     }
-    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints("testServiceName",
-        "1.0.1", endpoints, ThirdPartyService.class);
+    // TODO: invoke third party services. should use local discovery.
+//    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints("testServiceName",
+//        "1.0.1", endpoints, ThirdPartyService.class);
     thirdPartyService = Invoker.createProxy("testServiceName",
         "testServiceName", ThirdPartyService.class);
   }

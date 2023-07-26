@@ -21,37 +21,20 @@ import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.LifeCycle;
-import org.apache.servicecomb.registry.api.Registration;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.consumer.MicroserviceManager;
-import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
-import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.registry.swagger.SwaggerLoader;
+import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.jackson.JacksonFactory;
@@ -64,48 +47,17 @@ public class RegistrationManager {
 
   private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
-  private static final SwaggerLoader swaggerLoader = new SwaggerLoader();
+  private final List<Registration<? extends RegistrationInstance>> registrationList;
 
-  public static RegistrationManager INSTANCE = new RegistrationManager();
-
-  private final List<Registration> registrationList = new ArrayList<>();
-
-  private Microservice microservice;
-
-  private final MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-
-  private Environment environment;
-
-  private RegistrationManager() {
-    SPIServiceUtils.getOrLoadSortedService(Registration.class)
-        .stream()
-        .filter((SPIEnabled::enabled))
-        .forEach(registrationList::add);
+  public RegistrationManager(List<Registration<? extends RegistrationInstance>> registrationList) {
+    if (registrationList == null) {
+      this.registrationList = Collections.emptyList();
+      return;
+    }
+    this.registrationList = registrationList;
   }
 
-  @VisibleForTesting
-  public static void setINSTANCE(RegistrationManager INSTANCE) {
-    RegistrationManager.INSTANCE = INSTANCE;
-  }
-
-  public MicroserviceInstance getMicroserviceInstance() {
-    return this.microservice.getInstance();
-  }
-
-  public Microservice getMicroservice() {
-    return this.microservice;
-  }
-
-  public String getAppId() {
-    return microservice.getAppId();
-  }
-
-  public SwaggerLoader getSwaggerLoader() {
-    return swaggerLoader;
-  }
-
-  public void updateMicroserviceInstanceStatus(
-      MicroserviceInstanceStatus status) {
+  public void updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
     registrationList
         .forEach(registration -> registration.updateMicroserviceInstanceStatus(status));
   }
@@ -125,105 +77,11 @@ public class RegistrationManager {
   }
 
   public void run() {
-    EventManager.getEventBus().register(new AfterServiceInstanceRegistryHandler(registrationList.size()));
     registrationList.forEach(LifeCycle::run);
   }
 
-  public void init(Environment environment) {
-    this.environment = environment;
-    this.microservice = this.microserviceFactory.create(this.environment);
-
-    BeanUtils.addBeans(Registration.class, registrationList);
-
+  public void init() {
     registrationList.forEach(LifeCycle::init);
-  }
-
-  /**
-   * <p>
-   * Register a third party service if not registered before, and set it's instances into
-   * {@linkplain StaticMicroserviceVersions StaticMicroserviceVersions}.
-   * </p>
-   * <p>
-   * The registered third party service has the same {@code appId} and {@code environment} as this microservice instance has,
-   * and there is only one schema represented by {@code schemaIntfCls}, whose name is the same as {@code microserviceName}.
-   * </p>
-   * <em>
-   *   This method is for initializing 3rd party service endpoint config.
-   *   i.e. If this service has not been registered before, this service will be registered and the instances will be set;
-   *   otherwise, NOTHING will happen.
-   * </em>
-   *
-   * @param microserviceName name of the 3rd party service, and this param also specifies the schemaId
-   * @param version version of this 3rd party service
-   * @param instances the instances of this 3rd party service. Users only need to specify the endpoint information, other
-   * necessary information will be generate and set in the implementation of this method.
-   * @param schemaIntfCls the producer interface of the service. This interface is used to generate swagger schema and
-   * can also be used for the proxy interface of RPC style invocation.
-   */
-  public void registerMicroserviceMapping(String microserviceName, String version, List<MicroserviceInstance> instances,
-      Class<?> schemaIntfCls) {
-    MicroserviceNameParser parser = new MicroserviceNameParser(getAppId(), microserviceName);
-    MicroserviceManager microserviceManager = DiscoveryManager.INSTANCE.getAppManager()
-        .getOrCreateMicroserviceManager(parser.getAppId());
-    microserviceManager.getVersionsByName()
-        .computeIfAbsent(microserviceName,
-            svcName -> new StaticMicroserviceVersions(DiscoveryManager.INSTANCE.getAppManager(), parser.getAppId(),
-                microserviceName)
-                .init(schemaIntfCls, version, instances)
-        );
-  }
-
-  /**
-   * @see #registerMicroserviceMapping(String, String, List, Class)
-   * @param endpoints the endpoints of 3rd party service. Each of endpoints will be treated as a separated instance.
-   * Format of the endpoints is the same as the endpoints that ServiceComb microservices register in service-center,
-   * like {@code rest://127.0.0.1:8080}
-   */
-  public void registerMicroserviceMappingByEndpoints(String microserviceName, String version,
-      List<String> endpoints, Class<?> schemaIntfCls) {
-    ArrayList<MicroserviceInstance> microserviceInstances = new ArrayList<>();
-    for (String endpoint : endpoints) {
-      MicroserviceInstance instance = new MicroserviceInstance();
-      instance.setEndpoints(Collections.singletonList(endpoint));
-      microserviceInstances.add(instance);
-    }
-
-    registerMicroserviceMapping(microserviceName, version, microserviceInstances, schemaIntfCls);
-  }
-
-  public static String getPublishAddress() {
-    String publicAddressSetting =
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
-    publicAddressSetting = publicAddressSetting.trim();
-    if (publicAddressSetting.isEmpty()) {
-      return NetUtils.getHostAddress();
-    }
-
-    // placeholder is network interface name
-    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-      return NetUtils
-          .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-          .getHostAddress();
-    }
-
-    return publicAddressSetting;
-  }
-
-  public static String getPublishHostName() {
-    String publicAddressSetting =
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
-    publicAddressSetting = publicAddressSetting.trim();
-    if (publicAddressSetting.isEmpty()) {
-      return NetUtils.getHostName();
-    }
-
-    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-      return NetUtils
-          .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-          .getHostName();
-    }
-
-    return publicAddressSetting;
   }
 
   /**
@@ -314,33 +172,5 @@ public class RegistrationManager {
 
   private String getEndpoints(List<String> endpoints) {
     return JacksonFactory.CODEC.toString(endpoints);
-  }
-
-  public static class AfterServiceInstanceRegistryHandler {
-    private final AtomicInteger instanceRegisterCounter;
-
-    AfterServiceInstanceRegistryHandler(int counter) {
-      instanceRegisterCounter = new AtomicInteger(counter);
-    }
-
-    @Subscribe
-    @EnableExceptionPropagation
-    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent event) {
-      LOGGER.info("receive MicroserviceInstanceRegisteredEvent event, registration={}, instance id={}",
-          event.getRegistrationName(),
-          event.getInstanceId());
-
-      if (instanceRegisterCounter.decrementAndGet() > 0) {
-        return;
-      }
-
-      EventManager.unregister(this);
-
-      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(
-          "Registration Manager",
-          null,
-          true
-      ));
-    }
   }
 }

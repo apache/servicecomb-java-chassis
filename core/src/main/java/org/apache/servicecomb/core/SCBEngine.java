@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
@@ -54,8 +52,8 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.registry.swagger.SwaggerLoader;
@@ -64,12 +62,15 @@ import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
@@ -83,8 +84,6 @@ public class SCBEngine {
   static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
 
   private static final Object initializationLock = new Object();
-
-  private static volatile SCBEngine INSTANCE;
 
   private ApplicationContext applicationContext;
 
@@ -122,25 +121,40 @@ public class SCBEngine {
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
+  private final SwaggerLoader swaggerLoader = new SwaggerLoader();
+
   private Thread shutdownHook;
 
-  protected SCBEngine() {
+  private RegistrationManager registrationManager;
+
+  private MicroserviceProperties microserviceProperties;
+
+  public SCBEngine() {
     eventBus = EventManager.getEventBus();
 
     eventBus.register(this);
-
-    INSTANCE = this;
 
     producerProviderManager = new ProducerProviderManager(this);
     serviceRegistryListener = new ServiceRegistryListener(this);
   }
 
-  public ApplicationContext getApplicationContext() {
-    return applicationContext;
-  }
-
+  @Autowired
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
+  }
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
+  }
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return applicationContext;
   }
 
   public VendorExtensions getVendorExtensions() {
@@ -148,7 +162,7 @@ public class SCBEngine {
   }
 
   public String getAppId() {
-    return RegistrationManager.INSTANCE.getAppId();
+    return this.microserviceProperties.getApplication();
   }
 
   public void setStatus(SCBStatus status) {
@@ -159,19 +173,8 @@ public class SCBEngine {
     return status;
   }
 
-  public static SCBEngine getInstance() {
-    if (null == INSTANCE) {
-      synchronized (initializationLock) {
-        if (null == INSTANCE) {
-          new SCBEngine();
-        }
-      }
-    }
-    return INSTANCE;
-  }
-
   public SwaggerLoader getSwaggerLoader() {
-    return RegistrationManager.INSTANCE.getSwaggerLoader();
+    return swaggerLoader;
   }
 
   public FilterChainsManager getFilterChainsManager() {
@@ -367,7 +370,7 @@ public class SCBEngine {
 
     triggerAfterRegistryEvent();
 
-    RegistrationManager.INSTANCE.run();
+    registrationManager.run();
     DiscoveryManager.INSTANCE.run();
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
@@ -375,8 +378,7 @@ public class SCBEngine {
   }
 
   private void createProducerMicroserviceMeta() {
-    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
-
+    String microserviceName = this.microserviceProperties.getName();
     producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
@@ -418,7 +420,7 @@ public class SCBEngine {
 
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
-    RegistrationManager.INSTANCE.destroy();
+    registrationManager.destroy();
     DiscoveryManager.INSTANCE.destroy();
 
     serviceRegistryListener.destroy();
@@ -448,7 +450,7 @@ public class SCBEngine {
   }
 
   private void turnDownInstanceStatus() {
-    RegistrationManager.INSTANCE.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
+    registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
   }
 
   private void blockShutDownOperationForConsumerRefresh() {
