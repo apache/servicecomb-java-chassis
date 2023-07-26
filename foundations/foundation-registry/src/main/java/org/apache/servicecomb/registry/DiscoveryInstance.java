@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.registry;
 
-package org.apache.servicecomb.registry.api.registry;
+import org.apache.servicecomb.registry.api.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 /**
- * Created by   on 2016/12/5.
+ * Microserivce instance discovery object.
  */
-public enum MicroserviceInstanceStatus {
-  STARTING,
-  TESTING,
-  UP,
-  OUTOFSERVICE,
-  DOWN,
-  UNKNOWN
+public interface DiscoveryInstance extends MicroserviceInstance {
+  /**
+   * Microservice instance status.
+   */
+  MicroserviceInstanceStatus getStatus();
 }

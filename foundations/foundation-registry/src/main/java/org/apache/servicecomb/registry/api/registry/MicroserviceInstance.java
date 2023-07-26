@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.config.InstancePropertiesLoader;
 import org.springframework.core.env.Environment;
 

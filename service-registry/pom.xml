@@ -31,10 +31,12 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>registry-lightweight</module>
-    <module>registry-service-center</module>
-    <module>registry-local</module>
-    <module>registry-zero-config</module>
-    <module>registry-schema-discovery</module>
+    <!-- TODO : after model finished, will implement
+<module>registry-local</module>
+<module>registry-lightweight</module>
+<module>registry-service-center</module>
+<module>registry-zero-config</module>
+<module>registry-schema-discovery</module>
+-->
   </modules>
 </project>

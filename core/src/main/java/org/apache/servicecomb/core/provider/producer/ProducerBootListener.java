@@ -21,20 +21,15 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -81,34 +76,8 @@ public class ProducerBootListener implements BootListener {
       }
       RegistrationManager.INSTANCE.addSchema(schemaMeta.getSchemaId(), content);
     }
-
-    saveBasePaths(microserviceMeta);
   }
 
-  // just compatible to old 3rd components， servicecomb not use it......
-  private void saveBasePaths(MicroserviceMeta microserviceMeta) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty(DefinitionConst.REGISTER_SERVICE_PATH, false).get()) {
-      return;
-    }
-
-    String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
-    Map<String, BasePath> basePaths = new LinkedHashMap<>();
-    for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
-      OpenAPI swagger = schemaMeta.getSwagger();
-
-      String basePath = SwaggerUtils.getBasePath(swagger);
-      if (StringUtils.isNotEmpty(urlPrefix) && !basePath.startsWith(urlPrefix)) {
-        basePath = urlPrefix + basePath;
-      }
-      if (StringUtils.isNotEmpty(basePath)) {
-        BasePath basePathObj = new BasePath();
-        basePathObj.setPath(basePath);
-        basePaths.put(basePath, basePathObj);
-      }
-    }
-
-    RegistrationManager.INSTANCE.addBasePath(basePaths.values());
-  }
 
   // bug: can not close all thread for edge
   @Override

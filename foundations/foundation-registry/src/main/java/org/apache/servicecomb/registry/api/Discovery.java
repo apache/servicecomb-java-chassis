@@ -17,61 +17,35 @@
 
 package org.apache.servicecomb.registry.api;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.DiscoveryInstance;
 
 /**
  * This is the core service discovery interface. <br/>
  */
-public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
-  /**
-   * get Microservice </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   */
-  Microservice getMicroservice(String microserviceId);
-
-  /**
-   * get all Microservices </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   */
-  List<Microservice> getAllMicroservices();
-
-  /**
-   * get schema content </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   */
-  String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId);
-
-  /**
-   * get MicroserviceInstance </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   */
-  MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId);
-
-  /**
-   * Find all instances. Implementations can use <code>gerRevision</code> to retrieve the
-   * latest instances changed. </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   *
-   * @param appId application id
-   * @param serviceName microservice name
-   * @param versionRule literal version rule. e.g. 1.0.0, 1.0.0+, [1.0.0, 2.0.0)
-   * @return all instances match the criteria.
-   */
-  default MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
-    return null;
+public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIOrder, LifeCycle {
+  interface InstanceChangedListener<D extends DiscoveryInstance> {
+    void onInstanceChanged(String application, String serviceName, List<D> updatedInstances);
   }
 
   String name();
+
+  /**
+   * Find all instances.
+   *
+   * Life Cycle：This method is called anytime after <code>run</code>.
+   *
+   * @param application application
+   * @param serviceName microservice name
+   * @return all instances match the criteria.
+   */
+  List<D> findServiceInstances(String application, String serviceName);
+
+  /**
+   * Discovery can call InstanceChangedListener when instance get changed.
+   */
+  void setInstanceChangedListener(InstanceChangedListener<D> instanceChangedListener);
 }
