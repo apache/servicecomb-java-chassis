@@ -19,8 +19,8 @@ package org.apache.servicecomb.registry.config;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.springframework.core.env.Environment;
 
 public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
 
@@ -29,14 +29,13 @@ public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
   private InstancePropertiesLoader() {
   }
 
-
   @Override
-  protected Map<String, String> readProperties(Configuration configuration) {
-    return BootStrapProperties.readServiceInstanceProperties(configuration);
+  protected Map<String, String> readProperties(Environment environment) {
+    return environment.getProperty(BootStrapProperties.CONFIG_SERVICE_INSTANCE_PROPERTIES, Map.class);
   }
 
   @Override
-  protected String readPropertiesExtendedClass(Configuration configuration) {
-    return BootStrapProperties.readServiceInstanceExtendedClass(configuration);
+  protected String readPropertiesExtendedClass(Environment environment) {
+    return environment.getProperty(BootStrapProperties.CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS);
   }
 }

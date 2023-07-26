@@ -61,6 +61,10 @@ public class Microservice {
 
   private String description;
 
+  @Deprecated
+  /**
+   * No meaning in real world.
+   */
   private String level;
 
   private List<String> schemas = new ArrayList<>();
@@ -68,6 +72,10 @@ public class Microservice {
   @JsonIgnore
   private final Map<String, String> schemaMap = new HashMap<>();
 
+  @Deprecated
+  /**
+   * Can use registered Open API information instead.
+   */
   private List<BasePath> paths = new ArrayList<>();
 
   private MicroserviceStatus status = MicroserviceStatus.UP;
@@ -164,10 +172,12 @@ public class Microservice {
     this.description = description;
   }
 
+  @Deprecated
   public String getLevel() {
     return level;
   }
 
+  @Deprecated
   public void setLevel(String level) {
     this.level = level;
   }
@@ -211,10 +221,12 @@ public class Microservice {
     return sb.toString();
   }
 
+  @Deprecated
   public List<BasePath> getPaths() {
     return paths;
   }
 
+  @Deprecated
   public void setPaths(List<BasePath> paths) {
     this.paths = paths;
   }

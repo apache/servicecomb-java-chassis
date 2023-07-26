@@ -82,6 +82,8 @@ public class BootStrapProperties {
 
   public static final String CONFIG_SERVICE_PATHS = "servicecomb.service.paths";
 
+  public static final String CONFIG_SERVICE_ALIAS = "servicecomb.service.alias";
+
   // service instance definition keys of new version
   public static final String CONFIG_SERVICE_INSTANCE_PROPERTIES = "servicecomb.instance.properties";
 
