@@ -16,72 +16,47 @@
  */
 package org.apache.servicecomb.registry.api.registry;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.APP_MAPPING;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICE_MAPPING;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.VERSION_MAPPING;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.EnvironmentConfiguration;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
-import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
 import org.apache.servicecomb.foundation.common.Version;
+import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
+import org.springframework.core.env.Environment;
 
 public class MicroserviceFactory {
-  public Microservice create() {
-    return create(ConfigUtil.createLocalConfig());
-  }
-
-  public Microservice create(Configuration configuration) {
-    Microservice microservice = createMicroserviceFromConfiguration(configuration);
-    microservice.setInstance(MicroserviceInstance.createFromDefinition(configuration));
+  public Microservice create(Environment environment) {
+    Microservice microservice = createMicroserviceFromConfiguration(environment);
+    microservice.setInstance(MicroserviceInstance.createFromDefinition(environment));
     return microservice;
   }
 
-  private Microservice createMicroserviceFromConfiguration(Configuration configuration) {
+  private Microservice createMicroserviceFromConfiguration(Environment environment) {
     Microservice microservice = new Microservice();
 
-    EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
-    if (!StringUtils.isEmpty(envConfig.getString(APP_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(APP_MAPPING)))) {
-      microservice.setAppId(envConfig.getString(envConfig.getString(APP_MAPPING)));
-    } else {
-      microservice.setAppId(BootStrapProperties.readApplication(configuration));
-    }
-    if (!StringUtils.isEmpty(envConfig.getString(SERVICE_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(SERVICE_MAPPING)))) {
-      microservice.setServiceName(envConfig.getString(envConfig.getString(SERVICE_MAPPING)));
-    } else {
-      microservice.setServiceName(BootStrapProperties.readServiceName(configuration));
-    }
-    String version;
-    if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(VERSION_MAPPING)))) {
-      version = envConfig.getString(envConfig.getString(VERSION_MAPPING));
-    } else {
-      version = BootStrapProperties.readServiceVersion(configuration);
-    }
+    microservice.setEnvironment(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT,
+        BootStrapProperties.DEFAULT_MICROSERVICE_ENVIRONMENT));
+    microservice.setAppId(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION,
+        BootStrapProperties.DEFAULT_APPLICATION));
+    microservice.setServiceName(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME,
+        BootStrapProperties.DEFAULT_MICROSERVICE_NAME));
+    microservice.setVersion(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_VERSION,
+        BootStrapProperties.DEFAULT_MICROSERVICE_VERSION));
     // just check version format
-    new Version(version);
-    microservice.setVersion(version);
+    new Version(microservice.getVersion());
 
-    microservice.setDescription(BootStrapProperties.readServiceDescription(configuration));
-    microservice.setLevel(BootStrapProperties.readServiceRole(configuration));
-    microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
-    Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
+    microservice.setDescription(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION));
+    Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(environment);
     microservice.setProperties(propertiesMap);
-    microservice.setEnvironment(BootStrapProperties.readServiceEnvironment(configuration));
 
     // set alias name when allow cross app
     if (microservice.allowCrossApp()) {
       microservice.setAlias(Microservice.generateAbsoluteMicroserviceName(microservice.getAppId(),
           microservice.getServiceName()));
+    } else {
+      microservice.setAlias(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ALIAS));
     }
 
     microservice.setFramework(createFramework());

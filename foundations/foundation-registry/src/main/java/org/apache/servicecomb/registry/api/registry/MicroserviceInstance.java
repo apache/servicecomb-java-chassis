@@ -22,13 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.config.InstancePropertiesLoader;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * Created by   on 2016/12/5.
@@ -51,12 +49,24 @@ public class MicroserviceInstance {
 
   private Map<String, String> properties = new HashMap<>(); // reserved key list: region|az|stage|group
 
+  @Deprecated
+  /**
+   * This property is registry implementation specific.
+   */
   private HealthCheck healthCheck;
 
+  @Deprecated
+  /**
+   * Not meaning full property.
+   */
   private String stage;
 
   private DataCenterInfo dataCenterInfo;
 
+  @Deprecated
+  /**
+   * Not meaning full property.
+   */
   private String timestamp;
 
   @Override
@@ -69,10 +79,12 @@ public class MicroserviceInstance {
     return sb.toString();
   }
 
+  @Deprecated
   public String getTimestamp() {
     return timestamp;
   }
 
+  @Deprecated
   public void setTimestamp(String timestamp) {
     this.timestamp = timestamp;
   }
@@ -174,34 +186,25 @@ public class MicroserviceInstance {
     this.dataCenterInfo = dataCenterInfo;
   }
 
-  // Some properties of microservice instance are dynamic changed, not cover them all now.
-  public static MicroserviceInstance createFromDefinition(Configuration configuration) {
+  public static MicroserviceInstance createFromDefinition(Environment environment) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    // default hard coded values
-    microserviceInstance.setStage(DefinitionConst.DEFAULT_STAGE);
     microserviceInstance.setStatus(MicroserviceInstanceStatus
-        .valueOf(BootStrapProperties.readServiceInstanceInitialStatus()));
-    HealthCheck healthCheck = new HealthCheck();
-    healthCheck.setMode(HealthCheckMode.HEARTBEAT);
-    microserviceInstance.setHealthCheck(healthCheck);
+        .valueOf(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_INSTANCE_INITIAL_STATUS,
+            BootStrapProperties.DEFAULT_MICROSERVICE_INSTANCE_INITIAL_STATUS)));
 
     // load properties
-    Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(configuration);
+    Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(environment);
     microserviceInstance.setProperties(propertiesMap);
 
     // load data center information
-    loadDataCenterInfo(microserviceInstance);
+    loadDataCenterInfo(microserviceInstance, environment);
     return microserviceInstance;
   }
 
-  private static void loadDataCenterInfo(MicroserviceInstance microserviceInstance) {
-    String dataCenterName = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.datacenter.name", null)
-        .get();
-    String region = DynamicPropertyFactory.getInstance().
-        getStringProperty("servicecomb.datacenter.region", null).get();
-    String availableZone = DynamicPropertyFactory.getInstance().
-        getStringProperty("servicecomb.datacenter.availableZone", null).get();
+  private static void loadDataCenterInfo(MicroserviceInstance microserviceInstance, Environment environment) {
+    String dataCenterName = environment.getProperty("servicecomb.datacenter.name");
+    String region = environment.getProperty("servicecomb.datacenter.region");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
     if (dataCenterName == null && region == null && availableZone == null) {
       return;
     }

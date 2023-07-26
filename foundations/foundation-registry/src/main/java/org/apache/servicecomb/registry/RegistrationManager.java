@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -42,6 +41,7 @@ import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.consumer.MicroserviceManager;
@@ -50,7 +50,9 @@ import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -70,14 +72,17 @@ public class RegistrationManager {
 
   private final List<Registration> registrationList = new ArrayList<>();
 
-  private Registration primary;
+  private Microservice microservice;
+
+  private final MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+
+  private Environment environment;
 
   private RegistrationManager() {
     SPIServiceUtils.getOrLoadSortedService(Registration.class)
         .stream()
         .filter((SPIEnabled::enabled))
         .forEach(registrationList::add);
-    initPrimary();
   }
 
   @VisibleForTesting
@@ -86,24 +91,15 @@ public class RegistrationManager {
   }
 
   public MicroserviceInstance getMicroserviceInstance() {
-    return primary.getMicroserviceInstance();
+    return this.microservice.getInstance();
   }
 
   public Microservice getMicroservice() {
-    assertPrimaryNotNull();
-    return primary.getMicroservice();
-  }
-
-  private void assertPrimaryNotNull() {
-    if (primary == null) {
-      throw new NullPointerException("At least one Registration implementation configured. Missed"
-          + " to include dependency ? e.g. <artifactId>registry-service-center</artifactId>");
-    }
+    return this.microservice;
   }
 
   public String getAppId() {
-    assertPrimaryNotNull();
-    return primary.getAppId();
+    return microservice.getAppId();
   }
 
   public SwaggerLoader getSwaggerLoader() {
@@ -140,20 +136,13 @@ public class RegistrationManager {
     registrationList.forEach(LifeCycle::run);
   }
 
-  public void init() {
+  public void init(Environment environment) {
+    this.environment = environment;
+    this.microservice = this.microserviceFactory.create(this.environment);
+
     BeanUtils.addBeans(Registration.class, registrationList);
 
-    initPrimary();
     registrationList.forEach(LifeCycle::init);
-  }
-
-  private void initPrimary() {
-    if (registrationList.isEmpty()) {
-      LOGGER.warn("No registration is enabled. Fix this if only in unit tests.");
-      primary = null;
-    } else {
-      primary = registrationList.get(0);
-    }
   }
 
   /**
@@ -307,7 +296,6 @@ public class RegistrationManager {
               publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
           .getHostAddress();
     }
-
 
     return new IpPort(publicAddressSetting, publishPort);
   }
