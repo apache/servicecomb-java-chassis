@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.discovery;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
@@ -26,7 +27,6 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
@@ -42,12 +42,13 @@ public class TestDiscoveryTree {
   public void before() {
     ConfigUtil.installDynamicConfig();
   }
+
   @AfterEach
   public void tearDown() {
     ArchaiusUtils.resetConfig();
   }
 
-  DiscoveryTree discoveryTree = new DiscoveryTree();
+  DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
 
   List<DiscoveryFilter> filters = discoveryTree.getFilters();
 
@@ -171,24 +172,18 @@ public class TestDiscoveryTree {
 
   @Test
   public void easyDiscovery() {
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    DiscoveryManager.INSTANCE = Mockito.spy(DiscoveryManager.INSTANCE);
-    Mockito.when(DiscoveryManager.INSTANCE.getInstanceCacheManager()).thenReturn(instanceCacheManager);
-    Mockito.when(instanceCacheManager.getOrCreateVersionedCache(null, null, null)).thenReturn(parent);
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache(null, null)).thenReturn(parent);
 
-
-    result = discoveryTree.discovery(context, null, null, null);
+    result = discoveryTree.discovery(context, null, null);
     Assertions.assertEquals(parent.name(), result.name());
     Assertions.assertEquals(parent.cacheVersion(), result.cacheVersion());
   }
 
   @Test
   public void discovery_filterReturnNull() {
-    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    DiscoveryManager.INSTANCE = Mockito.spy(DiscoveryManager.INSTANCE);
-    Mockito.when(DiscoveryManager.INSTANCE.getInstanceCacheManager()).thenReturn(instanceCacheManager);
-    Mockito.when(instanceCacheManager.getOrCreateVersionedCache(null, null, null)).thenReturn(parent);
-
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache(null, null)).thenReturn(parent);
     DiscoveryFilter filter = new DiscoveryFilter() {
       @Override
       public int getOrder() {
@@ -203,7 +198,7 @@ public class TestDiscoveryTree {
     discoveryTree.addFilter(filter);
 
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> result = discoveryTree.discovery(context, null, null, null));
+        () -> result = discoveryTree.discovery(context, null, null));
     Assertions.assertEquals(filter.getClass().getName() + " discovery return null.", exception.getMessage());
   }
 

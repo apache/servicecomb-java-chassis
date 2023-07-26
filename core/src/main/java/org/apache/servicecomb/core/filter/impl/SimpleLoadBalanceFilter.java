@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
@@ -42,6 +44,7 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * build-in round robin LB, for demo scenes
@@ -51,7 +54,7 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
 
   public static final String NAME = "simple-load-balance";
 
-  private static class Service {
+  private class Service {
     public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
 
     // Enough times to make sure to choose a different server in high volume.
@@ -59,7 +62,7 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
 
     private final String name;
 
-    private final DiscoveryTree discoveryTree = new DiscoveryTree();
+    private final DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
 
     // key is grouping filter qualified name
     private final Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
@@ -67,7 +70,7 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
     public Service(String name) {
       this.name = name;
       discoveryTree.loadFromSPI(DiscoveryFilter.class);
-      discoveryTree.addFilter(new EndpointDiscoveryFilter());
+      discoveryTree.addFilter(new EndpointDiscoveryFilter(scbEngine));
       discoveryTree.sort();
     }
 
@@ -80,8 +83,7 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
       context.setInputParameters(invocation);
       VersionedCache endpointsVersionedCache = discoveryTree.discovery(context,
           invocation.getAppId(),
-          invocation.getMicroserviceName(),
-          invocation.getMicroserviceVersionRule());
+          invocation.getMicroserviceName());
       if (endpointsVersionedCache.isEmpty()) {
         String msg = "No available address found.";
         LOGGER.error("{} microserviceName={}, version={}, discoveryGroupName={}",
@@ -149,6 +151,20 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
 
 
   private final Map<String, Service> servicesByName = new ConcurrentHashMapEx<>();
+
+  private DiscoveryManager discoveryManager;
+
+  private SCBEngine scbEngine;
+
+  @Autowired
+  public void setScbEngine(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
 
   @Nonnull
   @Override

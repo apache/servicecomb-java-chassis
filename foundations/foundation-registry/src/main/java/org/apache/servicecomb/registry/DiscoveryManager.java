@@ -17,128 +17,71 @@
 
 package org.apache.servicecomb.registry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.common.cache.VersionedCache;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.Discovery;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.LifeCycle;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.cache.InstanceCacheManager;
-import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
-import org.apache.servicecomb.registry.consumer.AppManager;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
-
-import com.google.common.annotations.VisibleForTesting;
+import org.springframework.util.CollectionUtils;
 
 public class DiscoveryManager {
-  public static DiscoveryManager INSTANCE = new DiscoveryManager();
+  private final List<Discovery<? extends DiscoveryInstance>> discoveryList;
 
-  private final List<Discovery> discoveryList = new ArrayList<>();
+  private List<? extends DiscoveryInstance> highestInstances;
 
-  private final AppManager appManager;
+  private List<? extends DiscoveryInstance> normalInstances;
 
-  private final InstanceCacheManager instanceCacheManager;
+  private List<? extends DiscoveryInstance> lowestInstances;
 
+  private Map<String, Map<String, VersionedCache>> versionedCache = new ConcurrentHashMapEx<>();
 
-  private DiscoveryManager() {
-    appManager = new AppManager();
-    instanceCacheManager = new InstanceCacheManagerNew(appManager);
-    SPIServiceUtils.getOrLoadSortedService(Discovery.class)
-        .stream()
-        .filter((SPIEnabled::enabled))
-        .forEach(discoveryList::add);
+  public DiscoveryManager(List<Discovery<? extends DiscoveryInstance>> discoveryList) {
+    this.discoveryList = discoveryList;
   }
 
-  @VisibleForTesting
-  public static void renewInstance() {
-    DiscoveryManager.INSTANCE = new DiscoveryManager();
-  }
-
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule) {
-    return findServiceInstances(appId, serviceName, versionRule, null);
-  }
-
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule, String revision) {
-    MicroserviceInstances result = new MicroserviceInstances();
-    // default values not suitable for aggregate, reset.
-    result.setNeedRefresh(false);
-    result.setMicroserviceNotExist(true);
-    result.setRevision(revision);
-    discoveryList
-        .forEach(discovery -> {
-          MicroserviceInstances instances = discovery.findServiceInstances(appId, serviceName, versionRule);
-          result.mergeMicroserviceInstances(instances);
+  public VersionedCache getOrCreateVersionedCache(String application, String serviceName) {
+    return versionedCache.computeIfAbsent(application, key ->
+            new ConcurrentHashMapEx<>())
+        .computeIfAbsent(serviceName, key -> {
+          if (!CollectionUtils.isEmpty(highestInstances)) {
+            return new VersionedCache()
+                .name(key)
+                .autoCacheVersion()
+                .data(highestInstances);
+          }
+          if (!CollectionUtils.isEmpty(normalInstances)) {
+            return new VersionedCache()
+                .name(key)
+                .autoCacheVersion()
+                .data(normalInstances);
+          }
+          if (!CollectionUtils.isEmpty(lowestInstances)) {
+            return new VersionedCache()
+                .name(key)
+                .autoCacheVersion()
+                .data(lowestInstances);
+          }
+          return new VersionedCache()
+              .name(key)
+              .autoCacheVersion()
+              .data(Collections.emptyList());
         });
-
-    return result;
   }
 
-  public InstanceCacheManager getInstanceCacheManager() {
-    return this.instanceCacheManager;
-  }
-
-  public AppManager getAppManager() {
-    return this.appManager;
-  }
-
-  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
-    for (Discovery discovery : discoveryList) {
-      MicroserviceInstance microserviceInstance = discovery.getMicroserviceInstance(serviceId, instanceId);
-      if (microserviceInstance != null) {
-        return microserviceInstance;
+  public List<? extends DiscoveryInstance> findServiceInstances(String application, String serviceName) {
+    List<? extends DiscoveryInstance> result;
+    for (Discovery<? extends DiscoveryInstance> discovery : discoveryList) {
+      result = discovery.findServiceInstances(application, serviceName);
+      if (CollectionUtils.isEmpty(result)) {
+        continue;
       }
+      return result;
     }
-    return null;
-  }
-
-  public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId) {
-    for (Discovery discovery : discoveryList) {
-      String schema = discovery.getSchema(microserviceId, instances, schemaId);
-      if (schema != null) {
-        return schema;
-      }
-    }
-    return null;
-  }
-
-  public Microservice getMicroservice(String microserviceId) {
-    for (Discovery discovery : discoveryList) {
-      Microservice microservice = discovery.getMicroservice(microserviceId);
-      if (microservice != null) {
-        return microservice;
-      }
-    }
-    return null;
-  }
-
-  public List<Microservice> getAllMicroservices() {
-    List<Microservice> result = new LinkedList<>();
-    for (Discovery discovery : discoveryList) {
-      List<Microservice> microservices = discovery.getAllMicroservices();
-      if (microservices != null) {
-        result.addAll(microservices);
-      }
-    }
-    return result;
-  }
-
-  public CompletableFuture<MicroserviceVersions> getOrCreateMicroserviceVersionsAsync(String appId,
-      String microserviceName) {
-    return appManager.getOrCreateMicroserviceVersionsAsync(appId, microserviceName);
-  }
-
-  public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
-    return appManager.getOrCreateMicroserviceVersions(appId, microserviceName);
+    return Collections.emptyList();
   }
 
   public void destroy() {
@@ -150,8 +93,6 @@ public class DiscoveryManager {
   }
 
   public void init() {
-    BeanUtils.addBeans(Discovery.class, discoveryList);
-
     discoveryList.forEach(LifeCycle::init);
   }
 }

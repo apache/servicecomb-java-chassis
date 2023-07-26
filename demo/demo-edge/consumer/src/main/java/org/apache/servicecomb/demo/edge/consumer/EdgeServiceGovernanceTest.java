@@ -21,15 +21,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.servicecomb.core.MicroserviceProperties;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -39,6 +38,12 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
   RestTemplate template = RestTemplateBuilder.create();
 
   String edgePrefix;
+
+  @Autowired
+  MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  DiscoveryManager discoveryManager;
 
   @Override
   public void testRestTransport() throws Exception {
@@ -131,19 +136,9 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
     TestMgr.check(false, notExpectedFailed.get());
   }
 
-//  private void testEdgeServiceRetry() {
-//    String url = edgePrefix + "/business/v2/testEdgeServiceRetry";
-//    String invocationID = UUID.randomUUID().toString();
-//    String result = template.getForObject(url + "?invocationID={1}", String.class, invocationID);
-//    TestMgr.check(result, "try times: 3");
-//  }
-
   private URIEndpointObject prepareEdge(String prefix) {
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) DiscoveryManager.INSTANCE
-        .getAppManager()
-        .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
-        .getVersionedCache()
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) discoveryManager.getOrCreateVersionedCache(
+            microserviceProperties.getApplication(), "edge")
         .mapData()
         .values()
         .stream()
