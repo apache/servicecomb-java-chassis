@@ -25,7 +25,6 @@ import java.util.Collections;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -62,7 +61,7 @@ public class TestAbstractTransport {
   public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
     new Expectations() {
       {
-        RegistrationManager.getPublishAddress("my", "127.0.0.1:9090");
+        AbstractTransport.getPublishAddress("my", "127.0.0.1:9090");
       }
     };
 
