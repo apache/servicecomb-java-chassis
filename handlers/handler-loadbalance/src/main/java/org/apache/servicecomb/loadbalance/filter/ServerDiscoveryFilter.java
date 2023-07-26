@@ -31,10 +31,16 @@ import org.slf4j.LoggerFactory;
 public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServerDiscoveryFilter.class);
 
+  private SCBEngine scbEngine;
+
+  public ServerDiscoveryFilter(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
+
   @Override
   protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
       MicroserviceInstance instance) {
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
+    Transport transport = scbEngine.getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;

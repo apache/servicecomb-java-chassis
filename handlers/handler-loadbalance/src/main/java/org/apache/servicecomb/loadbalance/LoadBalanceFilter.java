@@ -34,10 +34,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -90,13 +87,11 @@ public class LoadBalanceFilter implements ConsumerFilter {
   }
 
   @Autowired
-  public LoadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryManager discoveryManager) {
+  public LoadBalanceFilter(ExtensionsManager extensionsManager,
+      DiscoveryTree discoveryTree) {
     preCheck();
     this.extensionsManager = extensionsManager;
-    discoveryTree = new DiscoveryTree(discoveryManager);
-    discoveryTree.loadFromSPI(DiscoveryFilter.class);
-    discoveryTree.addFilter(new ServerDiscoveryFilter());
-    discoveryTree.sort();
+    this.discoveryTree = discoveryTree;
   }
 
   @Autowired

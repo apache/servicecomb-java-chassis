@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.MicroserviceProperties;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -83,12 +84,12 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private DiscoveryTree discoveryTree;
 
-  public CommonHttpEdgeDispatcher(DiscoveryManager discoveryManager) {
+  public CommonHttpEdgeDispatcher(DiscoveryManager discoveryManager, SCBEngine scbEngine) {
     this.discoveryManager = discoveryManager;
     if (this.enabled()) {
       loadConfigurations();
       discoveryTree = new DiscoveryTree(this.discoveryManager);
-      discoveryTree.addFilter(new ServerDiscoveryFilter());
+      discoveryTree.addFilter(new ServerDiscoveryFilter(scbEngine));
     }
   }
 
