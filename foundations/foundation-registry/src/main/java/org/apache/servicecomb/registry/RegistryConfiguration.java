@@ -17,7 +17,12 @@
 
 package org.apache.servicecomb.registry;
 
+import java.util.List;
+
+import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.consumer.AppManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,5 +31,11 @@ public class RegistryConfiguration {
   @Bean
   public AppManager appManager() {
     return DiscoveryManager.INSTANCE.getAppManager();
+  }
+
+  @Bean
+  public RegistrationManager registrationManager(
+      @Autowired(required = false) List<Registration<? extends RegistrationInstance>> registrationList) {
+    return new RegistrationManager(registrationList);
   }
 }

@@ -17,6 +17,7 @@
 package org.apache.servicecomb.core;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,5 +33,15 @@ public class ServiceCombCoreConfiguration {
     SCBApplicationListener scbApplicationListener = new SCBApplicationListener();
     scbApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
     return scbApplicationListener;
+  }
+
+  @Bean
+  public SCBEngine scbEngine() {
+    return new SCBEngine();
+  }
+
+  @ConfigurationProperties(prefix = "servicecomb.service")
+  public MicroserviceProperties microserviceProperties() {
+    return new MicroserviceProperties();
   }
 }

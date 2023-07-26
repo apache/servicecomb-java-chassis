@@ -14,10 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry;
-
-import org.apache.servicecomb.registry.api.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+package org.apache.servicecomb.registry.api;
 
 /**
  * Microserivce instance discovery object.
