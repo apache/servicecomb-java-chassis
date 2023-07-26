@@ -22,11 +22,19 @@ import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * initialize public and private key pair when system boot before registry instance to service center
  */
 public class AuthenticationBootListener implements BootListener {
+  private RegistrationManager registrationManager;
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
+  }
+
   @Override
   public void onBootEvent(BootEvent event) {
     if (!EventType.BEFORE_REGISTRY.equals(event.getEventType())) {
@@ -36,7 +44,7 @@ public class AuthenticationBootListener implements BootListener {
     Keypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
     Keypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
     Keypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
-    RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
+    this.registrationManager.addProperty(DefinitionConst.INSTANCE_PUBKEY_PRO,
         rsaKeyPairEntry.getPublicKeyEncoded());
   }
 }

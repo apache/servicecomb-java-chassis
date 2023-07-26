@@ -62,6 +62,11 @@ public class RegistrationManager {
         .forEach(registration -> registration.updateMicroserviceInstanceStatus(status));
   }
 
+  public void addProperty(String key, String value) {
+    registrationList
+        .forEach(registration -> registration.addProperty(key, value));
+  }
+
   public void addSchema(String schemaId, String content) {
     registrationList
         .forEach(registration -> registration.addSchema(schemaId, content));

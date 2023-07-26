@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -97,8 +96,7 @@ public class SCBEngine {
 
   private TransportManager transportManager = new TransportManager();
 
-  private final List<BootListener> bootListeners = new ArrayList<>(
-      SPIServiceUtils.getOrLoadSortedService(BootListener.class));
+  private List<BootListener> bootListeners;
 
   private final AtomicLong invocationStartedCounter = new AtomicLong();
 
@@ -139,6 +137,11 @@ public class SCBEngine {
   }
 
   @Autowired
+  public void setBootListeners(List<BootListener> listeners) {
+    this.bootListeners = listeners;
+  }
+
+  @Autowired
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }
@@ -151,6 +154,10 @@ public class SCBEngine {
   @Autowired
   public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;
+  }
+
+  public RegistrationManager getRegistrationManager() {
+    return this.registrationManager;
   }
 
   public ApplicationContext getApplicationContext() {
