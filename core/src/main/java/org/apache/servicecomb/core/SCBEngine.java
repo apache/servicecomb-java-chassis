@@ -34,7 +34,6 @@ import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
-import org.apache.servicecomb.core.definition.ServiceRegistryListener;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
@@ -42,6 +41,7 @@ import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
+import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
@@ -55,7 +55,6 @@ import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -113,13 +112,11 @@ public class SCBEngine {
   protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
       .getSortedService(BootUpInformationCollector.class);
 
-  private final ServiceRegistryListener serviceRegistryListener;
-
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
-  private final SwaggerLoader swaggerLoader = new SwaggerLoader();
+  private SwaggerLoader swaggerLoader;
 
   private Thread shutdownHook;
 
@@ -127,13 +124,14 @@ public class SCBEngine {
 
   private MicroserviceProperties microserviceProperties;
 
+  private DiscoveryManager discoveryManager;
+
   public SCBEngine() {
     eventBus = EventManager.getEventBus();
 
     eventBus.register(this);
 
     producerProviderManager = new ProducerProviderManager(this);
-    serviceRegistryListener = new ServiceRegistryListener(this);
   }
 
   @Autowired
@@ -149,6 +147,16 @@ public class SCBEngine {
   @Autowired
   public void setRegistrationManager(RegistrationManager registrationManager) {
     this.registrationManager = registrationManager;
+  }
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
+
+  @Autowired
+  public void setSwaggerLoader(SwaggerLoader swaggerLoader) {
+    this.swaggerLoader = swaggerLoader;
   }
 
   @Autowired
@@ -378,7 +386,7 @@ public class SCBEngine {
     triggerAfterRegistryEvent();
 
     registrationManager.run();
-    DiscoveryManager.INSTANCE.run();
+    discoveryManager.run();
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
@@ -428,9 +436,7 @@ public class SCBEngine {
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
     registrationManager.destroy();
-    DiscoveryManager.INSTANCE.destroy();
-
-    serviceRegistryListener.destroy();
+    discoveryManager.destroy();
 
     //Step 4: wait all invocation finished
     try {
