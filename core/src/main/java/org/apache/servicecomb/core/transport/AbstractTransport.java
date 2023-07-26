@@ -17,22 +17,36 @@
 
 package org.apache.servicecomb.core.transport;
 
+import java.net.Inet6Address;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
-import org.apache.servicecomb.registry.RegistrationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
+
+  public static final String PUBLISH_ADDRESS = "servicecomb.service.publishAddress";
+
+  private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
   /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
@@ -69,7 +83,7 @@ public abstract class AbstractTransport implements Transport {
 
     this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
     if (this.endpoint.getEndpoint() != null) {
-      this.publishEndpoint = new Endpoint(this, RegistrationManager.getPublishAddress(getName(),
+      this.publishEndpoint = new Endpoint(this, getPublishAddress(getName(),
           addressWithoutSchema));
     } else {
       this.publishEndpoint = null;
@@ -88,7 +102,9 @@ public abstract class AbstractTransport implements Transport {
       addressWithoutSchema += "&";
     }
 
-    String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> new BasicNameValuePair(entry.getKey(), entry.getValue())).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
+    String encodedQuery = URLEncodedUtils.format(
+        pairs.entrySet().stream().map(entry -> new BasicNameValuePair(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList()), StandardCharsets.UTF_8.name());
 
     addressWithoutSchema += encodedQuery;
 
@@ -101,5 +117,72 @@ public abstract class AbstractTransport implements Transport {
       return null;
     }
     return new URIEndpointObject(address);
+  }
+
+  /**
+   * In the case that listening address configured as 0.0.0.0, the publish address will be determined
+   * by the query result for the net interfaces.
+   *
+   * @return the publish address, or {@code null} if the param {@code address} is null.
+   */
+  public static String getPublishAddress(String schema, String address) {
+    if (address == null) {
+      return address;
+    }
+
+    try {
+      URI originalURI = new URI(schema + "://" + address);
+      IpPort ipPort = NetUtils.parseIpPort(originalURI);
+      if (ipPort == null) {
+        LOGGER.warn("address {} not valid.", address);
+        return null;
+      }
+
+      IpPort publishIpPort = genPublishIpPort(schema, ipPort);
+      URIBuilder builder = new URIBuilder(originalURI);
+      return builder.setHost(publishIpPort.getHostOrIp()).setPort(publishIpPort.getPort()).build().toString();
+    } catch (URISyntaxException e) {
+      LOGGER.warn("address {} not valid.", address);
+      return null;
+    }
+  }
+
+  private static IpPort genPublishIpPort(String schema, IpPort ipPort) {
+    String publicAddressSetting = DynamicPropertyFactory.getInstance()
+        .getStringProperty(PUBLISH_ADDRESS, "")
+        .get();
+    publicAddressSetting = publicAddressSetting.trim();
+
+    String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
+    int publishPortSetting = DynamicPropertyFactory.getInstance()
+        .getIntProperty(publishPortKey, 0)
+        .get();
+    int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
+
+    if (publicAddressSetting.isEmpty()) {
+      InetSocketAddress socketAddress = ipPort.getSocketAddress();
+      if (socketAddress.getAddress().isAnyLocalAddress()) {
+        String host = NetUtils.getHostAddress();
+        if (Inet6Address.class.isInstance(socketAddress.getAddress())) {
+          host = NetUtils.getIpv6HostAddress();
+        }
+        LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
+            socketAddress,
+            host,
+            publishPort);
+        return new IpPort(host, publishPort);
+      }
+
+      return ipPort;
+    }
+
+    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
+      publicAddressSetting = NetUtils
+          .ensureGetInterfaceAddress(
+              publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
+          .getHostAddress();
+    }
+
+    return new IpPort(publicAddressSetting, publishPort);
   }
 }
