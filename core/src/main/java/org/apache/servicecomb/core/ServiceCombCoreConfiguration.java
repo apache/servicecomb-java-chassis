@@ -17,6 +17,7 @@
 package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
+import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -49,5 +50,10 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public ProducerBootListener producerBootListener() {
     return new ProducerBootListener();
+  }
+
+  @Bean
+  public SwaggerLoader swaggerLoader(MicroserviceProperties microserviceProperties) {
+    return new SwaggerLoader(microserviceProperties);
   }
 }
