@@ -14,17 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.bootstrap;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
+package org.apache.servicecomb.registry.api;
 
-public class SCBBootstrap {
-  public static SCBEngine createSCBEngineForTest() {
-    // TODO: SCBEngine can be a bean
-    RegistrationManager.INSTANCE.init(null);
-    DiscoveryManager.INSTANCE.init();
-    return new SCBEngineForTest();
-  }
+public enum MicroserviceInstanceStatus {
+  STARTING,
+  TESTING,
+  UP,
+  DOWN,
+  UNKNOWN
 }

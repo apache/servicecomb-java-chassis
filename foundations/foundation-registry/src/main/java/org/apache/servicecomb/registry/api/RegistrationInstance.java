@@ -14,17 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.bootstrap;
+package org.apache.servicecomb.registry.api;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
+/**
+ * Microserivce instance registration object.
+ */
+public interface RegistrationInstance extends MicroserviceInstance {
+  /**
+   * Initial status when registering.
+   */
+  MicroserviceInstanceStatus getInitialStatus();
 
-public class SCBBootstrap {
-  public static SCBEngine createSCBEngineForTest() {
-    // TODO: SCBEngine can be a bean
-    RegistrationManager.INSTANCE.init(null);
-    DiscoveryManager.INSTANCE.init();
-    return new SCBEngineForTest();
-  }
+  /**
+   * Ready status when microservice instance is ready for service.
+   */
+  MicroserviceInstanceStatus getReadyStatus();
 }

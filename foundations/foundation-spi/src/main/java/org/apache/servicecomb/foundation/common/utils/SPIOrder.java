@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-public interface SPIOrder {
+import org.springframework.core.Ordered;
+
+public interface SPIOrder extends Ordered {
   default int getOrder() {
     return 0;
   }

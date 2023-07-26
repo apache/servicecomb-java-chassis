@@ -28,13 +28,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 
 public class SCBApplicationListener
-    implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware {
+    implements ApplicationListener<ApplicationEvent>, Ordered, ApplicationContextAware, EnvironmentAware {
   private Class<?> initEventClass = ContextRefreshedEvent.class;
 
   private ApplicationContext applicationContext;
@@ -48,7 +50,11 @@ public class SCBApplicationListener
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
     HttpClients.load();
-    RegistrationManager.INSTANCE.init();
+  }
+
+  @Override
+  public void setEnvironment(Environment environment) {
+    RegistrationManager.INSTANCE.init(environment);
     DiscoveryManager.INSTANCE.init();
   }
 

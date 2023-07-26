@@ -22,7 +22,6 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,11 +38,10 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.consumer.MicroserviceManager;
 import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
@@ -120,11 +118,6 @@ public class RegistrationManager {
   public void addEndpoint(String endpoint) {
     registrationList
         .forEach(registration -> registration.addEndpoint(endpoint));
-  }
-
-  public void addBasePath(Collection<BasePath> basePaths) {
-    registrationList
-        .forEach(registration -> registration.addBasePath(basePaths));
   }
 
   public void destroy() {
@@ -305,16 +298,15 @@ public class RegistrationManager {
     AtomicBoolean first = new AtomicBoolean(true);
     registrationList.forEach(registration -> {
       if (first.getAndSet(false)) {
-        result.append("App ID: " + registration.getAppId() + "\n");
-        result.append("Service Name: " + registration.getMicroservice().getServiceName() + "\n");
-        result.append("Version: " + registration.getMicroservice().getVersion() + "\n");
-        result.append("Environment: " + registration.getMicroservice().getEnvironment() + "\n");
+        result.append("App ID: " + registration.getMicroserviceInstance().getApplication() + "\n");
+        result.append("Service Name: " + registration.getMicroserviceInstance().getServiceName() + "\n");
+        result.append("Version: " + registration.getMicroserviceInstance().getVersion() + "\n");
+        result.append("Environment: " + registration.getMicroserviceInstance().getEnvironment() + "\n");
         result.append("Endpoints: " + getEndpoints(registration.getMicroserviceInstance().getEndpoints()) + "\n");
         result.append("Registration implementations:\n");
       }
 
       result.append("  name:" + registration.name() + "\n");
-      result.append("    Service ID: " + registration.getMicroservice().getServiceId() + "\n");
       result.append("    Instance ID: " + registration.getMicroserviceInstance().getInstanceId() + "\n");
     });
     return result.toString();
