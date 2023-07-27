@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,7 +38,7 @@ public class TestEndpoint {
   @Test
   public void testEndpointAddressConstructor() {
     Transport transport = Mockito.mock(Transport.class);
-    MicroserviceInstance instance = Mockito.mock(MicroserviceInstance.class);
+    StatefulDiscoveryInstance instance = Mockito.mock(StatefulDiscoveryInstance.class);
     Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080", instance, "iot://123.6.6.6:8080");
     Assertions.assertEquals(endpoint.getAddress(), "iot://123.6.6.6:8080");
     Assertions.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");

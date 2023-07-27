@@ -65,4 +65,9 @@ public class CommonRestConfiguration {
   public QueryCodecs queryCodecs(List<QueryCodec> orderedCodecs) {
     return new QueryCodecs(orderedCodecs);
   }
+
+  @Bean
+  public RestEngineSchemaListener restEngineSchemaListener() {
+    return new RestEngineSchemaListener();
+  }
 }

@@ -45,7 +45,6 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -190,6 +189,10 @@ public class SCBEngine {
 
   public String getAppId() {
     return this.microserviceProperties.getApplication();
+  }
+
+  public MicroserviceProperties getMicroserviceProperties() {
+    return this.microserviceProperties;
   }
 
   public void setStatus(SCBStatus status) {

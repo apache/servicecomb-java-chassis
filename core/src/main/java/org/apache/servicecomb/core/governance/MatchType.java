@@ -77,7 +77,7 @@ public final class MatchType {
     public String instanceId() {
       if (invocation.isConsumer()) {
         if (invocation.getEndpoint() != null && invocation.getEndpoint().getMicroserviceInstance() != null) {
-          return invocation.getEndpoint().getMicroserviceInstance().getInstanceId();
+          return invocation.getEndpoint().getMicroserviceInstance().getDiscoveryInstance().getInstanceId();
         }
       }
       return null;
