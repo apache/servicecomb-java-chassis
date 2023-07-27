@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.handler.governance;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
@@ -31,9 +31,8 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
-import org.apache.servicecomb.registry.api.MicroserviceKey;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
+import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -46,15 +45,23 @@ import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
+import jakarta.ws.rs.core.Response.Status;
 
 public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInstanceIsolationFilter.class);
 
   private final InstanceIsolationHandler instanceIsolationHandler;
 
+  private DiscoveryManager discoveryManager;
+
   @Autowired
   public ConsumerInstanceIsolationFilter(InstanceIsolationHandler instanceIsolationHandler) {
     this.instanceIsolationHandler = instanceIsolationHandler;
+  }
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
   }
 
   @Override
@@ -74,9 +81,16 @@ public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
       return CompletableFuture.failedFuture(new InvocationException(Status.INTERNAL_SERVER_ERROR,
           new CommonExceptionData("instance isolation should work after load balancer.")));
     }
+
+    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
+    CircuitBreakerPolicy circuitBreakerPolicy = instanceIsolationHandler.matchPolicy(request);
+    if (circuitBreakerPolicy != null && circuitBreakerPolicy.isForceOpen()) {
+      return CompletableFuture.failedFuture(new InvocationException(Status.SERVICE_UNAVAILABLE,
+          new CommonExceptionData("Policy \" + circuitBreakerPolicy.getName() + \" forced open and deny requests\"")));
+    }
+
     Supplier<CompletionStage<Response>> next = createBusinessCompletionStageSupplier(invocation, nextNode);
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
     addCircuitBreaker(dcs, request);
 
@@ -90,7 +104,8 @@ public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
 
       if (e instanceof CallNotPermittedException) {
         LOGGER.warn("instance isolation circuitBreaker is open by policy : {}", e.getMessage());
-        ServiceCenterEventBus.getEventBus().post(createMicroserviceInstanceChangedEvent(invocation));
+        discoveryManager.onInstanceIsolated(invocation.getEndpoint().getMicroserviceInstance(),
+            Duration.parse(circuitBreakerPolicy.getWaitDurationInOpenState()).toMillis());
         // return 503 so that consumer can retry
         future.complete(Response.failResp(new InvocationException(Status.SERVICE_UNAVAILABLE,
             new CommonExceptionData("instance isolation circuitBreaker is open."))));
@@ -100,15 +115,6 @@ public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
     });
 
     return future;
-  }
-
-  private Object createMicroserviceInstanceChangedEvent(Invocation invocation) {
-    MicroserviceInstanceChangedEvent event = new MicroserviceInstanceChangedEvent();
-    MicroserviceKey key = new MicroserviceKey();
-    key.setAppId(invocation.getAppId());
-    key.setServiceName(invocation.getMicroserviceName());
-    event.setKey(key);
-    return event;
   }
 
   private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {
