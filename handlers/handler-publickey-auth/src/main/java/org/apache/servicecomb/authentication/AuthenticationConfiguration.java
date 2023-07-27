@@ -17,7 +17,9 @@
 package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.authentication.consumer.ConsumerAuthFilter;
+import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
 import org.apache.servicecomb.authentication.provider.ProviderAuthFilter;
+import org.apache.servicecomb.authentication.provider.ProviderTokenManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,5 +45,15 @@ public class AuthenticationConfiguration {
   @Bean
   public AuthenticationBootListener authenticationBootListener() {
     return new AuthenticationBootListener();
+  }
+
+  @Bean
+  public ConsumerTokenManager consumerTokenManager() {
+    return new ConsumerTokenManager();
+  }
+
+  @Bean
+  public ProviderTokenManager providerTokenManager() {
+    return new ProviderTokenManager();
   }
 }

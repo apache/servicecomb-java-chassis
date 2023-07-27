@@ -21,10 +21,11 @@ import java.util.Map;
 
 import org.apache.servicecomb.authentication.provider.AccessController;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestAccessController {
   @AfterEach
@@ -38,26 +39,30 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust*");
     AccessController controller = new AccessController();
-    Microservice service = new Microservice();
-
-    service.setServiceName("trustCustomer");
+    DiscoveryInstance service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
     Assertions.assertTrue(controller.isAllowed(service));
 
-    service.setServiceName("nottrustCustomer");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("nottrustCustomer");
     Assertions.assertFalse(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "*trust");
-    service.setServiceName("Customer_trust");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
     Assertions.assertTrue(controller.isAllowed(service));
 
-    service.setServiceName("Customer_trust_not");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("Customer_trust_not");
     Assertions.assertFalse(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust");
-    service.setServiceName("trust");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trust");
     Assertions.assertTrue(controller.isAllowed(service));
 
-    service.setServiceName("Customer_trust");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
     Assertions.assertFalse(controller.isAllowed(service));
   }
 
@@ -67,26 +72,31 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "trust*");
     AccessController controller = new AccessController();
-    Microservice service = new Microservice();
 
-    service.setServiceName("trustCustomer");
+    DiscoveryInstance service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
     Assertions.assertFalse(controller.isAllowed(service));
 
-    service.setServiceName("nottrustCustomer");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("nottrustCustomer");
     Assertions.assertTrue(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "*trust");
-    service.setServiceName("Customer_trust");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
     Assertions.assertFalse(controller.isAllowed(service));
 
-    service.setServiceName("Customer_trust_not");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("Customer_trust_not");
     Assertions.assertTrue(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "trust");
-    service.setServiceName("trust");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trust");
     Assertions.assertFalse(controller.isAllowed(service));
 
-    service.setServiceName("Customer_trust");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
     Assertions.assertTrue(controller.isAllowed(service));
   }
 
@@ -100,12 +110,12 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "*hacker");
 
     AccessController controller = new AccessController();
-    Microservice service = new Microservice();
-
-    service.setServiceName("trustCustomer");
+    DiscoveryInstance service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
     Assertions.assertTrue(controller.isAllowed(service));
 
-    service.setServiceName("trustCustomerhacker");
+    service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trustCustomerhacker");
     Assertions.assertFalse(controller.isAllowed(service));
   }
 
@@ -115,15 +125,15 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "test");
     AccessController controller = new AccessController();
-    Microservice service = new Microservice();
+    DiscoveryInstance service = Mockito.mock(DiscoveryInstance.class);
     Map<String, String> map = new HashMap<>();
     map.put("tag", "test");
+    Mockito.when(service.getProperties()).thenReturn(map);
 
-    service.setProperties(map);
     Assertions.assertFalse(controller.isAllowed(service));
 
     map.put("tag", "testa");
-    service.setProperties(map);
+    Mockito.when(service.getProperties()).thenReturn(map);
     Assertions.assertTrue(controller.isAllowed(service));
   }
 
@@ -133,15 +143,14 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "test");
     AccessController controller = new AccessController();
-    Microservice service = new Microservice();
+    DiscoveryInstance service = Mockito.mock(DiscoveryInstance.class);
     Map<String, String> map = new HashMap<>();
     map.put("tag", "test");
-
-    service.setProperties(map);
+    Mockito.when(service.getProperties()).thenReturn(map);
     Assertions.assertTrue(controller.isAllowed(service));
 
     map.put("tag", "testa");
-    service.setProperties(map);
+    Mockito.when(service.getProperties()).thenReturn(map);
     Assertions.assertFalse(controller.isAllowed(service));
   }
 
@@ -155,9 +164,9 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "0.0.1");
 
     AccessController controller = new AccessController();
-    Microservice service = new Microservice();
-    service.setServiceName("trustCustomer");
-    service.setVersion("0.0.1");
+    DiscoveryInstance service = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
+    Mockito.when(service.getVersion()).thenReturn("0.0.1");
 
     Assertions.assertFalse(controller.isAllowed(service));
   }

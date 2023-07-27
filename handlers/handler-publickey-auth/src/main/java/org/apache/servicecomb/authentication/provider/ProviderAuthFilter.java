@@ -19,7 +19,6 @@ package org.apache.servicecomb.authentication.provider;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
@@ -29,9 +28,17 @@ import org.apache.servicecomb.core.filter.ProducerFilter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ProviderAuthFilter implements ProducerFilter {
-  private final ProviderTokenManager authenticationTokenManager = new ProviderTokenManager();
+  private ProviderTokenManager authenticationTokenManager;
+
+  @Autowired
+  public void setProviderTokenManager(ProviderTokenManager providerTokenManager) {
+    this.authenticationTokenManager = providerTokenManager;
+  }
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {

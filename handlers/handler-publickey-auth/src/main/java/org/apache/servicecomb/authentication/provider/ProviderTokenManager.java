@@ -24,11 +24,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.cache.MicroserviceInstanceCache;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.discovery.MicroserviceInstanceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.Cache;
@@ -44,6 +45,13 @@ public class ProviderTokenManager {
 
   private final AccessController accessController = new AccessController();
 
+  private MicroserviceInstanceCache microserviceInstanceCache;
+
+  @Autowired
+  public void setDiscoveryManager(MicroserviceInstanceCache microserviceInstanceCache) {
+    this.microserviceInstanceCache = microserviceInstanceCache;
+  }
+
   public boolean valid(String token) {
     try {
       RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
@@ -57,12 +65,14 @@ public class ProviderTokenManager {
       }
 
       if (validatedToken.asMap().containsKey(rsaToken)) {
-        return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
+        return accessController.isAllowed(microserviceInstanceCache.getOrCreate(
+            rsaToken.getServiceId(), rsaToken.getInstanceId()));
       }
 
       if (isValidToken(rsaToken) && !tokenExpired(rsaToken)) {
         validatedToken.put(rsaToken, true);
-        return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
+        return accessController.isAllowed(microserviceInstanceCache.getOrCreate(
+            rsaToken.getServiceId(), rsaToken.getInstanceId()));
       }
       return false;
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
@@ -91,7 +101,7 @@ public class ProviderTokenManager {
   }
 
   private String getPublicKeyFromInstance(String instanceId, String serviceId) {
-    MicroserviceInstance instances = MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
+    DiscoveryInstance instances = microserviceInstanceCache.getOrCreate(serviceId, instanceId);
     if (instances != null) {
       return instances.getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
     } else {
