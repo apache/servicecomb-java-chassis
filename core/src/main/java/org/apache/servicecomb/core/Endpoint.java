@@ -17,35 +17,35 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 /**
- * Endpoint : 表示一个Endpoint。Transport识别其内部格式.
+ * Internal representation for microservice instance address.
  */
 public class Endpoint {
-  // 格式：rest://192.168.1.1:8080
+  // Registry address: http://192.168.1.1:8080
   // see: http://www.ietf.org/rfc/rfc2396.txt
   private final String endpoint;
 
   private final Transport transport;
 
-  private final MicroserviceInstance instance;
+  private final StatefulDiscoveryInstance instance;
 
-  // 内部格式， 只有Transport能够认识
+  // Internal address format recognized by Transport
   private final Object address;
 
   public Endpoint(Transport transport, String endpoint) {
     this(transport, endpoint, null);
   }
 
-  public Endpoint(Transport transport, String endpoint, MicroserviceInstance instance) {
+  public Endpoint(Transport transport, String endpoint, StatefulDiscoveryInstance instance) {
     this.transport = transport;
     this.endpoint = endpoint;
     this.instance = instance;
     this.address = transport.parseAddress(this.endpoint);
   }
 
-  public Endpoint(Transport transport, String endpoint, MicroserviceInstance instance, Object address) {
+  public Endpoint(Transport transport, String endpoint, StatefulDiscoveryInstance instance, Object address) {
     this.transport = transport;
     this.endpoint = endpoint;
     this.instance = instance;
@@ -56,7 +56,7 @@ public class Endpoint {
     return endpoint;
   }
 
-  public MicroserviceInstance getMicroserviceInstance() {
+  public StatefulDiscoveryInstance getMicroserviceInstance() {
     return instance;
   }
 

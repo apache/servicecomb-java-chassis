@@ -29,6 +29,7 @@ import org.apache.servicecomb.registry.api.LifeCycle;
 import org.springframework.util.CollectionUtils;
 
 public class DiscoveryManager {
+  // TODO: 1. instance init and notification; 2. ping status; 3. isolation status.
   private final List<Discovery<? extends DiscoveryInstance>> discoveryList;
 
   private List<? extends DiscoveryInstance> highestInstances;
