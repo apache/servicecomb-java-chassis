@@ -24,7 +24,6 @@ import java.util.Random;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
@@ -105,8 +104,8 @@ public class DarklaunchServerListFilter implements ServerListFilterExt {
     for (ServiceCombServer server : serverList) {
       boolean hasGroup = false;
       for (DarklaunchRuleItem item : rule.getRuleItems()) {
-        Microservice microservice = MicroserviceCache.getInstance().getService(server.getInstance().getServiceId());
-        item.getGroupCondition().setActual(DarklaunchRule.PROP_VERSION, microservice.getVersion());
+        item.getGroupCondition()
+            .setActual(DarklaunchRule.PROP_VERSION, server.getInstance().getDiscoveryInstance().getVersion());
         if (item.getGroupCondition().match()) {
           item.addServer(server);
           hasGroup = true;
