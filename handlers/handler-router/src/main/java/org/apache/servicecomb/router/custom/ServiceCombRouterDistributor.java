@@ -27,15 +27,11 @@ public class ServiceCombRouterDistributor extends
 
   public ServiceCombRouterDistributor() {
     init(
-        instance -> MicroserviceCache.getInstance()
-            .getService(instance.getInstance().getServiceId()).getVersion(),
-        instance -> MicroserviceCache.getInstance()
-            .getService(instance.getInstance().getServiceId()).getServiceName(),
+        instance -> instance.getInstance().getDiscoveryInstance().getVersion(),
+        instance -> instance.getInstance().getDiscoveryInstance().getServiceName(),
         instance -> {
           Map<String, String> properties = new HashMap<>();
-          properties.putAll(MicroserviceCache.getInstance()
-              .getService(instance.getInstance().getServiceId()).getProperties());
-          properties.putAll(instance.getInstance().getProperties());
+          properties.putAll(instance.getInstance().getDiscoveryInstance().getProperties());
           return properties;
         });
   }
