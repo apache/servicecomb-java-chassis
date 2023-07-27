@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,5 +25,15 @@ public class MetricsCoreConfiguration {
   @Bean
   public HealthBootListener healthBootListener() {
     return new HealthBootListener();
+  }
+
+  @Bean
+  public MetricsBootListener metricsBootListener(MetricsBootstrap metricsBootstrap) {
+    return new MetricsBootListener(metricsBootstrap);
+  }
+
+  @Bean
+  public MetricsBootstrap metricsBootstrap() {
+    return new MetricsBootstrap();
   }
 }

@@ -17,21 +17,22 @@
 
 package org.apache.servicecomb.provider.pojo;
 
-import com.fasterxml.jackson.databind.JavaType;
+import java.io.File;
+import java.lang.reflect.Method;
+
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import jakarta.servlet.http.Part;
-import java.io.File;
-import java.lang.reflect.Method;
 
 public class TestInvoker {
   public interface DownloadIntf {
@@ -47,7 +48,6 @@ public class TestInvoker {
   @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
-    DiscoveryManager.renewInstance();
   }
 
   @AfterEach

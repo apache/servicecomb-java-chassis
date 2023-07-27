@@ -17,30 +17,31 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.adapter.EnvAdapter;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+//import org.apache.servicecomb.registry.api.registry.Microservice;
+//import org.apache.servicecomb.serviceregistry.adapter.EnvAdapter;
+//import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
-public class CasEnvVariablesAdapter implements EnvAdapter {
-  private static final String NAME = "cas-env-variables-adapter";
-
-  @Override
-  public String getEnvName() {
-    return NAME;
-  }
-
-  @Override
-  public int getOrder() {
-    return 0;
-  }
-
-  @Override
-  public void beforeRegisterInstance(MicroserviceInstance instance) {
-    instance.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyInstanceProperties());
-  }
-
-  @Override
-  public void beforeRegisterService(Microservice microservice) {
-    microservice.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyServiceProperties());
-  }
+// TODO: set CAS properties for service center
+public class CasEnvVariablesAdapter {// implements EnvAdapter {
+//  private static final String NAME = "cas-env-variables-adapter";
+//
+//  @Override
+//  public String getEnvName() {
+//    return NAME;
+//  }
+//
+//  @Override
+//  public int getOrder() {
+//    return 0;
+//  }
+//
+//  @Override
+//  public void beforeRegisterInstance(MicroserviceInstance instance) {
+//    instance.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyInstanceProperties());
+//  }
+//
+//  @Override
+//  public void beforeRegisterService(Microservice microservice) {
+//    microservice.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyServiceProperties());
+//  }
 }

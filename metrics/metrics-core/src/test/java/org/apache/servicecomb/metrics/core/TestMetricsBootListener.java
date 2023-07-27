@@ -23,6 +23,7 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.hamcrest.MatcherAssert;
@@ -44,7 +45,7 @@ public class TestMetricsBootListener {
 
   @Test
   public void onBeforeProducerProvider_metrics_endpoint_enabled_by_default() {
-    final MetricsBootListener listener = new MetricsBootListener();
+    final MetricsBootListener listener = new MetricsBootListener(new MetricsBootstrap());
 
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
@@ -76,7 +77,7 @@ public class TestMetricsBootListener {
   @Test
   public void onBeforeProducerProvider_metrics_endpoint_disabled() {
     ArchaiusUtils.setProperty("servicecomb.metrics.endpoint.enabled", false);
-    final MetricsBootListener listener = new MetricsBootListener();
+    final MetricsBootListener listener = new MetricsBootListener(new MetricsBootstrap());
 
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();

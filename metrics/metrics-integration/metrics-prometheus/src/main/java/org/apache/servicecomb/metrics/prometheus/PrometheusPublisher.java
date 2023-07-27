@@ -21,13 +21,14 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.core.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.config.DynamicPropertyFactory;
@@ -49,6 +50,13 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
   private HTTPServer httpServer;
 
   private GlobalRegistry globalRegistry;
+
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
 
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
@@ -105,7 +113,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     List<String> labelValues = new ArrayList<>();
 
     labelNames.add("appId");
-    labelValues.add(RegistrationManager.INSTANCE.getAppId());
+    labelValues.add(microserviceProperties.getApplication());
 
     for (Tag tag : measurement.id().tags()) {
       labelNames.add(tag.key());

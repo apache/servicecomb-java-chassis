@@ -25,12 +25,14 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.servicecomb.core.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.netflix.spectator.api.Counter;
 import com.netflix.spectator.api.DefaultRegistry;
@@ -39,10 +41,7 @@ import com.netflix.spectator.api.Registry;
 import com.sun.net.httpserver.HttpServer;
 
 import io.prometheus.client.exporter.HTTPServer;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-@SuppressWarnings("restriction")
 public class TestPrometheusPublisher {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
 
@@ -79,9 +78,10 @@ public class TestPrometheusPublisher {
 
   @Test
   public void collect() throws IllegalAccessException, IOException {
-    RegistrationManager.INSTANCE = Mockito.spy(RegistrationManager.INSTANCE);
-    Mockito.doReturn("testAppId").when(RegistrationManager.INSTANCE).getAppId();
+    MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
+    Mockito.doReturn("testAppId").when(microserviceProperties.getApplication());
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
+    publisher.setMicroserviceProperties(microserviceProperties);
     publisher.init(globalRegistry, null, null);
 
     Registry registry = new DefaultRegistry(new ManualClock());
@@ -96,9 +96,11 @@ public class TestPrometheusPublisher {
     URL url = new URL("http://localhost:" + server.getAddress().getPort() + "/metrics");
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try (InputStream is = conn.getInputStream()) {
-      Assertions.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
-              "# TYPE ServiceComb_Metrics untyped\n" +
-              "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n",
+      Assertions.assertEquals("""
+              # HELP ServiceComb_Metrics ServiceComb Metrics
+              # TYPE ServiceComb_Metrics untyped
+              count_name{appId="testAppId",tag1="tag1v",tag2="tag2v",} 1.0
+              """,
           IOUtils.toString(is, StandardCharsets.UTF_8));
     }
 

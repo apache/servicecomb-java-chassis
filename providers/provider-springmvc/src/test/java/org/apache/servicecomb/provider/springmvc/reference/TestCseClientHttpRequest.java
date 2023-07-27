@@ -24,7 +24,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -51,7 +50,6 @@ public class TestCseClientHttpRequest {
   @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
-    DiscoveryManager.renewInstance();
     ArchaiusUtils.resetConfig();
   }
 
