@@ -29,11 +29,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -48,8 +43,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -67,12 +60,15 @@ import org.mockito.Mockito;
 
 import com.netflix.config.DynamicProperty;
 
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
+
 public class TestInspectorImpl {
   static Map<String, String> schemas = new LinkedHashMap<>();
 
   static InspectorImpl inspector;
-
-  static RegistrationManager originRegistrationManagerInstance;
 
   @BeforeAll
   public static void setup() throws IOException {
@@ -83,7 +79,6 @@ public class TestInspectorImpl {
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema2.yaml"), StandardCharsets.UTF_8));
 
     inspector = initInspector(null);
-    originRegistrationManagerInstance = RegistrationManager.INSTANCE;
   }
 
   private static InspectorImpl initInspector(String urlPrefix) {
@@ -131,21 +126,16 @@ public class TestInspectorImpl {
 
   @Test
   public void downloadSchemas_default_to_swagger() throws IOException {
-    Microservice microservice = Mockito.mock(Microservice.class);
-    testDownloadSchemasSwagger(microservice, null);
+    testDownloadSchemasSwagger(null);
   }
 
   @Test
   public void downloadSchemas_swagger() throws IOException {
-    Microservice microservice = Mockito.mock(Microservice.class);
-    testDownloadSchemasSwagger(microservice, SchemaFormat.SWAGGER);
+    testDownloadSchemasSwagger(SchemaFormat.SWAGGER);
   }
 
-  private void testDownloadSchemasSwagger(Microservice microservice, SchemaFormat format) throws IOException {
-    RegistrationManager spy = Mockito.spy(RegistrationManager.INSTANCE);
-    RegistrationManager.setINSTANCE(spy);
-    Mockito.when(spy.getMicroservice()).thenReturn(microservice);
-    Mockito.when(microservice.getServiceName()).thenReturn("ms");
+  private void testDownloadSchemasSwagger(SchemaFormat format) throws IOException {
+    inspector.setServiceName("ms");
 
     Response response = inspector.downloadSchemas(format);
     Part part = response.getResult();
@@ -295,7 +285,6 @@ public class TestInspectorImpl {
 
   @Test
   public void urlPrefix() {
-    RegistrationManager.setINSTANCE(originRegistrationManagerInstance);
     InspectorImpl inspector = initInspector("/webroot/rest");
 
     Map<String, String> schemas = inspector.getSchemas();

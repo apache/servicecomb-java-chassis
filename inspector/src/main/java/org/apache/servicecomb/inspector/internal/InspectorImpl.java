@@ -46,7 +46,6 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -82,6 +81,8 @@ public class InspectorImpl {
 
   private PriorityPropertyFactory propertyFactory;
 
+  private String serviceName;
+
   public InspectorImpl setPropertyFactory(PriorityPropertyFactory propertyFactory) {
     this.propertyFactory = propertyFactory;
     return this;
@@ -90,6 +91,11 @@ public class InspectorImpl {
   @VisibleForTesting
   public Map<String, String> getSchemas() {
     return schemas;
+  }
+
+  public InspectorImpl setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+    return this;
   }
 
   public InspectorImpl setSchemas(Map<String, String> schemas) {
@@ -161,8 +167,7 @@ public class InspectorImpl {
     }
 
     Part part = new InputStreamPart(null, new ByteArrayInputStream(os.toByteArray()))
-        .setSubmittedFileName(
-            RegistrationManager.INSTANCE.getMicroservice().getServiceName() + format.getSuffix() + ".zip");
+        .setSubmittedFileName(serviceName + format.getSuffix() + ".zip");
     return Response.ok(part);
   }
 
