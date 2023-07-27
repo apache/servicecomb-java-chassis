@@ -14,26 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.definition;
+package org.apache.servicecomb.config.kie;
 
-import org.apache.servicecomb.config.inject.InjectProperties;
-import org.apache.servicecomb.config.inject.InjectProperty;
-import org.apache.servicecomb.registry.version.VersionRuleUtils;
+import org.apache.servicecomb.config.kie.collect.KieClientInformationCollector;
+import org.springframework.context.annotation.Bean;
 
-@InjectProperties(prefix = "servicecomb")
-public class MicroserviceConfig {
-  @InjectProperty(keys = {
-      "references.version-rule.${service}",
-      "references.${service}.version-rule", // Deprecated
-      "references.version-rule"
-  }, defaultValue = "0.0.0.0+")
-  private String versionRule;
-
-  public String getVersionRule() {
-    return versionRule;
-  }
-
-  public void setVersionRule(String versionRule) {
-    this.versionRule = VersionRuleUtils.getOrCreate(versionRule).getVersionRule();
+public class KieConfigConfiguration {
+  @Bean
+  public KieClientInformationCollector kieClientInformationCollector() {
+    return new KieClientInformationCollector();
   }
 }

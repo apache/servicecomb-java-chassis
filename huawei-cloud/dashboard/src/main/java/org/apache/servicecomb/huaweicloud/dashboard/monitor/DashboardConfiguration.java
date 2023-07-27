@@ -14,25 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-package org.apache.servicecomb.core.bootup;
+import org.springframework.context.annotation.Bean;
 
-import org.apache.servicecomb.core.SCBEngine;
-
-public class ServiceInformationCollector implements BootUpInformationCollector {
-  private SCBEngine scbEngine;
-
-  public ServiceInformationCollector(SCBEngine scbEngine) {
-    this.scbEngine = scbEngine;
-  }
-
-  @Override
-  public String collect() {
-    return scbEngine.getRegistrationManager().info();
-  }
-
-  @Override
-  public int getOrder() {
-    return 200;
+public class DashboardConfiguration {
+  @Bean
+  public MonitorInformationCollector monitorInformationCollector() {
+    return new MonitorInformationCollector();
   }
 }

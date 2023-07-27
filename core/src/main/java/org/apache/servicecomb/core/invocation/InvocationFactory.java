@@ -19,15 +19,12 @@ package org.apache.servicecomb.core.invocation;
 
 import java.util.Map;
 
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -41,18 +38,19 @@ public final class InvocationFactory {
         operationMeta,
         invocationRuntimeType,
         swaggerArguments);
-    return setSrcMicroservice(invocation);
+    return invocation;
   }
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-    invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
-    if (addSourceServiceId()) {
-      invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
-    }
-    if (addSourceInstanceId()) {
-      invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
-    }
+    // TODO: add src instance to header
+//    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
+//    invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
+//    if (addSourceServiceId()) {
+//      invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
+//    }
+//    if (addSourceInstanceId()) {
+//      invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
+//    }
     return invocation;
   }
 

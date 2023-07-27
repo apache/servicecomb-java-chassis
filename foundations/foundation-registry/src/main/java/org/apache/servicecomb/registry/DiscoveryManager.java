@@ -20,6 +20,7 @@ package org.apache.servicecomb.registry;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -28,7 +29,7 @@ import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.LifeCycle;
 import org.springframework.util.CollectionUtils;
 
-public class DiscoveryManager {
+public class DiscoveryManager implements LifeCycle {
   // TODO: 1. instance init and notification; 2. ping status; 3. isolation status.
   private final List<Discovery<? extends DiscoveryInstance>> discoveryList;
 
@@ -85,14 +86,23 @@ public class DiscoveryManager {
     return Collections.emptyList();
   }
 
+  public CompletableFuture<List<? extends DiscoveryInstance>> findServiceInstancesAsync(String application,
+      String serviceName) {
+    // TODO: async implementation
+    return null;
+  }
+
+  @Override
   public void destroy() {
     discoveryList.forEach(LifeCycle::destroy);
   }
 
+  @Override
   public void run() {
     discoveryList.forEach(LifeCycle::run);
   }
 
+  @Override
   public void init() {
     discoveryList.forEach(LifeCycle::init);
   }

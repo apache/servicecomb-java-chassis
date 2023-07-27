@@ -52,18 +52,18 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     model.setName("hello");
     args.put("request", model);
 
-    Map result = (Map) InvokerUtils.syncInvoke("pojo", "0+", "highway", "InvokerEndpoint", "model", args);
+    Map result = (Map) InvokerUtils.syncInvoke("pojo", "highway", "InvokerEndpoint", "model", args);
     TestMgr.check(model.getCode(), result.get("code"));
     TestMgr.check(model.getName(), result.get("name"));
 
     ClientModel modelResult = InvokerUtils
-        .syncInvoke("pojo", "0+", "highway", "InvokerEndpoint", "model", args, ClientModel.class);
+        .syncInvoke("pojo", "highway", "InvokerEndpoint", "model", args, ClientModel.class);
     TestMgr.check(model.getCode(), modelResult.getCode());
     TestMgr.check(model.getName(), modelResult.getName());
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     InvokerUtils
-        .reactiveInvoke("pojo", "0+", "highway", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
+        .reactiveInvoke("pojo", "highway", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
           ClientModel reactiveResult = response.getResult();
           TestMgr.check(model.getCode(), reactiveResult.getCode());
           TestMgr.check(model.getName(), reactiveResult.getName());
@@ -80,17 +80,17 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     model.setName("hello");
     args.put("request", model);
 
-    Map result = (Map) InvokerUtils.syncInvoke("pojo", "0+", "rest", "InvokerEndpoint", "model", args);
+    Map result = (Map) InvokerUtils.syncInvoke("pojo", "rest", "InvokerEndpoint", "model", args);
     TestMgr.check(model.getCode(), result.get("code"));
     TestMgr.check(model.getName(), result.get("name"));
 
     ClientModel modelResult = InvokerUtils
-        .syncInvoke("pojo", "0+", "rest", "InvokerEndpoint", "model", args, ClientModel.class);
+        .syncInvoke("pojo", "rest", "InvokerEndpoint", "model", args, ClientModel.class);
     TestMgr.check(model.getCode(), modelResult.getCode());
     TestMgr.check(model.getName(), modelResult.getName());
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
-    InvokerUtils.reactiveInvoke("pojo", "0+", "rest", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
+    InvokerUtils.reactiveInvoke("pojo", "rest", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
       ClientModel reactiveResult = response.getResult();
       TestMgr.check(model.getCode(), reactiveResult.getCode());
       TestMgr.check(model.getName(), reactiveResult.getName());

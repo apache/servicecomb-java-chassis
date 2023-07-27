@@ -281,10 +281,6 @@ public class Invocation extends SwaggerInvocation {
     return schemaMeta.getMicroserviceMeta();
   }
 
-  public String getMicroserviceVersionRule() {
-    return referenceConfig.getVersionRule();
-  }
-
   public InvocationRuntimeType getInvocationRuntimeType() {
     return this.invocationRuntimeType;
   }

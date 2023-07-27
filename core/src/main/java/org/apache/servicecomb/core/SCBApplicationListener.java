@@ -21,8 +21,6 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -41,6 +39,12 @@ public class SCBApplicationListener
 
   private ApplicationContext applicationContext;
 
+  private final SCBEngine scbEngine;
+
+  public SCBApplicationListener(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
+
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     if (this.applicationContext == applicationContext) {
@@ -54,8 +58,7 @@ public class SCBApplicationListener
 
   @Override
   public void setEnvironment(Environment environment) {
-    RegistrationManager.INSTANCE.init(environment);
-    DiscoveryManager.INSTANCE.init();
+    scbEngine.init();
   }
 
   public void setInitEventClass(Class<?> initEventClass) {
@@ -75,7 +78,6 @@ public class SCBApplicationListener
         ((AbstractApplicationContext) applicationContext).registerShutdownHook();
       }
 
-      SCBEngine scbEngine = SCBEngine.getInstance();
       //SCBEngine init first, hence we do not need worry that when other beans need use the
       //producer microserviceMeta, the SCBEngine is not inited.
 //        String serviceName = RegistryUtils.getMicroservice().getServiceName();

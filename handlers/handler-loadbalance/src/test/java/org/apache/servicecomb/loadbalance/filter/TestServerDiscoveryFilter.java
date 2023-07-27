@@ -26,16 +26,18 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestServerDiscoveryFilter {
   static SCBEngine scbEngine;
@@ -85,8 +87,9 @@ public class TestServerDiscoveryFilter {
         result = "test";
       }
     };
-    MicroserviceInstance instance = new MicroserviceInstance();
-    instance.setInstanceId("0000001");
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("0000001");
 
     ServiceCombServer server = (ServiceCombServer) filter
         .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);

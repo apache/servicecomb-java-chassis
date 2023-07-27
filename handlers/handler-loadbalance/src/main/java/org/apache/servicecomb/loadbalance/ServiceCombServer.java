@@ -24,8 +24,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.Server;
@@ -38,16 +37,12 @@ import com.netflix.loadbalancer.Server;
 public class ServiceCombServer extends Server {
   private final Endpoint endpoint;
 
-  // 所属服务实例
-  private final MicroserviceInstance instance;
-
   private final String microserviceName;
 
   @VisibleForTesting
-  ServiceCombServer(String microserviceName, Endpoint endpoint, MicroserviceInstance instance) {
+  ServiceCombServer(String microserviceName, Endpoint endpoint) {
     super(null);
     this.endpoint = endpoint;
-    this.instance = instance;
     this.microserviceName = microserviceName;
 
     // Different types of Robin Component Rule have different usages for server status and list.
@@ -59,11 +54,10 @@ public class ServiceCombServer extends Server {
     this.setReadyToServe(true);
   }
 
-  public ServiceCombServer(String microserviceName, Transport transport, CacheEndpoint cacheEndpoint) {
+  public ServiceCombServer(String microserviceName, Transport transport, Endpoint endpoint) {
     super(null);
     this.microserviceName = microserviceName;
-    endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
-    instance = cacheEndpoint.getInstance();
+    this.endpoint = endpoint;
 
     // Different types of Robin Component Rule have different usages for server status and list.
     // e.g. RoundRobinRule using getAllServers & alive & readyToServe
@@ -88,8 +82,8 @@ public class ServiceCombServer extends Server {
     return endpoint;
   }
 
-  public MicroserviceInstance getInstance() {
-    return instance;
+  public StatefulDiscoveryInstance getInstance() {
+    return endpoint.getMicroserviceInstance();
   }
 
   @Override
@@ -106,7 +100,8 @@ public class ServiceCombServer extends Server {
   @Override
   public boolean equals(Object o) {
     if (o instanceof ServiceCombServer) {
-      return this.instance.getInstanceId().equals(((ServiceCombServer) o).instance.getInstanceId())
+      return this.getInstance().getDiscoveryInstance().getInstanceId()
+          .equals(((ServiceCombServer) o).getInstance().getDiscoveryInstance().getInstanceId())
           && StringUtils.equals(endpoint.getEndpoint(), ((ServiceCombServer) o).getEndpoint().getEndpoint());
     } else {
       return false;
@@ -115,6 +110,6 @@ public class ServiceCombServer extends Server {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.instance.getInstanceId(), this.endpoint);
+    return Objects.hash(this.getInstance().getDiscoveryInstance().getInstanceId(), this.endpoint);
   }
 }

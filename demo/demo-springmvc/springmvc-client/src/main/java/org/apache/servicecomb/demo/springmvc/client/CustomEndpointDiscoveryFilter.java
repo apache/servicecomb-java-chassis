@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.AbstractEndpointDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 public class CustomEndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   @Override
@@ -31,7 +31,7 @@ public class CustomEndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilt
 
   @Override
   protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
-      MicroserviceInstance instance) {
+      StatefulDiscoveryInstance instance) {
     return endpoint;
   }
 

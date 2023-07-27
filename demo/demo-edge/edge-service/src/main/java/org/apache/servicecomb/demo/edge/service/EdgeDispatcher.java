@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.edge.core.AbstractEdgeDispatcher;
-import org.apache.servicecomb.edge.core.CompatiblePathVersionMapper;
 import org.apache.servicecomb.edge.core.EdgeInvocationCreator;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -33,8 +32,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 public class EdgeDispatcher extends AbstractEdgeDispatcher {
-  private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
-
   @Override
   public int getOrder() {
     return 10000;
@@ -54,14 +51,14 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
     String pathVersion = pathParams.get("param1");
     String path = context.request().path().substring(4);
 
-    requestByFilter(context, microserviceName, versionMapper.getOrCreate(pathVersion).getVersionRule(), path);
+    requestByFilter(context, microserviceName, path);
   }
 
-  protected void requestByFilter(RoutingContext context, String microserviceName, String versionRule, String path) {
+  protected void requestByFilter(RoutingContext context, String microserviceName, String path) {
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
     InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
-        microserviceName, versionRule, path);
+        microserviceName, path);
     new RestProducerInvocationFlow(creator, requestEx, responseEx)
         .run();
   }

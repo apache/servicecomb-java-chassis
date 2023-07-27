@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -71,6 +70,7 @@ import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 import io.vertx.core.Context;
+import jakarta.ws.rs.core.Response.Status;
 
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
@@ -105,24 +105,24 @@ public final class InvokerUtils {
           .getBooleanProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", true).get();
 
   @SuppressWarnings({"unchecked"})
-  public static <T> T syncInvoke(String microserviceName, String microserviceVersion, String transport,
+  public static <T> T syncInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
-    Invocation invocation = createInvocation(microserviceName, microserviceVersion, transport, schemaId, operationId,
+    Invocation invocation = createInvocation(microserviceName, transport, schemaId, operationId,
         swaggerArguments, responseType);
     return (T) syncInvoke(invocation);
   }
 
-  public static void reactiveInvoke(String microserviceName, String microserviceVersion, String transport,
+  public static void reactiveInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType,
       AsyncResponse asyncResp) {
-    Invocation invocation = createInvocation(microserviceName, microserviceVersion, transport, schemaId, operationId,
+    Invocation invocation = createInvocation(microserviceName, transport, schemaId, operationId,
         swaggerArguments, responseType);
     reactiveInvoke(invocation, asyncResp);
   }
 
   public static <T> T syncInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments, Type responseType) {
-    return syncInvoke(microserviceName, null, null,
+    return syncInvoke(microserviceName, null,
         schemaId, operationId, swaggerArguments, responseType);
   }
 
@@ -130,15 +130,15 @@ public final class InvokerUtils {
   public static void reactiveInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments, Type responseType,
       AsyncResponse asyncResp) {
-    reactiveInvoke(microserviceName, null, null,
+    reactiveInvoke(microserviceName, null,
         schemaId, operationId, swaggerArguments, responseType, asyncResp);
   }
 
-  private static Invocation createInvocation(String microserviceName, String microserviceVersion, String transport,
+  private static Invocation createInvocation(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
-        .createMicroserviceReferenceConfig(microserviceName, microserviceVersion);
-    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+        .createMicroserviceReferenceConfig(microserviceName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
 
@@ -158,19 +158,19 @@ public final class InvokerUtils {
   @Deprecated
   public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments) {
-    return syncInvoke(microserviceName, null, null, schemaId, operationId, swaggerArguments);
+    return syncInvoke(microserviceName, null, schemaId, operationId, swaggerArguments);
   }
 
   /**
    *
    * use of this method , the response type can not be determined.
-   * use {@link #syncInvoke(String, String, String, String, String, Map, Type)} instead.
+   * use {@link #syncInvoke(String, String, String, String, Map, Type)} instead.
    *
    */
   @Deprecated
-  public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
+  public static Object syncInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments) {
-    return syncInvoke(microserviceName, microserviceVersion, transport, schemaId, operationId, swaggerArguments,
+    return syncInvoke(microserviceName, transport, schemaId, operationId, swaggerArguments,
         null);
   }
 

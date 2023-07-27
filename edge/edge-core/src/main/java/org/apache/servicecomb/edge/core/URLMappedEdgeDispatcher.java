@@ -133,7 +133,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
     InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
-        configurationItem.getMicroserviceName(), configurationItem.getVersionRule(), path);
+        configurationItem.getMicroserviceName(), path);
     new RestProducerInvocationFlow(creator, requestEx, responseEx)
         .run();
   }
