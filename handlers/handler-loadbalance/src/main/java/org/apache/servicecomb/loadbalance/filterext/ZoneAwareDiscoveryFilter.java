@@ -20,15 +20,23 @@ package org.apache.servicecomb.loadbalance.filterext;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.core.DataCenterProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
+  private DataCenterProperties dataCenterProperties;
+
+  @Autowired
+  @SuppressWarnings("unused")
+  public void setDataCenterProperties(DataCenterProperties dataCenterProperties) {
+    this.dataCenterProperties = dataCenterProperties;
+  }
 
   @Override
   public int getOrder() {
@@ -45,15 +53,13 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
   @Override
   public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
       Invocation invocation) {
-    MicroserviceInstance myself = RegistrationManager.INSTANCE.getMicroserviceInstance();
-
     List<ServiceCombServer> instancesRegionAndAZMatch = new ArrayList<>();
     List<ServiceCombServer> instancesAZMatch = new ArrayList<>();
     List<ServiceCombServer> instancesNoMatch = new ArrayList<>();
     servers.forEach((server) -> {
-      if (regionAndAZMatch(myself, server.getInstance())) {
+      if (regionAndAZMatch(server.getInstance())) {
         instancesRegionAndAZMatch.add(server);
-      } else if (regionMatch(myself, server.getInstance())) {
+      } else if (regionMatch(server.getInstance())) {
         instancesAZMatch.add(server);
       } else {
         instancesNoMatch.add(server);
@@ -67,21 +73,20 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
     return instancesNoMatch;
   }
 
-  private boolean regionAndAZMatch(MicroserviceInstance myself, MicroserviceInstance target) {
-    if (myself == null || myself.getDataCenterInfo() == null) {
-      // when instance have no datacenter info, it will match all other datacenters
-      return true;
-    }
-    if (target.getDataCenterInfo() != null) {
-      return myself.getDataCenterInfo().getRegion().equals(target.getDataCenterInfo().getRegion()) &&
-          myself.getDataCenterInfo().getAvailableZone().equals(target.getDataCenterInfo().getAvailableZone());
+  private boolean regionAndAZMatch(StatefulDiscoveryInstance target) {
+    if (dataCenterProperties.getRegion() != null && dataCenterProperties.getAvailableZone() != null) {
+      return dataCenterProperties.getRegion()
+          .equals(target.getDiscoveryInstance().getDataCenterInfo().getRegion()) &&
+          dataCenterProperties.getAvailableZone()
+              .equals(target.getDiscoveryInstance().getDataCenterInfo().getAvailableZone());
     }
     return false;
   }
 
-  private boolean regionMatch(MicroserviceInstance myself, MicroserviceInstance target) {
-    if (target.getDataCenterInfo() != null) {
-      return myself.getDataCenterInfo().getRegion().equals(target.getDataCenterInfo().getRegion());
+  private boolean regionMatch(StatefulDiscoveryInstance target) {
+    if (dataCenterProperties.getRegion() != null) {
+      return dataCenterProperties.getRegion()
+          .equals(target.getDiscoveryInstance().getDataCenterInfo().getRegion());
     }
     return false;
   }

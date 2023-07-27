@@ -53,6 +53,8 @@ public interface MicroserviceInstance {
    */
   String getVersion();
 
+  DataCenterInfo getDataCenterInfo();
+
   /**
    * Service Description(Optional)
    */

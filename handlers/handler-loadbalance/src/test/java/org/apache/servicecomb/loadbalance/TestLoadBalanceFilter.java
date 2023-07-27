@@ -32,6 +32,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
@@ -110,7 +111,9 @@ public class TestLoadBalanceFilter {
     extensionsFactories.add(new RuleNameExtentionsFactory());
     ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
-    handler = new LoadBalanceFilter(extensionsManager, new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
+        discoveryTree);
     loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
   }
 

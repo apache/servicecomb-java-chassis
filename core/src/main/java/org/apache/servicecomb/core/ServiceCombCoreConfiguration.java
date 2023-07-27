@@ -49,6 +49,11 @@ public class ServiceCombCoreConfiguration {
     return new MicroserviceProperties();
   }
 
+  @ConfigurationProperties(prefix = "servicecomb.datacenter")
+  public DataCenterProperties dataCenterProperties() {
+    return new DataCenterProperties();
+  }
+
   @Bean
   public ProducerBootListener producerBootListener() {
     return new ProducerBootListener();

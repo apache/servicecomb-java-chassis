@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.DataCenterProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.NonSwaggerInvocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -38,14 +38,13 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.localregistry.LocalRegistryStore;
 import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.DataCenterInfo;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -92,88 +91,83 @@ public class TestLoadBalanceFilter2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
-    //TODO: mock
-//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
-    MicroserviceInstance myself = new MicroserviceInstance();
-    DataCenterInfo info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone");
-    myself.setDataCenterInfo(info);
+    DataCenterProperties myself = new DataCenterProperties();
+    myself.setName("test");
+    myself.setRegion("test-Region");
+    myself.setAvailableZone("test-zone");
 
-    MicroserviceInstance allmatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance allmatchInstance = new StatefulDiscoveryInstance(discoveryInstance);
+    DataCenterInfo info = new DataCenterInfo();
     info.setName("test");
     info.setRegion("test-Region");
     info.setAvailableZone("test-zone");
     List<String> allMatchEndpoint = new ArrayList<>();
     allMatchEndpoint.add("rest://localhost:9090");
-    allmatchInstance.setEndpoints(allMatchEndpoint);
-    allmatchInstance.setDataCenterInfo(info);
-    allmatchInstance.setInstanceId("allmatchInstance");
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(allMatchEndpoint);
+    Mockito.when(discoveryInstance.getDataCenterInfo()).thenReturn(info);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("allmatchInstance");
 
-    MicroserviceInstance regionMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance regionMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance regionMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo regionMatchInfo = new DataCenterInfo();
+    regionMatchInfo.setName("test");
+    regionMatchInfo.setRegion("test-Region");
+    regionMatchInfo.setAvailableZone("test-zone2");
     List<String> regionMatchEndpoint = new ArrayList<>();
     regionMatchEndpoint.add("rest://localhost:9091");
-    regionMatchInstance.setEndpoints(regionMatchEndpoint);
-    regionMatchInstance.setDataCenterInfo(info);
-    regionMatchInstance.setInstanceId("regionMatchInstance");
+    Mockito.when(regionMatchDiscoveryInstance.getEndpoints()).thenReturn(regionMatchEndpoint);
+    Mockito.when(regionMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(regionMatchInfo);
+    Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
-    MicroserviceInstance noneMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region2");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo noneMatchInfo = new DataCenterInfo();
+    noneMatchInfo.setName("test");
+    noneMatchInfo.setRegion("test-Region2");
+    noneMatchInfo.setAvailableZone("test-zone2");
     List<String> noMatchEndpoint = new ArrayList<>();
     noMatchEndpoint.add("rest://localhost:9092");
-    noneMatchInstance.setEndpoints(noMatchEndpoint);
-    noneMatchInstance.setDataCenterInfo(info);
-    noneMatchInstance.setInstanceId("noneMatchInstance");
+    Mockito.when(noneMatchDiscoveryInstance.getEndpoints()).thenReturn(noMatchEndpoint);
+    Mockito.when(noneMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(noneMatchInfo);
+    Mockito.when(noneMatchDiscoveryInstance.getInstanceId()).thenReturn("noneMatchInstance");
 
-    Map<String, MicroserviceInstance> data = new HashMap<>();
+    List<StatefulDiscoveryInstance> data = new ArrayList<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
-    LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    //TODO: mock
-//    mockUpInstanceCacheManager(instanceCacheManager);
-//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+        discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
-    data.put("noneMatchInstance", noneMatchInstance);
+    data.add(noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+        discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
 
-    data.put("regionMatchInstance", regionMatchInstance);
+    data.add(regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
 
-    data.put("allmatchInstance", allmatchInstance);
+    data.add(allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -201,46 +195,41 @@ public class TestLoadBalanceFilter2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
-    MicroserviceInstance myself = new MicroserviceInstance();
-    DataCenterInfo info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test");
-    info.setAvailableZone("test");
-    myself.setDataCenterInfo(info);
+    DataCenterProperties myself = new DataCenterProperties();
+    myself.setName("test");
+    myself.setRegion("test");
+    myself.setAvailableZone("test");
 
-    MicroserviceInstance instance = new MicroserviceInstance();
-    info = new DataCenterInfo();
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance = new StatefulDiscoveryInstance(discoveryInstance);
+    DataCenterInfo info = new DataCenterInfo();
     info.setName("test");
     info.setRegion("test");
     info.setAvailableZone("test");
     List<String> allMatchEndpoint = new ArrayList<>();
     allMatchEndpoint.add("rest://localhost:9090");
-    instance.setEndpoints(allMatchEndpoint);
-    instance.setDataCenterInfo(info);
-    instance.setInstanceId("instance");
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(allMatchEndpoint);
+    Mockito.when(discoveryInstance.getDataCenterInfo()).thenReturn(info);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance");
 
-    Map<String, MicroserviceInstance> data = new HashMap<>();
+    List<StatefulDiscoveryInstance> data = new ArrayList<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    //TODO: mock
-//    mockUpInstanceCacheManager(instanceCacheManager);
-//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+        discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
-    data.put("instance", instance);
+    data.add(instance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -268,82 +257,77 @@ public class TestLoadBalanceFilter2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
-    MicroserviceInstance myself = new MicroserviceInstance();
-    DataCenterInfo info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone");
-    myself.setDataCenterInfo(info);
+    DataCenterProperties myself = new DataCenterProperties();
+    myself.setName("test");
+    myself.setRegion("test-Region");
+    myself.setAvailableZone("test-zone");
 
-    MicroserviceInstance allmatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance allmatchInstance = new StatefulDiscoveryInstance(discoveryInstance);
+    DataCenterInfo info = new DataCenterInfo();
     info.setName("test");
     info.setRegion("test-Region");
     info.setAvailableZone("test-zone");
     List<String> allMatchEndpoint = new ArrayList<>();
     allMatchEndpoint.add("rest://localhost:9090");
-    allmatchInstance.setEndpoints(allMatchEndpoint);
-    allmatchInstance.setDataCenterInfo(info);
-    allmatchInstance.setInstanceId("allmatchInstance");
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(allMatchEndpoint);
+    Mockito.when(discoveryInstance.getDataCenterInfo()).thenReturn(info);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("allmatchInstance");
 
-    MicroserviceInstance regionMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance regionMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance regionMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo regionMatchInfo = new DataCenterInfo();
+    regionMatchInfo.setName("test");
+    regionMatchInfo.setRegion("test-Region");
+    regionMatchInfo.setAvailableZone("test-zone2");
     List<String> regionMatchEndpoint = new ArrayList<>();
     regionMatchEndpoint.add("rest://localhost:9091");
-    regionMatchInstance.setEndpoints(regionMatchEndpoint);
-    regionMatchInstance.setDataCenterInfo(info);
-    regionMatchInstance.setInstanceId("regionMatchInstance");
+    Mockito.when(regionMatchDiscoveryInstance.getEndpoints()).thenReturn(regionMatchEndpoint);
+    Mockito.when(regionMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(regionMatchInfo);
+    Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
-    MicroserviceInstance noneMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region2");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo noneMatchInfo = new DataCenterInfo();
+    noneMatchInfo.setName("test");
+    noneMatchInfo.setRegion("test-Region2");
+    noneMatchInfo.setAvailableZone("test-zone2");
     List<String> noMatchEndpoint = new ArrayList<>();
     noMatchEndpoint.add("rest://localhost:9092");
-    noneMatchInstance.setEndpoints(noMatchEndpoint);
-    noneMatchInstance.setDataCenterInfo(info);
-    noneMatchInstance.setInstanceId("noneMatchInstance");
+    Mockito.when(noneMatchDiscoveryInstance.getEndpoints()).thenReturn(noMatchEndpoint);
+    Mockito.when(noneMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(noneMatchInfo);
+    Mockito.when(noneMatchDiscoveryInstance.getInstanceId()).thenReturn("noneMatchInstance");
 
-    Map<String, MicroserviceInstance> data = new HashMap<>();
+    List<StatefulDiscoveryInstance> data = new ArrayList<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    //TODO: mock
-//    mockUpInstanceCacheManager(instanceCacheManager);
-//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
-    data.put("noneMatchInstance", noneMatchInstance);
+    data.add(noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
 
-    data.put("regionMatchInstance", regionMatchInstance);
+    data.add(regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
 
-    data.put("allmatchInstance", allmatchInstance);
+    data.add(allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -360,55 +344,51 @@ public class TestLoadBalanceFilter2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
-    MicroserviceInstance myself = new MicroserviceInstance();
-    DataCenterInfo info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone");
-    myself.setDataCenterInfo(info);
+    DataCenterProperties myself = new DataCenterProperties();
+    myself.setName("test");
+    myself.setRegion("test-Region");
+    myself.setAvailableZone("test-zone");
 
-    MicroserviceInstance allmatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance allmatchInstance = new StatefulDiscoveryInstance(discoveryInstance);
+    DataCenterInfo info = new DataCenterInfo();
     info.setName("test");
     info.setRegion("test-Region");
     info.setAvailableZone("test-zone");
     List<String> allMatchEndpoint = new ArrayList<>();
     allMatchEndpoint.add("rest://localhost:7090");
-    allmatchInstance.setEndpoints(allMatchEndpoint);
-    allmatchInstance.setDataCenterInfo(info);
-    allmatchInstance.setInstanceId("allmatchInstance");
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(allMatchEndpoint);
+    Mockito.when(discoveryInstance.getDataCenterInfo()).thenReturn(info);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("allmatchInstance");
 
-    MicroserviceInstance regionMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance regionMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance regionMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo regionMatchInfo = new DataCenterInfo();
+    regionMatchInfo.setName("test");
+    regionMatchInfo.setRegion("test-Region");
+    regionMatchInfo.setAvailableZone("test-zone2");
     List<String> regionMatchEndpoint = new ArrayList<>();
     regionMatchEndpoint.add("rest://localhost:7091");
-    regionMatchInstance.setEndpoints(regionMatchEndpoint);
-    regionMatchInstance.setDataCenterInfo(info);
-    regionMatchInstance.setInstanceId("regionMatchInstance");
+    Mockito.when(regionMatchDiscoveryInstance.getEndpoints()).thenReturn(regionMatchEndpoint);
+    Mockito.when(regionMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(regionMatchInfo);
+    Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
-    MicroserviceInstance noneMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region2");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo noneMatchInfo = new DataCenterInfo();
+    noneMatchInfo.setName("test");
+    noneMatchInfo.setRegion("test-Region2");
+    noneMatchInfo.setAvailableZone("test-zone2");
     List<String> noMatchEndpoint = new ArrayList<>();
     noMatchEndpoint.add("rest://localhost:7092");
-    noneMatchInstance.setEndpoints(noMatchEndpoint);
-    noneMatchInstance.setDataCenterInfo(info);
-    noneMatchInstance.setInstanceId("noneMatchInstance");
+    Mockito.when(noneMatchDiscoveryInstance.getEndpoints()).thenReturn(noMatchEndpoint);
+    Mockito.when(noneMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(noneMatchInfo);
+    Mockito.when(noneMatchDiscoveryInstance.getInstanceId()).thenReturn("noneMatchInstance");
 
-    Map<String, MicroserviceInstance> data = new HashMap<>();
+    List<StatefulDiscoveryInstance> data = new ArrayList<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    //TODO: mock
-//    mockUpInstanceCacheManager(instanceCacheManager);
-//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-//        .thenReturn(parent);
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
@@ -417,28 +397,25 @@ public class TestLoadBalanceFilter2 {
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
-    discoveryTree.addFilter(new ServerDiscoveryFilter());
-    discoveryTree.sort();
-    handler = new LoadBalanceFilter(discoveryTree, new ExtensionsManager(new ArrayList<>()));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
-    data.put("noneMatchInstance", noneMatchInstance);
+    data.add(noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()), scbEngine);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
 
-    data.put("regionMatchInstance", regionMatchInstance);
+    data.add(regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
 
-    data.put("allmatchInstance", allmatchInstance);
+    data.add(allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -457,56 +434,52 @@ public class TestLoadBalanceFilter2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
-    MicroserviceInstance myself = new MicroserviceInstance();
-    DataCenterInfo info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone");
-    myself.setDataCenterInfo(info);
+    DataCenterProperties myself = new DataCenterProperties();
+    myself.setName("test");
+    myself.setRegion("test-Region");
+    myself.setAvailableZone("test-zone");
 
-    MicroserviceInstance allmatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance allmatchInstance = new StatefulDiscoveryInstance(discoveryInstance);
+    DataCenterInfo info = new DataCenterInfo();
     info.setName("test");
     info.setRegion("test-Region");
     info.setAvailableZone("test-zone");
     List<String> allMatchEndpoint = new ArrayList<>();
     allMatchEndpoint.add("rest://localhost:7090");
-    allmatchInstance.setEndpoints(allMatchEndpoint);
-    allmatchInstance.setDataCenterInfo(info);
-    allmatchInstance.setInstanceId("allmatchInstance");
-    allmatchInstance.setStatus(MicroserviceInstanceStatus.TESTING);
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(allMatchEndpoint);
+    Mockito.when(discoveryInstance.getDataCenterInfo()).thenReturn(info);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("allmatchInstance");
+    Mockito.when(discoveryInstance.getStatus()).thenReturn(MicroserviceInstanceStatus.TESTING);
 
-    MicroserviceInstance regionMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance regionMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance regionMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo regionMatchInfo = new DataCenterInfo();
+    regionMatchInfo.setName("test");
+    regionMatchInfo.setRegion("test-Region");
+    regionMatchInfo.setAvailableZone("test-zone2");
     List<String> regionMatchEndpoint = new ArrayList<>();
     regionMatchEndpoint.add("rest://localhost:7091");
-    regionMatchInstance.setEndpoints(regionMatchEndpoint);
-    regionMatchInstance.setDataCenterInfo(info);
-    regionMatchInstance.setInstanceId("regionMatchInstance");
+    Mockito.when(regionMatchDiscoveryInstance.getEndpoints()).thenReturn(regionMatchEndpoint);
+    Mockito.when(regionMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(regionMatchInfo);
+    Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
-    MicroserviceInstance noneMatchInstance = new MicroserviceInstance();
-    info = new DataCenterInfo();
-    info.setName("test");
-    info.setRegion("test-Region2");
-    info.setAvailableZone("test-zone2");
+    DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo noneMatchInfo = new DataCenterInfo();
+    noneMatchInfo.setName("test");
+    noneMatchInfo.setRegion("test-Region2");
+    noneMatchInfo.setAvailableZone("test-zone2");
     List<String> noMatchEndpoint = new ArrayList<>();
     noMatchEndpoint.add("rest://localhost:7092");
-    noneMatchInstance.setEndpoints(noMatchEndpoint);
-    noneMatchInstance.setDataCenterInfo(info);
-    noneMatchInstance.setInstanceId("noneMatchInstance");
+    Mockito.when(noneMatchDiscoveryInstance.getEndpoints()).thenReturn(noMatchEndpoint);
+    Mockito.when(noneMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(noneMatchInfo);
+    Mockito.when(noneMatchDiscoveryInstance.getInstanceId()).thenReturn("noneMatchInstance");
 
-    Map<String, MicroserviceInstance> data = new HashMap<>();
+    List<StatefulDiscoveryInstance> data = new ArrayList<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    LocalRegistryStore.INSTANCE.initSelfWithMocked(null, myself);
-    //TODO: mock
-//    mockUpInstanceCacheManager(instanceCacheManager);
-//    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
-//        .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadBalanceFilter handler = null;
@@ -514,28 +487,25 @@ public class TestLoadBalanceFilter2 {
     ServiceCombServer server = null;
 
     DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
-    discoveryTree.addFilter(new ServerDiscoveryFilter());
-    discoveryTree.sort();
-    handler = new LoadBalanceFilter(discoveryTree, new ExtensionsManager(new ArrayList<>()));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
-    data.put("noneMatchInstance", noneMatchInstance);
+    data.add(noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        new DiscoveryManager(Collections.emptyList()));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
 
-    data.put("regionMatchInstance", regionMatchInstance);
+    data.add(regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
 
-    data.put("allmatchInstance", allmatchInstance);
+    data.add(allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);

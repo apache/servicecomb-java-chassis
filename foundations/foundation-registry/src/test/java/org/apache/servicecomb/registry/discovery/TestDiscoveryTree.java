@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.hamcrest.MatcherAssert;
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 
@@ -58,21 +56,6 @@ public class TestDiscoveryTree {
 
   DiscoveryTreeNode result;
 
-  @Test
-  public void loadFromSPI() {
-    DiscoveryFilter f1 = Mockito.mock(DiscoveryFilter.class);
-    DiscoveryFilter f2 = Mockito.mock(DiscoveryFilter.class);
-
-    Class<? extends DiscoveryFilter> cls = DiscoveryFilter.class;
-    try (MockedStatic<SPIServiceUtils> spiServiceUtilsMockedStatic = Mockito.mockStatic(SPIServiceUtils.class)) {
-      spiServiceUtilsMockedStatic.when(() -> SPIServiceUtils.getSortedService(cls)).thenReturn(Arrays.asList(f1, f2));
-
-      discoveryTree.loadFromSPI(cls);
-
-      MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
-    }
-  }
-
 
   @Test
   public void sort() {
@@ -86,10 +69,7 @@ public class TestDiscoveryTree {
     Mockito.when(f3.getOrder()).thenReturn(0);
     Mockito.when(f3.enabled()).thenReturn(false);
 
-    discoveryTree.addFilter(f3);
-    discoveryTree.addFilter(f2);
-    discoveryTree.addFilter(f1);
-    discoveryTree.sort();
+    discoveryTree.setDiscoveryFilters(Arrays.asList(f1, f2, f3));
 
     MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
   }
@@ -160,11 +140,9 @@ public class TestDiscoveryTree {
   public void filterNormal() {
     parent.name("1.0.0-2.0.0");
 
-    discoveryTree.addFilter(new DiscoveryFilterForTest("g1"));
-    discoveryTree.addFilter(new DiscoveryFilterForTest(null));
-    discoveryTree.addFilter(new DiscoveryFilterForTest("g2"));
-    discoveryTree.addFilter(new DiscoveryFilterForTest(null));
-
+    discoveryTree.setDiscoveryFilters(Arrays.asList(new DiscoveryFilterForTest("g1"),
+        new DiscoveryFilterForTest(null), new DiscoveryFilterForTest("g2"),
+        new DiscoveryFilterForTest(null)));
     result = discoveryTree.discovery(context, parent);
 
     Assertions.assertEquals("1.0.0-2.0.0/g1/g2", result.name());
@@ -195,7 +173,7 @@ public class TestDiscoveryTree {
         return null;
       }
     };
-    discoveryTree.addFilter(filter);
+    discoveryTree.setDiscoveryFilters(Arrays.asList(filter));
 
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
         () -> result = discoveryTree.discovery(context, null, null));
@@ -206,7 +184,7 @@ public class TestDiscoveryTree {
   public void filterRerun() {
     parent.name("1.0.0-2.0.0");
 
-    discoveryTree.addFilter(new DiscoveryFilterForTest("g1") {
+    DiscoveryFilterForTest f1 = new DiscoveryFilterForTest("g1") {
       @Override
       public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
         if (context.getContextParameter("step") == null) {
@@ -217,8 +195,8 @@ public class TestDiscoveryTree {
 
         return new DiscoveryTreeNode().name(groupName).data("second");
       }
-    });
-    discoveryTree.addFilter(new DiscoveryFilterForTest(null) {
+    };
+    DiscoveryFilterForTest f2 = new DiscoveryFilterForTest(null) {
       @Override
       public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
         if ("first".equals(parent.data())) {
@@ -227,8 +205,9 @@ public class TestDiscoveryTree {
 
         return new DiscoveryTreeNode().data(parent.data());
       }
-    });
+    };
 
+    discoveryTree.setDiscoveryFilters(Arrays.asList(f1, f2));
     result = discoveryTree.discovery(context, parent);
 
     Assertions.assertEquals("second", result.data());
