@@ -21,7 +21,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,8 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
   protected DiscoveryTreeNode createDiscoveryTreeNode(String expectTransportName, DiscoveryContext context,
       DiscoveryTreeNode parent) {
     List<Object> endpoints = new ArrayList<>();
-    for (DiscoveryInstance instance : (List<DiscoveryInstance>) parent.data()) {
-      for (String endpoint : instance.getEndpoints()) {
+    for (StatefulDiscoveryInstance instance : (List<StatefulDiscoveryInstance>) parent.data()) {
+      for (String endpoint : instance.getDiscoveryInstance().getEndpoints()) {
         try {
           URI uri = URI.create(endpoint);
           String transportName = uri.getScheme();
@@ -79,5 +78,5 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
   protected abstract String findTransportName(DiscoveryContext context, DiscoveryTreeNode parent);
 
   protected abstract Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
-      DiscoveryInstance instance);
+      StatefulDiscoveryInstance instance);
 }

@@ -19,20 +19,11 @@ package org.apache.servicecomb.registry.config;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.registry.api.registry.BasePath;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
-
-import io.vertx.core.json.jackson.DatabindCodec;
 
 public final class ConfigurePropertyUtils {
   private ConfigurePropertyUtils() {
@@ -60,27 +51,5 @@ public final class ConfigurePropertyUtils {
       propertiesMap.put(key.substring(prefix.length() + 1), String.valueOf(configuration.getProperty(key)));
     }
     return propertiesMap;
-  }
-
-  public static List<BasePath> getMicroservicePaths(Configuration configuration) {
-    List<Object> configPaths = BootStrapProperties.readServicePaths(configuration);
-    List<BasePath> basePaths = DatabindCodec.mapper().convertValue(
-        configPaths,
-        TypeFactory.defaultInstance().constructCollectionType(List.class, BasePath.class)
-    );
-    for (BasePath basePath : basePaths) {
-      basePath.setPath(buildPath(basePath.getPath()));
-    }
-    return basePaths;
-  }
-
-  private static String buildPath(String path) {
-    String prefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
-    if (StringUtils.isNotEmpty(prefix)) {
-      if (!path.startsWith(prefix)) {
-        path = prefix + path;
-      }
-    }
-    return path;
   }
 }
