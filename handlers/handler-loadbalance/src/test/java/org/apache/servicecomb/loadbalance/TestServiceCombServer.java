@@ -17,9 +17,10 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -37,9 +38,10 @@ public class TestServiceCombServer {
 
   @Before
   public void setUp() {
-    MicroserviceInstance instance = new MicroserviceInstance();
-    instance.setInstanceId("123456");
-    cs = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance));
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("123456");
+    cs = new ServiceCombServer(null, transport, new Endpoint(transport, "abcd", instance));
   }
 
   @Test
@@ -57,14 +59,16 @@ public class TestServiceCombServer {
   public void testEqualsMethod() {
     Assertions.assertNotEquals(cs, (Object) "abcd");
 
-    MicroserviceInstance instance1 = new MicroserviceInstance();
-    instance1.setInstanceId("1234");
-    ServiceCombServer other = new ServiceCombServer(null, transport, new CacheEndpoint("1234", instance1));
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("1234");
+    ServiceCombServer other = new ServiceCombServer(null, transport, new Endpoint(transport, "1234", instance1));
     Assertions.assertNotEquals(cs, other);
 
-    MicroserviceInstance instance2 = new MicroserviceInstance();
-    instance2.setInstanceId("123456");
-    other = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance2));
+    DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
+    Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("123456");
+    other = new ServiceCombServer(null, transport, new Endpoint(transport, "abcd", instance2));
     Assertions.assertEquals(cs, other);
   }
 

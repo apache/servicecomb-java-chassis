@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,11 +35,13 @@ public class TestLoadBalancer {
     List<ServiceCombServer> newServers = new ArrayList<>();
     ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
     Invocation invocation = Mockito.mock(Invocation.class);
-    MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
+    StatefulDiscoveryInstance microserviceInstance = Mockito.mock(StatefulDiscoveryInstance.class);
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
     newServers.add(server);
     Mockito.when(invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST)).thenReturn(newServers);
+    Mockito.when(microserviceInstance.getDiscoveryInstance()).thenReturn(discoveryInstance);
     Mockito.when(server.getInstance()).thenReturn(microserviceInstance);
-    Mockito.when(microserviceInstance.getInstanceId()).thenReturn("123456");
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("123456");
     LoadBalancer loadBalancer = new LoadBalancer(rule, "test");
     loadBalancer.chooseServer(invocation);
 

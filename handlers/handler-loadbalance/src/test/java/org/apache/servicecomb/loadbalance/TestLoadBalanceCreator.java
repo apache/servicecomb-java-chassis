@@ -24,15 +24,17 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import com.netflix.loadbalancer.Server;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
-import org.junit.jupiter.api.Assertions;
 
 public class TestLoadBalanceCreator {
   @Test
@@ -41,15 +43,18 @@ public class TestLoadBalanceCreator {
     // Robin components implementations require getReachableServers & getServerList have the same size, we add a test case for this.
     RoundRobinRuleExt rule = new RoundRobinRuleExt();
     List<ServiceCombServer> servers = new ArrayList<>();
-    Endpoint host1 = new Endpoint(transport, "host1");
-    MicroserviceInstance instance1 = new MicroserviceInstance();
-    instance1.setInstanceId("instance1");
-    ServiceCombServer server = new ServiceCombServer(null, host1, instance1);
 
-    Endpoint host2 = new Endpoint(transport, "host2");
-    MicroserviceInstance instance2 = new MicroserviceInstance();
-    instance2.setInstanceId("instance2");
-    ServiceCombServer server2 = new ServiceCombServer(null, host2, instance2);
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance1");
+    Endpoint host1 = new Endpoint(transport, "host1", instance1);
+    ServiceCombServer server = new ServiceCombServer(null, host1);
+
+    DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
+    Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("instance2");
+    Endpoint host2 = new Endpoint(transport, "host2", instance2);
+    ServiceCombServer server2 = new ServiceCombServer(null, host2);
 
     servers.add(server);
     servers.add(server2);
@@ -91,15 +96,18 @@ public class TestLoadBalanceCreator {
     LoadBalancer lb = new LoadBalancer(rule, "service");
 
     List<ServiceCombServer> servers = new ArrayList<>();
-    Endpoint host1 = new Endpoint(transport, "host1");
-    MicroserviceInstance instance1 = new MicroserviceInstance();
-    instance1.setInstanceId("instance1");
-    ServiceCombServer server = new ServiceCombServer(null, host1, instance1);
 
-    Endpoint host2 = new Endpoint(transport, "host2");
-    MicroserviceInstance instance2 = new MicroserviceInstance();
-    instance2.setInstanceId("instance2");
-    ServiceCombServer server2 = new ServiceCombServer(null, host2, instance2);
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance1");
+    Endpoint host1 = new Endpoint(transport, "host1", instance1);
+    ServiceCombServer server = new ServiceCombServer(null, host1);
+
+    DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
+    Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("instance2");
+    Endpoint host2 = new Endpoint(transport, "host2", instance2);
+    ServiceCombServer server2 = new ServiceCombServer(null, host2);
 
     servers.add(server);
     servers.add(server2);
@@ -138,12 +146,17 @@ public class TestLoadBalanceCreator {
     LoadBalancer lb = new LoadBalancer(rule, "service");
 
     List<ServiceCombServer> servers = new ArrayList<>();
-    MicroserviceInstance instance1 = new MicroserviceInstance();
-    instance1.setInstanceId("ii01");
-    MicroserviceInstance instance2 = new MicroserviceInstance();
-    instance2.setInstanceId("ii02");
-    ServiceCombServer server = new ServiceCombServer(null, endpoint1, instance1);
-    ServiceCombServer server2 = new ServiceCombServer(null, endpoint2, instance2);
+
+    DiscoveryInstance discoveryInstance1 = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance1);
+    Mockito.when(discoveryInstance1.getInstanceId()).thenReturn("ii01");
+
+    DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
+    Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("ii02");
+
+    ServiceCombServer server = new ServiceCombServer(null, endpoint1);
+    ServiceCombServer server2 = new ServiceCombServer(null, endpoint2);
 
     new Expectations() {
       {
@@ -189,15 +202,18 @@ public class TestLoadBalanceCreator {
     LoadBalancer lb = new LoadBalancer(rule, "service");
 
     List<ServiceCombServer> servers = new ArrayList<>();
-    Endpoint host1 = new Endpoint(transport, "host1");
-    MicroserviceInstance instance1 = new MicroserviceInstance();
-    ServiceCombServer server = new ServiceCombServer(null, host1, instance1);
-    instance1.setInstanceId("instance1");
 
-    Endpoint host2 = new Endpoint(transport, "host2");
-    MicroserviceInstance instance2 = new MicroserviceInstance();
-    ServiceCombServer server2 = new ServiceCombServer(null, host2, instance2);
-    instance2.setInstanceId("instance2");
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance1");
+    Endpoint host1 = new Endpoint(transport, "host1", instance1);
+    ServiceCombServer server = new ServiceCombServer(null, host1);
+
+    DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
+    Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("instance2");
+    Endpoint host2 = new Endpoint(transport, "host2", instance2);
+    ServiceCombServer server2 = new ServiceCombServer(null, host2);
 
     servers.add(server);
     servers.add(server2);
