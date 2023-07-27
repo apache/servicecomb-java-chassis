@@ -23,6 +23,7 @@ import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
+import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,5 +40,10 @@ public class RegistryConfiguration {
   public DiscoveryManager discoveryManager(@Autowired(required = false)
       List<Discovery<? extends DiscoveryInstance>> discoveryList) {
     return new DiscoveryManager(discoveryList);
+  }
+
+  @Bean
+  public DiscoveryTree discoveryTree(DiscoveryManager discoveryManager) {
+    return new DiscoveryTree(discoveryManager);
   }
 }

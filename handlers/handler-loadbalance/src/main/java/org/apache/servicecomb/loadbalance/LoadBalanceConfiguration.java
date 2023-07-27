@@ -19,7 +19,9 @@ package org.apache.servicecomb.loadbalance;
 import java.util.List;
 
 import org.apache.servicecomb.core.filter.ConsumerFilter;
-import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.loadbalance.filter.InstancePropertyDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filter.PriorityInstancePropertyDiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +35,8 @@ public class LoadBalanceConfiguration {
   public static final String LOAD_BALANCE_ENABLED = LOAD_BALANCE_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerFilter loadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryManager discoveryManager) {
-    return new LoadBalanceFilter(extensionsManager, discoveryManager);
+  public ConsumerFilter loadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryTree discoveryTree) {
+    return new LoadBalanceFilter(extensionsManager, discoveryTree);
   }
 
   @Bean
@@ -45,5 +47,15 @@ public class LoadBalanceConfiguration {
   @Bean
   public ExtensionsManager extensionsManager(List<ExtensionsFactory> extensionsFactories) {
     return new ExtensionsManager(extensionsFactories);
+  }
+
+  @Bean
+  public PriorityInstancePropertyDiscoveryFilter priorityInstancePropertyDiscoveryFilter() {
+    return new PriorityInstancePropertyDiscoveryFilter();
+  }
+
+  @Bean
+  public InstancePropertyDiscoveryFilter instancePropertyDiscoveryFilter() {
+    return new InstancePropertyDiscoveryFilter();
   }
 }

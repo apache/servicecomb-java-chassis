@@ -80,12 +80,6 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private SCBEngine scbEngine;
 
-  @VisibleForTesting
-  public LoadBalanceFilter(DiscoveryTree discoveryTree, ExtensionsManager extensionsManager) {
-    this.discoveryTree = discoveryTree;
-    this.extensionsManager = extensionsManager;
-  }
-
   @Autowired
   public LoadBalanceFilter(ExtensionsManager extensionsManager,
       DiscoveryTree discoveryTree) {

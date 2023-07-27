@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.MicroserviceProperties;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -33,8 +32,6 @@ import org.apache.servicecomb.loadbalance.LoadBalanceFilter;
 import org.apache.servicecomb.loadbalance.LoadBalancer;
 import org.apache.servicecomb.loadbalance.RuleExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOptionsSPI;
@@ -80,16 +77,12 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private MicroserviceProperties microserviceProperties;
 
-  private DiscoveryManager discoveryManager;
-
   private DiscoveryTree discoveryTree;
 
-  public CommonHttpEdgeDispatcher(DiscoveryManager discoveryManager, SCBEngine scbEngine) {
-    this.discoveryManager = discoveryManager;
+  public CommonHttpEdgeDispatcher(DiscoveryTree discoveryTree) {
+    this.discoveryTree = discoveryTree;
     if (this.enabled()) {
       loadConfigurations();
-      discoveryTree = new DiscoveryTree(this.discoveryManager);
-      discoveryTree.addFilter(new ServerDiscoveryFilter(scbEngine));
     }
   }
 
