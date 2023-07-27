@@ -27,18 +27,14 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
-import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -62,16 +58,11 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
 
     private final String name;
 
-    private final DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
-
     // key is grouping filter qualified name
     private final Map<String, AtomicInteger> indexMap = new ConcurrentHashMapEx<>();
 
     public Service(String name) {
       this.name = name;
-      discoveryTree.loadFromSPI(DiscoveryFilter.class);
-      discoveryTree.addFilter(new EndpointDiscoveryFilter());
-      discoveryTree.sort();
     }
 
     public String getName() {
@@ -151,18 +142,11 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
 
   private final Map<String, Service> servicesByName = new ConcurrentHashMapEx<>();
 
-  private DiscoveryManager discoveryManager;
-
-  private SCBEngine scbEngine;
+  private DiscoveryTree discoveryTree;
 
   @Autowired
-  public void setScbEngine(SCBEngine scbEngine) {
-    this.scbEngine = scbEngine;
-  }
-
-  @Autowired
-  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
-    this.discoveryManager = discoveryManager;
+  public void setDiscoveryTree(DiscoveryTree discoveryTree) {
+    this.discoveryTree = discoveryTree;
   }
 
   @Nonnull

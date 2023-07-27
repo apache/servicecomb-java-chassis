@@ -17,17 +17,16 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -79,7 +78,7 @@ public class DiscoveryTree {
 
   private final Object lock = new Object();
 
-  private final List<DiscoveryFilter> filters = new ArrayList<>();
+  private List<DiscoveryFilter> filters;
 
   private final DiscoveryManager discoveryManager;
 
@@ -102,17 +101,15 @@ public class DiscoveryTree {
     return filters;
   }
 
-  public void loadFromSPI(Class<? extends DiscoveryFilter> cls) {
-    filters.addAll(SPIServiceUtils.getSortedService(cls));
-  }
-
-  public void addFilter(DiscoveryFilter filter) {
-    filters.add(filter);
+  @Autowired
+  public void setDiscoveryFilters(List<DiscoveryFilter> filters) {
+    this.filters = filters;
+    sort();
   }
 
   // group name are qualifiedName
   // all leaf group will create a loadbalancer instance, groupName is loadBalancer key
-  public void sort() {
+  private void sort() {
     filters.sort(Comparator.comparingInt(DiscoveryFilter::getOrder));
 
     Iterator<DiscoveryFilter> iterator = filters.iterator();

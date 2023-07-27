@@ -17,28 +17,32 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import mockit.Expectations;
 import mockit.Injectable;
-import org.junit.jupiter.api.Assertions;
 
 public class TestInstancePropertyDiscoveryFilter {
 
   private InstancePropertyDiscoveryFilter filter;
 
-  MicroserviceInstance instance = new MicroserviceInstance();
+  StatefulDiscoveryInstance instance;
 
   @BeforeClass
   public static void beforeCls() {
@@ -54,8 +58,10 @@ public class TestInstancePropertyDiscoveryFilter {
     Map<String, String> properties = new HashMap<>();
     properties.put("tag0", "value0");
     properties.put("tag1", "value1");
-    instance.setInstanceId("instance111");
-    instance.setProperties(properties);
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    instance = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance111");
+    Mockito.when(discoveryInstance.getProperties()).thenReturn(properties);
   }
 
   @Test
@@ -78,8 +84,8 @@ public class TestInstancePropertyDiscoveryFilter {
   @SuppressWarnings("unchecked")
   public void testGetFilteredListOfServers(@Injectable DiscoveryContext context, @Injectable DiscoveryTreeNode parent,
       @Injectable Invocation invocation) {
-    Map<String, MicroserviceInstance> instances = new HashMap<>();
-    instances.put(instance.getInstanceId(), instance);
+    List<StatefulDiscoveryInstance> instances = new ArrayList<>();
+    instances.add(instance);
     new Expectations() {
       {
         context.getInputParameters();
@@ -92,6 +98,6 @@ public class TestInstancePropertyDiscoveryFilter {
     };
 
     DiscoveryTreeNode node = filter.discovery(context, parent);
-    Assertions.assertEquals(1, ((Map<String, MicroserviceInstance>) node.data()).keySet().size());
+    Assertions.assertEquals(1, ((List<StatefulDiscoveryInstance>) node.data()).size());
   }
 }
