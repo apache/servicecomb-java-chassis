@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
@@ -30,9 +29,17 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ConsumerAuthFilter implements ConsumerFilter {
-  private ConsumerTokenManager authenticationTokenManager = new ConsumerTokenManager();
+  private ConsumerTokenManager authenticationTokenManager;
+
+  @Autowired
+  public void setConsumerTokenManager(ConsumerTokenManager consumerTokenManager) {
+    this.authenticationTokenManager = consumerTokenManager;
+  }
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {

@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.authentication;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
@@ -24,13 +27,12 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestAuthenticationBootListener {
   private SCBEngine engine;
@@ -49,10 +51,6 @@ public class TestAuthenticationBootListener {
 
   @Test
   public void testGenerateRSAKey() {
-    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    Microservice microservice = new Microservice();
-    microservice.setInstance(microserviceInstance);
-
     AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
@@ -66,9 +64,11 @@ public class TestAuthenticationBootListener {
     AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
+
+    RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
     authenticationBootListener.onBootEvent(bootEvent);
-    String publicKey = RegistrationManager.INSTANCE.getMicroserviceInstance().
-        getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
-    Assertions.assertNotNull(publicKey);
+
+    Mockito.verify(registrationManager, times(1))
+        .addProperty(DefinitionConst.INSTANCE_PUBKEY_PRO, any(String.class));
   }
 }

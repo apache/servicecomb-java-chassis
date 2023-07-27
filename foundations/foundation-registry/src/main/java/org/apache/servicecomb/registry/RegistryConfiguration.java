@@ -24,6 +24,7 @@ import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
+import org.apache.servicecomb.registry.discovery.MicroserviceInstanceCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,5 +46,10 @@ public class RegistryConfiguration {
   @Bean
   public DiscoveryTree discoveryTree(DiscoveryManager discoveryManager) {
     return new DiscoveryTree(discoveryManager);
+  }
+
+  @Bean
+  public MicroserviceInstanceCache microserviceInstanceCache(DiscoveryManager discoveryManager) {
+    return new MicroserviceInstanceCache(discoveryManager);
   }
 }

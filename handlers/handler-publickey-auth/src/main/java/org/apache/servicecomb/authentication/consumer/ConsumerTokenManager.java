@@ -19,11 +19,12 @@ package org.apache.servicecomb.authentication.consumer;
 import java.security.PrivateKey;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
+import org.apache.servicecomb.core.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConsumerTokenManager {
 
@@ -32,6 +33,13 @@ public class ConsumerTokenManager {
   private final Object lock = new Object();
 
   private RSAAuthenticationToken token;
+
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
 
   public String getToken() {
 
@@ -47,8 +55,8 @@ public class ConsumerTokenManager {
 
   public String createToken() {
     PrivateKey privateKey = Keypair4Auth.INSTANCE.getPrivateKey();
-    String instanceId = RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId();
-    String serviceId = RegistrationManager.INSTANCE.getMicroservice().getServiceId();
+    String instanceId = microserviceProperties.getName();
+    String serviceId = microserviceProperties.getApplication();
 
     if (instanceId == null || serviceId == null) {
       LOGGER.error("service not ready when create token.");

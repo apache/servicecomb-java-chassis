@@ -16,15 +16,13 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
-import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,25 +64,25 @@ public class AccessController {
     loadConfigurations(KEY_WHITE_LIST_PREFIX);
   }
 
-  public boolean isAllowed(Microservice microservice) {
+  public boolean isAllowed(DiscoveryInstance microservice) {
     return whiteAllowed(microservice) && !blackDenied(microservice);
   }
 
-  private boolean whiteAllowed(Microservice microservice) {
+  private boolean whiteAllowed(DiscoveryInstance microservice) {
     if (whiteList.isEmpty()) {
       return true;
     }
     return matchFound(microservice, whiteList);
   }
 
-  private boolean blackDenied(Microservice microservice) {
+  private boolean blackDenied(DiscoveryInstance microservice) {
     if (blackList.isEmpty()) {
       return false;
     }
     return matchFound(microservice, blackList);
   }
 
-  private boolean matchFound(Microservice microservice, Map<String, ConfigurationItem> ruleList) {
+  private boolean matchFound(DiscoveryInstance microservice, Map<String, ConfigurationItem> ruleList) {
     boolean matched = false;
     for (ConfigurationItem item : ruleList.values()) {
       if (ConfigurationItem.CATEGORY_PROPERTY.equals(item.category)) {
@@ -97,7 +95,7 @@ public class AccessController {
     return matched;
   }
 
-  private boolean matchMicroserviceProperties(Microservice microservice, ConfigurationItem item) {
+  private boolean matchMicroserviceProperties(DiscoveryInstance microservice, ConfigurationItem item) {
     Map<String, String> properties = microservice.getProperties();
     for (Entry<String, String> entry : properties.entrySet()) {
       if (!entry.getKey().equals(item.propertyName)) {
@@ -108,25 +106,16 @@ public class AccessController {
     return false;
   }
 
-  private boolean matchMicroserviceField(Microservice microservice, ConfigurationItem item) {
-    Object fieldValue = null;
-    try {
-      fieldValue = new PropertyDescriptor(item.propertyName, Microservice.class).getReadMethod().invoke(microservice);
-    } catch (Exception e) {
-      if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
-          false).get()) {
-        LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.",
-            item.propertyName, e);
-      } else {
-        LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.",
-            item.propertyName);
-      }
-      return false;
+  private boolean matchMicroserviceField(DiscoveryInstance microservice, ConfigurationItem item) {
+    String fieldValue;
+    if ("version".equals(item.propertyName)) {
+      fieldValue = microservice.getVersion();
+    } else if ("serviceName".equals(item.propertyName)) {
+      fieldValue = microservice.getServiceName();
+    } else {
+      fieldValue = microservice.getProperties().get(item.propertyName);
     }
-    if (fieldValue.getClass().getName().equals(String.class.getName())) {
-      return isPatternMatch((String) fieldValue, item.rule);
-    }
-    return false;
+    return isPatternMatch(fieldValue, item.rule);
   }
 
   private boolean isPatternMatch(String value, String pattern) {
@@ -191,8 +180,8 @@ public class AccessController {
 
   private void logConfigurations(Map<String, ConfigurationItem> configurations, boolean isWhite) {
     configurations.forEach((key, item) -> LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + key
-            + ";category=" + item.category
-            + ";propertyName=" + item.propertyName
-            + ";rule=" + item.rule));
+        + ";category=" + item.category
+        + ";propertyName=" + item.propertyName
+        + ";rule=" + item.rule));
   }
 }
