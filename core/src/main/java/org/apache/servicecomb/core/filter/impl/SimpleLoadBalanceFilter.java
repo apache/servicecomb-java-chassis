@@ -70,7 +70,7 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
     public Service(String name) {
       this.name = name;
       discoveryTree.loadFromSPI(DiscoveryFilter.class);
-      discoveryTree.addFilter(new EndpointDiscoveryFilter(scbEngine));
+      discoveryTree.addFilter(new EndpointDiscoveryFilter());
       discoveryTree.sort();
     }
 
@@ -86,10 +86,9 @@ public class SimpleLoadBalanceFilter implements ConsumerFilter {
           invocation.getMicroserviceName());
       if (endpointsVersionedCache.isEmpty()) {
         String msg = "No available address found.";
-        LOGGER.error("{} microserviceName={}, version={}, discoveryGroupName={}",
+        LOGGER.error("{} microserviceName={}, discoveryGroupName={}",
             msg,
             invocation.getMicroserviceName(),
-            invocation.getMicroserviceVersionRule(),
             endpointsVersionedCache.name());
         throw Exceptions.consumer(LB_ADDRESS_NOT_FOUND, msg);
       }

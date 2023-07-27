@@ -19,6 +19,7 @@ package org.apache.servicecomb.core;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -30,8 +31,6 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -44,7 +43,7 @@ import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -52,8 +51,6 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -83,6 +80,9 @@ public class SCBEngine {
 
   private static final Object initializationLock = new Object();
 
+  // TODO: will remove in future. Too many codes need refactor.
+  private static volatile SCBEngine INSTANCE;
+
   private ApplicationContext applicationContext;
 
   private FilterChainsManager filterChainsManager;
@@ -109,8 +109,7 @@ public class SCBEngine {
 
   private PriorityPropertyManager priorityPropertyManager;
 
-  protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
-      .getSortedService(BootUpInformationCollector.class);
+  private List<BootUpInformationCollector> bootUpInformationCollectors;
 
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
@@ -126,12 +125,25 @@ public class SCBEngine {
 
   private DiscoveryManager discoveryManager;
 
+  private final Map<String, MicroserviceReferenceConfig> referenceConfigs = new ConcurrentHashMapEx<>();
+
   public SCBEngine() {
     eventBus = EventManager.getEventBus();
 
     eventBus.register(this);
 
+    INSTANCE = this;
+
     producerProviderManager = new ProducerProviderManager(this);
+  }
+
+  public static SCBEngine getInstance() {
+    return INSTANCE;
+  }
+
+  @Autowired
+  public void setBootUpInformationCollectors(List<BootUpInformationCollector> bootUpInformationCollectors) {
+    this.bootUpInformationCollectors = bootUpInformationCollectors;
   }
 
   @Autowired
@@ -290,21 +302,6 @@ public class SCBEngine {
     }
   }
 
-  /**
-   * <p>As the process of instance registry is asynchronous, the {@code AFTER_REGISTRY}
-   * event should not be sent immediately.
-   * When the instance registry succeeds, {@link MicroserviceInstanceRegisteredEvent} will be posted in {@link EventManager},
-   * register a subscriber to watch this event and send {@code AFTER_REGISTRY}.</p>
-   *
-   * <p>This method should be called before registry initialization to avoid that the registry process is too quick
-   * that the event is not watched by this subscriber.</p>
-   *
-   * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>
-   */
-  private void triggerAfterRegistryEvent() {
-    eventBus.register(new AfterRegistryEventHanlder(this));
-  }
-
   @AllowConcurrentEvents
   @Subscribe
   public void onInvocationStart(InvocationStartEvent event) {
@@ -315,6 +312,12 @@ public class SCBEngine {
   @Subscribe
   public void onInvocationFinish(InvocationFinishEvent event) {
     invocationFinishedCounter.incrementAndGet();
+  }
+
+  public synchronized SCBEngine init() {
+    this.discoveryManager.init();
+    this.registrationManager.init();
+    return this;
   }
 
   public synchronized SCBEngine run() {
@@ -382,21 +385,24 @@ public class SCBEngine {
     triggerEvent(EventType.AFTER_TRANSPORT);
 
     triggerEvent(EventType.BEFORE_REGISTRY);
-
-    triggerAfterRegistryEvent();
-
     registrationManager.run();
     discoveryManager.run();
+    triggerEvent(EventType.AFTER_REGISTRY);
+
+    registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.UP);
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+    // Keep this message for tests cases work.
+    LOGGER.warn("ServiceComb is ready.");
   }
 
   private void createProducerMicroserviceMeta() {
     String microserviceName = this.microserviceProperties.getName();
     producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
-    producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
+    producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
   }
 
   public void destroyForShutdownHook() {
@@ -507,45 +513,34 @@ public class SCBEngine {
   }
 
   /**
-   * for normal consumers
-   * @param microserviceName shortName, or appId:shortName when invoke cross app
-   * @return
+   * for edge, versionRule maybe controlled by url rule
+   * @param microserviceName hortName, or appId:shortName when invoke cross app
+   */
+  public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(
+      String microserviceName) {
+    MicroserviceReferenceConfig config = referenceConfigs.get(microserviceName);
+    if (config != null) {
+      return CompletableFuture.completedFuture(config);
+    }
+    // TODO: create MicroserviceReferenceConfig
+    return CompletableFuture.completedFuture(null);
+//    return DiscoveryManager.INSTANCE
+//        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName)
+//        .thenApply(versions -> {
+//          ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
+//              .getMicroserviceVersionsMeta(versions);
+//          return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
+//        });
+  }
+
+  /**
+   * for edge, versionRule maybe controlled by url rule
+   * @param microserviceName hortName, or appId:shortName when invoke cross app
    */
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName) {
-    return createMicroserviceReferenceConfig(microserviceName, null);
-  }
-
-  /**
-   * for edge, versionRule maybe controlled by url rule
-   * @param microserviceName hortName, or appId:shortName when invoke cross app
-   * @param versionRule if is empty, then use configuration value
-   * @return
-   */
-  public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(String microserviceName,
-      String versionRule) {
-    return DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName)
-        .thenApply(versions -> {
-          ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
-              .getMicroserviceVersionsMeta(versions);
-          return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
-        });
-  }
-
-  /**
-   * for edge, versionRule maybe controlled by url rule
-   * @param microserviceName hortName, or appId:shortName when invoke cross app
-   * @param versionRule if is empty, then use configuration value
-   * @return
-   */
-  public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName, String versionRule) {
     ensureStatusUp();
-    MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersions(parseAppId(microserviceName), microserviceName);
-    ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
-        .getMicroserviceVersionsMeta(microserviceVersions);
-
-    return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
+    // TODO: create MicroserviceReferenceConfig
+    return null;
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {
@@ -605,26 +600,5 @@ public class SCBEngine {
 
   public MicroserviceNameParser parseMicroserviceName(String microserviceName) {
     return new MicroserviceNameParser(getAppId(), microserviceName);
-  }
-
-  public static class AfterRegistryEventHanlder {
-    private final SCBEngine engine;
-
-    public AfterRegistryEventHanlder(SCBEngine engine) {
-      this.engine = engine;
-    }
-
-    @Subscribe
-    @EnableExceptionPropagation
-    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent event) {
-      if (event.isRegistrationManager()) {
-        LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
-        engine.setStatus(SCBStatus.UP);
-        engine.triggerEvent(EventType.AFTER_REGISTRY);
-        EventManager.unregister(this);
-        // keep this message to be WARN, used to detect service ready.
-        LOGGER.warn("ServiceComb is ready.");
-      }
-    }
   }
 }

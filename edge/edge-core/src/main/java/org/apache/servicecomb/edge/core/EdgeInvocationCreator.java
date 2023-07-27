@@ -37,19 +37,16 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
 
   protected final String microserviceName;
 
-  protected final String versionRule;
-
   protected final String path;
 
   protected MicroserviceReferenceConfig microserviceReferenceConfig;
 
   public EdgeInvocationCreator(RoutingContext routingContext,
       HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
-      String microserviceName, String versionRule, String path) {
+      String microserviceName, String path) {
     super(routingContext, null, null, requestEx, responseEx);
 
     this.microserviceName = microserviceName;
-    this.versionRule = versionRule;
     this.path = path;
   }
 
@@ -61,10 +58,10 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
 
   protected CompletableFuture<Void> createMicroserviceReferenceConfig() {
     return SCBEngine.getInstance()
-        .createMicroserviceReferenceConfigAsync(microserviceName, versionRule)
+        .createMicroserviceReferenceConfigAsync(microserviceName)
         .thenAccept(mrc -> {
           this.microserviceReferenceConfig = mrc;
-          this.microserviceMeta = mrc.getLatestMicroserviceMeta();
+          this.microserviceMeta = mrc.getMicroserviceMeta();
         });
   }
 

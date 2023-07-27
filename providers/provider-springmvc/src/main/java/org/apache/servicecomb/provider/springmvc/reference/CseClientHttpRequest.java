@@ -182,7 +182,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName);
-    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
 
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager == null) {

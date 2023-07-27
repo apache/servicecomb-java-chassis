@@ -54,9 +54,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import mockit.Mock;
-import mockit.MockUp;
-
 public class TestLoadBalanceFilter2 {
   private static SCBEngine scbEngine;
 
@@ -93,7 +90,6 @@ public class TestLoadBalanceFilter2 {
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
     when(microserviceMeta.getAppId()).thenReturn("testApp");
-    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
     //TODO: mock
@@ -196,7 +192,6 @@ public class TestLoadBalanceFilter2 {
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
     when(microserviceMeta.getAppId()).thenReturn("testApp");
-    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
     //TODO: mock
@@ -264,7 +259,6 @@ public class TestLoadBalanceFilter2 {
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
     when(microserviceMeta.getAppId()).thenReturn("testApp");
-    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
     //TODO: mock
@@ -358,7 +352,7 @@ public class TestLoadBalanceFilter2 {
 
   @Test
   public void testZoneAwareFilterUsingMockedInvocationWorks() throws Exception {
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+");
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName");
     //TODO: mock
 //    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -455,7 +449,7 @@ public class TestLoadBalanceFilter2 {
   public void testStatusFilterUsingMockedInvocationWorks() throws Exception {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.status.enabled", "false");
 
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+");
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName");
     //TODO: mock
 //    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);

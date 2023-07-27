@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -32,6 +31,8 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class PojoConsumerMeta {
   private final MicroserviceReferenceConfig microserviceReferenceConfig;
@@ -64,10 +65,6 @@ public class PojoConsumerMeta {
 
   public MicroserviceReferenceConfig getMicroserviceReferenceConfig() {
     return microserviceReferenceConfig;
-  }
-
-  public boolean isExpired() {
-    return microserviceReferenceConfig.isExpired();
   }
 
   public MicroserviceMeta getMicroserviceMeta() {

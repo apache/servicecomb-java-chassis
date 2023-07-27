@@ -85,13 +85,13 @@ public class PojoConsumerMetaRefresher {
   }
 
   private boolean isNeedRefresh() {
-    return consumerMeta == null || consumerMeta.isExpired();
+    return consumerMeta == null;
   }
 
   protected PojoConsumerMeta refreshMeta() {
     MicroserviceReferenceConfig microserviceReferenceConfig = scbEngine
         .createMicroserviceReferenceConfig(microserviceName);
-    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
 
     SchemaMeta schemaMeta = findSchemaMeta(microserviceMeta);
     if (schemaMeta == null) {

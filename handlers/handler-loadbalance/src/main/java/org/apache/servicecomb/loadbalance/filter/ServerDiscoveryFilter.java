@@ -17,35 +17,33 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServerDiscoveryFilter.class);
 
-  private SCBEngine scbEngine;
-
-  public ServerDiscoveryFilter(SCBEngine scbEngine) {
-    this.scbEngine = scbEngine;
+  public ServerDiscoveryFilter() {
   }
 
   @Override
   protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
-      MicroserviceInstance instance) {
-    Transport transport = scbEngine.getTransportManager().findTransport(transportName);
+      StatefulDiscoveryInstance instance) {
+    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;
     }
     Invocation invocation = context.getInputParameters();
-    return new ServiceCombServer(invocation.getMicroserviceName(), transport, new CacheEndpoint(endpoint, instance));
+    return new ServiceCombServer(invocation.getMicroserviceName(), transport,
+        new Endpoint(transport, endpoint, instance));
   }
 }

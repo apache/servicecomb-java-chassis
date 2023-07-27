@@ -66,10 +66,6 @@ public class MicroserviceMeta {
     this.consumer = consumer;
   }
 
-  public MicroserviceConfig getMicroserviceConfig() {
-    return microserviceVersionsMeta.getMicroserviceConfig();
-  }
-
   public MicroserviceVersionsMeta getMicroserviceVersionsMeta() {
     return microserviceVersionsMeta;
   }

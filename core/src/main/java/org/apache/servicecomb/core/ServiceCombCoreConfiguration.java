@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.core.bootup.FilterChainCollector;
+import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -31,8 +33,8 @@ public class ServiceCombCoreConfiguration {
   }
 
   @Bean
-  public SCBApplicationListener scbApplicationListener() {
-    SCBApplicationListener scbApplicationListener = new SCBApplicationListener();
+  public SCBApplicationListener scbApplicationListener(SCBEngine scbEngine) {
+    SCBApplicationListener scbApplicationListener = new SCBApplicationListener(scbEngine);
     scbApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
     return scbApplicationListener;
   }
@@ -55,5 +57,15 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public SwaggerLoader swaggerLoader(MicroserviceProperties microserviceProperties) {
     return new SwaggerLoader(microserviceProperties);
+  }
+
+  @Bean
+  public FilterChainCollector filterChainCollector() {
+    return new FilterChainCollector();
+  }
+
+  @Bean
+  public ServiceInformationCollector serviceInformationCollector(SCBEngine scbEngine) {
+    return new ServiceInformationCollector(scbEngine);
   }
 }

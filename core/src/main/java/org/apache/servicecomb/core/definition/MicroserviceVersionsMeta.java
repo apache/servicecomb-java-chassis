@@ -24,32 +24,11 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 public class MicroserviceVersionsMeta {
   protected final SCBEngine scbEngine;
 
-  protected final String microserviceName;
-
   // key is operationMeta.getMicroserviceQualifiedName()
   private final Map<String, OperationConfig> configs = new ConcurrentHashMapEx<>();
 
-  protected volatile MicroserviceConfig microserviceConfig;
-
-  public MicroserviceVersionsMeta(SCBEngine scbEngine, String microserviceName) {
+  public MicroserviceVersionsMeta(SCBEngine scbEngine) {
     this.scbEngine = scbEngine;
-    this.microserviceName = microserviceName;
-  }
-
-  // should not create in constructor
-  // when invoke not exist microservice, will create DynamicProperty(com.netflix.config.DynamicProperty.getInstance)
-  // edge scene, if attacker request to forward request to not exist microservice, will cause OOM
-  public MicroserviceConfig getMicroserviceConfig() {
-    if (microserviceConfig == null) {
-      synchronized (this) {
-        if (microserviceConfig == null) {
-          this.microserviceConfig = scbEngine.getPriorityPropertyManager()
-              .createConfigObject(MicroserviceConfig.class, "service", microserviceName);
-        }
-      }
-    }
-
-    return microserviceConfig;
   }
 
   public OperationConfig getOrCreateOperationConfig(OperationMeta operationMeta) {

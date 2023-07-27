@@ -25,15 +25,15 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestEndpointDiscoveryFilter {
   EndpointDiscoveryFilter filter = new EndpointDiscoveryFilter();
@@ -82,7 +82,7 @@ public class TestEndpointDiscoveryFilter {
   }
 
   @Test
-  public void createEndpointNormal(@Mocked Transport transport, @Mocked MicroserviceInstance instance) {
+  public void createEndpointNormal(@Mocked Transport transport, @Mocked StatefulDiscoveryInstance instance) {
     String endpoint = "rest://ip:port";
     Object address = new Object();
 

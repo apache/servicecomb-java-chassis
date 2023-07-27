@@ -16,15 +16,22 @@
  */
 package org.apache.servicecomb.core.bootstrap;
 
+import java.util.Collections;
+
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 
 public class SCBBootstrap {
   public static SCBEngine createSCBEngineForTest() {
-    // TODO: SCBEngine can be a bean
-    RegistrationManager.INSTANCE.init(null);
-    DiscoveryManager.INSTANCE.init();
-    return new SCBEngineForTest();
+    RegistrationManager registrationManager = new RegistrationManager(Collections.emptyList());
+    DiscoveryManager discoveryManager = new DiscoveryManager(Collections.emptyList());
+    registrationManager.init();
+    discoveryManager.init();
+
+    SCBEngine result = new SCBEngineForTest();
+    result.setDiscoveryManager(discoveryManager);
+    result.setRegistrationManager(registrationManager);
+    return result;
   }
 }
