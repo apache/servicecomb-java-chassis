@@ -19,16 +19,15 @@ package org.apache.servicecomb.registry.discovery;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestAbstractTransportDiscoveryFilter {
   class AbstractEndpointDiscoveryFilterForTest extends AbstractEndpointDiscoveryFilter {
@@ -44,7 +43,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     @Override
     protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
-        MicroserviceInstance instance) {
+        StatefulDiscoveryInstance instance) {
       if (disableCreate) {
         return null;
       }
@@ -104,43 +103,47 @@ public class TestAbstractTransportDiscoveryFilter {
     Assertions.assertSame(child, result);
   }
 
-  private MicroserviceInstance createInstance(String... schemas) {
+  private StatefulDiscoveryInstance createInstance(String... schemas) {
     String id = UUID.randomUUID().toString();
-    MicroserviceInstance instance = new MicroserviceInstance();
-    instance.setInstanceId(id);
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance instance = new StatefulDiscoveryInstance(discoveryInstance);
+    List<String> endpoints = new ArrayList<>();
     for (int idx = 0; idx < schemas.length; idx++) {
       String schema = schemas[idx];
-      instance.getEndpoints().add(String.format("%s://%s:%d", schema, id, 8080 + idx));
+      endpoints.add(String.format("%s://%s:%d", schema, id, 8080 + idx));
     }
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn(id);
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(endpoints);
     return instance;
   }
 
-  private Map<String, MicroserviceInstance> createMicroserviceInstances(MicroserviceInstance... instances) {
-    Map<String, MicroserviceInstance> map = new LinkedHashMap<>();
-    for (MicroserviceInstance instance : instances) {
-      map.put(instance.getInstanceId(), instance);
+  private List<StatefulDiscoveryInstance> createMicroserviceInstances(StatefulDiscoveryInstance... instances) {
+    List<StatefulDiscoveryInstance> result = new ArrayList<>();
+    for (StatefulDiscoveryInstance instance : instances) {
+      result.add(instance);
     }
-    return map;
+    return result;
   }
 
   @Test
   public void createDiscoveryTree_oneTransport() {
-    MicroserviceInstance instance1 = createInstance("a", "b");
-    MicroserviceInstance instance2 = createInstance("b");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1, instance2);
+    StatefulDiscoveryInstance instance1 = createInstance("a", "b");
+    StatefulDiscoveryInstance instance2 = createInstance("b");
+    List<StatefulDiscoveryInstance> instances = createMicroserviceInstances(instance1, instance2);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("a", context, parent);
 
     Assertions.assertEquals("parent/a", result.name());
-    MatcherAssert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().get(0)));
+    MatcherAssert.assertThat(result.collectionData(),
+        Matchers.contains(instance1.getDiscoveryInstance().getEndpoints().get(0)));
   }
 
   @Test
   public void createDiscoveryTree_allTransport() {
-    MicroserviceInstance instance1 = createInstance("a", "b");
-    MicroserviceInstance instance2 = createInstance("b");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1, instance2);
+    StatefulDiscoveryInstance instance1 = createInstance("a", "b");
+    StatefulDiscoveryInstance instance2 = createInstance("b");
+    List<StatefulDiscoveryInstance> instances = createMicroserviceInstances(instance1, instance2);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("", context, parent);
@@ -148,29 +151,30 @@ public class TestAbstractTransportDiscoveryFilter {
     Assertions.assertEquals("parent/", result.name());
 
     List<String> expect = new ArrayList<>();
-    expect.addAll(instance1.getEndpoints());
-    expect.addAll(instance2.getEndpoints());
+    expect.addAll(instance1.getDiscoveryInstance().getEndpoints());
+    expect.addAll(instance2.getDiscoveryInstance().getEndpoints());
     MatcherAssert.assertThat(result.collectionData(), Matchers.contains(expect.toArray()));
   }
 
   @Test
   public void createDiscoveryTree_ignoreInvalid() {
-    MicroserviceInstance instance1 = createInstance("a", "b");
-    MicroserviceInstance instance2 = createInstance("");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1, instance2);
+    StatefulDiscoveryInstance instance1 = createInstance("a", "b");
+    StatefulDiscoveryInstance instance2 = createInstance("");
+    List<StatefulDiscoveryInstance> instances = createMicroserviceInstances(instance1, instance2);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("", context, parent);
 
     Assertions.assertEquals("parent/", result.name());
-    MatcherAssert.assertThat(result.collectionData(), Matchers.contains(instance1.getEndpoints().toArray()));
+    MatcherAssert.assertThat(result.collectionData(),
+        Matchers.contains(instance1.getDiscoveryInstance().getEndpoints().toArray()));
   }
 
   @Test
   public void createEndpointNull() {
     disableCreate = true;
-    MicroserviceInstance instance1 = createInstance("a", "b");
-    Map<String, MicroserviceInstance> instances = createMicroserviceInstances(instance1);
+    StatefulDiscoveryInstance instance1 = createInstance("a", "b");
+    List<StatefulDiscoveryInstance> instances = createMicroserviceInstances(instance1);
     parent.data(instances);
 
     result = filter.createDiscoveryTreeNode("", context, parent);

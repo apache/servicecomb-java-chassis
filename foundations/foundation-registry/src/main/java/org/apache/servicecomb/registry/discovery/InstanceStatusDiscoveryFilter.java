@@ -17,15 +17,14 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+// TODO: this class should be removed and add new filter to address state group
 public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
   private static final String UP_INSTANCES = "upInstances";
 
@@ -52,15 +51,13 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    Map<String, MicroserviceInstance> instances = parent.data();
-    Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    for (Entry<String, MicroserviceInstance> instanceEntry : instances.entrySet()) {
-      MicroserviceInstance instance = instanceEntry.getValue();
-      if (MicroserviceInstanceStatus.UP == instance.getStatus()) {
-        filteredServers.put(instanceEntry.getKey(), instance);
+    List<StatefulDiscoveryInstance> instances = parent.data();
+    List<StatefulDiscoveryInstance> filteredServers = new ArrayList<>();
+    for (StatefulDiscoveryInstance instance : instances) {
+      if (MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus()) {
+        filteredServers.add(instance);
       }
     }
-
     if (filteredServers.isEmpty()) {
       return;
     }
