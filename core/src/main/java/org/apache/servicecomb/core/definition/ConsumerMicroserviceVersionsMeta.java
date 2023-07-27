@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.definition;
 import org.apache.servicecomb.core.SCBEngine;
 
 public class ConsumerMicroserviceVersionsMeta extends MicroserviceVersionsMeta {
-  public ConsumerMicroserviceVersionsMeta(SCBEngine scbEngine, String microserviceName) {
-    super(scbEngine, microserviceName);
+  public ConsumerMicroserviceVersionsMeta(SCBEngine scbEngine) {
+    super(scbEngine);
   }
 }

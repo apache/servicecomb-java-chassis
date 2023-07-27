@@ -19,7 +19,6 @@ package org.apache.servicecomb.core;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +34,6 @@ public class TestSCBApplicationListener {
 
   @AfterAll
   public static void classTeardown() {
-    DiscoveryManager.renewInstance();
     ArchaiusUtils.resetConfig();
   }
 
@@ -45,7 +43,7 @@ public class TestSCBApplicationListener {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.setStatus(SCBStatus.UP);
 
-    SCBApplicationListener listener = new SCBApplicationListener();
+    SCBApplicationListener listener = new SCBApplicationListener(scbEngine);
     listener.onApplicationEvent(contextClosedEvent);
 
     Assertions.assertEquals(SCBStatus.DOWN, scbEngine.getStatus());

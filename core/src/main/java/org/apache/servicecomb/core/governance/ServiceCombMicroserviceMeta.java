@@ -17,17 +17,23 @@
 
 package org.apache.servicecomb.core.governance;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.governance.MicroserviceMeta;
-import org.apache.servicecomb.registry.RegistrationManager;
 
 public class ServiceCombMicroserviceMeta implements MicroserviceMeta {
+  private SCBEngine scbEngine;
+
+  public ServiceCombMicroserviceMeta(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
+
   @Override
   public String getName() {
-    return RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    return scbEngine.getMicroserviceProperties().getName();
   }
 
   @Override
   public String getVersion() {
-    return RegistrationManager.INSTANCE.getMicroservice().getVersion();
+    return scbEngine.getMicroserviceProperties().getVersion();
   }
 }

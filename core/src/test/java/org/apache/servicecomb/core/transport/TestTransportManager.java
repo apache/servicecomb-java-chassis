@@ -25,13 +25,12 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestTransportManager {
   @Test
@@ -57,8 +56,8 @@ public class TestTransportManager {
   }
 
   @Test
-  public void testTransportManagerInitSucc(@Mocked SCBEngine scbEngine, @Injectable Transport transport,
-      @Injectable Endpoint endpoint, @Injectable MicroserviceInstance instance) throws Exception {
+  public void testTransportManagerInitSuccess(@Mocked SCBEngine scbEngine, @Injectable Transport transport,
+      @Injectable Endpoint endpoint) throws Exception {
     new Expectations() {
       {
         transport.getName();
