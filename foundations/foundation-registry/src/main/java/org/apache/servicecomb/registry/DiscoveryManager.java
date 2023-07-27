@@ -27,6 +27,7 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.LifeCycle;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.springframework.util.CollectionUtils;
 
 public class DiscoveryManager implements LifeCycle {
@@ -43,6 +44,10 @@ public class DiscoveryManager implements LifeCycle {
 
   public DiscoveryManager(List<Discovery<? extends DiscoveryInstance>> discoveryList) {
     this.discoveryList = discoveryList;
+  }
+
+  public void onInstanceIsolated(StatefulDiscoveryInstance instance, long isolateTime) {
+    // TODO: 实例被隔离
   }
 
   public VersionedCache getOrCreateVersionedCache(String application, String serviceName) {
