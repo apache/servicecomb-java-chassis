@@ -81,10 +81,13 @@ public class DiscoveryManager implements LifeCycle {
 
     rebuildVersionCache(application, serviceName);
 
-    LOGGER.info("applying new instance list for {}/{}/{}", application, serviceName, instances.size());
+    StringBuilder instanceInfo = new StringBuilder();
     for (DiscoveryInstance instance : instances) {
-      LOGGER.info("instance {}/{}/{}", instance.getInstanceId(), instance.getStatus(), instance.getEndpoints());
+      instanceInfo.append("{").append(instance.getInstanceId())
+          .append(",").append(instance.getStatus()).append(",").append(instance.getEndpoints()).append("}");
     }
+    LOGGER.info("Applying new instance list for {}/{}/{}. Endpoints {}",
+        application, serviceName, instances.size(), instanceInfo);
   }
 
   public void onInstanceIsolated(StatefulDiscoveryInstance instance, long isolateDuration) {
@@ -123,8 +126,7 @@ public class DiscoveryManager implements LifeCycle {
         -> new ConcurrentHashMapEx<>());
     List<StatefulDiscoveryInstance> result = new ArrayList<>();
     for (StatefulDiscoveryInstance instance : statefulInstances.values()) {
-      if (instance.getHistoryStatus() == HistoryStatus.CURRENT
-          && instance.getIsolationStatus() != IsolationStatus.ISOLATED) {
+      if (instance.getHistoryStatus() == HistoryStatus.CURRENT) {
         result.add(instance);
         continue;
       }
