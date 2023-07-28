@@ -38,5 +38,6 @@
 <module>registry-zero-config</module>
 <module>registry-schema-discovery</module>
 -->
+    <module>registry-local</module>
   </modules>
 </project>

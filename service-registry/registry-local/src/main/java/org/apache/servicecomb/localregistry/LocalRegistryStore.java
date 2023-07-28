@@ -21,69 +21,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.apache.servicecomb.config.YAMLUtil;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-
-import com.google.common.annotations.VisibleForTesting;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocalRegistryStore {
   private static final String REGISTRY_FILE_NAME = "registry.yaml";
 
-  public static final LocalRegistryStore INSTANCE = new LocalRegistryStore();
+  private LocalRegistrationInstance selfMicroserviceInstance;
 
-  private Microservice selfMicroservice;
+  // application:serviceName
+  private final Map<String, Map<String, List<LocalDiscoveryInstance>>>
+      microserviceInstanceMap = new ConcurrentHashMap<>();
 
-  private MicroserviceInstance selfMicroserviceInstance;
-
-  // key is microservice id
-  private final Map<String, Microservice> microserviceMap = new ConcurrentHashMap<>();
-
-  // first key is microservice id
-  // second key is instance id
-  private final Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
-
-  private LocalRegistryStore() {
+  public LocalRegistryStore() {
 
   }
 
-  @VisibleForTesting
-  public void initSelfWithMocked(Microservice microservice, MicroserviceInstance microserviceInstance) {
-    this.selfMicroservice = microservice;
-    this.selfMicroserviceInstance = microserviceInstance;
+  @Autowired
+  public void setLocalRegistrationInstance(LocalRegistrationInstance selfMicroserviceInstance) {
+    this.selfMicroserviceInstance = selfMicroserviceInstance;
   }
 
   public void init() {
-    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    selfMicroservice = microserviceFactory.create();
-    selfMicroserviceInstance = selfMicroservice.getInstance();
-    microserviceMap.clear();
     microserviceInstanceMap.clear();
   }
 
   public void run() {
-    selfMicroservice.setServiceId("[local]-[" + selfMicroservice.getAppId()
-        + "]-[" + selfMicroservice.getServiceName() + "]");
-    selfMicroserviceInstance.setInstanceId(selfMicroservice.getServiceId());
-    selfMicroserviceInstance.setServiceId(selfMicroservice.getServiceId());
-
     List<RegistryBean> beans = loadYamlBeans();
     BeanUtils.getBeansOfType(RegistryBean.class).forEach((key, value) -> beans.add(value));
 
@@ -93,17 +68,10 @@ public class LocalRegistryStore {
   }
 
   private void addSelf() {
-    microserviceMap.put(selfMicroservice.getServiceId(), selfMicroservice);
-    Map<String, MicroserviceInstance> selfInstanceMap = new HashMap<>(1);
-    selfInstanceMap.put(selfMicroserviceInstance.getInstanceId(), selfMicroserviceInstance);
-    microserviceInstanceMap.put(selfMicroservice.getServiceId(), selfInstanceMap);
+    // TODO: add self
   }
 
-  public Microservice getSelfMicroservice() {
-    return selfMicroservice;
-  }
-
-  public MicroserviceInstance getSelfMicroserviceInstance() {
+  public LocalRegistrationInstance getSelfMicroserviceInstance() {
     return selfMicroserviceInstance;
   }
 
@@ -151,83 +119,25 @@ public class LocalRegistryStore {
 
   private void initRegistryFromBeans(List<RegistryBean> beans) {
     beans.forEach((bean -> {
-      Microservice microservice = new Microservice();
-      microservice.setAppId(bean.getAppId());
-      microservice.setServiceName(bean.getServiceName());
-      microservice.setVersion(bean.getVersion());
-      microservice.setServiceId(bean.getId());
-      microservice.setSchemas(bean.getSchemaIds());
-      addSchemaInterface(bean, microservice);
-      microserviceMap.put(microservice.getServiceId(), microservice);
-      addInstances(bean, microservice);
+      List<LocalDiscoveryInstance> instances = microserviceInstanceMap.computeIfAbsent(bean.getAppId(), key ->
+          new ConcurrentHashMapEx<>()).computeIfAbsent(bean.getServiceName(), key ->
+          new ArrayList<>());
+      for (Instance instance : bean.getInstances().getInstances()) {
+        instances.add(new LocalDiscoveryInstance(bean, instance, selfMicroserviceInstance));
+      }
     }));
   }
 
-  private void addSchemaInterface(RegistryBean bean, Microservice microservice) {
-    bean.getSchemaInterfaces().forEach((k, v) -> {
-      SwaggerGenerator generator = SwaggerGenerator.create(v);
-      microservice.getSchemaMap().put(k, SwaggerUtils.swaggerToString(generator.generate()));
-    });
-  }
 
-  private void addInstances(RegistryBean bean, Microservice microservice) {
-    Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
-    microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
-
-    for (Instance item : bean.getInstances().getInstances()) {
-      MicroserviceInstance instance = new MicroserviceInstance();
-      instance.setInstanceId(UUID.randomUUID().toString());
-      instance.setEndpoints(item.getEndpoints());
-      instance.setServiceId(microservice.getServiceId());
-      instanceMap.put(instance.getInstanceId(), instance);
+  public List<? extends DiscoveryInstance> findMicroserviceInstance(String application, String serviceName) {
+    Map<String, List<LocalDiscoveryInstance>> app = microserviceInstanceMap.get(application);
+    if (app == null) {
+      return Collections.emptyList();
     }
-  }
-
-  public Microservice getMicroservice(String microserviceId) {
-    return microserviceMap.get(microserviceId);
-  }
-
-  public List<Microservice> getAllMicroservices() {
-    return microserviceMap.values().stream().collect(Collectors.toList());
-  }
-
-  public String getSchema(String microserviceId, String schemaId) {
-    Microservice microservice = microserviceMap.get(microserviceId);
-    if (microservice == null) {
-      return null;
+    List<LocalDiscoveryInstance> instances = app.get(serviceName);
+    if (instances == null) {
+      return Collections.emptyList();
     }
-    return microserviceMap.get(microserviceId).getSchemaMap().get(schemaId);
-  }
-
-  public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
-    Map<String, MicroserviceInstance> microserviceInstance = microserviceInstanceMap.get(serviceId);
-    if (microserviceInstance == null) {
-      return null;
-    }
-    return microserviceInstanceMap.get(serviceId).get(instanceId);
-  }
-
-  // local registry do not care about version and revision
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
-    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
-    FindInstancesResponse findInstancesResponse = new FindInstancesResponse();
-    List<MicroserviceInstance> instances = new ArrayList<>();
-
-    Collectors.toList();
-    microserviceInstanceMap.values().forEach(
-        allInstances -> allInstances.values().stream().filter(
-            aInstance -> {
-              Microservice service = microserviceMap.get(aInstance.getServiceId());
-              return service.getAppId().equals(appId) && service.getServiceName().equals(serviceName);
-            }
-        ).forEach(instances::add));
-    if (instances.isEmpty()) {
-      microserviceInstances.setMicroserviceNotExist(true);
-    } else {
-      findInstancesResponse.setInstances(instances);
-      microserviceInstances.setMicroserviceNotExist(false);
-      microserviceInstances.setInstancesResponse(findInstancesResponse);
-    }
-    return microserviceInstances;
+    return instances;
   }
 }

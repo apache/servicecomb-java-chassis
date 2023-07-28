@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
@@ -33,12 +34,10 @@ import org.apache.servicecomb.demo.edge.model.DependTypeB;
 import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -65,6 +64,10 @@ public class Consumer {
   List<ResultWithInstance> addV2Result = new ArrayList<>();
 
   List<ResultWithInstance> decV2Result = new ArrayList<>();
+
+  DiscoveryManager discoveryManager = BeanUtils.getBean(DiscoveryManager.class);
+
+  MicroserviceProperties microserviceProperties = BeanUtils.getBean(MicroserviceProperties.class);
 
   public Consumer() {
     request.setDeviceId("2a5cc42ff60006ac");
@@ -268,17 +271,11 @@ public class Consumer {
   }
 
   private URIEndpointObject prepareEdge(String prefix) {
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) DiscoveryManager.INSTANCE
-        .getAppManager()
-        .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
-        .getVersionedCache()
-        .mapData()
-        .values()
+    DiscoveryInstance instance = discoveryManager.findServiceInstances(microserviceProperties.getApplication(), "edge")
         .stream()
         .findFirst()
         .get();
-    URIEndpointObject edgeAddress = new URIEndpointObject(microserviceInstance.getEndpoints().get(0));
+    URIEndpointObject edgeAddress = new URIEndpointObject(instance.getEndpoints().get(0));
     edgePrefix = String.format("http://%s:%d/%s/business", edgeAddress.getHostOrIp(), edgeAddress.getPort(), prefix);
     return edgeAddress;
   }

@@ -25,6 +25,7 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
@@ -32,6 +33,7 @@ import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.demo.edge.model.User;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +51,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RestSchema(schemaId = "news-v2")
 @RequestMapping(path = "/business/v2")
 public class Impl {
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   File tempDir = new File("target/downloadTemp");
 
   public Impl() throws IOException {
@@ -65,12 +74,12 @@ public class Impl {
 
   @RequestMapping(path = "/add", method = RequestMethod.GET)
   public ResultWithInstance add(int x, int y) {
-    return ResultWithInstance.create(x + y);
+    return ResultWithInstance.create(x + y, microserviceProperties);
   }
 
   @RequestMapping(path = "/dec", method = RequestMethod.GET)
   public ResultWithInstance dec(int x, int y) {
-    return ResultWithInstance.create(x - y);
+    return ResultWithInstance.create(x - y, microserviceProperties);
   }
 
   @GetMapping(path = "/download")

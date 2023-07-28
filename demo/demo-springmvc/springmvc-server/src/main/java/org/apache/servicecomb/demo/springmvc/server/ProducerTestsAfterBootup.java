@@ -59,14 +59,6 @@ public class ProducerTestsAfterBootup implements BootListener {
     TestMgr.check(expectSchema.trim(), codeFirst.trim());
   }
 
-  public void testRegisteredBasePath() {
-    if (DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
-      TestMgr.check(22, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
-    } else {
-      TestMgr.check(23, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
-    }
-  }
-
   private String getSwaggerContent(OpenAPI swagger) {
     try {
       return writer.writeValueAsString(swagger);
@@ -79,7 +71,6 @@ public class ProducerTestsAfterBootup implements BootListener {
   public void onBootEvent(BootEvent event) {
     if (event.getEventType() == BootListener.EventType.AFTER_REGISTRY) {
       testSchemaNotChange(event.getScbEngine());
-      testRegisteredBasePath();
       if (!TestMgr.isSuccess()) {
         TestMgr.summary();
         throw new IllegalStateException("some tests are failed. ");

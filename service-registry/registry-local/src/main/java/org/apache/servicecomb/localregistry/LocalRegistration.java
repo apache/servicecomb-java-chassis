@@ -17,33 +17,33 @@
 
 package org.apache.servicecomb.localregistry;
 
-import java.util.Collection;
-
-import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.api.registry.BasePath;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
+public class LocalRegistration implements Registration<LocalRegistrationInstance> {
+  private final LocalRegistrationInstance localRegistrationInstance;
 
-public class LocalRegistration implements Registration {
-  public static final String NAME = "local registration";
+  private Environment environment;
 
-  private final LocalRegistryStore localRegistrationStore = LocalRegistryStore.INSTANCE;
+  public LocalRegistration(LocalRegistrationInstance localRegistrationInstance) {
+    this.localRegistrationInstance = localRegistrationInstance;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public void init() {
-    localRegistrationStore.init();
+
   }
 
   @Override
   public void run() {
-    localRegistrationStore.run();
-    EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(NAME,
-        localRegistrationStore.getSelfMicroserviceInstance().getInstanceId(), false));
+
   }
 
   @Override
@@ -52,54 +52,37 @@ public class LocalRegistration implements Registration {
   }
 
   @Override
-  public int getOrder() {
-    return Const.LOCAL_ORDER;
-  }
-
-  @Override
   public String name() {
-    return NAME;
+    return "local-registration";
   }
 
   @Override
-  public MicroserviceInstance getMicroserviceInstance() {
-    return localRegistrationStore.getSelfMicroserviceInstance();
-  }
-
-  @Override
-  public Microservice getMicroservice() {
-    return localRegistrationStore.getSelfMicroservice();
-  }
-
-  @Override
-  public String getAppId() {
-    return localRegistrationStore.getSelfMicroservice().getAppId();
+  public LocalRegistrationInstance getMicroserviceInstance() {
+    return localRegistrationInstance;
   }
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    localRegistrationStore.getSelfMicroserviceInstance().setStatus(status);
     return true;
   }
 
   @Override
   public void addSchema(String schemaId, String content) {
-    localRegistrationStore.getSelfMicroservice().addSchema(schemaId, content);
+    localRegistrationInstance.addSchema(schemaId, content);
   }
 
   @Override
   public void addEndpoint(String endpoint) {
-    localRegistrationStore.getSelfMicroserviceInstance().getEndpoints().add(endpoint);
+    localRegistrationInstance.addEndpoint(endpoint);
   }
 
   @Override
-  public void addBasePath(Collection<BasePath> basePaths) {
-    localRegistrationStore.getSelfMicroservice().getPaths().addAll(basePaths);
+  public void addProperty(String key, String value) {
+    localRegistrationInstance.addProperty(key, value);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(Const.LOCAL_ENABLED, true).get();
+    return this.environment.getProperty(Const.LOCAL_REGISTRY_ENABLED, Boolean.class, true);
   }
 }

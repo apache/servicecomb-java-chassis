@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.MicroserviceProperties;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core;
+package org.apache.servicecomb.config;
 
 public class DataCenterProperties {
   private String name;

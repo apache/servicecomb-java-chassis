@@ -24,7 +24,8 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,6 +40,13 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   @RpcReference(microserviceName = "demo-local-registry-server-bean2", schemaId = "CodeFirstEndpoint2")
   private CodeFirstService codeFirstServiceBean2;
 
+  private DiscoveryManager discoveryManager;
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
+
   @Override
   public void testRestTransport() throws Exception {
     testServerGetName();
@@ -47,17 +55,15 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   }
 
   private void testGetAllMicroservice() {
-    List<Microservice> microserviceList = DiscoveryManager.INSTANCE.getAllMicroservices();
-    int expectedCount = 0;
-
-    for (Microservice m : microserviceList) {
-      if (m.getServiceName().equals("demo-local-registry-client")
-          || m.getServiceName().equals("demo-local-registry-server")
-          || m.getServiceName().equals("demo-local-registry-server-bean")) {
-        expectedCount++;
-      }
-    }
-    TestMgr.check(3, expectedCount);
+    List<? extends DiscoveryInstance> microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-client");
+    TestMgr.check(1, microserviceList.size());
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-server");
+    TestMgr.check(1, microserviceList.size());
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-server-bean");
+    TestMgr.check(1, microserviceList.size());
   }
 
   private void testCodeFirstGetName() {

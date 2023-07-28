@@ -289,7 +289,6 @@ public class PojoClient {
     warpArguments.put("splitParamBody", arguments);
     result =
         InvokerUtils.syncInvoke("pojo",
-            "0.0.4",
             transport,
             "server",
             "splitParam",

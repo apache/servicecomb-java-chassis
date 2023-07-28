@@ -17,19 +17,19 @@
 
 package org.apache.servicecomb.demo.zeroconfig.client;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.vertx.core.json.JsonObject;
+import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "ClientServerEndpoint")
 @RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
@@ -48,6 +49,13 @@ public class ClientServerEndpoint {
   @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "RpcEndpoint")
   private IRpcEndpoint rpcEndpoint;
 
+  private DiscoveryManager discoveryManager;
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
+
   @GetMapping(path = "/getName")
   public String getName(@RequestParam(name = "name") String name) {
     return serverEndpoint.getName(name);
@@ -55,16 +63,28 @@ public class ClientServerEndpoint {
 
   @GetMapping(path = "/getRegisteredMicroservice")
   public Set<String> getRegisteredMicroservice() {
-    List<Microservice> microserviceList = DiscoveryManager.INSTANCE.getAllMicroservices();
-    Set<String> names = new HashSet<>();
-
-    for (Microservice m : microserviceList) {
-      if (m.getServiceName().equals("demo-zeroconfig-schemadiscovery-registry-client")
-          || m.getServiceName().equals("demo-zeroconfig-schemadiscovery-registry-server")) {
-        names.add(m.getServiceName());
-      }
+    boolean result = true;
+    List<? extends DiscoveryInstance> microserviceList = discoveryManager
+        .findServiceInstances("demo-zeroconfig-schemadiscovery-registry",
+            "demo-zeroconfig-schemadiscovery-registry-client");
+    if (microserviceList.size() != 1) {
+      result = false;
     }
-    return names;
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-zeroconfig-schemadiscovery-registry",
+            "demo-zeroconfig-schemadiscovery-registry-server");
+    if (microserviceList.size() != 1) {
+      result = false;
+    }
+
+    if (result) {
+      Set<String> names = new HashSet<>();
+      names.add("demo-zeroconfig-schemadiscovery-registry-client");
+      names.add("demo-zeroconfig-schemadiscovery-registry-server");
+      return names;
+    }
+
+    return Collections.emptySet();
   }
 
   @PostMapping(path = "/jsonObject")

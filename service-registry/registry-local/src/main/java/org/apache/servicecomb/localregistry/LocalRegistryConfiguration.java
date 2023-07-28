@@ -14,10 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.localregistry;
 
-public class Const {
-  public static final String LOCAL_REGISTRY_ENABLED = "servicecomb.registry.local.enabled";
+import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.config.MicroserviceProperties;
+import org.springframework.context.annotation.Bean;
 
+public class LocalRegistryConfiguration {
+  @Bean
+  public LocalRegistrationInstance localRegistrationInstance(
+      MicroserviceProperties microserviceProperties,
+      DataCenterProperties dataCenterProperties) {
+    return new LocalRegistrationInstance(microserviceProperties, dataCenterProperties);
+  }
+
+  @Bean
+  public LocalRegistration localRegistration(LocalRegistrationInstance localRegistrationInstance) {
+    return new LocalRegistration(localRegistrationInstance);
+  }
+
+  @Bean
+  public LocalDiscovery localDiscovery() {
+    return new LocalDiscovery();
+  }
+
+  @Bean
+  public LocalRegistryStore localRegistryStore() {
+    return new LocalRegistryStore();
+  }
 }

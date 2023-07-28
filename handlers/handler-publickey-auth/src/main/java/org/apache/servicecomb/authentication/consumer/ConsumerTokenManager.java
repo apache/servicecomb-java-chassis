@@ -19,7 +19,7 @@ package org.apache.servicecomb.authentication.consumer;
 import java.security.PrivateKey;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
-import org.apache.servicecomb.core.MicroserviceProperties;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.slf4j.Logger;

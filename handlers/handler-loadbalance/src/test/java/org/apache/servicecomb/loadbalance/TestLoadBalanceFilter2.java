@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.core.DataCenterProperties;
+import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.NonSwaggerInvocation;
 import org.apache.servicecomb.core.SCBEngine;

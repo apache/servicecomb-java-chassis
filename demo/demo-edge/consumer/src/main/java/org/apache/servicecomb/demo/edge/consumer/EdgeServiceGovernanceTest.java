@@ -21,13 +21,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.servicecomb.core.MicroserviceProperties;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
@@ -137,10 +137,8 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
   }
 
   private URIEndpointObject prepareEdge(String prefix) {
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) discoveryManager.getOrCreateVersionedCache(
+    DiscoveryInstance microserviceInstance = discoveryManager.findServiceInstances(
             microserviceProperties.getApplication(), "edge")
-        .mapData()
-        .values()
         .stream()
         .findFirst()
         .get();
