@@ -17,74 +17,65 @@
 
 package org.apache.servicecomb.localregistry;
 
-import java.util.Collection;
+
 import java.util.List;
 
 import org.apache.servicecomb.registry.api.Discovery;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
+public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
+  private LocalRegistryStore localRegistryStore;
 
-public class LocalDiscovery implements Discovery {
-  public static final String NAME = "local discovery";
+  private Environment environment;
 
-  private final LocalRegistryStore localDiscoveryStore = LocalRegistryStore.INSTANCE;
-
-  @Override
-  public void init() {
-    // done in registration
+  @Autowired
+  public void setLocalRegistryStore(LocalRegistryStore localRegistryStore) {
+    this.localRegistryStore = localRegistryStore;
   }
 
-  @Override
-  public void run() {
-    // done in registration
-  }
 
-  @Override
-  public void destroy() {
-    // done in registration
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   @Override
   public int getOrder() {
-    return Const.LOCAL_ORDER;
-  }
-
-  @Override
-  public Microservice getMicroservice(String microserviceId) {
-    return localDiscoveryStore.getMicroservice(microserviceId);
-  }
-
-  @Override
-  public List<Microservice> getAllMicroservices() {
-    return localDiscoveryStore.getAllMicroservices();
-  }
-
-  @Override
-  public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId) {
-    return localDiscoveryStore.getSchema(microserviceId, schemaId);
-  }
-
-  @Override
-  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
-    return localDiscoveryStore.findMicroserviceInstance(serviceId, instanceId);
-  }
-
-  @Override
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
-    return localDiscoveryStore.findServiceInstances(appId, serviceName, versionRule);
+    return -10000;
   }
 
   @Override
   public String name() {
-    return NAME;
+    return "local-discovery";
+  }
+
+  @Override
+  public List<LocalDiscoveryInstance> findServiceInstances(String application, String serviceName) {
+    return null;
+  }
+
+  @Override
+  public void setInstanceChangedListener(InstanceChangedListener<LocalDiscoveryInstance> instanceChangedListener) {
+
+  }
+
+  @Override
+  public void init() {
+    this.localRegistryStore.init();
+  }
+
+  @Override
+  public void run() {
+    this.localRegistryStore.run();
+  }
+
+  @Override
+  public void destroy() {
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(Const.LOCAL_ENABLED, true).get();
+    return this.environment.getProperty(Const.LOCAL_REGISTRY_ENABLED, Boolean.class, true);
   }
 }

@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 
 /**
+ *
  * Configuration bean for local services. Bean configuration is token
  * same as `registry.yaml` file configuration.
  *
@@ -67,8 +68,6 @@ public class RegistryBean {
 
   private String appId;
 
-  private List<String> schemaIds = new ArrayList<>();
-
   private final Map<String, Class<?>> schemaInterfaces = new HashMap<>();
 
   private Instances instances;
@@ -81,7 +80,6 @@ public class RegistryBean {
         .setServiceName(serviceName)
         .setVersion((String) serviceConfig.get("version"))
         .setAppId(validAppId((String) serviceConfig.get("appid")))
-        .setSchemaIds(validListsValue((List<String>) serviceConfig.get("schemaIds")))
         .setInstances(
             new Instances()
                 .setInstances(validInstances((List<Map<String, Object>>) serviceConfig.get("instances"))));
@@ -152,28 +150,13 @@ public class RegistryBean {
     return this;
   }
 
-  public List<String> getSchemaIds() {
-    return schemaIds;
-  }
-
-  public RegistryBean addSchemaId(String schemaId) {
-    this.schemaIds.add(schemaId);
-    return this;
-  }
-
   public RegistryBean addSchemaInterface(String schemaId, Class<?> schemaInterface) {
     this.schemaInterfaces.put(schemaId, schemaInterface);
-    this.schemaIds.add(schemaId);
     return this;
   }
 
   public Map<String, Class<?>> getSchemaInterfaces() {
     return this.schemaInterfaces;
-  }
-
-  public RegistryBean setSchemaIds(List<String> schemaIds) {
-    this.schemaIds = schemaIds;
-    return this;
   }
 
   public Instances getInstances() {

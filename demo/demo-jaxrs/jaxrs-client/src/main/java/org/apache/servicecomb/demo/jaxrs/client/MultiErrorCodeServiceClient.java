@@ -19,8 +19,6 @@ package org.apache.servicecomb.demo.jaxrs.client;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -28,13 +26,7 @@ import org.apache.servicecomb.demo.multiErrorCode.MultiRequest;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse200;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse400;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse500;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,12 +39,11 @@ import org.springframework.web.client.RestTemplate;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import jakarta.ws.rs.core.Response.Status;
 
 @Component
 public class MultiErrorCodeServiceClient implements CategorizedTestCase {
   private static final String SERVER = "cse://jaxrs";
-
-  private static String serverDirectURL;
 
   private static RestTemplate template = RestTemplateBuilder.create();
 
@@ -67,7 +58,6 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    prepareServerDirectURL();
     testErrorCodeWrongType();
   }
 
@@ -76,20 +66,6 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
 
   }
 
-  private static void prepareServerDirectURL() {
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) DiscoveryManager.INSTANCE
-        .getAppManager()
-        .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "jaxrs", DefinitionConst.VERSION_RULE_ALL)
-        .getVersionedCache()
-        .mapData()
-        .values()
-        .stream()
-        .findFirst()
-        .get();
-    URIEndpointObject edgeAddress = new URIEndpointObject(microserviceInstance.getEndpoints().get(0));
-    serverDirectURL = String.format("http://%s:%d/", edgeAddress.getHostOrIp(), edgeAddress.getPort());
-  }
 
   private static void testErrorCodeWrongType() {
     HttpHeaders headers = new HttpHeaders();
@@ -99,17 +75,19 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     ResponseEntity<MultiResponse200> result;
     try {
       template
-          .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+          .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
     } catch (HttpClientErrorException e) {
       TestMgr.check(e.getStatusCode().value(), 400);
-      TestMgr.check(e.getMessage().contains("Parameter is not valid for operation "
-          + "[jaxrs.MultiErrorCodeService.errorCode]. Parameter is [request]. Processor is [body]."), true);
+      TestMgr.check(e.getMessage(),
+          "400 Bad Request: \"{\"message\":\"Parameter is not valid for operation [jaxrs.MultiErrorCodeService.errorCode]."
+              +
+              " Parameter is [request]. Processor is [body].\"}\"");
     }
 
     entity = new HttpEntity<>(null, headers);
     try {
       result = template
-          .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+          .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
       TestMgr.check(590, 200);
     } catch (HttpServerErrorException e) {
       TestMgr.check(e.getStatusCode().value(), 500);
@@ -119,7 +97,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     body = "{\"message\":\"hello\",\"code\":\"200\"}";
     entity = new HttpEntity<>(body, headers);
     result = template
-        .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+        .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
     TestMgr.check(result.getStatusCode().value(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
   }

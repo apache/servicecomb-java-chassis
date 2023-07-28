@@ -108,7 +108,6 @@ public class PojoClientTest {
     wrap.put("splitParamBody", arguments);
     result =
         InvokerUtils.syncInvoke("spring-boot-pojo-server",
-            "0.0.1",
             transport,
             "server",
             "splitParam",

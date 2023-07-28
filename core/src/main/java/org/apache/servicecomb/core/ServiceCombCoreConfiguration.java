@@ -16,16 +16,17 @@
  */
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@SuppressWarnings("unused")
 public class ServiceCombCoreConfiguration {
   @Bean
   public ConfigurationSpringInitializer configurationSpringInitializer() {
@@ -44,15 +45,6 @@ public class ServiceCombCoreConfiguration {
     return new SCBEngine();
   }
 
-  @ConfigurationProperties(prefix = "servicecomb.service")
-  public MicroserviceProperties microserviceProperties() {
-    return new MicroserviceProperties();
-  }
-
-  @ConfigurationProperties(prefix = "servicecomb.datacenter")
-  public DataCenterProperties dataCenterProperties() {
-    return new DataCenterProperties();
-  }
 
   @Bean
   public ProducerBootListener producerBootListener() {

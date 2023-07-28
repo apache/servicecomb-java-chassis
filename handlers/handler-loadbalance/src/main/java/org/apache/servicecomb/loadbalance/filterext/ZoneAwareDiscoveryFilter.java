@@ -20,7 +20,7 @@ package org.apache.servicecomb.loadbalance.filterext;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.core.DataCenterProperties;
+import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;

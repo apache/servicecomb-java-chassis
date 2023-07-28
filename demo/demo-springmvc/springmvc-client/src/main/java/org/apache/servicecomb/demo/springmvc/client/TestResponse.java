@@ -20,20 +20,28 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class TestResponse {
   private CodeFirstSpringmvcIntf intf;
+
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
 
   public TestResponse() {
     intf = Invoker.createProxy("springmvc", "codeFirst", CodeFirstSpringmvcIntf.class);
@@ -63,7 +71,7 @@ public class TestResponse {
   }
 
   private void testCseResponse() {
-    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    String srcName = microserviceProperties.getName();
     Response cseResponse = intf.cseResponse();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
     TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
@@ -72,7 +80,7 @@ public class TestResponse {
   }
 
   private void testCseResponseCorrect() {
-    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    String srcName = microserviceProperties.getName();
     Response cseResponse = intf.cseResponseCorrect();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
     TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
@@ -83,7 +91,7 @@ public class TestResponse {
   private void testResponseEntity() {
     Date date = new Date();
 
-    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    String srcName = microserviceProperties.getName();
 
     ResponseEntity<Date> responseEntity = intf.responseEntity(date);
     TestMgr.check(date, responseEntity.getBody());

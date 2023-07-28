@@ -40,8 +40,7 @@ public class RegistryBeansConfiguration {
         .setId("002")
         .setVersion("0.0.3")
         .setAppId("demo-local-registry")
-        .addSchemaId("ServerEndpoint")
-        .addSchemaId("CodeFirstEndpoint")
+        .addSchemaInterface("CodeFirstEndpoint", CodeFirstService.class)
         .setInstances(new Instances().setInstances(instances));
   }
 

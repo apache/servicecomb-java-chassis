@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.edge.model;
 
-import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.config.MicroserviceProperties;
 
 public class ResultWithInstance {
   private int result;
@@ -28,12 +28,10 @@ public class ResultWithInstance {
 
   private String version;
 
-  public static ResultWithInstance create(int value) {
+  public static ResultWithInstance create(int value, MicroserviceProperties microserviceProperties) {
     ResultWithInstance result = new ResultWithInstance();
     result.setResult(value);
-    result.setInstanceId(RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId());
-    result.setServiceId(RegistrationManager.INSTANCE.getMicroservice().getServiceId());
-    result.setVersion(RegistrationManager.INSTANCE.getMicroservice().getVersion());
+    result.setVersion(microserviceProperties.getVersion());
 
     return result;
   }

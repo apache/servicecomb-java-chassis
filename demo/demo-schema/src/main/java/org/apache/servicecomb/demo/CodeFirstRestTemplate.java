@@ -21,15 +21,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +42,13 @@ import org.springframework.web.client.RestTemplate;
 import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
+  protected MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   protected void changeTransport(String microserviceName, String transport) {
     ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
@@ -153,7 +161,7 @@ public class CodeFirstRestTemplate {
 
   private void testCseResponse(String targetMicroserviceName, RestTemplate template,
       String cseUrlPrefix) {
-    String srcMicroserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    String srcMicroserviceName = microserviceProperties.getName();
 
     ResponseEntity<User> responseEntity =
         template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);

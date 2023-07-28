@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;

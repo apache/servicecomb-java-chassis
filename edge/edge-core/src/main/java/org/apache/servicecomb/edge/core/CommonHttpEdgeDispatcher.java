@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.MicroserviceProperties;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;

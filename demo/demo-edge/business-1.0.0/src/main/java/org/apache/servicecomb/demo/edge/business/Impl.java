@@ -17,10 +17,12 @@
 
 package org.apache.servicecomb.demo.edge.business;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,6 +30,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RestSchema(schemaId = "news-v1")
 @RequestMapping(path = "/business/v1")
 public class Impl {
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   @RequestMapping(path = "/channel/news/subscribe", method = RequestMethod.POST)
   public AppClientDataRsp subscribeNewsColumn(@RequestBody ChannelRequestBase request) {
     AppClientDataRsp response = new AppClientDataRsp();
@@ -38,6 +47,6 @@ public class Impl {
 
   @RequestMapping(path = "/add", method = RequestMethod.GET)
   public ResultWithInstance add(int x, int y) {
-    return ResultWithInstance.create(x + y);
+    return ResultWithInstance.create(x + y, microserviceProperties);
   }
 }

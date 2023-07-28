@@ -91,8 +91,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
   public void setDiscoveryManager(DiscoveryManager discoveryManager) {
     this.discoveryManager = discoveryManager;
     this.discoveryTree = new DiscoveryTree(discoveryManager);
-    discoveryTree.addFilter(new CustomEndpointDiscoveryFilter());
-    discoveryTree.sort();
+    discoveryTree.setDiscoveryFilters(List.of(new CustomEndpointDiscoveryFilter()));
   }
 
   public TestDateTimeSchema() {

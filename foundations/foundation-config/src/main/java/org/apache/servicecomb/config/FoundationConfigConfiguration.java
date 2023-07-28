@@ -20,10 +20,12 @@ import org.apache.servicecomb.config.inject.InjectBeanPostProcessor;
 import org.apache.servicecomb.config.priority.ConfigObjectFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@SuppressWarnings("unused")
 public class FoundationConfigConfiguration {
   @Bean
   public InjectBeanPostProcessor injectBeanPostProcessor(PriorityPropertyManager priorityPropertyManager) {
@@ -53,5 +55,15 @@ public class FoundationConfigConfiguration {
   @Bean
   public ConfigObjectFactory configObjectFactory(PriorityPropertyFactory propertyFactory) {
     return new ConfigObjectFactory(propertyFactory);
+  }
+
+  @ConfigurationProperties(prefix = "servicecomb.service")
+  public MicroserviceProperties microserviceProperties() {
+    return new MicroserviceProperties();
+  }
+
+  @ConfigurationProperties(prefix = "servicecomb.datacenter")
+  public DataCenterProperties dataCenterProperties() {
+    return new DataCenterProperties();
   }
 }

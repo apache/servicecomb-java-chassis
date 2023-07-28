@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.MicroserviceProperties;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
