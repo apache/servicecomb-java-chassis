@@ -160,7 +160,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
      * @param microserviceInstance instance
      */
     public PriorityInstanceProperty(@NotNull String key, @NotNull StatefulDiscoveryInstance microserviceInstance) {
-      this(key, Optional.ofNullable(microserviceInstance.getDiscoveryInstance().getProperties().get(key))
+      this(key, Optional.ofNullable(microserviceInstance.getProperties().get(key))
           .orElse(StringUtils.EMPTY));
     }
 

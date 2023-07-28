@@ -145,7 +145,7 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
     DiscoveryTreeNode node = filter.discovery(discoveryContext, parent);
     List<StatefulDiscoveryInstance> filterInstance = node.data();
-    assertThat(filterInstance.stream().map(instance -> instance.getDiscoveryInstance().getInstanceId()).collect(
+    assertThat(filterInstance.stream().map(instance -> instance.getInstanceId()).collect(
         Collectors.toList())).containsAnyElementsOf(expectedMatchedKeys);
   }
 }

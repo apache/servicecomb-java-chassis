@@ -39,7 +39,6 @@ public class TestLoadBalancer {
     DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
     newServers.add(server);
     Mockito.when(invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST)).thenReturn(newServers);
-    Mockito.when(microserviceInstance.getDiscoveryInstance()).thenReturn(discoveryInstance);
     Mockito.when(server.getInstance()).thenReturn(microserviceInstance);
     Mockito.when(discoveryInstance.getInstanceId()).thenReturn("123456");
     LoadBalancer loadBalancer = new LoadBalancer(rule, "test");

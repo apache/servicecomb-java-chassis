@@ -16,22 +16,32 @@
  */
 package org.apache.servicecomb.registry.discovery;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
+import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 /**
- * Holder class for DiscoveryInstance with states like: isolation, health, metrics and so on.
+ * Wrapper class for DiscoveryInstance with states like: isolation, health, metrics and so on.
  */
-public class StatefulDiscoveryInstance {
-  enum IsolationStatus {
+public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
+  public enum IsolationStatus {
     NORMAL,
     ISOLATED
   }
 
-  enum PingStatus {
+  public enum PingStatus {
     UNKNOWN,
     OK,
     FAIL
+  }
+
+  public enum HistoryStatus {
+    CURRENT,
+    HISTORY
   }
 
   private final DiscoveryInstance discoveryInstance;
@@ -40,14 +50,16 @@ public class StatefulDiscoveryInstance {
 
   private IsolationStatus isolationStatus = IsolationStatus.NORMAL;
 
+  private long isolatedTime;
+
+  private long isolateDuration;
+
   private PingStatus pingStatus = PingStatus.UNKNOWN;
+
+  private HistoryStatus historyStatus = HistoryStatus.CURRENT;
 
   public StatefulDiscoveryInstance(DiscoveryInstance discoveryInstance) {
     this.discoveryInstance = discoveryInstance;
-  }
-
-  public DiscoveryInstance getDiscoveryInstance() {
-    return discoveryInstance;
   }
 
   public MicroserviceInstanceStatus getMicroserviceInstanceStatus() {
@@ -74,5 +86,89 @@ public class StatefulDiscoveryInstance {
 
   public void setPingStatus(PingStatus pingStatus) {
     this.pingStatus = pingStatus;
+  }
+
+  public HistoryStatus getHistoryStatus() {
+    return historyStatus;
+  }
+
+  public void setHistoryStatus(HistoryStatus historyStatus) {
+    this.historyStatus = historyStatus;
+  }
+
+  public long getIsolatedTime() {
+    return isolatedTime;
+  }
+
+  public void setIsolatedTime(long isolatedTime) {
+    this.isolatedTime = isolatedTime;
+  }
+
+  public long getIsolateDuration() {
+    return isolateDuration;
+  }
+
+  public void setIsolateDuration(long isolateDuration) {
+    this.isolateDuration = isolateDuration;
+  }
+
+  @Override
+  public MicroserviceInstanceStatus getStatus() {
+    return this.discoveryInstance.getStatus();
+  }
+
+  @Override
+  public String getEnvironment() {
+    return this.discoveryInstance.getEnvironment();
+  }
+
+  @Override
+  public String getApplication() {
+    return this.discoveryInstance.getApplication();
+  }
+
+  @Override
+  public String getServiceName() {
+    return this.discoveryInstance.getServiceName();
+  }
+
+  @Override
+  public String getAlias() {
+    return this.discoveryInstance.getAlias();
+  }
+
+  @Override
+  public String getVersion() {
+    return this.discoveryInstance.getVersion();
+  }
+
+  @Override
+  public DataCenterInfo getDataCenterInfo() {
+    return this.discoveryInstance.getDataCenterInfo();
+  }
+
+  @Override
+  public String getDescription() {
+    return this.discoveryInstance.getDescription();
+  }
+
+  @Override
+  public Map<String, String> getProperties() {
+    return this.discoveryInstance.getProperties();
+  }
+
+  @Override
+  public Map<String, String> getSchemas() {
+    return this.discoveryInstance.getSchemas();
+  }
+
+  @Override
+  public List<String> getEndpoints() {
+    return this.discoveryInstance.getEndpoints();
+  }
+
+  @Override
+  public String getInstanceId() {
+    return this.discoveryInstance.getInstanceId();
   }
 }

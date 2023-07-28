@@ -136,7 +136,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     Assertions.assertEquals("parent/a", result.name());
     MatcherAssert.assertThat(result.collectionData(),
-        Matchers.contains(instance1.getDiscoveryInstance().getEndpoints().get(0)));
+        Matchers.contains(instance1.getEndpoints().get(0)));
   }
 
   @Test
@@ -151,8 +151,8 @@ public class TestAbstractTransportDiscoveryFilter {
     Assertions.assertEquals("parent/", result.name());
 
     List<String> expect = new ArrayList<>();
-    expect.addAll(instance1.getDiscoveryInstance().getEndpoints());
-    expect.addAll(instance2.getDiscoveryInstance().getEndpoints());
+    expect.addAll(instance1.getEndpoints());
+    expect.addAll(instance2.getEndpoints());
     MatcherAssert.assertThat(result.collectionData(), Matchers.contains(expect.toArray()));
   }
 
@@ -167,7 +167,7 @@ public class TestAbstractTransportDiscoveryFilter {
 
     Assertions.assertEquals("parent/", result.name());
     MatcherAssert.assertThat(result.collectionData(),
-        Matchers.contains(instance1.getDiscoveryInstance().getEndpoints().toArray()));
+        Matchers.contains(instance1.getEndpoints().toArray()));
   }
 
   @Test

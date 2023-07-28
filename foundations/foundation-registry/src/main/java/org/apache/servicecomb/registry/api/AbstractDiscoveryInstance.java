@@ -14,25 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.custom;
+package org.apache.servicecomb.registry.api;
 
-import java.util.HashMap;
-import java.util.Map;
+public abstract class AbstractDiscoveryInstance implements DiscoveryInstance {
+  @Override
+  public int hashCode() {
+    return getInstanceId().hashCode();
+  }
 
-import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
-
-public class ServiceCombRouterDistributor extends
-    AbstractRouterDistributor<ServiceCombServer> {
-
-  public ServiceCombRouterDistributor() {
-    init(
-        instance -> instance.getInstance().getVersion(),
-        instance -> instance.getInstance().getServiceName(),
-        instance -> {
-          Map<String, String> properties = new HashMap<>();
-          properties.putAll(instance.getInstance().getProperties());
-          return properties;
-        });
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof DiscoveryInstance) {
+      return getInstanceId().equals(((DiscoveryInstance) obj).getInstanceId());
+    }
+    return false;
   }
 }
