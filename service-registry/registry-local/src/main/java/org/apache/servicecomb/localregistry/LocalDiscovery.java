@@ -52,7 +52,7 @@ public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
 
   @Override
   public List<LocalDiscoveryInstance> findServiceInstances(String application, String serviceName) {
-    return null;
+    return this.localRegistryStore.findServiceInstances(application, serviceName);
   }
 
   @Override

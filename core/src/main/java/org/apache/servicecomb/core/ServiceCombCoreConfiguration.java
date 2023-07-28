@@ -62,7 +62,7 @@ public class ServiceCombCoreConfiguration {
   }
 
   @Bean
-  public ServiceInformationCollector serviceInformationCollector(SCBEngine scbEngine) {
-    return new ServiceInformationCollector(scbEngine);
+  public ServiceInformationCollector serviceInformationCollector() {
+    return new ServiceInformationCollector();
   }
 }

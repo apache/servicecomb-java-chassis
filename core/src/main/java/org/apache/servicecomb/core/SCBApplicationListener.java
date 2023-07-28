@@ -92,7 +92,6 @@ public class SCBApplicationListener
           .addAll(applicationContext.getBeansOfType(ConsumerProvider.class).values());
       scbEngine.getProducerProviderManager().getProducerProviderList()
           .addAll(applicationContext.getBeansOfType(ProducerProvider.class).values());
-      scbEngine.addBootListeners(applicationContext.getBeansOfType(BootListener.class).values());
 
       scbEngine.run();
     } else if (event instanceof ContextClosedEvent) {

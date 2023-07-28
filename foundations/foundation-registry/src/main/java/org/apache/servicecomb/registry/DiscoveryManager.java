@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -171,12 +170,6 @@ public class DiscoveryManager implements LifeCycle {
       return result;
     }
     return Collections.emptyList();
-  }
-
-  public CompletableFuture<List<? extends DiscoveryInstance>> findServiceInstancesAsync(
-      String application, String serviceName) {
-    // TODO: async implementation
-    return null;
   }
 
   @Override

@@ -33,7 +33,6 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
-import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LocalRegistryStore {
@@ -68,11 +67,9 @@ public class LocalRegistryStore {
   }
 
   private void addSelf() {
-    // TODO: add self
-  }
-
-  public LocalRegistrationInstance getSelfMicroserviceInstance() {
-    return selfMicroserviceInstance;
+    microserviceInstanceMap.computeIfAbsent(selfMicroserviceInstance.getApplication(), key ->
+        new ConcurrentHashMapEx<>()).computeIfAbsent(selfMicroserviceInstance.getServiceName(), key ->
+        new ArrayList<>()).add(new LocalDiscoveryInstance(selfMicroserviceInstance));
   }
 
   private List<RegistryBean> loadYamlBeans() {
@@ -129,7 +126,7 @@ public class LocalRegistryStore {
   }
 
 
-  public List<? extends DiscoveryInstance> findMicroserviceInstance(String application, String serviceName) {
+  public List<LocalDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     Map<String, List<LocalDiscoveryInstance>> app = microserviceInstanceMap.get(application);
     if (app == null) {
       return Collections.emptyList();

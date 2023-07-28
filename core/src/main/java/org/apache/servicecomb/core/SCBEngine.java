@@ -16,13 +16,11 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +30,7 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
+import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -44,6 +43,7 @@ import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -52,6 +52,7 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -59,6 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
@@ -70,15 +72,9 @@ import jakarta.ws.rs.core.Response.Status;
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
 
-  static final String CFG_KEY_WAIT_UP_TIMEOUT = "servicecomb.boot.waitUp.timeoutInMilliseconds";
-
-  static final long DEFAULT_WAIT_UP_TIMEOUT = 10_000;
-
   static final String CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC = "servicecomb.boot.turnDown.waitInSeconds";
 
   static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
-
-  private static final Object initializationLock = new Object();
 
   // TODO: will remove in future. Too many codes need refactor.
   private static volatile SCBEngine INSTANCE;
@@ -126,6 +122,8 @@ public class SCBEngine {
   private DiscoveryManager discoveryManager;
 
   private final Map<String, MicroserviceReferenceConfig> referenceConfigs = new ConcurrentHashMapEx<>();
+
+  private final Object referenceConfigsLock = new Object();
 
   public SCBEngine() {
     eventBus = EventManager.getEventBus();
@@ -268,14 +266,6 @@ public class SCBEngine {
     return swaggerEnvironment;
   }
 
-  public Collection<BootListener> getBootListeners() {
-    return bootListeners;
-  }
-
-  public void addBootListeners(Collection<BootListener> bootListeners) {
-    this.bootListeners.addAll(bootListeners);
-  }
-
   public SCBEngine addProducerMeta(String schemaId, Object instance) {
     getProducerProviderManager().addProducerMeta(schemaId, instance);
     return this;
@@ -328,9 +318,6 @@ public class SCBEngine {
     if (SCBStatus.DOWN.equals(status)) {
       try {
         doRun();
-        waitStatusUp();
-      } catch (TimeoutException e) {
-        LOGGER.warn("{}", e.getMessage());
       } catch (Throwable e) {
         LOGGER.error("Failed to start ServiceComb due to errors and close", e);
         try {
@@ -391,9 +378,10 @@ public class SCBEngine {
     triggerEvent(EventType.BEFORE_REGISTRY);
     registrationManager.run();
     discoveryManager.run();
-    triggerEvent(EventType.AFTER_REGISTRY);
-
+    // ensure can invoke services in AFTER_REGISTRY
     registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.UP);
+    status = SCBStatus.UP;
+    triggerEvent(EventType.AFTER_REGISTRY);
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
@@ -517,34 +505,45 @@ public class SCBEngine {
   }
 
   /**
-   * for edge, versionRule maybe controlled by url rule
-   * @param microserviceName hortName, or appId:shortName when invoke cross app
+   * Only implement a sync method now.
    */
   public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(
       String microserviceName) {
-    MicroserviceReferenceConfig config = referenceConfigs.get(microserviceName);
-    if (config != null) {
-      return CompletableFuture.completedFuture(config);
-    }
-    // TODO: create MicroserviceReferenceConfig
-    return CompletableFuture.completedFuture(null);
-//    return DiscoveryManager.INSTANCE
-//        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName)
-//        .thenApply(versions -> {
-//          ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
-//              .getMicroserviceVersionsMeta(versions);
-//          return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
-//        });
+    return CompletableFuture.completedFuture(createMicroserviceReferenceConfig(microserviceName));
   }
 
-  /**
-   * for edge, versionRule maybe controlled by url rule
-   * @param microserviceName hortName, or appId:shortName when invoke cross app
-   */
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName) {
     ensureStatusUp();
-    // TODO: create MicroserviceReferenceConfig
-    return null;
+    MicroserviceReferenceConfig config = referenceConfigs.get(microserviceName);
+    if (config == null) {
+      synchronized (referenceConfigsLock) {
+        config = referenceConfigs.get(microserviceName);
+        if (config != null) {
+          return config;
+        }
+        VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parseAppId(microserviceName),
+            microserviceName);
+        List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
+        if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
+          return null;
+        }
+        config = buildMicroserviceReferenceConfig(microserviceName, statefulDiscoveryInstances.get(0));
+        referenceConfigs.put(microserviceName, config);
+        return config;
+      }
+    }
+    return config;
+  }
+
+  private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(
+      String microserviceName, StatefulDiscoveryInstance instance) {
+    ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
+    MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, microserviceName, true);
+    microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
+    microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
+    // TODO: add schemas metas 
+    return new MicroserviceReferenceConfig(instance.getApplication(),
+        instance.getServiceName(), microserviceVersionsMeta, microserviceMeta);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {
@@ -555,48 +554,6 @@ public class SCBEngine {
     this.producerMicroserviceMeta = producerMicroserviceMeta;
   }
 
-  /**
-   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
-   * but in some simple scenes, just block and wait is enough.
-   */
-  public void waitStatusUp() throws InterruptedException, TimeoutException {
-    long msWait = DynamicPropertyFactory.getInstance().getLongProperty(CFG_KEY_WAIT_UP_TIMEOUT, DEFAULT_WAIT_UP_TIMEOUT)
-        .get();
-    waitStatusUp(msWait);
-  }
-
-  /**
-   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
-   * but in some simple scenes, just block and wait is enough.
-   */
-  public void waitStatusUp(long msWait) throws InterruptedException, TimeoutException {
-    if (msWait <= 0) {
-      LOGGER.info("Give up waiting for status up, wait timeout milliseconds={}.", msWait);
-      return;
-    }
-
-    LOGGER.info("Waiting for status up. timeout: {}ms", msWait);
-    long start = System.currentTimeMillis();
-    for (; ; ) {
-      SCBStatus currentStatus = getStatus();
-      switch (currentStatus) {
-        case DOWN:
-        case FAILED:
-          throw new IllegalStateException("Failed to wait status up, real status: " + currentStatus);
-        case UP:
-          LOGGER.info("Status already changed to up.");
-          return;
-        default:
-          break;
-      }
-
-      TimeUnit.MILLISECONDS.sleep(100);
-      if (System.currentTimeMillis() - start > msWait) {
-        throw new TimeoutException(
-            String.format("Timeout to wait status up, timeout: %dms, last status: %s", msWait, currentStatus));
-      }
-    }
-  }
 
   public String parseAppId(String microserviceName) {
     return parseMicroserviceName(microserviceName).getAppId();
