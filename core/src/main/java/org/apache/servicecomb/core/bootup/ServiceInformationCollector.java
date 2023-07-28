@@ -17,18 +17,23 @@
 
 package org.apache.servicecomb.core.bootup;
 
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ServiceInformationCollector implements BootUpInformationCollector {
-  private SCBEngine scbEngine;
+  private RegistrationManager registrationManager;
 
-  public ServiceInformationCollector(SCBEngine scbEngine) {
-    this.scbEngine = scbEngine;
+  public ServiceInformationCollector() {
+  }
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
   }
 
   @Override
   public String collect() {
-    return scbEngine.getRegistrationManager().info();
+    return registrationManager.info();
   }
 
   @Override

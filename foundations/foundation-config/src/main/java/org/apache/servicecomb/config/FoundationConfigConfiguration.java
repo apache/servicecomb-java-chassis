@@ -57,11 +57,13 @@ public class FoundationConfigConfiguration {
     return new ConfigObjectFactory(propertyFactory);
   }
 
+  @Bean
   @ConfigurationProperties(prefix = "servicecomb.service")
   public MicroserviceProperties microserviceProperties() {
     return new MicroserviceProperties();
   }
 
+  @Bean
   @ConfigurationProperties(prefix = "servicecomb.datacenter")
   public DataCenterProperties dataCenterProperties() {
     return new DataCenterProperties();

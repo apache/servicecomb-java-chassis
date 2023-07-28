@@ -56,6 +56,18 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
     });
   }
 
+  public LocalDiscoveryInstance(LocalRegistrationInstance registrationInstance) {
+    this.registryBean = new RegistryBean();
+    this.registryBean.setAppId(registrationInstance.getApplication());
+    this.registryBean.setServiceName(registrationInstance.getServiceName());
+    this.registryBean.setVersion(registrationInstance.getVersion());
+    this.localRegistrationInstance = registrationInstance;
+    this.instance = new Instance();
+    this.instance.setEndpoints(registrationInstance.getEndpoints());
+    this.instanceId = registrationInstance.getInstanceId();
+    this.schemas.putAll(registrationInstance.getSchemas());
+  }
+
   @Override
   public MicroserviceInstanceStatus getStatus() {
     return MicroserviceInstanceStatus.UP;

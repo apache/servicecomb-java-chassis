@@ -26,20 +26,20 @@ import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.InstanceStatusDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.MicroserviceInstanceCache;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@SuppressWarnings("unused")
 public class RegistryConfiguration {
   @Bean
-  public RegistrationManager registrationManager(@Autowired(required = false)
+  public RegistrationManager registrationManager(
       List<Registration<? extends RegistrationInstance>> registrationList) {
     return new RegistrationManager(registrationList);
   }
 
   @Bean
-  public DiscoveryManager discoveryManager(@Autowired(required = false)
+  public DiscoveryManager discoveryManager(
       List<Discovery<? extends DiscoveryInstance>> discoveryList) {
     return new DiscoveryManager(discoveryList);
   }

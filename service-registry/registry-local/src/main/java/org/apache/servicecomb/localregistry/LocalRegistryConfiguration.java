@@ -19,7 +19,9 @@ package org.apache.servicecomb.localregistry;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class LocalRegistryConfiguration {
   @Bean
   public LocalRegistrationInstance localRegistrationInstance(

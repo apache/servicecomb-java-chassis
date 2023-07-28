@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.slf4j.Logger;
@@ -52,18 +53,20 @@ public class MicroserviceInstanceCache {
     this.discoveryManager = discoveryManager;
   }
 
-  public DiscoveryInstance getOrCreate(String serviceId, String instanceId) {
+  public DiscoveryInstance getOrCreate(String application, String serviceName) {
     try {
-      String key = String.format("%s@%s", serviceId, instanceId);
+      String key = String.format("%s@%s", application, serviceName);
       return instances.get(key, () -> {
-        List<? extends DiscoveryInstance> instances = discoveryManager.findServiceInstances(serviceId, instanceId);
-        if (CollectionUtils.isEmpty(instances)) {
+        VersionedCache instances = discoveryManager.getOrCreateVersionedCache(application, serviceName);
+        List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
+        if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
           throw new IllegalArgumentException("instance id not exists.");
         }
-        return instances.get(0);
+        return statefulDiscoveryInstances.get(0);
       });
     } catch (ExecutionException | UncheckedExecutionException e) {
-      logger.error("get microservice instance from cache failed, {}, {}", String.format("%s@%s", serviceId, instanceId),
+      logger.error("get microservice instance from cache failed, {}, {}",
+          String.format("%s@%s", application, serviceName),
           e.getMessage());
       return null;
     }
