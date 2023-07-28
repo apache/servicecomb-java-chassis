@@ -76,7 +76,7 @@ public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
   }
 
   protected boolean allowVisit(StatefulDiscoveryInstance instance, Map<String, String> filterOptions) {
-    Map<String, String> propertiesMap = instance.getDiscoveryInstance().getProperties();
+    Map<String, String> propertiesMap = instance.getProperties();
     for (Entry<String, String> entry : filterOptions.entrySet()) {
       if (!entry.getValue().equals(propertiesMap.get(entry.getKey()))) {
         return false;

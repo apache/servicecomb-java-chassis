@@ -33,6 +33,13 @@ public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIO
   String name();
 
   /**
+   * If this implementation enabled for this microservice.
+   */
+  default boolean enabled(String application, String serviceName) {
+    return true;
+  }
+
+  /**
    * Find all instances.
    *
    * Life Cycle：This method is called anytime after <code>run</code>.

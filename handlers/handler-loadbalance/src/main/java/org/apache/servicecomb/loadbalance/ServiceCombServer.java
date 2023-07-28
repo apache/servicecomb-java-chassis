@@ -100,8 +100,8 @@ public class ServiceCombServer extends Server {
   @Override
   public boolean equals(Object o) {
     if (o instanceof ServiceCombServer) {
-      return this.getInstance().getDiscoveryInstance().getInstanceId()
-          .equals(((ServiceCombServer) o).getInstance().getDiscoveryInstance().getInstanceId())
+      return this.getInstance().getInstanceId()
+          .equals(((ServiceCombServer) o).getInstance().getInstanceId())
           && StringUtils.equals(endpoint.getEndpoint(), ((ServiceCombServer) o).getEndpoint().getEndpoint());
     } else {
       return false;
@@ -110,6 +110,6 @@ public class ServiceCombServer extends Server {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.getInstance().getDiscoveryInstance().getInstanceId(), this.endpoint);
+    return Objects.hash(this.getInstance().getInstanceId(), this.endpoint);
   }
 }

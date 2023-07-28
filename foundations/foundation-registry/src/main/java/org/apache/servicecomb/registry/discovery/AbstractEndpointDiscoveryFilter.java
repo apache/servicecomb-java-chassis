@@ -46,7 +46,7 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
       DiscoveryTreeNode parent) {
     List<Object> endpoints = new ArrayList<>();
     for (StatefulDiscoveryInstance instance : (List<StatefulDiscoveryInstance>) parent.data()) {
-      for (String endpoint : instance.getDiscoveryInstance().getEndpoints()) {
+      for (String endpoint : instance.getEndpoints()) {
         try {
           URI uri = URI.create(endpoint);
           String transportName = uri.getScheme();

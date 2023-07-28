@@ -105,7 +105,7 @@ public class DarklaunchServerListFilter implements ServerListFilterExt {
       boolean hasGroup = false;
       for (DarklaunchRuleItem item : rule.getRuleItems()) {
         item.getGroupCondition()
-            .setActual(DarklaunchRule.PROP_VERSION, server.getInstance().getDiscoveryInstance().getVersion());
+            .setActual(DarklaunchRule.PROP_VERSION, server.getInstance().getVersion());
         if (item.getGroupCondition().match()) {
           item.addServer(server);
           hasGroup = true;

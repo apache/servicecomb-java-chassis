@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,56 +28,135 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.LifeCycle;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.HistoryStatus;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.PingStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 public class DiscoveryManager implements LifeCycle {
-  // TODO: 1. instance init and notification; 2. ping status; 3. isolation status.
+  private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryManager.class);
+
+  // TODO: 1. ping status;
   private final List<Discovery<? extends DiscoveryInstance>> discoveryList;
 
-  private List<? extends DiscoveryInstance> highestInstances;
+  // application:serviceName:instanceId
+  private final Map<String, Map<String, Map<String, StatefulDiscoveryInstance>>>
+      allInstances = new ConcurrentHashMapEx<>();
 
-  private List<? extends DiscoveryInstance> normalInstances;
+  // application:serviceName
+  private final Map<String, Map<String, VersionedCache>>
+      versionedCache = new ConcurrentHashMapEx<>();
 
-  private List<? extends DiscoveryInstance> lowestInstances;
-
-  private Map<String, Map<String, VersionedCache>> versionedCache = new ConcurrentHashMapEx<>();
+  private final Object cacheLock = new Object();
 
   public DiscoveryManager(List<Discovery<? extends DiscoveryInstance>> discoveryList) {
     this.discoveryList = discoveryList;
+    for (Discovery<? extends DiscoveryInstance> discovery : this.discoveryList) {
+      discovery.setInstanceChangedListener(this::onInstancesChanged);
+    }
   }
 
-  public void onInstanceIsolated(StatefulDiscoveryInstance instance, long isolateTime) {
-    // TODO: 实例被隔离
+  public void onInstancesChanged(String application, String serviceName,
+      List<? extends DiscoveryInstance> instances) {
+    Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(application, key ->
+        new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key -> new ConcurrentHashMapEx<>());
+
+    for (StatefulDiscoveryInstance statefulInstance : statefulInstances.values()) {
+      statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
+    }
+
+    for (DiscoveryInstance instance : instances) {
+      StatefulDiscoveryInstance target = statefulInstances.get(instance.getInstanceId());
+      if (target == null) {
+        statefulInstances.put(instance.getInstanceId(), new StatefulDiscoveryInstance(instance));
+        continue;
+      }
+      target.setHistoryStatus(HistoryStatus.CURRENT);
+      target.setMicroserviceInstanceStatus(instance.getStatus());
+    }
+
+    rebuildVersionCache(application, serviceName);
+
+    LOGGER.info("applying new instance list for {}/{}/{}", application, serviceName, instances.size());
+    for (DiscoveryInstance instance : instances) {
+      LOGGER.info("instance {}/{}/{}", instance.getInstanceId(), instance.getStatus(), instance.getEndpoints());
+    }
+  }
+
+  public void onInstanceIsolated(StatefulDiscoveryInstance instance, long isolateDuration) {
+    Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(
+        instance.getApplication(), key ->
+            new ConcurrentHashMapEx<>()).computeIfAbsent(instance.getServiceName(), key
+        -> new ConcurrentHashMapEx<>());
+    StatefulDiscoveryInstance target = statefulInstances.get(instance.getInstanceId());
+    if (target == null) {
+      return;
+    }
+
+    target.setIsolatedTime(System.currentTimeMillis());
+    target.setIsolateDuration(isolateDuration);
+
+    if (target.getIsolationStatus() != IsolationStatus.ISOLATED) {
+      target.setIsolationStatus(IsolationStatus.ISOLATED);
+      rebuildVersionCache(instance.getApplication(), instance.getServiceName());
+    }
+
+    LOGGER.warn("isolated instance {}/{}/{}, time {}/{}",
+        instance.getApplication(), instance.getServiceName(), instance.getInstanceId(),
+        target.getIsolatedTime(), target.getIsolateDuration());
+  }
+
+  private void rebuildVersionCache(String application, String serviceName) {
+    Map<String, VersionedCache> caches = versionedCache.computeIfAbsent(application, key ->
+        new ConcurrentHashMapEx<>());
+    caches.put(serviceName, calcAvailableInstance(application, serviceName));
+  }
+
+  private VersionedCache calcAvailableInstance(String application, String serviceName) {
+    Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(
+        application, key ->
+            new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key
+        -> new ConcurrentHashMapEx<>());
+    List<StatefulDiscoveryInstance> result = new ArrayList<>();
+    for (StatefulDiscoveryInstance instance : statefulInstances.values()) {
+      if (instance.getHistoryStatus() == HistoryStatus.CURRENT
+          && instance.getIsolationStatus() != IsolationStatus.ISOLATED) {
+        result.add(instance);
+        continue;
+      }
+      if (instance.getHistoryStatus() == HistoryStatus.HISTORY
+          && instance.getMicroserviceInstanceStatus() == MicroserviceInstanceStatus.UP
+          && instance.getPingStatus() == PingStatus.OK
+          && instance.getIsolationStatus() == IsolationStatus.NORMAL) {
+        result.add(instance);
+      }
+    }
+    return new VersionedCache()
+        .name(application + ":" + serviceName)
+        .autoCacheVersion()
+        .data(result);
   }
 
   public VersionedCache getOrCreateVersionedCache(String application, String serviceName) {
-    return versionedCache.computeIfAbsent(application, key ->
-            new ConcurrentHashMapEx<>())
-        .computeIfAbsent(serviceName, key -> {
-          if (!CollectionUtils.isEmpty(highestInstances)) {
-            return new VersionedCache()
-                .name(key)
-                .autoCacheVersion()
-                .data(highestInstances);
-          }
-          if (!CollectionUtils.isEmpty(normalInstances)) {
-            return new VersionedCache()
-                .name(key)
-                .autoCacheVersion()
-                .data(normalInstances);
-          }
-          if (!CollectionUtils.isEmpty(lowestInstances)) {
-            return new VersionedCache()
-                .name(key)
-                .autoCacheVersion()
-                .data(lowestInstances);
-          }
-          return new VersionedCache()
-              .name(key)
-              .autoCacheVersion()
-              .data(Collections.emptyList());
-        });
+    Map<String, VersionedCache> caches = versionedCache.computeIfAbsent(application, key ->
+        new ConcurrentHashMapEx<>());
+    VersionedCache cache = caches.get(serviceName);
+    if (cache == null) {
+      synchronized (cacheLock) {
+        cache = caches.get(serviceName);
+        if (cache != null) {
+          return cache;
+        }
+        List<? extends DiscoveryInstance> instances = findServiceInstances(application, serviceName);
+        onInstancesChanged(application, serviceName, instances);
+        return versionedCache.get(application).get(serviceName);
+      }
+    }
+    return cache;
   }
 
   public List<? extends DiscoveryInstance> findServiceInstances(String application, String serviceName) {
@@ -91,8 +171,8 @@ public class DiscoveryManager implements LifeCycle {
     return Collections.emptyList();
   }
 
-  public CompletableFuture<List<? extends DiscoveryInstance>> findServiceInstancesAsync(String application,
-      String serviceName) {
+  public CompletableFuture<List<? extends DiscoveryInstance>> findServiceInstancesAsync(
+      String application, String serviceName) {
     // TODO: async implementation
     return null;
   }

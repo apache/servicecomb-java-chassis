@@ -76,9 +76,9 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
   private boolean regionAndAZMatch(StatefulDiscoveryInstance target) {
     if (dataCenterProperties.getRegion() != null && dataCenterProperties.getAvailableZone() != null) {
       return dataCenterProperties.getRegion()
-          .equals(target.getDiscoveryInstance().getDataCenterInfo().getRegion()) &&
+          .equals(target.getDataCenterInfo().getRegion()) &&
           dataCenterProperties.getAvailableZone()
-              .equals(target.getDiscoveryInstance().getDataCenterInfo().getAvailableZone());
+              .equals(target.getDataCenterInfo().getAvailableZone());
     }
     return false;
   }
@@ -86,7 +86,7 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
   private boolean regionMatch(StatefulDiscoveryInstance target) {
     if (dataCenterProperties.getRegion() != null) {
       return dataCenterProperties.getRegion()
-          .equals(target.getDiscoveryInstance().getDataCenterInfo().getRegion());
+          .equals(target.getDataCenterInfo().getRegion());
     }
     return false;
   }
