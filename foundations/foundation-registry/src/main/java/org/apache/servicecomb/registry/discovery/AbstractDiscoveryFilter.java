@@ -39,7 +39,7 @@ public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
     String childName = findChildName(context, parent);
     DiscoveryTreeNode node = parent.child(childName);
     if (node == null) {
-      LOGGER.warn("discovery filter {} return null.", this.getClass().getName());
+      LOGGER.warn("discovery filter {}/{} return null.", this.getClass().getSimpleName(), childName);
       return new DiscoveryTreeNode().subName(parent, "empty").data(new HashMap<>());
     }
     return node;
