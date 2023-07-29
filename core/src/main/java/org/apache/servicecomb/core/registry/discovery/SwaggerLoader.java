@@ -18,7 +18,6 @@ package org.apache.servicecomb.core.registry.discovery;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,14 +30,19 @@ import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-
-import com.google.common.annotations.VisibleForTesting;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
+/**
+ * Loading swaggers for microservices.
+ *
+ * 1. Memory: Registered by apis, like registerSwaggersInLocation, registerSwagger, etc
+ * 2. Local: From local resource, like microservice/{microservice name}/{schema id}.yaml
+ * 3. Remote: From DiscoveryInstances getSchemas method
+ */
 public class SwaggerLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerLoader.class);
 
@@ -47,7 +51,7 @@ public class SwaggerLoader {
   // third key : schemaId
   private final Map<String, Map<String, Map<String, OpenAPI>>> apps = new ConcurrentHashMapEx<>();
 
-  private MicroserviceProperties microserviceProperties;
+  private final MicroserviceProperties microserviceProperties;
 
   public SwaggerLoader(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;
@@ -80,6 +84,11 @@ public class SwaggerLoader {
     registerSwagger(parser.getAppId(), parser.getShortName(), schemaId, swagger);
   }
 
+  public void registerSwagger(String appId, String shortName, String schemaId, Class<?> cls) {
+    OpenAPI swagger = SwaggerGenerator.generate(cls);
+    registerSwagger(appId, shortName, schemaId, swagger);
+  }
+
   public void registerSwagger(String appId, String shortName, String schemaId, OpenAPI swagger) {
     apps.computeIfAbsent(appId, k -> new ConcurrentHashMapEx<>())
         .computeIfAbsent(shortName, k -> new ConcurrentHashMapEx<>())
@@ -87,8 +96,11 @@ public class SwaggerLoader {
     LOGGER.info("register swagger appId={}, name={}, schemaId={}.", appId, shortName, schemaId);
   }
 
-  public OpenAPI loadSwagger(String appId, String microserviceName, DiscoveryInstance instance,
-      String schemaId) {
+  /**
+   * Load swaggers: first from memory, then local resource and last instance.
+   */
+  public OpenAPI loadSwagger(String appId, String microserviceName,
+      DiscoveryInstance instance, String schemaId) {
     OpenAPI swagger = loadLocalSwagger(appId, microserviceName, schemaId);
     if (swagger != null) {
       return swagger;
@@ -97,6 +109,9 @@ public class SwaggerLoader {
     return loadFromRemote(appId, microserviceName, instance, schemaId);
   }
 
+  /**
+   * Load swaggers: first from memory, then local resource.
+   */
   public OpenAPI loadLocalSwagger(String appId, String shortName, String schemaId) {
     LOGGER.info("try to load schema locally, appId=[{}], serviceName=[{}], schemaId=[{}]",
         appId, shortName, schemaId);
@@ -109,15 +124,14 @@ public class SwaggerLoader {
     return loadFromResource(appId, shortName, schemaId);
   }
 
-  @VisibleForTesting
-  public OpenAPI loadFromMemory(String appId, String shortName, String schemaId) {
+  protected OpenAPI loadFromMemory(String appId, String shortName, String schemaId) {
     return Optional.ofNullable(apps.get(appId))
         .map(microservices -> microservices.get(shortName))
         .map(schemas -> schemas.get(schemaId))
         .orElse(null);
   }
 
-  private OpenAPI loadFromResource(String appId, String shortName, String schemaId) {
+  protected OpenAPI loadFromResource(String appId, String shortName, String schemaId) {
     if (appId.equals(microserviceProperties.getApplication())) {
       OpenAPI swagger = loadFromResource(String.format("microservices/%s/%s.yaml", shortName, schemaId));
       if (swagger != null) {
@@ -128,7 +142,7 @@ public class SwaggerLoader {
     return loadFromResource(String.format("applications/%s/%s/%s.yaml", appId, shortName, schemaId));
   }
 
-  private OpenAPI loadFromResource(String path) {
+  protected OpenAPI loadFromResource(String path) {
     URL url = JvmUtils.findClassLoader().getResource(path);
     if (url == null) {
       return null;
@@ -138,7 +152,7 @@ public class SwaggerLoader {
     return SwaggerUtils.parseAndValidateSwagger(url);
   }
 
-  private OpenAPI loadFromRemote(String appId, String microserviceName,
+  protected OpenAPI loadFromRemote(String appId, String microserviceName,
       DiscoveryInstance instances,
       String schemaId) {
     String schemaContent = instances.getSchemas().get(schemaId);
@@ -149,7 +163,7 @@ public class SwaggerLoader {
           microserviceName,
           schemaId);
       LOGGER.debug(schemaContent);
-      return SwaggerUtils.parseAndValidateSwagger(schemaContent);
+      return SwaggerUtils.parseAndValidateSwagger(appId, microserviceName, schemaId, schemaContent);
     }
 
     LOGGER.warn("no schema in local, and can not get schema from service center, "

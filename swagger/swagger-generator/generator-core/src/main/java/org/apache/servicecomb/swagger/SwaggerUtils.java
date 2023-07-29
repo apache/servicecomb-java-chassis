@@ -111,13 +111,16 @@ public final class SwaggerUtils {
     }
   }
 
-  public static OpenAPI parseAndValidateSwagger(String swaggerContent) {
+  public static OpenAPI parseAndValidateSwagger(String appId, String microserviceName,
+      String schemaId, String swaggerContent) {
     try {
       OpenAPI result = internalParseSwagger(swaggerContent);
       validateSwagger(result);
       return result;
     } catch (Throwable e) {
-      throw new ServiceCombException("Parse swagger from content failed, ", e);
+      throw new ServiceCombException(
+          String.format("Parse swagger from content failed, %s/%s/%s",
+              appId, microserviceName, schemaId), e);
     }
   }
 
