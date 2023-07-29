@@ -26,6 +26,7 @@ import org.apache.servicecomb.demo.jaxrs.server.validation.ValidationModel;
 import org.apache.servicecomb.demo.validator.Teacher;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.client.RestTemplate;
 
@@ -89,7 +90,7 @@ public class ValidationServiceClient {
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(e.getErrorData().toString().contains("Parameter is required."), true);
+      TestMgr.check(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"), true);
     }
 
     Teacher teacher = new Teacher();

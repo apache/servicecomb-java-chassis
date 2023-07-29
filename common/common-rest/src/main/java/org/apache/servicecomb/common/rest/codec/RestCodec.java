@@ -24,14 +24,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public final class RestCodec {
   private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);
@@ -60,25 +57,17 @@ public final class RestCodec {
     for (RestParam param : paramList) {
       try {
         paramValues.put(param.getParamName(), param.getParamProcessor().getValue(request));
-      } catch (InvocationException e) {
-        throw e;
       } catch (Exception e) {
         // Avoid information leak of user input, and add option for debug use.
         String message = String
-            .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+            .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s]. Message is [%s].",
                 restOperation.getOperationMeta().getMicroserviceQualifiedName(),
                 param.getParamName(),
-                param.getParamProcessor().getProcessorType());
-        if (DynamicPropertyFactory.getInstance().getBooleanProperty(
-            RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
-          LOG.error(message, e);
-        } else {
-          LOG.error("{} Add {}=true to print the details.", message, RestConst.PRINT_CODEC_ERROR_MESSGAGE);
-        }
+                param.getParamProcessor().getProcessorType(),
+                e.getMessage());
         throw new InvocationException(Status.BAD_REQUEST, message);
       }
     }
-
     return paramValues;
   }
 }
