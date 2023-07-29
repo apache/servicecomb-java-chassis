@@ -23,10 +23,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.Server;
 
 /**
@@ -39,22 +37,7 @@ public class ServiceCombServer extends Server {
 
   private final String microserviceName;
 
-  @VisibleForTesting
-  ServiceCombServer(String microserviceName, Endpoint endpoint) {
-    super(null);
-    this.endpoint = endpoint;
-    this.microserviceName = microserviceName;
-
-    // Different types of Robin Component Rule have different usages for server status and list.
-    // e.g. RoundRobinRule using getAllServers & alive & readyToServe
-    // RandomRule using getReachableServers & alive
-    // WeightedResponseTimeRule using getAllServers & alive
-    // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
-    this.setAlive(true);
-    this.setReadyToServe(true);
-  }
-
-  public ServiceCombServer(String microserviceName, Transport transport, Endpoint endpoint) {
+  public ServiceCombServer(String microserviceName, Endpoint endpoint) {
     super(null);
     this.microserviceName = microserviceName;
     this.endpoint = endpoint;

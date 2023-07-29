@@ -41,7 +41,7 @@ public class TestServiceCombServer {
     DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
     StatefulDiscoveryInstance instance = new StatefulDiscoveryInstance(discoveryInstance);
     Mockito.when(discoveryInstance.getInstanceId()).thenReturn("123456");
-    cs = new ServiceCombServer(null, transport, new Endpoint(transport, "abcd", instance));
+    cs = new ServiceCombServer(null, new Endpoint(transport, "abcd", instance));
   }
 
   @Test
@@ -62,13 +62,13 @@ public class TestServiceCombServer {
     DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
     StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
     Mockito.when(discoveryInstance.getInstanceId()).thenReturn("1234");
-    ServiceCombServer other = new ServiceCombServer(null, transport, new Endpoint(transport, "1234", instance1));
+    ServiceCombServer other = new ServiceCombServer(null, new Endpoint(transport, "1234", instance1));
     Assertions.assertNotEquals(cs, other);
 
     DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
     StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
     Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("123456");
-    other = new ServiceCombServer(null, transport, new Endpoint(transport, "abcd", instance2));
+    other = new ServiceCombServer(null, new Endpoint(transport, "abcd", instance2));
     Assertions.assertEquals(cs, other);
   }
 

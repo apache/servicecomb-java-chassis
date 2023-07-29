@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.loadbalance.filter.InstancePropertyDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.PriorityInstancePropertyDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -57,5 +58,10 @@ public class LoadBalanceConfiguration {
   @Bean
   public InstancePropertyDiscoveryFilter instancePropertyDiscoveryFilter() {
     return new InstancePropertyDiscoveryFilter();
+  }
+
+  @Bean
+  public ServerDiscoveryFilter serverDiscoveryFilter() {
+    return new ServerDiscoveryFilter();
   }
 }
