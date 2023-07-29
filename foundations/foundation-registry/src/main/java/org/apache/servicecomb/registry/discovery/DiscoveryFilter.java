@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-// filter is stateless
+/**
+ * Server list filters for DiscoveryTree.
+ */
 public interface DiscoveryFilter {
   default boolean enabled() {
     return true;
@@ -25,8 +27,10 @@ public interface DiscoveryFilter {
 
   int getOrder();
 
-  // grouping filter, means grouping instances to some groups
-  // eg: operation/ZoneAware/transport
+  /**
+   * grouping filter, means grouping instances to some groups
+   *  eg: operation/ZoneAware/transport
+   */
   default boolean isGroupingFilter() {
     return false;
   }

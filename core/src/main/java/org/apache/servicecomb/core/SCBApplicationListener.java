@@ -85,7 +85,6 @@ public class SCBApplicationListener
 //        SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
 //        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
 //        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
-      scbEngine.setApplicationContext(applicationContext);
       scbEngine.setPriorityPropertyManager(applicationContext.getBean(PriorityPropertyManager.class));
       scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
       scbEngine.getConsumerProviderManager().getConsumerProviderList()

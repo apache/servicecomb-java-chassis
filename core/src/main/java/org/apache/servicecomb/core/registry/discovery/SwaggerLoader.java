@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -53,11 +51,6 @@ public class SwaggerLoader {
 
   public SwaggerLoader(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;
-  }
-
-  // result length is 64
-  public static String calcSchemaSummary(String schemaContent) {
-    return Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString();
   }
 
   public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
@@ -94,14 +87,14 @@ public class SwaggerLoader {
     LOGGER.info("register swagger appId={}, name={}, schemaId={}.", appId, shortName, schemaId);
   }
 
-  public OpenAPI loadSwagger(String appId, String microserviceName, Collection<DiscoveryInstance> instances,
+  public OpenAPI loadSwagger(String appId, String microserviceName, DiscoveryInstance instance,
       String schemaId) {
     OpenAPI swagger = loadLocalSwagger(appId, microserviceName, schemaId);
     if (swagger != null) {
       return swagger;
     }
 
-    return loadFromRemote(appId, microserviceName, instances, schemaId);
+    return loadFromRemote(appId, microserviceName, instance, schemaId);
   }
 
   public OpenAPI loadLocalSwagger(String appId, String shortName, String schemaId) {
@@ -145,12 +138,10 @@ public class SwaggerLoader {
     return SwaggerUtils.parseAndValidateSwagger(url);
   }
 
-  private OpenAPI loadFromRemote(String appId, String microserviceName, Collection<DiscoveryInstance> instances,
+  private OpenAPI loadFromRemote(String appId, String microserviceName,
+      DiscoveryInstance instances,
       String schemaId) {
-    if (CollectionUtils.isEmpty(instances)) {
-      return null;
-    }
-    String schemaContent = instances.iterator().next().getSchemas().get(schemaId);
+    String schemaContent = instances.getSchemas().get(schemaId);
     if (schemaContent != null) {
       LOGGER.info(
           "load schema from service center, appId={}, microserviceName={}, schemaId={}.",

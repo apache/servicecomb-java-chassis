@@ -41,11 +41,11 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
         .computeIfAbsent(expectTransportName, etn -> createDiscoveryTreeNode(expectTransportName, context, parent));
   }
 
-  @SuppressWarnings("unchecked")
   protected DiscoveryTreeNode createDiscoveryTreeNode(String expectTransportName, DiscoveryContext context,
       DiscoveryTreeNode parent) {
     List<Object> endpoints = new ArrayList<>();
-    for (StatefulDiscoveryInstance instance : (List<StatefulDiscoveryInstance>) parent.data()) {
+    List<StatefulDiscoveryInstance> instances = parent.data();
+    for (StatefulDiscoveryInstance instance : instances) {
       for (String endpoint : instance.getEndpoints()) {
         try {
           URI uri = URI.create(endpoint);

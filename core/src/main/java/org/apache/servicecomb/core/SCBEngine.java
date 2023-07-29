@@ -50,7 +50,9 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
@@ -67,6 +69,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.ws.rs.core.Response.Status;
 
 public class SCBEngine {
@@ -140,11 +143,13 @@ public class SCBEngine {
   }
 
   @Autowired
+  @SuppressWarnings("unused")
   public void setBootUpInformationCollectors(List<BootUpInformationCollector> bootUpInformationCollectors) {
     this.bootUpInformationCollectors = bootUpInformationCollectors;
   }
 
   @Autowired
+  @SuppressWarnings("unused")
   public void setBootListeners(List<BootListener> listeners) {
     this.bootListeners = listeners;
   }
@@ -165,6 +170,7 @@ public class SCBEngine {
   }
 
   @Autowired
+  @SuppressWarnings("unused")
   public void setSwaggerLoader(SwaggerLoader swaggerLoader) {
     this.swaggerLoader = swaggerLoader;
   }
@@ -536,12 +542,30 @@ public class SCBEngine {
   }
 
   private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(
-      String microserviceName, StatefulDiscoveryInstance instance) {
+      String microserviceName, DiscoveryInstance instance) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, microserviceName, true);
     microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
-    // TODO: add schemas metas 
+
+    boolean isServiceCenter = DefinitionConst.REGISTRY_APP_ID.equals(instance.getApplication())
+        && DefinitionConst.REGISTRY_SERVICE_NAME.equals(instance.getServiceName());
+    // do not load service center schemas, because service center did not provide swagger,but can get schema ids....
+    // service center better to resolve the problem.
+    if (!isServiceCenter) {
+      for (String schemaId : instance.getSchemas().keySet()) {
+        OpenAPI swagger = swaggerLoader
+            .loadSwagger(instance.getApplication(), instance.getServiceName(),
+                instance, schemaId);
+        if (swagger != null) {
+          microserviceMeta.registerSchemaMeta(schemaId, swagger);
+          continue;
+        }
+        throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+            "swagger can not be empty or load swagger failed");
+      }
+    }
+
     return new MicroserviceReferenceConfig(instance.getApplication(),
         instance.getServiceName(), microserviceVersionsMeta, microserviceMeta);
   }

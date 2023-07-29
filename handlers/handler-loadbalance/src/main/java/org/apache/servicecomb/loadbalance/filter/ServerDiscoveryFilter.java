@@ -43,7 +43,7 @@ public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
       return null;
     }
     Invocation invocation = context.getInputParameters();
-    return new ServiceCombServer(invocation.getMicroserviceName(), transport,
+    return new ServiceCombServer(invocation.getMicroserviceName(),
         new Endpoint(transport, endpoint, instance));
   }
 }
