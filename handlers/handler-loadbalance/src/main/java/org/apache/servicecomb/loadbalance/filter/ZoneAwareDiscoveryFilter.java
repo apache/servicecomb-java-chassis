@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.loadbalance.filterext;
+package org.apache.servicecomb.loadbalance.filter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.config.DataCenterProperties;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.loadbalance.ServerListFilterExt;
-import org.apache.servicecomb.loadbalance.ServiceCombServer;
+import org.apache.servicecomb.registry.discovery.AbstractGroupDiscoveryFilter;
+import org.apache.servicecomb.registry.discovery.DiscoveryContext;
+import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.netflix.config.DynamicPropertyFactory;
+public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
+  public static final String PARAMETER = "zone_aware_level";
 
-public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
+  public static final String GROUP_PREFIX = "zone_aware_group_";
+
   private DataCenterProperties dataCenterProperties;
 
   @Autowired
@@ -40,41 +42,63 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
 
   @Override
   public int getOrder() {
-    return ORDER_ZONE_AWARE;
+    return -9000;
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ZONE_AWARE_FILTER_ENABLED, true)
-        .get();
+    return environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true);
   }
 
   @Override
-  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers,
-      Invocation invocation) {
-    List<ServiceCombServer> instancesRegionAndAZMatch = new ArrayList<>();
-    List<ServiceCombServer> instancesAZMatch = new ArrayList<>();
-    List<ServiceCombServer> instancesNoMatch = new ArrayList<>();
-    servers.forEach((server) -> {
-      if (regionAndAZMatch(server.getInstance())) {
+  protected String contextParameter() {
+    return PARAMETER;
+  }
+
+  @Override
+  protected String groupPrefix() {
+    return GROUP_PREFIX;
+  }
+
+  @Override
+  public void init(DiscoveryContext context, DiscoveryTreeNode parent) {
+    List<StatefulDiscoveryInstance> instances = parent.data();
+    List<StatefulDiscoveryInstance> instancesRegionAndAZMatch = new ArrayList<>();
+    List<StatefulDiscoveryInstance> instancesAZMatch = new ArrayList<>();
+    List<StatefulDiscoveryInstance> instancesNoMatch = new ArrayList<>();
+
+    this.groups = 1;
+
+    for (StatefulDiscoveryInstance server : instances) {
+      if (regionAndAZMatch(server)) {
         instancesRegionAndAZMatch.add(server);
-      } else if (regionMatch(server.getInstance())) {
+      } else if (regionMatch(server)) {
         instancesAZMatch.add(server);
       } else {
         instancesNoMatch.add(server);
       }
-    });
-    if (!instancesRegionAndAZMatch.isEmpty()) {
-      return instancesRegionAndAZMatch;
-    } else if (!instancesAZMatch.isEmpty()) {
-      return instancesAZMatch;
     }
-    return instancesNoMatch;
+
+    if (!instancesRegionAndAZMatch.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(instancesRegionAndAZMatch));
+      groups++;
+    }
+
+    if (!instancesAZMatch.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(instancesAZMatch));
+      groups++;
+    }
+
+    parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+        .subName(parent, GROUP_PREFIX + groups).data(instancesNoMatch));
   }
 
   private boolean regionAndAZMatch(StatefulDiscoveryInstance target) {
-    if (dataCenterProperties.getRegion() != null && dataCenterProperties.getAvailableZone() != null) {
+    if (dataCenterProperties.getRegion() != null
+        && dataCenterProperties.getAvailableZone() != null && target.getDataCenterInfo() != null) {
       return dataCenterProperties.getRegion()
           .equals(target.getDataCenterInfo().getRegion()) &&
           dataCenterProperties.getAvailableZone()
@@ -84,7 +108,7 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
   }
 
   private boolean regionMatch(StatefulDiscoveryInstance target) {
-    if (dataCenterProperties.getRegion() != null) {
+    if (dataCenterProperties.getRegion() != null && target.getDataCenterInfo() != null) {
       return dataCenterProperties.getRegion()
           .equals(target.getDataCenterInfo().getRegion());
     }

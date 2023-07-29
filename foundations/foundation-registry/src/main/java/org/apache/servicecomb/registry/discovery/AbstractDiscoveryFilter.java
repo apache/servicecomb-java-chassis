@@ -21,9 +21,18 @@ import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiscoveryFilter.class);
+
+  protected Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
