@@ -32,12 +32,11 @@
 
   <modules>
     <!-- TODO : after model finished, will implement
-<module>registry-local</module>
-<module>registry-lightweight</module>
 <module>registry-service-center</module>
-<module>registry-zero-config</module>
 <module>registry-schema-discovery</module>
 -->
     <module>registry-local</module>
+    <module>registry-lightweight</module>
+    <module>registry-zero-config</module>
   </modules>
 </project>

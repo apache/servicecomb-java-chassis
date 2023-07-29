@@ -21,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.GET;

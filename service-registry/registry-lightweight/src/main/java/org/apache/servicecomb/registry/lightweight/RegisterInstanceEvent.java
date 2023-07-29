@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 
 /**
  * post when a new instance registered<br>

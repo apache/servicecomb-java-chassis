@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.invocation.endpoint.EndpointCacheUtils;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 public class RegisterRequest {
   private String appId;

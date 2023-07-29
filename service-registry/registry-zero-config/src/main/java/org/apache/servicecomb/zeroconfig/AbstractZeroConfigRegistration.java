@@ -45,7 +45,6 @@ public abstract class AbstractZeroConfigRegistration extends AbstractLightweight
   public void run() {
     super.run();
 
-    postRegisteredEvent();
     startRegister(config.getHeartbeatInterval());
   }
 }

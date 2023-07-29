@@ -19,6 +19,7 @@ package org.apache.servicecomb.zeroconfig;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
 import org.apache.servicecomb.registry.lightweight.AbstractLightweightDiscovery;
+import org.apache.servicecomb.registry.lightweight.ZeroConfigDiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
@@ -33,15 +34,13 @@ public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
-    super.afterPropertiesSet();
-
-    startPullInstances(config.getPullInterval());
+  public String name() {
+    return NAME;
   }
 
   @Override
-  public String name() {
-    return NAME;
+  public void setInstanceChangedListener(InstanceChangedListener<ZeroConfigDiscoveryInstance> instanceChangedListener) {
+
   }
 
   @Override
@@ -52,5 +51,10 @@ public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
   @Override
   public boolean enabled() {
     return config.isEnabled();
+  }
+
+  @Override
+  public void run() {
+
   }
 }

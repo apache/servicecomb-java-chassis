@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.registry.config;
+package org.apache.servicecomb.registry.lightweight.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.registry.api.PropertyExtended;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
 /**
  * Loading microservice properties
@@ -32,24 +32,24 @@ import org.springframework.core.env.Environment;
 public abstract class AbstractPropertiesLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertiesLoader.class);
 
-  public Map<String, String> loadProperties(Environment environment) {
+  public Map<String, String> loadProperties(Configuration configuration) {
     Map<String, String> propertiesMap = new HashMap<>();
-    loadPropertiesFromConfigMap(environment, propertiesMap);
-    loadPropertiesFromExtendedClass(environment, propertiesMap);
+    loadPropertiesFromConfigMap(configuration, propertiesMap);
+    loadPropertiesFromExtendedClass(configuration, propertiesMap);
 
     return propertiesMap;
   }
 
-  protected abstract Map<String, String> readProperties(Environment environment);
+  protected abstract Map<String, String> readProperties(Configuration configuration);
 
-  protected abstract String readPropertiesExtendedClass(Environment environment);
+  protected abstract String readPropertiesExtendedClass(Configuration configuration);
 
-  private void loadPropertiesFromConfigMap(Environment environment, Map<String, String> propertiesMap) {
-    propertiesMap.putAll(readProperties(environment));
+  private void loadPropertiesFromConfigMap(Configuration configuration, Map<String, String> propertiesMap) {
+    propertiesMap.putAll(readProperties(configuration));
   }
 
-  private void loadPropertiesFromExtendedClass(Environment environment, Map<String, String> propertiesMap) {
-    String extendedPropertyClass = readPropertiesExtendedClass(environment);
+  private void loadPropertiesFromExtendedClass(Configuration configuration, Map<String, String> propertiesMap) {
+    String extendedPropertyClass = readPropertiesExtendedClass(configuration);
 
     if (StringUtils.isEmpty(extendedPropertyClass)) {
       return;

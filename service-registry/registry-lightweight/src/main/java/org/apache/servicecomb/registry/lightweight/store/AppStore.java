@@ -20,7 +20,7 @@ package org.apache.servicecomb.registry.lightweight.store;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstances;
 
 public class AppStore {
   private final Map<String, MicroserviceStore> microserviceByName = new ConcurrentHashMapEx<>();

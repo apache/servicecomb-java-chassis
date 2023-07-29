@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 import org.apache.servicecomb.registry.lightweight.store.InstanceStore;
 import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
@@ -47,7 +47,7 @@ public class StoreService {
   }
 
   public void registerSelf(Self self) {
-    MicroserviceStore microserviceStore = store.addMicroservice(self.getMicroservice(), self.getSchemasSummary());
+    MicroserviceStore microserviceStore = store.addMicroservice(self.getMicroservice());
     addInstance(microserviceStore, self.getInstance());
   }
 
@@ -95,9 +95,7 @@ public class StoreService {
       return addMicroserviceAndInstance(endpoint, request);
     }
 
-    return checkSchemaSummary(request, microserviceStore)
-        .thenCompose(v -> discoveryClient.getInstanceAsync(endpoint, request.getServiceId()))
-        .thenApply(instance -> addInstance(microserviceStore, instance));
+    return CompletableFuture.completedFuture(null);
   }
 
   private CompletableFuture<InstanceStore> addMicroserviceAndInstance(Endpoint endpoint, RegisterRequest request) {
@@ -105,7 +103,7 @@ public class StoreService {
         .thenApply(info -> {
           info.getMicroservice().getSchemaMap().putAll(info.getSchemasById());
           MicroserviceStore microserviceStore = store
-              .addMicroservice(info.getMicroservice(), request.getSchemasSummary());
+              .addMicroservice(info.getMicroservice());
 
           LOGGER.info("add microservice and instance, serviceId={}, instanceId={}, endpoints={}",
               request.getServiceId(),
@@ -128,27 +126,6 @@ public class StoreService {
     InstanceStore instanceStore = store.addInstance(microserviceStore, instance);
     eventBus.post(new RegisterInstanceEvent(microserviceStore.getMicroservice(), instance));
     return instanceStore;
-  }
-
-  private CompletableFuture<Void> checkSchemaSummary(RegisterRequest request, MicroserviceStore microserviceStore) {
-    if (!microserviceStore.isSchemaChanged(request.getSchemasSummary())) {
-      return CompletableFuture.completedFuture(null);
-    }
-
-    if (microserviceStore.hasInstance()) {
-      String message = String.format("schemas changed, but version not changed, and has %d existing instances",
-          microserviceStore.getInstanceCount());
-      return AsyncUtils.completeExceptionally(new RegisterException(message));
-    }
-
-    microserviceStore.setSchemasSummary(request.getSchemasSummary());
-    eventBus.post(new SchemaChangedEvent(microserviceStore.getMicroservice()));
-    LOGGER.warn(
-        "schemas changed, but version not changed, only allow in dev stage, serviceId={}, instanceId={}, endpoints={}",
-        request.getServiceId(),
-        request.getInstanceId(),
-        request.getEndpoints());
-    return CompletableFuture.completedFuture(null);
   }
 
   private void updateInstanceStatus(RegisterRequest request, InstanceStore instanceStore) {
