@@ -57,16 +57,13 @@ public final class RestCodec {
     for (RestParam param : paramList) {
       try {
         paramValues.put(param.getParamName(), param.getParamProcessor().getValue(request));
-      } catch (InvocationException e) {
-        throw e;
       } catch (Exception e) {
-        // Avoid information leak of user input, and add option for debug use.
         String message = String
-            .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+            .format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s]. Message is [%s].",
                 restOperation.getOperationMeta().getMicroserviceQualifiedName(),
                 param.getParamName(),
-                param.getParamProcessor().getProcessorType());
-        LOG.warn(message, e);
+                param.getParamProcessor().getProcessorType(),
+                e.getMessage());
         throw new InvocationException(Status.BAD_REQUEST, message);
       }
     }

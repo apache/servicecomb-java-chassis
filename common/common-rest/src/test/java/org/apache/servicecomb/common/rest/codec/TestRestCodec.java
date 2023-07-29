@@ -161,6 +161,8 @@ public class TestRestCodec {
       success = true;
     } catch (InvocationException e) {
       Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
+      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage()
+          .contains("Parameter is not valid for operation"));
     }
     Assertions.assertFalse(success);
   }
