@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstances;
 
 import com.google.common.base.Ticker;
 
@@ -59,8 +59,8 @@ public class Store {
     return instancesById.get(instanceId);
   }
 
-  public MicroserviceStore addMicroservice(Microservice microservice, String schemasSummary) {
-    MicroserviceStore microserviceStore = new MicroserviceStore(ticker, microservice, schemasSummary);
+  public MicroserviceStore addMicroservice(Microservice microservice) {
+    MicroserviceStore microserviceStore = new MicroserviceStore(ticker, microservice);
 
     getOrCreateAppStore(microservice.getAppId())
         .addMicroservice(microserviceStore);

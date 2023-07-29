@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.test.scaffolding.time.MockTicker;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.store.InstanceStore;
 import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
@@ -71,7 +71,7 @@ class StoreServiceTest extends TestBase {
   @Test
   void should_register_instance_when_microservice_exist() {
     Microservice microservice = Json.decodeValue(Json.encode(self.getMicroservice()), Microservice.class);
-    store.addMicroservice(microservice, self.getSchemasSummary());
+    store.addMicroservice(microservice);
 
     RegisterRequest request = self.buildRegisterRequest();
     InstanceStore instanceStore = service.register(request);
@@ -118,7 +118,6 @@ class StoreServiceTest extends TestBase {
         .setSchemasSummary("new summary");
     InstanceStore instanceStore = service.register(request);
 
-    assertThat(microserviceStore.isSchemaChanged("new summary")).isFalse();
     assertThat(instanceStore.getInstance()).isSameAs(self.getInstance());
     assertThat(schemaChangedEvent.getMicroservice()).isSameAs(self.getMicroservice());
   }

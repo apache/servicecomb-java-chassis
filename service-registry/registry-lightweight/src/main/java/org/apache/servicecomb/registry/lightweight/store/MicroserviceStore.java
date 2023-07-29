@@ -19,15 +19,14 @@ package org.apache.servicecomb.registry.lightweight.store;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.lightweight.model.FindInstancesResponse;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstances;
 
 import com.google.common.base.Ticker;
 
@@ -38,14 +37,11 @@ public class MicroserviceStore {
 
   private final Map<String, InstanceStore> instancesById = new ConcurrentHashMapEx<>();
 
-  private String schemasSummary;
-
   private String instancesRevision;
 
-  public MicroserviceStore(Ticker ticker, Microservice microservice, String schemasSummary) {
+  public MicroserviceStore(Ticker ticker, Microservice microservice) {
     this.ticker = ticker;
     this.microservice = microservice;
-    this.schemasSummary = schemasSummary;
 
     updateInstancesRevision();
   }
@@ -105,14 +101,6 @@ public class MicroserviceStore {
         .setInstancesResponse(response);
   }
 
-  public boolean isSchemaChanged(String schemasSummary) {
-    return !Objects.equals(this.schemasSummary, schemasSummary);
-  }
-
-  public MicroserviceStore setSchemasSummary(String schemasSummary) {
-    this.schemasSummary = schemasSummary;
-    return this;
-  }
 
   public boolean hasInstance() {
     return !instancesById.isEmpty();

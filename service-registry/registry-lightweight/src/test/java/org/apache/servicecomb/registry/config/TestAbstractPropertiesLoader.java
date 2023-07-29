@@ -21,19 +21,13 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
 
 import com.netflix.config.DynamicConfiguration;
+
+import org.apache.servicecomb.registry.lightweight.model.AbstractPropertiesLoader;
+import org.apache.servicecomb.registry.lightweight.model.MicroservicePropertiesLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 
-@SpringBootTest
-@ContextConfiguration(classes = {})
 public class TestAbstractPropertiesLoader {
-  @Autowired
-  private Environment environment;
-
   @Test
   public void testExtendedClassCompatible() {
     Configuration configuration = new DynamicConfiguration();
@@ -41,7 +35,7 @@ public class TestAbstractPropertiesLoader {
 
     AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
     try {
-      loader.loadProperties(environment);
+      loader.loadProperties(configuration);
       Assertions.fail("Must throw exception");
     } catch (Error e) {
       Assertions.assertEquals(ClassNotFoundException.class, e.getCause().getClass());

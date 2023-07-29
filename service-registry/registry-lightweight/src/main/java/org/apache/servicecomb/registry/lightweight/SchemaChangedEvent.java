@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
-import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
 
 public class SchemaChangedEvent {
   private final Microservice microservice;

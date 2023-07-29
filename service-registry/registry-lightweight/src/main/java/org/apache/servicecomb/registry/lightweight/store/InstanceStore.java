@@ -20,8 +20,8 @@ package org.apache.servicecomb.registry.lightweight.store;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 
 import com.google.common.base.Ticker;
 

@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.registry.config;
+package org.apache.servicecomb.registry.lightweight.model;
 
-import java.util.Map;
+import java.util.List;
 
-import org.apache.servicecomb.config.BootStrapProperties;
-import org.springframework.core.env.Environment;
+public class FindInstancesResponse {
+  private List<MicroserviceInstance> instances;
 
-public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
-
-  public static final InstancePropertiesLoader INSTANCE = new InstancePropertiesLoader();
-
-  private InstancePropertiesLoader() {
+  public List<MicroserviceInstance> getInstances() {
+    return instances;
   }
 
-  @Override
-  protected Map<String, String> readProperties(Environment environment) {
-    return environment.getProperty(BootStrapProperties.CONFIG_SERVICE_INSTANCE_PROPERTIES, Map.class);
+  public FindInstancesResponse setInstances(List<MicroserviceInstance> instances) {
+    this.instances = instances;
+    return this;
   }
 
-  @Override
-  protected String readPropertiesExtendedClass(Environment environment) {
-    return environment.getProperty(BootStrapProperties.CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS);
+  public void mergeInstances(List<MicroserviceInstance> instances) {
+    if (this.instances == null) {
+      this.instances = instances;
+    } else {
+      this.instances.addAll(instances);
+    }
   }
 }

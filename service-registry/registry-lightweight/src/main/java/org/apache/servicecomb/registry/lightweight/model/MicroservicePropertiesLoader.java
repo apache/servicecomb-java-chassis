@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.registry.config;
+package org.apache.servicecomb.registry.lightweight.model;
 
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.springframework.core.env.Environment;
 
 public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader {
 
@@ -30,12 +30,12 @@ public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader
   }
 
   @Override
-  protected Map<String, String> readProperties(Environment environment) {
-    return environment.getProperty(BootStrapProperties.CONFIG_SERVICE_PROPERTIES, Map.class);
+  protected Map<String, String> readProperties(Configuration configuration) {
+    return BootStrapProperties.readServiceProperties(configuration);
   }
 
   @Override
-  protected String readPropertiesExtendedClass(Environment environment) {
-    return environment.getProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS);
+  protected String readPropertiesExtendedClass(Configuration configuration) {
+    return BootStrapProperties.readServiceExtendedClass(configuration);
   }
 }
