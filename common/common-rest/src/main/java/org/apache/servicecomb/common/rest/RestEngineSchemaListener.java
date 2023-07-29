@@ -19,7 +19,11 @@ package org.apache.servicecomb.common.rest;
 
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.SCBEngine.CreateMicroserviceMetaEvent;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
+
+import com.google.common.eventbus.Subscribe;
 
 public class RestEngineSchemaListener implements BootListener {
   @Override
@@ -34,6 +38,12 @@ public class RestEngineSchemaListener implements BootListener {
     event.getScbEngine().getEventBus().register(this);
   }
 
+  @EnableExceptionPropagation
+  @Subscribe
+  public void onCreateMicroserviceMetaEvent(CreateMicroserviceMetaEvent event) {
+    MicroserviceMeta microserviceMeta = event.getMicroserviceMeta();
+    createServicePathManager(microserviceMeta);
+  }
 
   private ServicePathManager createServicePathManager(MicroserviceMeta microserviceMeta) {
     // already connect ServicePathManager and MicroserviceMeta instance

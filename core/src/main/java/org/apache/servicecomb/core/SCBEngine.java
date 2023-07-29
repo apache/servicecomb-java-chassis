@@ -566,6 +566,7 @@ public class SCBEngine {
       }
     }
 
+    eventBus.post(new CreateMicroserviceMetaEvent(microserviceMeta));
     return new MicroserviceReferenceConfig(instance.getApplication(),
         instance.getServiceName(), microserviceVersionsMeta, microserviceMeta);
   }
@@ -585,5 +586,17 @@ public class SCBEngine {
 
   public MicroserviceNameParser parseMicroserviceName(String microserviceName) {
     return new MicroserviceNameParser(getAppId(), microserviceName);
+  }
+
+  public static class CreateMicroserviceMetaEvent {
+    private final MicroserviceMeta microserviceMeta;
+
+    public CreateMicroserviceMetaEvent(MicroserviceMeta microserviceMeta) {
+      this.microserviceMeta = microserviceMeta;
+    }
+
+    public MicroserviceMeta getMicroserviceMeta() {
+      return this.microserviceMeta;
+    }
   }
 }

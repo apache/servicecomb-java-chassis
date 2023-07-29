@@ -18,9 +18,8 @@
 server:
   port: 8082
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-local-registry
-service_description:
-  name: demo-local-registry-client
-  version: 0.0.1
+servicecomb:
+  service:
+    application: demo-local-registry
+    name: demo-local-registry-client
+    version: 0.0.1
