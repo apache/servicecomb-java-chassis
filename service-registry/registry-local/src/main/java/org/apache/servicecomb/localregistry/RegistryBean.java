@@ -68,7 +68,15 @@ public class RegistryBean {
 
   private String appId;
 
+  /**
+   * Schema ids configured from RegistryBean. Generate schema content from Class.
+   */
   private final Map<String, Class<?>> schemaInterfaces = new HashMap<>();
+
+  /**
+   * Schema ids configured in yaml. Will load contents from local file.
+   */
+  private List<String> schemaIds = new ArrayList<>();
 
   private Instances instances;
 
@@ -80,6 +88,7 @@ public class RegistryBean {
         .setServiceName(serviceName)
         .setVersion((String) serviceConfig.get("version"))
         .setAppId(validAppId((String) serviceConfig.get("appid")))
+        .setSchemaIds(validListsValue((List<String>) serviceConfig.get("schemaIds")))
         .setInstances(
             new Instances()
                 .setInstances(validInstances((List<Map<String, Object>>) serviceConfig.get("instances"))));
@@ -153,6 +162,20 @@ public class RegistryBean {
   public RegistryBean addSchemaInterface(String schemaId, Class<?> schemaInterface) {
     this.schemaInterfaces.put(schemaId, schemaInterface);
     return this;
+  }
+
+  public RegistryBean addSchemaId(String schemaId) {
+    this.schemaIds.add(schemaId);
+    return this;
+  }
+
+  public RegistryBean setSchemaIds(List<String> schemaIds) {
+    this.schemaIds = schemaIds;
+    return this;
+  }
+
+  public List<String> getSchemaIds() {
+    return this.schemaIds;
   }
 
   public Map<String, Class<?>> getSchemaInterfaces() {

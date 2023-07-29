@@ -28,9 +28,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 @EnableServiceComb
-public class ServerApplication {
+public class LocalRegistryServerApplication {
   public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(ServerApplication.class).web(WebApplicationType.SERVLET).build().run(args);
+    new SpringApplicationBuilder().sources(LocalRegistryServerApplication.class).web(WebApplicationType.SERVLET).build().run(args);
 
     SelfServiceInvoker invoker = BeanUtils.getBean("SelfServiceInvoker");
     invoker.latch.await(10, TimeUnit.SECONDS);

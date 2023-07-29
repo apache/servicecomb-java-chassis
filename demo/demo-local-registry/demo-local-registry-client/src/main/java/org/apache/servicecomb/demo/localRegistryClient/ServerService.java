@@ -14,24 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.demo.localRegistryClient;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-public class LocalRegistryIT {
-  @BeforeEach
-  public void setUp() throws Exception {
-    TestMgr.errors().clear();
-  }
-
-  @Test
-  public void clientGetsNoError() throws Exception {
-    LocalRegistryClientApplication.main(new String[0]);
-
-    Assertions.assertTrue(TestMgr.errors().isEmpty());
-  }
+public interface ServerService {
+  String getName(String name);
 }

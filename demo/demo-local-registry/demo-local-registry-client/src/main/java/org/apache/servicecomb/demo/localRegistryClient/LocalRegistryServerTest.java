@@ -31,14 +31,28 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class LocalRegistryServerTest implements CategorizedTestCase {
+  // demo-local-registry-server-bean use yaml to register service, and register schema by
+  // local file loading
   @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstService;
 
+  @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "ServerEndpoint")
+  private ServerService serverService;
+
+  // demo-local-registry-server-bean use bean to register service, and register schema part by
+  // local file loading, part by bean class
   @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstServiceBean;
 
+  @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "ServerEndpoint")
+  private ServerService serverServiceBean;
+
+  // demo-local-registry-server-bean2 use bean to register service and schema
   @RpcReference(microserviceName = "demo-local-registry-server-bean2", schemaId = "CodeFirstEndpoint2")
   private CodeFirstService codeFirstServiceBean2;
+
+  @RpcReference(microserviceName = "demo-local-registry-server-bean2", schemaId = "ServerEndpoint")
+  private ServerService serverServiceBean2;
 
   private DiscoveryManager discoveryManager;
 
@@ -64,6 +78,9 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
     microserviceList = discoveryManager
         .findServiceInstances("demo-local-registry", "demo-local-registry-server-bean");
     TestMgr.check(1, microserviceList.size());
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-server-bean2");
+    TestMgr.check(1, microserviceList.size());
   }
 
   private void testCodeFirstGetName() {
@@ -80,5 +97,11 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server-bean/register/url/prefix/getName?name=2",
             String.class));
+    TestMgr.check("2", template
+        .getForObject("cse://demo-local-registry-server-bean2/register/url/prefix/getName?name=2",
+            String.class));
+    TestMgr.check("2", serverService.getName("2"));
+    TestMgr.check("2", serverServiceBean.getName("2"));
+    TestMgr.check("2", serverServiceBean2.getName("2"));
   }
 }

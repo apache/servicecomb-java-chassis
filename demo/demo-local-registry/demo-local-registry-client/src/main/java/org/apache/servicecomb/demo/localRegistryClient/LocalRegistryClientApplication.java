@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.localRegistryClient;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
@@ -26,9 +27,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 @EnableServiceComb
-public class Application {
+public class LocalRegistryClientApplication {
   public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET).build().run(args);
+    new SpringApplicationBuilder().sources(LocalRegistryClientApplication.class)
+        .web(WebApplicationType.SERVLET).build()
+        .run(args);
+
+    registerSchema();
 
     runTest();
 
@@ -36,6 +41,15 @@ public class Application {
     if (!TestMgr.errors().isEmpty()) {
       throw new IllegalStateException("tests failed");
     }
+  }
+
+  private static void registerSchema() {
+    SCBEngine.getInstance().getSwaggerLoader().registerSwagger("demo-local-registry",
+        "demo-local-registry-server",
+        "CodeFirstEndpoint", CodeFirstService.class);
+    SCBEngine.getInstance().getSwaggerLoader().registerSwagger("demo-local-registry",
+        "demo-local-registry-server-bean",
+        "CodeFirstEndpoint", CodeFirstService.class);
   }
 
   private static void runTest() throws Exception {
