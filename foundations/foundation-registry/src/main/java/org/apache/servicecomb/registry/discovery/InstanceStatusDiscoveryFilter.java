@@ -24,22 +24,11 @@ import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.HistoryStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.PingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
-public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
+public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   public static final String PARAMETER = "status_level";
 
-  public static final String INSTANCE_GROUP_KEY_PREFIX = "status_group_";
-
-  public static final int MAX_GROUP = 3;
-
-  private Environment environment;
-
-  @Autowired
-  public void setEnvironment(Environment environment) {
-    this.environment = environment;
-  }
+  public static final String GROUP_PREFIX = "status_group_";
 
   @Override
   public int getOrder() {
@@ -52,29 +41,13 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
   }
 
   @Override
-  public boolean isGroupingFilter() {
-    return true;
+  protected String contextParameter() {
+    return PARAMETER;
   }
 
   @Override
-  protected String findChildName(DiscoveryContext context, DiscoveryTreeNode parent) {
-    Integer level = context.getContextParameter(PARAMETER);
-    String group;
-    if (level == null) {
-      group = INSTANCE_GROUP_KEY_PREFIX + 0;
-      context.pushRerunFilter();
-      context.putContextParameter(PARAMETER, 0);
-      return group;
-    }
-
-    level = level + 1;
-    group = INSTANCE_GROUP_KEY_PREFIX + level;
-    context.putContextParameter(PARAMETER, level);
-
-    if (level < MAX_GROUP) {
-      context.pushRerunFilter();
-    }
-    return group;
+  protected String groupPrefix() {
+    return GROUP_PREFIX;
   }
 
   @Override
@@ -84,6 +57,9 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
     List<StatefulDiscoveryInstance> level1 = new ArrayList<>();
     List<StatefulDiscoveryInstance> level2 = new ArrayList<>();
     List<StatefulDiscoveryInstance> level3 = new ArrayList<>();
+
+    this.groups = 1;
+
     for (StatefulDiscoveryInstance instance : instances) {
       if (HistoryStatus.CURRENT == instance.getHistoryStatus() &&
           MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
@@ -109,13 +85,22 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
       level3.add(instance);
     }
 
-    parent.child(INSTANCE_GROUP_KEY_PREFIX + 0, new DiscoveryTreeNode()
-        .subName(parent, INSTANCE_GROUP_KEY_PREFIX + 0).data(level0));
-    parent.child(INSTANCE_GROUP_KEY_PREFIX + 1, new DiscoveryTreeNode()
-        .subName(parent, INSTANCE_GROUP_KEY_PREFIX + 1).data(level1));
-    parent.child(INSTANCE_GROUP_KEY_PREFIX + 2, new DiscoveryTreeNode()
-        .subName(parent, INSTANCE_GROUP_KEY_PREFIX + 2).data(level2));
-    parent.child(INSTANCE_GROUP_KEY_PREFIX + 3, new DiscoveryTreeNode()
-        .subName(parent, INSTANCE_GROUP_KEY_PREFIX + 3).data(level3));
+    if (!level0.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(level0));
+      groups++;
+    }
+    if (!level1.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(level1));
+      groups++;
+    }
+    if (!level2.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(level2));
+      groups++;
+    }
+    parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+        .subName(parent, GROUP_PREFIX + groups).data(level3));
   }
 }
