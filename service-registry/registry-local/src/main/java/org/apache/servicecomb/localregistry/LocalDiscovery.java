@@ -76,6 +76,6 @@ public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
 
   @Override
   public boolean enabled() {
-    return this.environment.getProperty(Const.LOCAL_REGISTRY_ENABLED, Boolean.class, true);
+    return this.environment.getProperty(Const.LOCAL_REGISTRY_ENABLED, boolean.class, true);
   }
 }

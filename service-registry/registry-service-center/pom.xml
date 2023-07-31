@@ -52,7 +52,7 @@
 
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-registry</artifactId>
+      <artifactId>java-chassis-core</artifactId>
     </dependency>
 
     <dependency>
@@ -84,19 +84,11 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-core</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jmockit</groupId>
-      <artifactId>jmockit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -24,6 +24,7 @@ import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishModelFactory;
@@ -32,6 +33,8 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
+import org.apache.servicecomb.registry.sc.SCRegistrationInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
@@ -52,8 +55,15 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
 
   private volatile List<Meter> meters = null;
 
+  private SCRegistrationInstance registrationInstance;
+
   public MetricsMonitorDataProvider() {
     EventManager.register(this);
+  }
+
+  @Autowired
+  public void setRegistrationInstance(SCRegistrationInstance registrationInstance) {
+    this.registrationInstance = registrationInstance;
   }
 
   @Override
@@ -61,6 +71,22 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.monitor.provider.metrics.enabled", true)
         .get();
+  }
+
+  @Override
+  public String getURL() {
+    return String.format(MonitorConstant.MONITORS_URI, registrationInstance.getServiceName());
+  }
+
+  @Override
+  public void extractServiceInfo(MonitorData monitorData) {
+    monitorData.setAppId(registrationInstance.getApplication());
+    monitorData.setName(registrationInstance.getServiceName());
+    monitorData.setVersion(registrationInstance.getVersion());
+    monitorData.setServiceId(registrationInstance.getBackendMicroservice().getServiceId());
+    monitorData.setInstance(registrationInstance.getBackendMicroserviceInstance().getHostName());
+    monitorData.setInstanceId(registrationInstance.getInstanceId());
+    monitorData.setEnvironment(registrationInstance.getEnvironment());
   }
 
   @Override
