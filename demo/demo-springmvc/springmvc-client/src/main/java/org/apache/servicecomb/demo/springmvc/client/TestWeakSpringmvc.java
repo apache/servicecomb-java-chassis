@@ -97,7 +97,7 @@ interface SpecialNameModelInf {
 
 @Component
 public class TestWeakSpringmvc implements CategorizedTestCase {
-  @Value("${APPLICATION_ID}")
+  @Value("${servicecomb.service.application}")
   private String applicationName;
 
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
@@ -115,7 +115,7 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInf;
 
-  @RpcReference(microserviceName = "${APPLICATION_ID}:springmvc", schemaId = "weakSpringmvc")
+  @RpcReference(microserviceName = "${servicecomb.service.application}:springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInfWithAppId;
 
   private RestTemplate restTemplate = RestTemplateBuilder.create();

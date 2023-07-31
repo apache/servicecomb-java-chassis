@@ -167,7 +167,7 @@ public class SpringmvcClient {
       String content = restTemplate
           .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
-      String application = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "").get();
+      String application = DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.service.application", "").get();
 
       TestMgr.check(true,
           content.contains(

@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -110,8 +109,6 @@ public class DiscoveryTree {
   // group name are qualifiedName
   // all leaf group will create a loadbalancer instance, groupName is loadBalancer key
   private void sort() {
-    filters.sort(Comparator.comparingInt(DiscoveryFilter::getOrder));
-
     Iterator<DiscoveryFilter> iterator = filters.iterator();
     while (iterator.hasNext()) {
       DiscoveryFilter filter = iterator.next();

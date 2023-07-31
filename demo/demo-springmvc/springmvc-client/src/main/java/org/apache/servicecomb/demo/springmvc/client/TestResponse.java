@@ -28,7 +28,6 @@ import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -38,7 +37,6 @@ public class TestResponse {
 
   private MicroserviceProperties microserviceProperties;
 
-  @Autowired
   public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;
   }
