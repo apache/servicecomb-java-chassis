@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.registry.discovery;
 
+import org.springframework.core.Ordered;
+
 /**
  * Server list filters for DiscoveryTree.
  */
-public interface DiscoveryFilter {
+public interface DiscoveryFilter extends Ordered {
   default boolean enabled() {
     return true;
   }
-
-  int getOrder();
 
   /**
    * grouping filter, means grouping instances to some groups

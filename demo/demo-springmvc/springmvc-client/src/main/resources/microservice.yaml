@@ -15,24 +15,17 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: springmvctest
-service_description:
-  name: springmvcClient
-  version: 0.0.1
 servicecomb:
   service:
+    application: springmvctest
+    name: springmvcClient
+    version: 0.0.1
     registry:
-      address: http://127.0.0.1:30100
-      autodiscovery: true
-      client:
-        timeout:
-          idle: 60
-          watch: 60
-      instance:
-        healthCheck:
-          interval: 3
-        pull:
-          interval: 90
+      sc:
+        address: http://127.0.0.1:30100
+        autodiscovery: true
+        healthCheckInterval: 3
+        pollInterval: 90000
         watch: true
 
   rest:
@@ -121,22 +114,6 @@ servicecomb:
     retry-governance: |
       maxAttempts: 2
       retryOnResponseStatus: [500]
-
-cse:
-  fallback:
-    Consumer:
-      springmvc:
-        codeFirstBizkeeperTest:
-          testTimeout:
-            enabled: false
-  isolation:
-    Consumer:
-      springmvc:
-        codeFirstBizkeeperTest:
-          testTimeout:
-            timeout:
-              enabled: true
-            timeoutInMilliseconds: 1000S
 
 3rd-svc:
   urls:
