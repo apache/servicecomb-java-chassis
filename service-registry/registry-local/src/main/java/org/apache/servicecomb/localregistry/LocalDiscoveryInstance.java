@@ -105,6 +105,11 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
+  public String getDiscoveryName() {
+    return LocalDiscovery.LOCAL_DISCOVERY_NAME;
+  }
+
+  @Override
   public String getEnvironment() {
     return localRegistrationInstance.getEnvironment();
   }

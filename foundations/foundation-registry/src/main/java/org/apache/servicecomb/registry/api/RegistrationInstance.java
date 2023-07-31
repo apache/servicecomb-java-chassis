@@ -21,12 +21,14 @@ package org.apache.servicecomb.registry.api;
  */
 public interface RegistrationInstance extends MicroserviceInstance {
   /**
-   * Initial status when registering.
+   * Initial status when registering(Optional). This method is
+   * implementation specific and may be not used.
    */
   MicroserviceInstanceStatus getInitialStatus();
 
   /**
-   * Ready status when microservice instance is ready for service.
+   * Ready status when microservice instance is ready for service(Optional).This method is
+   * implementation specific and may be not used.
    */
   MicroserviceInstanceStatus getReadyStatus();
 }

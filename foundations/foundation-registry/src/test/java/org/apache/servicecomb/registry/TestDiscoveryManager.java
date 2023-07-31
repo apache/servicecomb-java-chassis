@@ -139,6 +139,11 @@ public class TestDiscoveryManager {
     }
 
     @Override
+    public String getDiscoveryName() {
+      return null;
+    }
+
+    @Override
     public String getEnvironment() {
       return null;
     }

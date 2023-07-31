@@ -25,6 +25,7 @@ import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
+import org.springframework.util.CollectionUtils;
 
 import io.vertx.core.json.jackson.JacksonFactory;
 
@@ -37,6 +38,26 @@ public class RegistrationManager {
       return;
     }
     this.registrationList = registrationList;
+  }
+
+  /**
+   * For internal use. Only choose the first RegistrationInstance id.
+   */
+  public String getInstanceId() {
+    if (CollectionUtils.isEmpty(registrationList)) {
+      return "";
+    }
+    return registrationList.get(0).getMicroserviceInstance().getInstanceId();
+  }
+
+  /**
+   * For internal use. Only choose the first RegistrationInstance id.
+   */
+  public String getServiceId() {
+    if (CollectionUtils.isEmpty(registrationList)) {
+      return "";
+    }
+    return registrationList.get(0).getMicroserviceInstance().getServiceId();
   }
 
   public void updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {

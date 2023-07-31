@@ -30,6 +30,8 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
 
   public static final String GROUP_PREFIX = "status_group_";
 
+  public static final String GROUP_SIZE = "status_group_size";
+
   @Override
   public int getOrder() {
     return -10000;
@@ -38,6 +40,11 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
   @Override
   public boolean enabled() {
     return environment.getProperty("servicecomb.loadbalance.filter.status.enabled", Boolean.class, true);
+  }
+
+  @Override
+  protected String groupsSizeParameter() {
+    return GROUP_SIZE;
   }
 
   @Override
@@ -58,7 +65,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
     List<StatefulDiscoveryInstance> level2 = new ArrayList<>();
     List<StatefulDiscoveryInstance> level3 = new ArrayList<>();
 
-    this.groups = 1;
+    int groups = 1;
 
     for (StatefulDiscoveryInstance instance : instances) {
       if (HistoryStatus.CURRENT == instance.getHistoryStatus() &&
@@ -102,5 +109,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
     }
     parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
         .subName(parent, GROUP_PREFIX + groups).data(level3));
+
+    parent.attribute(GROUP_SIZE, groups);
   }
 }

@@ -24,4 +24,9 @@ public interface DiscoveryInstance extends MicroserviceInstance {
    * Microservice instance status.
    */
   MicroserviceInstanceStatus getStatus();
+
+  /**
+   * This name of Discovery Implementation.
+   */
+  String getDiscoveryName();
 }

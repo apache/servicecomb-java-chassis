@@ -53,6 +53,9 @@ public interface MicroserviceInstance {
    */
   String getVersion();
 
+  /**
+   * Data center info(Optional).
+   */
   DataCenterInfo getDataCenterInfo();
 
   /**
@@ -82,4 +85,12 @@ public interface MicroserviceInstance {
    * When microservice instance is restarted, this id should be changed.
    */
   String getInstanceId();
+
+  /**
+   * Microservice service id(Optional). This is used for service center, other implementations may not
+   * support service id.
+   */
+  default String getServiceId() {
+    return "";
+  }
 }

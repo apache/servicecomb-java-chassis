@@ -27,7 +27,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIOrder;
  */
 public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIOrder, LifeCycle {
   interface InstanceChangedListener<D extends DiscoveryInstance> {
-    void onInstanceChanged(String application, String serviceName, List<D> updatedInstances);
+    void onInstanceChanged(String discoveryName, String application, String serviceName, List<D> updatedInstances);
   }
 
   String name();

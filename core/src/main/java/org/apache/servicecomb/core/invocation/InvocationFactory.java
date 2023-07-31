@@ -19,6 +19,7 @@ package org.apache.servicecomb.core.invocation;
 
 import java.util.Map;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -38,19 +39,17 @@ public final class InvocationFactory {
         operationMeta,
         invocationRuntimeType,
         swaggerArguments);
-    return invocation;
+    return setSrcMicroservice(invocation);
   }
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
-    // TODO: add src instance to header
-//    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-//    invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
-//    if (addSourceServiceId()) {
-//      invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
-//    }
-//    if (addSourceInstanceId()) {
-//      invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
-//    }
+    invocation.addContext(Const.SRC_MICROSERVICE, SCBEngine.getInstance().getMicroserviceProperties().getName());
+    if (addSourceServiceId()) {
+      invocation.addContext(Const.SRC_SERVICE_ID, SCBEngine.getInstance().getRegistrationManager().getServiceId());
+    }
+    if (addSourceInstanceId()) {
+      invocation.addContext(Const.SRC_INSTANCE_ID, SCBEngine.getInstance().getRegistrationManager().getInstanceId());
+    }
     return invocation;
   }
 

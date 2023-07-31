@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
+  public static final String LOCAL_DISCOVERY_NAME = "local-discovery";
+
   private LocalRegistryStore localRegistryStore;
 
   private Environment environment;
@@ -47,7 +49,7 @@ public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
 
   @Override
   public String name() {
-    return "local-discovery";
+    return LOCAL_DISCOVERY_NAME;
   }
 
   @Override

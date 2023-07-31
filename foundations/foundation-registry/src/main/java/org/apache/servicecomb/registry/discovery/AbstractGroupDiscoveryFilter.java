@@ -1,12 +1,12 @@
 package org.apache.servicecomb.registry.discovery;
 
 public abstract class AbstractGroupDiscoveryFilter extends AbstractDiscoveryFilter {
-  protected int groups = 0;
-
   @Override
   public boolean isGroupingFilter() {
     return true;
   }
+
+  abstract protected String groupsSizeParameter();
 
   abstract protected String contextParameter();
 
@@ -15,6 +15,8 @@ public abstract class AbstractGroupDiscoveryFilter extends AbstractDiscoveryFilt
   @Override
   protected String findChildName(DiscoveryContext context, DiscoveryTreeNode parent) {
     Integer level = context.getContextParameter(contextParameter());
+    Integer groups = parent.attribute(groupsSizeParameter());
+
     String group;
     if (level == null) {
       group = groupPrefix() + 1;

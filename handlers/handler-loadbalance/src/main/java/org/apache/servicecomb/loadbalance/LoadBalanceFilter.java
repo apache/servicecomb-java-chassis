@@ -200,7 +200,9 @@ public class LoadBalanceFilter implements ConsumerFilter {
     ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {
       return CompletableFuture.failedFuture(
-          new InvocationException(Status.INTERNAL_SERVER_ERROR, "No available address found."));
+          new InvocationException(Status.INTERNAL_SERVER_ERROR,
+              String.format("No available address found for %s/%s.", invocation.getAppId(),
+                  invocation.getMicroserviceName())));
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());

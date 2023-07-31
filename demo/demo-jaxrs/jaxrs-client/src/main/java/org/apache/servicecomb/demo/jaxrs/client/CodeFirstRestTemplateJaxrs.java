@@ -19,10 +19,12 @@ package org.apache.servicecomb.demo.jaxrs.client;
 
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   @Override
   protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
