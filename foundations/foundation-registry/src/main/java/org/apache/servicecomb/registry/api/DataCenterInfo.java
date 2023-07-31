@@ -18,12 +18,21 @@
 package org.apache.servicecomb.registry.api;
 
 public class DataCenterInfo {
-
   private String name;
 
   private String region;
 
   private String availableZone;
+
+  public DataCenterInfo() {
+
+  }
+
+  public DataCenterInfo(String name, String region, String availableZone) {
+    this.name = name;
+    this.region = region;
+    this.availableZone = availableZone;
+  }
 
   public String getName() {
     return name;

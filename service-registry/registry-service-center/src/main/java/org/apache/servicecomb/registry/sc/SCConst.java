@@ -14,26 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.registry.sc;
 
-package org.apache.servicecomb.demo.multiServiceCenterClient;
+public class SCConst {
+  public static final String SC_REGISTRY_PREFIX = "servicecomb.registry.sc";
 
-import org.apache.servicecomb.serviceregistry.client.http.RegistryHttpClientOptionsSPI;
+  public static final String SC_SSL_TAG = "sc.consumer";
 
-public class ServerBRegistryHttpClientOptionsSPI extends RegistryHttpClientOptionsSPI {
-  public static final String CLIENT_NAME = "registry-serverB";
+  public static final String SC_ALLOW_CROSS_APP = "allowCrossApp";
 
-  @Override
-  public String clientName() {
-    return CLIENT_NAME;
-  }
-
-  @Override
-  public String getConfigTag() {
-    return "sc.serverB.consumer";
-  }
-
-  @Override
-  public boolean isSsl() {
-    return false;
-  }
+  public static final String SC_DEFAULT_PROJECT = "default";
 }

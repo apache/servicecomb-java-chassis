@@ -28,30 +28,13 @@ import java.util.Map;
 
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.CPUMonitorCalc;
-import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
 public interface MonitorDataProvider {
   boolean enabled();
 
-  default String getURL() {
-    // TODO: dashboard dependends on service center.
-//    return String.format(MonitorConstant.MONITORS_URI, RegistryUtils.getMicroservice().getServiceName());
-    return null;
-  }
+  String getURL();
 
-  default void extractServiceInfo(MonitorData monitorData) {
-    // TODO: dashboard dependends on service center.
-//    Microservice microservice = RegistryUtils.getMicroservice();
-//    MicroserviceInstance microserviceInstance = RegistryUtils.getMicroserviceInstance();
-//    monitorData.setAppId(microservice.getAppId());
-//    monitorData.setName(microservice.getServiceName());
-//    monitorData.setVersion(microservice.getVersion());
-//    monitorData.setServiceId(microservice.getServiceId());
-//    monitorData.setInstance(microserviceInstance.getHostName());
-//    monitorData.setInstanceId(microserviceInstance.getInstanceId());
-//    monitorData.setEnvironment(microservice.getEnvironment());
-  }
+  void extractServiceInfo(MonitorData monitorData);
 
   default void exactProcessInfo(MonitorData monitorData) {
     MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
