@@ -37,10 +37,6 @@ public class SCConfigurationProperties {
 
   private String hostname;
 
-  private String publishAddress;
-
-  private boolean healthCheck = true;
-
   private int healthCheckInterval = 15;
 
   private int healthCheckTimes = 3;
@@ -101,22 +97,6 @@ public class SCConfigurationProperties {
 
   public void setHostname(String hostname) {
     this.hostname = hostname;
-  }
-
-  public String getPublishAddress() {
-    return publishAddress;
-  }
-
-  public void setPublishAddress(String publishAddress) {
-    this.publishAddress = publishAddress;
-  }
-
-  public boolean isHealthCheck() {
-    return healthCheck;
-  }
-
-  public void setHealthCheck(boolean healthCheck) {
-    this.healthCheck = healthCheck;
   }
 
   public int getHealthCheckInterval() {
