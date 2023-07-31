@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.registry.sc;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -54,6 +57,8 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
 
   private DataCenterProperties dataCenterProperties;
 
+  private CountDownLatch readyWaiter = new CountDownLatch(1);
+
   @Autowired
   public void setServiceCenterClient(ServiceCenterClient serviceCenterClient) {
     this.serviceCenterClient = serviceCenterClient;
@@ -79,12 +84,6 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
     this.dataCenterProperties = dataCenterProperties;
   }
 
-  @Subscribe
-  public void onMicroserviceInstanceRegistrationEvent(MicroserviceInstanceRegistrationEvent event) {
-    if (event.isSuccess() && configurationProperties.isWatch()) {
-      serviceCenterWatch.startWatch(SCConst.SC_DEFAULT_PROJECT, microservice.getServiceId());
-    }
-  }
 
   @Override
   public void init() {
@@ -100,11 +99,32 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
     serviceCenterRegistration.setMicroservice(microservice);
     serviceCenterRegistration.setMicroserviceInstance(microserviceInstance);
     registrationInstance = new SCRegistrationInstance(microservice, microserviceInstance, serviceCenterRegistration);
+    EventManager.getEventBus().register(this);
   }
 
   @Override
   public void run() {
-    serviceCenterRegistration.startRegistration();
+    try {
+      serviceCenterRegistration.startRegistration();
+      if (!readyWaiter.await(configurationProperties.getRegistrationWaitTimeInMillis(), TimeUnit.MILLISECONDS)) {
+        throw new IllegalStateException(
+            String.format("registration timeout after %s milli seconds.",
+                configurationProperties.getRegistrationWaitTimeInMillis()));
+      }
+    } catch (InterruptedException e) {
+      throw new IllegalStateException("registration process is interrupted.");
+    }
+  }
+
+  @Subscribe
+  public void onMicroserviceInstanceRegistrationEvent(MicroserviceInstanceRegistrationEvent event) {
+    if (!event.isSuccess()) {
+      return;
+    }
+    readyWaiter.countDown();
+    if (configurationProperties.isWatch()) {
+      serviceCenterWatch.startWatch(SCConst.SC_DEFAULT_PROJECT, microservice.getServiceId());
+    }
   }
 
   @Override

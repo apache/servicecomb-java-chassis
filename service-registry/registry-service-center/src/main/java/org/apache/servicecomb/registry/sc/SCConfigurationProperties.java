@@ -51,6 +51,8 @@ public class SCConfigurationProperties {
 
   private boolean watch = false;
 
+  private long registrationWaitTimeInMillis = 30000;
+
   public String getAddress() {
     return address;
   }
@@ -153,5 +155,13 @@ public class SCConfigurationProperties {
 
   public void setWatch(boolean watch) {
     this.watch = watch;
+  }
+
+  public long getRegistrationWaitTimeInMillis() {
+    return registrationWaitTimeInMillis;
+  }
+
+  public void setRegistrationWaitTimeInMillis(long registrationWaitTimeInMillis) {
+    this.registrationWaitTimeInMillis = registrationWaitTimeInMillis;
   }
 }
