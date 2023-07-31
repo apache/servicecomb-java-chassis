@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
+import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,12 @@ public class SCConfiguration {
   public ServiceCenterClient serviceCenterClient(SCConfigurationProperties scConfigurationProperties,
       List<AuthHeaderProvider> authHeaderProviders) {
     return SCClientUtils.serviceCenterClient(scConfigurationProperties, authHeaderProviders);
+  }
+
+  @Bean
+  public ServiceCenterWatch serviceCenterWatch(SCConfigurationProperties scConfigurationProperties,
+      List<AuthHeaderProvider> authHeaderProviders) {
+    return SCClientUtils.serviceCenterWatch(scConfigurationProperties, authHeaderProviders);
   }
 
   @Bean
