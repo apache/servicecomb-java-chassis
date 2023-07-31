@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.config;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MicroserviceProperties {
@@ -31,7 +32,7 @@ public class MicroserviceProperties {
 
   private String description;
 
-  private Map<String, String> properties;
+  private Map<String, String> properties = new HashMap<>();
 
   public String getEnvironment() {
     return environment;
