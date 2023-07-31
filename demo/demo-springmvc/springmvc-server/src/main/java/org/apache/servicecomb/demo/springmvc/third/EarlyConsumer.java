@@ -45,7 +45,7 @@ public class EarlyConsumer implements BootListener {
           // ignore error
         }
         try {
-          Thread.sleep(100);
+          Thread.sleep(500);
         } catch (Throwable e) {
           // ignore error
         }
